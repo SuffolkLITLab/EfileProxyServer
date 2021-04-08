@@ -19,6 +19,8 @@ import tyler.efm.services.schema.getpaymentaccountresponse.GetPaymentAccountResp
 import tyler.efm.services.schema.getservicecontactresponse.GetServiceContactResponseType;
 import tyler.efm.services.schema.getuserresponse.GetUserResponseType;
 import tyler.efm.services.schema.notificationpreferencesresponse.NotificationPreferencesResponseType;
+import tyler.efm.services.schema.getvitalchekpaymentaccountidresponse.GetVitalChekPaymentAccountIdResponseType;
+import tyler.efm.services.schema.notificationpreferenceslistresponse.NotificationPreferencesListResponseType;
 import tyler.efm.services.schema.passwordquestionresponse.PasswordQuestionResponseType;
 import tyler.efm.services.schema.paymentaccountlistresponse.PaymentAccountListResponseType;
 import tyler.efm.services.schema.paymentaccounttypelistresponse.PaymentAccountTypeListResponseType;
@@ -56,20 +58,35 @@ import tyler.efm.services.schema.userlistresponse.UserListResponseType;
     "error"
 })
 @XmlSeeAlso({
+    RegistrationResponseType.class,
     UserListResponseType.class,
     GetAttorneyResponseType.class,
     ChangePasswordResponseType.class,
     ResetPasswordResponseType.class,
+    GetUserResponseType.class,
+    UpdateUserResponseType.class,
+    GetFirmResponseType.class,
     AttorneyListResponseType.class,
+    GetAttorneyResponseType.class,
+    UpdateAttorneyResponseType.class,
+    CreateAttorneyResponseType.class,
+    PaymentAccountTypeListResponseType.class,
+    PaymentAccountListResponseType.class,
+    GetPaymentAccountResponseType.class,
+    GetVitalChekPaymentAccountIdResponseType.class,
     UpdatePaymentAccountResponseType.class,
+    CreatePaymentAccountResponseType.class,
     ServiceContactListResponseType.class,
     GetServiceContactResponseType.class,
     CreatePaymentAccountResponseType.class,
     UpdateAttorneyResponseType.class,
+    UpdateServiceContactResponseType.class,
     CreateServiceContactResponseType.class,
     GetUserResponseType.class,
     GetFirmResponseType.class,
     PaymentAccountTypeListResponseType.class,
+    ResetPasswordResponseType.class,
+    NotificationPreferencesListResponseType.class,
     PasswordQuestionResponseType.class,
     CreateAttorneyResponseType.class,
     GetPaymentAccountResponseType.class,
@@ -78,7 +95,9 @@ import tyler.efm.services.schema.userlistresponse.UserListResponseType;
     UpdateServiceContactResponseType.class,
     AuthenticateResponseType.class,
     UpdateUserResponseType.class,
-    NotificationPreferencesResponseType.class
+    NotificationPreferencesResponseType.class,
+    ChangePasswordResponseType.class,
+    AuthenticateResponseType.class
 })
 public class BaseResponseType {
 

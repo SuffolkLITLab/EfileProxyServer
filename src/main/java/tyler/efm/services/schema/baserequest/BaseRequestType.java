@@ -16,6 +16,7 @@ import tyler.efm.services.schema.detachservicecontactrequest.DetachServiceContac
 import tyler.efm.services.schema.getattorneyrequest.GetAttorneyRequestType;
 import tyler.efm.services.schema.getpasswordquestionrequest.GetPasswordQuestionRequestType;
 import tyler.efm.services.schema.getpaymentaccountrequest.GetPaymentAccountRequestType;
+import tyler.efm.services.schema.getpubliclistrequest.GetPublicListRequestType;
 import tyler.efm.services.schema.getservicecontactrequest.GetServiceContactRequestType;
 import tyler.efm.services.schema.getuserrequest.GetUserRequestType;
 import tyler.efm.services.schema.registrationrequest.RegistrationRequestType;
@@ -57,6 +58,12 @@ import tyler.efm.services.schema.updateuserrequest.UpdateUserRequestType;
 @XmlSeeAlso({
     GetPaymentAccountRequestType.class,
     DetachServiceContactRequestType.class,
+    RegistrationRequestType.class,
+    GetUserRequestType.class,
+    AddUserRoleRequestType.class,
+    RemoveUserRoleRequestType.class,
+    UpdateUserRequestType.class,
+    RemoveUserRequestType.class,
     UpdateFirmRequestType.class,
     ChangePasswordRequestType.class,
     GetAttorneyRequestType.class,
@@ -68,6 +75,8 @@ import tyler.efm.services.schema.updateuserrequest.UpdateUserRequestType;
     RemoveUserRequestType.class,
     CreateServiceContactRequestType.class,
     CreatePaymentAccountRequestType.class,
+    RemovePaymentAccountRequestType.class,
+    UpdateNotificationPreferencesRequestType.class,
     AuthenticateRequestType.class,
     RemoveServiceContactRequestType.class,
     GetPasswordQuestionRequestType.class,
@@ -76,14 +85,25 @@ import tyler.efm.services.schema.updateuserrequest.UpdateUserRequestType;
     GetServiceContactRequestType.class,
     CreateAttorneyRequestType.class,
     ResetPasswordRequestType.class,
-    RemovePaymentAccountRequestType.class,
-    UpdateNotificationPreferencesRequestType.class,
-    RemoveUserRoleRequestType.class,
     UpdatePaymentAccountRequestType.class,
+    RemoveAttorneyRequestType.class,
+    GetPaymentAccountRequestType.class,
     AddUserRoleRequestType.class,
+    CreatePaymentAccountRequestType.class,
+    GetServiceContactRequestType.class,
     UpdateServiceContactRequestType.class,
     RemoveAttorneyRequestType.class,
-    AttachServiceContactRequestType.class
+    AttachServiceContactRequestType.class,
+    CreateServiceContactRequestType.class,
+    RemoveServiceContactRequestType.class,
+    AttachServiceContactRequestType.class,
+    DetachServiceContactRequestType.class,
+    ResetUserPasswordRequestType.class,
+    ResendActivationEmailRequestType.class,
+    GetPublicListRequestType.class,
+    AuthenticateRequestType.class,
+    GetPasswordQuestionRequestType.class,
+    ChangePasswordRequestType.class
 })
 public class BaseRequestType {
 

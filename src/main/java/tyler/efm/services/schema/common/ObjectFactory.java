@@ -31,6 +31,7 @@ public class ObjectFactory {
     private final static QName _Attorney_QNAME = new QName("urn:tyler:efm:services:schema:Common", "Attorney");
     private final static QName _Role_QNAME = new QName("urn:tyler:efm:services:schema:Common", "Role");
     private final static QName _Notification_QNAME = new QName("urn:tyler:efm:services:schema:Common", "Notification");
+    private final static QName _NotificationListItem_QNAME = new QName("urn:tyler:efm:services:schema:Common", "NotificationListItem");
     private final static QName _PaymentAccountTypeCardType_QNAME = new QName("urn:tyler:efm:services:schema:Common", "CardType");
     private final static QName _PaymentAccountTypeCardMonth_QNAME = new QName("urn:tyler:efm:services:schema:Common", "CardMonth");
     private final static QName _PaymentAccountTypeCardYear_QNAME = new QName("urn:tyler:efm:services:schema:Common", "CardYear");
@@ -93,6 +94,14 @@ public class ObjectFactory {
      */
     public NotificationType createNotificationType() {
         return new NotificationType();
+    }
+
+    /**
+     * Create an instance of {@link NotificationListItemType }
+     * 
+     */
+    public NotificationListItemType createNotificationListItemType() {
+        return new NotificationListItemType();
     }
 
     /**
@@ -203,6 +212,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:tyler:efm:services:schema:Common", name = "Role")
     public JAXBElement<RoleType> createRole(RoleType value) {
         return new JAXBElement<RoleType>(_Role_QNAME, RoleType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link NotificationListItemType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link NotificationListItemType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:efm:services:schema:Common", name = "NotificationListItem")
+    public JAXBElement<NotificationListItemType> createNotificationListItem(NotificationListItemType value) {
+        return new JAXBElement<NotificationListItemType>(_NotificationListItem_QNAME, NotificationListItemType.class, null, value);
     }
 
     /**
