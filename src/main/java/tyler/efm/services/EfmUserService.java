@@ -26,7 +26,7 @@ public class EfmUserService extends Service {
     static {
         URL url = EfmUserService.class.getClassLoader().getResource("wsdl/EFMUserServiceSingle.svc.wsdl");
         if (url == null) {
-          java.util.logging.Logger.getLogger(EfmUserService.class.getName())
+            java.util.logging.Logger.getLogger(EfmUserService.class.getName())
                 .log(java.util.logging.Level.INFO,
                      "Can not initialize the default wsdl from {0}", "classpath:wsdl/EFMUserServiceSingle.svc.wsdl");
         }
