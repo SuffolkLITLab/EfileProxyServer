@@ -24,7 +24,7 @@ public class EfmFirmService extends Service {
     public final static QName BasicHttpBindingIEfmFirmService = new QName("urn:tyler:efm:services", "BasicHttpBinding_IEfmFirmService");
     public final static QName BasicHttpBindingIEfmFirmService1 = new QName("urn:tyler:efm:services", "BasicHttpBinding_IEfmFirmService1");
     static {
-        URL url = EfmFirmService.class.getClassLoader().getResource("classpath:wsdl/EFMFirmServiceSingle.svc.wsdl");
+        URL url = EfmFirmService.class.getClassLoader().getResource("wsdl/EFMFirmServiceSingle.svc.wsdl");
         if (url == null) {
             java.util.logging.Logger.getLogger(EfmFirmService.class.getName())
                 .log(java.util.logging.Level.INFO,

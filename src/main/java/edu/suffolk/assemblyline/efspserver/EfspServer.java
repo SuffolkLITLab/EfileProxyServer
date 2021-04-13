@@ -4,57 +4,135 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import org.apache.cxf.headers.Header;
+import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.EfmUserService;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.IEfmUserService;
+import tyler.efm.services.schema.adduserrolerequest.AddUserRoleRequestType;
 import tyler.efm.services.schema.authenticaterequest.AuthenticateRequestType;
 import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
 import tyler.efm.services.schema.baseresponse.BaseResponseType;
 import tyler.efm.services.schema.changepasswordrequest.ChangePasswordRequestType;
 import tyler.efm.services.schema.changepasswordresponse.ChangePasswordResponseType;
 import tyler.efm.services.schema.common.NotificationType;
+import tyler.efm.services.schema.common.RegistrationType;
+import tyler.efm.services.schema.common.RoleType;
 import tyler.efm.services.schema.common.UserType;
+import tyler.efm.services.schema.getfirmresponse.GetFirmResponseType;
 import tyler.efm.services.schema.getuserrequest.GetUserRequestType;
 import tyler.efm.services.schema.getuserresponse.GetUserResponseType;
 import tyler.efm.services.schema.notificationpreferencesresponse.NotificationPreferencesResponseType;
 import tyler.efm.services.schema.registrationrequest.RegistrationRequestType;
+import tyler.efm.services.schema.registrationresponse.RegistrationResponseType;
+import tyler.efm.services.schema.removeuserrequest.RemoveUserRequestType;
+import tyler.efm.services.schema.removeuserrolerequest.RemoveUserRoleRequestType;
+import tyler.efm.services.schema.resendactivationemailrequest.ResendActivationEmailRequestType;
 import tyler.efm.services.schema.resetpasswordrequest.ResetPasswordRequestType;
 import tyler.efm.services.schema.resetpasswordresponse.ResetPasswordResponseType;
 import tyler.efm.services.schema.selfresendactivationemailrequest.SelfResendActivationEmailRequestType;
 import tyler.efm.services.schema.updatenotificationpreferencesrequest.UpdateNotificationPreferencesRequestType;
 import tyler.efm.services.schema.updateuserrequest.UpdateUserRequestType;
 import tyler.efm.services.schema.updateuserresponse.UpdateUserResponseType;
+import tyler.efm.services.schema.userlistresponse.UserListResponseType;
 
 public final class EfspServer {
 
-  private static final QName SERVICE_NAME = new QName("urn:tyler:efm:services", "EfmUserService");
+  private static final QName USER_SERVICE_NAME = new QName("urn:tyler:efm:services", "EfmUserService");
+  private static final QName FIRM_SERVICE_NAME = new QName("urn:tyler:efm:services", "EfmFirmService");
 
-  public static void testFirmManagement(IEfmFirmService port) throws JAXBException {
+  public static void testFirmManagement(IEfmUserService userPort, IEfmFirmService firmPort) throws JAXBException {
+    AuthenticateRequestType authReq = new AuthenticateRequestType();
+    authReq.setEmail("bwilley@suffolk.edu");
+    authReq.setPassword(System.getenv("BRYCE_USER_PASSWORD"));
+    AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
+
+    List<Header> headersList = Arrays.asList(TylerUserNamePassword.makeHeader(authRes.getEmail(), authRes.getPasswordHash()));
+    ((BindingProvider) firmPort).getRequestContext().put(Header.HEADER_LIST, headersList); 
+    ((BindingProvider) userPort).getRequestContext().put(Header.HEADER_LIST, headersList); 
+
+    GetFirmResponseType firm = firmPort.getFirm();
+    System.out.println("Firm info: " + firm.getFirm().getFirmID() + ", " + firm.getFirm().getFirmName());
+    
     // RegisterUser
     RegistrationRequestType regUser = new RegistrationRequestType();
-    regUser.setCity("Galveston");
+    regUser.setEmail("bryce.steven.willey+tylertesting@gmail.com");
+    regUser.setFirstName("Bryce");
+    regUser.setMiddleName("Steven");
+    regUser.setLastName("Wiley");
+    regUser.setPassword("testingPassword1@");
+    regUser.setPasswordQuestion("Again, password Qs are deprecated");
+    regUser.setPasswordAnswer("Yes, lol");
+    regUser.setCountryCode("US");
+    regUser.setCity("Houston");
+    regUser.setPhoneNumber("4093563492");
+    regUser.setRegistrationType(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
+    // RegistrationType.INDIVIDUAL doesn't let you have any control over the user or let you delete
+    // the account in any way
+    regUser.setStateCode("TX");
+    regUser.setZipCode("77098");
+    regUser.setStreetAddressLine1("123 Fake St");
+    regUser.setStreetAddressLine2("Apt 1");
+    regUser.setFirmName(firm.getFirm().getFirmName());
+    RegistrationResponseType userRes = firmPort.registerUser(regUser);
+    System.out.println("New user errors: " + userRes.getError().getErrorCode() + ", " + userRes.getError().getErrorText());
+    System.out.println("New User for gmail: " + userRes.getUserID() + ", " + userRes.getFirmID() + ", " + userRes.getExpirationDateTime());
+
+    // ResendActivationEmail
+    ResendActivationEmailRequestType newEmail = new ResendActivationEmailRequestType();
+    newEmail.setUserID(userRes.getUserID());
+    BaseResponseType newEmailRes = firmPort.resendActivationEmail(newEmail);
+    System.out.println("New email res error: " + newEmailRes.getError().getErrorText());
 
     // AddUserRole
+    AddUserRoleRequestType req = new AddUserRoleRequestType();
+    req.setRole(RoleType.FIRM_ADMIN);
+    req.setUserID(userRes.getUserID());
+    BaseResponseType res = firmPort.addUserRole(req);
+    System.out.println("Set new role error: " + res.getError().getErrorText());
+
+    // UpdateUser
+    UserType correctUser = new UserType();
+    correctUser.setFirstName("Bryce");
+    correctUser.setFirstName("Steven");
+    correctUser.setLastName("Willey");
+    correctUser.setEmail("bryce.steven.willey+tylertesting@gmail.com");
+    correctUser.setUserID(userRes.getUserID());
+    UpdateUserRequestType updateUser = new UpdateUserRequestType();
+    updateUser.setUser(correctUser);
+    UpdateUserResponseType correctUserRes = firmPort.updateUser(updateUser);
+    System.out.println(correctUserRes.getError().getErrorText());
 
     // GetUser
 
     // GetUserList
-
-    // UpdateUser
+    UserListResponseType userList = firmPort.getUserList();
+    System.out.println(userList.getUser().size() + " users");
+    for (UserType u : userList.getUser()) {
+      System.out.println(u.getEmail());
+    }
 
     // GetNotificationPreferencesList
 
-    // RemoveUser
-
     // RemoveUserRole
+    RemoveUserRoleRequestType removeRole = new RemoveUserRoleRequestType();
+    removeRole.setUserID(userRes.getUserID());
+    removeRole.setRole(RoleType.FIRM_ADMIN);
+    BaseResponseType removedRoleRes = firmPort.removeUserRole(removeRole);
+    System.out.println("Remove role error: " + removedRoleRes.getError().getErrorText());
 
-    // ResendActivationEmail
+    // RemoveUser
+    RemoveUserRequestType removeUser = new RemoveUserRequestType();
+    removeUser.setUserID(userRes.getUserID());
+    BaseResponseType removeUserRes = firmPort.removeUser(removeUser);
+    System.out.println("Remove user error: " + removeUserRes.getError().getErrorText());
 
     // ResetUserPassword
   }
@@ -68,9 +146,7 @@ public final class EfspServer {
     // GetUser
     GetUserRequestType getUserReq = new GetUserRequestType();
     getUserReq.setUserID(authRes.getUserID());
-    ArrayList<Header> headersList = new ArrayList<Header>();
-    headersList.add(
-        TylerUserNamePassword.makeHeader(authRes.getEmail(), authRes.getPasswordHash()));
+    List<Header> headersList = Arrays.asList(TylerUserNamePassword.makeHeader(authRes.getEmail(), authRes.getPasswordHash()));
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
     ctx.put(Header.HEADER_LIST, headersList);
     GetUserResponseType getUserResp = port.getUser(getUserReq);
@@ -176,23 +252,9 @@ public final class EfspServer {
     System.out.println(resetPasswordResp.getError().getErrorCode());
     System.out.println(resetPasswordResp.getError().getErrorText());
   }
-
-  public static void main(String[] args) throws JAXBException {
-    URL wsdlUrl = EfmUserService.WSDL_LOCATION;
-    if (args.length > 0 && args[0] != null && !"".equals(args[0])) {
-      File wsdlFile = new File(args[0]);
-      try {
-        if (wsdlFile.exists()) {
-          wsdlUrl = wsdlFile.toURI().toURL();
-        } else {
-          wsdlUrl = new URL(args[0]);
-        }
-      } catch (MalformedURLException e) {
-        e.printStackTrace();
-      }
-    }
-
-    EfmUserService ss = new EfmUserService(wsdlUrl, SERVICE_NAME);
+  
+  public static IEfmUserService makeUserService(URL userWsdlUrl) {
+    EfmUserService ss = new EfmUserService(userWsdlUrl, USER_SERVICE_NAME);
     IEfmUserService port = ss.getBasicHttpBindingIEfmUserService();
     BindingProvider bp = (BindingProvider) port;
     Map<String, Object> ctx = bp.getRequestContext();
@@ -201,8 +263,51 @@ public final class EfspServer {
     ctx.put("security.signature.properties", "client_sign.properties");
     ctx.put("security.callback-handler", ClientCallbackHandler.class.getName());
     ctx.put("security.signature.username", "1");
+    return port;
+  }
+
+  public static IEfmFirmService makeFirmService(URL firmWsdlUrl) {
+    EfmFirmService ss = new EfmFirmService(firmWsdlUrl, FIRM_SERVICE_NAME);
+    IEfmFirmService port = ss.getBasicHttpBindingIEfmFirmService();
+    BindingProvider bp = (BindingProvider) port;
+    Map<String, Object> ctx = bp.getRequestContext();
+    ctx.put("security.username", "bwilley@suffolk.edu");
+    ctx.put("security.password", "can-be-anything?");
+    ctx.put("security.signature.properties", "client_sign.properties");
+    ctx.put("security.callback-handler", ClientCallbackHandler.class.getName());
+    ctx.put("security.signature.username", "1");
+    return port;
+  }
+
+
+  public static void main(String[] args) throws JAXBException {
+    URL userWsdlUrl = EfmUserService.WSDL_LOCATION;
+    URL firmWsdlUrl = EfmFirmService.WSDL_LOCATION;
+    if (args.length > 0 && args[0] != null && !"".equals(args[0])) {
+      try {
+        File userWsdlFile = new File(args[0]);
+        if (userWsdlFile.exists()) {
+          userWsdlUrl = userWsdlFile.toURI().toURL();
+        } else {
+          userWsdlUrl = new URL(args[0]);
+        }
+        if (args.length > 1 && args[1] != null && !"".equals(args[1])) {
+          File firmWsdlFile = new File(args[1]);
+          if (firmWsdlFile.exists()) {
+            firmWsdlUrl = firmWsdlFile.toURI().toURL();
+          } else {
+            firmWsdlUrl = new URL(args[1]);
+          }
+        }
+      } catch (MalformedURLException e) {
+        e.printStackTrace();
+      }
+    }
+    IEfmUserService userPort = makeUserService(userWsdlUrl);
+    IEfmFirmService firmPort = makeFirmService(firmWsdlUrl);
 
     // testUserManagement(port);
-    testUserActionManagement(port, "bwilley@suffolk.edu");
+    //testUserActionManagement(port, "bwilley@suffolk.edu");
+    testFirmManagement(userPort, firmPort);
   }
 }
