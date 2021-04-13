@@ -15,6 +15,7 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 
 import tyler.efm.services.EfmUserService;
+import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.IEfmUserService;
 import tyler.efm.services.schema.authenticaterequest.AuthenticateRequestType;
 import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
@@ -48,9 +49,10 @@ public final class EfspServer {
 	
 	private static final QName SERVICE_NAME = new QName("urn:tyler:efm:services", "EfmUserService");
 	
-	public static void testFirmManagement() throws JAXBException {
+	public static void testFirmManagement(IEfmFirmService port) throws JAXBException {
 		// RegisterUser
 		RegistrationRequestType regUser = new RegistrationRequestType();
+		regUser.setCity("Galveston");
 		
 		// AddUserRole
 		
