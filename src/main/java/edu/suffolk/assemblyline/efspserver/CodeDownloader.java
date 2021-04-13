@@ -1,4 +1,4 @@
-package edu.suffolk.assemblyLineEfspServer;
+package edu.suffolk.assemblyline.efspserver;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -92,7 +92,7 @@ public class CodeDownloader {
     return Base64.getEncoder().encodeToString(signedBytes);
   }
 
-  public static Document LoadCodesXML(String fileName) throws Exception {
+  public static Document loadCodesXml(String fileName) throws Exception {
     File file = new File(fileName);
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     DocumentBuilder db = dbf.newDocumentBuilder();
@@ -101,7 +101,7 @@ public class CodeDownloader {
     return doc;
   }
 
-  public static Optional<Node> GetSubElement(Node node, String subelementName) {
+  public static Optional<Node> getSubElement(Node node, String subelementName) {
     if (!node.hasChildNodes()) {
       return Optional.empty();
     }
@@ -114,7 +114,7 @@ public class CodeDownloader {
     return Optional.empty();
   }
 
-  public static List<Node> GetAllSubElements(Node node, String subelementName) {
+  public static List<Node> getAllSubElements(Node node, String subelementName) {
     List<Node> fullList = new ArrayList<Node>();
     if (!node.hasChildNodes()) {
       return fullList;
@@ -129,7 +129,7 @@ public class CodeDownloader {
     return fullList;
   }
 
-  public static Optional<String> GetAttribute(Node node, String attrName) {
+  public static Optional<String> getAttribute(Node node, String attrName) {
     if (node.getAttributes() != null && node.getAttributes().getLength() == 0) {
       return Optional.empty();
     }
@@ -140,7 +140,7 @@ public class CodeDownloader {
     return Optional.empty();
   }
 
-  public static void WriteCSV(Document codeXml, String outFileName) throws IOException {
+  public static void writeCsv(Document codeXml, String outFileName) throws IOException {
     File outFile = new File(outFileName);
     BufferedWriter writer = new BufferedWriter(new FileWriter(outFile));
 
@@ -175,8 +175,8 @@ public class CodeDownloader {
       if (node.getNodeType() == Node.ELEMENT_NODE) {
         System.out.println(
             "Cols: " + node.getNodeName() + ", " + node.getNodeValue() + ", " + node.getNodeType());
-        Optional<Node> maybeChild = GetSubElement(node, "ShortName");
-        Optional<String> maybeId = GetAttribute(node, "Id");
+        Optional<Node> maybeChild = getSubElement(node, "ShortName");
+        Optional<String> maybeId = getAttribute(node, "Id");
         maybeId.ifPresent(
             (id) -> {
               columnIndices.put(id, defaultColValues.size());
@@ -203,10 +203,10 @@ public class CodeDownloader {
       if (node.getNodeType() != Node.ELEMENT_NODE) {
         continue;
       }
-      List<Node> allValues = GetAllSubElements(node, "Value");
+      List<Node> allValues = getAllSubElements(node, "Value");
       for (Node n : allValues) {
-        Optional<String> maybeId = GetAttribute(n, "ColumnRef");
-        Optional<Node> maybeVal = GetSubElement(n, "SimpleValue");
+        Optional<String> maybeId = getAttribute(n, "ColumnRef");
+        Optional<Node> maybeVal = getSubElement(n, "SimpleValue");
         if (maybeId.isPresent() && maybeVal.isPresent()) {
           int idx = columnIndices.get(maybeId.get());
           theseColValues.set(idx, maybeVal.get().getTextContent());
@@ -221,36 +221,34 @@ public class CodeDownloader {
 
   public static void readCodes() throws Exception {
     // TODO(brycew): ready directly from zip as well
-    Document doc = LoadCodesXML("testing_codes/locations.xml");
-    WriteCSV(doc, "testing_codes/locations.csv");
+    Document doc = loadCodesXml("testing_codes/locations.xml");
+    writeCsv(doc, "testing_codes/locations.csv");
   }
 
   /**
    * https://stackoverflow.com/a/1485730/11416267
    *
-   * @param urlToRead
    * @return
-   * @throws Exception
    */
-  public static InputStream getHTML(String urlToRead, String auth_header) throws Exception {
+  public static InputStream getHtml(String urlToRead, String authHeader) throws Exception {
     URL url = new URL(urlToRead);
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     conn.setRequestMethod("GET");
-    conn.setRequestProperty("tyl-efm-api", auth_header);
+    conn.setRequestProperty("tyl-efm-api", authHeader);
     return conn.getInputStream();
   }
 
   public static void download() throws Exception {
     CodeDownloader signer = new CodeDownloader();
     // TODO(brycew): use the current time
-    String b64_out = signedBase64(signer, "2021-02-22T18:08:00.775Z");
+    String b64Out = signedBase64(signer, "2021-02-22T18:08:00.775Z");
     // TODO(brycew): make this an env variable somehow
-    String base_url = "https://illinois-stage.tylerhost.net";
-    InputStream urlStream = getHTML(base_url + "/CodeService/codes/location", b64_out);
+    String baseUrl = "https://illinois-stage.tylerhost.net";
+    InputStream urlStream = getHtml(baseUrl + "/CodeService/codes/location", b64Out);
 
     // Write out the zip file
-    FileOutputStream file_out = new FileOutputStream("testing_codes.zip");
-    long length = urlStream.transferTo(file_out);
+    FileOutputStream fileOut = new FileOutputStream("testing_codes.zip");
+    long length = urlStream.transferTo(fileOut);
     System.out.println(length + " bytes transfered");
     // TODO(brycew): read back in that zip file
   }

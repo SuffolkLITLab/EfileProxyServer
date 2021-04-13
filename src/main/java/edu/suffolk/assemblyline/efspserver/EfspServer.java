@@ -1,5 +1,4 @@
-/** */
-package edu.suffolk.assemblyLineEfspServer;
+package edu.suffolk.assemblyline.efspserver;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -32,10 +31,8 @@ import tyler.efm.services.schema.updatenotificationpreferencesrequest.UpdateNoti
 import tyler.efm.services.schema.updateuserrequest.UpdateUserRequestType;
 import tyler.efm.services.schema.updateuserresponse.UpdateUserResponseType;
 
-/** @author brycew */
 public final class EfspServer {
 
-  /** @param args */
   private static final QName SERVICE_NAME = new QName("urn:tyler:efm:services", "EfmUserService");
 
   public static void testFirmManagement(IEfmFirmService port) throws JAXBException {
@@ -73,7 +70,7 @@ public final class EfspServer {
     getUserReq.setUserID(authRes.getUserID());
     ArrayList<Header> headersList = new ArrayList<Header>();
     headersList.add(
-        TylerUserNamePassword.MakeHeader(authRes.getEmail(), authRes.getPasswordHash()));
+        TylerUserNamePassword.makeHeader(authRes.getEmail(), authRes.getPasswordHash()));
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
     ctx.put(Header.HEADER_LIST, headersList);
     GetUserResponseType getUserResp = port.getUser(getUserReq);
@@ -149,7 +146,7 @@ public final class EfspServer {
 
     headersList = new ArrayList<Header>();
     headersList.add(
-        TylerUserNamePassword.MakeHeader(authRes.getEmail(), changePassResp.getPasswordHash()));
+        TylerUserNamePassword.makeHeader(authRes.getEmail(), changePassResp.getPasswordHash()));
     ctx.put(Header.HEADER_LIST, headersList);
 
     // Change it back please, lol
@@ -159,7 +156,7 @@ public final class EfspServer {
 
     headersList = new ArrayList<Header>();
     headersList.add(
-        TylerUserNamePassword.MakeHeader(authRes.getEmail(), changePassResp.getPasswordHash()));
+        TylerUserNamePassword.makeHeader(authRes.getEmail(), changePassResp.getPasswordHash()));
     ctx.put(Header.HEADER_LIST, headersList);
   }
 
@@ -181,21 +178,21 @@ public final class EfspServer {
   }
 
   public static void main(String[] args) throws JAXBException {
-    URL wsdlURL = EfmUserService.WSDL_LOCATION;
+    URL wsdlUrl = EfmUserService.WSDL_LOCATION;
     if (args.length > 0 && args[0] != null && !"".equals(args[0])) {
       File wsdlFile = new File(args[0]);
       try {
         if (wsdlFile.exists()) {
-          wsdlURL = wsdlFile.toURI().toURL();
+          wsdlUrl = wsdlFile.toURI().toURL();
         } else {
-          wsdlURL = new URL(args[0]);
+          wsdlUrl = new URL(args[0]);
         }
       } catch (MalformedURLException e) {
         e.printStackTrace();
       }
     }
 
-    EfmUserService ss = new EfmUserService(wsdlURL, SERVICE_NAME);
+    EfmUserService ss = new EfmUserService(wsdlUrl, SERVICE_NAME);
     IEfmUserService port = ss.getBasicHttpBindingIEfmUserService();
     BindingProvider bp = (BindingProvider) port;
     Map<String, Object> ctx = bp.getRequestContext();

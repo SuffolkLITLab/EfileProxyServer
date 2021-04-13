@@ -1,4 +1,4 @@
-package edu.suffolk.assemblyLineEfspServer;
+package edu.suffolk.assemblyline.efspserver;
 
 import java.io.BufferedReader;
 import java.io.IOException;

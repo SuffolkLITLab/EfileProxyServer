@@ -1,4 +1,4 @@
-package edu.suffolk.assemblyLineEfspServer;
+package edu.suffolk.assemblyline.efspserver;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlElement;
@@ -25,12 +25,12 @@ public class TylerUserNamePassword {
   /**
    * Convenience method to make the Tyler specific SOAP Header.
    *
-   * @param userName: the email of the user that is sending this request
-   * @param passwordHash: the base64 auth token (gotten from the AuthenticateUser call).
+   * @param userName the email of the user that is sending this request
+   * @param passwordHash the base64 auth token (gotten from the AuthenticateUser call).
    * @return the Header object to the request context's Header.HEADER_LIST
-   * @throws JAXBException
+   * @throws JAXBException if the Data binding fails for any reason
    */
-  public static Header MakeHeader(String userName, String passwordHash) throws JAXBException {
+  public static Header makeHeader(String userName, String passwordHash) throws JAXBException {
     return new Header(
         new QName("urn:tyler:efm:services", "UserNameHeader"),
         new TylerUserNamePassword(userName, passwordHash),
