@@ -1,11 +1,14 @@
 package edu.suffolk.assemblyline.efspserver;
 
+import java.util.Arrays;
+import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
 import org.apache.cxf.headers.Header;
 import org.apache.cxf.jaxb.JAXBDataBinding;
+import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
 
 @XmlRootElement(name = "UserNameHeader")
 public class TylerUserNamePassword {
@@ -35,5 +38,9 @@ public class TylerUserNamePassword {
         new QName("urn:tyler:efm:services", "UserNameHeader"),
         new TylerUserNamePassword(userName, passwordHash),
         new JAXBDataBinding(TylerUserNamePassword.class));
+  }
+  
+  public static List<Header> makeHeaderList(AuthenticateResponseType authRes) throws JAXBException {
+    return Arrays.asList(makeHeader(authRes.getEmail(), authRes.getPasswordHash()));
   }
 }
