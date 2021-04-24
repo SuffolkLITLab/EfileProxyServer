@@ -1,0 +1,228 @@
+
+package gov.niem.niem.niem_core._2;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
+import gov.niem.niem.domains.jxdm._4.ArrestType;
+import gov.niem.niem.domains.jxdm._4.BookingType;
+import gov.niem.niem.domains.jxdm._4.CitationType;
+import gov.niem.niem.domains.jxdm._4.CourtEventType;
+import gov.niem.niem.domains.jxdm._4.CourtOrderType;
+import gov.niem.niem.domains.jxdm._4.SentenceType;
+import gov.niem.niem.domains.jxdm._4.TermType;
+import gov.niem.niem.structures._2.ComplexObjectType;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+
+
+/**
+ * &lt;p&gt;Java class for ActivityType complex type.
+ * 
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * 
+ * &lt;pre&gt;
+ * &amp;lt;complexType name="ActivityType"&amp;gt;
+ *   &amp;lt;complexContent&amp;gt;
+ *     &amp;lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&amp;gt;
+ *       &amp;lt;sequence&amp;gt;
+ *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}ActivityIdentification" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
+ *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}ActivityDateRepresentation" minOccurs="0"/&amp;gt;
+ *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}ActivityDescriptionText" minOccurs="0"/&amp;gt;
+ *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}ActivityStatus" minOccurs="0"/&amp;gt;
+ *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}ActivityDisposition" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
+ *       &amp;lt;/sequence&amp;gt;
+ *     &amp;lt;/extension&amp;gt;
+ *   &amp;lt;/complexContent&amp;gt;
+ * &amp;lt;/complexType&amp;gt;
+ * &lt;/pre&gt;
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "ActivityType", propOrder = {
+    "activityIdentification",
+    "activityDateRepresentation",
+    "activityDescriptionText",
+    "activityStatus",
+    "activityDisposition"
+})
+@XmlSeeAlso({
+    ArrestType.class,
+    CourtEventType.class,
+    DriverLicenseWithdrawalType.class,
+    BookingType.class,
+    CitationType.class,
+    CourtOrderType.class,
+    TermType.class,
+    IncidentType.class,
+    CaseType.class,
+    SentenceType.class
+})
+public class ActivityType
+    extends ComplexObjectType
+{
+
+    @XmlElement(name = "ActivityIdentification", nillable = true)
+    protected List<IdentificationType> activityIdentification;
+    @XmlElementRef(name = "ActivityDateRepresentation", namespace = "http://niem.gov/niem/niem-core/2.0", type = JAXBElement.class, required = false)
+    protected JAXBElement<?> activityDateRepresentation;
+    @XmlElement(name = "ActivityDescriptionText", nillable = true)
+    protected TextType activityDescriptionText;
+    @XmlElement(name = "ActivityStatus", nillable = true)
+    protected StatusType activityStatus;
+    @XmlElementRef(name = "ActivityDisposition", namespace = "http://niem.gov/niem/niem-core/2.0", type = JAXBElement.class, required = false)
+    protected List<JAXBElement<? extends DispositionType>> activityDisposition;
+
+    /**
+     * Gets the value of the activityIdentification property.
+     * 
+     * &lt;p&gt;
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the activityIdentification property.
+     * 
+     * &lt;p&gt;
+     * For example, to add a new item, do as follows:
+     * &lt;pre&gt;
+     *    getActivityIdentification().add(newItem);
+     * &lt;/pre&gt;
+     * 
+     * 
+     * &lt;p&gt;
+     * Objects of the following type(s) are allowed in the list
+     * {@link IdentificationType }
+     * 
+     * 
+     */
+    public List<IdentificationType> getActivityIdentification() {
+        if (activityIdentification == null) {
+            activityIdentification = new ArrayList<IdentificationType>();
+        }
+        return this.activityIdentification;
+    }
+
+    /**
+     * Gets the value of the activityDateRepresentation property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link DateRangeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link DateType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link Object }{@code >}
+     *     
+     */
+    public JAXBElement<?> getActivityDateRepresentation() {
+        return activityDateRepresentation;
+    }
+
+    /**
+     * Sets the value of the activityDateRepresentation property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link DateRangeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link DateType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link Object }{@code >}
+     *     
+     */
+    public void setActivityDateRepresentation(JAXBElement<?> value) {
+        this.activityDateRepresentation = value;
+    }
+
+    /**
+     * Gets the value of the activityDescriptionText property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TextType }
+     *     
+     */
+    public TextType getActivityDescriptionText() {
+        return activityDescriptionText;
+    }
+
+    /**
+     * Sets the value of the activityDescriptionText property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TextType }
+     *     
+     */
+    public void setActivityDescriptionText(TextType value) {
+        this.activityDescriptionText = value;
+    }
+
+    /**
+     * Gets the value of the activityStatus property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link StatusType }
+     *     
+     */
+    public StatusType getActivityStatus() {
+        return activityStatus;
+    }
+
+    /**
+     * Sets the value of the activityStatus property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link StatusType }
+     *     
+     */
+    public void setActivityStatus(StatusType value) {
+        this.activityStatus = value;
+    }
+
+    /**
+     * Gets the value of the activityDisposition property.
+     * 
+     * &lt;p&gt;
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the activityDisposition property.
+     * 
+     * &lt;p&gt;
+     * For example, to add a new item, do as follows:
+     * &lt;pre&gt;
+     *    getActivityDisposition().add(newItem);
+     * &lt;/pre&gt;
+     * 
+     * 
+     * &lt;p&gt;
+     * Objects of the following type(s) are allowed in the list
+     * {@link JAXBElement }{@code <}{@link CaseDispositionType }{@code >}
+     * {@link JAXBElement }{@code <}{@link DispositionType }{@code >}
+     * 
+     * 
+     */
+    public List<JAXBElement<? extends DispositionType>> getActivityDisposition() {
+        if (activityDisposition == null) {
+            activityDisposition = new ArrayList<JAXBElement<? extends DispositionType>>();
+        }
+        return this.activityDisposition;
+    }
+
+    /**
+     * Generates a String representation of the contents of this type.
+     * This is an extension method, produced by the 'ts' xjc plugin
+     * 
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
+    }
+
+}
