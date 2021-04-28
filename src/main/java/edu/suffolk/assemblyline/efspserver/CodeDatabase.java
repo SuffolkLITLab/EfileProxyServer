@@ -2,117 +2,124 @@ package edu.suffolk.assemblyline.efspserver;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.Properties;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import org.oasis_open.docs.codelist.ns.genericode._1.CodeListDocument;
 import org.oasis_open.docs.codelist.ns.genericode._1.Column;
-import org.oasis_open.docs.codelist.ns.genericode._1.Key;
 import org.oasis_open.docs.codelist.ns.genericode._1.Row;
 import org.oasis_open.docs.codelist.ns.genericode._1.Value;
 
 public class CodeDatabase {
-
-  private Map<String, Map<String, String>> locationCodes;
-  private Map<String, Map<String, String>> versionCodes;
-  private Map<String, Map<String, String>> errorCodes;
-  private Map<String, Map<String, String>> countryCodes;
-  private Map<String, Map<String, String>> stateCodes;
-  private Map<String, Map<String, String>> dataFieldConfigCodes;
+  private final String pgUrl;
+  private final String pgPort;
+  private final String pgDb;
   
+  public CodeDatabase() {
+    this(System.getenv("POSTGRES_URL"), System.getenv("POSTGRES_PORT"), 
+        System.getenv("POSTGRES_CODES_DB"));
+  }
   
-  private Optional<Map<String, Map<String, String>>> readCodes(String fileName) {
-    try {
-      if (fileName.endsWith(".zip")) {
-        ZipFile zip = new ZipFile(fileName);
-        // This works because there should only be a single xml in the zip
-        ZipEntry entry = zip.entries().asIterator().next(); 
-        Map<String, Map<String, String>> codes = readCodes(zip.getInputStream(entry));
-        zip.close();
-        return Optional.of(codes); 
-      } else if (fileName.endsWith(".xml")) {
-        FileInputStream is = new FileInputStream(fileName);
-        Map<String, Map<String, String>> codes = readCodes(is);
-        is.close();
-        return Optional.of(codes); 
-      } else {
-        System.err.println("Wasn't able to load codes from " + fileName + "!");
-        return Optional.empty();
-      }
-    } catch (JAXBException jaxEx) {
-      System.err.println("Wasn't able to load codes from " + fileName + "!");
-      return Optional.empty();
-
-    } catch (FileNotFoundException ex) {
-      return Optional.empty();
-    } catch (IOException ioEx) {
-      return Optional.empty();
-    }
+  public CodeDatabase(String pgUrl, String pgPort, String pgDb) {
+    this.pgUrl = pgUrl;
+    this.pgPort = pgPort;
+    this.pgDb = pgDb;
   }
 
-  /**
-   * Reads any genericode XML file into a usable dataframe-like Map.
-   * Genericode spec is at https://www.oasis-open.org/committees/download.php/24288/oasis-code-list-representation-genericode.pdf
-   *
-   * @param fileName The path to the XML file
-   * @return a map from Keys to Rows, which are maps from column names to the values
-   * @throws JAXBException if the file isn't actually a genericode object
-   */
-  private Map<String, Map<String, String>> readCodes(InputStream inStream) throws JAXBException {
-    Map<String, Map<String, String>> codes = new HashMap<String, Map<String, String>>();
-    
+  public void updateTable(String tableName, String courtName, 
+      InputStream inStream, Connection dbConn) throws JAXBException, SQLException {
+    if (tableName.contains("(") || tableName.contains(")") || tableName.contains(" ")) {
+      System.err.println("Must be valid table name: " + tableName + " is not");
+    }
+    String tableExistsQuery = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_name = ? LIMIT 1;";
     JAXBContext jc = JAXBContext.newInstance(CodeListDocument.class);
     Unmarshaller u = jc.createUnmarshaller();
     JAXBElement<CodeListDocument> doc = 
         (JAXBElement<CodeListDocument>) u.unmarshal(inStream); 
-    CodeListDocument trueDoc = doc.getValue();
+    final CodeListDocument trueDoc = doc.getValue();
     
-    Map<String, Integer> columnIndices = new HashMap<String, Integer>();
-    Map<String, String> defaultColValues = new HashMap<String, String>();
-    for (Object obj : trueDoc.getColumnSet().getColumnChoice()) {
-      if (!(obj instanceof Column)) {
-        continue;
+    PreparedStatement existsSt = dbConn.prepareStatement(tableExistsQuery); 
+    existsSt.setString(1, tableName);
+    //System.out.println("tableExistsQuery: " + existsSt.toString());
+    ResultSet rs = existsSt.executeQuery();
+    if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
+      //System.out.println("rs: " + rs.getInt(1) + ", " + rs.getFetchSize());
+      String createQuery = CodeTableConstants.getCreateTable(tableName); 
+      if (createQuery.isEmpty()) {
+        System.out.println("Something is wrong with Table name " + tableName 
+            + ", court: " + courtName);
       }
-      Column col = (Column) obj;
-      // TODO(brycew): do something with all of the column information
-      columnIndices.put(col.getId(), defaultColValues.size());
-      defaultColValues.put(col.getId(), "");  // If no value in is a row, it should be a string?
+      PreparedStatement createSt = dbConn.prepareStatement(createQuery);
+      System.out.println("Full statement: " + createSt.toString());
+      int created = createSt.executeUpdate();
+      // TODO(brycew): check for returned < 0?
     }
-    Object keyObj = trueDoc.getColumnSet().getKeyChoice().get(0);
-    String keyId = "";
-    if (keyObj instanceof Key) {
-      keyId = ((Key) keyObj).getColumnRef().get(0).getRef().toString();
-    }
-    
+
+    // TODO(brycew): eventually make the create tables have foreign keys and required
+    // from the Id/ columnRefs
+
     for (Row r : trueDoc.getSimpleCodeList().getRow()) {
-      Map<String, String> rowsVals = new HashMap<String, String>(defaultColValues);
-      String keyString = "";
+      // HACK(brycew): jeez, this is horrible. Figure a better option
+      String insertQuery = CodeTableConstants.getInsertInto(tableName, courtName);
+      PreparedStatement stmt = dbConn.prepareStatement(insertQuery);
+      Map<String, String> rowsVals = new HashMap<String, String>();
       for (Value v : r.getValue()) {
-        // TODO(brycew): will all be simple values?
-        rowsVals.put(v.getColumnRef().toString(), v.getSimpleValue().getValue());
-        if (v.getColumnRef().toString().equals(keyId)) {
-          keyString = v.getSimpleValue().getValue();
+        Column c = (Column) v.getColumnRef();
+        rowsVals.put(c.getId(), v.getSimpleValue().getValue());
+      }
+      int idx = 1;
+      Optional<List<String>> tc = CodeTableConstants.getTableColumns(tableName);
+      for (String colName : tc.orElse(List.of())) {
+        if (rowsVals.containsKey(colName)) {
+          stmt.setString(idx, rowsVals.get(colName));
+        } else {
+          System.err.println("Couldn't find " + colName + " in row vals");
+          stmt.setNull(idx, Types.VARCHAR);
         }
+        idx += 1;
       }
-      if (keyString.equals("")) {
-        continue;
+      int addedRows;
+      try {
+        addedRows = stmt.executeUpdate();
+      } catch (SQLException ex) {
+        System.err.println("Tried to execute: " + stmt.toString() + ", but failed!");
+        throw ex;
       }
-      codes.put(keyString, defaultColValues);
+      if (addedRows <= 0) {
+        System.err.println("Boo, for " + stmt.toString() + ", row wasn't added?");
+        // TODO(brycew): handle error here too
+      }
     }
-    return codes;
+  }
+  
+  public List<String> getAllLocations() throws SQLException {
+    String query = "SELECT DISTINCT code FROM location ORDER BY code";
+    Connection dbConn = createDbConnection();
+    Statement st = dbConn.createStatement();
+    ResultSet rs = st.executeQuery(query);
+    List<String> locs = new ArrayList<String>();
+    while (rs.next()) {
+      locs.add(rs.getString(1));
+    } 
+ 
+    return locs;
   }
 
   /**
@@ -144,26 +151,18 @@ public class CodeDatabase {
     writer.close();
   }
 
-  public void updateAllCodes() {
-    
+  public Connection createDbConnection() throws SQLException {
+    return createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
   }
-  
-  /** Reads the database information from files.
-   *
-   * @param locationFile File with court location genericode information, either as Zip or XML
-   * @param versionFile File with information about other codes for a specific court
-   * @return
-   */
-  public boolean loadFromFiles(String locationFile, String versionFile) {
-    Optional<Map<String, Map<String, String>>> maybeLocCodes = readCodes(locationFile);
-    Optional<Map<String, Map<String, String>>> maybeVerCodes = readCodes(versionFile);
-    if (maybeLocCodes.isEmpty() || maybeVerCodes.isEmpty()) {
-      System.err.println("Loc codes empty?: " + maybeLocCodes.isEmpty() + 
-          ", Ver codes empty?: " + maybeVerCodes.isEmpty());
-      return false;
-    }
-    locationCodes = maybeLocCodes.get();
-    versionCodes = maybeVerCodes.get();
-    return true;
+
+  public Connection createDbConnection(String pgUser, String pgPassword) throws SQLException {
+    // TODO(brycew): automatically make a 'tyler_efm_codes' database if it doesn't exist.
+    String url = "jdbc:postgresql://" + this.pgUrl + ":" + this.pgPort + "/" + this.pgDb;
+    Properties props = new Properties();
+    props.setProperty("user", pgUser); 
+    props.setProperty("password", pgPassword);
+    Connection conn = DriverManager.getConnection(url, props);
+    return conn;
   }
+
 }
