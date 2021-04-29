@@ -330,8 +330,7 @@ public class CodeTableConstants {
         new ImmutablePair<String, String>("name", "text"), 
         new ImmutablePair<String, String>("servicemethod", "text"),
         new ImmutablePair<String, String>("fee", "text"), 
-        new ImmutablePair<String, String>("disclaimertext", "text"),
-        new ImmutablePair<String, String>("efspcode", "text")));
+        new ImmutablePair<String, String>("disclaimertext", "text")));
     courtTableColumns.put("statute", List.of(new ImmutablePair<String, String>("code", "text"), 
         new ImmutablePair<String, String>("name", "text"),
         new ImmutablePair<String, String>("word", "text"), 
@@ -379,6 +378,11 @@ public class CodeTableConstants {
     return tableCols.map(
         // Convert the list of column name + types to a list of just column names
         (tc) -> tc.mainList.stream().map((e) -> e.getLeft()).collect(Collectors.toList()));
+  }
+
+  public static String getTableExists() {
+    return "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' "
+        + "AND table_name = ? LIMIT 1;";
   }
 
   public static String getCreateTable(String tableName) {

@@ -48,7 +48,7 @@ public class CodeDatabase {
     if (tableName.contains("(") || tableName.contains(")") || tableName.contains(" ")) {
       System.err.println("Must be valid table name: " + tableName + " is not");
     }
-    String tableExistsQuery = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_name = ? LIMIT 1;";
+    String tableExistsQuery = CodeTableConstants.getTableExists();
     JAXBContext jc = JAXBContext.newInstance(CodeListDocument.class);
     Unmarshaller u = jc.createUnmarshaller();
     JAXBElement<CodeListDocument> doc = 
@@ -63,7 +63,7 @@ public class CodeDatabase {
       //System.out.println("rs: " + rs.getInt(1) + ", " + rs.getFetchSize());
       String createQuery = CodeTableConstants.getCreateTable(tableName); 
       if (createQuery.isEmpty()) {
-        System.out.println("Something is wrong with Table name " + tableName 
+        System.out.println("Will not create table with name: " + tableName
             + ", court: " + courtName);
       }
       PreparedStatement createSt = dbConn.prepareStatement(createQuery);
@@ -75,38 +75,41 @@ public class CodeDatabase {
     // TODO(brycew): eventually make the create tables have foreign keys and required
     // from the Id/ columnRefs
 
-    for (Row r : trueDoc.getSimpleCodeList().getRow()) {
-      // HACK(brycew): jeez, this is horrible. Figure a better option
-      String insertQuery = CodeTableConstants.getInsertInto(tableName, courtName);
-      PreparedStatement stmt = dbConn.prepareStatement(insertQuery);
-      Map<String, String> rowsVals = new HashMap<String, String>();
-      for (Value v : r.getValue()) {
-        Column c = (Column) v.getColumnRef();
-        rowsVals.put(c.getId(), v.getSimpleValue().getValue());
-      }
-      int idx = 1;
-      Optional<List<String>> tc = CodeTableConstants.getTableColumns(tableName);
-      for (String colName : tc.orElse(List.of())) {
-        if (rowsVals.containsKey(colName)) {
-          stmt.setString(idx, rowsVals.get(colName));
-        } else {
-          System.err.println("Couldn't find " + colName + " in row vals");
-          stmt.setNull(idx, Types.VARCHAR);
+    String insertQuery = CodeTableConstants.getInsertInto(tableName, courtName);
+    try (PreparedStatement stmt = dbConn.prepareStatement(insertQuery)){
+      dbConn.setAutoCommit(false);
+      for (Row r : trueDoc.getSimpleCodeList().getRow()) {
+        // HACK(brycew): jeez, this is horrible. Figure a better option
+        Map<String, String> rowsVals = new HashMap<String, String>();
+        for (Value v : r.getValue()) {
+          Column c = (Column) v.getColumnRef();
+          rowsVals.put(c.getId(), v.getSimpleValue().getValue());
         }
-        idx += 1;
+        int idx = 1;
+        Optional<List<String>> tc = CodeTableConstants.getTableColumns(tableName);
+        for (String colName : tc.orElse(List.of())) {
+          if (rowsVals.containsKey(colName)) {
+            stmt.setString(idx, rowsVals.get(colName));
+          } else {
+            System.err.println("Couldn't find " + colName + " in row vals");
+            stmt.setNull(idx, Types.VARCHAR);
+          }
+          idx += 1;
+        }
+        stmt.addBatch();
       }
-      int addedRows;
-      try {
-        addedRows = stmt.executeUpdate();
-      } catch (SQLException ex) {
-        System.err.println("Tried to execute: " + stmt.toString() + ", but failed!");
-        throw ex;
-      }
-      if (addedRows <= 0) {
-        System.err.println("Boo, for " + stmt.toString() + ", row wasn't added?");
+      int[] addedRowsPerQuery = stmt.executeBatch();
+      //if (addedRowsPerQuery <= 0) {
+      //  System.err.println("Boo, for " + stmt.toString() + ", row wasn't added?");
         // TODO(brycew): handle error here too
-      }
+      //}
+    } catch (SQLException ex) {
+      System.err.println("Tried to execute an insert, but failed! Exception: " + ex.toString());
+      System.err.println("Going to rollback updates to this table");
+      dbConn.rollback();
+      throw ex;
     }
+    dbConn.commit();
   }
   
   public List<String> getAllLocations() throws SQLException {
