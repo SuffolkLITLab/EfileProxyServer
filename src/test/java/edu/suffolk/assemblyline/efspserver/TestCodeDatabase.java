@@ -16,5 +16,6 @@ public class TestCodeDatabase {
           0, "Expected " + table + " to exist");
     }
   }
+  // TODO(brycew): test that all database column names are <= 63 characters (NAMEDATALEN - 1)
 
 }

@@ -6,14 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class CodeTableConstants {
-  private static final Map<String, List<Pair<String, String>>> systemTableColumns = new HashMap<String, List<Pair<String, String>>>();
-  private static final Map<String, List<Pair<String, String>>> bothTableColumns = new HashMap<String, List<Pair<String, String>>>();
-  private static final Map<String, List<Pair<String, String>>> courtTableColumns = new HashMap<String, List<Pair<String, String>>>();
+  private static final Map<String, List<Pair<String, String>>> systemTableColumns = 
+      new HashMap<String, List<Pair<String, String>>>();
+  private static final Map<String, List<Pair<String, String>>> bothTableColumns = 
+      new HashMap<String, List<Pair<String, String>>>();
+  private static final Map<String, List<Pair<String, String>>> courtTableColumns = 
+      new HashMap<String, List<Pair<String, String>>>();
 
   // TODO(brycew): the types are confusing here: some are only ever ints, but
   // are coded as normalizedStrings in the XML. Unclear what to make ints in the
@@ -213,13 +215,7 @@ public class CodeTableConstants {
     courtTableColumns.put("filertype",
         List.of(new ImmutablePair<String, String>("code", "text"), 
             new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("default", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("filertype",
-        List.of(new ImmutablePair<String, String>("code", "text"), 
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("default", "text"),
+            new ImmutablePair<String, String>("default", "text"), 
             new ImmutablePair<String, String>("efspcode", "text")));
 
     courtTableColumns.put("filetype",
@@ -356,9 +352,6 @@ public class CodeTableConstants {
   }
 
   private class TableColumns {
-    public TableColumns() {
-    }
-
     public List<Pair<String, String>> mainList;
     public boolean needsExtraLocCol = false;
   }
@@ -402,10 +395,10 @@ public class CodeTableConstants {
       } else {
         createLocation.append(", ");
       }
-      createLocation.append(col.getLeft() + " " + col.getRight());
+      createLocation.append("\"" + col.getLeft() + "\" " + col.getRight());
     }
     if (tableCols.get().needsExtraLocCol) {
-      createLocation.append(", location text");
+      createLocation.append(", \"location\" text");
     }
     createLocation.append(")");
     return createLocation.toString();
@@ -421,7 +414,7 @@ public class CodeTableConstants {
       return "";
     }
     StringBuilder insertLocation = new StringBuilder();
-    insertLocation.append("INSERT INTO " + tableName + " (");
+    insertLocation.append("INSERT INTO \"" + tableName + "\" (");
     boolean isFirst = true;
     for (Pair<String, String> col : tableCols.get().mainList) {
       if (isFirst) {
@@ -429,7 +422,7 @@ public class CodeTableConstants {
       } else {
         insertLocation.append(", ");
       }
-      insertLocation.append(col.getLeft());
+      insertLocation.append("\"" + col.getLeft() + "\"");
     }
     if (tableCols.get().needsExtraLocCol) {
       insertLocation.append(", location");

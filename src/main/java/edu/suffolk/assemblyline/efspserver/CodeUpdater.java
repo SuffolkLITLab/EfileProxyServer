@@ -56,7 +56,7 @@ public class CodeUpdater {
     ncToTableName.put("ecf:FilingStatusCode", "filingstatus");
     ncToTableName.put("nc:PersonNameSuffixText", "namesuffix");
     ncToTableName.put("tyler:DataFieldConfigCode", "datafield");
-    ncToTableName.put("ecf:ServiceRecipientId/nc:IdentificationSourceText", "servicetype");
+    ncToTableName.put("ecf:ServiceRecipientID/nc:IdentificationSourceText", "servicetype");
     ncToTableName.put("nc:BinaryLocationURI", "filetype");
     ncToTableName.put("j:/ArrestCharge/j:ArrestLocation/nc:LocationName", "arrestlocation");
     ncToTableName.put("cext:BondTypeText", "bond");
@@ -121,31 +121,34 @@ public class CodeUpdater {
     HeaderSigner signer = new HeaderSigner();
     CodeDatabase cd = new CodeDatabase();
     Connection conn = cd.createDbConnection();
+    /*
     for (Map.Entry<String, String> urlSuffix : codeUrls.entrySet()) {
-      //InputStream urlStream = getHtml(baseUrl + urlSuffix.getValue(), signedTime); 
+      InputStream urlStream = getHtml(baseUrl + urlSuffix.getValue(), signedTime); 
       // Write out the zip file
       String zipName = urlSuffix.getKey() + ".zip";
-      //FileOutputStream fileOut = new FileOutputStream(zipName);
-      //long length = urlStream.transferTo(fileOut);
-      //System.out.println(length + " bytes transfered for " + urlSuffix);
-      //ZipFile zip = new ZipFile(zipName);
-      //ZipEntry entry = zip.entries().nextElement();
+      FileOutputStream fileOut = new FileOutputStream(zipName);
+      long length = urlStream.transferTo(fileOut);
+      System.out.println(length + " bytes transfered for " + urlSuffix);
+      ZipFile zip = new ZipFile(zipName);
+      ZipEntry entry = zip.entries().nextElement();
       
-      //cd.updateTable(urlSuffix.getKey(), "", zip.getInputStream(entry), conn);
-      //zip.close();
+      cd.updateTable(urlSuffix.getKey(), "", zip.getInputStream(entry), conn);
+      zip.close();
     }
+    */
 
     Duration downloads = Duration.ZERO;
     Duration updates = Duration.ZERO;
     List<String> locs = cd.getAllLocations();
     for (String location : locs) {
-      if (location == "0" || location == "1") {
+      System.err.println("Location: " + location);
+      if (location.equals("0") || location.equals("1")) {
         // TODO(brycew): download just system codes / File & Serve somehow? https://Illinois-stage.tylerhost.net/codeservice/codes/casecategory/0/
         // 500's for some reason, and it's really annoying.
         System.err.println("Skipping location " + location);
         continue;
       }
-      Instant startLoc = Instant.now(Clock.systemUTC());
+      final Instant startLoc = Instant.now(Clock.systemUTC());
       CourtPolicyQueryMessageType m = new CourtPolicyQueryMessageType();
       IdentificationType courtId = EfspServer.makeIDType(location); 
       ObjectFactory of = new ObjectFactory();
@@ -196,18 +199,17 @@ public class CodeUpdater {
   }
 
   public static void main(String[] args) throws Exception {
-    Instant startSetup = Instant.now(Clock.systemUTC());
+    final Instant startSetup = Instant.now(Clock.systemUTC());
     URL userWsdlUrl = EfmUserService.WSDL_LOCATION;
-    URL firmWsdlUrl = EfmFirmService.WSDL_LOCATION;
     IEfmUserService userPort = EfspServer.makeUserService(userWsdlUrl);
-    IEfmFirmService firmPort = EfspServer.makeFirmService(firmWsdlUrl);
     AuthenticateRequestType authReq = new AuthenticateRequestType();
     authReq.setEmail("bwilley@suffolk.edu");
     authReq.setPassword(System.getenv("BRYCE_USER_PASSWORD"));
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
     System.out.println("Auth'd?: " + authRes.getError().getErrorText());
     List<Header> headersList = TylerUserNamePassword.makeHeaderList(authRes); 
-    FilingReviewMDEPort filingPort = EfspServer.makeFilingService(FilingReviewMDEService.WSDL_LOCATION, headersList); 
+    FilingReviewMDEPort filingPort = EfspServer.makeFilingService(
+        FilingReviewMDEService.WSDL_LOCATION, headersList); 
     Instant finishSetup = Instant.now(Clock.systemUTC());
     System.err.println("Takes " + Duration.between(finishSetup, startSetup) + " to setup ports");
     CodeUpdater cd = new CodeUpdater();
