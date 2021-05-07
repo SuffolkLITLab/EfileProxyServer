@@ -71,7 +71,16 @@ public class CodeTableConstants {
     systemTableColumns.put("version", List.of(
         new ImmutablePair<String, String>("location", "text"),
         new ImmutablePair<String, String>("codelist", "text"), 
-        new ImmutablePair<String, String>("version", "text")));
+        new ImmutablePair<String, String>("version", "text")
+    ));
+
+    // custom table, the version that's currently installed
+    // Custom table so we can just drop the existing version table when updating.
+    systemTableColumns.put("installedversion", List.of(
+        new ImmutablePair<String, String>("location", "text"),
+        new ImmutablePair<String, String>("codelist", "text"), 
+        new ImmutablePair<String, String>("installedversion", "text") 
+    ));
 
     //////////// Tables that are both system wide, and court specific
 
@@ -282,7 +291,7 @@ public class CodeTableConstants {
         new ImmutablePair<String, String>("name", "text"), 
         new ImmutablePair<String, String>("efspcode", "text")));
 
-    courtTableColumns.put("optionalservice",
+    courtTableColumns.put("optionalservices",
         List.of(new ImmutablePair<String, String>("code", "text"), 
             new ImmutablePair<String, String>("name", "text"),
             new ImmutablePair<String, String>("displayorder", "text"), 
@@ -376,13 +385,54 @@ public class CodeTableConstants {
   public static Optional<List<String>> getTableColumns(String tableName) {
     Optional<TableColumns> tableCols = getTableColumnInfo(tableName);
     return tableCols.map(
-        // Convert the list of column name + types to a list of just column names
+        // Drops the type in the column name + type pairs. 
         (tc) -> tc.mainList.stream().map((e) -> e.getLeft()).collect(Collectors.toList()));
   }
 
   public static String getTableExists() {
     return "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' "
         + "AND table_name = ? LIMIT 1;";
+  }
+  
+  public static String updateVersion() {
+    return "UPDATE installedversion SET installedversion = ? WHERE location=? AND codelist=?"; 
+  }
+  
+  public static String needToUpdateVersion() {
+    return "SELECT v.location, v.codelist, iv.installedversion "
+        + "FROM version AS v LEFT OUTER JOIN installedversion as iv "
+        + "  ON (v.location=iv.location AND v.codelist=iv.codelist) " 
+        + "WHERE (iv.installedversion IS NULL) OR (v.version != iv.installedversion)";
+  }
+  
+  public static String getPartyTypeFromCaseType() {
+    return "SELECT p.code, p.name, p.isavailablefornewparties, c.name, c.fee "
+        + "from partytype AS p " 
+        + "LEFT JOIN casetype AS c ON (p.casetypeid = c.code AND p.location = c.location) "
+        + " where p.location=? AND c.casecategory=?";
+  }
+  
+  public static String getCaseCategoryForLoc() {
+    return "SELECT code, name, ecfcasetype, procedureremedyinitial,"
+        + "procedureremedysubsequenty, damageamountinitial"
+        + "FROM casecategory WHERE location=?";
+  }
+  
+  /** Will only delete from non-system tables. */
+  public static String deleteFromTable(String tableName) {
+    Optional<TableColumns> tableCols = getTableColumnInfo(tableName);
+    if (tableCols.isEmpty() || !tableCols.get().needsExtraLocCol) {
+      return "";
+    }
+    return "DELETE FROM " + tableName + " WHERE location=?";
+  }
+  
+  public static String dropTable(String tableName) {
+    Optional<TableColumns> tableCols = getTableColumnInfo(tableName);
+    if (tableCols.isEmpty()) {
+      return "";
+    }
+    return "DROP TABLE IF EXISTS " + tableName;
   }
 
   public static String getCreateTable(String tableName) {
@@ -408,6 +458,13 @@ public class CodeTableConstants {
     return createLocation.toString();
   }
 
+  /**
+   * Returns an INSERT statement for the given table + court.
+   * The statement includes a ON CONFLICT (all columns...) DO NOTHING clause.
+   *
+   * @param tableName The name of the DB table (i.e. code list) to insert into
+   * @param courtName The Court Location ID to add codes for
+   */
   public static String getInsertInto(String tableName, String courtName) {
     Optional<TableColumns> tableCols = getTableColumnInfo(tableName);
     if (tableCols.isEmpty()) {
@@ -419,18 +476,20 @@ public class CodeTableConstants {
     }
     StringBuilder insertLocation = new StringBuilder();
     insertLocation.append("INSERT INTO \"" + tableName + "\" (");
+    StringBuilder colNames = new StringBuilder();
     boolean isFirst = true;
     for (Pair<String, String> col : tableCols.get().mainList) {
       if (isFirst) {
         isFirst = false;
       } else {
-        insertLocation.append(", ");
+        colNames.append(", ");
       }
-      insertLocation.append("\"" + col.getLeft() + "\"");
+      colNames.append("\"" + col.getLeft() + "\"");
     }
     if (tableCols.get().needsExtraLocCol) {
-      insertLocation.append(", location");
+      colNames.append(", location");
     }
+    insertLocation.append(colNames.toString());
     insertLocation.append(") VALUES (");
     for (int i = 0; i < tableCols.get().mainList.size(); i++) {
       if (i > 0) {

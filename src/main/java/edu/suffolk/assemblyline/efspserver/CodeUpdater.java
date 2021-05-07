@@ -5,40 +5,41 @@ import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.ObjectFactory;
 import gov.niem.niem.niem_core._2.PersonType;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.sql.Connection;
+import java.security.GeneralSecurityException;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
 import javax.xml.namespace.QName;
-
+import javax.xml.stream.XMLStreamException;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtCodelistType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtPolicyResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingReviewMDEPort;
 import org.apache.cxf.headers.Header;
-import tyler.efm.services.EfmFirmService;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.operator.OperatorCreationException;
 import tyler.efm.services.EfmUserService;
-import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.IEfmUserService;
 import tyler.efm.services.schema.authenticaterequest.AuthenticateRequestType;
 import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
@@ -61,7 +62,7 @@ public class CodeUpdater {
     ncToTableName.put("tyler:FilerTypeText", "filertype");
     ncToTableName.put("j:RegisterActionDescriptionText", "filing");
     ncToTableName.put("nc:BinaryCategoryText", "filingcomponent");
-    ncToTableName.put("tyler:DocumentOptionalService", "optionalservice");
+    ncToTableName.put("tyler:DocumentOptionalService", "optionalservices");
     ncToTableName.put("ecf:CaseParticipantRoleCode", "partytype");
     ncToTableName.put("tyler:RemedyCode", "procedureremedy");
     ncToTableName.put("nc:LocationStateName", "state");
@@ -119,7 +120,7 @@ public class CodeUpdater {
   private Duration updates = Duration.ZERO;
 
   private boolean downloadAndReadZip(String url, String signedTime, String tableName, String location,
-      CodeDatabase cd, Connection conn) throws IOException, JAXBException, SQLException {
+      CodeDatabase cd) throws JAXBException, SQLException, XMLStreamException {
     Instant startTable = Instant.now(Clock.systemUTC());
     try (InputStream urlStream = getHtml(url, signedTime)) {
       // Write out the zip file
@@ -132,7 +133,7 @@ public class CodeUpdater {
       ZipEntry entry = zip.entries().nextElement();
 
       Instant updateTableLoc = Instant.now(Clock.systemUTC());
-      cd.updateTable(tableName, location, zip.getInputStream(entry), conn);
+      cd.updateTable(tableName, location, zip.getInputStream(entry));
       updates = updates.plus(Duration.between(updateTableLoc, Instant.now(Clock.systemUTC())));
       zip.close();
       // Delete the zip file after processing: no need to have it hanging around.
@@ -147,8 +148,8 @@ public class CodeUpdater {
       return false;
     }
   }
-
-  public void downloadAll(String baseUrl, FilingReviewMDEPort filingPort) throws Exception {
+  
+  private boolean downloadSystemTables(String baseUrl, CodeDatabase cd, HeaderSigner signer) throws SQLException, OperatorCreationException, GeneralSecurityException, CMSException, IOException, JAXBException, XMLStreamException {
     Map<String, String> codeUrls = Map.of(
         "version",  "/CodeService/codes/version/",
         "location", "/CodeService/codes/location/",
@@ -157,84 +158,156 @@ public class CodeUpdater {
         );
     // TODO(brycew): can tell if court codes will differ if they have a Row in Version codes
     // where the simple value differs from the "0" Row. Need to check both
-    
-    HeaderSigner signer = new HeaderSigner();
-    CodeDatabase cd = new CodeDatabase();
 
-    Connection conn = cd.createDbConnection();
+    Savepoint sp = cd.setSavePoint("systemTables");
+    cd.dropTables(codeUrls.entrySet().stream().map(
+        (e) -> e.getKey()).collect(Collectors.toList())); 
+    
+    // On first download, there won't be installed versions of things yet.
+    cd.createTableIfAbsent("installedversion");
+    
     String signedTime = signer.signedCurrentTime();
     for (Map.Entry<String, String> urlSuffix : codeUrls.entrySet()) {
-      downloadAndReadZip(baseUrl + urlSuffix.getValue(), signedTime,
-          urlSuffix.getKey(), "", cd, conn);
+      boolean updateSuccess = false;
+      try {
+        updateSuccess = downloadAndReadZip(baseUrl + urlSuffix.getValue(), signedTime, urlSuffix.getKey(), "", cd);
+      } catch (SQLException ex) {
+        updateSuccess = false;
+      }
+      if (!updateSuccess) {
+        cd.rollback(sp);
+        return false;
+      }
     }
+    return true;
+  }
+  
+  /**
+   * 
+   * @param location
+   * @param codes If empty, all versions will be downloaded
+   * @param cd
+   * @param signer
+   * @param conn
+   */
+  private void downloadCourtTables(String location, 
+      Optional<List<String>> codes, CodeDatabase cd, HeaderSigner signer, FilingReviewMDEPort filingPort) 
+          throws JAXBException, OperatorCreationException, IOException, SQLException, XMLStreamException, GeneralSecurityException, CMSException {
+    System.err.println("Location: " + location);
+    //final Instant startLoc = Instant.now(Clock.systemUTC());
+    CourtPolicyQueryMessageType m = new CourtPolicyQueryMessageType();
+    IdentificationType courtId = EfmClient.makeIDType(location); 
+    ObjectFactory of = new ObjectFactory();
+    JAXBElement<IdentificationType> elem = of.createOrganizationIdentification(courtId);
+    CourtType court = new CourtType();
+    court.setOrganizationIdentification(elem);
+    m.setCaseCourt(court);
+    // TODO(brycew): change this stuff
+    m.setSendingMDELocationID(EfmClient.makeIDType("https://filingassemblymde.com"));
+    m.setSendingMDEProfileCode("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0");
+    JAXBElement<PersonType> elem2 = of.createEntityPerson(new PersonType());  
+    EntityType typ = new EntityType();
+    typ.setEntityRepresentation(elem2);
+    m.setQuerySubmitter(typ);
+    CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
+    JAXBContext jc = JAXBContext.newInstance(ObjectFactory.class, 
+        gov.niem.niem.structures._2.ObjectFactory.class,
+        oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
+        oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class);
+    Marshaller mar = jc.createMarshaller();
+    mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+    QName qname = new QName("tyler.test.bbb", "bbb");
+    JAXBElement<CourtPolicyResponseMessageType> pp =
+        new JAXBElement<CourtPolicyResponseMessageType>(qname, CourtPolicyResponseMessageType.class, p);
+    mar.marshal(pp, new File("full_court_obj_" + location + ".xml"));
+
+    // TODO(brycew): use the version codes to check the checksums of each table, 
+    // then see if we need to update
+    for (CourtCodelistType ccl : p.getRuntimePolicyParameters().getCourtCodelist()) {
+      String ecfElem = ccl.getECFElementName().getValue();
+      if (ncToTableName.containsKey(ecfElem)) {
+        String tableName = ncToTableName.get(ecfElem);
+        if (codes.isEmpty() || codes.get().contains(tableName)) {
+          // TODO(brycew): check that the effective date is later than today
+          // JAXBElement<?> obj = ccl.getEffectiveDate().getDateRepresentation();
+          // Tyler will give us URLs with spaces in them, which aren't valid. This makes them valid
+          String url =
+              ccl.getCourtCodelistURI().getIdentificationID().getValue().replace(" ", "%20");
+          downloadAndReadZip(url, signer.signedCurrentTime(), tableName, location, cd);
+        }
+      } else {
+        System.err.println(ecfElem + " not in the nc map!");
+      }
+    }
+    System.err.println("Downloads took: " + downloads + ", and updates took: " + updates);
+  }
+  
+  public void updateAll(String baseUrl, FilingReviewMDEPort filingPort) throws SQLException, OperatorCreationException, GeneralSecurityException, CMSException, IOException, JAXBException, XMLStreamException {
+    CodeDatabase cd = new CodeDatabase();
+    cd.createDbConnection();
+    Savepoint sp = cd.setSavePoint("mysavepoint");
+    HeaderSigner signer = new HeaderSigner(System.getenv("X509_PASSWORD"));
+    if (!downloadSystemTables(baseUrl, cd, signer)) {
+      System.err.println("System tables didn't update, but we needed them "
+          + " to actually figure out new versions");
+      return;
+    }
+    
+    // Drop each of tables that need to be updated
+    Map<String, List<String>> versionsToUpdate = cd.getVersionsToUpdate();
+    for (Entry<String, List<String>> courtAndTables : versionsToUpdate.entrySet()) {
+      String courtLocation = courtAndTables.getKey();
+      List<String> tables = courtAndTables.getValue();
+      System.err.println("Updating court " + courtLocation);
+      for (String table : tables) {
+        System.err.println("Refreshing table " + table + " for court " + courtLocation);
+        if (!cd.deleteFromTable(table, courtLocation)) {
+          System.err.println("Couldn't delete from " + table + " at " + courtLocation + ", aborting");
+          cd.rollback(sp);
+          return;
+        }
+      }
+      downloadCourtTables(courtLocation, Optional.of(tables), cd, signer, filingPort);
+    }
+    cd.commit();
+  }
+
+  public void downloadAll(String baseUrl, FilingReviewMDEPort filingPort) 
+      throws SQLException, OperatorCreationException, PropertyException, GeneralSecurityException, CMSException, IOException, JAXBException, XMLStreamException {
+    CodeDatabase cd = new CodeDatabase();
+    cd.createDbConnection();
+    HeaderSigner signer = new HeaderSigner(System.getenv("X509_PASSWORD"));
+    downloadSystemTables(baseUrl, cd, signer);
+
+    List<String> tablesToDrop = ncToTableName.entrySet().stream().map(
+        (e) -> e.getValue()).collect(Collectors.toUnmodifiableList()); 
+    cd.dropTables(tablesToDrop);
 
     downloads = Duration.ZERO;
     updates = Duration.ZERO;
     List<String> locs = cd.getAllLocations();
     for (String location : locs) {
-      System.err.println("Location: " + location);
-      //final Instant startLoc = Instant.now(Clock.systemUTC());
-      CourtPolicyQueryMessageType m = new CourtPolicyQueryMessageType();
-      IdentificationType courtId = EfspServer.makeIDType(location); 
-      ObjectFactory of = new ObjectFactory();
-      JAXBElement<IdentificationType> elem = of.createOrganizationIdentification(courtId);
-      CourtType court = new CourtType();
-      court.setOrganizationIdentification(elem);
-      m.setCaseCourt(court);
-      // TODO(brycew): change this stuff
-      m.setSendingMDELocationID(EfspServer.makeIDType("https://filingassemblymde.com"));
-      m.setSendingMDEProfileCode("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0");
-      JAXBElement<PersonType> elem2 = of.createEntityPerson(new PersonType());  
-      EntityType typ = new EntityType();
-      typ.setEntityRepresentation(elem2);
-      m.setQuerySubmitter(typ);
-      CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
-      JAXBContext jc = JAXBContext.newInstance(ObjectFactory.class, gov.niem.niem.structures._2.ObjectFactory.class,
-          oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
-          oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class);
-      Marshaller mar = jc.createMarshaller();
-      mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-      QName qname = new QName("tyler.test.bbb", "bbb");
-      JAXBElement<CourtPolicyResponseMessageType> pp =
-          new JAXBElement<CourtPolicyResponseMessageType>(qname, CourtPolicyResponseMessageType.class, p);
-      mar.marshal(pp, new File("full_court_obj_" + location + ".xml"));
-
-      // TODO(brycew): use the version codes to check the checksums of each table, 
-      // then see if we need to update
-      for (CourtCodelistType ccl : p.getRuntimePolicyParameters().getCourtCodelist()) {
-        JAXBElement<?> obj = ccl.getEffectiveDate().getDateRepresentation();
-        // TODO(brycew): check that the effective date is later than today
-        String ecfElem = ccl.getECFElementName().getValue();
-        if (ncToTableName.containsKey(ecfElem)) {
-          String tableName = ncToTableName.get(ecfElem);
-          // Tyler will give us URLs with spaces in them, which aren't valid. This makes them valid
-          String url =
-              ccl.getCourtCodelistURI().getIdentificationID().getValue().replace(" ", "%20");
-          downloadAndReadZip(url, signer.signedCurrentTime(), tableName, location, cd, conn);
-        } else {
-          System.err.println(ecfElem + " not in the nc map!");
-        }
-      }
-      System.err.println("Downloads took: " + downloads + ", and updates took: " + updates);
+      downloadCourtTables(location, Optional.empty(), cd, signer, filingPort);
     }
     System.err.println("Downloads took: " + downloads + ", and updates took: " + updates);
+    cd.commit();
   }
 
   public static void main(String[] args) throws Exception {
     final Instant startSetup = Instant.now(Clock.systemUTC());
     URL userWsdlUrl = EfmUserService.WSDL_LOCATION;
-    IEfmUserService userPort = EfspServer.makeUserService(userWsdlUrl);
+    IEfmUserService userPort = EfmClient.makeUserService(userWsdlUrl);
     AuthenticateRequestType authReq = new AuthenticateRequestType();
     authReq.setEmail("bwilley@suffolk.edu");
     authReq.setPassword(System.getenv("BRYCE_USER_PASSWORD"));
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
     System.out.println("Auth'd?: " + authRes.getError().getErrorText());
     List<Header> headersList = TylerUserNamePassword.makeHeaderList(authRes); 
-    FilingReviewMDEPort filingPort = EfspServer.makeFilingService(
+    FilingReviewMDEPort filingPort = EfmClient.makeFilingService(
         FilingReviewMDEService.WSDL_LOCATION, headersList); 
     Instant finishSetup = Instant.now(Clock.systemUTC());
     System.err.println("Takes " + Duration.between(finishSetup, startSetup) + " to setup ports");
-    CodeUpdater cd = new CodeUpdater();
-    cd.downloadAll("https://illinois-stage.tylerhost.net", filingPort);
+    CodeUpdater cu = new CodeUpdater();
+    cu.updateAll("https://illinois-stage.tylerhost.net", filingPort);
   }
 }
