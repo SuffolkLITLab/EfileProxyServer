@@ -12,42 +12,42 @@ public class Name {
   private String suffix;
   private String maidenName;
   private String prefix;
-  
+
   public String getFullName() {
     return prefix + " " + firstName + " " + middleName + " " + lastName + " " + suffix;
   }
-  
+
   public String getFirstName() {
     return firstName;
   }
-  
+
   public String getMiddleName() {
     return middleName;
   }
-  
+
   public String getLastName() {
     return lastName;
   }
-  
+
   public String getSuffix() {
     return suffix;
   }
-  
+
   public String getPrefix() {
     return prefix;
   }
-  
+
   public String getMaidenName() {
     return maidenName;
   }
-  
+
   private gov.niem.niem.niem_core._2.PersonNameTextType wrapName(String name) {
     ObjectFactory of = new ObjectFactory();
     PersonNameTextType t = of.createPersonNameTextType();
     t.setValue(name);
     return t;
   }
-  
+
   /** Returns the PersonNameType XML object from this Name. */
   public gov.niem.niem.niem_core._2.PersonNameType getNameType() {
     ObjectFactory of = new ObjectFactory();
@@ -60,7 +60,7 @@ public class Name {
     personName.setPersonNameSuffixText(wrapName(suffix));
     return personName;
   }
-  
+
   public JAXBElement<gov.niem.niem.niem_core._2.PersonNameType> getNiemStruct() {
     ObjectFactory of = new ObjectFactory();
     return of.createPersonName(getNameType());

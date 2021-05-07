@@ -23,7 +23,8 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonAugmen
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 
 public class Person {
-  // NOTE: from DA, we will take the mailing address if present, not the standard address.
+  // NOTE: from DA, we will take the mailing address if present, not the standard
+  // address.
   private Address address;
   private Name name;
   private List<String> phoneNumbers;
@@ -32,34 +33,31 @@ public class Person {
   private Optional<String> language;
   private Optional<LocalDate> birthdate;
   private boolean isOrg;
-  
+
   // TODO(brycew): GUID, should be set on construction
   private String id;
   // TODO(brycew): do we need some type of ID here?
-  
+
   public Address getAddress() {
     return address;
   }
-  
+
   public Name getName() {
     return name;
   }
-  
+
   public List<String> getPhoneNumbers() {
     return phoneNumbers;
   }
-  
+
   public String getEmail() {
     return email;
   }
-  
 
   /** Needs to have participant role set. */
   public CaseParticipantType getEcfCaseParticipant() {
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf = 
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-    final gov.niem.niem.proxy.xsd._2.ObjectFactory proxyOf = 
-        new gov.niem.niem.proxy.xsd._2.ObjectFactory();
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+    final gov.niem.niem.proxy.xsd._2.ObjectFactory proxyOf = new gov.niem.niem.proxy.xsd._2.ObjectFactory();
     final ObjectFactory of = new ObjectFactory();
     AugmentationType aug;
     if (isOrg) {
@@ -95,12 +93,12 @@ public class Person {
 
     // Else, it's a person: add other optional person stuff
     ((PersonAugmentationType) aug).getContactInformation().add(cit);
-    
+
     PersonType pt = ecfOf.createPersonType();
     pt.setId(id);
     pt.setPersonName(name.getNameType());
     pt.setPersonAugmentation((PersonAugmentationType) aug);
-    
+
     gender.ifPresent((gen) -> {
       of.createPersonSex(pt);
       SEXCodeType sct = new SEXCodeType();
@@ -112,13 +110,11 @@ public class Person {
       } else {
         sct.setValue(SEXCodeSimpleType.U);
       }
-      pt.setPersonSex(of.createPersonSexCode(sct)); 
+      pt.setPersonSex(of.createPersonSexCode(sct));
     });
 
-
     language.ifPresent((lang) -> {
-      final gov.niem.niem.iso_639_3._2.ObjectFactory lctOf = 
-          new gov.niem.niem.iso_639_3._2.ObjectFactory();
+      final gov.niem.niem.iso_639_3._2.ObjectFactory lctOf = new gov.niem.niem.iso_639_3._2.ObjectFactory();
       LanguageCodeType lct = lctOf.createLanguageCodeType();
       lct.setValue(lang);
       PersonLanguageType plt = of.createPersonLanguageType();
@@ -137,13 +133,14 @@ public class Person {
         e.printStackTrace();
         return;
       }
-      // TODO(brycew): THIS TIMEZONE IS WRONG: how should LocalDate + GregorianCalendar operate?
-      d.setValue(dtf.newXMLGregorianCalendarDate(bd.getYear(), bd.getMonth().getValue(), 
-          bd.getDayOfMonth(), 0)); 
+      // TODO(brycew): THIS TIMEZONE IS WRONG: how should LocalDate +
+      // GregorianCalendar operate?
+      d.setValue(dtf.newXMLGregorianCalendarDate(bd.getYear(), bd.getMonth().getValue(),
+          bd.getDayOfMonth(), 0));
       dt.setDateRepresentation(of.createDate(d));
       pt.setPersonBirthDate(dt);
     });
-    
+
     CaseParticipantType cpt = ecfOf.createCaseParticipantType();
     cpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
     return cpt;

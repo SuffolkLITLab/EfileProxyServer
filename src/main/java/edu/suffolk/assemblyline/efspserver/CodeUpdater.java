@@ -46,12 +46,14 @@ import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 
 public class CodeUpdater {
-  
+
   public static final Map<String, String> ncToTableName = new HashMap<String, String>();
 
   static {
-    //TODO(brycew): there's little more info on these mappings and how they combine besides: 
-    //   The name of an ECF element to be substituted by a court-specific codelist or extension
+    // TODO(brycew): there's little more info on these mappings and how they combine
+    // besides:
+    // The name of an ECF element to be substituted by a court-specific codelist or
+    // extension
     // Is this actually an XPath? Should figure it out
     ncToTableName.put("nc:CaseCategoryText", "casecategory");
     ncToTableName.put("tyler:CaseTypeText", "casetype");
@@ -74,17 +76,20 @@ public class CodeUpdater {
     ncToTableName.put("j:/ArrestCharge/j:ArrestLocation/nc:LocationName", "arrestlocation");
     ncToTableName.put("cext:BondTypeText", "bond");
     ncToTableName.put("cext:Charge/cext:ChargeStatute/j:StatuteLevelText", "degree");
-    ncToTableName.put("j:ArrestOfficial/j:EnforcementOfficialUnit/nc:OrganizationIdentification/nc:IdentificationID",
-        "lawenforcementunit"); 
+    ncToTableName.put(
+        "j:ArrestOfficial/j:EnforcementOfficialUnit/nc:OrganizationIdentification/nc:IdentificationID",
+        "lawenforcementunit");
     ncToTableName.put("nc:DocumentIdentification/nc:IdentificationSourceText", "crossreference");
     ncToTableName.put("cext:GeneralOffenseText", "generaloffense");
     ncToTableName.put("cext:StatuteTypeText", "statutetype");
-    ncToTableName.put("ecf:PersonDriverLicense/nc:DriverLicenseIdentification/nc:IdentificationCategoryText",
+    ncToTableName.put(
+        "ecf:PersonDriverLicense/nc:DriverLicenseIdentification/nc:IdentificationCategoryText",
         "driverlicensetype");
-    ncToTableName.put("cext:Charge/cext:ChargeStatute/j:StatuteCodeIdentification/nc:IdentificationID",
-        "statute"); 
+    ncToTableName.put(
+        "cext:Charge/cext:ChargeStatute/j:StatuteCodeIdentification/nc:IdentificationID",
+        "statute");
     ncToTableName.put("nc:PrimaryLanguage\\nc:LanguageCode", "language");
-    ncToTableName.put("nc:PersonPhysicalFeature\\nc:PhysicalFeatureCategoryCode", 
+    ncToTableName.put("nc:PersonPhysicalFeature\\nc:PhysicalFeatureCategoryCode",
         "physicalfeature");
     ncToTableName.put("nc:PersonHairColorCode", "haircolor");
     ncToTableName.put("nc:PersonEyeColorCode", "eyecolor");
@@ -96,12 +101,12 @@ public class CodeUpdater {
     ncToTableName.put("nc:VehicleMakeCode", "vehiclemake");
     ncToTableName.put("nc:VehicleColorPrimaryCode", "vehiclecolor");
     ncToTableName.put("tyler:MotionTypeCode", "motiontype");
-    ncToTableName.put("j:Citation\\nc:ActivityIdentification\\tyler:JurisdictionCode", 
+    ncToTableName.put("j:Citation\\nc:ActivityIdentification\\tyler:JurisdictionCode",
         "citationjurisdiction");
     ncToTableName.put("tyler:QuestionCode", "question");
     ncToTableName.put("tyler:AnswerCode", "answer");
   }
-  
+
   /**
    * https://stackoverflow.com/a/1485730/11416267
    *
@@ -119,8 +124,8 @@ public class CodeUpdater {
   private Duration downloads = Duration.ZERO;
   private Duration updates = Duration.ZERO;
 
-  private boolean downloadAndReadZip(String url, String signedTime, String tableName, String location,
-      CodeDatabase cd) throws JAXBException, SQLException, XMLStreamException {
+  private boolean downloadAndReadZip(String url, String signedTime, String tableName,
+      String location, CodeDatabase cd) throws JAXBException, SQLException, XMLStreamException {
     Instant startTable = Instant.now(Clock.systemUTC());
     try (InputStream urlStream = getHtml(url, signedTime)) {
       // Write out the zip file
@@ -141,36 +146,38 @@ public class CodeUpdater {
       f.delete();
       return true;
     } catch (IOException ex) {
-      // Some system codes (everything but "country", "state", "filingstatus", "datafield",
-      // and "servicetype") are expected to 500. Not really sure why they give us bad URLs.
-      System.err.println("Skipping " + url
-          + ", got exception downloading zip: " + ex.toString());
+      // Some system codes (everything but "country", "state", "filingstatus",
+      // "datafield",
+      // and "servicetype") are expected to 500. Not really sure why they give us bad
+      // URLs.
+      System.err.println("Skipping " + url + ", got exception downloading zip: " + ex.toString());
       return false;
     }
   }
-  
-  private boolean downloadSystemTables(String baseUrl, CodeDatabase cd, HeaderSigner signer) throws SQLException, OperatorCreationException, GeneralSecurityException, CMSException, IOException, JAXBException, XMLStreamException {
-    Map<String, String> codeUrls = Map.of(
-        "version",  "/CodeService/codes/version/",
-        "location", "/CodeService/codes/location/",
+
+  private boolean downloadSystemTables(String baseUrl, CodeDatabase cd, HeaderSigner signer)
+      throws SQLException, OperatorCreationException, GeneralSecurityException, CMSException,
+      IOException, JAXBException, XMLStreamException {
+    Map<String, String> codeUrls = Map.of("version", "/CodeService/codes/version/", "location",
+        "/CodeService/codes/location/",
         // NOTE: the Tyler docs say this is available from `GetPolicy'. That is wrong.
-        "error",    "/CodeService/codes/error"
-        );
-    // TODO(brycew): can tell if court codes will differ if they have a Row in Version codes
+        "error", "/CodeService/codes/error");
+    // TODO(brycew): can tell if court codes will differ if they have a Row in
+    // Version codes
     // where the simple value differs from the "0" Row. Need to check both
 
     Savepoint sp = cd.setSavePoint("systemTables");
-    cd.dropTables(codeUrls.entrySet().stream().map(
-        (e) -> e.getKey()).collect(Collectors.toList())); 
-    
+    cd.dropTables(codeUrls.entrySet().stream().map((e) -> e.getKey()).collect(Collectors.toList()));
+
     // On first download, there won't be installed versions of things yet.
     cd.createTableIfAbsent("installedversion");
-    
+
     String signedTime = signer.signedCurrentTime();
     for (Map.Entry<String, String> urlSuffix : codeUrls.entrySet()) {
       boolean updateSuccess = false;
       try {
-        updateSuccess = downloadAndReadZip(baseUrl + urlSuffix.getValue(), signedTime, urlSuffix.getKey(), "", cd);
+        updateSuccess = downloadAndReadZip(baseUrl + urlSuffix.getValue(), signedTime,
+            urlSuffix.getKey(), "", cd);
       } catch (SQLException ex) {
         updateSuccess = false;
       }
@@ -181,22 +188,23 @@ public class CodeUpdater {
     }
     return true;
   }
-  
+
   /**
    * 
    * @param location
-   * @param codes If empty, all versions will be downloaded
+   * @param codes    If empty, all versions will be downloaded
    * @param cd
    * @param signer
    * @param conn
    */
-  private void downloadCourtTables(String location, 
-      Optional<List<String>> codes, CodeDatabase cd, HeaderSigner signer, FilingReviewMDEPort filingPort) 
-          throws JAXBException, OperatorCreationException, IOException, SQLException, XMLStreamException, GeneralSecurityException, CMSException {
+  private void downloadCourtTables(String location, Optional<List<String>> codes, CodeDatabase cd,
+      HeaderSigner signer, FilingReviewMDEPort filingPort)
+      throws JAXBException, OperatorCreationException, IOException, SQLException,
+      XMLStreamException, GeneralSecurityException, CMSException {
     System.err.println("Location: " + location);
-    //final Instant startLoc = Instant.now(Clock.systemUTC());
+    // final Instant startLoc = Instant.now(Clock.systemUTC());
     CourtPolicyQueryMessageType m = new CourtPolicyQueryMessageType();
-    IdentificationType courtId = EfmClient.makeIDType(location); 
+    IdentificationType courtId = EfmClient.makeIDType(location);
     ObjectFactory of = new ObjectFactory();
     JAXBElement<IdentificationType> elem = of.createOrganizationIdentification(courtId);
     CourtType court = new CourtType();
@@ -204,24 +212,25 @@ public class CodeUpdater {
     m.setCaseCourt(court);
     // TODO(brycew): change this stuff
     m.setSendingMDELocationID(EfmClient.makeIDType("https://filingassemblymde.com"));
-    m.setSendingMDEProfileCode("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0");
-    JAXBElement<PersonType> elem2 = of.createEntityPerson(new PersonType());  
+    m.setSendingMDEProfileCode(
+        "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0");
+    JAXBElement<PersonType> elem2 = of.createEntityPerson(new PersonType());
     EntityType typ = new EntityType();
     typ.setEntityRepresentation(elem2);
     m.setQuerySubmitter(typ);
     CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
-    JAXBContext jc = JAXBContext.newInstance(ObjectFactory.class, 
+    JAXBContext jc = JAXBContext.newInstance(ObjectFactory.class,
         gov.niem.niem.structures._2.ObjectFactory.class,
         oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
         oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class);
     Marshaller mar = jc.createMarshaller();
     mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
     QName qname = new QName("tyler.test.bbb", "bbb");
-    JAXBElement<CourtPolicyResponseMessageType> pp =
-        new JAXBElement<CourtPolicyResponseMessageType>(qname, CourtPolicyResponseMessageType.class, p);
+    JAXBElement<CourtPolicyResponseMessageType> pp = new JAXBElement<CourtPolicyResponseMessageType>(
+        qname, CourtPolicyResponseMessageType.class, p);
     mar.marshal(pp, new File("full_court_obj_" + location + ".xml"));
 
-    // TODO(brycew): use the version codes to check the checksums of each table, 
+    // TODO(brycew): use the version codes to check the checksums of each table,
     // then see if we need to update
     for (CourtCodelistType ccl : p.getRuntimePolicyParameters().getCourtCodelist()) {
       String ecfElem = ccl.getECFElementName().getValue();
@@ -230,9 +239,10 @@ public class CodeUpdater {
         if (codes.isEmpty() || codes.get().contains(tableName)) {
           // TODO(brycew): check that the effective date is later than today
           // JAXBElement<?> obj = ccl.getEffectiveDate().getDateRepresentation();
-          // Tyler will give us URLs with spaces in them, which aren't valid. This makes them valid
-          String url =
-              ccl.getCourtCodelistURI().getIdentificationID().getValue().replace(" ", "%20");
+          // Tyler will give us URLs with spaces in them, which aren't valid. This makes
+          // them valid
+          String url = ccl.getCourtCodelistURI().getIdentificationID().getValue().replace(" ",
+              "%20");
           downloadAndReadZip(url, signer.signedCurrentTime(), tableName, location, cd);
         }
       } else {
@@ -241,8 +251,10 @@ public class CodeUpdater {
     }
     System.err.println("Downloads took: " + downloads + ", and updates took: " + updates);
   }
-  
-  public void updateAll(String baseUrl, FilingReviewMDEPort filingPort) throws SQLException, OperatorCreationException, GeneralSecurityException, CMSException, IOException, JAXBException, XMLStreamException {
+
+  public void updateAll(String baseUrl, FilingReviewMDEPort filingPort)
+      throws SQLException, OperatorCreationException, GeneralSecurityException, CMSException,
+      IOException, JAXBException, XMLStreamException {
     CodeDatabase cd = new CodeDatabase();
     cd.createDbConnection();
     Savepoint sp = cd.setSavePoint("mysavepoint");
@@ -252,7 +264,7 @@ public class CodeUpdater {
           + " to actually figure out new versions");
       return;
     }
-    
+
     // Drop each of tables that need to be updated
     Map<String, List<String>> versionsToUpdate = cd.getVersionsToUpdate();
     for (Entry<String, List<String>> courtAndTables : versionsToUpdate.entrySet()) {
@@ -262,7 +274,8 @@ public class CodeUpdater {
       for (String table : tables) {
         System.err.println("Refreshing table " + table + " for court " + courtLocation);
         if (!cd.deleteFromTable(table, courtLocation)) {
-          System.err.println("Couldn't delete from " + table + " at " + courtLocation + ", aborting");
+          System.err
+              .println("Couldn't delete from " + table + " at " + courtLocation + ", aborting");
           cd.rollback(sp);
           return;
         }
@@ -272,15 +285,16 @@ public class CodeUpdater {
     cd.commit();
   }
 
-  public void downloadAll(String baseUrl, FilingReviewMDEPort filingPort) 
-      throws SQLException, OperatorCreationException, PropertyException, GeneralSecurityException, CMSException, IOException, JAXBException, XMLStreamException {
+  public void downloadAll(String baseUrl, FilingReviewMDEPort filingPort)
+      throws SQLException, OperatorCreationException, PropertyException, GeneralSecurityException,
+      CMSException, IOException, JAXBException, XMLStreamException {
     CodeDatabase cd = new CodeDatabase();
     cd.createDbConnection();
     HeaderSigner signer = new HeaderSigner(System.getenv("X509_PASSWORD"));
     downloadSystemTables(baseUrl, cd, signer);
 
-    List<String> tablesToDrop = ncToTableName.entrySet().stream().map(
-        (e) -> e.getValue()).collect(Collectors.toUnmodifiableList()); 
+    List<String> tablesToDrop = ncToTableName.entrySet().stream().map((e) -> e.getValue())
+        .collect(Collectors.toUnmodifiableList());
     cd.dropTables(tablesToDrop);
 
     downloads = Duration.ZERO;
@@ -302,9 +316,9 @@ public class CodeUpdater {
     authReq.setPassword(System.getenv("BRYCE_USER_PASSWORD"));
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
     System.out.println("Auth'd?: " + authRes.getError().getErrorText());
-    List<Header> headersList = TylerUserNamePassword.makeHeaderList(authRes); 
-    FilingReviewMDEPort filingPort = EfmClient.makeFilingService(
-        FilingReviewMDEService.WSDL_LOCATION, headersList); 
+    List<Header> headersList = TylerUserNamePassword.makeHeaderList(authRes);
+    FilingReviewMDEPort filingPort = EfmClient
+        .makeFilingService(FilingReviewMDEService.WSDL_LOCATION, headersList);
     Instant finishSetup = Instant.now(Clock.systemUTC());
     System.err.println("Takes " + Duration.between(finishSetup, startSetup) + " to setup ports");
     CodeUpdater cu = new CodeUpdater();

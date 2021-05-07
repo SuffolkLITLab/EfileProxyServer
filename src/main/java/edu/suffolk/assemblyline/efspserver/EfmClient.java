@@ -65,26 +65,31 @@ import tyler.efm.services.schema.updatenotificationpreferencesrequest.UpdateNoti
 import tyler.efm.services.schema.updateuserrequest.UpdateUserRequestType;
 import tyler.efm.services.schema.updateuserresponse.UpdateUserResponseType;
 import tyler.efm.services.schema.userlistresponse.UserListResponseType;
-import tyler.efm.wsdl.webservicesprofile_implementation_4_0.*;
+import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 
 public final class EfmClient {
 
-  private static final QName USER_SERVICE_NAME = new QName("urn:tyler:efm:services", "EfmUserService");
-  private static final QName FIRM_SERVICE_NAME = new QName("urn:tyler:efm:services", "EfmFirmService");
+  private static final QName USER_SERVICE_NAME = new QName("urn:tyler:efm:services",
+      "EfmUserService");
+  private static final QName FIRM_SERVICE_NAME = new QName("urn:tyler:efm:services",
+      "EfmFirmService");
 
-  public static void testFirmManagement(IEfmUserService userPort, IEfmFirmService firmPort) throws JAXBException {
+  public static void testFirmManagement(IEfmUserService userPort, IEfmFirmService firmPort)
+      throws JAXBException {
     AuthenticateRequestType authReq = new AuthenticateRequestType();
     authReq.setEmail("bwilley@suffolk.edu");
     authReq.setPassword(System.getenv("BRYCE_USER_PASSWORD"));
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
 
-    List<Header> headersList = Arrays.asList(TylerUserNamePassword.makeHeader(authRes.getEmail(), authRes.getPasswordHash()));
-    ((BindingProvider) firmPort).getRequestContext().put(Header.HEADER_LIST, headersList); 
-    ((BindingProvider) userPort).getRequestContext().put(Header.HEADER_LIST, headersList); 
+    List<Header> headersList = Arrays
+        .asList(TylerUserNamePassword.makeHeader(authRes.getEmail(), authRes.getPasswordHash()));
+    ((BindingProvider) firmPort).getRequestContext().put(Header.HEADER_LIST, headersList);
+    ((BindingProvider) userPort).getRequestContext().put(Header.HEADER_LIST, headersList);
 
     GetFirmResponseType firm = firmPort.getFirm();
-    System.out.println("Firm info: " + firm.getFirm().getFirmID() + ", " + firm.getFirm().getFirmName());
-    
+    System.out
+        .println("Firm info: " + firm.getFirm().getFirmID() + ", " + firm.getFirm().getFirmName());
+
     // RegisterUser
     RegistrationRequestType regUser = new RegistrationRequestType();
     regUser.setEmail("bryce.steven.willey+tylertesting@gmail.com");
@@ -98,7 +103,8 @@ public final class EfmClient {
     regUser.setCity("Houston");
     regUser.setPhoneNumber("4093563492");
     regUser.setRegistrationType(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
-    // RegistrationType.INDIVIDUAL doesn't let you have any control over the user or let you delete
+    // RegistrationType.INDIVIDUAL doesn't let you have any control over the user or
+    // let you delete
     // the account in any way
     regUser.setStateCode("TX");
     regUser.setZipCode("77098");
@@ -106,8 +112,10 @@ public final class EfmClient {
     regUser.setStreetAddressLine2("Apt 1");
     regUser.setFirmName(firm.getFirm().getFirmName());
     RegistrationResponseType userRes = firmPort.registerUser(regUser);
-    System.out.println("New user errors: " + userRes.getError().getErrorCode() + ", " + userRes.getError().getErrorText());
-    System.out.println("New User for gmail: " + userRes.getUserID() + ", " + userRes.getFirmID() + ", " + userRes.getExpirationDateTime());
+    System.out.println("New user errors: " + userRes.getError().getErrorCode() + ", "
+        + userRes.getError().getErrorText());
+    System.out.println("New User for gmail: " + userRes.getUserID() + ", " + userRes.getFirmID()
+        + ", " + userRes.getExpirationDateTime());
 
     // ResendActivationEmail
     ResendActivationEmailRequestType newEmail = new ResendActivationEmailRequestType();
@@ -170,7 +178,8 @@ public final class EfmClient {
     // GetUser
     GetUserRequestType getUserReq = new GetUserRequestType();
     getUserReq.setUserID(authRes.getUserID());
-    List<Header> headersList = Arrays.asList(TylerUserNamePassword.makeHeader(authRes.getEmail(), authRes.getPasswordHash()));
+    List<Header> headersList = Arrays
+        .asList(TylerUserNamePassword.makeHeader(authRes.getEmail(), authRes.getPasswordHash()));
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
     ctx.put(Header.HEADER_LIST, headersList);
     GetUserResponseType getUserResp = port.getUser(getUserReq);
@@ -200,11 +209,8 @@ public final class EfmClient {
     GetUserRequestType getNewUser = new GetUserRequestType();
     getNewUser.setUserID(updateUserResp.getUserID());
     GetUserResponseType getNewUserResp = port.getUser(getNewUser);
-    System.out.println(
-        "Get new user: "
-            + getNewUserResp.getError().getErrorCode()
-            + " "
-            + getNewUserResp.getError().getErrorText());
+    System.out.println("Get new user: " + getNewUserResp.getError().getErrorCode() + " "
+        + getNewUserResp.getError().getErrorText());
     UserType newUser = getNewUserResp.getUser();
     if (newUser != null) {
       System.out.println(newUser.getEmail());
@@ -215,8 +221,7 @@ public final class EfmClient {
     }
 
     // UpdateNotificationPreferences
-    UpdateNotificationPreferencesRequestType updateNotif =
-        new UpdateNotificationPreferencesRequestType();
+    UpdateNotificationPreferencesRequestType updateNotif = new UpdateNotificationPreferencesRequestType();
     NotificationType newNotif = new NotificationType();
     newNotif.setCode("SERVICEUNDELIVERABLE");
     updateNotif.getNotification().add(newNotif);
@@ -241,7 +246,8 @@ public final class EfmClient {
     changePass.setPasswordQuestion("Why no password question?");
     changePass.setPasswordAnswer("They are deprecated");
     ChangePasswordResponseType changePassResp = port.changePassword(changePass);
-    System.out.println("Successfully changed password?: " + changePassResp.getError().getErrorText());
+    System.out
+        .println("Successfully changed password?: " + changePassResp.getError().getErrorText());
     System.out.println("New pass stuff: " + changePassResp.getPasswordHash());
     System.out.println("New pass stuff: " + changePassResp.getExpirationDateTime());
 
@@ -278,10 +284,10 @@ public final class EfmClient {
     System.out.println(resetPasswordResp.getError().getErrorCode());
     System.out.println(resetPasswordResp.getError().getErrorText());
   }
-  
+
   public static IEfmUserService makeUserService(URL userWsdlUrl) {
     EfmUserService ss = new EfmUserService(userWsdlUrl, USER_SERVICE_NAME);
-    System.out.println(userWsdlUrl.getHost()+ userWsdlUrl.getPath());
+    System.out.println(userWsdlUrl.getHost() + userWsdlUrl.getPath());
     IEfmUserService port = ss.getBasicHttpBindingIEfmUserService();
     BindingProvider bp = (BindingProvider) port;
     Map<String, Object> ctx = bp.getRequestContext();
@@ -305,17 +311,20 @@ public final class EfmClient {
     ctx.put("security.signature.username", "1");
     return port;
   }
-  
+
   public static FilingReviewMDEPort makeFilingService(URL filingURL, List<Header> headersList) {
     // https://stackoverflow.com/a/18923391/11416267
     // makes it much faster, but fucks up the WSDL security
-    FilingReviewMDEService filingService = new FilingReviewMDEService(FilingReviewMDEService.WSDL_LOCATION, FilingReviewMDEService.SERVICE);
+    FilingReviewMDEService filingService = new FilingReviewMDEService(
+        FilingReviewMDEService.WSDL_LOCATION, FilingReviewMDEService.SERVICE);
     FilingReviewMDEPort filingPort = filingService.getFilingReviewMDEPort();
     BindingProvider bp = (BindingProvider) filingPort;
     Map<String, Object> ctx = bp.getRequestContext();
     System.out.println(filingURL.toExternalForm());
-    ctx.put(Header.HEADER_LIST, headersList); 
-    //ctx.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, "https://illinois-stage.tylerhost.net/efm/FilingReviewMDEPort.svc"); //filingURL.toExternalForm()); 
+    ctx.put(Header.HEADER_LIST, headersList);
+    // ctx.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+    // "https://illinois-stage.tylerhost.net/efm/FilingReviewMDEPort.svc");
+    // //filingURL.toExternalForm());
     ctx.put("security.username", "bwilley@suffolk.edu");
     ctx.put("security.password", "can-be-anything?");
     ctx.put("security.signature.properties", "client_sign.properties");
@@ -323,7 +332,7 @@ public final class EfmClient {
     ctx.put("security.signature.username", "1");
     return filingPort;
   }
-  
+
   public static String objectToXmlString() throws JAXBException {
     JAXBContext context = JAXBContext.newInstance(GetUserRequestType.class);
     Marshaller marshaller = context.createMarshaller();
@@ -334,53 +343,51 @@ public final class EfmClient {
     marshaller.marshal(req, sw);
     return sw.toString();
   }
-  
+
   public static IdentificationType makeIDType(String idStr) {
     gov.niem.niem.niem_core._2.ObjectFactory of = new gov.niem.niem.niem_core._2.ObjectFactory();
     gov.niem.niem.niem_core._2.IdentificationType id = of.createIdentificationType();
     gov.niem.niem.proxy.xsd._2.String s = new gov.niem.niem.proxy.xsd._2.String();
     s.setValue(idStr);
-    id.setIdentificationID(s); 
+    id.setIdentificationID(s);
     return id;
   }
-  
+
   // TODO(brycew): figure out how to pass in person information
   // TODO(brycew): not handling attorneys, only SRLs right now
-  public static void sendFiling(FilingReviewMDEPort filingPort, String courtLocationId, List<Person> plantiffs, 
-      List<Person> defendants, String caseCategoryCode, CodeDatabase cd) throws SQLException {
+  public static void sendFiling(FilingReviewMDEPort filingPort, String courtLocationId,
+      List<Person> plantiffs, List<Person> defendants, String caseCategoryCode, CodeDatabase cd)
+      throws SQLException {
     gov.niem.niem.niem_core._2.ObjectFactory of = new gov.niem.niem.niem_core._2.ObjectFactory();
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory ccof = 
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory();
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ctof = 
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-    gov.niem.niem.domains.jxdm._4.ObjectFactory jof = 
-        new gov.niem.niem.domains.jxdm._4.ObjectFactory();
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory ccof = new oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory();
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ctof = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+    gov.niem.niem.domains.jxdm._4.ObjectFactory jof = new gov.niem.niem.domains.jxdm._4.ObjectFactory();
     gov.niem.niem.domains.jxdm._4.CaseAugmentationType caseAug = jof.createCaseAugmentationType();
     CourtType court = jof.createCourtType();
-    JAXBElement<IdentificationType> idType = 
-        of.createOrganizationIdentification(makeIDType(courtLocationId));
+    JAXBElement<IdentificationType> idType = of
+        .createOrganizationIdentification(makeIDType(courtLocationId));
     court.setOrganizationIdentification(idType);
     caseAug.setCaseCourt(court);
-    JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> qCaseAug = 
-        jof.createCaseAugmentation(caseAug);
+    JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> qCaseAug = jof
+        .createCaseAugmentation(caseAug);
 
-    CivilCaseType c = ccof.createCivilCaseType();    
+    CivilCaseType c = ccof.createCivilCaseType();
     JAXBElement<TextType> relief = ccof.createReliefTypeCode(new TextType());
     AmountType amount = new AmountType();
     amount.setValue(new BigDecimal(500));
-    amount.setCurrencyCode(CurrencyCodeSimpleType.USD); 
+    amount.setCurrencyCode(CurrencyCodeSimpleType.USD);
     JAXBElement<AmountType> amountInControversy = ccof.createAmountInControversy(amount);
     gov.niem.niem.proxy.xsd._2.Boolean b = new gov.niem.niem.proxy.xsd._2.Boolean();
     b.setValue(false);
-    JAXBElement<gov.niem.niem.proxy.xsd._2.Boolean> classAction = 
-        ccof.createClassActionIndicator(b);
+    JAXBElement<gov.niem.niem.proxy.xsd._2.Boolean> classAction = ccof
+        .createClassActionIndicator(b);
     JAXBElement<TextType> causeOfAction = ctof.createCauseOfActionCode(new TextType());
-    
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseAugmentationType ecfAug =
-        ctof.createCaseAugmentationType();
-    
+
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseAugmentationType ecfAug = ctof
+        .createCaseAugmentationType();
+
     List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocationId, caseCategoryCode);
-    
+
     for (Person plantiff : plantiffs) {
       CaseParticipantType cp = plantiff.getEcfCaseParticipant();
       TextType tt = of.createTextType();
@@ -388,15 +395,15 @@ public final class EfmClient {
       cp.setCaseParticipantRoleCode(tt);
       ecfAug.getCaseParticipant().add(ctof.createCaseParticipant(cp));
     }
-    
+
     for (Person defendant : defendants) {
       CaseParticipantType cp = defendant.getEcfCaseParticipant();
       TextType tt = of.createTextType();
       tt.setValue(partyTypes.get(0).partyTypeCode);
-      cp.setCaseParticipantRoleCode(tt); 
+      cp.setCaseParticipantRoleCode(tt);
       ecfAug.getCaseParticipant().add(ctof.createCaseParticipant(cp));
     }
-    
+
     c.getRest().add(qCaseAug);
     c.getRest().add(causeOfAction);
     c.getRest().add(amountInControversy);
@@ -430,76 +437,83 @@ public final class EfmClient {
     IEfmUserService userPort = makeUserService(userWsdlUrl);
     testUserActionManagement(userPort, "bwilley@suffolk.edu");
     /*
-    IEfmFirmService firmPort = makeFirmService(firmWsdlUrl);
-    AuthenticateRequestType authReq = new AuthenticateRequestType();
-    authReq.setEmail("bwilley@suffolk.edu");
-    authReq.setPassword(System.getenv("BRYCE_USER_PASSWORD"));
-    AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
-    System.out.println("Auth'd?: " + authRes.getError().getErrorText());
-    List<Header> headersList = TylerUserNamePassword.makeHeaderList(authRes); 
-    FilingReviewMDEPort filingPort = makeFilingService(FilingReviewMDEService.WSDL_LOCATION, headersList); 
-    CourtPolicyQueryMessageType m = new CourtPolicyQueryMessageType();
-    CourtType court = new CourtType();
-    IdentificationType courtId = makeIDType("henderson"); 
-    ObjectFactory of = new ObjectFactory();
-    JAXBElement<IdentificationType> elem = of.createOrganizationIdentification(courtId);
-    court.setOrganizationIdentification(elem);
-    // TODO(brycew): change this stuff
-    m.setSendingMDELocationID(makeIDType("https://filingassemblymde.com"));
-    m.setSendingMDEProfileCode("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0");
-    JAXBElement<PersonType> elem2 = of.createEntityPerson(new PersonType());  
-    EntityType typ = new EntityType();
-    typ.setEntityRepresentation(elem2);
-    m.setQuerySubmitter(typ);
-    m.setCaseCourt(court);
-     *Exception in thread "main" javax.xml.ws.soap.SOAPFaultException: The element 'CourtPolicyQueryMessage' in namespace 'urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyQueryMessage-4.0' has invalid child element 'CaseCourt' in namespace 'http://niem.gov/niem/domains/jxdm/4.0'. List of possible elements expected: 'SendingMDELocationID' in namespace 'urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0'.
-        at org.apache.cxf.jaxws.JaxWsClientProxy.mapException(JaxWsClientProxy.java:195)
-        at org.apache.cxf.jaxws.JaxWsClientProxy.invoke(JaxWsClientProxy.java:145)
-        at com.sun.proxy.$Proxy71.getPolicy(Unknown Source)
-        at edu.suffolk.assemblyline.efspserver.EfmClient.main(EfmClient.java:370)
-Caused by: org.apache.cxf.binding.soap.SoapFault: The element 'CourtPolicyQueryMessage' in namespace 'urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyQueryMessage-4.0' has invalid child element 'CaseCourt' in namespace 'http://niem.gov/niem/domains/jxdm/4.0'. List of possible elements expected: 'SendingMDELocationID' in namespace 'urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0'.
-        at org.apache.cxf.binding.soap.interceptor.Soap11FaultInInterceptor.unmarshalFault(Soap11FaultInInterceptor.java:87)
-        at org.apache.cxf.binding.soap.interceptor.Soap11FaultInInterceptor.handleMessage(Soap11FaultInInterceptor.java:53)
-        at org.apache.cxf.binding.soap.interceptor.Soap11FaultInInterceptor.handleMessage(Soap11FaultInInterceptor.java:42)
-    // TODO(brycew): this fails because the generated WSDL doesn't actually use the proper security headers. Need to add manually
-    CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
-    // https://stackoverflow.com/a/36762179/11416267
-    JAXBContext jc = JAXBContext.newInstance(ObjectFactory.class, gov.niem.niem.structures._2.ObjectFactory.class,
-        oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class, 
-        oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class); 
-    Marshaller mar = jc.createMarshaller();
-    mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-    QName qName = new QName("tyler.test.bbb", "bbb");
-    JAXBElement<CourtPolicyResponseMessageType> pp = new JAXBElement<CourtPolicyResponseMessageType>(qName, CourtPolicyResponseMessageType.class, p);
-    mar.marshal(pp, new File("full_court_obj_henderson.xml"));
+     * IEfmFirmService firmPort = makeFirmService(firmWsdlUrl);
+     * AuthenticateRequestType authReq = new AuthenticateRequestType();
+     * authReq.setEmail("bwilley@suffolk.edu");
+     * authReq.setPassword(System.getenv("BRYCE_USER_PASSWORD"));
+     * AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
+     * System.out.println("Auth'd?: " + authRes.getError().getErrorText());
+     * List<Header> headersList = TylerUserNamePassword.makeHeaderList(authRes);
+     * FilingReviewMDEPort filingPort =
+     * makeFilingService(FilingReviewMDEService.WSDL_LOCATION, headersList);
+     * CourtPolicyQueryMessageType m = new CourtPolicyQueryMessageType(); CourtType
+     * court = new CourtType(); IdentificationType courtId =
+     * makeIDType("henderson"); ObjectFactory of = new ObjectFactory();
+     * JAXBElement<IdentificationType> elem =
+     * of.createOrganizationIdentification(courtId);
+     * court.setOrganizationIdentification(elem); // TODO(brycew): change this stuff
+     * m.setSendingMDELocationID(makeIDType("https://filingassemblymde.com"));
+     * m.setSendingMDEProfileCode(
+     * "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0"
+     * ); JAXBElement<PersonType> elem2 = of.createEntityPerson(new PersonType());
+     * EntityType typ = new EntityType(); typ.setEntityRepresentation(elem2);
+     * m.setQuerySubmitter(typ); m.setCaseCourt(court); Exception in thread "main"
+     * javax.xml.ws.soap.SOAPFaultException: The element 'CourtPolicyQueryMessage'
+     * in namespace
+     * 'urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyQueryMessage-4
+     * .0' has invalid child element 'CaseCourt' in namespace
+     * 'http://niem.gov/niem/domains/jxdm/4.0'. List of possible elements expected:
+     * 'SendingMDELocationID' in namespace
+     * 'urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0'. at
+     * org.apache.cxf.jaxws.JaxWsClientProxy.mapException(JaxWsClientProxy.java:195)
+     * at org.apache.cxf.jaxws.JaxWsClientProxy.invoke(JaxWsClientProxy.java:145) at
+     * com.sun.proxy.$Proxy71.getPolicy(Unknown Source) at
+     * edu.suffolk.assemblyline.efspserver.EfmClient.main(EfmClient.java:370) Caused
+     * by: org.apache.cxf.binding.soap.SoapFault: The element
+     * 'CourtPolicyQueryMessage' in namespace
+     * 'urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyQueryMessage-4
+     * .0' has invalid child element 'CaseCourt' in namespace
+     * 'http://niem.gov/niem/domains/jxdm/4.0'. List of possible elements expected:
+     * 'SendingMDELocationID' in namespace
+     * 'urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0'. at
+     * org.apache.cxf.binding.soap.interceptor.Soap11FaultInInterceptor.
+     * unmarshalFault(Soap11FaultInInterceptor.java:87) at
+     * org.apache.cxf.binding.soap.interceptor.Soap11FaultInInterceptor.
+     * handleMessage(Soap11FaultInInterceptor.java:53) at
+     * org.apache.cxf.binding.soap.interceptor.Soap11FaultInInterceptor.
+     * handleMessage(Soap11FaultInInterceptor.java:42) // TODO(brycew): this fails
+     * because the generated WSDL doesn't actually use the proper security headers.
+     * Need to add manually CourtPolicyResponseMessageType p =
+     * filingPort.getPolicy(m); // https://stackoverflow.com/a/36762179/11416267
+     * JAXBContext jc = JAXBContext.newInstance(ObjectFactory.class,
+     * gov.niem.niem.structures._2.ObjectFactory.class,
+     * oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.
+     * ObjectFactory.class,
+     * oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.
+     * class); Marshaller mar = jc.createMarshaller();
+     * mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true); QName qName = new
+     * QName("tyler.test.bbb", "bbb"); JAXBElement<CourtPolicyResponseMessageType>
+     * pp = new JAXBElement<CourtPolicyResponseMessageType>(qName,
+     * CourtPolicyResponseMessageType.class, p); mar.marshal(pp, new
+     * File("full_court_obj_henderson.xml"));
+     * 
+     * StringBuilder sb = new StringBuilder(); sb.append(p.getCaseCourt().getId() +
+     * ", "); //sb.append(p.getCaseCourt().getCourtName().getValue() + ", ");
+     * sb.append(p.getSendingMDEProfileCode() + ", ");
+     * sb.append(p.getPolicyLastUpdateDate() + ", ");
+     * sb.append(p.getPolicyVersionID()); sb.append('\n'); sb.append("Errors: ");
+     * for (ErrorType e : p.getError()) { sb.append(e.getErrorCode() + ", ");
+     * sb.append(e.getErrorText()); sb.append('\n'); }
+     * sb.append("Runtime Policy Params: "); for (CourtCodelistType l :
+     * p.getRuntimePolicyParameters().getCourtCodelist()) {
+     * sb.append(l.getECFElementName() + ", "); sb.append(l.getEffectiveDate() +
+     * ", "); sb.append(l.getCourtCodelistURI() + ", "); } for (OperationNameType t
+     * : p.getDevelopmentPolicyParameters().getValue().getSupportedOperationName())
+     * { sb.append(t.getValue()); } System.out.print(sb.toString());
+     */
 
-    StringBuilder sb = new StringBuilder(); 
-    sb.append(p.getCaseCourt().getId() + ", ");
-    //sb.append(p.getCaseCourt().getCourtName().getValue() + ", ");
-    sb.append(p.getSendingMDEProfileCode() + ", ");
-    sb.append(p.getPolicyLastUpdateDate() + ", ");
-    sb.append(p.getPolicyVersionID());
-    sb.append('\n');
-    sb.append("Errors: ");
-    for (ErrorType e : p.getError()) {
-      sb.append(e.getErrorCode() + ", ");
-      sb.append(e.getErrorText());
-      sb.append('\n');
-    }
-    sb.append("Runtime Policy Params: ");
-    for (CourtCodelistType l : p.getRuntimePolicyParameters().getCourtCodelist()) {
-      sb.append(l.getECFElementName() + ", ");
-      sb.append(l.getEffectiveDate() + ", ");
-      sb.append(l.getCourtCodelistURI() + ", ");
-    }
-    for (OperationNameType t : p.getDevelopmentPolicyParameters().getValue().getSupportedOperationName()) {
-      sb.append(t.getValue());
-    }
-    System.out.print(sb.toString());
-    */
-    
-    //testUserManagement(userPort);
-    //testUserActionManagement(port, "bwilley@suffolk.edu");
-    //testFirmManagement(userPort, firmPort);
+    // testUserManagement(userPort);
+    // testUserActionManagement(port, "bwilley@suffolk.edu");
+    // testFirmManagement(userPort, firmPort);
   }
 }

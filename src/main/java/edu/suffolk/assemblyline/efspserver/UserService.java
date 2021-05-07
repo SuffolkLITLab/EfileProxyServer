@@ -23,30 +23,31 @@ import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
 @Path("/userservice/")
 @Produces("text/xml")
 public class UserService {
-  private static final QName USER_SERVICE_NAME = new QName("urn:tyler:efm:services", "EfmUserService");
+  private static final QName USER_SERVICE_NAME = new QName("urn:tyler:efm:services",
+      "EfmUserService");
   private IEfmUserService userPort;
 
   public UserService() {
     init();
   }
-  
+
   @POST
   @Path("/authenticateuser/")
   public Response authenticateUser(UserAuth userAuth) {
     System.out.println("Invoking User Auth");
     AuthenticateRequestType authReq = new AuthenticateRequestType();
     System.out.println("userAuth: " + userAuth.getUsername());
-    System.out.println("userAuth: " +  userAuth.getPassword());
+    System.out.println("userAuth: " + userAuth.getPassword());
     authReq.setEmail(userAuth.getUsername());
     authReq.setPassword(userAuth.getPassword());
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
-    System.out.println(authRes.getError().getErrorText()); 
+    System.out.println(authRes.getError().getErrorText());
     if (!authRes.getError().getErrorCode().equals("0")) {
       return Response.status(499, authRes.getError().getErrorText()).build();
     } else {
       return Response.ok(authRes.getPasswordHash()).build();
     }
-    
+
   }
 
   final void init() {
@@ -56,7 +57,7 @@ public class UserService {
 
   public static IEfmUserService makeUserService(URL userWsdlUrl) {
     EfmUserService ss = new EfmUserService(userWsdlUrl, USER_SERVICE_NAME);
-    System.out.println(userWsdlUrl.getHost()+ userWsdlUrl.getPath());
+    System.out.println(userWsdlUrl.getHost() + userWsdlUrl.getPath());
     IEfmUserService port = ss.getBasicHttpBindingIEfmUserService();
     BindingProvider bp = (BindingProvider) port;
     Map<String, Object> ctx = bp.getRequestContext();
@@ -67,5 +68,5 @@ public class UserService {
     ctx.put("security.signature.username", "1");
     return port;
   }
-  
+
 }

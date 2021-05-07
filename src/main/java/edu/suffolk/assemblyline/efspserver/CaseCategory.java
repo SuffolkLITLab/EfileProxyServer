@@ -7,9 +7,9 @@ public class CaseCategory {
   public String procedureremedyinitial;
   public String procedureremedysubsequenty;
   public String damagaamountinitial;
-  
-  public CaseCategory(String code, String name, String ecfCaseType,
-      String procedureremedyinitial, String procedureSub, String damage) {
+
+  public CaseCategory(String code, String name, String ecfCaseType, String procedureremedyinitial,
+      String procedureSub, String damage) {
     this.code = Integer.parseInt(code);
     this.name = name;
     this.ecfcasetype = ecfCaseType;

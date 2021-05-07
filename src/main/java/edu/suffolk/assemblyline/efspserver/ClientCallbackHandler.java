@@ -20,17 +20,17 @@ public class ClientCallbackHandler implements CallbackHandler {
         // display the message according to the specified type
         TextOutputCallback toc = (TextOutputCallback) callbacks[i];
         switch (toc.getMessageType()) {
-          case TextOutputCallback.INFORMATION:
-            System.out.println(toc.getMessage());
-            break;
-          case TextOutputCallback.ERROR:
-            System.out.println("ERROR: " + toc.getMessage());
-            break;
-          case TextOutputCallback.WARNING:
-            System.out.println("WARNING: " + toc.getMessage());
-            break;
-          default:
-            throw new IOException("Unsupported message type: " + toc.getMessageType());
+        case TextOutputCallback.INFORMATION:
+          System.out.println(toc.getMessage());
+          break;
+        case TextOutputCallback.ERROR:
+          System.out.println("ERROR: " + toc.getMessage());
+          break;
+        case TextOutputCallback.WARNING:
+          System.out.println("WARNING: " + toc.getMessage());
+          break;
+        default:
+          throw new IOException("Unsupported message type: " + toc.getMessageType());
         }
 
       } else if (callbacks[i] instanceof NameCallback) {
@@ -48,7 +48,7 @@ public class ClientCallbackHandler implements CallbackHandler {
         if (x509Password == null || x509Password.equals("")) {
           throw new RuntimeException("x509Password can't be null. Did you forget to source .env?");
         }
-        pc.setPassword(x509Password); 
+        pc.setPassword(x509Password);
       } else {
         throw new UnsupportedCallbackException(callbacks[i], "Unrecognized Callback");
       }
