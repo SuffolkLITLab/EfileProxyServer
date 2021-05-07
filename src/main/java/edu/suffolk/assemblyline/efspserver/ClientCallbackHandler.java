@@ -44,7 +44,11 @@ public class ClientCallbackHandler implements CallbackHandler {
         nc.setName((new BufferedReader(new InputStreamReader(System.in))).readLine());
       } else if (callbacks[i] instanceof WSPasswordCallback) {
         WSPasswordCallback pc = (WSPasswordCallback) callbacks[0];
-        pc.setPassword(System.getenv("X509_PASSWORD"));
+        String x509Password = System.getenv("X509_PASSWORD");
+        if (x509Password == null || x509Password.equals("")) {
+          throw new RuntimeException("x509Password can't be null. Did you forget to source .env?");
+        }
+        pc.setPassword(x509Password); 
       } else {
         throw new UnsupportedCallbackException(callbacks[i], "Unrecognized Callback");
       }
