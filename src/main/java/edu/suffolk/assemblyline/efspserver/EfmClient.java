@@ -1,14 +1,20 @@
 package edu.suffolk.assemblyline.efspserver;
 
 import gov.niem.niem.domains.jxdm._4.CourtType;
+import gov.niem.niem.iso_4217._2.CurrencyCodeSimpleType;
+import gov.niem.niem.niem_core._2.AmountType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.ObjectFactory;
+import gov.niem.niem.niem_core._2.PersonNameType;
 import gov.niem.niem.niem_core._2.PersonType;
+import gov.niem.niem.niem_core._2.TextType;
 import java.io.File;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +26,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.CivilCaseType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtCodelistType;
@@ -59,7 +67,7 @@ import tyler.efm.services.schema.updateuserresponse.UpdateUserResponseType;
 import tyler.efm.services.schema.userlistresponse.UserListResponseType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.*;
 
-public final class EfspServer {
+public final class EfmClient {
 
   private static final QName USER_SERVICE_NAME = new QName("urn:tyler:efm:services", "EfmUserService");
   private static final QName FIRM_SERVICE_NAME = new QName("urn:tyler:efm:services", "EfmFirmService");
@@ -328,11 +336,72 @@ public final class EfspServer {
   }
   
   public static IdentificationType makeIDType(String idStr) {
-    IdentificationType id = new IdentificationType();
+    gov.niem.niem.niem_core._2.ObjectFactory of = new gov.niem.niem.niem_core._2.ObjectFactory();
+    gov.niem.niem.niem_core._2.IdentificationType id = of.createIdentificationType();
     gov.niem.niem.proxy.xsd._2.String s = new gov.niem.niem.proxy.xsd._2.String();
     s.setValue(idStr);
     id.setIdentificationID(s); 
     return id;
+  }
+  
+  // TODO(brycew): figure out how to pass in person information
+  // TODO(brycew): not handling attorneys, only SRLs right now
+  public static void sendFiling(FilingReviewMDEPort filingPort, String courtLocationId, List<Person> plantiffs, 
+      List<Person> defendants, String caseCategoryCode, CodeDatabase cd) throws SQLException {
+    gov.niem.niem.niem_core._2.ObjectFactory of = new gov.niem.niem.niem_core._2.ObjectFactory();
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory ccof = 
+        new oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory();
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ctof = 
+        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+    gov.niem.niem.domains.jxdm._4.ObjectFactory jof = 
+        new gov.niem.niem.domains.jxdm._4.ObjectFactory();
+    gov.niem.niem.domains.jxdm._4.CaseAugmentationType caseAug = jof.createCaseAugmentationType();
+    CourtType court = jof.createCourtType();
+    JAXBElement<IdentificationType> idType = 
+        of.createOrganizationIdentification(makeIDType(courtLocationId));
+    court.setOrganizationIdentification(idType);
+    caseAug.setCaseCourt(court);
+    JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> qCaseAug = 
+        jof.createCaseAugmentation(caseAug);
+
+    CivilCaseType c = ccof.createCivilCaseType();    
+    JAXBElement<TextType> relief = ccof.createReliefTypeCode(new TextType());
+    AmountType amount = new AmountType();
+    amount.setValue(new BigDecimal(500));
+    amount.setCurrencyCode(CurrencyCodeSimpleType.USD); 
+    JAXBElement<AmountType> amountInControversy = ccof.createAmountInControversy(amount);
+    gov.niem.niem.proxy.xsd._2.Boolean b = new gov.niem.niem.proxy.xsd._2.Boolean();
+    b.setValue(false);
+    JAXBElement<gov.niem.niem.proxy.xsd._2.Boolean> classAction = 
+        ccof.createClassActionIndicator(b);
+    JAXBElement<TextType> causeOfAction = ctof.createCauseOfActionCode(new TextType());
+    
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseAugmentationType ecfAug =
+        ctof.createCaseAugmentationType();
+    
+    List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocationId, caseCategoryCode);
+    
+    for (Person plantiff : plantiffs) {
+      CaseParticipantType cp = plantiff.getEcfCaseParticipant();
+      TextType tt = of.createTextType();
+      tt.setValue(partyTypes.get(0).partyTypeCode);
+      cp.setCaseParticipantRoleCode(tt);
+      ecfAug.getCaseParticipant().add(ctof.createCaseParticipant(cp));
+    }
+    
+    for (Person defendant : defendants) {
+      CaseParticipantType cp = defendant.getEcfCaseParticipant();
+      TextType tt = of.createTextType();
+      tt.setValue(partyTypes.get(0).partyTypeCode);
+      cp.setCaseParticipantRoleCode(tt); 
+      ecfAug.getCaseParticipant().add(ctof.createCaseParticipant(cp));
+    }
+    
+    c.getRest().add(qCaseAug);
+    c.getRest().add(causeOfAction);
+    c.getRest().add(amountInControversy);
+    c.getRest().add(classAction);
+    c.getRest().add(relief);
   }
 
   public static void main(String[] args) throws JAXBException {
@@ -359,6 +428,8 @@ public final class EfspServer {
       }
     }
     IEfmUserService userPort = makeUserService(userWsdlUrl);
+    testUserActionManagement(userPort, "bwilley@suffolk.edu");
+    /*
     IEfmFirmService firmPort = makeFirmService(firmWsdlUrl);
     AuthenticateRequestType authReq = new AuthenticateRequestType();
     authReq.setEmail("bwilley@suffolk.edu");
@@ -381,17 +452,15 @@ public final class EfspServer {
     typ.setEntityRepresentation(elem2);
     m.setQuerySubmitter(typ);
     m.setCaseCourt(court);
-    /*
      *Exception in thread "main" javax.xml.ws.soap.SOAPFaultException: The element 'CourtPolicyQueryMessage' in namespace 'urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyQueryMessage-4.0' has invalid child element 'CaseCourt' in namespace 'http://niem.gov/niem/domains/jxdm/4.0'. List of possible elements expected: 'SendingMDELocationID' in namespace 'urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0'.
         at org.apache.cxf.jaxws.JaxWsClientProxy.mapException(JaxWsClientProxy.java:195)
         at org.apache.cxf.jaxws.JaxWsClientProxy.invoke(JaxWsClientProxy.java:145)
         at com.sun.proxy.$Proxy71.getPolicy(Unknown Source)
-        at edu.suffolk.assemblyline.efspserver.EfspServer.main(EfspServer.java:370)
+        at edu.suffolk.assemblyline.efspserver.EfmClient.main(EfmClient.java:370)
 Caused by: org.apache.cxf.binding.soap.SoapFault: The element 'CourtPolicyQueryMessage' in namespace 'urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyQueryMessage-4.0' has invalid child element 'CaseCourt' in namespace 'http://niem.gov/niem/domains/jxdm/4.0'. List of possible elements expected: 'SendingMDELocationID' in namespace 'urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0'.
         at org.apache.cxf.binding.soap.interceptor.Soap11FaultInInterceptor.unmarshalFault(Soap11FaultInInterceptor.java:87)
         at org.apache.cxf.binding.soap.interceptor.Soap11FaultInInterceptor.handleMessage(Soap11FaultInInterceptor.java:53)
         at org.apache.cxf.binding.soap.interceptor.Soap11FaultInInterceptor.handleMessage(Soap11FaultInInterceptor.java:42)
-     */
     // TODO(brycew): this fails because the generated WSDL doesn't actually use the proper security headers. Need to add manually
     CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
     // https://stackoverflow.com/a/36762179/11416267
@@ -427,6 +496,7 @@ Caused by: org.apache.cxf.binding.soap.SoapFault: The element 'CourtPolicyQueryM
       sb.append(t.getValue());
     }
     System.out.print(sb.toString());
+    */
     
     //testUserManagement(userPort);
     //testUserActionManagement(port, "bwilley@suffolk.edu");

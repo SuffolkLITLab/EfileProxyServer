@@ -36,8 +36,18 @@
         <version>3.12.0</version>
     </dependency>
     <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.13</version>
+    </dependency>
+    <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxws</artifactId>
+        <version>${cxf.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxrs</artifactId>
         <version>${cxf.version}</version>
     </dependency>
     <dependency>
@@ -57,6 +67,36 @@
         <version>${cxf.version}</version>
     </dependency>
     <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-rs-client</artifactId>
+        <version>${cxf.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-xjc</artifactId>
+        <version>2.3.3</version>
+    </dependency>
+    <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>2.3.3</version>
+    </dependency>
+    <dependency>
+    <groupId>javax.ws.rs</groupId>
+    <artifactId>jsr311-api</artifactId>
+    <version>1.1.1</version>
+</dependency>
+    <dependency>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>javax.ws.rs-api</artifactId>
+        <version>2.1.1</version>
+    </dependency>
+    <dependency>
+        <groupId>javax.jws</groupId>
+        <artifactId>javax.jws-api</artifactId>
+        <version>1.1</version>
+    </dependency>
+    <dependency>
         <groupId>org.apache.cxf.xjc-utils</groupId>
         <artifactId>cxf-xjc-runtime</artifactId>
         <version>3.3.1</version>
@@ -70,6 +110,11 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-simple</artifactId>
         <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>5.3.5</version>
     </dependency>
     <dependency>
         <groupId>org.bouncycastle</groupId>
@@ -157,7 +202,8 @@
             <artifactId>exec-maven-plugin</artifactId>
             <version>1.2.1</version>
             <configuration>
-                <mainClass>edu.suffolk.assemblyline.efspserver.CodeUpdater</mainClass>
+                <!--mainClass>edu.suffolk.assemblyline.efspserver.CodeUpdater</mainClass-->
+                <mainClass>edu.suffolk.assemblyline.efspserver.EfspServer</mainClass>
             </configuration>
         </plugin>
       </plugins>
