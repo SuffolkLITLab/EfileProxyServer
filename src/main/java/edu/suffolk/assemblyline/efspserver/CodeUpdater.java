@@ -204,14 +204,14 @@ public class CodeUpdater {
     System.err.println("Location: " + location);
     // final Instant startLoc = Instant.now(Clock.systemUTC());
     CourtPolicyQueryMessageType m = new CourtPolicyQueryMessageType();
-    IdentificationType courtId = EfmClient.makeIDType(location);
+    IdentificationType courtId = XmlHelper.convertId(location);
     ObjectFactory of = new ObjectFactory();
     JAXBElement<IdentificationType> elem = of.createOrganizationIdentification(courtId);
     CourtType court = new CourtType();
     court.setOrganizationIdentification(elem);
     m.setCaseCourt(court);
     // TODO(brycew): change this stuff
-    m.setSendingMDELocationID(EfmClient.makeIDType("https://filingassemblymde.com"));
+    m.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
     m.setSendingMDEProfileCode(
         "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0");
     JAXBElement<PersonType> elem2 = of.createEntityPerson(new PersonType());

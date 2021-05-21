@@ -418,6 +418,18 @@ public class CodeTableConstants {
         + "FROM casecategory WHERE location=?";
   }
   
+  /** Gets all columns from datafield table
+   * Need to provide the location (1) and the code (2) of the field.
+   * For example, 'adams' and 'FilingEventCaseParties'
+   *
+   * @return the String to make a SQL PreparedStatement from
+   */
+  public static String getAllFromDataFieldForLoc() {
+    return "SELECT code, name, isvisible, helptext, ghosttext, contextualhelpdata, "
+        + "validationmessage, regularexpression, defaultvalueexpression, isreadonly, location "
+        + "FROM datafield WHERE location=? AND code=?";
+  }
+  
   /** Will only delete from non-system tables. */
   public static String deleteFromTable(String tableName) {
     Optional<TableColumns> tableCols = getTableColumnInfo(tableName);

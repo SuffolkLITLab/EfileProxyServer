@@ -3,6 +3,7 @@ package edu.suffolk.assemblyline.efspserver;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
+import javax.ws.rs.core.MediaType;
 
 import java.net.URL;
 import java.util.Map;
@@ -21,7 +22,7 @@ import tyler.efm.services.schema.authenticaterequest.AuthenticateRequestType;
 import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
 
 @Path("/userservice/")
-@Produces("text/xml")
+@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 public class UserService {
   private static final QName USER_SERVICE_NAME = new QName("urn:tyler:efm:services",
       "EfmUserService");
@@ -34,10 +35,8 @@ public class UserService {
   @POST
   @Path("/authenticateuser/")
   public Response authenticateUser(UserAuth userAuth) {
-    System.out.println("Invoking User Auth");
+    System.out.println("Invoking User Auth for " + userAuth.getUsername());
     AuthenticateRequestType authReq = new AuthenticateRequestType();
-    System.out.println("userAuth: " + userAuth.getUsername());
-    System.out.println("userAuth: " + userAuth.getPassword());
     authReq.setEmail(userAuth.getUsername());
     authReq.setPassword(userAuth.getPassword());
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
@@ -47,8 +46,9 @@ public class UserService {
     } else {
       return Response.ok(authRes.getPasswordHash()).build();
     }
-
   }
+  
+  
 
   final void init() {
     URL userWsdlUrl = EfmUserService.WSDL_LOCATION;

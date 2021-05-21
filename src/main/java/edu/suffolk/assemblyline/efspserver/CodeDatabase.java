@@ -141,6 +141,27 @@ public class CodeDatabase {
     }
     return cats;
   }
+  
+  public Optional<DataFieldRow> getDataField(String courtLocationId, String dataName) throws SQLException {
+    if (conn == null) {
+      throw new SQLException();
+    }
+    
+    String query = CodeTableConstants.getAllFromDataFieldForLoc();
+    PreparedStatement st = conn.prepareStatement(query);
+    st.setString(1, courtLocationId);
+    st.setString(2, dataName);
+    ResultSet rs = st.executeQuery();
+    if (!rs.next()) {
+      return Optional.empty();
+    }
+    
+    DataFieldRow dfr = new DataFieldRow(rs.getString(1), rs.getString(2), rs.getString(3), 
+        rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), 
+        rs.getString(9), rs.getString(10), rs.getString(11), rs.getString(12));
+    
+    return Optional.of(dfr);
+  }
 
   public List<PartyType> getPartyTypeFor(String courtLocationId, String caseCategory)
       throws SQLException {

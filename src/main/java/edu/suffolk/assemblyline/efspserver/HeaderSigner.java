@@ -33,6 +33,9 @@ public class HeaderSigner {
   private static final String SIGNATUREALGO = "SHA256withRSA";
   private final String x509Password;
 
+  /** The string password to the x509 certificate. This password is given by Tyler,
+   * and will also unlock the .pfx file.
+   */
   public HeaderSigner(String x509Password) {
     if (x509Password == null || x509Password.isEmpty()) {
       throw new RuntimeException("x509 Password cannot be null: did you forget to source .env");
