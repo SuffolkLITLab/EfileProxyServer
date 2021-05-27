@@ -25,7 +25,7 @@ public class FilingReviewMDEService extends Service {
     public final static QName SERVICE = new QName("urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0", "FilingReviewMDEService");
     public final static QName FilingReviewMDEPort = new QName("urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0", "FilingReviewMDEPort");
     static {
-        URL url = FilingReviewMDEService.class.getClassLoader().getResource("wsdl/ECF-4.0-FilingReviewMDEService.wsdl");
+        URL url = FilingReviewMDEService.class.getClassLoader().getResource("wsdl/filingreview/ecf.wsdl"); //ECF-4.0-FilingReviewMDEService.wsdl");
         if (url == null) {
             java.util.logging.Logger.getLogger(EfmUserService.class.getName())
                 .log(java.util.logging.Level.INFO,

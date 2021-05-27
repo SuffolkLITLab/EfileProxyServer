@@ -1,0 +1,725 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+  LegalXML Electronic Court Filing 4.0 Specification
+
+  Copyright (C) OASIS Open (2008). All Rights Reserved.
+
+  This document and translations of it may be copied and furnished to others, and
+  derivative works that comment on or otherwise explain it or assist in its
+  implementation may be prepared, copied, published and distributed, in whole or
+  in part, without restriction of any kind, provided that the above copyright
+  notice and this paragraph are included on all such copies and derivative works.
+  However, this document itself may not be modified in any way, such as by
+  removing the copyright notice or references to OASIS, except as needed for the
+  purpose of developing OASIS specifications, in which case the procedures for
+  copyrights defined in the OASIS Intellectual Property Rights document must be
+  followed, or as required to translate it into languages other than English.
+
+  The limited permissions granted above are perpetual and will not be revoked by
+  OASIS or its successors or assigns.
+
+  This document and the information contained herein is provided on an "AS IS"
+  basis and OASIS DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+  LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT
+  INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR
+  A PARTICULAR PURPOSE.
+
+  ===============================================================================
+
+  LegalXML Electronic Court Filing 4.0 Specification
+      (http://www.oasis-open.org/committees/tc_home.php?wg_abbrev=legalxml-courtfiling)
+  OASIS Open (http://www.oasis-open.org/)
+
+
+  Document Type:     Web Services Profile Definitions
+  Generated On:       25 August 2008
+
+    This WSDL document defines the interface to all Major Design Elements (MDEs) in the OASIS Electronic Court Filing 4.0 specification.
+    
+    --><definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:cancelquery="urn:tyler:ecf:extensions:CancelFilingMessage" xmlns:cancelresponse="urn:tyler:ecf:extensions:CancelFilingResponseMessage" xmlns:caselistquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListQueryMessage-4.0" xmlns:caselistresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListResponseMessage-4.0" xmlns:casequery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseQueryMessage-4.0" xmlns:caseresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseResponseMessage-4.0" xmlns:casetype="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseTypeSpecificMessage-4.0" xmlns:core="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0" xmlns:court="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtSpecificMessage-4.0" xmlns:createcase="urn:tyler:ecf:extensions:CreateCaseMessage" xmlns:createcasecb="urn:tyler:ecf:extensions:CreateCaseCallbackMessage" xmlns:detail="urn:tyler:ecf:extensions:FilingDetailQueryMessage" xmlns:detailresponse="urn:tyler:ecf:extensions:FilingDetailResponseMessage" xmlns:docket="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:RecordDocketingMessage-4.0" xmlns:docketcb="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:RecordDocketingCallbackMessage-4.0" xmlns:docquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DocumentQueryMessage-4.0" xmlns:docresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DocumentResponseMessage-4.0" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:eventcb="urn:tyler:ecf:extensions:EventCallbackMessage" xmlns:feesquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FeesCalculationQueryMessage-4.0" xmlns:feesresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FeesCalculationResponseMessage-4.0" xmlns:filingservice="urn:tyler:ecf:extensions:FilingServiceQueryMessage" xmlns:filingserviceresponse="urn:tyler:ecf:extensions:FilingServiceResponseMessage" xmlns:i="http://niem.gov/niem/appinfo/2.0" xmlns:listquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingListQueryMessage-4.0" xmlns:listresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingListResponseMessage-4.0" xmlns:message="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:MessageReceiptMessage-4.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:notifyreceipt="urn:tyler:ecf:extensions:NotifyReceiptMessage" xmlns:notifyservice="urn:tyler:ecf:extensions:NotifyServiceMessage" xmlns:ns="http://niem.gov/niem/ansi-nist/2.0" xmlns:ns1="http://niem.gov/niem/domains/jxdm/4.0" xmlns:ns10="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CivilCase-4.0" xmlns:ns11="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CriminalCase-4.0" xmlns:ns12="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DomesticCase-4.0" xmlns:ns13="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:JuvenileCase-4.0" xmlns:ns14="urn:tyler:ecf:extensions:Common" xmlns:ns15="urn:tyler:ecf:extensions:Criminal" xmlns:ns16="http://niem.gov/niem/ansi_d20/2.0" xmlns:ns17="http://niem.gov/niem/fbi/2.0" xmlns:ns18="http://niem.gov/niem/fips_10-4/2.0" xmlns:ns19="http://niem.gov/niem/fips_6-4/2.0" xmlns:ns2="http://niem.gov/niem/domains/screening/2.0" xmlns:ns20="http://niem.gov/niem/iso_639-3/2.0" xmlns:ns21="http://niem.gov/niem/nonauthoritative-code/2.0" xmlns:ns22="http://niem.gov/niem/proxy/xsd/2.0" xmlns:ns23="http://niem.gov/niem/structures/2.0" xmlns:ns24="http://niem.gov/niem/unece_rec20-misc/2.0" xmlns:ns25="http://niem.gov/niem/usps_states/2.0" xmlns:ns26="urn:oasis:names:specification:ubl:schema:xsd:UnqualifiedDataTypes-2" xmlns:ns27="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:ns28="http://niem.gov/niem/iso_4217/2.0" xmlns:ns29="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns3="http://www.w3.org/2000/09/xmldsig#" xmlns:ns4="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:ns5="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ns6="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:AppInfo-4.0" xmlns:ns7="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:AppellateCase-4.0" xmlns:ns8="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:BankruptcyCase-4.0" xmlns:ns9="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0" xmlns:payment="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:PaymentMessage-4.0" xmlns:policyquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyQueryMessage-4.0" xmlns:policyresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0" xmlns:receipt="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:PaymentReceiptMessage-4.0" xmlns:reviewcb="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ReviewFilingCallbackMessage-4.0" xmlns:securecase="urn:tyler:ecf:extensions:SecureCaseMessage" xmlns:serviceattach="urn:tyler:ecf:extensions:ServiceAttachCaseListQueryMessage" xmlns:serviceattachresponse="urn:tyler:ecf:extensions:ServiceAttachCaseListResponseMessage" xmlns:servicecb="urn:tyler:ecf:extensions:ServiceCallbackMessage" xmlns:servicehist="urn:tyler:ecf:extensions:ServiceInformationHistoryQueryMessage" xmlns:servicehistresponse="urn:tyler:ecf:extensions:ServiceInformationHistoryResponseMessage" xmlns:servicequery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceInformationQueryMessage-4.0" xmlns:servicereceipt="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceReceiptMessage-4.0" xmlns:serviceresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceInformationResponseMessage-4.0" xmlns:servicetyperequest="urn:tyler:ecf:extensions:ServiceTypesRequestMessage" xmlns:servicetyperesponse="urn:tyler:ecf:extensions:ServiceTypesResponseMessage" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:statusquery="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingStatusQueryMessage-4.0" xmlns:statusresponse="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingStatusResponseMessage-4.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsmp="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsrmp="http://docs.oasis-open.org/ws-rx/wsrmp/200702" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0">
+	<wsdl:types>
+		<xsd:schema xmlns="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0" targetNamespace="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0">
+			<xsd:annotation>
+				<xsd:documentation>ECF 4.0 Web services SIP WSDL Schema</xsd:documentation>
+				<xsd:appinfo>
+					<i:ConformantIndicator>true</i:ConformantIndicator>
+				</xsd:appinfo>
+			</xsd:annotation>
+			<xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="ecf-2.xsd"/>
+			<xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="ecf-18.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CivilCase-4.0" schemaLocation="ecf-19.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:AppellateCase-4.0" schemaLocation="ecf-32.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:BankruptcyCase-4.0" schemaLocation="ecf-33.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0" schemaLocation="ecf-34.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CriminalCase-4.0" schemaLocation="ecf-35.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DomesticCase-4.0" schemaLocation="ecf-38.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:JuvenileCase-4.0" schemaLocation="ecf-40.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListQueryMessage-4.0" schemaLocation="ecf-41.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListResponseMessage-4.0" schemaLocation="ecf-42.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseQueryMessage-4.0" schemaLocation="ecf-43.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseResponseMessage-4.0" schemaLocation="ecf-44.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0" schemaLocation="ecf-45.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyQueryMessage-4.0" schemaLocation="ecf-46.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0" schemaLocation="ecf-47.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DocumentQueryMessage-4.0" schemaLocation="ecf-49.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DocumentResponseMessage-4.0" schemaLocation="ecf-50.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FeesCalculationQueryMessage-4.0" schemaLocation="ecf-51.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FeesCalculationResponseMessage-4.0" schemaLocation="ecf-53.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingListQueryMessage-4.0" schemaLocation="ecf-59.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingListResponseMessage-4.0" schemaLocation="ecf-60.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingStatusQueryMessage-4.0" schemaLocation="ecf-61.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingStatusResponseMessage-4.0" schemaLocation="ecf-62.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:MessageReceiptMessage-4.0" schemaLocation="ecf-63.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:PaymentMessage-4.0" schemaLocation="ecf-64.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:PaymentReceiptMessage-4.0" schemaLocation="ecf-65.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:RecordDocketingCallbackMessage-4.0" schemaLocation="ecf-67.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:RecordDocketingMessage-4.0" schemaLocation="ecf-68.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ReviewFilingCallbackMessage-4.0" schemaLocation="ecf-69.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceInformationQueryMessage-4.0" schemaLocation="ecf-70.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceInformationResponseMessage-4.0" schemaLocation="ecf-71.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ServiceReceiptMessage-4.0" schemaLocation="ecf-72.xsd"/>
+			<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="ecf-74.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:ServiceInformationHistoryResponseMessage" schemaLocation="ecf-75.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:ServiceInformationHistoryQueryMessage" schemaLocation="ecf-76.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:ServiceCallbackMessage" schemaLocation="ecf-77.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:ServiceAttachCaseListResponseMessage" schemaLocation="ecf-85.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:ServiceAttachCaseListQueryMessage" schemaLocation="ecf-86.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:FilingServiceResponseMessage" schemaLocation="ecf-87.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:FilingServiceQueryMessage" schemaLocation="ecf-88.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:FilingDetailResponseMessage" schemaLocation="ecf-89.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:FilingDetailQueryMessage" schemaLocation="ecf-90.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:CreateCaseCallbackMessage" schemaLocation="ecf-91.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:CreateCaseMessage" schemaLocation="ecf-92.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:CancelFilingResponseMessage" schemaLocation="ecf-93.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:CancelFilingMessage" schemaLocation="ecf-94.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:Common" schemaLocation="ecf-95.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:Criminal" schemaLocation="ecf-96.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:SecureCaseMessage" schemaLocation="ecf-98.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:EventCallbackMessage" schemaLocation="ecf-99.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:NotifyReceiptMessage" schemaLocation="ecf-100.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:ServiceTypesRequestMessage" schemaLocation="ecf-102.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:ServiceTypesResponseMessage" schemaLocation="ecf-103.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:extensions:NotifyServiceMessage" schemaLocation="ecf-104.xsd"/>
+			
+			<xsd:complexType name="NotifyFilingReviewCompleteRequestMessageType">
+				<xsd:annotation>
+					<xsd:documentation>Multi-part message type (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexContent>
+					<xsd:extension base="ecf:ElectronicFilingMessageType">
+						<xsd:sequence>
+							<xsd:element ref="reviewcb:ReviewFilingCallbackMessage"/>
+							<xsd:element ref="receipt:PaymentReceiptMessage"/>
+						</xsd:sequence>
+					</xsd:extension>
+				</xsd:complexContent>
+			</xsd:complexType>
+			<xsd:element name="NotifyFilingReviewCompleteRequestMessage" type="NotifyFilingReviewCompleteRequestMessageType">
+				<xsd:annotation>
+					<xsd:documentation>Multi-part message (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:complexType name="RecordFilingRequestMessageType">
+				<xsd:annotation>
+					<xsd:documentation>Multi-part message type (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexContent>
+					<xsd:extension base="ecf:ElectronicFilingMessageType">
+						<xsd:sequence>
+							<xsd:element ref="docket:RecordDocketingMessage"/>
+							<xsd:element ref="core:CoreFilingMessage"/>
+						</xsd:sequence>
+					</xsd:extension>
+				</xsd:complexContent>
+			</xsd:complexType>
+			<xsd:element name="RecordFilingRequestMessage" type="RecordFilingRequestMessageType">
+				<xsd:annotation>
+					<xsd:documentation>Multi-part message (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:complexType name="ReviewFilingRequestMessageType">
+				<xsd:annotation>
+					<xsd:documentation>Multi-part message type (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexContent>
+					<xsd:extension base="ecf:ElectronicFilingMessageType">
+						<xsd:sequence>
+							<xsd:element ref="core:CoreFilingMessage"/>
+							<xsd:element ref="payment:PaymentMessage"/>
+						</xsd:sequence>
+					</xsd:extension>
+				</xsd:complexContent>
+			</xsd:complexType>
+			<xsd:element name="ReviewFilingRequestMessage" type="ReviewFilingRequestMessageType">
+				<xsd:annotation>
+					<xsd:documentation>Multi-part message (required for conformance with WS-I Basic Profile 1.1</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:schema>
+	</wsdl:types>
+	<message name="GetPolicyRequest">
+		<part element="policyquery:CourtPolicyQueryMessage" name="CourtPolicyQueryMessage"/>
+	</message>
+	<message name="GetCaseListRequest">
+		<part element="caselistquery:CaseListQueryMessage" name="CaseListQueryMessage"/>
+	</message>
+	<message name="GetCaseRequest">
+		<part element="casequery:CaseQueryMessage" name="CaseQueryMessage"/>
+	</message>
+	<message name="GetDocumentRequest">
+		<part element="docquery:DocumentQueryMessage" name="DocumentQueryMessage"/>
+	</message>
+	<message name="GetFeesCalculationRequest">
+		<part element="feesquery:FeesCalculationQueryMessage" name="FeesCalculationQueryMessage"/>
+	</message>
+	<message name="GetFilingListRequest">
+		<part element="listquery:FilingListQueryMessage" name="FilingListQueryMessage"/>
+	</message>
+	<message name="GetFilingStatusRequest">
+		<part element="statusquery:FilingStatusQueryMessage" name="FilingStatusQueryMessage"/>
+	</message>
+	<message name="GetServiceInformationRequest">
+		<part element="servicequery:ServiceInformationQueryMessage" name="ServiceInformationQueryMessage"/>
+	</message>
+	<message name="ServeFilingRequest">
+		<part element="core:CoreFilingMessage" name="CoreFilingMessage"/>
+	</message>
+	<message name="NotifyFilingReviewCompleteRequest">
+		<part element="wsmp:NotifyFilingReviewCompleteRequestMessage" name="NotifyFilingReviewCompleteRequestMessage"/>
+	</message>
+	<message name="NotifyServiceCompleteRequest">
+		<part element="servicecb:ServiceCallbackMessage" name="ServiceCallbackMessage"/>
+	</message>
+	<message name="NotifyEventRequest">
+		<part element="eventcb:EventCallbackMessage" name="EventCallbackMessage"/>
+	</message>
+	<message name="RecordFilingRequest">
+		<part element="wsmp:RecordFilingRequestMessage" name="RecordFilingRequestMessage"/>
+	</message>
+	<message name="ReviewFilingRequest">
+		<part element="wsmp:ReviewFilingRequestMessage" name="ReviewFilingRequestMessage"/>
+	</message>
+	<message name="NotifyDocketingCompleteRequest">
+		<part element="docketcb:RecordDocketingCallbackMessage" name="RecordDocketingCallbackMessage"/>
+	</message>
+	<message name="NotifyServiceRequest">
+		<part element="notifyservice:NotifyServiceMessage" name="NotifyServiceMessage"/>
+	</message>
+	<message name="GetPolicyResponse">
+		<part element="policyresponse:CourtPolicyResponseMessage" name="CourtPolicyResponseMessage"/>
+	</message>
+	<message name="GetFeesCalculationResponse">
+		<part element="feesresponse:FeesCalculationResponseMessage" name="FeesCalculationResponseMessage"/>
+	</message>
+	<message name="GetCaseListResponse">
+		<part element="caselistresponse:CaseListResponseMessage" name="CaseListResponseMessage"/>
+	</message>
+	<message name="GetCaseResponse">
+		<part element="caseresponse:CaseResponseMessage" name="CaseResponseMessage"/>
+	</message>
+	<message name="GetDocumentResponse">
+		<part element="docresponse:DocumentResponseMessage" name="DocumentResponseMessage"/>
+	</message>
+	<message name="GetFilingListResponse">
+		<part element="listresponse:FilingListResponseMessage" name="FilingListResponseMessage"/>
+	</message>
+	<message name="GetFilingStatusResponse">
+		<part element="statusresponse:FilingStatusResponseMessage" name="FilingStatusReponseMessage"/>
+	</message>
+	<message name="GetServiceInformationResponse">
+		<part element="serviceresponse:ServiceInformationResponseMessage" name="ServiceInformationResponseMessage"/>
+	</message>
+	<message name="NotifyServiceResponse">
+		<part element="message:MessageReceiptMessage" name="MessageReceiptMessage"/>
+	</message>
+	<message name="ServeFilingResponse">
+		<part element="servicereceipt:ServiceReceiptMessage" name="ServiceReceiptMessage"/>
+	</message>
+	<message name="NotifyFilingReviewCompleteResponse">
+		<part element="message:MessageReceiptMessage" name="MessageReceiptMessage"/>
+	</message>
+	<message name="NotifyServiceCompleteResponse">
+		<part element="message:MessageReceiptMessage" name="MessageReceiptMessage"/>
+	</message>
+	<message name="NotifyEventResponse">
+		<part element="message:MessageReceiptMessage" name="MessageReceiptMessage"/>
+	</message>
+	<message name="RecordFilingResponse">
+		<part element="message:MessageReceiptMessage" name="MessageReceiptMessage"/>
+	</message>
+	<message name="ReviewFilingResponse">
+		<part element="message:MessageReceiptMessage" name="MessageReceiptMessage"/>
+	</message>
+	<message name="NotifyDocketingCompleteResponse">
+		<part element="message:MessageReceiptMessage" name="MessageReceiptMessage"/>
+	</message>
+	<message name="CreateCaseRequest">
+		<part element="createcase:CreateCaseMessage" name="CreateCaseMessage"/>
+	</message>
+	<message name="CreateCaseResponse">
+		<part element="message:MessageReceiptMessage" name="MessageReceiptMessage"/>
+	</message>
+	<message name="GetServiceInformationHistoryRequest">
+		<part element="servicehist:ServiceInformationHistoryQueryMessage" name="ServiceInformationHistoryQueryMessage"/>
+	</message>
+	<message name="GetServiceInformationHistoryResponse">
+		<part element="servicehistresponse:ServiceInformationHistoryResponseMessage" name="ServiceInformationHistoryResponseMessage"/>
+	</message>
+	<message name="GetServiceAttachCaseListRequest">
+		<part element="serviceattach:ServiceAttachCaseListQueryMessage" name="ServiceAttachCaseListQueryMessage"/>
+	</message>
+	<message name="GetServiceAttachCaseListResponse">
+		<part element="serviceattachresponse:ServiceAttachCaseListResponseMessage" name="ServiceAttachCaseListResponseMessage"/>
+	</message>
+	<message name="NotifyReceiptCompleteRequest">
+		<part element="notifyreceipt:NotifyReceiptMessage" name="NotifyReceiptMessage"/>
+	</message>
+	<message name="NotifyReceiptCompleteResponse">
+		<part element="message:MessageReceiptMessage" name="MessageReceiptMessage"/>
+	</message>
+	<message name="GetFilingDetailsRequest">
+		<part element="detail:FilingDetailQueryMessage" name="FilingDetailQueryMessage"/>
+	</message>
+	<message name="GetFilingDetailsResponse">
+		<part element="detailresponse:FilingDetailResponseMessage" name="FilingDetailResponseMessage"/>
+	</message>
+	<message name="NotifyCaseAssignmentCompleteRequest">
+		<part element="createcasecb:CreateCaseCallbackMessage" name="CreateCaseCallbackMessage"/>
+	</message>
+	<message name="NotifyCaseAssignmentCompleteResponse">
+		<part element="message:MessageReceiptMessage" name="MessageReceiptMessage"/>
+	</message>
+	<message name="CancelFilingRequest">
+		<part element="cancelquery:CancelFilingMessage" name="CancelFilingMessage"/>
+	</message>
+	<message name="CancelFilingResponse">
+		<part element="cancelresponse:CancelFilingResponseMessage" name="CancelFilingResponseMessage"/>
+	</message>
+	<message name="GetFilingServiceRequest">
+		<part element="filingservice:FilingServiceQueryMessage" name="FilingServiceQueryMessage"/>
+	</message>
+	<message name="GetFilingServiceResponse">
+		<part element="filingserviceresponse:FilingServiceResponseMessage" name="FilingServiceResponseMessage"/>
+	</message>
+	<message name="SecureCaseRequest">
+		<part element="securecase:SecureCaseMessage" name="SecureCaseMessage"/>
+	</message>
+	<message name="SecureCaseResponse">
+		<part element="message:MessageReceiptMessage" name="MessageReceiptMessage"/>
+	</message>
+	<message name="GetServiceTypesRequest">
+		<part element="servicetyperequest:ServiceTypesRequestMessage" name="ServiceTypesRequestMessage"/>
+	</message>
+	<message name="GetServiceTypesResponse">
+		<part element="servicetyperesponse:ServiceTypesResponseMessage" name="ServiceTypesResponseMessage"/>
+	</message>
+	<portType name="ServiceMDEPort">
+		<operation name="ServeFiling">
+			<input message="wsmp:ServeFilingRequest" name="ServeFilingRequest"/>
+			<output message="wsmp:ServeFilingResponse" name="ServeFilingResponse"/>
+		</operation>
+	</portType>
+	<portType name="FilingAssemblyMDEPort">
+		<operation name="NotifyFilingReviewComplete">
+			<input message="wsmp:NotifyFilingReviewCompleteRequest" name="NotifyFilingReviewCompleteRequest"/>
+			<output message="wsmp:NotifyFilingReviewCompleteResponse" name="NotifyFilingReviewCompleteResponse"/>
+		</operation>
+		<operation name="NotifyServiceComplete">
+			<input message="wsmp:NotifyServiceCompleteRequest" name="NotifyServiceCompleteRequest"/>
+			<output message="wsmp:NotifyServiceCompleteResponse" name="NotifyServiceCompleteResponse"/>
+		</operation>
+		<operation name="NotifyEvent">
+			<input message="wsmp:NotifyEventRequest" name="NotifyEventRequest"/>
+			<output message="wsmp:NotifyEventResponse" name="NotifyEventResponse"/>
+		</operation>
+	</portType>
+	<portType name="CourtRecordMDEPort">
+		<operation name="RecordFiling">
+			<input message="wsmp:RecordFilingRequest" name="RecordFilingRequest"/>
+			<output message="wsmp:RecordFilingResponse" name="RecordFilingResponse"/>
+		</operation>
+		<operation name="GetCaseList">
+			<input message="wsmp:GetCaseListRequest" name="GetCaseListRequest"/>
+			<output message="wsmp:GetCaseListResponse" name="GetCaseListResponse"/>
+		</operation>
+		<operation name="GetCase">
+			<input message="wsmp:GetCaseRequest" name="GetCaseRequest"/>
+			<output message="wsmp:GetCaseResponse" name="GetCaseResponse"/>
+		</operation>
+		<operation name="GetDocument">
+			<input message="wsmp:GetDocumentRequest" name="GetDocumentRequest"/>
+			<output message="wsmp:GetDocumentResponse" name="GetDocumentResponse"/>
+		</operation>
+		<operation name="GetServiceInformation">
+			<input message="wsmp:GetServiceInformationRequest" name="GetServiceInformationRequest"/>
+			<output message="wsmp:GetServiceInformationResponse" name="GetServiceInformationResponse"/>
+		</operation>
+		<operation name="CreateCase">
+			<input message="wsmp:CreateCaseRequest" name="CreateCaseRequest"/>
+			<output message="wsmp:CreateCaseResponse" name="CreateCaseResponse"/>
+		</operation>
+		<operation name="GetServiceInformationHistory">
+			<input message="wsmp:GetServiceInformationHistoryRequest" name="GetServiceInformationHistoryRequest"/>
+			<output message="wsmp:GetServiceInformationHistoryResponse" name="GetServiceInformationHistoryResponse"/>
+		</operation>
+		<operation name="GetServiceAttachCaseList">
+			<input message="wsmp:GetServiceAttachCaseListRequest" name="GetServiceAttachCaseListRequest"/>
+			<output message="wsmp:GetServiceAttachCaseListResponse" name="GetServiceAttachCaseListResponse"/>
+		</operation>
+		<operation name="NotifyReceiptComplete">
+			<input message="wsmp:NotifyReceiptCompleteRequest" name="NotifyReceiptCompleteRequest"/>
+			<output message="wsmp:NotifyReceiptCompleteResponse" name="NotifyReceiptCompleteResponse"/>
+		</operation>
+		<operation name="NotifyService">
+			<input message="wsmp:NotifyServiceRequest" name="NotifyServiceRequest"/>
+			<output message="wsmp:NotifyServiceResponse" name="NotifyServiceResponse"/>
+		</operation>
+	</portType>
+	<portType name="FilingReviewMDEPort">
+		<operation name="ReviewFiling">
+			<input message="wsmp:ReviewFilingRequest" name="ReviewFilingRequest"/>
+			<output message="wsmp:ReviewFilingResponse" name="ReviewFilingResponse"/>
+		</operation>
+		<operation name="NotifyDocketingComplete">
+			<input message="wsmp:NotifyDocketingCompleteRequest" name="NotifyDocketingCompleteRequest"/>
+			<output message="wsmp:NotifyDocketingCompleteResponse" name="NotifyDocketingCompleteResponse"/>
+		</operation>
+		<operation name="GetFeesCalculation">
+			<input message="wsmp:GetFeesCalculationRequest" name="GetFeesCalculationRequest"/>
+			<output message="wsmp:GetFeesCalculationResponse" name="GetFeesCalculationResponse"/>
+		</operation>
+		<operation name="GetFilingList">
+			<input message="wsmp:GetFilingListRequest" name="GetFilingListRequest"/>
+			<output message="wsmp:GetFilingListResponse" name="GetFilingListResponse"/>
+		</operation>
+		<operation name="GetFilingStatus">
+			<input message="wsmp:GetFilingStatusRequest" name="GetFilingStatusRequest"/>
+			<output message="wsmp:GetFilingStatusResponse" name="GetFilingStatusResponse"/>
+		</operation>
+		<operation name="GetPolicy">
+			<input message="wsmp:GetPolicyRequest" name="GetPolicyRequest"/>
+			<output message="wsmp:GetPolicyResponse" name="GetPolicyResponse"/>
+		</operation>
+		<operation name="GetFilingDetails">
+			<input message="wsmp:GetFilingDetailsRequest" name="GetFilingDetailsRequest"/>
+			<output message="wsmp:GetFilingDetailsResponse" name="GetFilingDetailsResponse"/>
+		</operation>
+		<operation name="NotifyCaseAssignmentComplete">
+			<input message="wsmp:NotifyCaseAssignmentCompleteRequest" name="NotifyCaseAssignmentCompleteRequest"/>
+			<output message="wsmp:NotifyCaseAssignmentCompleteResponse" name="NotifyCaseAssignmentCompleteResponse"/>
+		</operation>
+		<operation name="CancelFiling">
+			<input message="wsmp:CancelFilingRequest" name="CancelFilingRequest"/>
+			<output message="wsmp:CancelFilingResponse" name="CancelFilingResponse"/>
+		</operation>
+		<operation name="GetFilingService">
+			<input message="wsmp:GetFilingServiceRequest" name="GetFilingServiceRequest"/>
+			<output message="wsmp:GetFilingServiceResponse" name="GetFilingServiceResponse"/>
+		</operation>
+		<operation name="SecureCase">
+			<input message="wsmp:SecureCaseRequest" name="SecureCaseRequest"/>
+			<output message="wsmp:SecureCaseResponse" name="SecureCaseResponse"/>
+		</operation>
+		<operation name="GetServiceTypes">
+			<input message="wsmp:GetServiceTypesRequest" name="GetServiceTypesRequest"/>
+			<output message="wsmp:GetServiceTypesResponse" name="GetServiceTypesResponse"/>
+		</operation>
+	</portType>
+	<binding name="ServiceMDEPortSOAPBinding" type="wsmp:ServiceMDEPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsp:PolicyReference URI="#MyPolicy"/>
+		<operation name="ServeFiling">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/ServiceMDEPort/ServeFilingRequest"/>
+			<input name="ServeFilingRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="ServeFilingResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<binding name="FilingAssemblyMDEPortSOAPBinding" type="wsmp:FilingAssemblyMDEPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsp:PolicyReference URI="#MyPolicy"/>
+		<operation name="NotifyFilingReviewComplete">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/FilingAssemblyMDEPort/NotifyFilingReviewCompleteRequest"/>
+			<input name="NotifyFilingReviewCompleteRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="NotifyFilingReviewCompleteResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="NotifyServiceComplete">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/FilingAssemblyMDEPort/NotifyServiceCompleteRequest"/>
+			<input name="NotifyServiceCompleteRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="NotifyServiceCompleteResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="NotifyEvent">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/FilingAssemblyMDEPort/NotifyEventRequest"/>
+			<input name="NotifyEventRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="NotifyEventResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<binding name="CourtRecordMDEPortSOAPBinding" type="wsmp:CourtRecordMDEPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsp:PolicyReference URI="#MyPolicy"/>
+		<operation name="RecordFiling">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/CourtRecordMDEPort/RecordFilingRequest"/>
+			<input name="RecordFilingRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="RecordFilingResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetCaseList">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/CourtRecordMDEPort/GetCaseListRequest"/>
+			<input name="GetCaseListRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetCaseListResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetCase">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/CourtRecordMDEPort/GetCaseRequest"/>
+			<input name="GetCaseRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetCaseResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetDocument">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/CourtRecordMDEPort/GetDocumentRequest"/>
+			<input name="GetDocumentRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetDocumentResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetServiceInformation">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/CourtRecordMDEPort/GetServiceInformationRequest"/>
+			<input name="GetServiceInformationRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetServiceInformationResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="CreateCase">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/CourtRecordMDEPort/CreateCaseRequest"/>
+			<input name="CreateCaseRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="CreateCaseResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetServiceInformationHistory">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/CourtRecordMDEPort/GetServiceInformationHistoryRequest"/>
+			<input name="GetServiceInformationHistoryRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetServiceInformationHistoryResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetServiceAttachCaseList">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/CourtRecordMDEPort/GetServiceAttachCaseListRequest"/>
+			<input name="GetServiceAttachCaseListRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetServiceAttachCaseListResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="NotifyReceiptComplete">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/CourtRecordMDEPort/NotifyReceiptCompleteRequest"/>
+			<input name="NotifyReceiptCompleteRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="NotifyReceiptCompleteResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="NotifyService">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/CourtRecordMDEPort/NotifyServiceRequest"/>
+			<input name="NotifyServiceRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="NotifyServiceResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<binding name="FilingReviewMDEPortSOAPBinding" type="wsmp:FilingReviewMDEPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsp:PolicyReference URI="#MyPolicy"/>
+		<operation name="ReviewFiling">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/FilingReviewMDEPort/ReviewFilingRequest"/>
+			<input name="ReviewFilingRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="ReviewFilingResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="NotifyDocketingComplete">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/FilingReviewMDEPort/NotifyDocketingCompleteRequest"/>
+			<input name="NotifyDocketingCompleteRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="NotifyDocketingCompleteResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetFeesCalculation">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/FilingReviewMDEPort/GetFeesCalculationRequest"/>
+			<input name="GetFeesCalculationRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetFeesCalculationResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetFilingList">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/FilingReviewMDEPort/GetFilingListRequest"/>
+			<input name="GetFilingListRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetFilingListResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetFilingStatus">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/FilingReviewMDEPort/GetFilingStatusRequest"/>
+			<input name="GetFilingStatusRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetFilingStatusResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetPolicy">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/FilingReviewMDEPort/GetPolicyRequest"/>
+			<input name="GetPolicyRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetPolicyResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetFilingDetails">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/FilingReviewMDEPort/GetFilingDetailsRequest"/>
+			<input name="GetFilingDetailsRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetFilingDetailsResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="NotifyCaseAssignmentComplete">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/FilingReviewMDEPort/NotifyCaseAssignmentCompleteRequest"/>
+			<input name="NotifyCaseAssignmentCompleteRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="NotifyCaseAssignmentCompleteResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="CancelFiling">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/FilingReviewMDEPort/CancelFilingRequest"/>
+			<input name="CancelFilingRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="CancelFilingResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetFilingService">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/FilingReviewMDEPort/GetFilingServiceRequest"/>
+			<input name="GetFilingServiceRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetFilingServiceResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="SecureCase">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/FilingReviewMDEPort/SecureCaseRequest"/>
+			<input name="SecureCaseRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="SecureCaseResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetServiceTypes">
+			<soap:operation soapAction="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0/FilingReviewMDEPort/GetServiceTypesRequest"/>
+			<input name="GetServiceTypesRequest">
+				<soap:body use="literal"/>
+			</input>
+			<output name="GetServiceTypesResponse">
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<wsp:UsingPolicy wsdl:required="true"/>
+	<wsp:Policy wsu:Id="MyPolicy">
+		<wsp:ExactlyOne>
+			<wsp:All>
+				<wsoma:OptimizedMimeSerialization xmlns:wsoma="http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization"/>
+				<sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:TransportToken>
+							<wsp:Policy>
+								<sp:HttpsToken RequireClientCertificate="false"/>
+							</wsp:Policy>
+						</sp:TransportToken>
+						<sp:AlgorithmSuite>
+							<wsp:Policy>
+								<sp:Basic256/>
+							</wsp:Policy>
+						</sp:AlgorithmSuite>
+						<sp:Layout>
+							<wsp:Policy>
+								<sp:Lax/>
+							</wsp:Policy>
+						</sp:Layout>
+						<sp:IncludeTimestamp/>
+					</wsp:Policy>
+				</sp:TransportBinding>
+				<sp:EndorsingSupportingTokens xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:X509Token sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+							<wsp:Policy>
+								<sp:WssX509V3Token10/>
+							</wsp:Policy>
+						</sp:X509Token>
+					</wsp:Policy>
+				</sp:EndorsingSupportingTokens>
+				<sp:Wss10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:MustSupportRefKeyIdentifier/>
+						<sp:MustSupportRefIssuerSerial/>
+					</wsp:Policy>
+				</sp:Wss10>
+			</wsp:All>
+		</wsp:ExactlyOne>
+	</wsp:Policy>
+	<!-- request messages -->
+	<!-- response messages -->
+	<!-- ports -->
+	<!-- bindings -->
+	<!-- services not defined here...defined in an implementation-specific WSDL that imports this one -->
+</definitions>
