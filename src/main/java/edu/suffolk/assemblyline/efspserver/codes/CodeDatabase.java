@@ -1,4 +1,4 @@
-package edu.suffolk.assemblyline.efspserver;
+package edu.suffolk.assemblyline.efspserver.codes;
 
 import java.io.InputStream;
 import java.sql.Connection;
@@ -33,6 +33,7 @@ public class CodeDatabase {
 
   private Connection conn;
 
+  // TODO(brycew): make a factory for this, make the connection automatically
   public CodeDatabase() {
     this(System.getenv("POSTGRES_URL"), System.getenv("POSTGRES_PORT"),
         System.getenv("POSTGRES_CODES_DB"));
@@ -138,6 +139,24 @@ public class CodeDatabase {
     while (rs.next()) {
       cats.add(new CaseCategory(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
           rs.getString(5), rs.getString(6)));
+    }
+    return cats;
+  }
+  
+  public List<CaseType> getCaseTypesFor(String courtLocationId, String caseCategory) throws SQLException {
+    if (conn == null) {
+      throw new SQLException();
+    }
+    
+    String query = CodeTableConstants.getCaseTypesFor();
+    PreparedStatement st = conn.prepareStatement(query);
+    st.setString(1, courtLocationId);
+    st.setString(2,  caseCategory);
+    ResultSet rs = st.executeQuery();
+    List<CaseType> cats = new ArrayList<CaseType>();
+    while (rs.next()) {
+      cats.add(new CaseType(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
+          rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8)));
     }
     return cats;
   }

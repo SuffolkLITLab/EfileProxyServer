@@ -47,8 +47,6 @@ public class UserService {
       return Response.ok(authRes.getPasswordHash()).build();
     }
   }
-  
-  
 
   final void init() {
     URL userWsdlUrl = EfmUserService.WSDL_LOCATION;

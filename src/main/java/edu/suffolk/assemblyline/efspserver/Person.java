@@ -33,8 +33,31 @@ public class Person {
 
   private String id;
   
-  Person() {
-    this.id = UUID.randomUUID().toString();
+  /** Minimal constructor, empty lists and empty optionals. */
+  public Person(Name name, String email, boolean isOrg) {
+    this(name, Optional.empty(), List.of(), email, 
+        Optional.empty(), Optional.empty(), Optional.empty(), isOrg);
+  }
+  
+  /** Default constructor. */
+  public Person(Name name,
+      Optional<Address> address, 
+      List<String> phoneNumbers,
+      String email, 
+      Optional<String> gender,
+      Optional<String> language,
+      Optional<LocalDate> birthdate,
+      boolean isOrg) {
+    this.address = address;
+    this.name = name;
+    this.phoneNumbers = phoneNumbers;
+    this.email = email;
+    this.gender = gender;
+    this.language = language;
+    this.birthdate = birthdate;
+    this.isOrg = isOrg;
+    
+    this.id = "id-" + UUID.randomUUID().toString();
   }
 
   public Name getName() {
@@ -107,7 +130,8 @@ public class Person {
     });
 
     language.ifPresent((lang) -> {
-      final gov.niem.niem.iso_639_3._2.ObjectFactory lctOf = new gov.niem.niem.iso_639_3._2.ObjectFactory();
+      final gov.niem.niem.iso_639_3._2.ObjectFactory lctOf =
+          new gov.niem.niem.iso_639_3._2.ObjectFactory();
       LanguageCodeType lct = lctOf.createLanguageCodeType();
       lct.setValue(lang);
       PersonLanguageType plt = of.createPersonLanguageType();

@@ -1,4 +1,4 @@
-package edu.suffolk.assemblyline.efspserver;
+package edu.suffolk.assemblyline.efspserver.codes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -418,6 +418,12 @@ public class CodeTableConstants {
         + "FROM casecategory WHERE location=?";
   }
   
+  public static String getCaseTypesFor() {
+    return "SELECT code, name, casecategory, initial,"
+        + "fee, willfileddate, efspcode, location"
+        + "FROM casetype WHERE location=? AND casecategory=?";
+  }
+  
   /** Gets all columns from datafield table
    * Need to provide the location (1) and the code (2) of the field.
    * For example, 'adams' and 'FilingEventCaseParties'
@@ -425,7 +431,7 @@ public class CodeTableConstants {
    * @return the String to make a SQL PreparedStatement from
    */
   public static String getAllFromDataFieldForLoc() {
-    return "SELECT code, name, isvisible, helptext, ghosttext, contextualhelpdata, "
+    return "SELECT code, name, isvisible, isrequired, helptext, ghosttext, contextualhelpdata, "
         + "validationmessage, regularexpression, defaultvalueexpression, isreadonly, location "
         + "FROM datafield WHERE location=? AND code=?";
   }

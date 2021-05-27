@@ -1,4 +1,4 @@
-package edu.suffolk.assemblyline.efspserver;
+package edu.suffolk.assemblyline.efspserver.codes;
 
 public class CaseCategory {
   public int code;

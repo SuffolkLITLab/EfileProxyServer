@@ -1,18 +1,18 @@
-package edu.suffolk.assemblyline.efspserver;
+package edu.suffolk.assemblyline.efspserver.codes;
 
 public class DataFieldRow {
-  String code;
-  String name;
-  boolean isvisible;
-  boolean isrequired;
-  String helptext;
-  String ghosttext;
-  String contextualhelpdata;
-  String validationmessage;
-  String regularexpression;
-  String defaultvalueexpression;
-  String isreadonly;
-  String location;
+  public String code;
+  public String name;
+  public boolean isvisible;
+  public boolean isrequired;
+  public String helptext;
+  public String ghosttext;
+  public String contextualhelpdata;
+  public String validationmessage;
+  public String regularexpression;
+  public String defaultvalueexpression;
+  public String isreadonly;
+  public String location;
   
   /** Constructor directly from Database. */
   public DataFieldRow(String code, String name, String isvisible, String isrequired, 

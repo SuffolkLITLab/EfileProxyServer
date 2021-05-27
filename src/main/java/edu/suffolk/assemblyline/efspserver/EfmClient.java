@@ -1,13 +1,13 @@
 package edu.suffolk.assemblyline.efspserver;
 
-import gov.niem.niem.iso_4217._2.CurrencyCodeSimpleType;
-import gov.niem.niem.niem_core._2.AmountType;
+import com.google.gson.Gson;
+import edu.suffolk.assemblyline.efspserver.codes.CaseCategory;
+import edu.suffolk.assemblyline.efspserver.codes.CodeDatabase;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.TextType;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -17,28 +17,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.CivilCaseType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.CoreFilingMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.feescalculationquerymessage_4.FeesCalculationQueryMessageType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.feescalculationresponsemessage_4.FeesCalculationResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.FilingListQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistresponsemessage_4.FilingListResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistresponsemessage_4.MatchingFilingType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.FilingStatusQueryMessageType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusresponsemessage_4.FilingStatusResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.messagereceiptmessage_4.MessageReceiptMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.PaymentMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ReviewFilingRequestMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingReviewMDEPort;
 import org.apache.cxf.headers.Header;
-import tyler.ecf.extensions.common.FilingAssociationType;
+import tyler.ecf.extensions.cancelfilingmessage.CancelFilingMessageType;
+import tyler.ecf.extensions.cancelfilingresponsemessage.CancelFilingResponseMessageType;
+import tyler.ecf.extensions.common.FilingTypeType;
+import tyler.ecf.extensions.filingdetailquerymessage.FilingDetailQueryMessageType;
+import tyler.ecf.extensions.filingdetailresponsemessage.FilingDetailResponseMessageType;
 import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.EfmUserService;
 import tyler.efm.services.IEfmFirmService;
@@ -69,8 +75,6 @@ import tyler.efm.services.schema.detachservicecontactrequest.DetachServiceContac
 import tyler.efm.services.schema.getattorneyrequest.GetAttorneyRequestType;
 import tyler.efm.services.schema.getattorneyresponse.GetAttorneyResponseType;
 import tyler.efm.services.schema.getfirmresponse.GetFirmResponseType;
-import tyler.efm.services.schema.getpaymentaccountrequest.GetPaymentAccountRequestType;
-import tyler.efm.services.schema.getpaymentaccountresponse.GetPaymentAccountResponseType;
 import tyler.efm.services.schema.getservicecontactrequest.GetServiceContactRequestType;
 import tyler.efm.services.schema.getservicecontactresponse.GetServiceContactResponseType;
 import tyler.efm.services.schema.getuserrequest.GetUserRequestType;
@@ -94,8 +98,6 @@ import tyler.efm.services.schema.updateattorneyrequest.UpdateAttorneyRequestType
 import tyler.efm.services.schema.updateattorneyresponse.UpdateAttorneyResponseType;
 import tyler.efm.services.schema.updatefirmrequest.UpdateFirmRequestType;
 import tyler.efm.services.schema.updatenotificationpreferencesrequest.UpdateNotificationPreferencesRequestType;
-import tyler.efm.services.schema.updatepaymentaccountrequest.UpdatePaymentAccountRequestType;
-import tyler.efm.services.schema.updatepaymentaccountresponse.UpdatePaymentAccountResponseType;
 import tyler.efm.services.schema.updateservicecontactrequest.UpdateServiceContactRequestType;
 import tyler.efm.services.schema.updateservicecontactresponse.UpdateServiceContactResponseType;
 import tyler.efm.services.schema.updateuserrequest.UpdateUserRequestType;
@@ -110,11 +112,17 @@ public final class EfmClient {
   private static final QName FIRM_SERVICE_NAME = new QName("urn:tyler:efm:services",
       "EfmFirmService");
 
+  /**
+   * One of the ways that you can communicate over ECF. For more information, see
+   * https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Toc425241629
+   */
+  private static final String MDE_PROFILE_CODE = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0";
+
   /** Returns true on errors from the Tyler / Admin side of the API. */
   public static boolean checkErrors(BaseResponseType resp) {
     if (!resp.getError().getErrorCode().equals("0")) {
-      System.err.println("Error!: " + resp.getError().getErrorCode() + ": " 
-          + resp.getError().getErrorText());
+      System.err.println(
+          "Error!: " + resp.getError().getErrorCode() + ": " + resp.getError().getErrorText());
       return true;
     }
     return false;
@@ -127,14 +135,14 @@ public final class EfmClient {
         if (error.getErrorCode().getValue().equals("0")) {
           continue;
         }
-        System.err.println("Errors!: " + error.getErrorCode().getValue() + ": " 
-            + error.getErrorText().getValue());
+        System.err.println(
+            "Errors!: " + error.getErrorCode().getValue() + ": " + error.getErrorText().getValue());
         return true;
       }
     }
     return false;
   }
-  
+
   public static void testFirmManagement(IEfmUserService userPort, IEfmFirmService firmPort)
       throws JAXBException {
     AuthenticateRequestType authReq = new AuthenticateRequestType();
@@ -148,10 +156,9 @@ public final class EfmClient {
     ((BindingProvider) userPort).getRequestContext().put(Header.HEADER_LIST, headersList);
 
     GetFirmResponseType firm = firmPort.getFirm();
-    System.out
-        .println("Firm info: " + firm.getFirm().getFirmID() + ", " + firm.getFirm().getFirmName()
-            + ", " + firm.getFirm().getPhoneNumber() + ", " 
-            + firm.getFirm().getAddress().getAddressLine1());
+    System.out.println("Firm info: " + firm.getFirm().getFirmID() + ", "
+        + firm.getFirm().getFirmName() + ", " + firm.getFirm().getPhoneNumber() + ", "
+        + firm.getFirm().getAddress().getAddressLine1());
     final String oldNumber = firm.getFirm().getPhoneNumber();
     firm.getFirm().setPhoneNumber("1234567890");
     UpdateFirmRequestType update = new UpdateFirmRequestType();
@@ -160,7 +167,7 @@ public final class EfmClient {
     firm = firmPort.getFirm();
     System.out.println("Firm's updated phone is: " + firm.getFirm().getPhoneNumber());
     // Change it back
-    firm.getFirm().setPhoneNumber(oldNumber); 
+    firm.getFirm().setPhoneNumber(oldNumber);
     update = new UpdateFirmRequestType();
     update.setFirm(firm.getFirm());
     firmPort.updateFirm(update);
@@ -359,7 +366,7 @@ public final class EfmClient {
     System.out.println(resetPasswordResp.getError().getErrorCode());
     System.out.println(resetPasswordResp.getError().getErrorText());
   }
-  
+
   public static void testAttorneyAndServiceManagement(IEfmFirmService port, boolean remove) {
     AttorneyType newAtt = new AttorneyType();
     newAtt.setFirstName("Valarie");
@@ -373,16 +380,17 @@ public final class EfmClient {
     if (checkErrors(resp)) {
       return;
     }
-    
+
     AttorneyListResponseType list = port.getAttorneyList();
     if (checkErrors(list)) {
       return;
     }
     for (AttorneyType att : list.getAttorney()) {
       System.err.println(att.getFirstName() + " " + att.getMiddleName() + " " + att.getLastName());
-      System.err.println(att.getFirmID() + ", " + att.getAttorneyID() + ", " + att.getBarNumber() + "\n");
+      System.err
+          .println(att.getFirmID() + ", " + att.getAttorneyID() + ", " + att.getBarNumber() + "\n");
     }
-    
+
     UpdateAttorneyRequestType updateAtt = new UpdateAttorneyRequestType();
     newAtt.setMiddleName("Lobert");
     newAtt.setAttorneyID(resp.getAttorneyID());
@@ -391,7 +399,7 @@ public final class EfmClient {
     if (checkErrors(updatedAtt)) {
       return;
     }
-    
+
     GetAttorneyRequestType attReq = new GetAttorneyRequestType();
     attReq.setAttorneyID(updatedAtt.getAttorneyID());
     GetAttorneyResponseType getResp = port.getAttorney(attReq);
@@ -400,8 +408,9 @@ public final class EfmClient {
     }
     AttorneyType att = getResp.getAttorney();
     System.err.println(att.getFirstName() + " " + att.getMiddleName() + " " + att.getLastName());
-    System.err.println(att.getFirmID() + ", " + att.getAttorneyID() + ", " + att.getBarNumber() + "\n");
-    
+    System.err
+        .println(att.getFirmID() + ", " + att.getAttorneyID() + ", " + att.getBarNumber() + "\n");
+
     if (remove) {
       RemoveAttorneyRequestType rart = new RemoveAttorneyRequestType();
       rart.setAttorneyID(getResp.getAttorney().getAttorneyID());
@@ -410,9 +419,10 @@ public final class EfmClient {
         return;
       }
     }
-    
+
     //////////// Service
-    // TODO(brycew): service contacts can only be at particular firms, so kinda useless?
+    // TODO(brycew): service contacts can only be at particular firms, so kinda
+    //////////// useless?
     tyler.efm.services.schema.common.ObjectFactory efmObjFac = new tyler.efm.services.schema.common.ObjectFactory();
     CreateServiceContactRequestType create = new CreateServiceContactRequestType();
     ServiceContactType contact = efmObjFac.createServiceContactType();
@@ -422,7 +432,7 @@ public final class EfmClient {
     contact.setEmail("bwilley@suffolk.edu");
     contact.setAdministrativeCopy("bryce.steven.willey@gmail.com");
     Address address = new Address("893 E Broadway", "", "Boston", "MA", "02127", "US");
-    contact.setAddress(address.getTylerAddress()); 
+    contact.setAddress(address.getTylerAddress());
     contact.setIsInFirmMasterList(efmObjFac.createServiceContactTypeIsInFirmMasterList(true));
     contact.setIsPublic(efmObjFac.createServiceContactTypeIsInFirmMasterList(true));
     create.setServiceContact(contact);
@@ -431,7 +441,7 @@ public final class EfmClient {
       return;
     }
     System.err.println("Service contact id: " + servResp.getServiceContactID());
-    
+
     ServiceContactListResponseType listResp = port.getServiceContactList();
     if (checkErrors(listResp)) {
       return;
@@ -440,8 +450,8 @@ public final class EfmClient {
       System.err.println("Service contacts are empty");
     }
     for (ServiceContactType c : listResp.getServiceContact()) {
-      System.err.println("List: " + c.getServiceContactID() + ", "
-          + c.getFirstName() + " " + c.getMiddleName() + " " + c.getLastName());
+      System.err.println("List: " + c.getServiceContactID() + ", " + c.getFirstName() + " "
+          + c.getMiddleName() + " " + c.getLastName());
     }
     contact.setServiceContactID(servResp.getServiceContactID());
 
@@ -452,7 +462,7 @@ public final class EfmClient {
     if (checkErrors(updateResp)) {
       return;
     }
-    
+
     GetServiceContactRequestType getReq = new GetServiceContactRequestType();
     getReq.setServiceContactID(servResp.getServiceContactID());
     GetServiceContactResponseType getServResp = port.getServiceContact(getReq);
@@ -460,10 +470,9 @@ public final class EfmClient {
       return;
     }
     contact = getServResp.getServiceContact();
-    System.err.println("GetResp: " + contact.getFirstName()+ " " + contact.getMiddleName() + " " +
-        contact.getLastName());
+    System.err.println("GetResp: " + contact.getFirstName() + " " + contact.getMiddleName() + " "
+        + contact.getLastName());
 
-    
     String preSetupCaseId = "f3d9b420-18e1-4e70-ac39-3270928bc29c";
     AttachServiceContactRequestType attachServ = new AttachServiceContactRequestType();
     attachServ.setCaseID(preSetupCaseId);
@@ -473,7 +482,7 @@ public final class EfmClient {
     if (checkErrors(attachBase)) {
       System.exit(-1);
     }
-    
+
     DetachServiceContactRequestType detachServ = new DetachServiceContactRequestType();
     detachServ.setCaseID(preSetupCaseId);
     detachServ.setServiceContactID(getServResp.getServiceContact().getServiceContactID());
@@ -484,12 +493,12 @@ public final class EfmClient {
 
     RemoveServiceContactRequestType rmReq = new RemoveServiceContactRequestType();
     rmReq.setServiceContactID(contact.getServiceContactID());
-    
+
     BaseResponseType base = port.removeServiceContact(rmReq);
     if (checkErrors(base)) {
       return;
     }
-    
+
     listResp = port.getServiceContactList();
     if (checkErrors(listResp)) {
       return;
@@ -498,11 +507,11 @@ public final class EfmClient {
       System.err.println("Service contacts are empty");
     }
     for (ServiceContactType c : listResp.getServiceContact()) {
-      System.err.println("List: " + c.getServiceContactID() + ", "
-          + c.getFirstName() + " " + c.getMiddleName() + " " + c.getLastName());
+      System.err.println("List: " + c.getServiceContactID() + ", " + c.getFirstName() + " "
+          + c.getMiddleName() + " " + c.getLastName());
     }
   }
-  
+
   public static void paymentAccounts(IEfmFirmService port, boolean global) {
     // Remove all
     if (global) {
@@ -528,42 +537,42 @@ public final class EfmClient {
         }
       }
     }
-    
+
     PaymentAccountTypeListResponseType listResp = port.getPaymentAccountTypeList();
     if (listResp.getPaymentAccountType().size() == 0) {
       System.err.println("No payment account types available?");
       return;
     }
     for (PaymentAccountTypeType accountType : listResp.getPaymentAccountType()) {
-      System.err.println("New Account: " + accountType.getCode() + ", " 
-          + accountType.getDescription());
-      tyler.efm.services.schema.common.ObjectFactory efmObjFac =
-          new tyler.efm.services.schema.common.ObjectFactory();
-      if (accountType.getCode().equals("WV")) {
+      System.err
+          .println("New Account: " + accountType.getCode() + ", " + accountType.getDescription());
+      tyler.efm.services.schema.common.ObjectFactory efmObjFac = new tyler.efm.services.schema.common.ObjectFactory();
+      if (!accountType.getCode().equals("WV")) {
         continue;
       }
       PaymentAccountType newAccount = efmObjFac.createPaymentAccountType();
       newAccount.setPaymentAccountTypeCode(accountType.getCode());
       newAccount.setAccountName("Waiver Account");
       newAccount.setAccountToken("mywaiveridentifier");
-      // TODO(brycew): on 122 for creation, look at all Account Tokens and don't choose them again
+      // TODO(brycew): on 122 for creation, look at all Account Tokens and don't
+      // choose them again
       if (accountType.getCode().equals("CC")) {
         newAccount.setAccountToken("myccaccounttoken");
-        newAccount.setCardType(efmObjFac.createPaymentAccountTypeCardType("MASTERCARD")); 
-        newAccount.setCardLast4("1234"); 
-        newAccount.setCardMonth(efmObjFac.createPaymentAccountTypeCardMonth(1)); 
-        newAccount.setCardYear(efmObjFac.createPaymentAccountTypeCardYear(2025)); 
+        newAccount.setCardType(efmObjFac.createPaymentAccountTypeCardType("MASTERCARD"));
+        newAccount.setCardLast4("1234");
+        newAccount.setCardMonth(efmObjFac.createPaymentAccountTypeCardMonth(1));
+        newAccount.setCardYear(efmObjFac.createPaymentAccountTypeCardYear(2025));
         newAccount.setCardHolderName(efmObjFac.createPaymentAccountTypeCardHolderName("Bob Bobby"));
       } else if (accountType.getCode().equals("BankAccount")) {
         newAccount.setAccountName("My Bank Payment Account");
         newAccount.setAccountToken("mybank_identifier");
-        newAccount.setCardType(efmObjFac.createPaymentAccountTypeCardType("Checking")); 
-        newAccount.setCardLast4("1235"); 
-        newAccount.setCardMonth(efmObjFac.createPaymentAccountTypeCardMonth(0)); 
-        newAccount.setCardYear(efmObjFac.createPaymentAccountTypeCardYear(0)); 
+        newAccount.setCardType(efmObjFac.createPaymentAccountTypeCardType("Checking"));
+        newAccount.setCardLast4("1235");
+        newAccount.setCardMonth(efmObjFac.createPaymentAccountTypeCardMonth(0));
+        newAccount.setCardYear(efmObjFac.createPaymentAccountTypeCardYear(0));
         newAccount.setCardHolderName(efmObjFac.createPaymentAccountTypeCardHolderName("Bob Bobby"));
       }
-      
+
       if (global) {
         newAccount.setAccountToken(newAccount.getAccountToken() + "global");
       }
@@ -593,79 +602,123 @@ public final class EfmClient {
 
       System.err.println("Created payment account: " + createResp.getPaymentAccountID() + ", "
           + "token: " + newAccount.getAccountToken());
-      
-      UpdatePaymentAccountRequestType updateReq = new UpdatePaymentAccountRequestType();
-      newAccount.setActive(efmObjFac.createPaymentAccountTypeActive(false));
-      newAccount.setPaymentAccountID(createResp.getPaymentAccountID());
-      updateReq.setPaymentAccount(newAccount);
-      UpdatePaymentAccountResponseType updateResp;
-      if (global) {
-        updateResp = port.updateGlobalPaymentAccount(updateReq);
-      } else {
-        updateResp = port.updatePaymentAccount(updateReq);
-      }
-      if (checkErrors(updateResp)) {
-        return;
-      }
-      
-      GetPaymentAccountRequestType getReq = new GetPaymentAccountRequestType();
-      getReq.setPaymentAccountID(createResp.getPaymentAccountID());
-      GetPaymentAccountResponseType getResp; 
-      if (global) {
-        getResp = port.getGlobalPaymentAccount(getReq);
-      } else {
-        getResp = port.getPaymentAccount(getReq);
-      }
-      if (checkErrors(getResp)) {
-        return;
-      }
-      System.err.println("Account: " + getResp.getPaymentAccount().getAccountName() + ", " 
-          + getResp.getPaymentAccount().getActive().getValue() + ", " 
-          + getResp.getPaymentAccount().getPaymentAccountTypeCode());
-      
-      RemovePaymentAccountRequestType rmReq = new RemovePaymentAccountRequestType();
-      rmReq.setPaymentAccountID(createResp.getPaymentAccountID());
-      BaseResponseType baseResp; 
-      if (global) {
-        baseResp = port.removeGlobalPaymentAccount(rmReq);
-      } else {
-        baseResp = port.removePaymentAccount(rmReq);
-      }
-      if (checkErrors(baseResp)) {
-        return;
-      }
+
+      return;
+      /*
+       * UpdatePaymentAccountRequestType updateReq = new
+       * UpdatePaymentAccountRequestType();
+       * newAccount.setActive(efmObjFac.createPaymentAccountTypeActive(false));
+       * newAccount.setPaymentAccountID(createResp.getPaymentAccountID());
+       * updateReq.setPaymentAccount(newAccount); UpdatePaymentAccountResponseType
+       * updateResp; if (global) { updateResp =
+       * port.updateGlobalPaymentAccount(updateReq); } else { updateResp =
+       * port.updatePaymentAccount(updateReq); } if (checkErrors(updateResp)) {
+       * return; }
+       * 
+       * GetPaymentAccountRequestType getReq = new GetPaymentAccountRequestType();
+       * getReq.setPaymentAccountID(createResp.getPaymentAccountID());
+       * GetPaymentAccountResponseType getResp; if (global) { getResp =
+       * port.getGlobalPaymentAccount(getReq); } else { getResp =
+       * port.getPaymentAccount(getReq); } if (checkErrors(getResp)) { return; }
+       * System.err.println("Account: " + getResp.getPaymentAccount().getAccountName()
+       * + ", " + getResp.getPaymentAccount().getActive().getValue() + ", " +
+       * getResp.getPaymentAccount().getPaymentAccountTypeCode());
+       * 
+       * RemovePaymentAccountRequestType rmReq = new
+       * RemovePaymentAccountRequestType();
+       * rmReq.setPaymentAccountID(createResp.getPaymentAccountID()); BaseResponseType
+       * baseResp; if (global) { baseResp = port.removeGlobalPaymentAccount(rmReq); }
+       * else { baseResp = port.removePaymentAccount(rmReq); } if
+       * (checkErrors(baseResp)) { return; }
+       */
     }
   }
-  
-  public static void testFilingService(FilingReviewMDEPort port) {
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory of =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory();
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory cof =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-    FilingListQueryMessageType m = of.createFilingListQueryMessageType();
+
+  public static void testFilingService(FilingReviewMDEPort port, String courtId) {
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory listObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory();
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory cof = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+    FilingListQueryMessageType m = listObjFac.createFilingListQueryMessageType();
     JAXBElement<PersonType> elem2 = cof.createEntityPerson(new PersonType());
     EntityType typ = new EntityType();
     typ.setEntityRepresentation(elem2);
-    m.setQuerySubmitter(typ); 
-    m.setDocumentSubmitter(null); //cof.createEntityPerson(null));
-    m.setCaseCourt(XmlHelper.convertCourtType("adams"));
+    m.setQuerySubmitter(typ);
+    m.setDocumentSubmitter(null); // cof.createEntityPerson(null));
+    m.setCaseCourt(XmlHelper.convertCourtType(courtId));
     m.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
-    m.setSendingMDEProfileCode(
-      "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0"
-    ); 
+    m.setSendingMDEProfileCode(MDE_PROFILE_CODE);
     FilingListResponseMessageType resp = port.getFilingList(m);
     if (checkErrors(resp)) {
       System.exit(-1);
     }
-    
+
+    System.out
+        .println("Filing List: " + objectToXmlString(resp, FilingListResponseMessageType.class));
+
+    String caseTrackingId = "";
+    String filingId = "";
     for (MatchingFilingType fil : resp.getMatchingFiling()) {
-      System.err.println(fil.getCaseTrackingID().getValue() + " // " + fil.getId() + " // "); 
+      System.err.println(fil.getCaseTrackingID().getValue() + " // " + fil.getId() + " // ");
+      caseTrackingId = fil.getCaseTrackingID().getValue();
+      filingId = fil.getDocumentIdentification().stream()
+          .filter((id) -> ((TextType) id.getIdentificationCategory().getValue()).getValue()
+              .equals("FILINGID"))
+          .map((id) -> id.getIdentificationID().getValue()).findFirst().orElse(filingId);
       if (fil.getFilingStatus() != null && fil.getFilingStatus().getStatusText() != null) {
-         System.err.println(fil.getFilingStatus().getStatusText().getValue());
+        System.err.println(fil.getFilingStatus().getStatusText().getValue());
       }
-      
     }
-    
+    if (caseTrackingId.isBlank() || filingId.isBlank()) {
+      return;
+    }
+
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory statusObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory();
+    FilingStatusQueryMessageType status = statusObjFac.createFilingStatusQueryMessageType();
+    status.setCaseCourt(XmlHelper.convertCourtType(courtId));
+    // TODO(brycew): SendingMDELocationID is the running URL of the server
+    status.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
+    status.setSendingMDEProfileCode(MDE_PROFILE_CODE);
+    status.setDocumentIdentification(XmlHelper.convertId(filingId));
+    status.setQuerySubmitter(typ);
+    FilingStatusResponseMessageType statusResp = port.getFilingStatus(status);
+    if (checkErrors(statusResp)) {
+      System.exit(-1);
+    }
+
+    System.out.println(
+        "Filing Status: " + objectToXmlString(statusResp, FilingStatusResponseMessageType.class));
+    System.out.println(statusResp.getFilingStatus().getStatusDescriptionText().stream()
+        .map((n) -> n.getValue()).reduce((start, n) -> start + ", " + n));
+
+    tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory detailObjFac = new tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory();
+    FilingDetailQueryMessageType details = detailObjFac.createFilingDetailQueryMessageType();
+    details.setCaseCourt(XmlHelper.convertCourtType(courtId));
+    details.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
+    details.setSendingMDEProfileCode(MDE_PROFILE_CODE);
+    details.setDocumentIdentification(XmlHelper.convertId(filingId));
+    details.setQuerySubmitter(typ);
+    FilingDetailResponseMessageType detailsResp = port.getFilingDetails(details);
+    if (checkErrors(detailsResp)) {
+      System.exit(-1);
+    }
+
+    System.out.println(
+        "Filing Details: " + objectToXmlString(detailsResp, FilingDetailResponseMessageType.class));
+    System.out.println(detailsResp.getFilingStatus().getStatusDescriptionText().stream()
+        .map((n) -> n.getValue()).reduce((start, n) -> start + ", " + n));
+
+    tyler.ecf.extensions.cancelfilingmessage.ObjectFactory cancelObjFac = new tyler.ecf.extensions.cancelfilingmessage.ObjectFactory();
+    CancelFilingMessageType cancel = cancelObjFac.createCancelFilingMessageType();
+    cancel.setCaseCourt(XmlHelper.convertCourtType(courtId));
+    cancel.setDocumentIdentification(XmlHelper.convertId(filingId));
+    cancel.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
+    cancel.setSendingMDEProfileCode(MDE_PROFILE_CODE);
+    cancel.setQuerySubmitter(typ);
+    CancelFilingResponseMessageType cancelResp = port.cancelFiling(cancel);
+    if (checkErrors(cancelResp)) {
+      System.exit(-1);
+    }
+
+    System.err.println(cancelResp.getFilingStatus().getStatusText().getValue());
   }
 
   public static IEfmUserService makeUserService(URL userWsdlUrl) {
@@ -681,7 +734,7 @@ public final class EfmClient {
     ctx.put("security.signature.username", "1");
     return port;
   }
-  
+
   public static IEfmFirmService makeFirmService(URL firmWsdlUrl) {
     return makeFirmService(firmWsdlUrl, List.of());
   }
@@ -703,12 +756,12 @@ public final class EfmClient {
   public static FilingReviewMDEPort makeFilingService(URL filingURL, List<Header> headersList) {
     // https://stackoverflow.com/a/18923391/11416267
     // makes it much faster, but fucks up the WSDL security
-    FilingReviewMDEService filingService = new FilingReviewMDEService(
-        FilingReviewMDEService.WSDL_LOCATION, FilingReviewMDEService.SERVICE);
+    FilingReviewMDEService filingService = new FilingReviewMDEService(filingURL,
+        FilingReviewMDEService.SERVICE);
     FilingReviewMDEPort filingPort = filingService.getFilingReviewMDEPort();
     BindingProvider bp = (BindingProvider) filingPort;
     Map<String, Object> ctx = bp.getRequestContext();
-    System.out.println(filingURL.toExternalForm());
+    // System.out.println(filingURL.toExternalForm());
     ctx.put(Header.HEADER_LIST, headersList);
     // ctx.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
     // "https://illinois-stage.tylerhost.net/efm/FilingReviewMDEPort.svc");
@@ -721,95 +774,55 @@ public final class EfmClient {
     return filingPort;
   }
 
-  public static String objectToXmlString(Object toXml) throws JAXBException {
-    JAXBContext context = JAXBContext.newInstance(GetUserRequestType.class);
-    Marshaller marshaller = context.createMarshaller();
-    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-    StringWriter sw = new StringWriter();
-    marshaller.marshal(toXml, sw);
-    return sw.toString();
+  /**
+   * Converts any XML annotated object (from CXF) to a string. Useful for
+   * debugging.
+   *
+   * @param  <T>   the type of object being passed in
+   * @param  toXml The object to do things with
+   * @return       the XML string to do what you want with
+   */
+  public static <T> String objectToXmlString(T toXml, Class<T> toXmlClazz) {
+    try {
+      JAXBContext jaxContext = JAXBContext.newInstance(toXmlClazz,
+          gov.niem.niem.niem_core._2.ObjectFactory.class,
+          gov.niem.niem.structures._2.ObjectFactory.class,
+          oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
+          oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class);
+      Marshaller mar = jaxContext.createMarshaller();
+      mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+      QName qname = new QName("tyler.test.objectToXml", "objectToXml");
+      JAXBElement<T> wrappedRoot = new JAXBElement<T>(qname, toXmlClazz, toXml);
+      StringWriter sw = new StringWriter();
+      mar.marshal(wrappedRoot, sw);
+      return sw.toString();
+    } catch (JAXBException ex) {
+      return ex.toString();
+    }
   }
 
   // TODO(brycew): figure out how to pass in person information
   // TODO(brycew): not handling attorneys, only SRLs right now
-  public static CoreFilingMessageType makeCivilCase(CodeDatabase cd,
-      String courtLocationId,
-      List<Person> plaintiffs, List<Person> defendants, 
-      String caseCategoryCode, String caseSubtype, 
-      List<Filing> filings)
-      throws SQLException, IOException {
-    gov.niem.niem.niem_core._2.ObjectFactory of = new gov.niem.niem.niem_core._2.ObjectFactory();
-    gov.niem.niem.structures._2.ObjectFactory structOf = new gov.niem.niem.structures._2.ObjectFactory();
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory ecfCivilObjFac = 
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory();
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfCommonObjFac = 
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-    gov.niem.niem.domains.jxdm._4.ObjectFactory jof = new gov.niem.niem.domains.jxdm._4.ObjectFactory();
-    tyler.ecf.extensions.common.ObjectFactory tylerObjFac = new tyler.ecf.extensions.common.ObjectFactory();
-    gov.niem.niem.domains.jxdm._4.CaseAugmentationType caseAug = jof.createCaseAugmentationType();
-    caseAug.setCaseCourt(XmlHelper.convertCourtType(courtLocationId));
+  public static Optional<CoreFilingMessageType> makeCivilCase(CodeDatabase cd,
+      String courtLocationId, List<Person> plaintiffs, List<Person> defendants,
+      CaseCategory caseCategoryCode, String caseType, String caseSubtype, List<Filing> filings,
+      String paymentId, String queryType) throws SQLException, IOException {
+    EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
 
-    AmountType amount = new AmountType();
-    amount.setValue(new BigDecimal(500));
-    amount.setCurrencyCode(CurrencyCodeSimpleType.USD);
-    tyler.ecf.extensions.common.CaseAugmentationType ecfAug = tylerObjFac.createCaseAugmentationType();
-
-    List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocationId, caseCategoryCode);
-
-    for (Person plaintiff : plaintiffs) {
-      CaseParticipantType cp = plaintiff.getEcfCaseParticipant();
-      TextType tt = of.createTextType();
-      partyTypes.stream()
-          .filter((pt) -> pt.partyTypeName.toLowerCase().contains("plaintiff"))
-          .findFirst()
-          .ifPresent((pt) -> tt.setValue(pt.partyTypeCode));
-      cp.setCaseParticipantRoleCode(tt);
-      ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
+    Optional<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>> assembledCase = ecfCaseFactory
+        .makeCaseTypeFromTylerCategory(courtLocationId, caseCategoryCode, caseType, caseSubtype,
+            plaintiffs, defendants,
+            filings.stream().map((f) -> f.getId()).collect(Collectors.toList()), paymentId, queryType,
+            new Gson());
+    if (assembledCase.isEmpty()) {
+      return Optional.empty();
     }
-
-    for (Person defendant : defendants) {
-      CaseParticipantType cp = defendant.getEcfCaseParticipant();
-      TextType tt = of.createTextType();
-      partyTypes.stream()
-          .filter((pt) -> pt.partyTypeName.toLowerCase().contains("defendant"))
-          .findFirst()
-          .ifPresent((pt) -> tt.setValue(pt.partyTypeCode));
-      cp.setCaseParticipantRoleCode(tt);
-      ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
-    }
-    
-    // TODO(brycew): FilerType and DamageAmount and ProcedureRemedy are all 
-    // empty tables, so can't tell what they might be
-
-    Optional<DataFieldRow> filingcaseparties = cd.getDataField(courtLocationId, "FilingEventCaseParties");
-    boolean needToAssociateFilings = filingcaseparties.isPresent() && filingcaseparties.get().isrequired;
-    if (needToAssociateFilings) {
-      for (Filing filing : filings) {
-        FilingAssociationType fat = tylerObjFac.createFilingAssociationType();
-        gov.niem.niem.structures._2.ReferenceType rt = structOf.createReferenceType(); 
-        rt.setId(filing.getId());
-        fat.setPartyReference(rt);
-        ecfAug.getFilingAssociation().add(fat); 
-      }
-    }
-
-    CivilCaseType c = ecfCivilObjFac.createCivilCaseType();
-    c.setCaseCategoryText(XmlHelper.convertText(caseCategoryCode)); 
-    gov.niem.niem.proxy.xsd._2.Boolean falseVal = new gov.niem.niem.proxy.xsd._2.Boolean();
-    falseVal.setValue(false);
-    c.getRest().add(tylerObjFac.createAttachServiceContactIndicator(falseVal));
-    c.getRest().add(ecfCommonObjFac.createCaseAugmentation(ecfAug));
-    c.getRest().add(jof.createCaseAugmentation(caseAug));
-    JAXBElement<TextType> causeOfAction = ecfCommonObjFac.createCauseOfActionCode(new TextType());
-    c.getRest().add(causeOfAction);
-    c.getRest().add(ecfCivilObjFac.createAmountInControversy(amount));
-    c.getRest().add(ecfCivilObjFac.createClassActionIndicator(falseVal));
-    JAXBElement<TextType> relief = ecfCivilObjFac.createReliefTypeCode(new TextType());
-    c.getRest().add(relief);
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory ecfCfmObjFac =
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory ecfCfmObjFac = 
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory();
     CoreFilingMessageType cfm = ecfCfmObjFac.createCoreFilingMessageType();
-    cfm.setCase(ecfCivilObjFac.createCivilCase(c));
+    cfm.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
+    cfm.setSendingMDEProfileCode(MDE_PROFILE_CODE);
+    cfm.setCase(assembledCase.get());
     int seqNum = 0;
     for (Filing filing : filings) {
       if (filing.isLead()) {
@@ -819,56 +832,65 @@ public final class EfmClient {
       }
       seqNum += 1;
     }
-    return cfm; //ecfCivilObjFac.createCivilCase(c);
+    return Optional.of(cfm);
   }
-  
+
   public static void checkFees(FilingReviewMDEPort filingPort, CodeDatabase cd,
       String courtLocationId, List<Person> plaintiffs, List<Person> defendants,
-      String caseCategoryCode, String caseSubtype, List<Filing> filings) throws SQLException, IOException {
-    CoreFilingMessageType cfm = 
-        makeCivilCase(cd, courtLocationId, plaintiffs, defendants, caseCategoryCode, caseSubtype, filings);
-    
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.feescalculationquerymessage_4.ObjectFactory of =
+      CaseCategory caseCategoryCode, String caseType, String caseSubtype, List<Filing> filings,
+      String paymentId) throws SQLException, IOException {
+
+    Optional<CoreFilingMessageType> cfm = makeCivilCase(cd, courtLocationId, plaintiffs, defendants,
+        caseCategoryCode, caseType, caseSubtype, filings, paymentId, "fees");
+
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.feescalculationquerymessage_4.ObjectFactory of = 
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.feescalculationquerymessage_4.ObjectFactory();
     FeesCalculationQueryMessageType feesQuery = of.createFeesCalculationQueryMessageType();
+    EntityType typ = new EntityType();
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory cof = 
+        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+    JAXBElement<PersonType> elem2 = cof.createEntityPerson(new PersonType());
+    typ.setEntityRepresentation(elem2);
+    feesQuery.setQuerySubmitter(typ);
+
     feesQuery.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
-    feesQuery.setSendingMDEProfileCode(
-      "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0"
-    ); 
-    feesQuery.setCoreFilingMessage(cfm);
-    filingPort.getFeesCalculation(feesQuery);
-  }
-    
-  public static void sendFiling(FilingReviewMDEPort filingPort, CodeDatabase cd,
-      String courtLocationId,
-      List<Person> plaintiffs, List<Person> defendants, 
-      String caseCategoryCode, String caseSubtype, 
-      List<Filing> filings)
-      throws SQLException, IOException {
-    CoreFilingMessageType cfm = 
-        makeCivilCase(cd, courtLocationId, plaintiffs, defendants, caseCategoryCode, caseSubtype, filings);
-    oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory wsOf = 
-        new
-        oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory();
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.ObjectFactory ecfPaymentObjFac =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.ObjectFactory();
-    PaymentMessageType pmt = ecfPaymentObjFac.createPaymentMessageType();
-    // TODO(brycew): put the filing charges on this page
-    //pmt.getAllowanceCharge().add();
-    ReviewFilingRequestMessageType rfrm = wsOf.createReviewFilingRequestMessageType();
-    rfrm.setCoreFilingMessage(cfm);
-    rfrm.setPaymentMessage(pmt);
-    
-    MessageReceiptMessageType mrmt = filingPort.reviewFiling(rfrm);
-    if (mrmt.getError().size() > 0) {
-      System.err.println("Got errors on review filing");
-      for (ErrorType err : mrmt.getError()) {
-        System.err.println(err.getErrorCode() + ", " + err.getErrorText());
-      }
+    feesQuery.setSendingMDEProfileCode(MDE_PROFILE_CODE);
+    feesQuery.setCoreFilingMessage(cfm.get());
+    System.err.println(objectToXmlString(feesQuery, FeesCalculationQueryMessageType.class));
+    System.err.println();
+    FeesCalculationResponseMessageType fees = filingPort.getFeesCalculation(feesQuery);
+    System.err.println(objectToXmlString(fees, FeesCalculationResponseMessageType.class));
+    System.err.println("Fees: " + fees.getFeesCalculationAmount().getCurrencyText() + " "
+        + fees.getFeesCalculationAmount().getValue());
+    if (checkErrors(fees)) {
+      return;
     }
   }
 
-  public static void main(String[] args) throws JAXBException {
+  public static void sendFiling(FilingReviewMDEPort filingPort, CodeDatabase cd,
+      String courtLocationId, List<Person> plaintiffs, List<Person> defendants,
+      CaseCategory caseCategoryCode, String caseType, String caseSubtype, List<Filing> filings,
+      String paymentId) throws SQLException, IOException {
+    Optional<CoreFilingMessageType> cfm = makeCivilCase(cd, courtLocationId, plaintiffs, defendants,
+        caseCategoryCode, caseType, caseSubtype, filings, paymentId, "review");
+    oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory wsOf = 
+        new oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory();
+    PaymentFactory pf = new PaymentFactory();
+    PaymentMessageType pmt = pf.makePaymentMessage(paymentId); 
+    ReviewFilingRequestMessageType rfrm = wsOf.createReviewFilingRequestMessageType();
+    rfrm.setCoreFilingMessage(cfm.get());
+    rfrm.setPaymentMessage(pmt);
+
+    MessageReceiptMessageType mrmt = filingPort.reviewFiling(rfrm);
+    if (mrmt.getError().size() > 0) {
+      for (ErrorType err : mrmt.getError()) {
+        System.err.println(err.getErrorCode().getValue() + ", " + err.getErrorText().getValue());
+      }
+    }
+    System.err.println(objectToXmlString(mrmt, MessageReceiptMessageType.class));
+  }
+
+  public static void main(String[] args) throws JAXBException, SQLException, IOException {
     URL userWsdlUrl = EfmUserService.WSDL_LOCATION;
     URL firmWsdlUrl = EfmFirmService.WSDL_LOCATION;
     if (args.length > 0 && args[0] != null && !"".equals(args[0])) {
@@ -892,7 +914,7 @@ public final class EfmClient {
       }
     }
     IEfmUserService userPort = makeUserService(userWsdlUrl);
-    //testUserActionManagement(userPort, "bwilley@suffolk.edu");
+    // testUserActionManagement(userPort, "bwilley@suffolk.edu");
     AuthenticateRequestType authReq = new AuthenticateRequestType();
     authReq.setEmail("bwilley@suffolk.edu");
     authReq.setPassword(System.getenv("BRYCE_USER_PASSWORD"));
@@ -900,36 +922,75 @@ public final class EfmClient {
     System.out.println("Auth'd?: " + authRes.getError().getErrorText());
     List<Header> headersList = TylerUserNamePassword.makeHeaderList(authRes);
     IEfmFirmService firmPort = makeFirmService(firmWsdlUrl, headersList);
-    //EfmClient.testFirmManagement(userPort, firmPort);
-    EfmClient.testAttorneyAndServiceManagement(firmPort, true);
-    //System.err.println("------------- GLOBAL -------------");
-    //EfmClient.paymentAccounts(firmPort, true);
-    //System.err.println("------------- FIRM -------------");
-    //EfmClient.paymentAccounts(firmPort, false);
-    //EfmClient.checkFees(filingPort, TODO, null, null, null, null, null, null); 
-    //FilingReviewMDEPort filingPort = 
-    //    makeFilingService(FilingReviewMDEService.WSDL_LOCATION, headersList);
-    //EfmClient.testFilingService(filingPort);
+    // EfmClient.testFirmManagement(userPort, firmPort);
+    // EfmClient.testAttorneyAndServiceManagement(firmPort, true);
+    // System.err.println("------------- GLOBAL -------------");
+    // EfmClient.paymentAccounts(firmPort, true);
+    // System.err.println("------------- FIRM -------------");
+    // EfmClient.paymentAccounts(firmPort, false);
+    // EfmClient.testFilingService(filingPort, "adams");
+    CodeDatabase cd = new CodeDatabase();
+    cd.createDbConnection();
+
+    // List<Person> plaintiffs, List<Person> defendants,
+    // List<Filing> filings) throws SQLException, IOException
+    Address plaintiffAddress = new Address("83 Fake St", "Apt 2", "Boston", "MA", "02125", "US");
+    Person plaintiff = new Person(new Name("Plaintiff", "Goth"), "fakeemail@example.com", false);
+    Person defendant = new Person(new Name("Defendant", "Zombie"), "fakeemail2@example.com", false);
+    List<Person> plaintiffs = List.of(plaintiff);
+    List<Person> defendants = List.of(defendant);
+    // filing code: complaint (27967): got from filing table, location = 'adams',
+    // casecategory='210',
+    // and filingtype='Both' or 'Initial'
+    String regActionDesc = "27967";
+    // SELECT * from filingcomponent where location = 'adams' and
+    // filingcodeid='27967';
+    String componentCode = "332";
+    File x = new File(
+        EfmClient.class.getClassLoader().getResource("quality_check_overlay.pdf").getFile());
+    Filing filing = new Filing(x, regActionDesc,
+        plaintiffs.stream().map((p) -> p.getId()).collect(Collectors.toList()), "5766",
+        componentCode, FilingTypeType.E_FILE);
+
+    PaymentAccountListResponseType allAccs = firmPort.getPaymentAccountList();
+    String paymentId = "";
+    // Manual combination: Decided on Adams, then it's a family, so "Family" name in
+    // catecategory table
+    // The code for those in adams in 210. Then, get all casetype where
+    // casecategory='210'
+    // Subtype is never used, the table is empty?
+    CaseCategory caseCategory = new CaseCategory("210", "Family", "DomesticCase", "Not Available",
+        "Not Available", "Not Available");
+    for (PaymentAccountType acc : allAccs.getPaymentAccount()) {
+      System.err.println("Acc: " + acc.getAccountName());
+      if (acc.getAccountName().equals("Waiver Account")) {
+        paymentId = acc.getPaymentAccountID();
+      }
+    }
+    if (paymentId.isEmpty()) {
+      System.err.println("Couldn't find Waiver Account account?");
+      System.exit(1);
+    }
+    FilingReviewMDEPort filingPort = makeFilingService(FilingReviewMDEService.WSDL_LOCATION,
+        headersList);
+    EfmClient.sendFiling(filingPort, cd, "adams", plaintiffs, defendants, caseCategory, "25384", "",
+        List.of(filing), paymentId);
     /*
-     CourtPolicyQueryMessageType m = new CourtPolicyQueryMessageType(); 
-     CourtType court = new CourtType(); 
-     IdentificationType courtId = makeIDType("henderson"); 
-     ObjectFactory of = new ObjectFactory();
-     JAXBElement<IdentificationType> elem = of.createOrganizationIdentification(courtId);
-     court.setOrganizationIdentification(elem); // TODO(brycew): change this stuff
-     m.setSendingMDELocationID(makeIDType("https://filingassemblymde.com"));
-     m.setSendingMDEProfileCode(
-      "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0"
-      ); 
-      JAXBElement<PersonType> elem2 = of.createEntityPerson(new PersonType());
-     EntityType typ = new EntityType(); 
-     typ.setEntityRepresentation(elem2);
-     m.setQuerySubmitter(typ); 
-     m.setCaseCourt(court); 
+     * CourtPolicyQueryMessageType m = new CourtPolicyQueryMessageType(); CourtType
+     * court = new CourtType(); IdentificationType courtId =
+     * makeIDType("henderson"); ObjectFactory of = new ObjectFactory();
+     * JAXBElement<IdentificationType> elem =
+     * of.createOrganizationIdentification(courtId);
+     * court.setOrganizationIdentification(elem); // TODO(brycew): change this stuff
+     * m.setSendingMDELocationID(makeIDType("https://filingassemblymde.com"));
+     * m.setSendingMDEProfileCode(MDE_PROFILE_CODE); JAXBElement<PersonType> elem2 =
+     * of.createEntityPerson(new PersonType()); EntityType typ = new EntityType();
+     * typ.setEntityRepresentation(elem2); m.setQuerySubmitter(typ);
+     * m.setCaseCourt(court);
      */
-     /* Exception in thread "main"
-     * javax.xml.ws.soap.SOAPFaultException: The element 'CourtPolicyQueryMessage'
-     * in namespace
+    /*
+     * Exception in thread "main" javax.xml.ws.soap.SOAPFaultException: The element
+     * 'CourtPolicyQueryMessage' in namespace
      * 'urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyQueryMessage-4
      * .0' has invalid child element 'CaseCourt' in namespace
      * 'http://niem.gov/niem/domains/jxdm/4.0'. List of possible elements expected:
@@ -955,18 +1016,8 @@ public final class EfmClient {
      * because the generated WSDL doesn't actually use the proper security headers.
      * Need to add manually CourtPolicyResponseMessageType p =
      * filingPort.getPolicy(m); // https://stackoverflow.com/a/36762179/11416267
-     * JAXBContext jc = JAXBContext.newInstance(ObjectFactory.class,
-     * gov.niem.niem.structures._2.ObjectFactory.class,
-     * oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.
-     * ObjectFactory.class,
-     * oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.
-     * class); Marshaller mar = jc.createMarshaller();
-     * mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true); QName qName = new
-     * QName("tyler.test.bbb", "bbb"); JAXBElement<CourtPolicyResponseMessageType>
-     * pp = new JAXBElement<CourtPolicyResponseMessageType>(qName,
-     * CourtPolicyResponseMessageType.class, p); mar.marshal(pp, new
-     * File("full_court_obj_henderson.xml"));
-     * 
+     */
+    /*
      * StringBuilder sb = new StringBuilder(); sb.append(p.getCaseCourt().getId() +
      * ", "); //sb.append(p.getCaseCourt().getCourtName().getValue() + ", ");
      * sb.append(p.getSendingMDEProfileCode() + ", ");

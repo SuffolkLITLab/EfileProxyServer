@@ -42,6 +42,13 @@ public class XmlHelper {
     return dt;
   }
   
+  public static gov.niem.niem.proxy.xsd._2.Boolean convertBool(boolean bool) {
+    gov.niem.niem.proxy.xsd._2.Boolean val = new gov.niem.niem.proxy.xsd._2.Boolean();
+    val.setValue(bool);
+    return val;
+  }
+  
+  
   /** Converts a Java string to Niem "Text".
    * TODO(brycew): what's the difference between text and String?
    */

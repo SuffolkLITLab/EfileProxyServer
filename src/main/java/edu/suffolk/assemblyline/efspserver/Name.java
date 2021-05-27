@@ -3,6 +3,7 @@ package edu.suffolk.assemblyline.efspserver;
 import gov.niem.niem.niem_core._2.ObjectFactory;
 import gov.niem.niem.niem_core._2.PersonNameTextType;
 import gov.niem.niem.niem_core._2.PersonNameType;
+import java.util.stream.Stream;
 import javax.xml.bind.JAXBElement;
 
 public class Name {
@@ -12,9 +13,32 @@ public class Name {
   private String suffix;
   private String maidenName;
   private String prefix;
+  
+  /** Default constructor with all members. */
+  public Name(String prefix, String firstName, String middleName, String lastName, 
+      String suffix, String maidenName) {
+    this.prefix = prefix;
+    this.firstName = firstName;
+    this.middleName = middleName;
+    this.lastName = lastName;
+    this.suffix = suffix;
+    this.maidenName = maidenName;
+  }
+  
+  public Name(String firstName, String lastName) {
+    this("", firstName, "", lastName, "", "");
+  }
 
+  /** The full name, with no extra spaces. */
   public String getFullName() {
-    return prefix + " " + firstName + " " + middleName + " " + lastName + " " + suffix;
+    return Stream.of(prefix, firstName, middleName, lastName, suffix)
+        .reduce((wd, n) -> {
+          if (n.isBlank()) {
+            return wd;
+          } else {
+            return wd + " " + n;
+          }
+        }).get();
   }
 
   public String getFirstName() {

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.xml.bind.JAXBElement;
 
@@ -17,36 +18,78 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentRend
 import tyler.ecf.extensions.common.DocumentType;
 import tyler.ecf.extensions.common.FilingTypeType;
 
+// TODO(brycew): this class is a mess. Redo please
 public class Filing {
   File file; // Provides Document Type code / BinaryFormatStandardName
-  String filingCode;
-  String title;
   Optional<String> userProvidedDescription;
   // TODO(brycew): what is this? Might be able to be a dup of the GUID,
   // it's returned with Get FilingList
   String documentFileControlId; 
   // See DueDateAvailableForFilers datafield and DocumentInformationCutOffDate
   Optional<LocalDate> dueDate; 
-  // A valid filing code
+  // A valid filing code (complaint, motion, Appearance, Motion, etc.)
   String regActionDesc;
   // TODO(brycew): generate on construction
   private String id;
-
-  List<String> filingPartyIds;
-  Optional<String> filingAttorney; // TODO(brycew): see FilingFilingAttorneyView data field config
   
-  boolean sendInBase64;
+  // Required to at least have one
+  List<String> filingPartyIds;
+  // TODO(brycew): see FilingFilingAttorneyView data field config
+  Optional<String> filingAttorney; 
+  
+  // This is, "determined via configuration within the EFM for each EFSP"?
+  // So, we can just say yes?
+  boolean sendInBase64 = true;
+  // Literally should just be if it's confidential or not. (or "Hot fix" or public).
+  // Search options in "documenttype" table with location
   String documentTypeFormatStandardName;
   String binaryCategoryComponent;
   
   // From filer, about this filing
   String filingComments;
-  String motionType;
+  // Only necessary if it's a motion?
+  Optional<String> motionType;
   List<String> courtesyCopies;
   List<String> preliminaryCopies;
   FilingTypeType filingAction;
 
   private boolean isLeadDoc;
+  
+  public Filing(File file,
+      String regActionDesc, List<String> filingPartyIds,
+      String documentTypeFormatStandardName,
+      String binaryCategoryComponent, FilingTypeType filingAction) {
+    this(file, Optional.empty(), "", Optional.empty(), regActionDesc,
+        filingPartyIds, Optional.empty(), documentTypeFormatStandardName, 
+        binaryCategoryComponent, "", Optional.empty(), List.of(), List.of(), 
+        filingAction, true);
+  }
+
+  public Filing(File file, Optional<String> userProvidedDescription,
+      String documentFileControlId, Optional<LocalDate> dueDate, String regActionDesc,
+      List<String> filingPartyIds, Optional<String> filingAttorney,
+      String documentTypeFormatStandardName, String binaryCategoryComponent,
+      String filingComments, Optional<String> motionType,
+      List<String> courtesyCopies, List<String> preliminaryCopies, FilingTypeType filingAction,
+      boolean isLeadDoc) {
+    this.file = file;
+    this.userProvidedDescription = userProvidedDescription;
+    this.documentFileControlId = documentFileControlId;
+    this.dueDate = dueDate;
+    this.regActionDesc = regActionDesc;
+    this.id = "id-" + UUID.randomUUID().toString();
+    this.filingPartyIds = filingPartyIds;
+    this.filingAttorney = filingAttorney;
+    this.documentTypeFormatStandardName = documentTypeFormatStandardName;
+    this.binaryCategoryComponent = binaryCategoryComponent;
+    
+    this.filingComments = filingComments;
+    this.motionType = motionType;
+    this.courtesyCopies = courtesyCopies;
+    this.preliminaryCopies = preliminaryCopies;
+    this.filingAction = filingAction;
+    this.isLeadDoc = isLeadDoc;
+  }
   
   public String getId() {
     return id;
@@ -115,7 +158,7 @@ public class Filing {
     String prelim = preliminaryCopies.stream().reduce("", (base, str) -> base + "," + str);
     docType.setPreliminaryCopiesText(XmlHelper.convertText(prelim));
     docType.setFilingCommentsText(XmlHelper.convertText(filingComments));
-    docType.setMotionTypeCode(XmlHelper.convertText(motionType));
+    motionType.ifPresent((mt) -> docType.setMotionTypeCode(XmlHelper.convertText(mt)));
     docType.setFilingAction(filingAction);
 
     if (isLeadDoc) {
