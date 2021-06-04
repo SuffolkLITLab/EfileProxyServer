@@ -1,9 +1,8 @@
-#! /bin/bash
+#! /bin/sh
 
-set -e
-cd /tmp/EfileProxyServer;
-source .env
-
-# Only expand stuff after sourcing, otherwise passwords end up in logs
-set -x
-/usr/bin/mvn exec:java
+set -ex
+cd /usr/src/app
+echo $X509_PASSWORD
+ls
+java -cp $(cat cp.txt):target/assemblyline-efsp-0.0.1-SNAPSHOT.jar edu.suffolk.assemblyline.efspserver.services.EfspServer
+#java -cp $(cat cp.txt):target/assemblyline-efsp-0.0.1-SNAPSHOT.jar edu.suffolk.assemblyline.efspserver.CodeUpdater
