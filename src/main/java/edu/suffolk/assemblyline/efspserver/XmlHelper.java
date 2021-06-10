@@ -9,6 +9,22 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
+/**
+ * Helper class that easily converts Java native types to Cumbersome XML Schema types,
+ * particularly those from Oasis's ECF standard, and the National Information 
+ * Exchange Model (NIEM).
+ *
+ * <p>Some information about NIEM:
+ * Many of the types here all include the "SimpleObjectAttributeGroup", which,
+ * "provides a collection of attributes which are appropriate for
+ *    definition of object types", including an ID attribute, a Metadata attribute,
+ * and a Link Metadata attribute that directly reference objects via IDs instead of
+ * including the object as an element. TBH, I'm not sure what the design decisions
+ * that dictate the use of them are, but they exist.</p>
+ *
+ * @author Bryce Willey
+ *
+ */
 public class XmlHelper {
 
   static final gov.niem.niem.proxy.xsd._2.ObjectFactory niemProxyObjFac;
@@ -42,6 +58,7 @@ public class XmlHelper {
     return dt;
   }
   
+  /** Niem's Boolean type: either true or false. */
   public static gov.niem.niem.proxy.xsd._2.Boolean convertBool(boolean bool) {
     gov.niem.niem.proxy.xsd._2.Boolean val = new gov.niem.niem.proxy.xsd._2.Boolean();
     val.setValue(bool);
@@ -49,8 +66,9 @@ public class XmlHelper {
   }
   
   
-  /** Converts a Java string to Niem "Text".
-   * TODO(brycew): what's the difference between text and String?
+  /** Converts a Java string to NIEM "Text", a wrapper around the NIEM String.
+   *
+   * <p>"A data type for a character string"</p>
    */
   public static TextType convertText(String str) {
     TextType tt = niemCoreObjFac.createTextType();
@@ -58,7 +76,9 @@ public class XmlHelper {
     return tt;
   }
   
-  /** Converts a Java string to Niem's XML String. */
+  /** Converts a Java string to NIEM's XML String. "A datatype for character strings in XML."
+   * Practically, just a xsd:string with the extra SimpleObjectAttributeGroup attributes.
+   */
   public static gov.niem.niem.proxy.xsd._2.String convertString(String str) {
     gov.niem.niem.proxy.xsd._2.String outStr = niemProxyObjFac.createString();
     outStr.setValue(str);
@@ -80,6 +100,7 @@ public class XmlHelper {
     return id;
   }
   
+  /** Converts a Java string to a URI. */
   public static gov.niem.niem.proxy.xsd._2.AnyURI convertUri(String uri) {
     gov.niem.niem.proxy.xsd._2.AnyURI anyUri = niemProxyObjFac.createAnyURI();
     anyUri.setValue(uri);

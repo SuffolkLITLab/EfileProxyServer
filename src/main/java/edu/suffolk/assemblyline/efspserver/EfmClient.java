@@ -3,6 +3,7 @@ package edu.suffolk.assemblyline.efspserver;
 import com.google.gson.Gson;
 import edu.suffolk.assemblyline.efspserver.codes.CaseCategory;
 import edu.suffolk.assemblyline.efspserver.codes.CodeDatabase;
+import edu.suffolk.assemblyline.efspserver.services.ServiceHelpers;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.TextType;
 import java.io.File;
@@ -111,12 +112,6 @@ public final class EfmClient {
       "EfmUserService");
   private static final QName FIRM_SERVICE_NAME = new QName("urn:tyler:efm:services",
       "EfmFirmService");
-
-  /**
-   * One of the ways that you can communicate over ECF. For more information, see
-   * https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Toc425241629
-   */
-  private static final String MDE_PROFILE_CODE = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0";
 
   /** Returns true on errors from the Tyler / Admin side of the API. */
   public static boolean checkErrors(BaseResponseType resp) {
@@ -635,8 +630,10 @@ public final class EfmClient {
   }
 
   public static void testFilingService(FilingReviewMDEPort port, String courtId) {
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory listObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory();
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory cof = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory listObjFac =
+        new oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory();
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory cof = 
+        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     FilingListQueryMessageType m = listObjFac.createFilingListQueryMessageType();
     JAXBElement<PersonType> elem2 = cof.createEntityPerson(new PersonType());
     EntityType typ = new EntityType();
@@ -645,7 +642,7 @@ public final class EfmClient {
     m.setDocumentSubmitter(null); // cof.createEntityPerson(null));
     m.setCaseCourt(XmlHelper.convertCourtType(courtId));
     m.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
-    m.setSendingMDEProfileCode(MDE_PROFILE_CODE);
+    m.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     FilingListResponseMessageType resp = port.getFilingList(m);
     if (checkErrors(resp)) {
       System.exit(-1);
@@ -671,12 +668,13 @@ public final class EfmClient {
       return;
     }
 
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory statusObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory();
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory statusObjFac =
+        new oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory();
     FilingStatusQueryMessageType status = statusObjFac.createFilingStatusQueryMessageType();
     status.setCaseCourt(XmlHelper.convertCourtType(courtId));
     // TODO(brycew): SendingMDELocationID is the running URL of the server
     status.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
-    status.setSendingMDEProfileCode(MDE_PROFILE_CODE);
+    status.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     status.setDocumentIdentification(XmlHelper.convertId(filingId));
     status.setQuerySubmitter(typ);
     FilingStatusResponseMessageType statusResp = port.getFilingStatus(status);
@@ -689,11 +687,12 @@ public final class EfmClient {
     System.out.println(statusResp.getFilingStatus().getStatusDescriptionText().stream()
         .map((n) -> n.getValue()).reduce((start, n) -> start + ", " + n));
 
-    tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory detailObjFac = new tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory();
+    tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory detailObjFac =
+        new tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory();
     FilingDetailQueryMessageType details = detailObjFac.createFilingDetailQueryMessageType();
     details.setCaseCourt(XmlHelper.convertCourtType(courtId));
     details.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
-    details.setSendingMDEProfileCode(MDE_PROFILE_CODE);
+    details.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     details.setDocumentIdentification(XmlHelper.convertId(filingId));
     details.setQuerySubmitter(typ);
     FilingDetailResponseMessageType detailsResp = port.getFilingDetails(details);
@@ -706,12 +705,13 @@ public final class EfmClient {
     System.out.println(detailsResp.getFilingStatus().getStatusDescriptionText().stream()
         .map((n) -> n.getValue()).reduce((start, n) -> start + ", " + n));
 
-    tyler.ecf.extensions.cancelfilingmessage.ObjectFactory cancelObjFac = new tyler.ecf.extensions.cancelfilingmessage.ObjectFactory();
+    tyler.ecf.extensions.cancelfilingmessage.ObjectFactory cancelObjFac =
+        new tyler.ecf.extensions.cancelfilingmessage.ObjectFactory();
     CancelFilingMessageType cancel = cancelObjFac.createCancelFilingMessageType();
     cancel.setCaseCourt(XmlHelper.convertCourtType(courtId));
     cancel.setDocumentIdentification(XmlHelper.convertId(filingId));
     cancel.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
-    cancel.setSendingMDEProfileCode(MDE_PROFILE_CODE);
+    cancel.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     cancel.setQuerySubmitter(typ);
     CancelFilingResponseMessageType cancelResp = port.cancelFiling(cancel);
     if (checkErrors(cancelResp)) {
@@ -821,7 +821,7 @@ public final class EfmClient {
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory();
     CoreFilingMessageType cfm = ecfCfmObjFac.createCoreFilingMessageType();
     cfm.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
-    cfm.setSendingMDEProfileCode(MDE_PROFILE_CODE);
+    cfm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     cfm.setCase(assembledCase.get());
     int seqNum = 0;
     for (Filing filing : filings) {
@@ -854,7 +854,7 @@ public final class EfmClient {
     feesQuery.setQuerySubmitter(typ);
 
     feesQuery.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
-    feesQuery.setSendingMDEProfileCode(MDE_PROFILE_CODE);
+    feesQuery.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     feesQuery.setCoreFilingMessage(cfm.get());
     System.err.println(objectToXmlString(feesQuery, FeesCalculationQueryMessageType.class));
     System.err.println();
@@ -929,8 +929,9 @@ public final class EfmClient {
     // System.err.println("------------- FIRM -------------");
     // EfmClient.paymentAccounts(firmPort, false);
     // EfmClient.testFilingService(filingPort, "adams");
-    CodeDatabase cd = new CodeDatabase();
-    cd.createDbConnection();
+    CodeDatabase cd = new CodeDatabase(System.getenv("POSTGRES_URL"), System.getenv("POSTGRES_PORT"), 
+        System.getenv("POSTGRES_CODES_DB"));
+    cd.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
 
     // List<Person> plaintiffs, List<Person> defendants,
     // List<Filing> filings) throws SQLException, IOException

@@ -102,11 +102,13 @@ public class EcfCaseTypeFactory {
           List<Person> plaintiffs, List<Person> defendants,
           List<String> filingIds,
           String paymentId, String queryType
-       ) throws SQLException {
-    tyler.ecf.extensions.common.ObjectFactory tylerObjFac = new tyler.ecf.extensions.common.ObjectFactory();
+  ) throws SQLException {
+    tyler.ecf.extensions.common.ObjectFactory tylerObjFac = 
+        new tyler.ecf.extensions.common.ObjectFactory();
     oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfCommonObjFac = 
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-    tyler.ecf.extensions.common.CaseAugmentationType ecfAug = tylerObjFac.createCaseAugmentationType();
+    tyler.ecf.extensions.common.CaseAugmentationType ecfAug = 
+        tylerObjFac.createCaseAugmentationType();
     gov.niem.niem.niem_core._2.ObjectFactory of = new gov.niem.niem.niem_core._2.ObjectFactory();
 
     List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocationId, caseCategoryCode);
@@ -141,9 +143,12 @@ public class EcfCaseTypeFactory {
     // TODO(brycew): FilerType and DamageAmount and ProcedureRemedy are all 
     // empty tables, so can't tell what they might be
 
-    Optional<DataFieldRow> filingcaseparties = cd.getDataField(courtLocationId, "FilingEventCaseParties");
-    boolean needToAssociateFilings = filingcaseparties.isPresent() && filingcaseparties.get().isrequired;
-    gov.niem.niem.structures._2.ObjectFactory structOf = new gov.niem.niem.structures._2.ObjectFactory();
+    Optional<DataFieldRow> filingcaseparties = 
+        cd.getDataField(courtLocationId, "FilingEventCaseParties");
+    boolean needToAssociateFilings = 
+        filingcaseparties.isPresent() && filingcaseparties.get().isrequired;
+    gov.niem.niem.structures._2.ObjectFactory structOf = 
+        new gov.niem.niem.structures._2.ObjectFactory();
     if (needToAssociateFilings) {
       for (String filingId : filingIds) {
         FilingAssociationType fat = tylerObjFac.createFilingAssociationType();

@@ -1,4 +1,4 @@
-package edu.suffolk.assemblyline.efspserver;
+package edu.suffolk.assemblyline.efspserver.services;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

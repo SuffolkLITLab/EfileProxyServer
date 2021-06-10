@@ -254,11 +254,9 @@ public class CodeUpdater {
     System.err.println("Downloads took: " + downloads + ", and updates took: " + updates);
   }
 
-  public void updateAll(String baseUrl, FilingReviewMDEPort filingPort)
+  public void updateAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
       throws SQLException, OperatorCreationException, GeneralSecurityException, CMSException,
       IOException, JAXBException, XMLStreamException {
-    CodeDatabase cd = new CodeDatabase();
-    cd.createDbConnection();
     Savepoint sp = cd.setSavePoint("mysavepoint");
     HeaderSigner signer = new HeaderSigner(System.getenv("X509_PASSWORD"));
     if (!downloadSystemTables(baseUrl, cd, signer)) {
@@ -287,12 +285,11 @@ public class CodeUpdater {
     cd.commit();
   }
 
-  public void downloadAll(String baseUrl, FilingReviewMDEPort filingPort)
+  public void downloadAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
       throws SQLException, OperatorCreationException, PropertyException, GeneralSecurityException,
       CMSException, IOException, JAXBException, XMLStreamException {
-    CodeDatabase cd = new CodeDatabase();
-    cd.createDbConnection();
     HeaderSigner signer = new HeaderSigner(System.getenv("X509_PASSWORD"));
+    System.err.println("Downloading system tables");
     downloadSystemTables(baseUrl, cd, signer);
 
     List<String> tablesToDrop = ncToTableName.entrySet().stream().map((e) -> e.getValue())
@@ -303,27 +300,34 @@ public class CodeUpdater {
     updates = Duration.ZERO;
     List<String> locs = cd.getAllLocations();
     for (String location : locs) {
+      System.err.println("Downloading tables for " + location);
       downloadCourtTables(location, Optional.empty(), cd, signer, filingPort);
     }
     System.err.println("Downloads took: " + downloads + ", and updates took: " + updates);
     cd.commit();
   }
-
-  public static void main(String[] args) throws Exception {
-    final Instant startSetup = Instant.now(Clock.systemUTC());
-    URL userWsdlUrl = EfmUserService.WSDL_LOCATION;
-    IEfmUserService userPort = EfmClient.makeUserService(userWsdlUrl);
+  
+  public void downloadAll(String codesSite, CodeDatabase cd) throws JAXBException, OperatorCreationException, 
+      SQLException, GeneralSecurityException, CMSException, IOException, XMLStreamException {
+    ClientCallbackHandler.setX509Password(System.getenv("X509_PASSWORD"));
     AuthenticateRequestType authReq = new AuthenticateRequestType();
     authReq.setEmail("bwilley@suffolk.edu");
     authReq.setPassword(System.getenv("BRYCE_USER_PASSWORD"));
+    URL userWsdlUrl = EfmUserService.WSDL_LOCATION;
+    IEfmUserService userPort = EfmClient.makeUserService(userWsdlUrl);
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
     System.out.println("Auth'd?: " + authRes.getError().getErrorText());
     List<Header> headersList = TylerUserNamePassword.makeHeaderList(authRes);
     FilingReviewMDEPort filingPort = EfmClient
         .makeFilingService(FilingReviewMDEService.WSDL_LOCATION, headersList);
-    Instant finishSetup = Instant.now(Clock.systemUTC());
-    System.err.println("Takes " + Duration.between(finishSetup, startSetup) + " to setup ports");
     CodeUpdater cu = new CodeUpdater();
-    cu.updateAll("https://illinois-stage.tylerhost.net", filingPort);
+    cu.downloadAll(codesSite, filingPort, cd);
+  }
+
+  public static void main(String[] args) throws Exception {
+    CodeDatabase cd = new CodeDatabase(System.getenv("POSTGRES_URL"), 
+        System.getenv("POSTGRES_PORT"), 
+        System.getenv("POSTGRES_CODES_DB"));
+    cd.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
   }
 }

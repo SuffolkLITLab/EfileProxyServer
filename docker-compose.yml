@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  efspjava:
+    build: .
+    ports:
+      - "9000:9000"
+    env_file: .env
+    depends_on:
+      - "db"
+  docassemble:
+    image: "jhpyle/docassemble:latest"
+    ports:
+      - "80:80"
+  db:
+    image: "postgres:latest"
+    env_file: .env
+    volumes:
+      - data-volume:/var/lib/postgresql/data
+
+volumes:
+  data-volume:

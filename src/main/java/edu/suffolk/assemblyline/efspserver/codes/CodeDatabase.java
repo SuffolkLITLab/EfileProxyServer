@@ -33,12 +33,6 @@ public class CodeDatabase {
 
   private Connection conn;
 
-  // TODO(brycew): make a factory for this, make the connection automatically
-  public CodeDatabase() {
-    this(System.getenv("POSTGRES_URL"), System.getenv("POSTGRES_PORT"),
-        System.getenv("POSTGRES_CODES_DB"));
-  }
-
   public CodeDatabase(String pgUrl, String pgPort, String pgDb) {
     this.pgUrl = pgUrl;
     this.pgPort = pgPort;
@@ -142,16 +136,17 @@ public class CodeDatabase {
     }
     return cats;
   }
-  
-  public List<CaseType> getCaseTypesFor(String courtLocationId, String caseCategory) throws SQLException {
+
+  public List<CaseType> getCaseTypesFor(String courtLocationId, String caseCategory)
+      throws SQLException {
     if (conn == null) {
       throw new SQLException();
     }
-    
+
     String query = CodeTableConstants.getCaseTypesFor();
     PreparedStatement st = conn.prepareStatement(query);
     st.setString(1, courtLocationId);
-    st.setString(2,  caseCategory);
+    st.setString(2, caseCategory);
     ResultSet rs = st.executeQuery();
     List<CaseType> cats = new ArrayList<CaseType>();
     while (rs.next()) {
@@ -160,12 +155,13 @@ public class CodeDatabase {
     }
     return cats;
   }
-  
-  public Optional<DataFieldRow> getDataField(String courtLocationId, String dataName) throws SQLException {
+
+  public Optional<DataFieldRow> getDataField(String courtLocationId, String dataName)
+      throws SQLException {
     if (conn == null) {
       throw new SQLException();
     }
-    
+
     String query = CodeTableConstants.getAllFromDataFieldForLoc();
     PreparedStatement st = conn.prepareStatement(query);
     st.setString(1, courtLocationId);
@@ -174,11 +170,11 @@ public class CodeDatabase {
     if (!rs.next()) {
       return Optional.empty();
     }
-    
-    DataFieldRow dfr = new DataFieldRow(rs.getString(1), rs.getString(2), rs.getString(3), 
-        rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), 
+
+    DataFieldRow dfr = new DataFieldRow(rs.getString(1), rs.getString(2), rs.getString(3),
+        rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8),
         rs.getString(9), rs.getString(10), rs.getString(11), rs.getString(12));
-    
+
     return Optional.of(dfr);
   }
 
@@ -285,30 +281,88 @@ public class CodeDatabase {
   }
 
   /**
-   * Creates an internally held connection to the database with environment
-   * variables POSTGRES_USER and POSTGRES_PASSWORD.
-   */
-  public void createDbConnection() throws SQLException {
-    createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
-  }
-
-  /**
    * Creates an internally held connection to the database with the given user and
    * password.
    *
-   * @param  pgUser       The user of the PostgreSQL database
-   * @param  pgPassword   The password for the above user
-   * @throws SQLException if the connection cannot be completed for some reason
+   * @param  pgUser               The user of the PostgreSQL database
+   * @param  pgPassword           The password for the above user
+   * @throws SQLException         if the connection cannot be completed for some
+   *                              reason
+   * @throws InterruptedException
    */
   public void createDbConnection(String pgUser, String pgPassword) throws SQLException {
-    // TODO(brycew): automatically make a 'tyler_efm_codes' database if it doesn't
-    // exist.
     String url = "jdbc:postgresql://" + this.pgUrl + ":" + this.pgPort + "/" + this.pgDb;
     Properties props = new Properties();
     props.setProperty("user", pgUser);
     props.setProperty("password", pgPassword);
-    conn = DriverManager.getConnection(url, props);
-    conn.setAutoCommit(false);
+    try {
+      conn = DriverManager.getConnection(url, props);
+      conn.setAutoCommit(false);
+    } catch (SQLException ex) {
+      System.err.println("Error code is: " + ex.getErrorCode());
+      createGivenDatabase(pgUser, pgPassword, this.pgDb);
+      conn = DriverManager.getConnection(url, props);
+      conn.setAutoCommit(false);
+    }
+  }
+  
+  private boolean createGivenDatabase(String pgUser, String pgPassword, String newDb) throws SQLException {
+    // TODO(brycew): maybe check this earlier
+    if (!this.pgDb.matches("[a-zA-Z_]+")) {
+      throw new SQLException(
+          "Won't make a database named " + this.pgDb + ": only alpha and _ allowed");
+    }
+
+    // TODO(brycew): Make the retry wrapper general, and maybe better formed?
+    long startTime = System.currentTimeMillis();
+    long RETRY_TIME_MILLIS = 5000;
+    long SLEEP_TIME_MILLIS = 1000;
+    while (System.currentTimeMillis() - startTime < RETRY_TIME_MILLIS) {
+      // Check if the named database exists before creating it
+      System.err.println("Trying to connect to the default database");
+      String tempUrl = "jdbc:postgresql://" + this.pgUrl + ":" + this.pgPort + "/postgrs";
+      try {
+        Properties props = new Properties();
+        props.setProperty("user", pgUser);
+        props.setProperty("password", pgPassword);
+        Connection tempConn = DriverManager.getConnection(tempUrl, props);
+        System.err.println("Got connection");
+        ResultSet rs = tempConn.getMetaData().getCatalogs();
+        boolean needToMakeDb = true;
+        while (rs.next()) {
+          System.err.println("Database: " + rs.getString(1));
+          if (rs.getString(1).equals(newDb)) {
+            needToMakeDb = false;
+          }
+        }
+        System.err.println("Need to make DB: " + needToMakeDb);
+        if (needToMakeDb) {
+          System.err.println("Making a database named " + newDb);
+          Statement st = tempConn.createStatement();
+          st.executeUpdate("CREATE DATABASE " + newDb);
+          st.close();
+        }
+        return true;
+      } catch (SQLException ex) {
+        System.err.println(ex.toString());
+        try {
+          System.err.println("Sleeping...");
+          Thread.sleep(SLEEP_TIME_MILLIS);
+        } catch (InterruptedException interruptEx) {
+          System.err.println("Interrupted? " + interruptEx.toString());
+          // explicitly do nothing
+        }
+      }
+    }
+    return false;
+  }
+
+  public boolean connectionIsOpen() {
+    try {
+      return conn != null && !conn.isClosed();
+    } catch (SQLException ex) {
+      return false;
+    }
   }
 
   public Savepoint setSavePoint(String savepoint) throws SQLException {
