@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
+
+import javax.security.auth.callback.CallbackHandler;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -863,7 +865,7 @@ public final class EfmClient {
     System.err.println("Fees: " + fees.getFeesCalculationAmount().getCurrencyText() + " "
         + fees.getFeesCalculationAmount().getValue());
     if (checkErrors(fees)) {
-      return;
+      System.exit(1);
     }
   }
 
@@ -881,6 +883,7 @@ public final class EfmClient {
     rfrm.setCoreFilingMessage(cfm.get());
     rfrm.setPaymentMessage(pmt);
 
+    System.err.println(objectToXmlString(rfrm, ReviewFilingRequestMessageType.class));
     MessageReceiptMessageType mrmt = filingPort.reviewFiling(rfrm);
     if (mrmt.getError().size() > 0) {
       for (ErrorType err : mrmt.getError()) {
@@ -913,6 +916,9 @@ public final class EfmClient {
         e.printStackTrace();
       }
     }
+    String x509Password = System.getenv("X509_PASSWORD");
+    System.err.println("x509 password: " + x509Password);
+    ClientCallbackHandler.setX509Password(x509Password); 
     IEfmUserService userPort = makeUserService(userWsdlUrl);
     // testUserActionManagement(userPort, "bwilley@suffolk.edu");
     AuthenticateRequestType authReq = new AuthenticateRequestType();

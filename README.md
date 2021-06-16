@@ -14,3 +14,11 @@ These instructions are written for Linux (specifically Ubuntu 20.04), steps for 
 2. Download this repository: In a terminal, you can run `git clone https://github.com/SuffolkLITLab/EfileProxyServer`
 3. In the same terminal change directories to where you downloaded the server: `cd EfileProxyServer`, and then build a docker image for this server. `docker build . -t efspjava`
 4. Run the server image that you just built with `docker run efspjava`.
+
+## Env file
+
+Docker env files are weird, and don't work in normal bash. To read all of the values to the current shell, use:
+
+```bash
+cat .env | export $(cut -d= -f1 -)="$(cut -d= -f2 -)"
+```

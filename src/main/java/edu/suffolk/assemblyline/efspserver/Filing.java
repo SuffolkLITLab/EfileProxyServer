@@ -11,6 +11,7 @@ import java.util.UUID;
 import javax.xml.bind.JAXBElement;
 
 import gov.niem.niem.niem_core._2.DateType;
+import gov.niem.niem.proxy.xsd._2.Base64Binary;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentAttachmentType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentMetadataType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentRenditionMetadataType;
@@ -129,9 +130,6 @@ public class Filing {
     }
     docType.setDocumentMetadata(metadata);
     
-    // The document itself
-    DocumentRenditionType rendition = oasisObjFac.createDocumentRenditionType();
-    DocumentRenditionMetadataType renditionMetadata = oasisObjFac.createDocumentRenditionMetadataType();
     // TODO(brycew): what should this actually be? Very unclear
     DocumentAttachmentType attachment = oasisObjFac.createDocumentAttachmentType();
     attachment.setBinaryDescriptionText(XmlHelper.convertText(file.getName()));
@@ -143,13 +141,19 @@ public class Filing {
       byte[] data = new byte[(int) file.length()];
       reader.read(data);
       reader.close();
-      attachment.setBinaryObject(
-          niemObjFac.createBinaryBase64Object(XmlHelper.convertBase64(data)));
+      Base64Binary b = XmlHelper.convertBase64(data);
+      JAXBElement<Base64Binary> n = niemObjFac.createBinaryBase64Object(XmlHelper.convertBase64(data));
+      System.err.println(EfmClient.objectToXmlString(n.getValue(), Base64Binary.class));
+      attachment.setBinaryObject(n); 
     } else {
       // TODO(brycew): DO this: make the file downloadable from the Proxy server
     }
+    // The document itself
+    DocumentRenditionMetadataType renditionMetadata = 
+        oasisObjFac.createDocumentRenditionMetadataType();
     renditionMetadata.getDocumentAttachment().add(attachment);
     
+    DocumentRenditionType rendition = oasisObjFac.createDocumentRenditionType();
     rendition.setDocumentRenditionMetadata(renditionMetadata);
     docType.getDocumentRendition().add(rendition);
     

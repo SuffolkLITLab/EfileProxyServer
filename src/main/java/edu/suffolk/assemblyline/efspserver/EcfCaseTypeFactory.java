@@ -54,7 +54,8 @@ public class EcfCaseTypeFactory {
       String queryType, 
       Gson jsonDump
   ) throws SQLException {
-    JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug = makeNiemCaseAug(courtLocationId);
+    JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug = 
+        makeNiemCaseAug(courtLocationId);
     JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug = 
               makeTylerCaseAug(courtLocationId, Integer.toString(caseCategory.code), 
                   caseType, caseSubType, plaintiffs, defendants, filingIds,

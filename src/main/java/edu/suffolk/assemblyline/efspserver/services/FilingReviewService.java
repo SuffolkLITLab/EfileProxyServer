@@ -24,11 +24,11 @@ import javax.xml.ws.BindingProvider;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.FilingListQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistresponsemessage_4.FilingListResponseMessageType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistresponsemessage_4.MatchingFilingType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.FilingStatusQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusresponsemessage_4.FilingStatusResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingReviewMDEPort;
 import org.apache.cxf.headers.Header;
-
 import tyler.ecf.extensions.cancelfilingmessage.CancelFilingMessageType;
 import tyler.ecf.extensions.cancelfilingresponsemessage.CancelFilingResponseMessageType;
 import tyler.ecf.extensions.filingdetailquerymessage.FilingDetailQueryMessageType;
@@ -67,6 +67,19 @@ public class FilingReviewService {
   }
   
   @GET
+  @Path("/courts")
+  public Response getCourts(@Context HttpHeaders httpHeaders) {
+    // TODO(brycew): login when we don't need tyler stuff?
+    try {
+      List<String> courtIds = cd.getAllLocations();
+      return Response.ok().entity(courtIds).build();
+    } catch (SQLException ex) {
+      return Response.status(500).entity("DevOps Error: Could not connect to database: " 
+        + ex.toString()).build();
+    }
+  }
+  
+  @GET
   @Path("/court/{court_id}/filings/{filing_id}/status")
   public Response getFilingStatus(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, 
@@ -92,7 +105,7 @@ public class FilingReviewService {
       status.setQuerySubmitter(typ);
       FilingStatusResponseMessageType statusResp = port.get().getFilingStatus(status);
       return ServiceHelpers.mapTylerCodesToHttp(statusResp.getError(), 
-          () -> Response.ok(status).build());
+          () -> Response.ok().entity(status).build());
     } catch (SQLException ex) {
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
     }
@@ -123,8 +136,17 @@ public class FilingReviewService {
       m.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
       m.getDateRange().add(null);
       FilingListResponseMessageType resp = port.get().getFilingList(m);
+      for (MatchingFilingType match : resp.getMatchingFiling()) {
+        System.err.println(match.getCaseTrackingID());
+        System.err.println(match);
+      }
       return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
-          () -> Response.ok(resp.getMatchingFiling()).build());
+          () -> {
+            if (resp.getMatchingFiling().size() <= 0) {
+              return Response.noContent().build();
+            }
+            return Response.ok().entity(resp.getMatchingFiling()).build();
+          });
     } catch (SQLException ex) {
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
     }
@@ -155,7 +177,7 @@ public class FilingReviewService {
       m.setDocumentIdentification(XmlHelper.convertId(filingId));
       FilingDetailResponseMessageType resp = port.get().getFilingDetails(m);
       return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
-          () -> Response.ok(resp).build());
+          () -> Response.ok().entity(resp).build());
     } catch (SQLException ex) {
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
     }

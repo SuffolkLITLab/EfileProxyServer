@@ -25,7 +25,7 @@ public class ServiceHelpers {
   public static final String MDE_PROFILE_CODE = 
       "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0";
 
-  {
+  static {
     tylerToHttp = new HashMap<String, Integer>();
     // First three are ones that the proxy should handle well. If we don't then it's our fault.
     // Message received in substitution message format but extended message format expected.
@@ -98,7 +98,9 @@ public class ServiceHelpers {
   /** Returns true on errors from the ECF side of the API. They work the same as the Tyler ones. */
   public static boolean checkErrors(
       oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType error) {
-    if (error.getErrorCode() != null && !error.getErrorCode().equals("0")) {
+    if (error.getErrorCode() != null && !error.getErrorCode().getValue().equals("0")) {
+      System.err.println("Error!: " + error.getErrorCode().getValue() 
+          + ": " + error.getErrorText());
       return true;
     }
     return false;

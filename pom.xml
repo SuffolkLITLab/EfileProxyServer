@@ -226,8 +226,8 @@
             <version>1.2.1</version>
             <configuration>
                 <!-- mainClass>edu.suffolk.assemblyline.efspserver.XsdDownloader</mainClass-->
-                <!-- mainClass>edu.suffolk.assemblyline.efspserver.EfmClient</mainClass -->
-                <mainClass>edu.suffolk.assemblyline.efspserver.services.EfspServer</mainClass>
+                <mainClass>edu.suffolk.assemblyline.efspserver.EfmClient</mainClass>
+                <!-- mainClass>edu.suffolk.assemblyline.efspserver.services.EfspServer</mainClass-->
             </configuration>
         </plugin>
       </plugins>

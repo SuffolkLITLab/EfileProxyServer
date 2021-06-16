@@ -109,7 +109,10 @@ public class XmlHelper {
   
   public static gov.niem.niem.proxy.xsd._2.Base64Binary convertBase64(final byte[] rawContent) {
     gov.niem.niem.proxy.xsd._2.Base64Binary binaryString = niemProxyObjFac.createBase64Binary();
-    binaryString.setValue(Base64.getEncoder().encode(rawContent));
+    // We don't need to encode Base64? For some strange reason, JAXB does it for us. 
+    // See https://stackoverflow.com/a/7224025
+    //binaryString.setValue(Base64.getEncoder().encode(rawContent));
+    binaryString.setValue(rawContent);
     return binaryString;
   }
   
