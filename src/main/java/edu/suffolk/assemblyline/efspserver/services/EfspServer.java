@@ -21,7 +21,7 @@ public class EfspServer {
   
   private JAXRSServerFactoryBean sf;
   private Server server;
-
+  
   protected EfspServer(String x509Password, 
       String dbUrl, String dbPort,
       String dbUser, String dbPassword,
@@ -116,11 +116,10 @@ public class EfspServer {
         server.StopServer();
       }
     });
+    System.out.println("Server ready...");
     
     while (true) {
-      System.out.println("Server ready...");
       Thread.sleep(5 * 60 * 1000);
-      System.out.println("Server exiting");
     }
   }
 }

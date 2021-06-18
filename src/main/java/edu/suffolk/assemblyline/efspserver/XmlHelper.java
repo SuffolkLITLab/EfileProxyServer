@@ -3,11 +3,15 @@ package edu.suffolk.assemblyline.efspserver;
 import gov.niem.niem.domains.jxdm._4.CourtType;
 import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.TextType;
+import java.io.StringWriter;
 import java.time.LocalDate;
-import java.util.Base64;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+import javax.xml.namespace.QName;
 
 /**
  * Helper class that easily converts Java native types to Cumbersome XML Schema types,
@@ -123,4 +127,32 @@ public class XmlHelper {
     court.setOrganizationIdentification(idType);
     return court;
   }
+
+  /**
+   * Converts any XML annotated object (from CXF) to a string. Useful for
+   * debugging.
+   *
+   * @param  <T>   the type of object being passed in
+   * @param  toXml The object to do things with
+   * @return       the XML string to do what you want with
+   */
+  public static <T> String objectToXmlString(T toXml, Class<T> toXmlClazz) {
+    try {
+      JAXBContext jaxContext = JAXBContext.newInstance(toXmlClazz,
+          gov.niem.niem.niem_core._2.ObjectFactory.class,
+          gov.niem.niem.structures._2.ObjectFactory.class,
+          oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
+          oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class);
+      Marshaller mar = jaxContext.createMarshaller();
+      mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+      QName qname = new QName("tyler.test.objectToXml", "objectToXml");
+      JAXBElement<T> wrappedRoot = new JAXBElement<T>(qname, toXmlClazz, toXml);
+      StringWriter sw = new StringWriter();
+      mar.marshal(wrappedRoot, sw);
+      return sw.toString();
+    } catch (JAXBException ex) {
+      return ex.toString();
+    }
+  }
+
 }

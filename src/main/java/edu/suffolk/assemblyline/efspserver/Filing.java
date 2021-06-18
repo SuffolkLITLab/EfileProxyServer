@@ -1,17 +1,20 @@
 package edu.suffolk.assemblyline.efspserver;
 
-import java.io.File;
-import java.io.FileInputStream;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import gov.niem.niem.niem_core._2.DateType;
+import gov.niem.niem.proxy.xsd._2.Base64Binary;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import javax.xml.bind.JAXBElement;
-
-import gov.niem.niem.niem_core._2.DateType;
-import gov.niem.niem.proxy.xsd._2.Base64Binary;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentAttachmentType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentMetadataType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentRenditionMetadataType;
@@ -21,7 +24,9 @@ import tyler.ecf.extensions.common.FilingTypeType;
 
 // TODO(brycew): this class is a mess. Redo please
 public class Filing {
-  File file; // Provides Document Type code / BinaryFormatStandardName
+  // Provides Document Type code / BinaryFormatStandardName
+  String fileName; 
+  InputStream fileStream;
   Optional<String> userProvidedDescription;
   // TODO(brycew): what is this? Might be able to be a dup of the GUID,
   // it's returned with Get FilingList
@@ -56,24 +61,25 @@ public class Filing {
 
   private boolean isLeadDoc;
   
-  public Filing(File file,
+  public Filing(String fileName, InputStream fileStream,
       String regActionDesc, List<String> filingPartyIds,
       String documentTypeFormatStandardName,
       String binaryCategoryComponent, FilingTypeType filingAction) {
-    this(file, Optional.empty(), "", Optional.empty(), regActionDesc,
+    this(fileName, fileStream, Optional.empty(), "", Optional.empty(), regActionDesc,
         filingPartyIds, Optional.empty(), documentTypeFormatStandardName, 
         binaryCategoryComponent, "", Optional.empty(), List.of(), List.of(), 
         filingAction, true);
   }
 
-  public Filing(File file, Optional<String> userProvidedDescription,
+  public Filing(String fileName, InputStream fileStream, Optional<String> userProvidedDescription,
       String documentFileControlId, Optional<LocalDate> dueDate, String regActionDesc,
       List<String> filingPartyIds, Optional<String> filingAttorney,
       String documentTypeFormatStandardName, String binaryCategoryComponent,
       String filingComments, Optional<String> motionType,
       List<String> courtesyCopies, List<String> preliminaryCopies, FilingTypeType filingAction,
       boolean isLeadDoc) {
-    this.file = file;
+    this.fileName = fileName;
+    this.fileStream = fileStream;
     this.userProvidedDescription = userProvidedDescription;
     this.documentFileControlId = documentFileControlId;
     this.dueDate = dueDate;
@@ -107,7 +113,7 @@ public class Filing {
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     gov.niem.niem.niem_core._2.ObjectFactory niemObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
     DocumentType docType = tylerObjFac.createDocumentType();
-    String desc = userProvidedDescription.orElse(file.getName());
+    String desc = userProvidedDescription.orElse(fileName);
     docType.setDocumentDescriptionText(XmlHelper.convertText(desc));
 
     docType.setDocumentFileControlID(XmlHelper.convertString(documentFileControlId)); 
@@ -132,18 +138,15 @@ public class Filing {
     
     // TODO(brycew): what should this actually be? Very unclear
     DocumentAttachmentType attachment = oasisObjFac.createDocumentAttachmentType();
-    attachment.setBinaryDescriptionText(XmlHelper.convertText(file.getName()));
+    attachment.setBinaryDescriptionText(XmlHelper.convertText(fileName)); 
     attachment.setBinaryCategoryText(XmlHelper.convertText(binaryCategoryComponent));
     attachment.setBinaryFormatStandardName(XmlHelper.convertText(documentTypeFormatStandardName));
     if (sendInBase64) {
-      attachment.setBinaryLocationURI(XmlHelper.convertUri(file.getName()));
-      FileInputStream reader = new FileInputStream(file);
-      byte[] data = new byte[(int) file.length()];
-      reader.read(data);
-      reader.close();
-      Base64Binary b = XmlHelper.convertBase64(data);
-      JAXBElement<Base64Binary> n = niemObjFac.createBinaryBase64Object(XmlHelper.convertBase64(data));
-      System.err.println(EfmClient.objectToXmlString(n.getValue(), Base64Binary.class));
+      attachment.setBinaryLocationURI(XmlHelper.convertUri(fileName));
+      byte[] data = fileStream.readAllBytes(); 
+      JAXBElement<Base64Binary> n = 
+          niemObjFac.createBinaryBase64Object(XmlHelper.convertBase64(data));
+      System.err.println(XmlHelper.objectToXmlString(n.getValue(), Base64Binary.class));
       attachment.setBinaryObject(n); 
     } else {
       // TODO(brycew): DO this: make the file downloadable from the Proxy server
@@ -170,5 +173,36 @@ public class Filing {
     } else {
       return tylerObjFac.createFilingConnectedDocument(docType);
     }
+  }
+  
+  public JsonElement getAsStandardJson(Gson gson) throws IOException {
+    //JsonArray filingParties = new JsonArray(); 
+    /*
+    for (String filingPartyId : filingPartyIds) {
+      JsonObject filingParty = new JsonObject(); 
+      filingParty.add("IdentificationID", new JsonPrimitive(filingPartyId));
+      filingParty.add("IdentificationCategoryText", new JsonPrimitive("REFERENCE"));
+      filingParties.add(filingParty);
+    }
+    */
+    // TODO(brycew): use Jackson, one less dependency?
+    JsonObject filingParty = new JsonObject(); 
+    filingParty.add("IdentificationID", new JsonPrimitive(filingPartyIds.get(0)));
+    filingParty.add("IdentificationCategoryText", new JsonPrimitive("REFERENCE"));
+    JsonObject metadata = new JsonObject(); 
+    metadata.add("FilingPartyID", filingParty);
+    metadata.add("RegisterActionDescriptionText", new JsonPrimitive(regActionDesc));
+    
+    JsonObject docAttachment = new JsonObject(); 
+    byte[] data = fileStream.readAllBytes();  
+    String encodedDoc = new String(Base64.getEncoder().encode(data));
+    docAttachment.add("BinaryBase64Object", new JsonPrimitive(encodedDoc));
+    docAttachment.add("DocumentName", new JsonPrimitive(fileName));
+    
+    JsonObject finalObj = new JsonObject(); 
+    finalObj.add("DocumentMetadata", metadata);
+    finalObj.add("DocumentAttachment", docAttachment);
+    finalObj.add("FilingCommentsText", new JsonPrimitive(filingComments));
+    return finalObj; 
   }
 }

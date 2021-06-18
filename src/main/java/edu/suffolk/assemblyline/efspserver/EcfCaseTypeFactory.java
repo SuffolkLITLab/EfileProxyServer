@@ -1,6 +1,6 @@
 package edu.suffolk.assemblyline.efspserver;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import edu.suffolk.assemblyline.efspserver.codes.CaseCategory;
 import edu.suffolk.assemblyline.efspserver.codes.CodeDatabase;
 import edu.suffolk.assemblyline.efspserver.codes.DataFieldRow;
@@ -52,7 +52,7 @@ public class EcfCaseTypeFactory {
       String paymentId,
       // HACK(brycew): hacky: needed because fee querys put the payment stuff in the tyler Aug
       String queryType, 
-      Gson jsonDump
+      JsonElement jsonDump
   ) throws SQLException {
     JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug = 
         makeNiemCaseAug(courtLocationId);

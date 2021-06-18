@@ -1,5 +1,8 @@
 package edu.suffolk.assemblyline.efspserver;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.annotations.SerializedName;
 import gov.niem.niem.fips_10_4._2.CountryCodeType;
 import gov.niem.niem.niem_core._2.ProperNameTextType;
 import gov.niem.niem.niem_core._2.StreetType;
@@ -7,11 +10,18 @@ import gov.niem.niem.niem_core._2.StructuredAddressType;
 import javax.xml.bind.JAXBElement;
 
 public class Address {
+  // NOTE: annotations are for Gson
+  @SerializedName("AddressLine1")
   private String streetLine;
+  @SerializedName("AddressLine2")
   private String apartmentLine;
+  @SerializedName("City")
   private String cityName;
+  @SerializedName("State")
   private String stateName;
+  @SerializedName("ZipCode")
   private String zipCode;
+  @SerializedName("Country")
   private String countryName;
   
   /** Constructor, each address element in order as a string. No qualifications. */
@@ -85,5 +95,13 @@ public class Address {
     addr.setZipCode(zipCode);
     addr.setCountry(countryName);
     return addr;
+  }
+  
+  public JsonElement getAsStandardJson() {
+    return getAsStandardJson(new Gson());
+  }
+  
+  public JsonElement getAsStandardJson(Gson gson) {
+    return gson.toJsonTree(this);
   }
 }

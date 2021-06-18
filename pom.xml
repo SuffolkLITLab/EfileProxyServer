@@ -162,6 +162,10 @@
         <artifactId>gson</artifactId>
        <version>2.8.6</version>
     </dependency>
+    <!--  TODO(brycew): decide whether we should use gson or jackson 
+        Both similar, Jackson is supposedly faster and already used by CXF/Spring.
+        Gson is solid though, and manual deserialization by building Json is necessary
+     -->
   </dependencies>
 
   <build>

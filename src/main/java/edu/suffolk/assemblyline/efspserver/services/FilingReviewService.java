@@ -1,16 +1,26 @@
 package edu.suffolk.assemblyline.efspserver.services;
 
+import edu.suffolk.assemblyline.efspserver.Address;
+import edu.suffolk.assemblyline.efspserver.ContactInformation;
+import edu.suffolk.assemblyline.efspserver.Filing;
+import edu.suffolk.assemblyline.efspserver.Name;
+import edu.suffolk.assemblyline.efspserver.Person;
 import edu.suffolk.assemblyline.efspserver.TylerUserNamePassword;
 import edu.suffolk.assemblyline.efspserver.XmlHelper;
+import edu.suffolk.assemblyline.efspserver.codes.CaseCategory;
 import edu.suffolk.assemblyline.efspserver.codes.CodeDatabase;
 import gov.niem.niem.niem_core._2.EntityType;
+import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -31,8 +41,10 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
 import org.apache.cxf.headers.Header;
 import tyler.ecf.extensions.cancelfilingmessage.CancelFilingMessageType;
 import tyler.ecf.extensions.cancelfilingresponsemessage.CancelFilingResponseMessageType;
+import tyler.ecf.extensions.common.FilingTypeType;
 import tyler.ecf.extensions.filingdetailquerymessage.FilingDetailQueryMessageType;
 import tyler.ecf.extensions.filingdetailresponsemessage.FilingDetailResponseMessageType;
+import tyler.efm.services.schema.common.ErrorType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 
 @Path("/filingreview/")
@@ -149,6 +161,55 @@ public class FilingReviewService {
           });
     } catch (SQLException ex) {
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
+    }
+  }
+  
+  @PUT
+  @Path("/court/{court_id}/filing")
+  public Response submitFilingForReview(@Context HttpHeaders httpHeaders, 
+      @PathParam("court_id") String courtId) throws URISyntaxException {
+    // TODO(brycew): handle mutliplexing between backends here if need be
+    
+    // TODO(brycew): actually read in JSON data and delete this hardcoded data
+    Address plaintiffAddress = new Address("83 Fake St", "Apt 2", "Boston", "MA", "02125", "US");
+    ContactInformation plaintiffContact = new ContactInformation(List.of(), 
+        Optional.of(plaintiffAddress), "fakeemail@example.com");
+    Person plaintiff = new Person(new Name("Plaintiff", "Goth"), 
+        plaintiffContact, Optional.empty(), 
+        Optional.of("English"), Optional.empty(), false);
+    Person defendant = new Person(new Name("Defendant", "Zombie"), "fakeemail2@example.com", false);
+    List<Person> plaintiffs = List.of(plaintiff);
+    List<Person> defendants = List.of(defendant);
+    // filing code: complaint (27967): got from filing table, location = 'adams',
+    // casecategory='210',
+    // and filingtype='Both' or 'Initial'
+    String regActionDesc = "27967";
+    // SELECT * from filingcomponent where location = 'adams' and
+    // filingcodeid='27967';
+    String componentCode = "332";
+    String fileName = "quality_check_overlay.pdf";
+    InputStream x = getClass().getResourceAsStream("/" + fileName); 
+    Filing filing = new Filing(fileName, x, regActionDesc,
+        plaintiffs.stream().map((p) -> p.getId()).collect(Collectors.toList()), "5766",
+        componentCode, FilingTypeType.E_FILE);
+
+    // Manual combination: Decided on Adams, then it's a family, so "Family" name in
+    // catecategory table
+    // The code for those in adams in 210. Then, get all casetype where
+    // casecategory='210'
+    // Subtype is never used, the table is empty?
+    CaseCategory caseCategory = new CaseCategory("210", "Family", "DomesticCase", "Not Available",
+        "Not Available", "Not Available");
+    
+    EfmFilingInterface filingInterface = new JeffersonParishFiler(System.getenv("JEFFERSON_ENDPOINT"), System.getenv("JEFFERSON_TOKEN"));
+    Optional<ErrorType> err = filingInterface.sendFiling(courtId, plaintiffs, 
+        defendants, caseCategory, "25384", regActionDesc, List.of(filing), componentCode);
+    if (err.isEmpty()) {
+      System.err.println("No error!");
+      return Response.ok().build();
+    } else {
+      System.err.println("Err!: " + err.get().getErrorText());
+      return Response.serverError().entity(err.get()).build();
     }
   }
 

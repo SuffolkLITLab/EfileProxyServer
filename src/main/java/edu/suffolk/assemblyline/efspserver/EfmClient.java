@@ -1,6 +1,8 @@
 package edu.suffolk.assemblyline.efspserver;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonPrimitive;
+
 import edu.suffolk.assemblyline.efspserver.codes.CaseCategory;
 import edu.suffolk.assemblyline.efspserver.codes.CodeDatabase;
 import edu.suffolk.assemblyline.efspserver.services.ServiceHelpers;
@@ -8,6 +10,7 @@ import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.TextType;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -651,7 +654,7 @@ public final class EfmClient {
     }
 
     System.out
-        .println("Filing List: " + objectToXmlString(resp, FilingListResponseMessageType.class));
+        .println("Filing List: " + XmlHelper.objectToXmlString(resp, FilingListResponseMessageType.class));
 
     String caseTrackingId = "";
     String filingId = "";
@@ -685,7 +688,7 @@ public final class EfmClient {
     }
 
     System.out.println(
-        "Filing Status: " + objectToXmlString(statusResp, FilingStatusResponseMessageType.class));
+        "Filing Status: " + XmlHelper.objectToXmlString(statusResp, FilingStatusResponseMessageType.class));
     System.out.println(statusResp.getFilingStatus().getStatusDescriptionText().stream()
         .map((n) -> n.getValue()).reduce((start, n) -> start + ", " + n));
 
@@ -703,7 +706,7 @@ public final class EfmClient {
     }
 
     System.out.println(
-        "Filing Details: " + objectToXmlString(detailsResp, FilingDetailResponseMessageType.class));
+        "Filing Details: " + XmlHelper.objectToXmlString(detailsResp, FilingDetailResponseMessageType.class));
     System.out.println(detailsResp.getFilingStatus().getStatusDescriptionText().stream()
         .map((n) -> n.getValue()).reduce((start, n) -> start + ", " + n));
 
@@ -776,33 +779,6 @@ public final class EfmClient {
     return filingPort;
   }
 
-  /**
-   * Converts any XML annotated object (from CXF) to a string. Useful for
-   * debugging.
-   *
-   * @param  <T>   the type of object being passed in
-   * @param  toXml The object to do things with
-   * @return       the XML string to do what you want with
-   */
-  public static <T> String objectToXmlString(T toXml, Class<T> toXmlClazz) {
-    try {
-      JAXBContext jaxContext = JAXBContext.newInstance(toXmlClazz,
-          gov.niem.niem.niem_core._2.ObjectFactory.class,
-          gov.niem.niem.structures._2.ObjectFactory.class,
-          oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
-          oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class);
-      Marshaller mar = jaxContext.createMarshaller();
-      mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-      QName qname = new QName("tyler.test.objectToXml", "objectToXml");
-      JAXBElement<T> wrappedRoot = new JAXBElement<T>(qname, toXmlClazz, toXml);
-      StringWriter sw = new StringWriter();
-      mar.marshal(wrappedRoot, sw);
-      return sw.toString();
-    } catch (JAXBException ex) {
-      return ex.toString();
-    }
-  }
-
   // TODO(brycew): figure out how to pass in person information
   // TODO(brycew): not handling attorneys, only SRLs right now
   public static Optional<CoreFilingMessageType> makeCivilCase(CodeDatabase cd,
@@ -815,7 +791,7 @@ public final class EfmClient {
         .makeCaseTypeFromTylerCategory(courtLocationId, caseCategoryCode, caseType, caseSubtype,
             plaintiffs, defendants,
             filings.stream().map((f) -> f.getId()).collect(Collectors.toList()), paymentId, queryType,
-            new Gson());
+            new JsonPrimitive(""));
     if (assembledCase.isEmpty()) {
       return Optional.empty();
     }
@@ -858,39 +834,15 @@ public final class EfmClient {
     feesQuery.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
     feesQuery.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     feesQuery.setCoreFilingMessage(cfm.get());
-    System.err.println(objectToXmlString(feesQuery, FeesCalculationQueryMessageType.class));
+    System.err.println(XmlHelper.objectToXmlString(feesQuery, FeesCalculationQueryMessageType.class));
     System.err.println();
     FeesCalculationResponseMessageType fees = filingPort.getFeesCalculation(feesQuery);
-    System.err.println(objectToXmlString(fees, FeesCalculationResponseMessageType.class));
+    System.err.println(XmlHelper.objectToXmlString(fees, FeesCalculationResponseMessageType.class));
     System.err.println("Fees: " + fees.getFeesCalculationAmount().getCurrencyText() + " "
         + fees.getFeesCalculationAmount().getValue());
     if (checkErrors(fees)) {
       System.exit(1);
     }
-  }
-
-  public static void sendFiling(FilingReviewMDEPort filingPort, CodeDatabase cd,
-      String courtLocationId, List<Person> plaintiffs, List<Person> defendants,
-      CaseCategory caseCategoryCode, String caseType, String caseSubtype, List<Filing> filings,
-      String paymentId) throws SQLException, IOException {
-    Optional<CoreFilingMessageType> cfm = makeCivilCase(cd, courtLocationId, plaintiffs, defendants,
-        caseCategoryCode, caseType, caseSubtype, filings, paymentId, "review");
-    oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory wsOf = 
-        new oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory();
-    PaymentFactory pf = new PaymentFactory();
-    PaymentMessageType pmt = pf.makePaymentMessage(paymentId); 
-    ReviewFilingRequestMessageType rfrm = wsOf.createReviewFilingRequestMessageType();
-    rfrm.setCoreFilingMessage(cfm.get());
-    rfrm.setPaymentMessage(pmt);
-
-    System.err.println(objectToXmlString(rfrm, ReviewFilingRequestMessageType.class));
-    MessageReceiptMessageType mrmt = filingPort.reviewFiling(rfrm);
-    if (mrmt.getError().size() > 0) {
-      for (ErrorType err : mrmt.getError()) {
-        System.err.println(err.getErrorCode().getValue() + ", " + err.getErrorText().getValue());
-      }
-    }
-    System.err.println(objectToXmlString(mrmt, MessageReceiptMessageType.class));
   }
 
   public static void main(String[] args) throws JAXBException, SQLException, IOException {
@@ -953,9 +905,9 @@ public final class EfmClient {
     // SELECT * from filingcomponent where location = 'adams' and
     // filingcodeid='27967';
     String componentCode = "332";
-    File x = new File(
-        EfmClient.class.getClassLoader().getResource("quality_check_overlay.pdf").getFile());
-    Filing filing = new Filing(x, regActionDesc,
+    String fileName = "quality_check_overlay.pdf";
+    InputStream x = EfmClient.class.getClassLoader().getResourceAsStream("/" + fileName); 
+    Filing filing = new Filing(fileName, x, regActionDesc,
         plaintiffs.stream().map((p) -> p.getId()).collect(Collectors.toList()), "5766",
         componentCode, FilingTypeType.E_FILE);
 
@@ -980,20 +932,23 @@ public final class EfmClient {
     }
     FilingReviewMDEPort filingPort = makeFilingService(FilingReviewMDEService.WSDL_LOCATION,
         headersList);
-    EfmClient.sendFiling(filingPort, cd, "adams", plaintiffs, defendants, caseCategory, "25384", "",
-        List.of(filing), paymentId);
-    /*
-     * CourtPolicyQueryMessageType m = new CourtPolicyQueryMessageType(); CourtType
-     * court = new CourtType(); IdentificationType courtId =
-     * makeIDType("henderson"); ObjectFactory of = new ObjectFactory();
-     * JAXBElement<IdentificationType> elem =
-     * of.createOrganizationIdentification(courtId);
-     * court.setOrganizationIdentification(elem); // TODO(brycew): change this stuff
-     * m.setSendingMDELocationID(makeIDType("https://filingassemblymde.com"));
-     * m.setSendingMDEProfileCode(MDE_PROFILE_CODE); JAXBElement<PersonType> elem2 =
-     * of.createEntityPerson(new PersonType()); EntityType typ = new EntityType();
-     * typ.setEntityRepresentation(elem2); m.setQuerySubmitter(typ);
-     * m.setCaseCourt(court);
+    /* EfmClient.sendFiling(filingPort, cd, "adams", plaintiffs, defendants, caseCategory, "25384", "",
+          List.of(filing), paymentId);
+    
+    CourtPolicyQueryMessageType m = new CourtPolicyQueryMessageType(); 
+    CourtType court = new CourtType(); 
+    IdentificationType courtId = makeIDType("henderson"); 
+    ObjectFactory of = new ObjectFactory();
+    JAXBElement<IdentificationType> elem =
+    of.createOrganizationIdentification(courtId);
+    court.setOrganizationIdentification(elem); // TODO(brycew): change this stuff
+    m.setSendingMDELocationID(makeIDType("https://filingassemblymde.com"));
+    m.setSendingMDEProfileCode(MDE_PROFILE_CODE); 
+    JAXBElement<PersonType> elem2 = of.createEntityPerson(new PersonType()); 
+    EntityType typ = new EntityType();
+    typ.setEntityRepresentation(elem2); 
+    m.setQuerySubmitter(typ);
+    m.setCaseCourt(court);
      */
     /*
      * Exception in thread "main" javax.xml.ws.soap.SOAPFaultException: The element

@@ -1,16 +1,21 @@
 package edu.suffolk.assemblyline.efspserver;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
 import gov.niem.niem.fbi._2.SEXCodeSimpleType;
 import gov.niem.niem.fbi._2.SEXCodeType;
 import gov.niem.niem.iso_639_3._2.LanguageCodeType;
 import gov.niem.niem.niem_core._2.ContactInformationType;
-import gov.niem.niem.niem_core._2.FullTelephoneNumberType;
 import gov.niem.niem.niem_core._2.ObjectFactory;
 import gov.niem.niem.niem_core._2.PersonLanguageType;
-import gov.niem.niem.niem_core._2.TelephoneNumberType;
 import gov.niem.niem.structures._2.AugmentationType;
 import java.time.LocalDate;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
@@ -22,10 +27,8 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 public class Person {
   // NOTE: from DA, we will take the mailing address if present, not the standard
   // address.
-  private Optional<Address> address;
   private Name name;
-  private List<String> phoneNumbers;
-  private String email;
+  private ContactInformation contactInfo;
   private Optional<String> gender;
   private Optional<String> language;
   private Optional<LocalDate> birthdate;
@@ -35,23 +38,19 @@ public class Person {
   
   /** Minimal constructor, empty lists and empty optionals. */
   public Person(Name name, String email, boolean isOrg) {
-    this(name, Optional.empty(), List.of(), email, 
+    this(name, new ContactInformation(email), 
         Optional.empty(), Optional.empty(), Optional.empty(), isOrg);
   }
   
   /** Default constructor. */
   public Person(Name name,
-      Optional<Address> address, 
-      List<String> phoneNumbers,
-      String email, 
+      ContactInformation contactInfo,
       Optional<String> gender,
       Optional<String> language,
       Optional<LocalDate> birthdate,
       boolean isOrg) {
-    this.address = address;
     this.name = name;
-    this.phoneNumbers = phoneNumbers;
-    this.email = email;
+    this.contactInfo = contactInfo;
     this.gender = gender;
     this.language = language;
     this.birthdate = birthdate;
@@ -64,14 +63,6 @@ public class Person {
     return name;
   }
 
-  public List<String> getPhoneNumbers() {
-    return phoneNumbers;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-  
   public String getId() {
     return id;
   }
@@ -87,16 +78,7 @@ public class Person {
     } else {
       aug = ecfOf.createPersonAugmentationType();
     }
-    ContactInformationType cit = of.createContactInformationType();
-    address.ifPresent((addr) -> cit.getContactMeans().add(addr.getNiemContactMeans()));
-    for (String phoneNumber : phoneNumbers) {
-      TelephoneNumberType tnt = of.createTelephoneNumberType();
-      FullTelephoneNumberType ftnt = of.createFullTelephoneNumberType();
-      ftnt.setTelephoneNumberFullID(XmlHelper.convertString(phoneNumber));
-      tnt.setTelephoneNumberRepresentation(of.createFullTelephoneNumber(ftnt));
-      cit.getContactMeans().add(of.createContactTelephoneNumber(tnt));
-    }
-    cit.getContactMeans().add(of.createContactEmailID(XmlHelper.convertString(email))); 
+    ContactInformationType cit = contactInfo.getEcfContactInformation();
     if (isOrg) {
       ((OrganizationAugmentationType) aug).getContactInformation().add(cit);
       OrganizationType ot = ecfOf.createOrganizationType();
@@ -146,5 +128,25 @@ public class Person {
     CaseParticipantType cpt = ecfOf.createCaseParticipantType();
     cpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
     return cpt;
+  }
+
+  // TODO(brycew): does this need to return a Java object, then to JSON later?
+  // TODO(brycew): turn this into a custom deserializer
+  public JsonElement getAsStandardJson(Gson gson, String role) {
+    JsonObject finalObj = new JsonObject(); 
+    finalObj.add("ContactInformation", contactInfo.getAsStandardJson(gson));
+    finalObj.add("PersonName", name.getAsStandardJson());
+    if (birthdate.isPresent()) {
+      finalObj.add("PersonBirthDate", new JsonPrimitive(birthdate.get().format(DateTimeFormatter.ISO_LOCAL_DATE)));
+    }
+    if (gender.isPresent()) {
+      finalObj.add("Gender", new JsonPrimitive(gender.get()));
+    }
+    if (language.isPresent()) {
+      finalObj.add("PersonPrimaryLanguage", new JsonPrimitive(language.get()));
+    }
+    finalObj.add("CaseParticipantRoleCode", new JsonPrimitive(role));
+    finalObj.add("id", new JsonPrimitive(id));
+    return gson.toJsonTree(finalObj);
   }
 }

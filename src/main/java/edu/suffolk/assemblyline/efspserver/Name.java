@@ -1,5 +1,7 @@
 package edu.suffolk.assemblyline.efspserver;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import gov.niem.niem.niem_core._2.ObjectFactory;
 import gov.niem.niem.niem_core._2.PersonNameTextType;
 import gov.niem.niem.niem_core._2.PersonNameType;
@@ -90,4 +92,8 @@ public class Name {
     return of.createPersonName(getNameType());
   }
 
+  public JsonElement getAsStandardJson() {
+    return new JsonPrimitive(getFullName());
+  }
+  
 }
