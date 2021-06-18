@@ -91,7 +91,7 @@ public class OasisEcfFiler implements EfmFilingInterface {
       rfrm.setCoreFilingMessage(cfm);
       rfrm.setPaymentMessage(pmt);
 
-      System.err.println(XmlHelper.objectToXmlString(rfrm, ReviewFilingRequestMessageType.class));
+      System.err.println(XmlHelper.objectToXmlStrOrError(rfrm, ReviewFilingRequestMessageType.class));
       MessageReceiptMessageType mrmt = filingPort.reviewFiling(rfrm);
       if (mrmt.getError().size() > 0) {
         for (oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType err : mrmt
@@ -99,7 +99,7 @@ public class OasisEcfFiler implements EfmFilingInterface {
           System.err.println(err.getErrorCode().getValue() + ", " + err.getErrorText().getValue());
         }
       }
-      System.err.println(XmlHelper.objectToXmlString(mrmt, MessageReceiptMessageType.class));
+      System.err.println(XmlHelper.objectToXmlStrOrError(mrmt, MessageReceiptMessageType.class));
       return Optional.empty();
     } catch (IOException ex) {
       tyler.efm.services.schema.common.ErrorType err = 

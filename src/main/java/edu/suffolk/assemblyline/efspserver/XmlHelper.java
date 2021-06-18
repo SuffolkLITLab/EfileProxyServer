@@ -130,29 +130,41 @@ public class XmlHelper {
 
   /**
    * Converts any XML annotated object (from CXF) to a string. Useful for
-   * debugging.
+   * debugging. Doesn't throw, but does return the string of the exception instead.
    *
    * @param  <T>   the type of object being passed in
    * @param  toXml The object to do things with
    * @return       the XML string to do what you want with
    */
-  public static <T> String objectToXmlString(T toXml, Class<T> toXmlClazz) {
+  public static <T> String objectToXmlStrOrError(T toXml, Class<T> toXmlClazz) {
     try {
-      JAXBContext jaxContext = JAXBContext.newInstance(toXmlClazz,
-          gov.niem.niem.niem_core._2.ObjectFactory.class,
-          gov.niem.niem.structures._2.ObjectFactory.class,
-          oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
-          oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class);
-      Marshaller mar = jaxContext.createMarshaller();
-      mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-      QName qname = new QName("tyler.test.objectToXml", "objectToXml");
-      JAXBElement<T> wrappedRoot = new JAXBElement<T>(qname, toXmlClazz, toXml);
-      StringWriter sw = new StringWriter();
-      mar.marshal(wrappedRoot, sw);
-      return sw.toString();
+      return objectToXmlStr(toXml, toXmlClazz);
     } catch (JAXBException ex) {
       return ex.toString();
     }
+  }
+
+  /**
+   * Converts any XML annotated object (from CXF) to a string. Useful for
+   * testing. Will throw an exception if there's a JAXB error.
+   *
+   * @param  <T>   the type of object being passed in
+   * @param  toXml The object to do things with
+   * @return       the XML string to do what you want with
+   */
+  public static <T> String objectToXmlStr(T toXml, Class<T> toXmlClazz) throws JAXBException {
+    JAXBContext jaxContext = JAXBContext.newInstance(toXmlClazz,
+        gov.niem.niem.niem_core._2.ObjectFactory.class,
+        gov.niem.niem.structures._2.ObjectFactory.class,
+        oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
+        oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class);
+    Marshaller mar = jaxContext.createMarshaller();
+    mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+    QName qname = new QName("tyler.test.objectToXml", "objectToXml");
+    JAXBElement<T> wrappedRoot = new JAXBElement<T>(qname, toXmlClazz, toXml);
+    StringWriter sw = new StringWriter();
+    mar.marshal(wrappedRoot, sw);
+    return sw.toString();
   }
 
 }

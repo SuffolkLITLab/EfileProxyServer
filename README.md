@@ -22,3 +22,12 @@ Docker env files are weird, and don't work in normal bash. To read all of the va
 ```bash
 cat .env | export $(cut -d= -f1 -)="$(cut -d= -f2 -)"
 ```
+
+## Testing
+
+You can run tests and get coverage with the following command:
+```
+mvn clean jacoco:prepare-agent verify jacoco:report
+```
+
+Then, visit the `target/site/jacoco/index.html` file to see the coverage report.

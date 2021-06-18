@@ -1,7 +1,6 @@
 package edu.suffolk.assemblyline.efspserver;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -146,7 +145,7 @@ public class Filing {
       byte[] data = fileStream.readAllBytes(); 
       JAXBElement<Base64Binary> n = 
           niemObjFac.createBinaryBase64Object(XmlHelper.convertBase64(data));
-      System.err.println(XmlHelper.objectToXmlString(n.getValue(), Base64Binary.class));
+      System.err.println(XmlHelper.objectToXmlStrOrError(n.getValue(), Base64Binary.class));
       attachment.setBinaryObject(n); 
     } else {
       // TODO(brycew): DO this: make the file downloadable from the Proxy server

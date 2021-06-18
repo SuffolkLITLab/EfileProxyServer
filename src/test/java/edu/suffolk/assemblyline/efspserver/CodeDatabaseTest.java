@@ -2,13 +2,12 @@ package edu.suffolk.assemblyline.efspserver;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import edu.suffolk.assemblyline.efspserver.codes.CodeTableConstants;
 import java.util.Collection;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-import edu.suffolk.assemblyline.efspserver.codes.CodeTableConstants;
-
-public class TestCodeDatabase {
+public class CodeDatabaseTest {
   
   @Test
   public void allNamespacesMapToTables() {

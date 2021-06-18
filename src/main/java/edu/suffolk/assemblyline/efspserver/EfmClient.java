@@ -1,8 +1,6 @@
 package edu.suffolk.assemblyline.efspserver;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonPrimitive;
-
 import edu.suffolk.assemblyline.efspserver.codes.CaseCategory;
 import edu.suffolk.assemblyline.efspserver.codes.CodeDatabase;
 import edu.suffolk.assemblyline.efspserver.services.ServiceHelpers;
@@ -11,7 +9,6 @@ import gov.niem.niem.niem_core._2.TextType;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -22,12 +19,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
-
-import javax.security.auth.callback.CallbackHandler;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType;
@@ -41,9 +34,6 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistresponsemessage_
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistresponsemessage_4.MatchingFilingType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.FilingStatusQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusresponsemessage_4.FilingStatusResponseMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.messagereceiptmessage_4.MessageReceiptMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.PaymentMessageType;
-import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ReviewFilingRequestMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingReviewMDEPort;
 import org.apache.cxf.headers.Header;
 import tyler.ecf.extensions.cancelfilingmessage.CancelFilingMessageType;
@@ -422,7 +412,8 @@ public final class EfmClient {
 
     //////////// Service
     // TODO(brycew): service contacts can only be at particular firms, so kinda
-    //////////// useless?
+    // useless?
+    //////////// 
     tyler.efm.services.schema.common.ObjectFactory efmObjFac = new tyler.efm.services.schema.common.ObjectFactory();
     CreateServiceContactRequestType create = new CreateServiceContactRequestType();
     ServiceContactType contact = efmObjFac.createServiceContactType();
@@ -432,7 +423,7 @@ public final class EfmClient {
     contact.setEmail("bwilley@suffolk.edu");
     contact.setAdministrativeCopy("bryce.steven.willey@gmail.com");
     Address address = new Address("893 E Broadway", "", "Boston", "MA", "02127", "US");
-    contact.setAddress(address.getTylerAddress());
+    contact.setAddress(address.getAsTylerAddress());
     contact.setIsInFirmMasterList(efmObjFac.createServiceContactTypeIsInFirmMasterList(true));
     contact.setIsPublic(efmObjFac.createServiceContactTypeIsInFirmMasterList(true));
     create.setServiceContact(contact);
@@ -653,8 +644,8 @@ public final class EfmClient {
       System.exit(-1);
     }
 
-    System.out
-        .println("Filing List: " + XmlHelper.objectToXmlString(resp, FilingListResponseMessageType.class));
+    System.out.println("Filing List: " 
+        + XmlHelper.objectToXmlStrOrError(resp, FilingListResponseMessageType.class));
 
     String caseTrackingId = "";
     String filingId = "";
@@ -687,8 +678,8 @@ public final class EfmClient {
       System.exit(-1);
     }
 
-    System.out.println(
-        "Filing Status: " + XmlHelper.objectToXmlString(statusResp, FilingStatusResponseMessageType.class));
+    System.out.println("Filing Status: " 
+        + XmlHelper.objectToXmlStrOrError(statusResp, FilingStatusResponseMessageType.class));
     System.out.println(statusResp.getFilingStatus().getStatusDescriptionText().stream()
         .map((n) -> n.getValue()).reduce((start, n) -> start + ", " + n));
 
@@ -705,8 +696,8 @@ public final class EfmClient {
       System.exit(-1);
     }
 
-    System.out.println(
-        "Filing Details: " + XmlHelper.objectToXmlString(detailsResp, FilingDetailResponseMessageType.class));
+    System.out.println("Filing Details: "
+        + XmlHelper.objectToXmlStrOrError(detailsResp, FilingDetailResponseMessageType.class));
     System.out.println(detailsResp.getFilingStatus().getStatusDescriptionText().stream()
         .map((n) -> n.getValue()).reduce((start, n) -> start + ", " + n));
 
@@ -834,10 +825,10 @@ public final class EfmClient {
     feesQuery.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
     feesQuery.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     feesQuery.setCoreFilingMessage(cfm.get());
-    System.err.println(XmlHelper.objectToXmlString(feesQuery, FeesCalculationQueryMessageType.class));
+    System.err.println(XmlHelper.objectToXmlStrOrError(feesQuery, FeesCalculationQueryMessageType.class));
     System.err.println();
     FeesCalculationResponseMessageType fees = filingPort.getFeesCalculation(feesQuery);
-    System.err.println(XmlHelper.objectToXmlString(fees, FeesCalculationResponseMessageType.class));
+    System.err.println(XmlHelper.objectToXmlStrOrError(fees, FeesCalculationResponseMessageType.class));
     System.err.println("Fees: " + fees.getFeesCalculationAmount().getCurrencyText() + " "
         + fees.getFeesCalculationAmount().getValue());
     if (checkErrors(fees)) {

@@ -4,15 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-
 import gov.niem.niem.niem_core._2.ContactInformationType;
 import gov.niem.niem.niem_core._2.FullTelephoneNumberType;
 import gov.niem.niem.niem_core._2.TelephoneNumberType;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-
 
 public class ContactInformation {
   private List<String> phoneNumbers;
@@ -47,7 +43,7 @@ public class ContactInformation {
         new gov.niem.niem.niem_core._2.ObjectFactory();
 
     ContactInformationType cit = niemObjFac.createContactInformationType();
-    address.ifPresent((addr) -> cit.getContactMeans().add(addr.getNiemContactMeans()));
+    address.ifPresent((addr) -> cit.getContactMeans().add(addr.getAsNiemContactMeans()));
     for (String phoneNumber : phoneNumbers) {
       TelephoneNumberType tnt = niemObjFac.createTelephoneNumberType();
       FullTelephoneNumberType ftnt = niemObjFac.createFullTelephoneNumberType();
@@ -59,6 +55,7 @@ public class ContactInformation {
     return cit;
   }
   
+  /** Gets as a json object, used to communicate mainly with Jefferson Parish. */
   public JsonElement getAsStandardJson(Gson gson) {
     JsonObject contactInfo = new JsonObject(); 
     contactInfo.add("ContactEmailID", new JsonPrimitive(email));

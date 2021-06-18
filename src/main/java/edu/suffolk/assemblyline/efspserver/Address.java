@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 import gov.niem.niem.fips_10_4._2.CountryCodeType;
+import gov.niem.niem.niem_core._2.AddressType;
 import gov.niem.niem.niem_core._2.ProperNameTextType;
 import gov.niem.niem.niem_core._2.StreetType;
 import gov.niem.niem.niem_core._2.StructuredAddressType;
@@ -62,7 +63,7 @@ public class Address {
   /** Returns the "ContactMeans" XML object from this address. Can be used in the 
    * ContactInformation element.
    */
-  public JAXBElement<Object> getNiemContactMeans() {
+  public JAXBElement<AddressType> getAsNiemContactMeans() {
     gov.niem.niem.niem_core._2.ObjectFactory niemObjFac =
         new gov.niem.niem.niem_core._2.ObjectFactory();
     StreetType st = niemObjFac.createStreetType();
@@ -78,13 +79,13 @@ public class Address {
     sat.setLocationPostalCode(XmlHelper.convertString(zipCode)); 
     gov.niem.niem.niem_core._2.AddressType at = niemObjFac.createAddressType();
     at.setAddressRepresentation(niemObjFac.createStructuredAddress(sat));
-    return niemObjFac.createContactMeans(niemObjFac.createContactMailingAddress(at));
+    return niemObjFac.createContactMailingAddress(at);
   }
   
   /** Returns the Tyler specific "AddressType" from this address. 
    * Used for service contacts, etc. 
    */
-  public tyler.efm.services.schema.common.AddressType getTylerAddress() {
+  public tyler.efm.services.schema.common.AddressType getAsTylerAddress() {
     tyler.efm.services.schema.common.ObjectFactory efmObjFac = 
         new tyler.efm.services.schema.common.ObjectFactory();
     tyler.efm.services.schema.common.AddressType addr = efmObjFac.createAddressType();
