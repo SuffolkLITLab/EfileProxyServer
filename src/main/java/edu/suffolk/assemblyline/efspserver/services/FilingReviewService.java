@@ -10,14 +10,23 @@ import edu.suffolk.assemblyline.efspserver.XmlHelper;
 import edu.suffolk.assemblyline.efspserver.codes.CaseCategory;
 import edu.suffolk.assemblyline.efspserver.codes.CodeDatabase;
 import gov.niem.niem.niem_core._2.EntityType;
+
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -39,6 +48,13 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusresponsemessage_4.FilingStatusResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingReviewMDEPort;
 import org.apache.cxf.headers.Header;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+
 import tyler.ecf.extensions.cancelfilingmessage.CancelFilingMessageType;
 import tyler.ecf.extensions.cancelfilingresponsemessage.CancelFilingResponseMessageType;
 import tyler.ecf.extensions.common.FilingTypeType;
@@ -167,7 +183,14 @@ public class FilingReviewService {
   @PUT
   @Path("/court/{court_id}/filing")
   public Response submitFilingForReview(@Context HttpHeaders httpHeaders, 
-      @PathParam("court_id") String courtId) throws URISyntaxException {
+      @PathParam("court_id") String courtId, String allVars) {
+    System.err.println("Court id: " + courtId);
+    System.err.println("All vars:" + allVars);
+    Gson gson = new Gson();
+    JsonElement jsonVars = gson.fromJson(allVars, JsonElement.class);
+    System.err.println("entity: " + jsonVars.getAsJsonObject());
+    return Response.ok().build();
+    /*
     // TODO(brycew): handle mutliplexing between backends here if need be
     
     // TODO(brycew): actually read in JSON data and delete this hardcoded data
@@ -211,6 +234,7 @@ public class FilingReviewService {
       System.err.println("Err!: " + err.get().getErrorText());
       return Response.serverError().entity(err.get()).build();
     }
+    */
   }
 
   @GET

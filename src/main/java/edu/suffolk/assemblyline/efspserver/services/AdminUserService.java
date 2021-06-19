@@ -165,7 +165,7 @@ public class AdminUserService {
     if (port.isEmpty()) {
       return Response.status(403).build();
     }
-    
+
     SelfResendActivationEmailRequestType req = 
         new SelfResendActivationEmailRequestType();
     req.setEmail(emailToSendTo);
@@ -193,6 +193,7 @@ public class AdminUserService {
   
   @POST
   @Path("/users/{id}/change_password")
+  //TODO(brycew) NEXT: THIS IS BROKEN! Can't take two string params, needs an object
   public Response resetPassword(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, String email, String password) {
     Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
@@ -211,6 +212,7 @@ public class AdminUserService {
   
   @POST
   @Path("/user/change_password")
+  //TODO(brycew) NEXT: THIS IS BROKEN! Can't take two string params, needs an object
   public Response setPassword(@Context HttpHeaders httpHeaders,
       String oldPassword, String newPassword) {
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
