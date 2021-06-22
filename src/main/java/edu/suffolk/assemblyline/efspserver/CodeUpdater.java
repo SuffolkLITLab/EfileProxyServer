@@ -1,5 +1,6 @@
 package edu.suffolk.assemblyline.efspserver;
 
+import edu.suffolk.assemblyline.efspserver.codes.CodeDatabase;
 import gov.niem.niem.domains.jxdm._4.CourtType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.IdentificationType;
@@ -25,12 +26,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtCodelistType;
@@ -39,8 +37,6 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
 import org.apache.cxf.headers.Header;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.operator.OperatorCreationException;
-
-import edu.suffolk.assemblyline.efspserver.codes.CodeDatabase;
 import tyler.efm.services.EfmUserService;
 import tyler.efm.services.IEfmUserService;
 import tyler.efm.services.schema.authenticaterequest.AuthenticateRequestType;
@@ -174,11 +170,16 @@ public class CodeUpdater {
     // On first download, there won't be installed versions of things yet.
     cd.createTableIfAbsent("installedversion");
 
-    String signedTime = signer.signedCurrentTime();
+    Optional<String> signedTime = signer.signedCurrentTime();
+    if (signedTime.isEmpty()) {
+      cd.rollback(sp);
+      return false;
+      
+    }
     for (Map.Entry<String, String> urlSuffix : codeUrls.entrySet()) {
       boolean updateSuccess = false;
       try {
-        updateSuccess = downloadAndReadZip(baseUrl + urlSuffix.getValue(), signedTime,
+        updateSuccess = downloadAndReadZip(baseUrl + urlSuffix.getValue(), signedTime.get(),
             urlSuffix.getKey(), "", cd);
       } catch (SQLException ex) {
         updateSuccess = false;
@@ -221,16 +222,8 @@ public class CodeUpdater {
     typ.setEntityRepresentation(elem2);
     m.setQuerySubmitter(typ);
     CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
-    JAXBContext jc = JAXBContext.newInstance(ObjectFactory.class,
-        gov.niem.niem.structures._2.ObjectFactory.class,
-        oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
-        oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class);
-    Marshaller mar = jc.createMarshaller();
-    mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-    QName qname = new QName("tyler.test.bbb", "bbb");
-    JAXBElement<CourtPolicyResponseMessageType> pp = new JAXBElement<CourtPolicyResponseMessageType>(
-        qname, CourtPolicyResponseMessageType.class, p);
-    mar.marshal(pp, new File("full_court_obj_" + location + ".xml"));
+    XmlHelper.objectToXmlFile(p, CourtPolicyResponseMessageType.class, 
+        new File("full_court_obj_" + location + ".xml"));
 
     // TODO(brycew): use the version codes to check the checksums of each table,
     // then see if we need to update
@@ -241,11 +234,16 @@ public class CodeUpdater {
         if (codes.isEmpty() || codes.get().contains(tableName)) {
           // TODO(brycew): check that the effective date is later than today
           // JAXBElement<?> obj = ccl.getEffectiveDate().getDateRepresentation();
-          // Tyler will give us URLs with spaces in them, which aren't valid. This makes
-          // them valid
+
+          // Tyler gives us URLs w/ spaces, which aren't valid. This makes them valid
           String url = ccl.getCourtCodelistURI().getIdentificationID().getValue().replace(" ",
               "%20");
-          downloadAndReadZip(url, signer.signedCurrentTime(), tableName, location, cd);
+          Optional<String> signedTime = signer.signedCurrentTime();
+          if (signedTime.isEmpty()) {
+            System.err.println("Couldn't get signed time to download codeds, skipping all");
+            return;
+          }
+          downloadAndReadZip(url, signedTime.get(), tableName, location, cd);
         }
       } else {
         System.err.println(ecfElem + " not in the nc map!");
@@ -258,7 +256,8 @@ public class CodeUpdater {
       throws SQLException, OperatorCreationException, GeneralSecurityException, CMSException,
       IOException, JAXBException, XMLStreamException {
     Savepoint sp = cd.setSavePoint("mysavepoint");
-    HeaderSigner signer = new HeaderSigner(System.getenv("X509_PASSWORD"));
+    HeaderSigner signer = new HeaderSigner(
+        System.getenv("PATH_TO_KEYSTORE"), System.getenv("X509_PASSWORD"));
     if (!downloadSystemTables(baseUrl, cd, signer)) {
       System.err.println("System tables didn't update, but we needed them "
           + " to actually figure out new versions");
@@ -288,7 +287,8 @@ public class CodeUpdater {
   public void downloadAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
       throws SQLException, OperatorCreationException, PropertyException, GeneralSecurityException,
       CMSException, IOException, JAXBException, XMLStreamException {
-    HeaderSigner signer = new HeaderSigner(System.getenv("X509_PASSWORD"));
+    HeaderSigner signer = new HeaderSigner(
+        System.getenv("PATH_TO_KEYSTORE"), System.getenv("X509_PASSWORD"));
     System.err.println("Downloading system tables");
     downloadSystemTables(baseUrl, cd, signer);
 

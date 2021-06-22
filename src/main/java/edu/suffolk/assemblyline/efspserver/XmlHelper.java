@@ -3,6 +3,8 @@ package edu.suffolk.assemblyline.efspserver;
 import gov.niem.niem.domains.jxdm._4.CourtType;
 import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.TextType;
+
+import java.io.File;
 import java.io.StringWriter;
 import java.time.LocalDate;
 import javax.xml.bind.JAXBContext;
@@ -160,11 +162,33 @@ public class XmlHelper {
         oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class);
     Marshaller mar = jaxContext.createMarshaller();
     mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-    QName qname = new QName("tyler.test.objectToXml", "objectToXml");
+    QName qname = new QName("suffolk.test.objectToXml", "objectToXml");
     JAXBElement<T> wrappedRoot = new JAXBElement<T>(qname, toXmlClazz, toXml);
     StringWriter sw = new StringWriter();
     mar.marshal(wrappedRoot, sw);
     return sw.toString();
+  }
+  
+  /**
+   * Converts any XML annotated object (from CXF) to a file. Useful for
+   * testing larger XML objects that are unwieldly to print. 
+   * Will throw an exception if there's a JAXB error.
+   *
+   * @param  <T>   the type of object being passed in
+   * @param  toXml The object to do things with
+   */
+  public static <T> void objectToXmlFile(T toXml, Class<T> toXmlClazz, 
+      File outfile) throws JAXBException {
+    JAXBContext jc = JAXBContext.newInstance(
+        gov.niem.niem.niem_core._2.ObjectFactory.class,
+        gov.niem.niem.structures._2.ObjectFactory.class,
+        oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
+        oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class);
+    Marshaller mar = jc.createMarshaller();
+    mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+    QName qname = new QName("suffolk.test.objectToXml", "objectToXml");
+    JAXBElement<T> pp = new JAXBElement<T>(qname, toXmlClazz, toXml);
+    mar.marshal(pp, outfile); 
   }
 
 }

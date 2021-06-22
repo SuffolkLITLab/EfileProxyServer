@@ -104,8 +104,6 @@
             <artifactId>cxf-xjc-runtime</artifactId>
             <version>3.3.1</version>
         </dependency>
-        <!-- TODO(brycew): you can't include providers? IDK what's happenning 
-            here -->
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-base</artifactId>
