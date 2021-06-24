@@ -1,10 +1,10 @@
 package edu.suffolk.assemblyline.efspserver;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-
 import gov.niem.niem.fbi._2.SEXCodeSimpleType;
 import gov.niem.niem.fbi._2.SEXCodeType;
 import gov.niem.niem.iso_639_3._2.LanguageCodeType;
@@ -14,10 +14,11 @@ import gov.niem.niem.niem_core._2.PersonLanguageType;
 import gov.niem.niem.structures._2.AugmentationType;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Logger;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationAugmentationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
@@ -25,6 +26,7 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonAugmen
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 
 public class Person {
+
   // NOTE: from DA, we will take the mailing address if present, not the standard
   // address.
   private Name name;
@@ -66,7 +68,7 @@ public class Person {
   public String getId() {
     return id;
   }
-
+  
   /** Needs to have participant role set. */
   public CaseParticipantType getEcfCaseParticipant() {
     oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf = 
@@ -148,5 +150,78 @@ public class Person {
     finalObj.add("CaseParticipantRoleCode", new JsonPrimitive(role));
     finalObj.add("id", new JsonPrimitive(id));
     return gson.toJsonTree(finalObj);
+  }
+  
+  public static class Builder {
+    private static Logger log = Logger.getLogger("edu.suffolk.assemblyline.efspserver.Person"); 
+
+    private static boolean hasStringMember(JsonObject obj, String memberName) {
+      return obj.has(memberName) 
+          && obj.get(memberName).isJsonPrimitive() 
+          && obj.getAsJsonPrimitive(memberName).isString();
+    }
+    
+    private static Optional<String> getStringMember(JsonObject obj, String memberName) {
+      if (obj.has(memberName) 
+          && obj.get(memberName).isJsonPrimitive() 
+          && obj.getAsJsonPrimitive(memberName).isString()) {
+        return Optional.of(obj.getAsJsonPrimitive(memberName).getAsString());
+      }
+      return Optional.empty();
+    }
+
+    public static Optional<Person> createPerson(JsonElement personJson) {
+      Gson gson = new GsonBuilder().setPrettyPrinting().create();
+      if (!personJson.isJsonObject()) {
+        log.warning("Refusing to parse person that isn't a Json Object: " 
+            + gson.toJson(personJson)); 
+        return Optional.empty();
+      }
+      JsonObject personSubset = personJson.getAsJsonObject();
+
+      List<String> phones = new ArrayList<String>();
+      if (hasStringMember(personSubset, "mobile_number")) {
+        String mobile = personSubset.getAsJsonPrimitive("mobile_number").getAsString();
+        if (!mobile.isBlank()) {
+          phones.add(mobile);
+        }
+      }
+      if (hasStringMember(personSubset, "phone_number")) {
+        String phone = personSubset.getAsJsonPrimitive("phone_number").getAsString();
+        if (!phone.isBlank()) {
+          phones.add(phone);
+        }
+      }
+      Optional<Address> addr = Optional.empty();
+      if (personSubset.has("address") && personSubset.get("address").isJsonObject()) {
+        JsonObject addressSubset = personSubset.getAsJsonObject("address");
+        addr = Address.Builder.createAddress(addressSubset);
+      }
+      Optional<String> email = getStringMember(personSubset, "email"); 
+      ContactInformation info = new ContactInformation(phones, addr, email);
+
+      if (!(personSubset.has("name") 
+          && personSubset.get("name").isJsonObject() 
+          && personSubset.getAsJsonObject("name").has("first"))) {
+        log.warning("Refusing to parse a person without a name / or first name");
+        return Optional.empty();
+      }
+      JsonObject nameSubset = personSubset.getAsJsonObject("name");
+      boolean isOrg = !(nameSubset.has("middle") || nameSubset.has("last"));
+      Name name = new Name(
+          "", // TODO(brycew): where should we handle prefixes? Are they always empty?
+          getStringMember(nameSubset, "first").orElse(""),
+          getStringMember(nameSubset, "middle").orElse(""),
+          getStringMember(nameSubset, "last").orElse(""),
+          getStringMember(nameSubset, "suffix").orElse(""),
+          "" // TODO(brycew): where would Maiden name go, if asked for?
+      );
+      
+      Optional<String> language = getStringMember(personSubset, "prefered_language");
+      Optional<String> gender = getStringMember(personSubset, "gender");
+      Optional<LocalDate> birthdate = Optional.empty(); // TODO(brycew): read in birthdate
+      Person per = new Person(name, info, gender, language, birthdate, isOrg);
+      return Optional.of(per);
+    }
   }
 }

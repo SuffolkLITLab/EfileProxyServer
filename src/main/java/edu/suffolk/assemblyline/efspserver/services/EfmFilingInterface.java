@@ -12,7 +12,8 @@ public interface EfmFilingInterface {
   public Optional<ErrorType> sendFiling(String courtLocationId, 
       List<Person> plaintiffs,
       List<Person> defendants,
-      CaseCategory caseCategoryCode, String caseType, String caseSubtype, List<Filing> filings,
+      CaseCategory caseCategoryCode, String caseType, String caseSubtype, 
+      List<Filing> filings,
       String paymentId);
  
 }

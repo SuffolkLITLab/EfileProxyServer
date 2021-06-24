@@ -1,13 +1,18 @@
 package edu.suffolk.assemblyline.efspserver;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import gov.niem.niem.fips_10_4._2.CountryCodeType;
 import gov.niem.niem.niem_core._2.AddressType;
 import gov.niem.niem.niem_core._2.ProperNameTextType;
 import gov.niem.niem.niem_core._2.StreetType;
 import gov.niem.niem.niem_core._2.StructuredAddressType;
+import java.util.List;
+import java.util.Optional;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
 
 public class Address {
@@ -104,5 +109,41 @@ public class Address {
   
   public JsonElement getAsStandardJson(Gson gson) {
     return gson.toJsonTree(this);
+  }
+  
+  static class Builder {
+
+    private static Logger log = Logger.getLogger("edu.suffolk.assemblyline.efspserver.Address"); 
+
+    private static boolean hasStringMember(JsonObject obj, String memberName) {
+      return obj.has(memberName) 
+          && obj.get(memberName).isJsonPrimitive() 
+          && obj.getAsJsonPrimitive(memberName).isString();
+    }
+    
+    public static Optional<Address> createAddress(JsonElement addressJson) {
+      Gson gson = new GsonBuilder().setPrettyPrinting().create();
+      if (!addressJson.isJsonObject()) {
+        log.warning("Refusing to parse Address that isn't a JsonObject: " 
+            + gson.toJson(addressJson));
+        return Optional.empty();
+      }
+      JsonObject addressSubset = addressJson.getAsJsonObject();
+      for (String member : List.of("address", "unit", "city", "state", "zip", "country")) {
+        if (!hasStringMember(addressSubset, member)) {
+          log.warning("Refusing to parse Address object that doesn't have a " + member 
+              + ": " + gson.toJson(addressJson));
+          return Optional.empty();
+        }
+      }
+      String address = addressSubset.getAsJsonPrimitive("address").getAsString();
+      String unit = addressSubset.getAsJsonPrimitive("unit").getAsString();
+      String city = addressSubset.getAsJsonPrimitive("city").getAsString();
+      String state = addressSubset.getAsJsonPrimitive("state").getAsString();
+      String zip = addressSubset.getAsJsonPrimitive("zip").getAsString();
+      String country = addressSubset.getAsJsonPrimitive("country").getAsString();
+      Address addr = new Address(address, unit, city, state, zip, country);
+      return Optional.of(addr);
+    }
   }
 }

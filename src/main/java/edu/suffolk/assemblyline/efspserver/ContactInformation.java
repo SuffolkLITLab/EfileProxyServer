@@ -13,12 +13,12 @@ import java.util.Optional;
 public class ContactInformation {
   private List<String> phoneNumbers;
   private Optional<Address> address;
-  private String email;
+  private Optional<String> email;
   
   
   /** Default constructor. */
   public ContactInformation(List<String> phoneNumbers, 
-      Optional<Address> address, String email) {
+      Optional<Address> address, Optional<String> email) {
     this.phoneNumbers = phoneNumbers;
     this.address = address;
     this.email = email;
@@ -26,17 +26,13 @@ public class ContactInformation {
   
   /** Minimal constructor, empty lists and empty optionals. */
   public ContactInformation(String email) {
-    this(List.of(), Optional.empty(), email);
+    this(List.of(), Optional.empty(), Optional.of(email));
   }
   
   public List<String> getPhoneNumbers() {
     return phoneNumbers;
   }
 
-  public String getEmail() {
-    return email;
-  }
-  
   /** Gets the ECF XML for contact information. */
   public ContactInformationType getEcfContactInformation() {
     final gov.niem.niem.niem_core._2.ObjectFactory niemObjFac = 
@@ -51,17 +47,17 @@ public class ContactInformation {
       tnt.setTelephoneNumberRepresentation(niemObjFac.createFullTelephoneNumber(ftnt));
       cit.getContactMeans().add(niemObjFac.createContactTelephoneNumber(tnt));
     }
-    cit.getContactMeans().add(niemObjFac.createContactEmailID(XmlHelper.convertString(email))); 
+    email.ifPresent((em) -> {
+      cit.getContactMeans().add(niemObjFac.createContactEmailID(XmlHelper.convertString(em))); 
+    });
     return cit;
   }
   
   /** Gets as a json object, used to communicate mainly with Jefferson Parish. */
   public JsonElement getAsStandardJson(Gson gson) {
     JsonObject contactInfo = new JsonObject(); 
-    contactInfo.add("ContactEmailID", new JsonPrimitive(email));
-    if (address.isPresent()) {
-      contactInfo.add("Address", address.get().getAsStandardJson(gson));
-    }
+    address.ifPresent((addr) -> contactInfo.add("Address", address.get().getAsStandardJson(gson)));
+    email.ifPresent((em) -> contactInfo.add("ContactEmailID", new JsonPrimitive(em)));
     int i = 0;
     for (String phoneNumber : phoneNumbers) {
       if (i == 0) {
