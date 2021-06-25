@@ -129,7 +129,7 @@ public class Address {
         return Optional.empty();
       }
       JsonObject addressSubset = addressJson.getAsJsonObject();
-      for (String member : List.of("address", "unit", "city", "state", "zip", "country")) {
+      for (String member : List.of("address", "unit", "city", "state", "zip")) {
         if (!hasStringMember(addressSubset, member)) {
           log.warning("Refusing to parse Address object that doesn't have a " + member 
               + ": " + gson.toJson(addressJson));
@@ -141,7 +141,10 @@ public class Address {
       String city = addressSubset.getAsJsonPrimitive("city").getAsString();
       String state = addressSubset.getAsJsonPrimitive("state").getAsString();
       String zip = addressSubset.getAsJsonPrimitive("zip").getAsString();
-      String country = addressSubset.getAsJsonPrimitive("country").getAsString();
+      String country = "US";
+      if (hasStringMember(addressSubset, "country")) {
+        country = addressSubset.getAsJsonPrimitive("country").getAsString();
+      }
       Address addr = new Address(address, unit, city, state, zip, country);
       return Optional.of(addr);
     }

@@ -3,6 +3,7 @@ package edu.suffolk.assemblyline.efspserver;
 import com.google.gson.JsonPrimitive;
 import edu.suffolk.assemblyline.efspserver.codes.CaseCategory;
 import edu.suffolk.assemblyline.efspserver.codes.CodeDatabase;
+import edu.suffolk.assemblyline.efspserver.codes.NameAndCode;
 import edu.suffolk.assemblyline.efspserver.services.ServiceHelpers;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.TextType;
@@ -892,7 +893,7 @@ public final class EfmClient {
     // filing code: complaint (27967): got from filing table, location = 'adams',
     // casecategory='210',
     // and filingtype='Both' or 'Initial'
-    String regActionDesc = "27967";
+    NameAndCode regActionDesc = new NameAndCode("Complaint", "27967");
     // SELECT * from filingcomponent where location = 'adams' and
     // filingcodeid='27967';
     String componentCode = "332";

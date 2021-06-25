@@ -54,10 +54,14 @@ public class EcfCaseTypeFactory {
       String queryType, 
       JsonElement jsonDump
   ) throws SQLException {
+    if (caseCategory.code.isEmpty()) {
+      return Optional.empty();
+    }
+    String caseCategoryCode = Integer.toString(caseCategory.code.get());
     JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug = 
         makeNiemCaseAug(courtLocationId);
     JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug = 
-              makeTylerCaseAug(courtLocationId, Integer.toString(caseCategory.code), 
+              makeTylerCaseAug(courtLocationId, caseCategoryCode, 
                   caseType, caseSubType, plaintiffs, defendants, filingIds,
                   paymentId, queryType);
     if (caseCategory.ecfcasetype.equals("CivilCase")) {
@@ -66,8 +70,7 @@ public class EcfCaseTypeFactory {
               caseAug, tylerAug,
               // TODO(brycew) from the gson
               new BigDecimal(500.0));
-      myCase.getValue().setCaseCategoryText(
-          XmlHelper.convertText(Integer.toString(caseCategory.code)));
+      myCase.getValue().setCaseCategoryText(XmlHelper.convertText(caseCategoryCode)); 
       return Optional.of(myCase);
     } else if (caseCategory.ecfcasetype.equals("DomesticCase")) {
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase = 
@@ -76,8 +79,7 @@ public class EcfCaseTypeFactory {
               // TODO(brycew) from the gson
               false
               );
-      myCase.getValue().setCaseCategoryText(
-          XmlHelper.convertText(Integer.toString(caseCategory.code)));
+      myCase.getValue().setCaseCategoryText(XmlHelper.convertText(caseCategoryCode)); 
       return Optional.of(myCase);
     } else {
       // TODO(brycew): start passing back why we couldn't make a case from this info

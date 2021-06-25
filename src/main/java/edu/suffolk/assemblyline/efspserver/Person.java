@@ -69,6 +69,18 @@ public class Person {
     return id;
   }
   
+  public ContactInformation getContactInfo() {
+    return contactInfo;
+  }
+  
+  public Optional<String> getLanguage() {
+    return language;
+  }
+  
+  public void setLanguage(String language) {
+    this.language = Optional.of(language);
+  }
+  
   /** Needs to have participant role set. */
   public CaseParticipantType getEcfCaseParticipant() {
     oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf = 

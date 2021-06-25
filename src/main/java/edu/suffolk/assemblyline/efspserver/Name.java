@@ -37,6 +37,8 @@ public class Name {
         .reduce((wd, n) -> {
           if (n.isBlank()) {
             return wd;
+          } else if (wd.isBlank()) {
+            return n;
           } else {
             return wd + " " + n;
           }

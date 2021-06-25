@@ -32,6 +32,14 @@ public class ContactInformation {
   public List<String> getPhoneNumbers() {
     return phoneNumbers;
   }
+  
+  public Optional<String> getEmail() {
+    return email;
+  }
+  
+  public Optional<Address> getAddress() {
+    return address;
+  }
 
   /** Gets the ECF XML for contact information. */
   public ContactInformationType getEcfContactInformation() {

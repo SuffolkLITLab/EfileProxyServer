@@ -1,18 +1,24 @@
 package edu.suffolk.assemblyline.efspserver;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import edu.suffolk.assemblyline.efspserver.codes.NameAndCode;
 import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.proxy.xsd._2.Base64Binary;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Logger;
+
 import javax.xml.bind.JAXBElement;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentAttachmentType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentMetadataType;
@@ -33,8 +39,7 @@ public class Filing {
   // See DueDateAvailableForFilers datafield and DocumentInformationCutOffDate
   Optional<LocalDate> dueDate; 
   // A valid filing code (complaint, motion, Appearance, Motion, etc.)
-  String regActionDesc;
-  // TODO(brycew): generate on construction
+  NameAndCode regActionDesc;
   private String id;
   
   // Required to at least have one
@@ -60,8 +65,21 @@ public class Filing {
 
   private boolean isLeadDoc;
   
+  /** Filing constructor for Jefferson Parish data. */
   public Filing(String fileName, InputStream fileStream,
-      String regActionDesc, List<String> filingPartyIds,
+      NameAndCode regActionDesc, List<String> filingPartyIds,
+      String filingComments)  {
+    this(fileName, fileStream, Optional.empty(), "", Optional.empty(), regActionDesc,
+        filingPartyIds, Optional.empty(), "", "", "", Optional.empty(),
+        List.of(), List.of(), FilingTypeType.E_FILE, true);
+    String[] splits = fileName.split("\\.");
+    if (splits.length > 1) {
+      documentTypeFormatStandardName = splits[1]; 
+    }
+  }
+  
+  public Filing(String fileName, InputStream fileStream,
+      NameAndCode regActionDesc, List<String> filingPartyIds,
       String documentTypeFormatStandardName,
       String binaryCategoryComponent, FilingTypeType filingAction) {
     this(fileName, fileStream, Optional.empty(), "", Optional.empty(), regActionDesc,
@@ -70,8 +88,9 @@ public class Filing {
         filingAction, true);
   }
 
+  /** Full constructor, in all it's mess. */
   public Filing(String fileName, InputStream fileStream, Optional<String> userProvidedDescription,
-      String documentFileControlId, Optional<LocalDate> dueDate, String regActionDesc,
+      String documentFileControlId, Optional<LocalDate> dueDate, NameAndCode regActionDesc,
       List<String> filingPartyIds, Optional<String> filingAttorney,
       String documentTypeFormatStandardName, String binaryCategoryComponent,
       String filingComments, Optional<String> motionType,
@@ -108,9 +127,8 @@ public class Filing {
   public JAXBElement<DocumentType> getDocument(int sequenceNum) throws IOException {
     tyler.ecf.extensions.common.ObjectFactory tylerObjFac = 
         new tyler.ecf.extensions.common.ObjectFactory();
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory oasisObjFac = 
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-    gov.niem.niem.niem_core._2.ObjectFactory niemObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
+    gov.niem.niem.niem_core._2.ObjectFactory niemObjFac = 
+        new gov.niem.niem.niem_core._2.ObjectFactory();
     DocumentType docType = tylerObjFac.createDocumentType();
     String desc = userProvidedDescription.orElse(fileName);
     docType.setDocumentDescriptionText(XmlHelper.convertText(desc));
@@ -121,9 +139,11 @@ public class Filing {
       docType.setDocumentInformationCutOffDate(cutOffDate);
     });
     
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory oasisObjFac = 
+        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     docType.setDocumentSequenceID(XmlHelper.convertString(Integer.toString(sequenceNum)));
     DocumentMetadataType metadata = oasisObjFac.createDocumentMetadataType();
-    metadata.setRegisterActionDescriptionText(XmlHelper.convertText(regActionDesc));
+    metadata.setRegisterActionDescriptionText(XmlHelper.convertText(regActionDesc.getCode()));
     if (filingAttorney.isPresent()) {
       metadata.setFilingAttorneyID(XmlHelper.convertId(filingAttorney.get(), "REFERENCE"));
     } else {
@@ -175,6 +195,7 @@ public class Filing {
   }
   
   public JsonElement getAsStandardJson(Gson gson) throws IOException {
+    // TODO(brycew): get David Benton to let us have multiple filing parties
     //JsonArray filingParties = new JsonArray(); 
     /*
     for (String filingPartyId : filingPartyIds) {
@@ -184,13 +205,12 @@ public class Filing {
       filingParties.add(filingParty);
     }
     */
-    // TODO(brycew): use Jackson, one less dependency?
     JsonObject filingParty = new JsonObject(); 
     filingParty.add("IdentificationID", new JsonPrimitive(filingPartyIds.get(0)));
     filingParty.add("IdentificationCategoryText", new JsonPrimitive("REFERENCE"));
     JsonObject metadata = new JsonObject(); 
     metadata.add("FilingPartyID", filingParty);
-    metadata.add("RegisterActionDescriptionText", new JsonPrimitive(regActionDesc));
+    metadata.add("RegisterActionDescriptionText", new JsonPrimitive(regActionDesc.getName()));
     
     JsonObject docAttachment = new JsonObject(); 
     byte[] data = fileStream.readAllBytes();  
@@ -203,5 +223,56 @@ public class Filing {
     finalObj.add("DocumentAttachment", docAttachment);
     finalObj.add("FilingCommentsText", new JsonPrimitive(filingComments));
     return finalObj; 
+  }
+  
+  public static class Builder {
+    private static Logger log = Logger.getLogger("mylogger"); 
+
+    private static boolean hasStringMember(JsonObject obj, String memberName) {
+      return obj.has(memberName) 
+          && obj.get(memberName).isJsonPrimitive() 
+          && obj.getAsJsonPrimitive(memberName).isString();
+    }
+
+    public static Optional<Filing> createFiling(JsonElement filingJson, 
+        List<String> filingPartyIds) {
+      Gson gson = new GsonBuilder().setPrettyPrinting().create();
+      log.info("Starting to extract filing" + gson.toJson(filingJson));
+      if (!filingJson.isJsonObject()) {
+        return Optional.empty();
+      }
+
+      JsonObject filingSubset = filingJson.getAsJsonObject();
+
+      try {
+        if (!hasStringMember(filingSubset, "data_url")) {
+          log.warning("Refusing to parse filing without data_url: " + gson.toJson(filingSubset));
+          return Optional.empty();
+        }
+        if (!hasStringMember(filingSubset, "filename")) {
+          log.warning("Refusing to parse filename without data_url: " + gson.toJson(filingSubset));
+          return Optional.empty();
+        }
+        // TODO(brycew): we need to put URLs of all of the other filings and read in those files
+        URL inUrl = new URL(filingSubset.getAsJsonPrimitive("data_url").getAsString());
+        // Get: filename
+        String fileName = filingSubset.getAsJsonPrimitive("filename").getAsString() + ".pdf";
+        // TODO(brycew): where can I get the "Motion" from the interview?
+        NameAndCode regActionDesc = new NameAndCode("Motion", "");
+        // TODO(brycew): grab the user's comments to the court clerk from the cover page
+        // TODO(brycew): the above will require us to pass the full json
+        String filingComments = "";
+        HttpURLConnection conn = (HttpURLConnection) inUrl.openConnection();
+        conn.setRequestMethod("GET");
+        return Optional.of(new Filing(fileName, conn.getInputStream(), regActionDesc, 
+            filingPartyIds, filingComments));
+      } catch (IOException ex) {
+        log.warning("IOException trying to to parse data_url: " + ex + ";; " 
+            + gson.toJson(filingSubset));
+        // TODO(brycew): this is where we should start returning errors instead of optionals
+        return Optional.empty();
+      }
+    }
+    
   }
 }
