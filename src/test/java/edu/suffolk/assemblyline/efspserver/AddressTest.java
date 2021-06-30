@@ -3,7 +3,10 @@ package edu.suffolk.assemblyline.efspserver;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.google.gson.JsonElement;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.suffolk.litlab.efspserver.Address;
+import edu.suffolk.litlab.efspserver.XmlHelper;
 import gov.niem.niem.niem_core._2.AddressType;
 import gov.niem.niem.niem_core._2.StructuredAddressType;
 import javax.xml.bind.JAXBElement;
@@ -44,16 +47,12 @@ public class AddressTest {
   
   @Test
   public void addressShouldMakeJson() {
-    JsonElement addrJson = addr.getAsStandardJson();
-    assertEquals(addrJson.getAsJsonObject().getAsJsonPrimitive("AddressLine1").getAsString(),
-        "100 Circle Road");
-    assertEquals(addrJson.getAsJsonObject().getAsJsonPrimitive("AddressLine2").getAsString(),
-        "Apt 2"); 
-    assertEquals(addrJson.getAsJsonObject().getAsJsonPrimitive("City").getAsString(),
-        "Plano"); 
-    assertEquals(addrJson.getAsJsonObject().getAsJsonPrimitive("State").getAsString(),
-        "TX"); 
-    assertEquals(addrJson.getAsJsonObject().getAsJsonPrimitive("ZipCode").getAsString(),
-        "75093"); 
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode addrJson = mapper.valueToTree(addr);
+    assertEquals(addrJson.get("AddressLine1").asText(), "100 Circle Road");
+    assertEquals(addrJson.get("AddressLine2").asText(), "Apt 2"); 
+    assertEquals(addrJson.get("City").asText(), "Plano"); 
+    assertEquals(addrJson.get("State").asText(), "TX"); 
+    assertEquals(addrJson.get("ZipCode").asText(), "75093"); 
   }
 }

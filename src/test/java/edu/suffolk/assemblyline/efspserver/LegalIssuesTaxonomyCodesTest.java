@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.opencsv.exceptions.CsvValidationException;
+import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
