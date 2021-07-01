@@ -34,3 +34,7 @@ client_sign.properties
 *.pcap
 
 .settings
+
+*:Zone.Identifier
+.history
+.vscode
