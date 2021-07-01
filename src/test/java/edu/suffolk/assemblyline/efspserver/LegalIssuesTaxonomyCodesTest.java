@@ -24,7 +24,7 @@ public class LegalIssuesTaxonomyCodesTest {
     assertThrows(NullPointerException.class, () -> new LegalIssuesTaxonomyCodes(null));  
     assertThrows(CsvValidationException.class, () -> {
       new LegalIssuesTaxonomyCodes(this.getClass().getResourceAsStream(
-          "/housing_tro_2_plaintiff_business_def_no_email.json"));
+          "/bad.csv"));
     });
   }
   
