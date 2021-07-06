@@ -1,8 +1,7 @@
-package edu.suffolk.assemblyline.efspserver;
+package edu.suffolk.litlab.efspserver;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-import edu.suffolk.litlab.efspserver.CodeUpdater;
 import edu.suffolk.litlab.efspserver.codes.CodeTableConstants;
 import java.util.Collection;
 import java.util.List;

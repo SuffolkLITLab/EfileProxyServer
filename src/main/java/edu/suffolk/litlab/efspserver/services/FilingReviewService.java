@@ -174,7 +174,7 @@ public class FilingReviewService {
     MediaType mediaType = httpHeaders.getMediaType();
     log.fine("New FilingDoc: Media type: " + mediaType);
     log.fine("Court id: " + courtId);
-    log.fine("All vars: " + allVars.substring(0, Integer.min(100, allVars.length()- 1)));
+    log.fine("All vars: " + allVars.substring(0, Integer.min(100, allVars.length() - 1)));
     if (!filingInterfaces.containsKey(courtId)) {
       return Response.status(404).entity("Cannot send filing to " + courtId).build();
     }
@@ -184,7 +184,7 @@ public class FilingReviewService {
       if (maybeInfo.isErr()) {
         return Response.status(400).entity(maybeInfo.unwrapErrOrElseThrow()).build();
       }
-      FilingInformation info= maybeInfo.unwrapOrElseThrow();
+      FilingInformation info = maybeInfo.unwrapOrElseThrow();
       info.setCourtLocation(courtId);
       Result<NullValue, ErrorType> result = 
           filingInterfaces.get(courtId).sendFiling(info);
@@ -196,8 +196,6 @@ public class FilingReviewService {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     }
     /*
-    // TODO(brycew): handle mutliplexing between backends here if need be
-    
     // TODO(brycew): actually read in JSON data and delete this hardcoded data
     Address plaintiffAddress = new Address("83 Fake St", "Apt 2", "Boston", "MA", "02125", "US");
     ContactInformation plaintiffContact = new ContactInformation(List.of(), 

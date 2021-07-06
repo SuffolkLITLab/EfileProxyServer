@@ -86,6 +86,10 @@ public class Person {
     this.language = Optional.of(language);
   }
   
+  public void setRole(String role) {
+    this.role = role;
+  }
+  
   /** Needs to have participant role set. */
   public CaseParticipantType getEcfCaseParticipant() {
     oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf = 

@@ -22,17 +22,28 @@ public class FilingJeffNetJacksonSerializer extends StdSerializer<FilingDoc> {
   public void serialize(FilingDoc filingDoc, JsonGenerator gen, SerializerProvider provider)
       throws IOException {
     List<FilingParty> filingPartyList = new ArrayList<FilingParty>(); 
-    for (String filingPartyId : filingDoc.getFilingPartyIds()) { 
+
+    gen.writeStartObject();
+    /*if (filingDoc.getFilingPartyIds().size() == 1) {
       FilingParty p = new FilingParty();
-      p.id = filingPartyId; 
+      p.id = filingDoc.getFilingPartyIds().get(0);
       p.idCategoryText = "REFERENCE";
-      filingPartyList.add(p);
-    }
-    FilingParties filingParties = new FilingParties();
-    filingParties.filingParties = filingPartyList;
-    Metadata metadata = new Metadata(); 
-    metadata.filingParties = filingParties;
-    metadata.regAction = filingDoc.getRegisterAction().getName();
+      SingleMetadata metadata = new SingleMetadata();
+      metadata.filingParty = p;
+      metadata.regAction = filingDoc.getRegisterAction().getName();
+      gen.writeObjectField("DocumentMetadata", metadata);
+    } else {*/
+      for (String filingPartyId : filingDoc.getFilingPartyIds()) { 
+        FilingParty p = new FilingParty();
+        p.id = filingPartyId; 
+        p.idCategoryText = "REFERENCE";
+        filingPartyList.add(p);
+      }
+      Metadata metadata = new Metadata(); 
+      metadata.filingParties = filingPartyList;
+      metadata.regAction = filingDoc.getRegisterAction().getName();
+      gen.writeObjectField("DocumentMetadata", metadata);
+    //}
     
     DocAttachment docAttachment = new DocAttachment(); 
     byte[] data = filingDoc.getFileContents(); 
@@ -40,8 +51,6 @@ public class FilingJeffNetJacksonSerializer extends StdSerializer<FilingDoc> {
     docAttachment.encodedDoc = encodedDoc;
     docAttachment.documentName = filingDoc.getFileName(); 
     
-    gen.writeStartObject();
-    gen.writeObjectField("DocumentMetadata", metadata);
     gen.writeObjectField("DocumentAttachment", docAttachment);
     gen.writeStringField("FilingCommentsText", filingDoc.getFilingComments());
     gen.writeEndObject();
@@ -57,16 +66,21 @@ public class FilingJeffNetJacksonSerializer extends StdSerializer<FilingDoc> {
   
   private class Metadata {
     @JsonProperty("FilingParties")
-    FilingParties filingParties;
+    List<FilingParty> filingParties;
     
     @JsonProperty("RegisterActionDescriptionText")
     String regAction;
   }
   
-  private class FilingParties {
+  /*
+  private class SingleMetadata {
     @JsonProperty("FilingParty")
-    List<FilingParty> filingParties;
+    FilingParty filingParty;
+   
+    @JsonProperty("RegisterActionDescriptionText")
+    String regAction;
   }
+  */
   
   private class FilingParty {
     @JsonProperty("IdentificationID")

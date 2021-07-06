@@ -107,15 +107,26 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
     // TODO(brycew): plaintiff and petitioners are both defined. 
     // Typical role might have the difference, take which is available
-    userStartedCase.ifPresent((started) -> {
-      if (started) {
-        entities.setPlaintiffs(users);
-        entities.setDefendants(otherParties);
-      } else {
-        entities.setPlaintiffs(otherParties);
-        entities.setDefendants(users);
-      }
-    });
+    boolean started = userStartedCase.get(); 
+    if (started) {
+      users.forEach((user) -> {
+        user.setRole("Plaintiff");
+      });
+      entities.setPlaintiffs(users);
+      otherParties.forEach((other) -> {
+        other.setRole("Defendant");
+      });
+      entities.setDefendants(otherParties);
+    } else {
+      users.forEach((user) -> {
+        user.setRole("Defendant");
+      });
+      entities.setPlaintiffs(otherParties);
+      otherParties.forEach((other) -> {
+        other.setRole("Plaintiff");
+      });
+      entities.setDefendants(users);
+    }
       
     // Get the interview metadablock TODO(brycew): just one for now
     // TODO(brycew): also be better at errors here

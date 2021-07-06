@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.niem.niem.fips_10_4._2.CountryCodeType;
 import gov.niem.niem.niem_core._2.AddressType;
@@ -61,6 +62,7 @@ public class Address {
   /** Returns the "ContactMeans" XML object from this address. Can be used in the 
    * ContactInformation element.
    */
+  @JsonIgnore
   public JAXBElement<AddressType> getAsNiemContactMeans() {
     gov.niem.niem.niem_core._2.ObjectFactory niemObjFac =
         new gov.niem.niem.niem_core._2.ObjectFactory();
@@ -83,6 +85,7 @@ public class Address {
   /** Returns the Tyler specific "AddressType" from this address. 
    * Used for service contacts, etc. 
    */
+  @JsonIgnore
   public tyler.efm.services.schema.common.AddressType getAsTylerAddress() {
     tyler.efm.services.schema.common.ObjectFactory efmObjFac = 
         new tyler.efm.services.schema.common.ObjectFactory();

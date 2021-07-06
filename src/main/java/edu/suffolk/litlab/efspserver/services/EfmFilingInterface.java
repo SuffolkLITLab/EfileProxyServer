@@ -6,5 +6,5 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 import tyler.efm.services.schema.common.ErrorType;
 
 public interface EfmFilingInterface {
-  public Result<NullValue, ErrorType> sendFiling(FilingInformation stuff);
+  public Result<NullValue, ErrorType> sendFiling(FilingInformation info);
 }

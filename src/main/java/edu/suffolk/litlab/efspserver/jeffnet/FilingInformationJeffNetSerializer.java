@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Person;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,9 +24,12 @@ public class FilingInformationJeffNetSerializer extends StdSerializer<FilingInfo
       throws IOException {
     CaseInfo caseInfo = new CaseInfo();
     caseInfo.caseCourt = info.getCourtLocation();
-    caseInfo.caseCategory = info.getCaseCategory().name;
+    caseInfo.caseCategory = info.getCaseCategory().ecfcasetype;
     caseInfo.caseType = info.getCaseType();
     caseInfo.caseSubtype = info.getCaseSubtype();
+    caseInfo.participants = new ArrayList<Person>();
+    caseInfo.participants.addAll(info.getDefendants());
+    caseInfo.participants.addAll(info.getPlaintiffs());
     
     SendingMde mde = new SendingMde();
     mde.ourUrl = "https://suffolk-operating-url.org";
@@ -52,7 +56,7 @@ public class FilingInformationJeffNetSerializer extends StdSerializer<FilingInfo
     @JsonProperty("CaseCategoryText")
     String caseCategory;
     
-    @JsonProperty("CaseTypeTex")
+    @JsonProperty("CaseTypeText")
     String caseType;
     
     @JsonProperty("CaseSubTypeText")

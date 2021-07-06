@@ -23,12 +23,21 @@ public class JeffNetFiler implements EfmFilingInterface {
   
   private URI filingEndpoint;
   private String apiToken;
+  private SimpleModule module;
   
   public JeffNetFiler(String filingEndpoint, String apiToken) throws URISyntaxException {
     this.filingEndpoint = new URI(filingEndpoint);
     this.apiToken = apiToken;
+    
+    this.module = new SimpleModule();
+    module.addSerializer(new FilingInformationJeffNetSerializer(FilingInformation.class));
+    module.addSerializer(
+        new ContactInfoJeffNetJacksonSerializer(ContactInformation.class));
+    module.addSerializer(new NameJeffNetJacksonSerializer(Name.class));
+    module.addSerializer(new FilingJeffNetJacksonSerializer(FilingDoc.class));
+    module.addSerializer(new PersonJeffNetJacksonSerializer(Person.class));
   }
-
+  
   @Override
   public Result<NullValue, ErrorType> sendFiling(FilingInformation info) {
     
@@ -39,15 +48,8 @@ public class JeffNetFiler implements EfmFilingInterface {
       return Result.err(err);
     }
     
-    SimpleModule module = new SimpleModule();
-    module.addSerializer(new FilingInformationJeffNetSerializer(FilingInformation.class));
-    module.addSerializer(
-        new ContactInfoJeffNetJacksonSerializer(ContactInformation.class));
-    module.addSerializer(new NameJeffNetJacksonSerializer(Name.class));
-    module.addSerializer(new FilingJeffNetJacksonSerializer(FilingDoc.class));
-    module.addSerializer(new PersonJeffNetJacksonSerializer(Person.class));
     ObjectMapper mapper = new ObjectMapper();
-    mapper.registerModule(module);
+    mapper.registerModule(this.module);
     
     try {
       String finalStr = mapper.writeValueAsString(info);
@@ -64,6 +66,12 @@ public class JeffNetFiler implements EfmFilingInterface {
           .build();
       HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
       System.err.println("Got err response code: " + response.body() + " " + response.statusCode());
+      if (response.statusCode() != 200) {
+        ErrorType err = new ErrorType();
+        err.setErrorCode(Integer.toString(response.statusCode()));
+        err.setErrorText(response.body());
+        return Result.err(err);
+      }
     } catch (InterruptedException ex) {
       ErrorType err = new ErrorType();
       err.setErrorCode("-1");

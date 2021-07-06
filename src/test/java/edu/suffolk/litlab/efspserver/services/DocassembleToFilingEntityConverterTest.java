@@ -1,4 +1,4 @@
-package edu.suffolk.assemblyline.efspserver.services;
+package edu.suffolk.litlab.efspserver.services;
 
 import static com.hubspot.assertj.algebra.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -12,8 +12,6 @@ import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingEntityConverter;
-import edu.suffolk.litlab.efspserver.services.ExtractError;
-import edu.suffolk.litlab.efspserver.services.InterviewToFilingEntityConverter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,7 +72,8 @@ public class DocassembleToFilingEntityConverterTest {
     String contents = getFileContents("/housing_tro_2_plaintiff_business_def_no_email.json"); 
     Result<FilingInformation, ExtractError> result = converter.extractEntities(contents);
     assertThat(result).isErr()
-        .containsErr(new ExtractError(ExtractError.Type.MissingRequired, "users[0]", "users[0].email"));
+        .containsErr(new ExtractError(ExtractError.Type.MissingRequired, 
+            "users[0]", "users[0].email"));
   }
   
   @Test

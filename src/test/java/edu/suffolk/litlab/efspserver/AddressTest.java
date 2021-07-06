@@ -1,12 +1,10 @@
-package edu.suffolk.assemblyline.efspserver;
+package edu.suffolk.litlab.efspserver;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.suffolk.litlab.efspserver.Address;
-import edu.suffolk.litlab.efspserver.XmlHelper;
 import gov.niem.niem.niem_core._2.AddressType;
 import gov.niem.niem.niem_core._2.StructuredAddressType;
 import javax.xml.bind.JAXBElement;
