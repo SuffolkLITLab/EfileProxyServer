@@ -35,7 +35,8 @@ public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person
   /** Parses a person from the Json Object. Used by Deserializers that include people. */
   public static Person fromNode(JsonNode node, JsonParser p) throws JsonProcessingException {
     if (!node.isObject()) {
-      throw new JsonParseException(p, "Refusing to parse person that isn't a Json Object: " + node.toPrettyString());
+      throw new JsonParseException(p,
+          "Refusing to parse person that isn't a Json Object: " + node.toPrettyString());
     }
     
     List<String> phones = new ArrayList<String>();

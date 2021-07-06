@@ -18,7 +18,7 @@ import tyler.ecf.extensions.common.DocumentType;
 import tyler.ecf.extensions.common.FilingTypeType;
 
 // TODO(brycew): this class is a mess. Redo please
-public class Filing {
+public class FilingDoc {
   // Provides Document Type code / BinaryFormatStandardName
   String fileName; 
   byte[] fileContents;
@@ -55,13 +55,13 @@ public class Filing {
 
   private boolean isLeadDoc;
   
-  public Filing(String fileName, InputStream fileStream, NameAndCode regActionDesc) throws IOException {
+  public FilingDoc(String fileName, InputStream fileStream, NameAndCode regActionDesc) throws IOException {
     this(fileName, fileStream, regActionDesc, List.of(), "");
   }
   
-  /** Filing constructor for Jefferson Parish data. 
+  /** FilingDoc constructor for Jefferson Parish data. 
    * @throws IOException */
-  public Filing(String fileName, InputStream fileStream,
+  public FilingDoc(String fileName, InputStream fileStream,
       NameAndCode regActionDesc, List<String> filingPartyIds,
       String filingComments) throws IOException  {
     this(fileName, fileStream.readAllBytes(), Optional.empty(), "", Optional.empty(), regActionDesc,
@@ -73,7 +73,7 @@ public class Filing {
     }
   }
   
-  public Filing(String fileName, InputStream fileStream,
+  public FilingDoc(String fileName, InputStream fileStream,
       NameAndCode regActionDesc, List<String> filingPartyIds,
       String documentTypeFormatStandardName,
       String binaryCategoryComponent, FilingTypeType filingAction) throws IOException {
@@ -84,7 +84,7 @@ public class Filing {
   }
 
   /** Full constructor, in all it's mess. */
-  public Filing(String fileName, byte[] fileContents, Optional<String> userProvidedDescription,
+  public FilingDoc(String fileName, byte[] fileContents, Optional<String> userProvidedDescription,
       String documentFileControlId, Optional<LocalDate> dueDate, NameAndCode regActionDesc,
       List<String> filingPartyIds, Optional<String> filingAttorney,
       String documentTypeFormatStandardName, String binaryCategoryComponent,

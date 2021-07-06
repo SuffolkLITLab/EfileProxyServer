@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.hubspot.algebra.Result;
 import com.opencsv.exceptions.CsvValidationException;
 import edu.suffolk.litlab.efspserver.Address;
-import edu.suffolk.litlab.efspserver.Filing;
-import edu.suffolk.litlab.efspserver.FilingStuff;
+import edu.suffolk.litlab.efspserver.FilingDoc;
+import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.ExtractError;
@@ -28,17 +28,18 @@ public class DocassembleToFilingEntityConverter implements InterviewToFilingEnti
   }
 
   @Override
-  public Result<FilingStuff, ExtractError> extractEntities(String interviewContents) {
+  public Result<FilingInformation, ExtractError> extractEntities(String interviewContents) {
     SimpleModule module = new SimpleModule();
-    module.addDeserializer(Filing.class, new FilingDocassembleJacksonDeserializer(Filing.class)); 
+    module.addDeserializer(FilingDoc.class, 
+        new FilingDocDocassembleJacksonDeserializer(FilingDoc.class)); 
     module.addDeserializer(Address.class, new AddressDocassembleJacksonDeserializer(Address.class));
     module.addDeserializer(Person.class, new PersonDocassembleJacksonDeserializer(Person.class));
-    module.addDeserializer(FilingStuff.class, 
-        new FilingStuffDocassembleJacksonDeserializer(FilingStuff.class, codes));
+    module.addDeserializer(FilingInformation.class, 
+        new FilingInformationDocassembleJacksonDeserializer(FilingInformation.class, codes));
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(module);
     try {
-      FilingStuff entities = mapper.readValue(interviewContents, FilingStuff.class);
+      FilingInformation entities = mapper.readValue(interviewContents, FilingInformation.class);
       if (entities == null) {
         return Result.err(new ExtractError(ExtractError.Type.MalformedInterview));
       }

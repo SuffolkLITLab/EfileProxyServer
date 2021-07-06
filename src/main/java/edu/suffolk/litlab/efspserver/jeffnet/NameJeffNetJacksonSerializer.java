@@ -6,11 +6,11 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import edu.suffolk.litlab.efspserver.Name;
 import java.io.IOException;
 
-public class NameJacksonJeffParishSerializer extends StdSerializer<Name> {
+public class NameJeffNetJacksonSerializer extends StdSerializer<Name> {
 
   private static final long serialVersionUID = 1L;
   
-  public NameJacksonJeffParishSerializer(Class<Name> t) {
+  public NameJeffNetJacksonSerializer(Class<Name> t) {
     super(t);
   }
   

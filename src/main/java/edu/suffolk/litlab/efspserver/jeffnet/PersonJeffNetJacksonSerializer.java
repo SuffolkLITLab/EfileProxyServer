@@ -7,11 +7,11 @@ import edu.suffolk.litlab.efspserver.Person;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
-public class PersonJeffParishJsonSerializer extends StdSerializer<Person> {
+public class PersonJeffNetJacksonSerializer extends StdSerializer<Person> {
   
   private static final long serialVersionUID = 1L;
   
-  public PersonJeffParishJsonSerializer(Class<Person> t) {
+  public PersonJeffNetJacksonSerializer(Class<Person> t) {
     super(t);
   }
   

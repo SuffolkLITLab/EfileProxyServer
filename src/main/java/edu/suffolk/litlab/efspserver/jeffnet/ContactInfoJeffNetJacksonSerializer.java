@@ -1,19 +1,17 @@
 package edu.suffolk.litlab.efspserver.jeffnet;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-
 import edu.suffolk.litlab.efspserver.ContactInformation;
+import java.io.IOException;
 
 /** Gets as a json object, used to communicate mainly with Jefferson Parish. */
-public class ContactInformationJacksonJeffParishSerializer extends StdSerializer<ContactInformation>{
+public class ContactInfoJeffNetJacksonSerializer extends StdSerializer<ContactInformation> {
   
   private static final long serialVersionUID = 1L;
 
-  public ContactInformationJacksonJeffParishSerializer(Class<ContactInformation> t) {
+  public ContactInfoJeffNetJacksonSerializer(Class<ContactInformation> t) {
     super(t);
   }
   

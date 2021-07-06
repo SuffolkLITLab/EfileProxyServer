@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
  * URL to it.
  * <a href="https://github.com/pablod/xsd-downloader">Github here</a>
  *
- * @author https://github.com/pablod
+ * @author c 
  */
 public class XsdDownloader {
 

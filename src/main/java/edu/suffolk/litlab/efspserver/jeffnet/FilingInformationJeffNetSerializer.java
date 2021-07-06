@@ -4,28 +4,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import edu.suffolk.litlab.efspserver.FilingStuff;
+import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Person;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-public class FilingStuffJeffParistSerializer extends StdSerializer<FilingStuff> {
+public class FilingInformationJeffNetSerializer extends StdSerializer<FilingInformation> {
 
   private static final long serialVersionUID = 1L;
 
-  protected FilingStuffJeffParistSerializer(Class<FilingStuff> t) {
+  protected FilingInformationJeffNetSerializer(Class<FilingInformation> t) {
     super(t);
   }
 
   @Override
-  public void serialize(FilingStuff stuff, JsonGenerator gen, SerializerProvider provider)
+  public void serialize(FilingInformation info, JsonGenerator gen, SerializerProvider provider)
       throws IOException {
     CaseInfo caseInfo = new CaseInfo();
-    caseInfo.caseCourt = stuff.getCourtLocation();
-    caseInfo.caseCategory = stuff.getCaseCategory().name;
-    caseInfo.caseType = stuff.getCaseType();
-    caseInfo.caseSubtype = stuff.getCaseSubtype();
+    caseInfo.caseCourt = info.getCourtLocation();
+    caseInfo.caseCategory = info.getCaseCategory().name;
+    caseInfo.caseType = info.getCaseType();
+    caseInfo.caseSubtype = info.getCaseSubtype();
     
     SendingMde mde = new SendingMde();
     mde.ourUrl = "https://suffolk-operating-url.org";
@@ -41,7 +41,7 @@ public class FilingStuffJeffParistSerializer extends StdSerializer<FilingStuff> 
     gen.writeObjectField("SendingMDELocationID", mde);
     gen.writeObjectField("CaseInfo", caseInfo);
     gen.writeObjectField("Callback", callbackObj);
-    gen.writeObjectField("FilingLeadDocument", stuff.getFilings().get(0));
+    gen.writeObjectField("FilingLeadDocument", info.getFilings().get(0));
     gen.writeEndObject();
   }
 

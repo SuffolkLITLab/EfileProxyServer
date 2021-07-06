@@ -3,7 +3,7 @@ package edu.suffolk.litlab.efspserver;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import java.util.List;
 
-public class FilingStuff {
+public class FilingInformation {
   private String courtLocationId;
   private List<Person> plaintiffs;
   private List<Person> defendants;
@@ -12,7 +12,7 @@ public class FilingStuff {
   private CaseCategory caseCategory;
   private String caseType;
   private String caseSubtype;
-  private List<Filing> filings;
+  private List<FilingDoc> filingDocs;
   private String paymentId;
   
   public String getCourtLocation() {
@@ -39,8 +39,8 @@ public class FilingStuff {
     return caseSubtype;
   }
   
-  public List<Filing> getFilings() {
-    return filings;
+  public List<FilingDoc> getFilings() {
+    return filingDocs;
   }
   
   public String getPaymentId() {
@@ -71,8 +71,8 @@ public class FilingStuff {
     this.caseSubtype = caseSubtype;
   }
   
-  public void setFilings(List<Filing> filings) {
-    this.filings = filings;
+  public void setFilings(List<FilingDoc> filingDocs) {
+    this.filingDocs = filingDocs;
   }
   
   public void setPaymentId(String paymentId) {

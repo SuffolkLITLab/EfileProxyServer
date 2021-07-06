@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.EcfCaseTypeFactory;
-import edu.suffolk.litlab.efspserver.Filing;
-import edu.suffolk.litlab.efspserver.FilingStuff;
+import edu.suffolk.litlab.efspserver.FilingDoc;
+import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.PaymentFactory;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
@@ -48,7 +48,7 @@ public class OasisEcfFiler implements EfmFilingInterface {
   
   @Override
   public Result<NullValue, tyler.efm.services.schema.common.ErrorType> sendFiling(
-      FilingStuff stuff) {
+      FilingInformation stuff) {
     FilingReviewMDEPort filingPort = makeFilingService(this.headersList);
     EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
     try {
@@ -75,11 +75,11 @@ public class OasisEcfFiler implements EfmFilingInterface {
       cfm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
       cfm.setCase(assembledCase.get());
       int seqNum = 0;
-      for (Filing filing : stuff.getFilings()) {
-        if (filing.isLead()) {
-          cfm.getFilingLeadDocument().add(filing.getDocument(seqNum));
+      for (FilingDoc filingDoc : stuff.getFilings()) {
+        if (filingDoc.isLead()) {
+          cfm.getFilingLeadDocument().add(filingDoc.getDocument(seqNum));
         } else {
-          cfm.getFilingConnectedDocument().add(filing.getDocument(seqNum));
+          cfm.getFilingConnectedDocument().add(filingDoc.getDocument(seqNum));
         }
         seqNum += 1;
       }
