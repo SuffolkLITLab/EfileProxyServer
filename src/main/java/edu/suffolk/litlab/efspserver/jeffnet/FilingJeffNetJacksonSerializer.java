@@ -24,26 +24,16 @@ public class FilingJeffNetJacksonSerializer extends StdSerializer<FilingDoc> {
     List<FilingParty> filingPartyList = new ArrayList<FilingParty>(); 
 
     gen.writeStartObject();
-    /*if (filingDoc.getFilingPartyIds().size() == 1) {
+    for (String filingPartyId : filingDoc.getFilingPartyIds()) { 
       FilingParty p = new FilingParty();
-      p.id = filingDoc.getFilingPartyIds().get(0);
+      p.id = filingPartyId; 
       p.idCategoryText = "REFERENCE";
-      SingleMetadata metadata = new SingleMetadata();
-      metadata.filingParty = p;
-      metadata.regAction = filingDoc.getRegisterAction().getName();
-      gen.writeObjectField("DocumentMetadata", metadata);
-    } else {*/
-      for (String filingPartyId : filingDoc.getFilingPartyIds()) { 
-        FilingParty p = new FilingParty();
-        p.id = filingPartyId; 
-        p.idCategoryText = "REFERENCE";
-        filingPartyList.add(p);
-      }
-      Metadata metadata = new Metadata(); 
-      metadata.filingParties = filingPartyList;
-      metadata.regAction = filingDoc.getRegisterAction().getName();
-      gen.writeObjectField("DocumentMetadata", metadata);
-    //}
+      filingPartyList.add(p);
+    }
+    Metadata metadata = new Metadata(); 
+    metadata.filingParties = filingPartyList;
+    metadata.regAction = filingDoc.getRegisterAction().getName();
+    gen.writeObjectField("DocumentMetadata", metadata);
     
     DocAttachment docAttachment = new DocAttachment(); 
     byte[] data = filingDoc.getFileContents(); 
@@ -71,16 +61,6 @@ public class FilingJeffNetJacksonSerializer extends StdSerializer<FilingDoc> {
     @JsonProperty("RegisterActionDescriptionText")
     String regAction;
   }
-  
-  /*
-  private class SingleMetadata {
-    @JsonProperty("FilingParty")
-    FilingParty filingParty;
-   
-    @JsonProperty("RegisterActionDescriptionText")
-    String regAction;
-  }
-  */
   
   private class FilingParty {
     @JsonProperty("IdentificationID")
