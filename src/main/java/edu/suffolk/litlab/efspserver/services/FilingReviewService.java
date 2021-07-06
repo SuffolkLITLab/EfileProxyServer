@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Logger;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -34,6 +33,8 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusresponsemessage_4.FilingStatusResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingReviewMDEPort;
 import org.apache.cxf.headers.Header;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tyler.ecf.extensions.cancelfilingmessage.CancelFilingMessageType;
 import tyler.ecf.extensions.cancelfilingresponsemessage.CancelFilingResponseMessageType;
 import tyler.ecf.extensions.filingdetailquerymessage.FilingDetailQueryMessageType;
@@ -46,7 +47,7 @@ import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEServi
 public class FilingReviewService {
 
   private static Logger log = 
-      Logger.getLogger("edu.suffolk.litlab.efspserver.services.FilingReviewService"); 
+      LoggerFactory.getLogger(FilingReviewService.class); 
 
   private FilingReviewMDEService filingFactory;
   private CodeDatabase cd;
@@ -153,7 +154,7 @@ public class FilingReviewService {
       m.getDateRange().add(null);
       FilingListResponseMessageType resp = port.get().getFilingList(m);
       for (MatchingFilingType match : resp.getMatchingFiling()) {
-        log.fine("Matched: " + match.getCaseTrackingID() + ", " + match);
+        log.trace("Matched: " + match.getCaseTrackingID() + ", " + match);
       }
       return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
           () -> {
@@ -172,9 +173,9 @@ public class FilingReviewService {
   public Response submitFilingForReview(@Context HttpHeaders httpHeaders, 
       @PathParam("court_id") String courtId, String allVars) {
     MediaType mediaType = httpHeaders.getMediaType();
-    log.fine("New FilingDoc: Media type: " + mediaType);
-    log.fine("Court id: " + courtId);
-    log.fine("All vars: " + allVars.substring(0, Integer.min(100, allVars.length() - 1)));
+    log.trace("New FilingDoc: Media type: " + mediaType);
+    log.trace("Court id: " + courtId);
+    log.trace("All vars: " + allVars.substring(0, Integer.min(100, allVars.length() - 1)));
     if (!filingInterfaces.containsKey(courtId)) {
       return Response.status(404).entity("Cannot send filing to " + courtId).build();
     }

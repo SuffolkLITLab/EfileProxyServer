@@ -26,8 +26,8 @@ public class EfmFirmService extends Service {
     static {
         URL url = EfmFirmService.class.getClassLoader().getResource("wsdl/EFMFirmServiceSingle.svc.wsdl");
         if (url == null) {
-            java.util.logging.Logger.getLogger(EfmFirmService.class.getName())
-                .log(java.util.logging.Level.INFO,
+            org.slf4j.LoggerFactory.getLogger(EfmFirmService.class.getName())
+                .info(
                      "Can not initialize the default wsdl from {0}", "classpath:wsdl/EFMFirmServiceSingle.svc.wsdl");
         }
         WSDL_LOCATION = url;

@@ -2,7 +2,8 @@ package edu.suffolk.litlab.efspserver.services;
 
 import edu.suffolk.litlab.efspserver.SendMessage;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -18,7 +19,7 @@ import javax.ws.rs.core.MediaType;
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 public class EfmCallback {
   private static Logger log = 
-      Logger.getLogger("edu.suffolk.litlab.efspserver.services.EfmCallback"); 
+      LoggerFactory.getLogger(EfmCallback.class); 
 
   // @POST("/court/{court_id}/{filing_id}/status")
   /*
