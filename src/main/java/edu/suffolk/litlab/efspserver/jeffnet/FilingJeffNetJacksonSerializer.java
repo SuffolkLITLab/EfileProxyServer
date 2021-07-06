@@ -4,49 +4,45 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import edu.suffolk.litlab.efspserver.Filing;
+import edu.suffolk.litlab.efspserver.FilingDoc;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
-public class FilingJeffParishJacksonSerializer extends StdSerializer<Filing> {
+public class FilingJeffNetJacksonSerializer extends StdSerializer<FilingDoc> {
 
   private static final long serialVersionUID = 1L;
 
-  protected FilingJeffParishJacksonSerializer(Class<Filing> t) {
+  protected FilingJeffNetJacksonSerializer(Class<FilingDoc> t) {
     super(t);
   }
 
   @Override
-  public void serialize(Filing filing, JsonGenerator gen, SerializerProvider provider)
+  public void serialize(FilingDoc filingDoc, JsonGenerator gen, SerializerProvider provider)
       throws IOException {
-    // TODO(brycew): get David Benton to let us have multiple filing parties
-    //List<FilingParty> filingParties = new ArrayList(); 
-    /*
-    for (String filingPartyId : filing.getFilingPartyIds()) { 
-      FilingParty p = new FilingParty
+    List<FilingParty> filingPartyList = new ArrayList<FilingParty>(); 
+
+    gen.writeStartObject();
+    for (String filingPartyId : filingDoc.getFilingPartyIds()) { 
+      FilingParty p = new FilingParty();
       p.id = filingPartyId; 
       p.idCategoryText = "REFERENCE";
-      filingParties.add(p);
+      filingPartyList.add(p);
     }
-    metadata.filingPartyId = filingParties;
-    */
-    FilingParty p = new FilingParty();
-    p.id = filing.getFilingPartyIds().get(0);
-    p.idCategoryText = "REFERENCE";
     Metadata metadata = new Metadata(); 
-    metadata.filingPartyId = p;
-    metadata.regAction = filing.getRegisterAction().getName();
+    metadata.filingParties = filingPartyList;
+    metadata.regAction = filingDoc.getRegisterAction().getName();
+    gen.writeObjectField("DocumentMetadata", metadata);
     
     DocAttachment docAttachment = new DocAttachment(); 
-    byte[] data = filing.getFileContents(); 
+    byte[] data = filingDoc.getFileContents(); 
     String encodedDoc = new String(Base64.getEncoder().encode(data));
     docAttachment.encodedDoc = encodedDoc;
-    docAttachment.documentName = filing.getFileName(); 
+    docAttachment.documentName = filingDoc.getFileName(); 
     
-    gen.writeStartObject();
-    gen.writeObjectField("DocumentMetadata", metadata);
     gen.writeObjectField("DocumentAttachment", docAttachment);
-    gen.writeStringField("FilingCommentsText", filing.getFilingComments());
+    gen.writeStringField("FilingCommentsText", filingDoc.getFilingComments());
     gen.writeEndObject();
   }
   
@@ -59,9 +55,8 @@ public class FilingJeffParishJacksonSerializer extends StdSerializer<Filing> {
   }
   
   private class Metadata {
-    // TODO(brycew): get David Benton to let us have multiple filing parties
-    @JsonProperty("FilingPartyID")
-    FilingParty filingPartyId;
+    @JsonProperty("FilingParties")
+    List<FilingParty> filingParties;
     
     @JsonProperty("RegisterActionDescriptionText")
     String regAction;

@@ -1,4 +1,4 @@
-package edu.suffolk.assemblyline.efspserver.services;
+package edu.suffolk.litlab.efspserver.services;
 
 import static com.hubspot.assertj.algebra.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,12 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.hubspot.algebra.Result;
 import com.opencsv.exceptions.CsvValidationException;
-import edu.suffolk.litlab.efspserver.Filing;
-import edu.suffolk.litlab.efspserver.FilingStuff;
+import edu.suffolk.litlab.efspserver.FilingDoc;
+import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingEntityConverter;
-import edu.suffolk.litlab.efspserver.services.ExtractError;
-import edu.suffolk.litlab.efspserver.services.InterviewToFilingEntityConverter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -72,18 +70,19 @@ public class DocassembleToFilingEntityConverterTest {
   @Test
   public void testEnsureUserEmail() throws IOException {
     String contents = getFileContents("/housing_tro_2_plaintiff_business_def_no_email.json"); 
-    Result<FilingStuff, ExtractError> result = converter.extractEntities(contents);
+    Result<FilingInformation, ExtractError> result = converter.extractEntities(contents);
     assertThat(result).isErr()
-        .containsErr(new ExtractError(ExtractError.Type.MissingRequired, "users[0]", "users[0].email"));
+        .containsErr(new ExtractError(ExtractError.Type.MissingRequired, 
+            "users[0]", "users[0].email"));
   }
   
   @Test
   public void testGetsUserInformation() throws IOException {
     String interviewContents = getFileContents("/housing_tro_2_plaintiff_business_def.json");
-    Result<FilingStuff, ExtractError> maybeEntities = 
+    Result<FilingInformation, ExtractError> maybeEntities = 
         converter.extractEntities(interviewContents);
     assertThat(maybeEntities).isOk(); 
-    FilingStuff entities = maybeEntities.unwrapOrElseThrow();
+    FilingInformation entities = maybeEntities.unwrapOrElseThrow();
     assertEquals(2, entities.getPlaintiffs().size(), 
         entities.getPlaintiffs().stream().map((p) -> p.getName().getFullName())
           .reduce("", (p, p2) -> p + " " + p2));
@@ -115,15 +114,15 @@ public class DocassembleToFilingEntityConverterTest {
   @Test
   public void testGetFilingInformation() throws IOException {
     String contents = getFileContents("/housing_tro_2_plaintiff_business_def.json");
-    Result<FilingStuff, ExtractError> maybeEntities = converter.extractEntities(contents);
+    Result<FilingInformation, ExtractError> maybeEntities = converter.extractEntities(contents);
     assertThat(maybeEntities).isOk();
-    FilingStuff entities = maybeEntities.unwrapOrElseThrow();
+    FilingInformation entities = maybeEntities.unwrapOrElseThrow();
     assertNotNull(entities.getCaseCategory());
     assertEquals("CivilCase", entities.getCaseCategory().ecfcasetype);
     assertEquals("Housing temporary restraining order", entities.getCaseType());
     assertEquals("", entities.getCaseSubtype());
     
-    List<Filing> filings = entities.getFilings();
-    assertEquals(1, filings.size());
+    List<FilingDoc> filingDocs = entities.getFilings();
+    assertEquals(1, filingDocs.size());
   }
 }

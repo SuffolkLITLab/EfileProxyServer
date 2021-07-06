@@ -645,7 +645,7 @@ public final class EfmClient {
       System.exit(-1);
     }
 
-    System.out.println("Filing List: " 
+    System.out.println("FilingDoc List: " 
         + XmlHelper.objectToXmlStrOrError(resp, FilingListResponseMessageType.class));
 
     String caseTrackingId = "";
@@ -679,7 +679,7 @@ public final class EfmClient {
       System.exit(-1);
     }
 
-    System.out.println("Filing Status: " 
+    System.out.println("FilingDoc Status: " 
         + XmlHelper.objectToXmlStrOrError(statusResp, FilingStatusResponseMessageType.class));
     System.out.println(statusResp.getFilingStatus().getStatusDescriptionText().stream()
         .map((n) -> n.getValue()).reduce((start, n) -> start + ", " + n));
@@ -697,7 +697,7 @@ public final class EfmClient {
       System.exit(-1);
     }
 
-    System.out.println("Filing Details: "
+    System.out.println("FilingDoc Details: "
         + XmlHelper.objectToXmlStrOrError(detailsResp, FilingDetailResponseMessageType.class));
     System.out.println(detailsResp.getFilingStatus().getStatusDescriptionText().stream()
         .map((n) -> n.getValue()).reduce((start, n) -> start + ", " + n));
@@ -775,14 +775,14 @@ public final class EfmClient {
   // TODO(brycew): not handling attorneys, only SRLs right now
   public static Optional<CoreFilingMessageType> makeCivilCase(CodeDatabase cd,
       String courtLocationId, List<Person> plaintiffs, List<Person> defendants,
-      CaseCategory caseCategoryCode, String caseType, String caseSubtype, List<Filing> filings,
+      CaseCategory caseCategoryCode, String caseType, String caseSubtype, List<FilingDoc> filingDocs,
       String paymentId, String queryType) throws SQLException, IOException {
     EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
 
     Optional<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>> assembledCase = ecfCaseFactory
         .makeCaseTypeFromTylerCategory(courtLocationId, caseCategoryCode, caseType, caseSubtype,
             plaintiffs, defendants,
-            filings.stream().map((f) -> f.getId()).collect(Collectors.toList()), paymentId, queryType,
+            filingDocs.stream().map((f) -> f.getId()).collect(Collectors.toList()), paymentId, queryType,
             JsonNodeFactory.instance.objectNode());
     if (assembledCase.isEmpty()) {
       return Optional.empty();
@@ -794,11 +794,11 @@ public final class EfmClient {
     cfm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     cfm.setCase(assembledCase.get());
     int seqNum = 0;
-    for (Filing filing : filings) {
-      if (filing.isLead()) {
-        cfm.getFilingLeadDocument().add(filing.getDocument(seqNum));
+    for (FilingDoc filingDoc : filingDocs) {
+      if (filingDoc.isLead()) {
+        cfm.getFilingLeadDocument().add(filingDoc.getDocument(seqNum));
       } else {
-        cfm.getFilingConnectedDocument().add(filing.getDocument(seqNum));
+        cfm.getFilingConnectedDocument().add(filingDoc.getDocument(seqNum));
       }
       seqNum += 1;
     }
@@ -807,11 +807,11 @@ public final class EfmClient {
 
   public static void checkFees(FilingReviewMDEPort filingPort, CodeDatabase cd,
       String courtLocationId, List<Person> plaintiffs, List<Person> defendants,
-      CaseCategory caseCategoryCode, String caseType, String caseSubtype, List<Filing> filings,
+      CaseCategory caseCategoryCode, String caseType, String caseSubtype, List<FilingDoc> filingDocs,
       String paymentId) throws SQLException, IOException {
 
     Optional<CoreFilingMessageType> cfm = makeCivilCase(cd, courtLocationId, plaintiffs, defendants,
-        caseCategoryCode, caseType, caseSubtype, filings, paymentId, "fees");
+        caseCategoryCode, caseType, caseSubtype, filingDocs, paymentId, "fees");
 
     oasis.names.tc.legalxml_courtfiling.schema.xsd.feescalculationquerymessage_4.ObjectFactory of = 
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.feescalculationquerymessage_4.ObjectFactory();
@@ -884,7 +884,7 @@ public final class EfmClient {
     cd.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
 
     // List<Person> plaintiffs, List<Person> defendants,
-    // List<Filing> filings) throws SQLException, IOException
+    // List<FilingDoc> filings) throws SQLException, IOException
     Address plaintiffAddress = new Address("83 Fake St", "Apt 2", "Boston", "MA", "02125", "US");
     Person plaintiff = new Person(new Name("Plaintiff", "Goth"), "fakeemail@example.com", false);
     Person defendant = new Person(new Name("Defendant", "Zombie"), "fakeemail2@example.com", false);
@@ -899,7 +899,7 @@ public final class EfmClient {
     String componentCode = "332";
     String fileName = "quality_check_overlay.pdf";
     InputStream x = EfmClient.class.getClassLoader().getResourceAsStream("/" + fileName); 
-    Filing filing = new Filing(fileName, x, regActionDesc,
+    FilingDoc filingDoc = new FilingDoc(fileName, x, regActionDesc,
         plaintiffs.stream().map((p) -> p.getId()).collect(Collectors.toList()), "5766",
         componentCode, FilingTypeType.E_FILE);
 

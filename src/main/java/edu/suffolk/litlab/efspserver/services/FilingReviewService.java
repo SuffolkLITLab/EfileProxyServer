@@ -2,7 +2,7 @@ package edu.suffolk.litlab.efspserver.services;
 
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
-import edu.suffolk.litlab.efspserver.FilingStuff;
+import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
@@ -172,22 +172,22 @@ public class FilingReviewService {
   public Response submitFilingForReview(@Context HttpHeaders httpHeaders, 
       @PathParam("court_id") String courtId, String allVars) {
     MediaType mediaType = httpHeaders.getMediaType();
-    log.fine("New Filing: Media type: " + mediaType);
+    log.fine("New FilingDoc: Media type: " + mediaType);
     log.fine("Court id: " + courtId);
-    log.fine("All vars: " + allVars.substring(0, Integer.min(100, allVars.length()- 1)));
+    log.fine("All vars: " + allVars.substring(0, Integer.min(100, allVars.length() - 1)));
     if (!filingInterfaces.containsKey(courtId)) {
       return Response.status(404).entity("Cannot send filing to " + courtId).build();
     }
     if (converterMap.containsKey(mediaType.toString())) {
-      Result<FilingStuff, ExtractError> maybeStuff = 
+      Result<FilingInformation, ExtractError> maybeInfo = 
           converterMap.get(mediaType.toString()).extractEntities(allVars);
-      if (maybeStuff.isErr()) {
-        return Response.status(400).entity(maybeStuff.unwrapErrOrElseThrow()).build();
+      if (maybeInfo.isErr()) {
+        return Response.status(400).entity(maybeInfo.unwrapErrOrElseThrow()).build();
       }
-      FilingStuff stuff = maybeStuff.unwrapOrElseThrow();
-      stuff.setCourtLocation(courtId);
+      FilingInformation info = maybeInfo.unwrapOrElseThrow();
+      info.setCourtLocation(courtId);
       Result<NullValue, ErrorType> result = 
-          filingInterfaces.get(courtId).sendFiling(stuff);
+          filingInterfaces.get(courtId).sendFiling(info);
       return result.match(
           err -> Response.serverError().entity(err).build(),
           n -> Response.ok().build()
@@ -196,8 +196,6 @@ public class FilingReviewService {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     }
     /*
-    // TODO(brycew): handle mutliplexing between backends here if need be
-    
     // TODO(brycew): actually read in JSON data and delete this hardcoded data
     Address plaintiffAddress = new Address("83 Fake St", "Apt 2", "Boston", "MA", "02125", "US");
     ContactInformation plaintiffContact = new ContactInformation(List.of(), 
@@ -217,7 +215,7 @@ public class FilingReviewService {
     String componentCode = "332";
     String fileName = "quality_check_overlay.pdf";
     InputStream x = getClass().getResourceAsStream("/" + fileName); 
-    Filing filing = new Filing(fileName, x, regActionDesc,
+    FilingDoc filing = new FilingDoc(fileName, x, regActionDesc,
         plaintiffs.stream().map((p) -> p.getId()).collect(Collectors.toList()), "5766",
         componentCode, FilingTypeType.E_FILE);
 
@@ -229,7 +227,7 @@ public class FilingReviewService {
     CaseCategory caseCategory = new CaseCategory("210", "Family", "DomesticCase", "Not Available",
         "Not Available", "Not Available");
     
-    EfmFilingInterface filingInterface = new JeffersonParishFiler(System.getenv("JEFFERSON_ENDPOINT"), System.getenv("JEFFERSON_TOKEN"));
+    EfmFilingInterface filingInterface = new JeffNetFiler(System.getenv("JEFFERSON_ENDPOINT"), System.getenv("JEFFERSON_TOKEN"));
     Optional<ErrorType> err = filingInterface.sendFiling(courtId, plaintiffs, 
         defendants, caseCategory, "25384", regActionDesc, List.of(filing), componentCode);
     if (err.isEmpty()) {

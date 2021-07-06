@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.ContactInformation;
-import edu.suffolk.litlab.efspserver.Filing;
-import edu.suffolk.litlab.efspserver.FilingStuff;
+import edu.suffolk.litlab.efspserver.FilingDoc;
+import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.EfmFilingInterface;
@@ -19,38 +19,40 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import tyler.efm.services.schema.common.ErrorType;
 
-public class JeffersonParishFiler implements EfmFilingInterface {
+public class JeffNetFiler implements EfmFilingInterface {
   
   private URI filingEndpoint;
   private String apiToken;
+  private SimpleModule module;
   
-  public JeffersonParishFiler(String filingEndpoint, String apiToken) throws URISyntaxException {
+  public JeffNetFiler(String filingEndpoint, String apiToken) throws URISyntaxException {
     this.filingEndpoint = new URI(filingEndpoint);
     this.apiToken = apiToken;
-  }
-
-  @Override
-  public Result<NullValue, ErrorType> sendFiling(FilingStuff stuff) {
     
-    if (stuff.getFilings().isEmpty()) {
+    this.module = new SimpleModule();
+    module.addSerializer(new FilingInformationJeffNetSerializer(FilingInformation.class));
+    module.addSerializer(
+        new ContactInfoJeffNetJacksonSerializer(ContactInformation.class));
+    module.addSerializer(new NameJeffNetJacksonSerializer(Name.class));
+    module.addSerializer(new FilingJeffNetJacksonSerializer(FilingDoc.class));
+    module.addSerializer(new PersonJeffNetJacksonSerializer(Person.class));
+  }
+  
+  @Override
+  public Result<NullValue, ErrorType> sendFiling(FilingInformation info) {
+    
+    if (info.getFilings().isEmpty()) {
       ErrorType err = new ErrorType();
       err.setErrorCode("-1");
       err.setErrorText("Error: cannot file with no filings ");
       return Result.err(err);
     }
     
-    SimpleModule module = new SimpleModule();
-    module.addSerializer(new FilingStuffJeffParistSerializer(FilingStuff.class));
-    module.addSerializer(
-        new ContactInformationJacksonJeffParishSerializer(ContactInformation.class));
-    module.addSerializer(new NameJacksonJeffParishSerializer(Name.class));
-    module.addSerializer(new FilingJeffParishJacksonSerializer(Filing.class));
-    module.addSerializer(new PersonJeffParishJsonSerializer(Person.class));
     ObjectMapper mapper = new ObjectMapper();
-    mapper.registerModule(module);
+    mapper.registerModule(this.module);
     
     try {
-      String finalStr = mapper.writeValueAsString(stuff);
+      String finalStr = mapper.writeValueAsString(info);
       System.err.println("Final Json object: " + finalStr); 
     
       System.err.println("Sending to " + this.filingEndpoint + ", with token: " + this.apiToken);
@@ -64,6 +66,12 @@ public class JeffersonParishFiler implements EfmFilingInterface {
           .build();
       HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
       System.err.println("Got err response code: " + response.body() + " " + response.statusCode());
+      if (response.statusCode() != 200) {
+        ErrorType err = new ErrorType();
+        err.setErrorCode(Integer.toString(response.statusCode()));
+        err.setErrorText(response.body());
+        return Result.err(err);
+      }
     } catch (InterruptedException ex) {
       ErrorType err = new ErrorType();
       err.setErrorCode("-1");

@@ -6,23 +6,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import edu.suffolk.litlab.efspserver.Filing;
+import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class FilingDocassembleJacksonDeserializer extends StdDeserializer<Filing> {
+public class FilingDocDocassembleJacksonDeserializer extends StdDeserializer<FilingDoc> {
 
   private static final long serialVersionUID = 1L;
 
-  protected FilingDocassembleJacksonDeserializer(Class<Filing> t) {
+  protected FilingDocDocassembleJacksonDeserializer(Class<FilingDoc> t) {
     super(t);
   }
   
   /** Parses a filing from the DA Json Object. Used by Deserializers that include filings. */
-  public static Filing fromNode(JsonNode node, JsonParser p) throws JsonParseException {
+  public static FilingDoc fromNode(JsonNode node, JsonParser p) throws JsonParseException {
     if (!node.isObject()) {
       throw new JsonParseException(p, "Refusing to parse filing that isn't a object");
     }
@@ -46,7 +46,7 @@ public class FilingDocassembleJacksonDeserializer extends StdDeserializer<Filing
       if (inStream == null) {
         throw new JsonParseException(p, "Couldn't connect to " + inUrl.toString());
       }
-      return new Filing(fileName, inStream, regActionDesc);
+      return new FilingDoc(fileName, inStream, regActionDesc);
       
     } catch (IOException ex)  {
       throw new JsonParseException(p, "IOException trying to parse data_url: " + ex);
@@ -54,7 +54,7 @@ public class FilingDocassembleJacksonDeserializer extends StdDeserializer<Filing
   }
 
   @Override
-  public Filing deserialize(JsonParser p, DeserializationContext ctxt)
+  public FilingDoc deserialize(JsonParser p, DeserializationContext ctxt)
       throws IOException, JsonProcessingException {
     JsonNode node = p.readValueAsTree();
     return fromNode(node, p);

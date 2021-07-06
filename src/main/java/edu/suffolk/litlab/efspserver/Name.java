@@ -25,6 +25,10 @@ public class Name {
     this.maidenName = maidenName;
   }
   
+  public Name(String companyName) {
+    this("", companyName, "", "", "", "");
+  }
+  
   public Name(String firstName, String lastName) {
     this("", firstName, "", lastName, "", "");
   }

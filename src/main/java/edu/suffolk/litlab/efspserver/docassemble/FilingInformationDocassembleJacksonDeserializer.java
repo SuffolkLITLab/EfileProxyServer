@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.hubspot.algebra.Result;
-import edu.suffolk.litlab.efspserver.Filing;
-import edu.suffolk.litlab.efspserver.FilingStuff;
+import edu.suffolk.litlab.efspserver.FilingDoc;
+import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
@@ -22,14 +22,15 @@ import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class FilingStuffDocassembleJacksonDeserializer extends StdDeserializer<FilingStuff> {
+public class FilingInformationDocassembleJacksonDeserializer 
+    extends StdDeserializer<FilingInformation> {
   private static Logger log = Logger.getLogger("mylogger"); 
 
   private static final long serialVersionUID = 1L;
 
   private LegalIssuesTaxonomyCodes codes;
   
-  public FilingStuffDocassembleJacksonDeserializer(Class<FilingStuff> t, 
+  public FilingInformationDocassembleJacksonDeserializer(Class<FilingInformation> t, 
       LegalIssuesTaxonomyCodes codes) {
     super(t);
     this.codes = codes;
@@ -57,7 +58,7 @@ public class FilingStuffDocassembleJacksonDeserializer extends StdDeserializer<F
   }
 
   @Override
-  public FilingStuff deserialize(JsonParser p, DeserializationContext ctxt)
+  public FilingInformation deserialize(JsonParser p, DeserializationContext ctxt)
       throws IOException, JsonProcessingException {
     JsonNode node = p.readValueAsTree();
     if (!node.isObject()) {
@@ -99,22 +100,33 @@ public class FilingStuffDocassembleJacksonDeserializer extends StdDeserializer<F
     }
     log.fine("user_started_case: " + userStartedCase.orElse(null));
 
-    FilingStuff entities = new FilingStuff();
+    FilingInformation entities = new FilingInformation();
     if (userStartedCase.isEmpty()) {
       throw new JsonExtractException(p, 
           new ExtractError(ExtractError.Type.MissingRequired, "", "user_started_case"));
     }
     // TODO(brycew): plaintiff and petitioners are both defined. 
     // Typical role might have the difference, take which is available
-    userStartedCase.ifPresent((started) -> {
-      if (started) {
-        entities.setPlaintiffs(users);
-        entities.setDefendants(otherParties);
-      } else {
-        entities.setPlaintiffs(otherParties);
-        entities.setDefendants(users);
-      }
-    });
+    boolean started = userStartedCase.get(); 
+    if (started) {
+      users.forEach((user) -> {
+        user.setRole("Plaintiff");
+      });
+      entities.setPlaintiffs(users);
+      otherParties.forEach((other) -> {
+        other.setRole("Defendant");
+      });
+      entities.setDefendants(otherParties);
+    } else {
+      users.forEach((user) -> {
+        user.setRole("Defendant");
+      });
+      entities.setPlaintiffs(otherParties);
+      otherParties.forEach((other) -> {
+        other.setRole("Plaintiff");
+      });
+      entities.setDefendants(users);
+    }
       
     // Get the interview metadablock TODO(brycew): just one for now
     // TODO(brycew): also be better at errors here
@@ -147,13 +159,13 @@ public class FilingStuffDocassembleJacksonDeserializer extends StdDeserializer<F
     List<String> filingPartyIds = users.stream()
         .map((per) -> per.getId())
         .collect(Collectors.toList());
-    List<Filing> filings = new ArrayList<Filing>();
+    List<FilingDoc> filingDocs = new ArrayList<FilingDoc>();
     JsonNode elems = node.get("al_court_bundle").get("elements");
     for (int i = 0; i < elems.size(); i++) {
       try {
-        Filing fil = FilingDocassembleJacksonDeserializer.fromNode(elems.get(i), p);
+        FilingDoc fil = FilingDocDocassembleJacksonDeserializer.fromNode(elems.get(i), p);
         fil.setFilingPartyIds(filingPartyIds);
-        filings.add(fil);
+        filingDocs.add(fil);
       } catch (JsonParseException ex) {
         // continue
       }
@@ -161,7 +173,7 @@ public class FilingStuffDocassembleJacksonDeserializer extends StdDeserializer<F
     // TODO(brycew): grab the user's comments to the court clerk from the cover page
     // TODO(brycew): the above will require us to pass the full json
     //String filingComments = "";
-    entities.setFilings(filings);
+    entities.setFilings(filingDocs);
       
     return entities;  
   }

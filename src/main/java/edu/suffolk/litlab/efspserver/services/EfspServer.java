@@ -1,13 +1,11 @@
 package edu.suffolk.litlab.efspserver.services;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-
 import edu.suffolk.litlab.efspserver.ClientCallbackHandler;
 import edu.suffolk.litlab.efspserver.CodeUpdater;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingEntityConverter;
-import edu.suffolk.litlab.efspserver.jeffnet.JeffersonParishFiler;
-
+import edu.suffolk.litlab.efspserver.jeffnet.JeffNetFiler;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -121,7 +119,7 @@ public class EfspServer {
         Map.of("application/json", daJsonConverter,
                "text/json", daJsonConverter);
     
-    EfmFilingInterface jeffersonParish = new JeffersonParishFiler(
+    EfmFilingInterface jeffersonParish = new JeffNetFiler(
         maybeJeffersonEndpoint.get(), maybeJeffersonToken.get());
     Map<String, EfmFilingInterface> filingMap = Map.of(
         "Jefferson", jeffersonParish);
