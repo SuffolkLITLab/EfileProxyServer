@@ -9,11 +9,14 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.PaymentFactory;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import gov.niem.niem.niem_core._2.IdentificationType;
+import gov.niem.niem.niem_core._2.TextType;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.xml.bind.JAXBElement;
 import javax.xml.ws.BindingProvider;
@@ -23,9 +26,13 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.PaymentMe
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ReviewFilingRequestMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingReviewMDEPort;
 import org.apache.cxf.headers.Header;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 
 public class OasisEcfFiler implements EfmFilingInterface {
+  private static Logger log = 
+      LoggerFactory.getLogger(OasisEcfFiler.class); 
   
   private FilingReviewMDEService filingServiceFactory;
   private List<Header> headersList;
@@ -47,7 +54,7 @@ public class OasisEcfFiler implements EfmFilingInterface {
   }
   
   @Override
-  public Result<NullValue, tyler.efm.services.schema.common.ErrorType> sendFiling(
+  public Result<UUID, tyler.efm.services.schema.common.ErrorType> sendFiling(
       FilingInformation stuff) {
     FilingReviewMDEPort filingPort = makeFilingService(this.headersList);
     EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
@@ -57,7 +64,7 @@ public class OasisEcfFiler implements EfmFilingInterface {
               stuff.getCourtLocation(), stuff.getCaseCategory(), stuff.getCaseType(), 
               stuff.getCaseSubtype(),
               stuff.getPlaintiffs(), stuff.getDefendants(),
-              stuff.getFilings().stream().map((f) -> f.getId()).collect(Collectors.toList()), 
+              stuff.getFilings().stream().map((f) -> f.getIdString()).collect(Collectors.toList()), 
               stuff.getPaymentId(), 
               "review", JsonNodeFactory.instance.objectNode());
       if (assembledCase.isEmpty()) {
@@ -77,9 +84,9 @@ public class OasisEcfFiler implements EfmFilingInterface {
       int seqNum = 0;
       for (FilingDoc filingDoc : stuff.getFilings()) {
         if (filingDoc.isLead()) {
-          cfm.getFilingLeadDocument().add(filingDoc.getDocument(seqNum));
+          cfm.getFilingLeadDocument().add(filingDoc.asDocument(seqNum));
         } else {
-          cfm.getFilingConnectedDocument().add(filingDoc.getDocument(seqNum));
+          cfm.getFilingConnectedDocument().add(filingDoc.asDocument(seqNum));
         }
         seqNum += 1;
       }
@@ -91,17 +98,26 @@ public class OasisEcfFiler implements EfmFilingInterface {
       rfrm.setCoreFilingMessage(cfm);
       rfrm.setPaymentMessage(pmt);
 
-      System.err.println(XmlHelper.objectToXmlStrOrError(
+      log.debug(XmlHelper.objectToXmlStrOrError(
           rfrm, ReviewFilingRequestMessageType.class));
       MessageReceiptMessageType mrmt = filingPort.reviewFiling(rfrm);
       if (mrmt.getError().size() > 0) {
         for (oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType err : mrmt
             .getError()) {
-          System.err.println(err.getErrorCode().getValue() + ", " + err.getErrorText().getValue());
+          log.warn(err.getErrorCode().getValue() + ", " + err.getErrorText().getValue());
         }
       }
-      System.err.println(XmlHelper.objectToXmlStrOrError(mrmt, MessageReceiptMessageType.class));
-      return Result.nullOk(); 
+      List<IdentificationType> ids = mrmt.getDocumentIdentification();
+      Optional<String> caseId = ids.stream().filter((id) -> {
+        TextType text = (TextType) id.getIdentificationCategory().getValue();
+        return text.getValue().toUpperCase().equals("CASEID");
+      }).map((id) -> id.getIdentificationID().getValue()).findFirst();
+      if (caseId.isEmpty()) {
+        log.error("Couldn't get back the case id from Tyler!");
+      }
+
+      log.info(XmlHelper.objectToXmlStrOrError(mrmt, MessageReceiptMessageType.class));
+      return Result.ok(UUID.fromString(caseId.get())); 
     } catch (IOException ex) {
       tyler.efm.services.schema.common.ErrorType err = 
           new tyler.efm.services.schema.common.ErrorType();

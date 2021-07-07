@@ -782,7 +782,7 @@ public final class EfmClient {
     Optional<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>> assembledCase = ecfCaseFactory
         .makeCaseTypeFromTylerCategory(courtLocationId, caseCategoryCode, caseType, caseSubtype,
             plaintiffs, defendants,
-            filingDocs.stream().map((f) -> f.getId()).collect(Collectors.toList()), paymentId, queryType,
+            filingDocs.stream().map((f) -> f.getIdString()).collect(Collectors.toList()), paymentId, queryType,
             JsonNodeFactory.instance.objectNode());
     if (assembledCase.isEmpty()) {
       return Optional.empty();
@@ -796,9 +796,9 @@ public final class EfmClient {
     int seqNum = 0;
     for (FilingDoc filingDoc : filingDocs) {
       if (filingDoc.isLead()) {
-        cfm.getFilingLeadDocument().add(filingDoc.getDocument(seqNum));
+        cfm.getFilingLeadDocument().add(filingDoc.asDocument(seqNum));
       } else {
-        cfm.getFilingConnectedDocument().add(filingDoc.getDocument(seqNum));
+        cfm.getFilingConnectedDocument().add(filingDoc.asDocument(seqNum));
       }
       seqNum += 1;
     }
@@ -900,7 +900,7 @@ public final class EfmClient {
     String fileName = "quality_check_overlay.pdf";
     InputStream x = EfmClient.class.getClassLoader().getResourceAsStream("/" + fileName); 
     FilingDoc filingDoc = new FilingDoc(fileName, x, regActionDesc,
-        plaintiffs.stream().map((p) -> p.getId()).collect(Collectors.toList()), "5766",
+        plaintiffs.stream().map((p) -> p.getIdString()).collect(Collectors.toList()), "5766",
         componentCode, FilingTypeType.E_FILE);
 
     PaymentAccountListResponseType allAccs = firmPort.getPaymentAccountList();

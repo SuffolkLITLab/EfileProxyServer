@@ -3,7 +3,6 @@ package edu.suffolk.litlab.efspserver.jeffnet;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -27,7 +26,7 @@ public class FilingInformationToJeffNetTest {
 
   FilingInformation info;
   
-  
+  /** Does standard set for the test. */
   @BeforeEach
   public void setUp() throws IOException {
     info = new FilingInformation();
@@ -53,7 +52,8 @@ public class FilingInformationToJeffNetTest {
     String fileName = "quality_check_overlay.pdf";
     InputStream x = this.getClass().getResourceAsStream("/" + fileName); 
     FilingDoc filingDoc = new FilingDoc(fileName, x, regActionDesc,
-        info.getPlaintiffs().stream().map((p) -> p.getId()).collect(Collectors.toList()), "5766",
+        info.getPlaintiffs().stream().map((p) -> p.getIdString()).collect(
+            Collectors.toList()), "5766",
         componentCode, FilingTypeType.E_FILE);
     info.setFilings(List.of(filingDoc));
   }

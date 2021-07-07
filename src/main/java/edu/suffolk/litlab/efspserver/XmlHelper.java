@@ -3,7 +3,6 @@ package edu.suffolk.litlab.efspserver;
 import gov.niem.niem.domains.jxdm._4.CourtType;
 import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.TextType;
-
 import java.io.File;
 import java.io.StringWriter;
 import java.time.LocalDate;

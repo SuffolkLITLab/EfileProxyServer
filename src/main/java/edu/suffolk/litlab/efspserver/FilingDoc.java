@@ -30,7 +30,7 @@ public class FilingDoc {
   Optional<LocalDate> dueDate; 
   // A valid filing code (complaint, motion, Appearance, Motion, etc.)
   NameAndCode regActionDesc;
-  private String id;
+  private UUID id;
   
   // Required to at least have one
   List<String> filingPartyIds;
@@ -60,7 +60,9 @@ public class FilingDoc {
   }
   
   /** FilingDoc constructor for Jefferson Parish data. 
-   * @throws IOException */
+   *
+   * @throws IOException If the input stream can't be opened or read from
+   */
   public FilingDoc(String fileName, InputStream fileStream,
       NameAndCode regActionDesc, List<String> filingPartyIds,
       String filingComments) throws IOException  {
@@ -97,7 +99,7 @@ public class FilingDoc {
     this.documentFileControlId = documentFileControlId;
     this.dueDate = dueDate;
     this.regActionDesc = regActionDesc;
-    this.id = "id-" + UUID.randomUUID().toString();
+    this.id = UUID.randomUUID();
     this.filingPartyIds = filingPartyIds;
     this.filingAttorney = filingAttorney;
     this.documentTypeFormatStandardName = documentTypeFormatStandardName;
@@ -111,7 +113,11 @@ public class FilingDoc {
     this.isLeadDoc = isLeadDoc;
   }
   
-  public String getId() {
+  public String getIdString() {
+    return "id-" + id.toString();
+  }
+  
+  public UUID getId() {
     return id;
   }
   
@@ -135,7 +141,7 @@ public class FilingDoc {
     return fileContents;
   }
   
-  public JAXBElement<DocumentType> getDocument(int sequenceNum) throws IOException {
+  public JAXBElement<DocumentType> asDocument(int sequenceNum) throws IOException {
     tyler.ecf.extensions.common.ObjectFactory tylerObjFac = 
         new tyler.ecf.extensions.common.ObjectFactory();
     gov.niem.niem.niem_core._2.ObjectFactory niemObjFac = 

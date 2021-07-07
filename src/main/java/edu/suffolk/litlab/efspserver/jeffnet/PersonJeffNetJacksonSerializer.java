@@ -32,7 +32,7 @@ public class PersonJeffNetJacksonSerializer extends StdSerializer<Person> {
       jsonGenerator.writeStringField("PersonPrimaryLanguage", per.getLanguage().get());
     }
     jsonGenerator.writeStringField("CaseParticipantRoleCode", per.getRole());
-    jsonGenerator.writeStringField("id", per.getId());
+    jsonGenerator.writeStringField("id", per.getIdString());
     jsonGenerator.writeEndObject();
   }
 }
