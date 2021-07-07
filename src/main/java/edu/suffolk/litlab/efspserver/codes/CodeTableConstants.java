@@ -8,8 +8,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CodeTableConstants {
+  private static Logger log = 
+      LoggerFactory.getLogger(CodeTableConstants.class); 
+
   private static final Map<String, List<Pair<String, String>>> systemTableColumns = 
       new HashMap<String, List<Pair<String, String>>>();
   private static final Map<String, List<Pair<String, String>>> bothTableColumns = 
@@ -445,6 +450,7 @@ public class CodeTableConstants {
     return "DELETE FROM " + tableName + " WHERE location=?";
   }
   
+  /** Gets the statement that will drop the specified table, but only if it pre-specified. */
   public static String dropTable(String tableName) {
     Optional<TableColumns> tableCols = getTableColumnInfo(tableName);
     if (tableCols.isEmpty()) {
@@ -489,7 +495,7 @@ public class CodeTableConstants {
       return "";
     }
     if (tableCols.get().needsExtraLocCol && courtName.isEmpty()) {
-      System.err.println("court name can't be empty");
+      log.warn("court name can't be empty");
       return "";
     }
     StringBuilder insertLocation = new StringBuilder();

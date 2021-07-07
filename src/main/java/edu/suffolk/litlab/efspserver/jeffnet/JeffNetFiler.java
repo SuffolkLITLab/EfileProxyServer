@@ -1,8 +1,8 @@
 package edu.suffolk.litlab.efspserver.jeffnet;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.ContactInformation;
 import edu.suffolk.litlab.efspserver.FilingDoc;
@@ -17,6 +17,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.UUID;
 import tyler.efm.services.schema.common.ErrorType;
 
 public class JeffNetFiler implements EfmFilingInterface {
@@ -25,6 +26,7 @@ public class JeffNetFiler implements EfmFilingInterface {
   private String apiToken;
   private SimpleModule module;
   
+  /** Constructor that takes the URL endpoint of JeffNet to call, and the API token to call it. */
   public JeffNetFiler(String filingEndpoint, String apiToken) throws URISyntaxException {
     this.filingEndpoint = new URI(filingEndpoint);
     this.apiToken = apiToken;
@@ -39,7 +41,7 @@ public class JeffNetFiler implements EfmFilingInterface {
   }
   
   @Override
-  public Result<NullValue, ErrorType> sendFiling(FilingInformation info) {
+  public Result<UUID, ErrorType> sendFiling(FilingInformation info) {
     
     if (info.getFilings().isEmpty()) {
       ErrorType err = new ErrorType();
@@ -72,6 +74,9 @@ public class JeffNetFiler implements EfmFilingInterface {
         err.setErrorText(response.body());
         return Result.err(err);
       }
+      ApiResult result = mapper.readValue(response.body(), ApiResult.class);
+      UUID transactionId = UUID.fromString(result.transactionId);
+      return Result.ok(transactionId); 
     } catch (InterruptedException ex) {
       ErrorType err = new ErrorType();
       err.setErrorCode("-1");
@@ -83,6 +88,16 @@ public class JeffNetFiler implements EfmFilingInterface {
       err.setErrorText("Error connecting to " + this.filingEndpoint + ", " + ex);
       return Result.err(err);
     }
-    return Result.nullOk();
+  }
+  
+  private class ApiResult {
+    @JsonProperty("ResultCode")
+    int resultCode;
+    
+    @JsonProperty("Message")
+    String message;
+    
+    @JsonProperty("TransactionID")
+    String transactionId;
   }
 }

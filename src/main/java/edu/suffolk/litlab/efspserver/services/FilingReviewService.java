@@ -1,17 +1,20 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.FilingInformation;
+import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
+import edu.suffolk.litlab.efspserver.UserDatabase;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import gov.niem.niem.niem_core._2.EntityType;
 import java.net.URL;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -51,6 +54,7 @@ public class FilingReviewService {
 
   private FilingReviewMDEService filingFactory;
   private CodeDatabase cd;
+  private UserDatabase ud;
   private Map<String, InterviewToFilingEntityConverter> converterMap;
   private Map<String, EfmFilingInterface> filingInterfaces;
   private oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory 
@@ -66,6 +70,7 @@ public class FilingReviewService {
   
   public FilingReviewService(
       CodeDatabase cd, 
+      UserDatabase ud,
       Map<String, InterviewToFilingEntityConverter> converterMap,
       Map<String, EfmFilingInterface> filingInterfaces) {
     this.converterMap = converterMap;
@@ -187,10 +192,39 @@ public class FilingReviewService {
       }
       FilingInformation info = maybeInfo.unwrapOrElseThrow();
       info.setCourtLocation(courtId);
-      Result<NullValue, ErrorType> result = 
+      Result<UUID, ErrorType> result = 
           filingInterfaces.get(courtId).sendFiling(info);
+      if (result.isOk()) {
+        // Add this information to the transaction database
+        List<Person> filers = info.getFilers();
+        if (filers.isEmpty()) {
+          log.error("No people to add as filers? %s".formatted(info));
+          return Response.ok().entity("Couldn't log the user who submitted!").build();
+        }
+        Person user = filers.get(0);
+        Optional<String> phoneNumber = Optional.empty();
+        if (user.getContactInfo().getPhoneNumbers().size() > 0) {
+          // TODO(brycew): should we store multiple phone numbers as backup?
+          phoneNumber = Optional.of(user.getContactInfo().getPhoneNumbers().get(0));
+        }
+        Timestamp ts = new Timestamp(System.currentTimeMillis());
+        try {
+          ud.addToTable(user.getName().getFullName(), user.getId(), 
+              phoneNumber, user.getContactInfo().getEmail().orElse(""), 
+              result.unwrapOrElseThrow(), info.getCaseType(), 
+              ts);
+        } catch (SQLException ex) {
+          log.error("Couldn't add info to the database! Logging here for posterity: " 
+                    + "%s %s %s %s %s".formatted(user.getName().getFullName(), user.getId(), 
+                            phoneNumber, user.getContactInfo().getEmail(),
+                            result, info.getCaseType(), ts));
+          // TODO(brycew): change to "created"
+          return Response.ok().entity("Error saving info to database").build();
+        }
+      }
       return result.match(
           err -> Response.serverError().entity(err).build(),
+          // TODO(brycew): change to "created"
           n -> Response.ok().build()
       );
     } else {

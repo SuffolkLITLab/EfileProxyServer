@@ -1,12 +1,10 @@
 package edu.suffolk.litlab.efspserver.codes;
 
+import edu.suffolk.litlab.efspserver.DatabaseInterface;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -14,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -25,18 +22,22 @@ import org.oasis_open.docs.codelist.ns.genericode._1.CodeListDocument;
 import org.oasis_open.docs.codelist.ns.genericode._1.Column;
 import org.oasis_open.docs.codelist.ns.genericode._1.Row;
 import org.oasis_open.docs.codelist.ns.genericode._1.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class CodeDatabase {
-  private final String pgUrl;
-  private final String pgPort;
-  private final String pgDb;
-
-  private Connection conn;
+/** The class that interfaces with the database tables that contain the Tyler case codes.
+ *
+ * <p>Codes in this case doesn't mean programming code", it's more like code numbers
+ * code names for all of the different case details and information.</p>
+ *
+ * @author brycew
+ */
+public class CodeDatabase extends DatabaseInterface {
+  private static Logger log = 
+      LoggerFactory.getLogger(CodeDatabase.class); 
 
   public CodeDatabase(String pgUrl, String pgPort, String pgDb) {
-    this.pgUrl = pgUrl;
-    this.pgPort = pgPort;
-    this.pgDb = pgDb;
+    super(pgUrl, pgPort, pgDb);
   }
 
   public void createTableIfAbsent(String tableName) throws SQLException {
@@ -44,7 +45,8 @@ public class CodeDatabase {
       throw new SQLException();
     }
     if (tableName.contains("(") || tableName.contains(")") || tableName.contains(" ")) {
-      System.err.println("Must be valid table name: " + tableName + " is not");
+      log.warn("Must be valid table name: " + tableName + " is not");
+      return;
     }
 
     // TODO(brycew): eventually make the create tables have foreign keys and
@@ -57,11 +59,11 @@ public class CodeDatabase {
     if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
       String createQuery = CodeTableConstants.getCreateTable(tableName);
       if (createQuery.isEmpty()) {
-        System.out.println("Will not create table with name: " + tableName);
+        log.warn("Will not create table with name: " + tableName);
         return;
       }
       PreparedStatement createSt = conn.prepareStatement(createQuery);
-      System.out.println("Full statement: " + createSt.toString());
+      log.info("Full statement: " + createSt.toString());
       createSt.executeUpdate();
     }
 
@@ -73,7 +75,8 @@ public class CodeDatabase {
       throw new SQLException();
     }
     if (tableName.contains("(") || tableName.contains(")") || tableName.contains(" ")) {
-      System.err.println("Must be valid table name: " + tableName + " is not");
+      log.warn("Must be valid table name: " + tableName + " is not");
+      return;
     }
 
     createTableIfAbsent(tableName);
@@ -115,8 +118,8 @@ public class CodeDatabase {
       }
       // TODO(brycew): handle error here too
     } catch (SQLException ex) {
-      System.err.println("Tried to execute an insert, but failed! Exception: " + ex.toString());
-      System.err.println("Going to rollback updates to this table");
+      log.error("Tried to execute an insert, but failed! Exception: " + ex.toString());
+      log.error("Going to rollback updates to this table");
       throw ex;
     }
   }
@@ -204,12 +207,11 @@ public class CodeDatabase {
     }
     Statement st = conn.createStatement();
     String query = CodeTableConstants.needToUpdateVersion();
-    System.err.println("Query was " + query);
+    log.info("Query was " + query);
     ResultSet rs = st.executeQuery(query);
     Map<String, List<String>> courtTables = new HashMap<String, List<String>>();
     while (rs.next()) {
-      System.err
-          .println("!!Result " + rs.getString(1) + ", " + rs.getString(2) + ", " + rs.getString(3));
+      log.debug("!!Result " + rs.getString(1) + ", " + rs.getString(2) + ", " + rs.getString(3));
       if (!courtTables.containsKey(rs.getString(1))) {
         courtTables.put(rs.getString(1), new ArrayList<String>());
       }
@@ -246,13 +248,12 @@ public class CodeDatabase {
     }
     String deleteFromTable = CodeTableConstants.deleteFromTable(tableName);
     if (deleteFromTable.isEmpty()) {
-      System.err.println("Table " + tableName + " cannot be deleted");
+      log.warn("Table " + tableName + " cannot be deleted");
       return false;
     }
     PreparedStatement st = conn.prepareStatement(deleteFromTable);
-    System.err.println(st.toString());
     st.setString(1, courtLocation);
-    System.err.println(st.toString());
+    log.info(st.toString());
     st.executeUpdate();
     return true;
   }
@@ -278,103 +279,6 @@ public class CodeDatabase {
     }
 
     return locs;
-  }
-
-  /**
-   * Creates an internally held connection to the database with the given user and
-   * password.
-   *
-   * @param  pgUser               The user of the PostgreSQL database
-   * @param  pgPassword           The password for the above user
-   * @throws SQLException         if the connection cannot be completed for some
-   *                              reason
-   * @throws InterruptedException
-   */
-  public void createDbConnection(String pgUser, String pgPassword) throws SQLException {
-    String url = "jdbc:postgresql://" + this.pgUrl + ":" + this.pgPort + "/" + this.pgDb;
-    Properties props = new Properties();
-    props.setProperty("user", pgUser);
-    props.setProperty("password", pgPassword);
-    try {
-      conn = DriverManager.getConnection(url, props);
-      conn.setAutoCommit(false);
-    } catch (SQLException ex) {
-      System.err.println("Error code is: " + ex.getErrorCode());
-      createGivenDatabase(pgUser, pgPassword, this.pgDb);
-      conn = DriverManager.getConnection(url, props);
-      conn.setAutoCommit(false);
-    }
-  }
-  
-  private boolean createGivenDatabase(String pgUser, String pgPassword, String newDb) throws SQLException {
-    // TODO(brycew): maybe check this earlier
-    if (!this.pgDb.matches("[a-zA-Z_]+")) {
-      throw new SQLException(
-          "Won't make a database named " + this.pgDb + ": only alpha and _ allowed");
-    }
-
-    // TODO(brycew): Make the retry wrapper general, and maybe better formed?
-    long startTime = System.currentTimeMillis();
-    long RETRY_TIME_MILLIS = 5000;
-    long SLEEP_TIME_MILLIS = 1000;
-    while (System.currentTimeMillis() - startTime < RETRY_TIME_MILLIS) {
-      // Check if the named database exists before creating it
-      System.err.println("Trying to connect to the default database");
-      String tempUrl = "jdbc:postgresql://" + this.pgUrl + ":" + this.pgPort + "/postgrs";
-      try {
-        Properties props = new Properties();
-        props.setProperty("user", pgUser);
-        props.setProperty("password", pgPassword);
-        Connection tempConn = DriverManager.getConnection(tempUrl, props);
-        System.err.println("Got connection");
-        ResultSet rs = tempConn.getMetaData().getCatalogs();
-        boolean needToMakeDb = true;
-        while (rs.next()) {
-          System.err.println("Database: " + rs.getString(1));
-          if (rs.getString(1).equals(newDb)) {
-            needToMakeDb = false;
-          }
-        }
-        System.err.println("Need to make DB: " + needToMakeDb);
-        if (needToMakeDb) {
-          System.err.println("Making a database named " + newDb);
-          Statement st = tempConn.createStatement();
-          st.executeUpdate("CREATE DATABASE " + newDb);
-          st.close();
-        }
-        return true;
-      } catch (SQLException ex) {
-        System.err.println(ex.toString());
-        try {
-          System.err.println("Sleeping...");
-          Thread.sleep(SLEEP_TIME_MILLIS);
-        } catch (InterruptedException interruptEx) {
-          System.err.println("Interrupted? " + interruptEx.toString());
-          // explicitly do nothing
-        }
-      }
-    }
-    return false;
-  }
-
-  public boolean connectionIsOpen() {
-    try {
-      return conn != null && !conn.isClosed();
-    } catch (SQLException ex) {
-      return false;
-    }
-  }
-
-  public Savepoint setSavePoint(String savepoint) throws SQLException {
-    return conn.setSavepoint(savepoint);
-  }
-
-  public void rollback(Savepoint savepoint) throws SQLException {
-    conn.rollback(savepoint);
-  }
-
-  public void commit() throws SQLException {
-    conn.commit();
   }
 
 }

@@ -49,6 +49,7 @@ public class LegalIssuesTaxonomyCodes {
     return taxonomyGraph.containsKey(code);
   }
   
+  /** Get all possible ECF case types for the given colleciton of LIST codes. Can be multiple. */
   public Set<String> allEcfCaseTypes(Collection<String> categories) {
     Set<String> ecfCases = new HashSet<String>();
     for (String category : categories) {

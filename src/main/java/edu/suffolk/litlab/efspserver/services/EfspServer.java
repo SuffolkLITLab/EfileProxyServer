@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efspserver.services;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import edu.suffolk.litlab.efspserver.ClientCallbackHandler;
 import edu.suffolk.litlab.efspserver.CodeUpdater;
+import edu.suffolk.litlab.efspserver.UserDatabase;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingEntityConverter;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetFiler;
@@ -16,8 +17,12 @@ import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
 import org.apache.cxf.jaxrs.provider.JAXBElementProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EfspServer {
+  private static Logger log = 
+      LoggerFactory.getLogger(EfspServer.class); 
   
   private JAXRSServerFactoryBean sf;
   private Server server;
@@ -25,25 +30,28 @@ public class EfspServer {
   protected EfspServer(String x509Password, 
       String dbUrl, String dbPort,
       String dbUser, String dbPassword,
-      String dbDatabaseName,
+      String codeDatabaseName,
+      String userDatabaseName,
       Map<String, InterviewToFilingEntityConverter> converterMap,
       Map<String, EfmFilingInterface> filingMap) throws Exception {
     boolean downloadAll = false;
-    CodeDatabase cd;
-    cd = new CodeDatabase(dbUrl, dbPort, dbDatabaseName);
+    CodeDatabase cd = new CodeDatabase(dbUrl, dbPort, codeDatabaseName);
+    UserDatabase ud = new UserDatabase(dbUrl, dbPort, userDatabaseName);
     try {
       cd.createDbConnection(dbUser, dbPassword);
       if (cd.getAllLocations().size() == 0) {
         // Code database is empty!
         downloadAll = true;
       }
+      ud.createDbConnection(dbUser, dbPassword);
+      ud.createTableIfAbsent();
     } catch (SQLException ex) {
       downloadAll = true;
     }
 
     if (downloadAll) {
       cd.createDbConnection(dbUser, dbPassword);
-      System.err.println("Download all codes: please wait a bit");
+      log.debug("Downloading all codes: please wait a bit");
       CodeUpdater cu = new CodeUpdater();
       cu.downloadAll("https://illinois-stage.tylerhost.net", cd);
     }
@@ -58,7 +66,7 @@ public class EfspServer {
         new SingletonResourceProvider(new AdminUserService()));
     cd.createDbConnection(dbUser, dbPassword);
     sf.setResourceProvider(FilingReviewService.class,
-        new SingletonResourceProvider(new FilingReviewService(cd, converterMap, filingMap)));
+        new SingletonResourceProvider(new FilingReviewService(cd, ud, converterMap, filingMap)));
     Map<Object, Object> extensionMappings = new HashMap<Object, Object>();
     extensionMappings.put("xml", MediaType.APPLICATION_XML);
     extensionMappings.put("json", MediaType.APPLICATION_JSON);
@@ -72,7 +80,7 @@ public class EfspServer {
     server = sf.create();
   }
   
-  protected void StopServer() {
+  protected void stopServer() {
     if (server != null) {
       server.stop();
       server.destroy();
@@ -104,7 +112,8 @@ public class EfspServer {
     
     String dbUrl = GetEnv("POSTGRES_URL").orElse("localhost");
     String dbPort = GetEnv("POSTGRES_PORT").orElse("5432"); // Default PG port
-    String dbDatabaseName = GetEnv("POSTGRES_CODES_DB").orElse("tyler_efm_codes");
+    String codeDatabaseName = GetEnv("POSTGRES_CODES_DB").orElse("tyler_efm_codes");
+    String userDatabaseName = GetEnv("POSTGRES_USER_DB").orElse("user_transactions");
     String dbUser = GetEnv("POSTGRES_USER").orElse("postgres"); 
     Optional<String> maybeDbPassword = GetEnv("POSTGRES_PASSWORD"); 
     if (maybeDbPassword.isEmpty()) {
@@ -125,7 +134,8 @@ public class EfspServer {
         "Jefferson", jeffersonParish);
     
     EfspServer server = new EfspServer(x509Password, dbUrl, dbPort, 
-        dbUser, dbPassword, dbDatabaseName, converterMap, filingMap);
+        dbUser, dbPassword, codeDatabaseName, userDatabaseName, 
+        converterMap, filingMap);
 
     // TODO(brycew): use https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ScheduledExecutorService.html
     // to routinely update codes if necessary
@@ -133,10 +143,10 @@ public class EfspServer {
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
       public void run() {
-        server.StopServer();
+        server.stopServer();
       }
     });
-    System.out.println("Server ready...");
+    log.info("Server ready...");
     
     while (true) {
       Thread.sleep(5 * 60 * 1000);

@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.stream.Collectors;
 
 public class FilingInformationDocassembleJacksonDeserializer 
     extends StdDeserializer<FilingInformation> {
@@ -158,7 +158,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
       
     List<String> filingPartyIds = users.stream()
-        .map((per) -> per.getId())
+        .map((per) -> per.getIdString())
         .collect(Collectors.toList());
     List<FilingDoc> filingDocs = new ArrayList<FilingDoc>();
     JsonNode elems = node.get("al_court_bundle").get("elements");

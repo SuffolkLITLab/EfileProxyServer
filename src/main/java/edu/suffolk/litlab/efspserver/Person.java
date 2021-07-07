@@ -27,7 +27,7 @@ public class Person {
   private Optional<LocalDate> birthdate;
   private boolean isOrg;
 
-  private String id;
+  private UUID id;
   // TODO(brycew): role doesn't normally go here. Can be constructed anyway. IDK
   private String role;
   
@@ -51,14 +51,14 @@ public class Person {
     this.birthdate = birthdate;
     this.isOrg = isOrg;
     
-    this.id = "id-" + UUID.randomUUID().toString();
+    this.id = UUID.randomUUID();
   }
 
   public Name getName() {
     return name;
   }
 
-  public String getId() {
+  public UUID getId() {
     return id;
   }
   
@@ -90,6 +90,10 @@ public class Person {
     this.role = role;
   }
   
+  public String getIdString() {
+    return "id-" + id.toString();
+  }
+  
   /** Needs to have participant role set. */
   public CaseParticipantType getEcfCaseParticipant() {
     oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf = 
@@ -116,7 +120,7 @@ public class Person {
     ((PersonAugmentationType) aug).getContactInformation().add(cit);
 
     PersonType pt = ecfOf.createPersonType();
-    pt.setId(id);
+    pt.setId("id-" + id.toString());
     pt.setPersonName(name.getNameType());
     pt.setPersonAugmentation((PersonAugmentationType) aug);
 

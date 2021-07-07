@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efspserver;
 
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FilingInformation {
@@ -14,6 +15,34 @@ public class FilingInformation {
   private String caseSubtype;
   private List<FilingDoc> filingDocs;
   private String paymentId;
+  
+  /** Gets all of the peole who are listed by filer ids in the filing docs.
+   * This corresponds to the `users` variable in Docassemble interviews.
+   *
+   * @return The People who are filers in the filing documents
+   */
+  public List<Person> getFilers() {
+    // Add this information to the transaction database
+    if (filingDocs.isEmpty()) {
+      return List.of();
+    }
+    List<String> allIds = new ArrayList<String>();
+    for (FilingDoc doc : filingDocs) {
+      allIds.addAll(doc.getFilingPartyIds());
+    }
+    List<Person> allFilers = new ArrayList<Person>();
+    for (Person per : defendants) {
+      if (allIds.contains(per.getIdString())) {
+        allFilers.add(per);
+      }
+    }
+    for (Person per : plaintiffs) {
+      if (allIds.contains(per.getIdString())) {
+        allFilers.add(per);
+      }
+    }
+    return allFilers;
+  }
   
   public String getCourtLocation() {
     return courtLocationId;
