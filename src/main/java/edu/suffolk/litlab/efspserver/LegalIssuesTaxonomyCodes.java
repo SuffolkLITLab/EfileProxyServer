@@ -13,10 +13,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LegalIssuesTaxonomyCodes {
-  private static Logger log = Logger.getLogger("edu.suffolk.litlab.efspserver.Person"); 
+  private static Logger log = LoggerFactory.getLogger(LegalIssuesTaxonomyCodes.class); 
 
   /** Reads a special version of the csv at originally from https://taxonomy.legal/download. 
    * A column is added before "Taxonomies" that maps top level codes to ECF case types:

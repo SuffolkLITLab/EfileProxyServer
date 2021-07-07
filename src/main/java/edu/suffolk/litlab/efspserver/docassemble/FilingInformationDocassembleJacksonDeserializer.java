@@ -19,12 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 public class FilingInformationDocassembleJacksonDeserializer 
     extends StdDeserializer<FilingInformation> {
-  private static Logger log = Logger.getLogger("mylogger"); 
+  private static Logger log = LoggerFactory.getLogger("mylogger"); 
 
   private static final long serialVersionUID = 1L;
 
@@ -51,7 +52,7 @@ public class FilingInformationDocassembleJacksonDeserializer
         Person per = PersonDocassembleJacksonDeserializer.fromNode(peopleElements.get(i), p);
         people.add(per);
       } catch (JsonProcessingException ex) {
-        log.warning("Person exception: " + ex);
+        log.warn("Person exception: " + ex);
       }
     }
     return Result.ok(people);
@@ -85,20 +86,20 @@ public class FilingInformationDocassembleJacksonDeserializer
           new ExtractError(ExtractError.Type.MissingRequired, "users[0]", "users[0].email"));
     }
       
-    log.fine("Got users");
+    log.debug("Got users");
     Result<List<Person>, ExtractError> maybeOthers = collectPeople(node, "other_parties", p);
     if (maybeOthers.isErr()) {
       throw new JsonExtractException(p, maybeOthers.unwrapErrOrElseThrow());
     }
     final List<Person> otherParties = maybeOthers.unwrapOrElseThrow(); 
-    log.fine("Got other parties");
+    log.debug("Got other parties");
       
     Optional<Boolean> userStartedCase = Optional.empty(); 
     if (node.has("user_started_case") 
         && node.get("user_started_case").isBoolean()) {
       userStartedCase = Optional.of(node.get("user_started_case").asBoolean());
     }
-    log.fine("user_started_case: " + userStartedCase.orElse(null));
+    log.debug("user_started_case: " + userStartedCase.orElse(null));
 
     FilingInformation entities = new FilingInformation();
     if (userStartedCase.isEmpty()) {

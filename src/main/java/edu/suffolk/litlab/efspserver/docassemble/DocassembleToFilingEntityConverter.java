@@ -15,11 +15,12 @@ import edu.suffolk.litlab.efspserver.services.InterviewToFilingEntityConverter;
 import edu.suffolk.litlab.efspserver.services.JsonExtractException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DocassembleToFilingEntityConverter implements InterviewToFilingEntityConverter {
 
-  private static Logger log = Logger.getLogger("mylogger"); 
+  private static Logger log = LoggerFactory.getLogger(DocassembleToFilingEntityConverter.class); 
   private LegalIssuesTaxonomyCodes codes;
   
   public DocassembleToFilingEntityConverter(InputStream taxonomyCsv) 
@@ -45,10 +46,10 @@ public class DocassembleToFilingEntityConverter implements InterviewToFilingEnti
       }
       return Result.ok(entities);  
     } catch (JsonExtractException ex) {
-      log.warning("Got extract Exception: " + ex);
+      log.warn("Got extract Exception: " + ex);
       return Result.err(ex.getError());
     } catch (JsonProcessingException ex) {
-      log.warning("Parsing Exception: " + ex);
+      log.warn("Parsing Exception: " + ex);
       return Result.err(new ExtractError(ExtractError.Type.MalformedInterview));
     }
   }
