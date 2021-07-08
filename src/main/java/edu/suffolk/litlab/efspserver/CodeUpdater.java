@@ -326,7 +326,7 @@ public class CodeUpdater {
 
   public static void main(String[] args) throws Exception {
     CodeDatabase cd = new CodeDatabase(System.getenv("POSTGRES_URL"), 
-        System.getenv("POSTGRES_PORT"), 
+        Integer.parseInt(System.getenv("POSTGRES_PORT")), 
         System.getenv("POSTGRES_CODES_DB"));
     cd.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
   }

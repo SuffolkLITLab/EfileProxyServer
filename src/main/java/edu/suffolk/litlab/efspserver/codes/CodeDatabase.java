@@ -36,8 +36,12 @@ public class CodeDatabase extends DatabaseInterface {
   private static Logger log = 
       LoggerFactory.getLogger(CodeDatabase.class); 
 
-  public CodeDatabase(String pgUrl, String pgPort, String pgDb) {
+  public CodeDatabase(String pgUrl, int pgPort, String pgDb) {
     super(pgUrl, pgPort, pgDb);
+  }
+
+  public CodeDatabase(String pgFullUrl, String pgDb) {
+    super(pgFullUrl, pgDb);
   }
 
   public void createTableIfAbsent(String tableName) throws SQLException {
