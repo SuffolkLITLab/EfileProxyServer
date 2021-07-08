@@ -879,7 +879,8 @@ public final class EfmClient {
     // System.err.println("------------- FIRM -------------");
     // EfmClient.paymentAccounts(firmPort, false);
     // EfmClient.testFilingService(filingPort, "adams");
-    CodeDatabase cd = new CodeDatabase(System.getenv("POSTGRES_URL"), System.getenv("POSTGRES_PORT"), 
+    CodeDatabase cd = new CodeDatabase(System.getenv("POSTGRES_URL"), 
+        Integer.parseInt(System.getenv("POSTGRES_PORT")), 
         System.getenv("POSTGRES_CODES_DB"));
     cd.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
 

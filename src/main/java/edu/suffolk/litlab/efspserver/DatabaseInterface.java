@@ -14,15 +14,19 @@ public abstract class DatabaseInterface {
   private static Logger log = 
       LoggerFactory.getLogger(UserDatabase.class); 
 
-  private final String pgUrl;
-  protected final String pgPort;
+  /** Of the full jdbc form, with no db name: e.g. "jdcb:postgresql://localhost:9000" */
+  private final String pgFullUrl;
   protected final String pgDb;
 
   protected Connection conn;
 
-  public DatabaseInterface(String pgUrl, String pgPort, String pgDb) {
-    this.pgUrl = pgUrl;
-    this.pgPort = pgPort;
+  public DatabaseInterface(String pgUrl, int pgPort, String pgDb) {
+    this.pgFullUrl = "jdbc:postgresql://" + pgUrl + ":" + Integer.toString(pgPort);
+    this.pgDb = pgDb;
+  }
+  
+  public DatabaseInterface(String pgFullUrl, String pgDb) {
+    this.pgFullUrl = pgFullUrl;
     this.pgDb = pgDb;
   }
 
@@ -37,7 +41,7 @@ public abstract class DatabaseInterface {
    * @throws InterruptedException if it can't connect to the database for some reason
    */
   public void createDbConnection(String pgUser, String pgPassword) throws SQLException {
-    String url = "jdbc:postgresql://" + this.pgUrl + ":" + this.pgPort + "/" + this.pgDb;
+    String url = this.pgFullUrl + "/" + this.pgDb;
     Properties props = new Properties();
     props.setProperty("user", pgUser);
     props.setProperty("password", pgPassword);
@@ -68,7 +72,7 @@ public abstract class DatabaseInterface {
     while (System.currentTimeMillis() - startTime < RETRY_TIME_MILLIS) {
       // Check if the named database exists before creating it
       log.info("Trying to connect to the default database");
-      String tempUrl = "jdbc:postgresql://" + this.pgUrl + ":" + this.pgPort + "/postgrs";
+      String tempUrl = this.pgFullUrl + "/postgres";
       try {
         Properties props = new Properties();
         props.setProperty("user", pgUser);

@@ -28,7 +28,7 @@ public class EfspServer {
   private Server server;
   
   protected EfspServer(String x509Password, 
-      String dbUrl, String dbPort,
+      String dbUrl, int dbPort,
       String dbUser, String dbPassword,
       String codeDatabaseName,
       String userDatabaseName,
@@ -112,6 +112,7 @@ public class EfspServer {
     
     String dbUrl = GetEnv("POSTGRES_URL").orElse("localhost");
     String dbPort = GetEnv("POSTGRES_PORT").orElse("5432"); // Default PG port
+    int dbPortInt = Integer.parseInt(dbPort);
     String codeDatabaseName = GetEnv("POSTGRES_CODES_DB").orElse("tyler_efm_codes");
     String userDatabaseName = GetEnv("POSTGRES_USER_DB").orElse("user_transactions");
     String dbUser = GetEnv("POSTGRES_USER").orElse("postgres"); 
@@ -133,7 +134,7 @@ public class EfspServer {
     Map<String, EfmFilingInterface> filingMap = Map.of(
         "Jefferson", jeffersonParish);
     
-    EfspServer server = new EfspServer(x509Password, dbUrl, dbPort, 
+    EfspServer server = new EfspServer(x509Password, dbUrl, dbPortInt, 
         dbUser, dbPassword, codeDatabaseName, userDatabaseName, 
         converterMap, filingMap);
 

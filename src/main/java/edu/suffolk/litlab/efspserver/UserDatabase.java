@@ -23,8 +23,12 @@ public class UserDatabase extends DatabaseInterface {
 
   private static final String tableName = "submitted_filings";
   
-  public UserDatabase(String pgUrl, String pgPort, String pgDb) {
+  public UserDatabase(String pgUrl, int pgPort, String pgDb) {
     super(pgUrl, pgPort, pgDb);
+  }
+
+  public UserDatabase(String pgFullUrl, String pgDb) {
+    super(pgFullUrl, pgDb);
   }
   
   /** Creates the userdatabase table if it doesn't exist yet. */
@@ -54,6 +58,8 @@ public class UserDatabase extends DatabaseInterface {
     }
   }
   
+  // TODO(bryceW): add the title of the case ("John vs Jones")
+  // Can generate it from the Plaintiff vs Defendant (in the matter of Respondant)
   /** Adds the given values as a row in the submitted table. */
   public void addToTable(String name,
       UUID filingPartyId, Optional<String> phoneNumber, String email, 
@@ -73,14 +79,13 @@ public class UserDatabase extends DatabaseInterface {
     PreparedStatement insertSt = conn.prepareStatement(insertIntoTable);
     insertSt.setObject(1, filingPartyId);
     insertSt.setString(2, name);
-    phoneNumber.ifPresent((phone) -> {
-      try {
-        insertSt.setString(3, phone);
-      } catch (SQLException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    });
+    String phone = phoneNumber.orElse(null); 
+    try {
+      insertSt.setString(3, phone);
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     insertSt.setString(4, email);
     insertSt.setObject(5, transactionId);
     insertSt.setString(6,  caseType);
@@ -89,6 +94,7 @@ public class UserDatabase extends DatabaseInterface {
     insertSt.executeUpdate();
   }
   
+  // TODO(brycew): consider having to lookup "callbacked" users: either in DB or just in Logs
   /** Gets the info from the table by using the (Primary key'd) transaction id.
    */
   public Optional<Transaction> findTransaction(UUID transactionToFind) throws SQLException {
@@ -97,8 +103,8 @@ public class UserDatabase extends DatabaseInterface {
       throw new SQLException();
     }
     String query = "SELECT name, user_id, phone_number, email, transaction_id, casetype, submitted"
-        + "FROM " + tableName
-        + "WHERE transaction_id = ?";
+        + " FROM " + tableName
+        + " WHERE transaction_id = ?";
     
     PreparedStatement st = conn.prepareStatement(query);
     st.setObject(1, transactionToFind);
