@@ -19,7 +19,7 @@ public class SendMessage {
     context.put("name", "Suffolk LIT Lab Test");
     // SendEmail("test@example.com", "Test email", "massaccess@suffolk.edu", "Hello, {{ name }}. message body", context);
 
-    SendSMS("+16073514615", "Hello {{ name }}", context);
+    //SendSMS("+1.........", "Hello {{ name }}", context);
   }
   
   /**
