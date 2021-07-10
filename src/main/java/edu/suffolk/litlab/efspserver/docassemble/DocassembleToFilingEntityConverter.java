@@ -11,6 +11,7 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.ExtractError;
+import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewToFilingEntityConverter;
 import edu.suffolk.litlab.efspserver.services.JsonExtractException;
 import java.io.IOException;
@@ -18,7 +19,7 @@ import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DocassembleToFilingEntityConverter implements InterviewToFilingEntityConverter {
+public class DocassembleToFilingEntityConverter extends InterviewToFilingEntityConverter {
 
   private static Logger log = LoggerFactory.getLogger(DocassembleToFilingEntityConverter.class); 
   private LegalIssuesTaxonomyCodes codes;
@@ -29,28 +30,29 @@ public class DocassembleToFilingEntityConverter implements InterviewToFilingEnti
   }
 
   @Override
-  public Result<FilingInformation, ExtractError> extractEntities(String interviewContents) {
+  public Result<FilingInformation, ExtractError> traverseInterview(String interviewContents,
+      InfoCollector collector) {
     SimpleModule module = new SimpleModule();
     module.addDeserializer(FilingDoc.class, 
         new FilingDocDocassembleJacksonDeserializer(FilingDoc.class)); 
     module.addDeserializer(Address.class, new AddressDocassembleJacksonDeserializer(Address.class));
     module.addDeserializer(Person.class, new PersonDocassembleJacksonDeserializer(Person.class));
     module.addDeserializer(FilingInformation.class, 
-        new FilingInformationDocassembleJacksonDeserializer(FilingInformation.class, codes));
+        new FilingInformationDocassembleJacksonDeserializer(FilingInformation.class, codes, collector));
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(module);
     try {
-      FilingInformation entities = mapper.readValue(interviewContents, FilingInformation.class);
-      if (entities == null) {
-        return Result.err(new ExtractError(ExtractError.Type.MalformedInterview));
+      FilingInformation info = mapper.readValue(interviewContents, FilingInformation.class);
+      if (info == null) {
+        return Result.err(ExtractError.malformedInterview("The interview contents were null"));
       }
-      return Result.ok(entities);  
+      return Result.ok(info);  
     } catch (JsonExtractException ex) {
       log.warn("Got extract Exception: " + ex);
       return Result.err(ex.getError());
     } catch (JsonProcessingException ex) {
       log.warn("Parsing Exception: " + ex);
-      return Result.err(new ExtractError(ExtractError.Type.MalformedInterview));
+      return Result.err(ExtractError.malformedInterview("JsonParsing Exception: " + ex));
     }
   }
 

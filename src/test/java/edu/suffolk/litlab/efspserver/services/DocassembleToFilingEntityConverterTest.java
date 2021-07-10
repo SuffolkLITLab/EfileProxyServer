@@ -45,35 +45,37 @@ public class DocassembleToFilingEntityConverterTest {
   @Test
   public void testEmptyOnInvalidJson() throws IOException {
     String contents1 = getFileContents("/invalid_1.json");
-    assertThat(converter.extractEntities(contents1))
-        .isErr()
-        .containsErr(new ExtractError(ExtractError.Type.MalformedInterview));
+    Result<FilingInformation, ExtractError> result = converter.extractEntities(contents1);
+    assertThat(result).isErr();
+    assertEquals(result.unwrapErrOrElseThrow().getType(), ExtractError.Type.MalformedInterview);
+
     String contents2 = getFileContents("/invalid_2.json");
-    assertThat(converter.extractEntities(contents2))
-        .isErr()
-        .containsErr(new ExtractError(ExtractError.Type.MalformedInterview));
+    Result<FilingInformation, ExtractError> result2 = converter.extractEntities(contents2);
+    assertThat(result2).isErr();
+    assertEquals(result2.unwrapErrOrElseThrow().getType(), ExtractError.Type.MalformedInterview);
   }
   
   @Test
   public void testEmptyOnUnsupportedJson() throws IOException {
     String justStr = getFileContents("/just_str.json");
-    assertThat(converter.extractEntities(justStr))
-        .isErr()
-        .containsErr(new ExtractError(ExtractError.Type.MalformedInterview));
-    assertTrue(converter.extractEntities(justStr).isErr());
+    Result<FilingInformation, ExtractError> result = converter.extractEntities(justStr);
+    assertThat(result).isErr();
+    assertEquals(result.unwrapErrOrElseThrow().getType(), ExtractError.Type.MalformedInterview);
+
     String justNull = getFileContents("/just_null.json");
-    assertThat(converter.extractEntities(justNull))
-        .isErr()
-        .containsErr(new ExtractError(ExtractError.Type.MalformedInterview));
+    Result<FilingInformation, ExtractError> result2 = converter.extractEntities(justNull);
+    assertThat(result2).isErr();
+    assertEquals(result2.unwrapErrOrElseThrow().getType(), ExtractError.Type.MalformedInterview);
   }
   
   @Test
   public void testEnsureUserEmail() throws IOException {
     String contents = getFileContents("/housing_tro_2_plaintiff_business_def_no_email.json"); 
     Result<FilingInformation, ExtractError> result = converter.extractEntities(contents);
+    System.out.println(result);
     assertThat(result).isErr()
-        .containsErr(new ExtractError(ExtractError.Type.MissingRequired, 
-            "users[0]", "users[0].email"));
+        .containsErr(ExtractError.missingRequired(new InterviewVariable(
+            "users[0].email", "", "text", List.of()))); 
   }
   
   @Test

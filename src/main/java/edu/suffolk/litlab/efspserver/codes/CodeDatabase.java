@@ -113,7 +113,7 @@ public class CodeDatabase extends DatabaseInterface {
         }
         stmt.addBatch();
       }
-      int[] addedRowsPerQuery = stmt.executeBatch();
+      stmt.executeBatch();
       if (!courtName.isEmpty()) {
         update.setString(1, doc.getIdentification().getVersion());
         update.setString(2, courtName);

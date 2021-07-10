@@ -1,15 +1,21 @@
 package edu.suffolk.litlab.efspserver.docassemble;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.hubspot.algebra.Result;
+
 import edu.suffolk.litlab.efspserver.Address;
 import edu.suffolk.litlab.efspserver.ContactInformation;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.Person;
+import edu.suffolk.litlab.efspserver.services.ExtractError;
+import edu.suffolk.litlab.efspserver.services.FailFastCollector;
+import edu.suffolk.litlab.efspserver.services.InfoCollector;
+import edu.suffolk.litlab.efspserver.services.InterviewVariable;
+import edu.suffolk.litlab.efspserver.services.JsonExtractException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -34,12 +40,14 @@ public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person
     }
     return Optional.empty();
   }
-  
+
   /** Parses a person from the Json Object. Used by Deserializers that include people. */
-  public static Person fromNode(JsonNode node, JsonParser p) throws JsonProcessingException {
+  public static Result<Person, ExtractError> fromNode(JsonNode node, InfoCollector collector) {
     if (!node.isObject()) {
-      throw new JsonParseException(p,
-          "Refusing to parse person that isn't a Json Object: " + node.toPrettyString());
+      ExtractError err = ExtractError.malformedInterview(
+              "Refusing to parse person that isn't a Json Object: " + node.toPrettyString());
+      collector.error(err);
+      return Result.err(err);
     }
     
     List<String> phones = new ArrayList<String>();
@@ -48,30 +56,78 @@ public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person
       if (!mobile.isBlank()) {
         phones.add(mobile);
       }
+    } else {
+      InterviewVariable var = new InterviewVariable("mobile_number", 
+          "A mobile or cell phone number", "text", List.of());
+      collector.addOptional(var);
     }
-    if (node.has("phone_number") && node.get("phone_number").isTextual()) {
-      String phone = node.get("phone_number").asText();
-      if (!phone.isBlank()) {
-        phones.add(phone);
+
+    if (node.has("phone_number")) {
+      if (node.get("phone_number").isTextual()) {
+        String phone = node.get("phone_number").asText();
+        if (!phone.isBlank()) {
+          phones.add(phone);
+        }
+      } else {
+        ExtractError err = ExtractError.malformedInterview("phone number needs to be text: " 
+            + node.get("phone_number").toPrettyString());
+        return Result.err(err);
       }
+    } else {
+      InterviewVariable var = new InterviewVariable("phone_number",
+          "A mobile or cell phone number", "text", List.of());
+      collector.addOptional(var);
     }
+
     Optional<Address> addr = Optional.empty(); 
     if (node.has("address") && node.get("address").isObject()) {
       AddressDocassembleJacksonDeserializer deser = 
           new AddressDocassembleJacksonDeserializer(Address.class);
-      try {
-        addr = Optional.of(deser.fromNode(node.get("address"), p));
-      } catch (JsonProcessingException ex) {
-        // do nothing
+      collector.pushAttributeStack("address");
+      Result<Address, ExtractError> result = deser.fromNode(node.get("address"), collector);
+      collector.popAttributeStack();
+      if (result.isErr()) {
+        ExtractError err = result.unwrapErrOrElseThrow();
+        if (err.getType().equals(ExtractError.Type.MissingRequired)) {
+          InterviewVariable var = new InterviewVariable(collector.currentAttributeStack()+ "address", 
+              "The address of a person", "Address", List.of());
+          collector.addRequired(var);
+          if (collector.finished()) {
+            return Result.err(err);
+          }
+        }  else {
+          return Result.err(err);
+        }
+      } else {
+        addr = Optional.of(result.unwrapOrElseThrow());
       }
     }
     Optional<String> email = getStringMember(node, "email"); 
     final ContactInformation info = new ContactInformation(phones, addr, email);
 
-    if (!(node.has("name") 
-        && node.get("name").isObject() 
-        && node.get("name").has("first"))) {
-      throw new JsonParseException(p, "Refusing to parse a person without a name / or first name");
+    if (!node.has("name")) {
+      InterviewVariable var = new InterviewVariable(
+              collector.currentAttributeStack() + "name", "The full name of the person", "IndividualName", List.of());
+      collector.addRequired(var);
+      if (collector.finished()) {
+        ExtractError err = ExtractError.missingRequired(var);
+        return Result.err(err);
+      }
+    }
+    if (!node.get("name").isObject()) {
+      ExtractError err = ExtractError.malformedInterview(
+          "Can't parse person with name that's not a JSON object: " + node.get("name").toPrettyString());
+      return Result.err(err);
+    }
+    if (!node.get("name").has("first")) {
+      InterviewVariable var = new InterviewVariable(
+          collector.currentAttributeStack() + "name.first", 
+          "The first name of a person / name of a business", "text", List.of());
+      collector.addRequired(var);
+      if (collector.finished()) {
+        ExtractError err = ExtractError.missingRequired(var);
+        return Result.err(err);
+      }
     }
 
     JsonNode nameSubset = node.get("name");
@@ -89,15 +145,20 @@ public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person
     Optional<String> gender = getStringMember(node, "gender");
     Optional<LocalDate> birthdate = Optional.empty(); // TODO(brycew): read in birthdate
     Person per = new Person(name, info, gender, language, birthdate, isOrg);
-    return per;
     log.debug("Read in a new person: " + per.getName().getFullName());
+    return Result.ok(per);
   }
 
   @Override
   public Person deserialize(JsonParser p, DeserializationContext ctxt)
       throws IOException, JsonProcessingException {
     JsonNode node = p.readValueAsTree();
-    return fromNode(node, p);
+    InfoCollector collector = new FailFastCollector();
+    Result<Person, ExtractError> person = fromNode(node, collector); 
+    if (person.isErr()) {
+      throw new JsonExtractException(p, person.unwrapErrOrElseThrow());
+    }
+    return person.unwrapOrElseThrow();
   }
 
 }
