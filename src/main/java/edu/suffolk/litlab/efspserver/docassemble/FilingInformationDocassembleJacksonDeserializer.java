@@ -53,7 +53,6 @@ public class FilingInformationDocassembleJacksonDeserializer
       return Result.err(ExtractError.malformedInterview(
           potentialMember + " isn't an List with an elements array")); 
     }
-    // TODO(brycew): use collector here instead of errors?
     List<Person> people = new ArrayList<Person>();
     JsonNode peopleElements = topObj.get(potentialMember).get("elements");
     for (int i = 0; i < peopleElements.size(); i++) {
@@ -95,8 +94,8 @@ public class FilingInformationDocassembleJacksonDeserializer
           node.get("user_preferred_language").asText());
     }
     // TODO(brycew): optional
-    boolean userHasEmail = users.get(0).getContactInfo().getEmail().isPresent();
-    if (!userHasEmail) { 
+    Optional<String> userEmail = users.get(0).getContactInfo().getEmail(); 
+    if (userEmail.isEmpty() || userEmail.get().isBlank()) { 
       InterviewVariable var = new InterviewVariable(
           "users[0].email", "Email is required for at least one user", "text", List.of());
       collector.addRequired(var);
@@ -129,7 +128,7 @@ public class FilingInformationDocassembleJacksonDeserializer
 
     FilingInformation entities = new FilingInformation();
     if (userStartedCase.isEmpty()) {
-      InterviewVariable var = new InterviewVariable(collector.currentAttributeStack() + "user_started_case", 
+      InterviewVariable var = collector.requestVar("user_started_case", 
           "Whether or the user is the plantiff or petitioner", "boolean", List.of("true", "false"));
       collector.addRequired(var);
       if (collector.finished()) {
@@ -182,8 +181,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       if (metadata.has("title") && metadata.get("title").isTextual()) {
         entities.setCaseType(metadata.get("title").asText());
         if (true /* TODO(brycew): fill in subtype? */) {
-          InterviewVariable var = 
-              new InterviewVariable(collector.currentAttributeStack() + "case_subtype", "TODO(brycew)", "text", List.of());
+          InterviewVariable var = collector.requestVar("case_subtype", "TODO(brycew)", "text");
           collector.addOptional(var);
           entities.setCaseSubtype("");
         }
@@ -194,8 +192,8 @@ public class FilingInformationDocassembleJacksonDeserializer
         .map((per) -> per.getIdString())    
         .collect(Collectors.toList());
     List<FilingDoc> filingDocs = new ArrayList<FilingDoc>();
-    InterviewVariable bundleVar = new InterviewVariable(collector.currentAttributeStack() + "al_court_bundle", 
-        "The full court bundle", "ALDocumentBundle", List.of());
+    final InterviewVariable bundleVar = collector.requestVar("al_court_bundle", 
+        "The full court bundle", "ALDocumentBundle");
     if (!node.has("al_court_bundle")) {
       collector.addRequired(bundleVar);
       if (collector.finished()) {
@@ -223,9 +221,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       } else {
         ExtractError err = fil.unwrapErrOrElseThrow();
         if (err.getType().equals(ExtractError.Type.MissingRequired)) {
-          InterviewVariable var = new InterviewVariable(collector.currentAttributeStack() + "al_court_bundle", 
-              "The full court bundle", "ALDocumentBundle", List.of());
-          collector.addRequired(var);
+          collector.addRequired(bundleVar); 
           return Result.err(err);
         }
       }

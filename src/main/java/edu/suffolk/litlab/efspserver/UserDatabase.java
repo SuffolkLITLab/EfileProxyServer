@@ -42,19 +42,22 @@ public class UserDatabase extends DatabaseInterface {
 
     existsSt.setString(1, tableName);
     ResultSet rs = existsSt.executeQuery();
-    if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
+    boolean next = rs.next();
+    int i = rs.getInt(1);
+    log.info("Result of " + tableName + " existing: " + next + ", " + i);
+    if (!next || i <= 0) { // There's no table! Make one
       String createQuery = """ 
            CREATE TABLE %s (
            "user_id" uuid, "name" text, "phone_number" text,
            "email" text, "transaction_id" uuid PRIMARY KEY, "casetype" text, 
            "submitted" date)""".formatted(tableName);
-      if (createQuery.isEmpty()) {
-        log.warn("Will not create table with name: " + tableName);
-        return;
-      }
       PreparedStatement createSt = conn.prepareStatement(createQuery);
       log.info("Full statement: " + createSt.toString());
-      createSt.executeUpdate();
+      int retVal = createSt.executeUpdate();
+      if (retVal < 0) {
+        log.warn("Issue when creating " + tableName + ": retVal == " + retVal);
+      }
+      conn.commit();
     }
   }
   

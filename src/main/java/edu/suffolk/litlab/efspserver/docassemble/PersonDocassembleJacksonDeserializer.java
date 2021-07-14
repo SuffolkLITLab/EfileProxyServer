@@ -89,8 +89,8 @@ public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person
       if (result.isErr()) {
         ExtractError err = result.unwrapErrOrElseThrow();
         if (err.getType().equals(ExtractError.Type.MissingRequired)) {
-          InterviewVariable var = new InterviewVariable(collector.currentAttributeStack()+ "address", 
-              "The address of a person", "Address", List.of());
+          InterviewVariable var = collector.requestVar("address", 
+              "The address of a person", "Address");
           collector.addRequired(var);
           if (collector.finished()) {
             return Result.err(err);
@@ -106,8 +106,8 @@ public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person
     final ContactInformation info = new ContactInformation(phones, addr, email);
 
     if (!node.has("name")) {
-      InterviewVariable var = new InterviewVariable(
-              collector.currentAttributeStack() + "name", "The full name of the person", "IndividualName", List.of());
+      InterviewVariable var = collector.requestVar(
+          "name", "The full name of the person", "IndividualName");
       collector.addRequired(var);
       if (collector.finished()) {
         ExtractError err = ExtractError.missingRequired(var);
@@ -120,9 +120,8 @@ public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person
       return Result.err(err);
     }
     if (!node.get("name").has("first")) {
-      InterviewVariable var = new InterviewVariable(
-          collector.currentAttributeStack() + "name.first", 
-          "The first name of a person / name of a business", "text", List.of());
+      InterviewVariable var = collector.requestVar("name.first", 
+          "The first name of a person / name of a business", "text");
       collector.addRequired(var);
       if (collector.finished()) {
         ExtractError err = ExtractError.missingRequired(var);

@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 
 public class FilingDocDocassembleJacksonDeserializer extends StdDeserializer<FilingDoc> {
 
@@ -56,8 +55,8 @@ public class FilingDocDocassembleJacksonDeserializer extends StdDeserializer<Fil
       // Get: filename
       String fileName = node.get("filename").asText() + ".pdf";
       if (true /* TODO(brycew): put some check for motion here. */) {
-        InterviewVariable var = new InterviewVariable(collector.currentAttributeStack() + "motion",
-            "The Type of Motion that this interview is", "text", List.of());
+        InterviewVariable var = collector.requestVar("motion",
+            "The Type of Motion that this interview is", "text");
         collector.addOptional(var);
       }
       NameAndCode regActionDesc = new NameAndCode("Motion", "");

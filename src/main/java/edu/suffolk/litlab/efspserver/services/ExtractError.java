@@ -53,6 +53,28 @@ public class ExtractError {
     return type.toString() + " " + description + " " + missingVariable;
   }
   
+  public String toJson() {
+    if (type.equals(Type.ServerError)) {
+      return """
+             {
+               "type": "Server Error",
+               "description": "%s"
+             }
+             """.formatted(this.description);
+    } else if (type.equals(Type.MalformedInterview)) {
+      return """
+             {
+               "type": "Malformed Interview",
+               "description": "%s"
+             }
+             """.formatted(this.description);
+    } else if (missingVariable.isPresent()){ // Missing Required
+      InterviewVariable var = missingVariable.get();
+      return var.toJson();
+    }
+    return "TODO(brycew): don't need this check?";
+  }
+  
   public Type getType() {
     return type;
   }
