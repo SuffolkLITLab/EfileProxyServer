@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efspserver.jeffnet;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.hubspot.algebra.Result;
@@ -27,7 +28,7 @@ import tyler.efm.services.schema.common.ErrorType;
 public class JeffNetFiler implements EfmFilingInterface {
   private static Logger log =
       LoggerFactory.getLogger(JeffNetFiler.class);
-  
+
   private URI filingEndpoint;
   private String apiToken;
   private SimpleModule module;
@@ -88,6 +89,11 @@ public class JeffNetFiler implements EfmFilingInterface {
       err.setErrorCode("-1");
       err.setErrorText("Error getting response from " + this.filingEndpoint + ", " + ex);
       return Result.err(err);
+    } catch (JsonMappingException ex) {
+      ErrorType err = new ErrorType();
+      err.setErrorCode("-1");
+      err.setErrorText("Error when trying to understand JeffNet's response b/c: " + ex); 
+      return Result.err(err);
     } catch (IOException ex) {
       ErrorType err = new ErrorType();
       err.setErrorCode("-1");
@@ -96,14 +102,14 @@ public class JeffNetFiler implements EfmFilingInterface {
     }
   }
   
-  private class ApiResult {
-    @JsonProperty("ResultCode")
+  private static class ApiResult {
+    @JsonProperty("resultCode")
     int resultCode;
     
-    @JsonProperty("Message")
+    @JsonProperty("message")
     String message;
     
-    @JsonProperty("TransactionID")
+    @JsonProperty("transactionID")
     String transactionId;
   }
 }

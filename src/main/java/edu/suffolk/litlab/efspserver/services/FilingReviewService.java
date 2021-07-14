@@ -76,6 +76,7 @@ public class FilingReviewService {
     this.converterMap = converterMap;
     this.filingInterfaces = filingInterfaces;
     this.cd = cd;
+    this.ud = ud;
     statusObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory();
     listObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory();
     commonObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
@@ -174,6 +175,24 @@ public class FilingReviewService {
   }
   
   @POST
+  @Path("/court/{court_id}/check_filing")
+  public Response checkFilingForReview(@Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId, String allVars) {
+    MediaType mediaType = httpHeaders.getMediaType();
+    log.trace("Checking a filing: Media type: " + mediaType);  
+    log.trace("Court id: " + courtId);
+    if (!filingInterfaces.containsKey(courtId)) {
+      return Response.status(404).entity("Cannot send filing to " + courtId).build();
+    }
+    if (!converterMap.containsKey(mediaType.toString())) {
+      return Response.status(415).entity("We only support " + converterMap.keySet()).build();
+    }
+    InfoCollector collector = new AllWrongCollector();
+    converterMap.get(mediaType.toString()).findMissing(allVars, collector);
+    return Response.ok(collector.jsonSummary()).build();
+  }
+  
+  @POST
   @Path("/court/{court_id}/filing")
   public Response submitFilingForReview(@Context HttpHeaders httpHeaders, 
       @PathParam("court_id") String courtId, String allVars) {
@@ -184,63 +203,54 @@ public class FilingReviewService {
     if (!filingInterfaces.containsKey(courtId)) {
       return Response.status(404).entity("Cannot send filing to " + courtId).build();
     }
-    if (converterMap.containsKey(mediaType.toString())) {
-      Result<FilingInformation, ExtractError> maybeInfo = 
-          converterMap.get(mediaType.toString()).extractEntities(allVars);
-      if (maybeInfo.isErr()) {
-        return Response.status(400).entity(maybeInfo.unwrapErrOrElseThrow()).build();
-      }
-      FilingInformation info = maybeInfo.unwrapOrElseThrow();
-      info.setCourtLocation(courtId);
-      Result<UUID, ErrorType> result = 
-          filingInterfaces.get(courtId).sendFiling(info);
-      if (result.isOk()) {
-        // Add this information to the transaction database
-        List<Person> filers = info.getFilers();
-        if (filers.isEmpty()) {
-          log.error("No people to add as filers? %s".formatted(info));
-          return Response.ok().entity("Couldn't log the user who submitted!").build();
-        }
-        Person user = filers.get(0);
-        Optional<String> phoneNumber = Optional.empty();
-        if (user.getContactInfo().getPhoneNumbers().size() > 0) {
-          // TODO(brycew): should we store multiple phone numbers as backup?
-          phoneNumber = Optional.of(user.getContactInfo().getPhoneNumbers().get(0));
-        }
-        Timestamp ts = new Timestamp(System.currentTimeMillis());
-        try {
-          ud.addToTable(user.getName().getFullName(), user.getId(), 
-              phoneNumber, user.getContactInfo().getEmail().orElse(""), 
-              result.unwrapOrElseThrow(), info.getCaseType(), 
-              ts);
-        } catch (SQLException ex) {
-          log.error("Couldn't add info to the database! Logging here for posterity: " 
-                    + "%s %s %s %s %s".formatted(user.getName().getFullName(), user.getId(), 
-                            phoneNumber, user.getContactInfo().getEmail(),
-                            result, info.getCaseType(), ts));
-          // TODO(brycew): change to "created"
-          return Response.ok().entity("Error saving info to database").build();
-        }
-      }
-      return result.match(
-          err -> Response.serverError().entity(err).build(),
-          // TODO(brycew): change to "created"
-          n -> Response.ok().build()
-      );
-    } else {
+    if (!converterMap.containsKey(mediaType.toString())) {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
+    } 
+    Result<FilingInformation, ExtractError> maybeInfo = 
+        converterMap.get(mediaType.toString()).extractEntities(allVars);
+    if (maybeInfo.isErr()) {
+      return Response.status(400).entity(maybeInfo.unwrapErrOrElseThrow().toJson()).build();
     }
+    FilingInformation info = maybeInfo.unwrapOrElseThrow();
+    info.setCourtLocation(courtId);
+    Result<UUID, ErrorType> result = 
+        filingInterfaces.get(courtId).sendFiling(info);
+    if (result.isErr()) {
+      return Response.status(500).entity(result.unwrapErrOrElseThrow()).build();
+    }
+    // Add this information to the transaction database
+    List<Person> filers = info.getFilers();
+    if (filers.isEmpty()) {
+      log.error("No people to add as filers? %s".formatted(info));
+      return Response.ok().entity("Couldn't log the user who submitted!").build();
+    }
+    Person user = filers.get(0);
+    Optional<String> phoneNumber = Optional.empty();
+    if (user.getContactInfo().getPhoneNumbers().size() > 0) {
+      // TODO(brycew): should we store multiple phone numbers as backup?
+      phoneNumber = Optional.of(user.getContactInfo().getPhoneNumbers().get(0));
+    }
+    Timestamp ts = new Timestamp(System.currentTimeMillis());
+    try {
+      ud.addToTable(user.getName().getFullName(), user.getId(), 
+          phoneNumber, user.getContactInfo().getEmail().orElse(""), 
+          result.unwrapOrElseThrow(), info.getCaseType(), 
+          ts);
+      ud.commit();
+    } catch (SQLException ex) {
+      log.error("Couldn't add info to the database! Logging here for posterity: " 
+                + "%s %s %s %s %s".formatted(user.getName().getFullName(), user.getId(), 
+                        phoneNumber, user.getContactInfo().getEmail(),
+                        result, info.getCaseType(), ts));
+      // TODO(brycew): change to "created"
+      return Response.ok().entity("Error saving info to database").build();
+    }
+    return result.match(
+        err -> Response.serverError().entity(err).build(),
+        // TODO(brycew): change to "created"
+        n -> Response.ok().build()
+    );
     /*
-    // TODO(brycew): actually read in JSON data and delete this hardcoded data
-    Address plaintiffAddress = new Address("83 Fake St", "Apt 2", "Boston", "MA", "02125", "US");
-    ContactInformation plaintiffContact = new ContactInformation(List.of(), 
-        Optional.of(plaintiffAddress), "fakeemail@example.com");
-    Person plaintiff = new Person(new Name("Plaintiff", "Goth"), 
-        plaintiffContact, Optional.empty(), 
-        Optional.of("English"), Optional.empty(), false);
-    Person defendant = new Person(new Name("Defendant", "Zombie"), "fakeemail2@example.com", false);
-    List<Person> plaintiffs = List.of(plaintiff);
-    List<Person> defendants = List.of(defendant);
     // filing code: complaint (27967): got from filing table, location = 'adams',
     // casecategory='210',
     // and filingtype='Both' or 'Initial'

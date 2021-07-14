@@ -27,6 +27,25 @@ public class InterviewVariable {
     return description;
   }
   
+  public String getDatatype() {
+    return datatype;
+  }
+  
+  public List<String> getChoices() {
+    return choices;
+  }
+  
+  public String toJson() {
+      return """
+             { 
+               "name": "%s",
+               "description": "%s",
+               "datatype": "%s",
+               "choices": %s
+             }
+             """.formatted(name, description, datatype, choices);
+  }
+  
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();

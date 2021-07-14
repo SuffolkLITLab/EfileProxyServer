@@ -65,12 +65,54 @@ public abstract class InfoCollector {
     variableAttributes.pop();
   }
   
-  public String currentAttributeStack() {
+  private String currentAttributeStack() {
     String x = variableAttributes.stream().collect(Collectors.joining("."));
     if (x.isEmpty()) {
       return x;
     } else {
       return x + ".";
     }
+  }
+  
+  public List<InterviewVariable> getRequired() {
+    return requiredVars;
+  }
+  
+  public List<InterviewVariable> getOptional() {
+    return optionalVars;
+  }
+  
+  /**
+   * Creates an InterviewVariable with the correct stack information in the variable name.
+   * @param localName
+   * @param desc
+   * @param datatype
+   * @param choices
+   * @return
+   */
+  public InterviewVariable requestVar(String localName, String desc, 
+      String datatype, List<String> choices) {
+    return new InterviewVariable(currentAttributeStack() + localName, desc, datatype, choices);
+  }
+  
+  public InterviewVariable requestVar(String localName, String description, String datatype) {
+    return requestVar(localName, description, datatype, List.of());
+  }
+
+  public String jsonSummary() {
+    if (err.isPresent()) {
+      return "{\"error\": {" + err.get().toJson() + "}}";
+    }
+    StringBuilder sb = new StringBuilder();
+    sb.append("{\"required_vars\": ["); 
+    sb.append(requiredVars.stream()
+        .map((v) -> v.toJson())
+        .collect(Collectors.joining(", ")));
+    sb.append("], \"optional_vars\": [");
+    sb.append(optionalVars.stream()
+        .map((v) -> v.toJson())
+        .collect(Collectors.joining(", ")));
+    sb.append("]}");
+    return sb.toString();
   }
 }

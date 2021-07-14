@@ -191,6 +191,7 @@ public class CodeUpdater {
         return false;
       }
     }
+    cd.commit();
     return true;
   }
 
@@ -251,6 +252,7 @@ public class CodeUpdater {
         log.error(ecfElem + " not in the nc map!");
       }
     }
+    cd.commit();
     log.info("Downloads took: " + downloads + ", and updates took: " + updates);
   }
 

@@ -141,6 +141,7 @@ public class CodeDatabase extends DatabaseInterface {
       cats.add(new CaseCategory(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
           rs.getString(5), rs.getString(6)));
     }
+    conn.commit();
     return cats;
   }
 
@@ -160,6 +161,7 @@ public class CodeDatabase extends DatabaseInterface {
       cats.add(new CaseType(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
           rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8)));
     }
+    conn.commit();
     return cats;
   }
 
@@ -182,6 +184,7 @@ public class CodeDatabase extends DatabaseInterface {
         rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8),
         rs.getString(9), rs.getString(10), rs.getString(11), rs.getString(12));
 
+    conn.commit();
     return Optional.of(dfr);
   }
 
@@ -201,6 +204,7 @@ public class CodeDatabase extends DatabaseInterface {
       partyTypes
           .add(new PartyType(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(5)));
     }
+    conn.commit();
     return partyTypes;
   }
 
@@ -228,6 +232,7 @@ public class CodeDatabase extends DatabaseInterface {
       }
       courtTables.get(rs.getString(1)).add(tableName);
     }
+    conn.commit();
     return courtTables;
   }
 
@@ -265,6 +270,8 @@ public class CodeDatabase extends DatabaseInterface {
   /**
    * Gets all court location identifiers (CLI) stored in the database. updateTable
    * should have been called on the `location` table before this works.
+   * 
+   * Calls commit by itself
    *
    * @return              a list of all valid CLIs for this jurisdiction
    * @throws SQLException if something goes wrong, or if the connection hasn't
@@ -282,6 +289,7 @@ public class CodeDatabase extends DatabaseInterface {
       locs.add(rs.getString(1));
     }
 
+    conn.commit();
     return locs;
   }
 
