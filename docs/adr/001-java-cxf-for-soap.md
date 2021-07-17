@@ -1,9 +1,19 @@
 # Use Java and CXF to communicate over SOAP 
 
+Author: Bryce Willey
+
 2021-03-25
 
-*[context and problem statement]*
-*[decision drivers | forces]* <!-- optional -->
+The main purpose of this project to create an application that allows Docassemble interviews 
+to e-file with Tyler Technologies as an E-Filing Service Provider (EFSP). Tyler implements
+the ECF v4.0 standard, which is defined using XML and SOAP services. Thus, the choice
+of what software to use to comminicate over SOAP is a vital decision. It needs to be
+reliable, have some longevity / be maintained, and be relatively easy to use, as none of
+us are SOAP experts. The decision also needed to be made relatively early on in the lifetime 
+of the project, as much of the rest of the software will depend on it working.
+
+
+The following were our discovered choices.
 
 ## Considered Alternatives
 
@@ -36,6 +46,12 @@ Consequences:
 * `-` We could not get Zeep to work with Tyler's SOAP server, and Tyler was not able to help us overcome those issues, despite the Envelope looking correct
 * `-` Zeep does not support MTOM (Message transmission optimization mechanism), where binaries are not encoded in base64 but instead are placed at the end of the SOAP message directly in binary. Tyler requires clients to MTOM. This could be the reason that Zeep wouldn't work with the SOAP server, but it's unclear. 
 * `-` A docassemble specific extension would limit the potential audience, and HotDocs and A2J author wouldn't be able to use it
+
+NOTE: In June of 2021 I came across [pysimplesoap](https://github.com/pysimplesoap/pysimplesoap),
+which could have been an alternative to the Zeep Library, but was discovered too late into
+development. On a brief look, it is lightly maintained, and I'm not sure if it has all
+of the features necessary.
+
 
 ### Java with a SOAP Libray
 
