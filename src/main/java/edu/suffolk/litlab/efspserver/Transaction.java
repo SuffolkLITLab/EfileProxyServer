@@ -6,11 +6,12 @@ import java.util.UUID;
 
 public class Transaction {
 
-  String name;
-  UUID filingPartyId;
-  Optional<String> phoneNumber;
-  String email;
-  UUID transactionId;
-  String caseType;
-  Timestamp submitted;
+  public String name;
+  public UUID filingPartyId;
+  public Optional<String> phoneNumber;
+  public String email;
+  public UUID transactionId;
+  public String apiKeyUsed;
+  public String caseType;
+  public Timestamp submitted;
 }

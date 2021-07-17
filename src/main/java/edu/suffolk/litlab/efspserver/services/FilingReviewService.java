@@ -57,6 +57,7 @@ public class FilingReviewService {
   private UserDatabase ud;
   private Map<String, InterviewToFilingEntityConverter> converterMap;
   private Map<String, EfmFilingInterface> filingInterfaces;
+  private Map<String, EfmRestCallbackInterface> callbackInterfaces;
   private oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory 
       statusObjFac;
   private oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory 
@@ -72,9 +73,11 @@ public class FilingReviewService {
       CodeDatabase cd, 
       UserDatabase ud,
       Map<String, InterviewToFilingEntityConverter> converterMap,
-      Map<String, EfmFilingInterface> filingInterfaces) {
+      Map<String, EfmFilingInterface> filingInterfaces,
+      Map<String, EfmRestCallbackInterface> callbackInterfaces) {
     this.converterMap = converterMap;
     this.filingInterfaces = filingInterfaces;
+    this.callbackInterfaces = callbackInterfaces;
     this.cd = cd;
     this.ud = ud;
     statusObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory();
@@ -193,6 +196,21 @@ public class FilingReviewService {
   }
   
   @POST
+  @Path("/court/{court_id}/filing/status")
+  public Response filingUpdateWebhook(@Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId, String statusReport) {
+    MediaType mediaType = httpHeaders.getMediaType();
+    log.trace("Got callback for filing! media type: " + mediaType + ", court id: " + courtId);
+    log.trace("Everything they sent: " + statusReport);
+    
+    if (!callbackInterfaces.containsKey(courtId)) {
+      return Response.status(404).entity("Court " + courtId + " doesn't exist").build();
+    }
+    
+    return callbackInterfaces.get(courtId).statusCallback(httpHeaders, statusReport);
+  }
+  
+  @POST
   @Path("/court/{court_id}/filing")
   public Response submitFilingForReview(@Context HttpHeaders httpHeaders, 
       @PathParam("court_id") String courtId, String allVars) {
@@ -234,8 +252,8 @@ public class FilingReviewService {
     try {
       ud.addToTable(user.getName().getFullName(), user.getId(), 
           phoneNumber, user.getContactInfo().getEmail().orElse(""), 
-          result.unwrapOrElseThrow(), info.getCaseType(), 
-          ts);
+          result.unwrapOrElseThrow(), filingInterfaces.get(courtId).getApiKey(),
+          info.getCaseType(), ts);
     } catch (SQLException ex) {
       log.error("Couldn't add info to the database! Logging here for posterity: " 
                 + "%s %s %s %s %s".formatted(user.getName().getFullName(), user.getId(), 
@@ -272,16 +290,8 @@ public class FilingReviewService {
     CaseCategory caseCategory = new CaseCategory("210", "Family", "DomesticCase", "Not Available",
         "Not Available", "Not Available");
     
-    EfmFilingInterface filingInterface = new JeffNetFiler(System.getenv("JEFFERSON_ENDPOINT"), System.getenv("JEFFERSON_TOKEN"));
     Optional<ErrorType> err = filingInterface.sendFiling(courtId, plaintiffs, 
         defendants, caseCategory, "25384", regActionDesc, List.of(filing), componentCode);
-    if (err.isEmpty()) {
-      System.err.println("No error!");
-      return Response.ok().build();
-    } else {
-      System.err.println("Err!: " + err.get().getErrorText());
-      return Response.serverError().entity(err.get()).build();
-    }
     */
   }
 

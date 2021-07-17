@@ -7,6 +7,8 @@ import edu.suffolk.litlab.efspserver.UserDatabase;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingEntityConverter;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetFiler;
+import edu.suffolk.litlab.efspserver.jeffnet.JeffNetRestCallback;
+
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -31,12 +33,13 @@ public class EfspServer {
       String dbUrl, int dbPort,
       String dbUser, String dbPassword,
       String codeDatabaseName,
+      UserDatabase ud,
       String userDatabaseName,
       Map<String, InterviewToFilingEntityConverter> converterMap,
-      Map<String, EfmFilingInterface> filingMap) throws Exception {
+      Map<String, EfmFilingInterface> filingMap,
+      Map<String, EfmRestCallbackInterface> callbackMap) throws Exception {
     boolean downloadAll = false;
     CodeDatabase cd = new CodeDatabase(dbUrl, dbPort, codeDatabaseName);
-    UserDatabase ud = new UserDatabase(dbUrl, dbPort, userDatabaseName);
     try {
       cd.createDbConnection(dbUser, dbPassword);
       if (cd.getAllLocations().size() == 0) {
@@ -56,7 +59,7 @@ public class EfspServer {
     }
     
     cd.setAutocommit(true);
-    cd.setAutocommit(true);
+    ud.setAutocommit(true);
     sf = new JAXRSServerFactoryBean();
     sf.setResourceClasses(AdminUserService.class,
         FilingReviewService.class);
@@ -67,7 +70,8 @@ public class EfspServer {
         new SingletonResourceProvider(new AdminUserService()));
     cd.createDbConnection(dbUser, dbPassword);
     sf.setResourceProvider(FilingReviewService.class,
-        new SingletonResourceProvider(new FilingReviewService(cd, ud, converterMap, filingMap)));
+        new SingletonResourceProvider(new FilingReviewService(
+            cd, ud, converterMap, filingMap, callbackMap)));
     Map<Object, Object> extensionMappings = new HashMap<Object, Object>();
     extensionMappings.put("xml", MediaType.APPLICATION_XML);
     extensionMappings.put("json", MediaType.APPLICATION_JSON);
@@ -135,9 +139,13 @@ public class EfspServer {
     Map<String, EfmFilingInterface> filingMap = Map.of(
         "Jefferson", jeffersonParish);
     
+    UserDatabase ud = new UserDatabase(dbUrl, dbPortInt, userDatabaseName);
+    EfmRestCallbackInterface callback = new JeffNetRestCallback(ud, new OrgMessageSender());
+    Map<String, EfmRestCallbackInterface> callbackMap = Map.of("Jefferson", callback);
+    
     EfspServer server = new EfspServer(x509Password, dbUrl, dbPortInt, 
-        dbUser, dbPassword, codeDatabaseName, userDatabaseName, 
-        converterMap, filingMap);
+        dbUser, dbPassword, codeDatabaseName, ud, userDatabaseName, 
+        converterMap, filingMap, callbackMap);
 
     // TODO(brycew): use https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ScheduledExecutorService.html
     // to routinely update codes if necessary

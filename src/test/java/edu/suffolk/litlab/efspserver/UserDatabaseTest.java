@@ -58,9 +58,11 @@ public class UserDatabaseTest {
     UUID transactionId = UUID.randomUUID();
     String name = "User1 McUserFace";
     String email = "test@example.com";
+    String apiKey = "abcdef12345";
+    String name = "User1 McUserFace";
     ud.createTableIfAbsent();
     ud.addToTable(name, userId, 
-        Optional.empty(), email, transactionId, 
+        Optional.empty(), email, transactionId, apiKey,
         "Motion to File", new Timestamp(System.currentTimeMillis()));
     ud.commit();
     
