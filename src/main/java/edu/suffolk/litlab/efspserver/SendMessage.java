@@ -13,6 +13,7 @@ import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 public class SendMessage {
 
@@ -37,8 +38,8 @@ public class SendMessage {
    * @param context A HashMap containing variables that will be substituted in the message_template
    * @throws IOException If there's a network error talking to sendgrid
    */
-  public static Integer sendEmail(String from, String subject, String to, 
-      String messageTemplate, HashMap<String, Object> context) throws IOException {
+  public static int sendEmail(String from, String subject, String to, 
+      String messageTemplate, Map<String, Object> context) throws IOException {
     SendGrid sg = new SendGrid(System.getenv("SENDGRID_API_KEY"));
     Request request = new Request();
     Jinjava jinjava = new Jinjava();
@@ -86,11 +87,11 @@ public class SendMessage {
     return message.getSid();
   }
 
-  public static boolean isValidEmail() {
+  public static boolean isValidEmail(String email) {
     return true;
   }
 
-  public static boolean isValidPhoneNumber() {
+  public static boolean isValidPhoneNumber(String phoneNumber) {
     return true;
   }
   // TODO: maybe allow multiple services?

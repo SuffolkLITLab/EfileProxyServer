@@ -21,6 +21,9 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.UUID;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +49,11 @@ public class JeffNetFiler implements EfmFilingInterface {
     module.addSerializer(new NameJeffNetJacksonSerializer(Name.class));
     module.addSerializer(new FilingJeffNetJacksonSerializer(FilingDoc.class));
     module.addSerializer(new PersonJeffNetJacksonSerializer(Person.class));
+  }
+  
+  @Override
+  public String getApiKey() {
+    return apiToken;
   }
   
   @Override
@@ -104,6 +112,18 @@ public class JeffNetFiler implements EfmFilingInterface {
     }
   }
   
+  @Override
+  public Response getFilingList(String courtId, HttpHeaders httpHeaders) {
+    // TODO Auto-generated method stub
+    return Response.status(500).build();
+  }
+
+  @Override
+  public Response getFilingStatus(String courtId, String filingId, HttpHeaders httpHeaders) {
+    // TODO Auto-generated method stub
+    return Response.status(500).build();
+  }
+
   private static class ApiResult {
     @JsonProperty("ResultCode")
     int resultCode;
@@ -114,4 +134,5 @@ public class JeffNetFiler implements EfmFilingInterface {
     @JsonProperty("TransactionID")
     String transactionId;
   }
+
 }

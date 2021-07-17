@@ -17,6 +17,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
 import javax.xml.ws.BindingProvider;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.CoreFilingMessageType;
@@ -131,6 +134,24 @@ public class OasisEcfFiler implements EfmFilingInterface {
       err.setErrorText("Got SQLException assembling the filing: " + ex);
       return Result.err(err);
     }
+  }
+
+  @Override
+  public Response getFilingList(String courtId, HttpHeaders httpHeaders) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Response getFilingStatus(String courtId, String filingId, HttpHeaders httpHeaders) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public String getApiKey() {
+    // No real API key we need to save
+    return null;
   }
 
 }
