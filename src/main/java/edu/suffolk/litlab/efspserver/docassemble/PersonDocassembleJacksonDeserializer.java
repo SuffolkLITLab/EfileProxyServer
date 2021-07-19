@@ -15,8 +15,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person> {
+  private static Logger log = LoggerFactory.getLogger(PersonDocassembleJacksonDeserializer.class); 
 
   private static final long serialVersionUID = 1L;
 
@@ -63,7 +66,7 @@ public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person
       }
     }
     Optional<String> email = getStringMember(node, "email"); 
-    ContactInformation info = new ContactInformation(phones, addr, email);
+    final ContactInformation info = new ContactInformation(phones, addr, email);
 
     if (!(node.has("name") 
         && node.get("name").isObject() 
@@ -87,6 +90,7 @@ public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person
     Optional<LocalDate> birthdate = Optional.empty(); // TODO(brycew): read in birthdate
     Person per = new Person(name, info, gender, language, birthdate, isOrg);
     return per;
+    log.debug("Read in a new person: " + per.getName().getFullName());
   }
 
   @Override

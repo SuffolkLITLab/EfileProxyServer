@@ -37,6 +37,9 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
 import org.apache.cxf.headers.Header;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.operator.OperatorCreationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import tyler.efm.services.EfmUserService;
 import tyler.efm.services.IEfmUserService;
 import tyler.efm.services.schema.authenticaterequest.AuthenticateRequestType;
@@ -44,6 +47,8 @@ import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 
 public class CodeUpdater {
+  private static Logger log =
+      LoggerFactory.getLogger(CodeUpdater.class);
 
   public static final Map<String, String> ncToTableName = new HashMap<String, String>();
 
@@ -130,7 +135,7 @@ public class CodeUpdater {
       String zipName = tableName + "_" + location + ".zip";
       FileOutputStream fileOut = new FileOutputStream(zipName);
       long length = urlStream.transferTo(fileOut);
-      System.out.println(length + " bytes transfered for " + zipName);
+      log.info(length + " bytes transfered for " + zipName);
       downloads = downloads.plus(Duration.between(startTable, Instant.now(Clock.systemUTC())));
       ZipFile zip = new ZipFile(zipName);
       ZipEntry entry = zip.entries().nextElement();
@@ -144,11 +149,9 @@ public class CodeUpdater {
       f.delete();
       return true;
     } catch (IOException ex) {
-      // Some system codes (everything but "country", "state", "filingstatus",
-      // "datafield",
-      // and "servicetype") are expected to 500. Not really sure why they give us bad
-      // URLs.
-      System.err.println("Skipping " + url + ", got exception downloading zip: " + ex.toString());
+      // Some system codes (everything but "country", "state", "filingstatus", "datafield",
+      // and "servicetype") are expected to 500. Not really sure why they give us bad URLs.
+      log.warn("Skipping " + url + ", got exception downloading zip: " + ex.toString());
       return false;
     }
   }
@@ -160,8 +163,7 @@ public class CodeUpdater {
         "/CodeService/codes/location/",
         // NOTE: the Tyler docs say this is available from `GetPolicy'. That is wrong.
         "error", "/CodeService/codes/error");
-    // TODO(brycew): can tell if court codes will differ if they have a Row in
-    // Version codes
+    // TODO(brycew): can tell if court codes will differ if they have a Row in Version codes
     // where the simple value differs from the "0" Row. Need to check both
 
     Savepoint sp = cd.setSavePoint("systemTables");
@@ -195,7 +197,7 @@ public class CodeUpdater {
   /**
    * 
    * @param location
-   * @param codes    If empty, all versions will be downloaded
+   * @param codes If empty, all versions will be downloaded
    * @param cd
    * @param signer
    * @param conn
@@ -204,7 +206,7 @@ public class CodeUpdater {
       HeaderSigner signer, FilingReviewMDEPort filingPort)
       throws JAXBException, OperatorCreationException, IOException, SQLException,
       XMLStreamException, GeneralSecurityException, CMSException {
-    System.err.println("Location: " + location);
+    log.info("Location: " + location);
     // final Instant startLoc = Instant.now(Clock.systemUTC());
     CourtPolicyQueryMessageType m = new CourtPolicyQueryMessageType();
     IdentificationType courtId = XmlHelper.convertId(location);
@@ -240,16 +242,16 @@ public class CodeUpdater {
               "%20");
           Optional<String> signedTime = signer.signedCurrentTime();
           if (signedTime.isEmpty()) {
-            System.err.println("Couldn't get signed time to download codeds, skipping all");
+            log.error("Couldn't get signed time to download codeds, skipping all");
             return;
           }
           downloadAndReadZip(url, signedTime.get(), tableName, location, cd);
         }
       } else {
-        System.err.println(ecfElem + " not in the nc map!");
+        log.error(ecfElem + " not in the nc map!");
       }
     }
-    System.err.println("Downloads took: " + downloads + ", and updates took: " + updates);
+    log.info("Downloads took: " + downloads + ", and updates took: " + updates);
   }
 
   public void updateAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
@@ -259,7 +261,7 @@ public class CodeUpdater {
     HeaderSigner signer = new HeaderSigner(
         System.getenv("PATH_TO_KEYSTORE"), System.getenv("X509_PASSWORD"));
     if (!downloadSystemTables(baseUrl, cd, signer)) {
-      System.err.println("System tables didn't update, but we needed them "
+      log.warn("System tables didn't update, but we needed them "
           + " to actually figure out new versions");
       return;
     }
@@ -269,12 +271,11 @@ public class CodeUpdater {
     for (Entry<String, List<String>> courtAndTables : versionsToUpdate.entrySet()) {
       String courtLocation = courtAndTables.getKey();
       List<String> tables = courtAndTables.getValue();
-      System.err.println("Updating court " + courtLocation);
+      log.info("Updating court " + courtLocation);
       for (String table : tables) {
-        System.err.println("Refreshing table " + table + " for court " + courtLocation);
+        log.info("Refreshing table " + table + " for court " + courtLocation);
         if (!cd.deleteFromTable(table, courtLocation)) {
-          System.err
-              .println("Couldn't delete from " + table + " at " + courtLocation + ", aborting");
+          log.warn("Couldn't delete from " + table + " at " + courtLocation + ", aborting");
           cd.rollback(sp);
           return;
         }
@@ -289,7 +290,7 @@ public class CodeUpdater {
       CMSException, IOException, JAXBException, XMLStreamException {
     HeaderSigner signer = new HeaderSigner(
         System.getenv("PATH_TO_KEYSTORE"), System.getenv("X509_PASSWORD"));
-    System.err.println("Downloading system tables");
+    log.info("Downloading system tables");
     downloadSystemTables(baseUrl, cd, signer);
 
     List<String> tablesToDrop = ncToTableName.entrySet().stream().map((e) -> e.getValue())
@@ -300,14 +301,14 @@ public class CodeUpdater {
     updates = Duration.ZERO;
     List<String> locs = cd.getAllLocations();
     for (String location : locs) {
-      System.err.println("Downloading tables for " + location);
+      log.info("Downloading tables for " + location);
       downloadCourtTables(location, Optional.empty(), cd, signer, filingPort);
     }
-    System.err.println("Downloads took: " + downloads + ", and updates took: " + updates);
+    log.info("Downloads took: " + downloads + ", and updates took: " + updates);
     cd.commit();
   }
   
-  public void downloadAll(String codesSite, CodeDatabase cd) throws JAXBException, OperatorCreationException, 
+  public static void downloadAll(String codesSite, CodeDatabase cd) throws JAXBException, OperatorCreationException, 
       SQLException, GeneralSecurityException, CMSException, IOException, XMLStreamException {
     ClientCallbackHandler.setX509Password(System.getenv("X509_PASSWORD"));
     AuthenticateRequestType authReq = new AuthenticateRequestType();
@@ -316,7 +317,7 @@ public class CodeUpdater {
     URL userWsdlUrl = EfmUserService.WSDL_LOCATION;
     IEfmUserService userPort = EfmClient.makeUserService(userWsdlUrl);
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
-    System.out.println("Auth'd?: " + authRes.getError().getErrorText());
+    log.info("Auth'd?: " + authRes.getError().getErrorText());
     List<Header> headersList = TylerUserNamePassword.makeHeaderList(authRes);
     FilingReviewMDEPort filingPort = EfmClient
         .makeFilingService(FilingReviewMDEService.WSDL_LOCATION, headersList);
