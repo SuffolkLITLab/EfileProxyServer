@@ -1,7 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efspserver.FilingDoc;
@@ -59,6 +58,7 @@ public class OasisEcfFiler implements EfmFilingInterface {
     FilingReviewMDEPort filingPort = makeFilingService(this.headersList);
     EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
     try {
+      // TODO(brycew): mapping from string case categories to Tyler code case categories, etc.
       Optional<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>> assembledCase = 
           ecfCaseFactory.makeCaseTypeFromTylerCategory(
               stuff.getCourtLocation(), stuff.getCaseCategory(), stuff.getCaseType(), 

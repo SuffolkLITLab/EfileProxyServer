@@ -64,6 +64,7 @@ public class EcfCaseTypeFactory {
               makeTylerCaseAug(courtLocationId, caseCategoryCode, 
                   caseType, caseSubType, plaintiffs, defendants, filingIds,
                   paymentId, queryType);
+    // TODO(brycew): handle ensuring the passed in values work with the court codes
     if (caseCategory.ecfcasetype.equals("CivilCase")) {
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase = 
           makeCivilCaseType(

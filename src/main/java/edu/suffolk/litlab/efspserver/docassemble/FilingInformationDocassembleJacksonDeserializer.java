@@ -25,7 +25,8 @@ import org.slf4j.LoggerFactory;
 
 public class FilingInformationDocassembleJacksonDeserializer 
     extends StdDeserializer<FilingInformation> {
-  private static Logger log = LoggerFactory.getLogger("mylogger"); 
+  private static Logger log = LoggerFactory.getLogger(
+      FilingInformationDocassembleJacksonDeserializer.class);
 
   private static final long serialVersionUID = 1L;
 

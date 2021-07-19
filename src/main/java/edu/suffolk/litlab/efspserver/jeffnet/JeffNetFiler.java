@@ -18,9 +18,15 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import tyler.efm.services.schema.common.ErrorType;
 
 public class JeffNetFiler implements EfmFilingInterface {
+  private static Logger log =
+      LoggerFactory.getLogger(JeffNetFiler.class);
   
   private URI filingEndpoint;
   private String apiToken;
@@ -55,9 +61,9 @@ public class JeffNetFiler implements EfmFilingInterface {
     
     try {
       String finalStr = mapper.writeValueAsString(info);
-      System.err.println("Final Json object: " + finalStr); 
+      log.debug("Final Json object: " + finalStr);
     
-      System.err.println("Sending to " + this.filingEndpoint + ", with token: " + this.apiToken);
+      log.info("Sending to " + this.filingEndpoint);
       HttpClient client = HttpClient.newBuilder().build();
       HttpRequest request = HttpRequest.newBuilder()
           .POST(HttpRequest.BodyPublishers.ofString(finalStr))
@@ -67,7 +73,7 @@ public class JeffNetFiler implements EfmFilingInterface {
           .uri(this.filingEndpoint)
           .build();
       HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-      System.err.println("Got err response code: " + response.body() + " " + response.statusCode());
+      log.info("Got response code: " + response.body() + " " + response.statusCode());
       if (response.statusCode() != 200) {
         ErrorType err = new ErrorType();
         err.setErrorCode(Integer.toString(response.statusCode()));
