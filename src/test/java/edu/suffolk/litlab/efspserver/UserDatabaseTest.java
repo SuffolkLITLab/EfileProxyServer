@@ -1,7 +1,6 @@
 package edu.suffolk.litlab.efspserver;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;
@@ -57,9 +56,10 @@ public class UserDatabaseTest {
   public void testFromNothing() throws SQLException {
     UUID userId = UUID.randomUUID();
     UUID transactionId = UUID.randomUUID();
+    String name = "User1 McUserFace";
     String email = "test@example.com";
     ud.createTableIfAbsent();
-    ud.addToTable("User1 McUserFace", userId, 
+    ud.addToTable(name, userId, 
         Optional.empty(), email, transactionId, 
         "Motion to File", new Timestamp(System.currentTimeMillis()));
     ud.commit();
@@ -68,7 +68,11 @@ public class UserDatabaseTest {
     assertTrue(transaction.isPresent());
     assertEquals(transaction.get().email, email);
     assertTrue(transaction.get().phoneNumber.isEmpty());
-    assertNotEquals(transaction.get().name, null);
+    assertEquals(transaction.get().name, name);
+    
+    ud.removeFromTable(transactionId);
+    transaction = ud.findTransaction(transactionId);
+    assertTrue(transaction.isEmpty());
   }
 
 }

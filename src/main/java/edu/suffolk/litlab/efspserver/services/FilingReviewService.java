@@ -155,7 +155,7 @@ public class FilingReviewService {
       m.setQuerySubmitter(typ);
       m.setDocumentSubmitter(null); // cof.createEntityPerson(null));
       m.setCaseCourt(XmlHelper.convertCourtType(courtId));
-      m.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
+      m.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
       m.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
       m.getDateRange().add(null);
       FilingListResponseMessageType resp = port.get().getFilingList(m);
@@ -236,12 +236,12 @@ public class FilingReviewService {
           phoneNumber, user.getContactInfo().getEmail().orElse(""), 
           result.unwrapOrElseThrow(), info.getCaseType(), 
           ts);
-      ud.commit();
     } catch (SQLException ex) {
       log.error("Couldn't add info to the database! Logging here for posterity: " 
                 + "%s %s %s %s %s".formatted(user.getName().getFullName(), user.getId(), 
                         phoneNumber, user.getContactInfo().getEmail(),
                         result, info.getCaseType(), ts));
+      log.error("Error: " + ex);
       // TODO(brycew): change to "created"
       return Response.ok().entity("Error saving info to database").build();
     }
@@ -305,7 +305,7 @@ public class FilingReviewService {
       typ.setEntityRepresentation(elem2);
       m.setQuerySubmitter(typ);
       m.setCaseCourt(XmlHelper.convertCourtType(courtId));
-      m.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
+      m.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
       m.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
       m.setDocumentIdentification(XmlHelper.convertId(filingId));
       FilingDetailResponseMessageType resp = port.get().getFilingDetails(m);
@@ -336,7 +336,7 @@ public class FilingReviewService {
       typ.setEntityRepresentation(elem2);
       cancel.setQuerySubmitter(typ);
       cancel.setCaseCourt(XmlHelper.convertCourtType(courtId));
-      cancel.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
+      cancel.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
       cancel.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
       cancel.setDocumentIdentification(XmlHelper.convertId(filingId));
       CancelFilingResponseMessageType resp = port.get().cancelFiling(cancel);

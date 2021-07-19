@@ -57,7 +57,6 @@ public class UserDatabase extends DatabaseInterface {
       if (retVal < 0) {
         log.warn("Issue when creating " + tableName + ": retVal == " + retVal);
       }
-      conn.commit();
     }
   }
   

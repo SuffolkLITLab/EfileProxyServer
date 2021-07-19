@@ -41,6 +41,9 @@ public abstract class DatabaseInterface {
    * @throws InterruptedException if it can't connect to the database for some reason
    */
   public void createDbConnection(String pgUser, String pgPassword) throws SQLException {
+    if (conn != null) {
+      conn.close();
+    }
     String url = this.pgFullUrl + "/" + this.pgDb;
     Properties props = new Properties();
     props.setProperty("user", pgUser);
@@ -128,5 +131,11 @@ public abstract class DatabaseInterface {
 
   public void commit() throws SQLException {
     conn.commit();
+  }
+  
+  public void setAutocommit(boolean on) throws SQLException {
+    if (conn != null) {
+      conn.setAutoCommit(on);
+    }
   }
 }
