@@ -298,6 +298,7 @@ public class CodeUpdater {
     List<String> tablesToDrop = ncToTableName.entrySet().stream().map((e) -> e.getValue())
         .collect(Collectors.toUnmodifiableList());
     cd.dropTables(tablesToDrop);
+    cd.commit();
 
     downloads = Duration.ZERO;
     updates = Duration.ZERO;
@@ -312,6 +313,7 @@ public class CodeUpdater {
   
   public static void downloadAll(String codesSite, CodeDatabase cd) throws JAXBException, OperatorCreationException, 
       SQLException, GeneralSecurityException, CMSException, IOException, XMLStreamException {
+    cd.setAutocommit(false);
     ClientCallbackHandler.setX509Password(System.getenv("X509_PASSWORD"));
     AuthenticateRequestType authReq = new AuthenticateRequestType();
     authReq.setEmail("bwilley@suffolk.edu");

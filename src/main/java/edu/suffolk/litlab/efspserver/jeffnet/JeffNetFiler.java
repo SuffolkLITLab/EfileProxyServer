@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efspserver.jeffnet;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.hubspot.algebra.Result;
@@ -59,6 +60,7 @@ public class JeffNetFiler implements EfmFilingInterface {
     
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(this.module);
+    mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
     
     try {
       String finalStr = mapper.writeValueAsString(info);
@@ -103,13 +105,13 @@ public class JeffNetFiler implements EfmFilingInterface {
   }
   
   private static class ApiResult {
-    @JsonProperty("resultCode")
+    @JsonProperty("ResultCode")
     int resultCode;
     
-    @JsonProperty("message")
+    @JsonProperty("Message")
     String message;
     
-    @JsonProperty("transactionID")
+    @JsonProperty("TransactionID")
     String transactionId;
   }
 }

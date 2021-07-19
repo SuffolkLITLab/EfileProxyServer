@@ -52,10 +52,11 @@ public class EfspServer {
     if (downloadAll) {
       cd.createDbConnection(dbUser, dbPassword);
       log.debug("Downloading all codes: please wait a bit");
-      CodeUpdater cu = new CodeUpdater();
-      cu.downloadAll("https://illinois-stage.tylerhost.net", cd);
+      CodeUpdater.downloadAll("https://illinois-stage.tylerhost.net", cd);
     }
     
+    cd.setAutocommit(true);
+    cd.setAutocommit(true);
     sf = new JAXRSServerFactoryBean();
     sf.setResourceClasses(AdminUserService.class,
         FilingReviewService.class);
