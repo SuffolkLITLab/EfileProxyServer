@@ -4,23 +4,19 @@
 
 Author: Bryce Willey
 
-TODO(brycew): go through and document this choice as it was made. 
-Might not have been a lot here, just between Maven and Gradle (which is mostly android focused).
-
 After [ADR 001](001-java-cxf-for-soap.md) chose a new language, the next step is to choose a build
 system for that language.
 
 ## Considered Alternatives
 
 * Maven 
-* alt2
+* Gradle 
+* Bazel
+* No build systems
 
 ## Decision Outcome
 
-* Maven. (TODO(brycew): why?)
-
-## Procs and Cons of the Alternatives
-
-### Maven 
-
-### alt2
+* Maven
+* The most widely used
+* Not building on Android (the primary place I've seen Gradle being used)
+* Don't need the speed of Bazel really, there's a complexity trade off
