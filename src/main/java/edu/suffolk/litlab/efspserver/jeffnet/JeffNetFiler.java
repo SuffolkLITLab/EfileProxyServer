@@ -12,6 +12,8 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.EfmFilingInterface;
+import edu.suffolk.litlab.efspserver.services.InfoCollector;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -111,6 +113,25 @@ public class JeffNetFiler implements EfmFilingInterface {
       return Result.err(err);
     }
   }
+
+  @Override
+  public void checkFiling(FilingInformation info, InfoCollector collector) {
+    // TODO(brycew): check the filing here too 
+    return;
+  }
+
+  @Override
+  public Response getFilingDetails(String courtId, String filingId, HttpHeaders httpHeaders) {
+    // TODO Auto-generated method stub
+    return Response.status(500).build();
+  }
+
+  @Override
+  public Response cancelFiling(String courtId, String filingId, HttpHeaders httpHeaders) {
+    // TODO Auto-generated method stub
+    return Response.status(500).build();
+  }
+
   
   @Override
   public Response getFilingList(String courtId, HttpHeaders httpHeaders) {

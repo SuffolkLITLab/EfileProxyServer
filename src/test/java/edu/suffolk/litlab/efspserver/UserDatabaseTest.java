@@ -59,7 +59,6 @@ public class UserDatabaseTest {
     String name = "User1 McUserFace";
     String email = "test@example.com";
     String apiKey = "abcdef12345";
-    String name = "User1 McUserFace";
     ud.createTableIfAbsent();
     ud.addToTable(name, userId, 
         Optional.empty(), email, transactionId, apiKey,
