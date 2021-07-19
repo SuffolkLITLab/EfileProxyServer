@@ -12,18 +12,18 @@ import tyler.efm.services.schema.common.ErrorType;
 public interface EfmFilingInterface {
   public Result<UUID, ErrorType> sendFiling(FilingInformation info);
   
+  public void checkFiling(FilingInformation info, InfoCollector collector);
+  
   // TODO(brycew): make this a little more independent of HTTP
   public Response getFilingList(String courtId, HttpHeaders httpHeaders); 
   
   public Response getFilingStatus(String courtId, String filingId, HttpHeaders httpHeaders);
   
+  public Response getFilingDetails(String courtId, String filingId, HttpHeaders httpHeaders);
+  
+  public Response cancelFiling(String courtId, String filingId, HttpHeaders httpHeaders);
+  
+  // Used if there is some specific API Key that is needed for this interface to work.
+  // Used to save it in the UserDatabase so it can be used by the Callback 
   public String getApiKey();
-  
-  // TODO(brycew): how to phrase checkFiling on the filing side
-  
-  // TODO(brycew): all the other ones, including
-  // * submitFilingForReview
-  // * getFilingDetails
-  // * cancelFiling
-  // * setupFilingPort
 }
