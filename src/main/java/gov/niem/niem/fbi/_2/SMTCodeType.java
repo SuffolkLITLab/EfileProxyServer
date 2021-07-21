@@ -41,8 +41,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 public class SMTCodeType {
 
     @XmlValue
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String value;
+    protected SMTCodeSimpleType value;
     @XmlAttribute(name = "id", namespace = "http://niem.gov/niem/structures/2.0")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
@@ -62,10 +61,10 @@ public class SMTCodeType {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link SMTCodeSimpleType }
      *     
      */
-    public String getValue() {
+    public SMTCodeSimpleType getValue() {
         return value;
     }
 
@@ -74,10 +73,10 @@ public class SMTCodeType {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link SMTCodeSimpleType }
      *     
      */
-    public void setValue(String value) {
+    public void setValue(SMTCodeSimpleType value) {
         this.value = value;
     }
 
