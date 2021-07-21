@@ -41,7 +41,7 @@ import gov.niem.niem.usps_states._2.USStateCodeType;
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
  * generated in the gov.niem.niem.niem_core._2 package. 
- * &lt;p&gt;An ObjectFactory allows you to programatically 
+ * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
  * content can consist of schema derived interfaces 
@@ -55,6 +55,7 @@ import gov.niem.niem.usps_states._2.USStateCodeType;
 public class ObjectFactory {
 
     private final static QName _Case_QNAME = new QName("http://niem.gov/niem/niem-core/2.0", "Case");
+    private final static QName _IdentificationJurisdiction_QNAME = new QName("http://niem.gov/niem/niem-core/2.0", "IdentificationJurisdiction");
     private final static QName _EntityRepresentation_QNAME = new QName("http://niem.gov/niem/niem-core/2.0", "EntityRepresentation");
     private final static QName _ActivityReference_QNAME = new QName("http://niem.gov/niem/niem-core/2.0", "ActivityReference");
     private final static QName _ActivityDate_QNAME = new QName("http://niem.gov/niem/niem-core/2.0", "ActivityDate");
@@ -189,7 +190,6 @@ public class ObjectFactory {
     private final static QName _IdentificationCategory_QNAME = new QName("http://niem.gov/niem/niem-core/2.0", "IdentificationCategory");
     private final static QName _IdentificationCategoryText_QNAME = new QName("http://niem.gov/niem/niem-core/2.0", "IdentificationCategoryText");
     private final static QName _IdentificationID_QNAME = new QName("http://niem.gov/niem/niem-core/2.0", "IdentificationID");
-    private final static QName _IdentificationJurisdiction_QNAME = new QName("http://niem.gov/niem/niem-core/2.0", "IdentificationJurisdiction");
     private final static QName _IdentificationSourceText_QNAME = new QName("http://niem.gov/niem/niem-core/2.0", "IdentificationSourceText");
     private final static QName _Image_QNAME = new QName("http://niem.gov/niem/niem-core/2.0", "Image");
     private final static QName _ImmediateFamilyAssociation_QNAME = new QName("http://niem.gov/niem/niem-core/2.0", "ImmediateFamilyAssociation");
@@ -365,11 +365,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DateType }
+     * Create an instance of {@link IdentificationType }
      * 
      */
-    public DateType createDateType() {
-        return new DateType();
+    public IdentificationType createIdentificationType() {
+        return new IdentificationType();
     }
 
     /**
@@ -381,35 +381,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CaseType }
+     * Create an instance of {@link DateType }
      * 
      */
-    public CaseType createCaseType() {
-        return new CaseType();
+    public DateType createDateType() {
+        return new DateType();
     }
 
     /**
-     * Create an instance of {@link DateRangeType }
+     * Create an instance of {@link MeasureType }
      * 
      */
-    public DateRangeType createDateRangeType() {
-        return new DateRangeType();
-    }
-
-    /**
-     * Create an instance of {@link IdentificationType }
-     * 
-     */
-    public IdentificationType createIdentificationType() {
-        return new IdentificationType();
-    }
-
-    /**
-     * Create an instance of {@link NumericType }
-     * 
-     */
-    public NumericType createNumericType() {
-        return new NumericType();
+    public MeasureType createMeasureType() {
+        return new MeasureType();
     }
 
     /**
@@ -421,11 +405,107 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CaseType }
+     * 
+     */
+    public CaseType createCaseType() {
+        return new CaseType();
+    }
+
+    /**
+     * Create an instance of {@link NumericType }
+     * 
+     */
+    public NumericType createNumericType() {
+        return new NumericType();
+    }
+
+    /**
+     * Create an instance of {@link OrganizationType }
+     * 
+     */
+    public OrganizationType createOrganizationType() {
+        return new OrganizationType();
+    }
+
+    /**
+     * Create an instance of {@link LocationType }
+     * 
+     */
+    public LocationType createLocationType() {
+        return new LocationType();
+    }
+
+    /**
      * Create an instance of {@link EntityType }
      * 
      */
     public EntityType createEntityType() {
         return new EntityType();
+    }
+
+    /**
+     * Create an instance of {@link IncidentType }
+     * 
+     */
+    public IncidentType createIncidentType() {
+        return new IncidentType();
+    }
+
+    /**
+     * Create an instance of {@link ScheduleDayType }
+     * 
+     */
+    public ScheduleDayType createScheduleDayType() {
+        return new ScheduleDayType();
+    }
+
+    /**
+     * Create an instance of {@link StatusType }
+     * 
+     */
+    public StatusType createStatusType() {
+        return new StatusType();
+    }
+
+    /**
+     * Create an instance of {@link DriverLicenseAssociationType }
+     * 
+     */
+    public DriverLicenseAssociationType createDriverLicenseAssociationType() {
+        return new DriverLicenseAssociationType();
+    }
+
+    /**
+     * Create an instance of {@link BiometricType }
+     * 
+     */
+    public BiometricType createBiometricType() {
+        return new BiometricType();
+    }
+
+    /**
+     * Create an instance of {@link ItemValueType }
+     * 
+     */
+    public ItemValueType createItemValueType() {
+        return new ItemValueType();
+    }
+
+    /**
+     * Create an instance of {@link JurisdictionType }
+     * 
+     */
+    public JurisdictionType createJurisdictionType() {
+        return new JurisdictionType();
+    }
+
+    /**
+     * Create an instance of {@link SupervisionType }
+     * 
+     */
+    public SupervisionType createSupervisionType() {
+        return new SupervisionType();
     }
 
     /**
@@ -453,19 +533,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DateRangeType }
+     * 
+     */
+    public DateRangeType createDateRangeType() {
+        return new DateRangeType();
+    }
+
+    /**
      * Create an instance of {@link DispositionType }
      * 
      */
     public DispositionType createDispositionType() {
         return new DispositionType();
-    }
-
-    /**
-     * Create an instance of {@link StatusType }
-     * 
-     */
-    public StatusType createStatusType() {
-        return new StatusType();
     }
 
     /**
@@ -498,14 +578,6 @@ public class ObjectFactory {
      */
     public NonNegativeDecimalType createNonNegativeDecimalType() {
         return new NonNegativeDecimalType();
-    }
-
-    /**
-     * Create an instance of {@link BiometricType }
-     * 
-     */
-    public BiometricType createBiometricType() {
-        return new BiometricType();
     }
 
     /**
@@ -597,14 +669,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link OrganizationType }
-     * 
-     */
-    public OrganizationType createOrganizationType() {
-        return new OrganizationType();
-    }
-
-    /**
      * Create an instance of {@link FullTelephoneNumberType }
      * 
      */
@@ -626,14 +690,6 @@ public class ObjectFactory {
      */
     public ImmediateFamilyAssociationType createImmediateFamilyAssociationType() {
         return new ImmediateFamilyAssociationType();
-    }
-
-    /**
-     * Create an instance of {@link LocationType }
-     * 
-     */
-    public LocationType createLocationType() {
-        return new LocationType();
     }
 
     /**
@@ -661,14 +717,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ItemValueType }
-     * 
-     */
-    public ItemValueType createItemValueType() {
-        return new ItemValueType();
-    }
-
-    /**
      * Create an instance of {@link ProperNameTextType }
      * 
      */
@@ -690,14 +738,6 @@ public class ObjectFactory {
      */
     public PersonUnionAssociationType createPersonUnionAssociationType() {
         return new PersonUnionAssociationType();
-    }
-
-    /**
-     * Create an instance of {@link MeasureType }
-     * 
-     */
-    public MeasureType createMeasureType() {
-        return new MeasureType();
     }
 
     /**
@@ -885,14 +925,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SupervisionType }
-     * 
-     */
-    public SupervisionType createSupervisionType() {
-        return new SupervisionType();
-    }
-
-    /**
      * Create an instance of {@link FacilityType }
      * 
      */
@@ -925,22 +957,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DriverLicenseAssociationType }
-     * 
-     */
-    public DriverLicenseAssociationType createDriverLicenseAssociationType() {
-        return new DriverLicenseAssociationType();
-    }
-
-    /**
-     * Create an instance of {@link IncidentType }
-     * 
-     */
-    public IncidentType createIncidentType() {
-        return new IncidentType();
-    }
-
-    /**
      * Create an instance of {@link ItemRegistrationType }
      * 
      */
@@ -949,27 +965,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JurisdictionType }
-     * 
-     */
-    public JurisdictionType createJurisdictionType() {
-        return new JurisdictionType();
-    }
-
-    /**
      * Create an instance of {@link PropertyType }
      * 
      */
     public PropertyType createPropertyType() {
         return new PropertyType();
-    }
-
-    /**
-     * Create an instance of {@link ScheduleDayType }
-     * 
-     */
-    public ScheduleDayType createScheduleDayType() {
-        return new ScheduleDayType();
     }
 
     /**
@@ -999,6 +999,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://niem.gov/niem/niem-core/2.0", name = "Case")
     public JAXBElement<CaseType> createCase(CaseType value) {
         return new JAXBElement<CaseType>(_Case_QNAME, CaseType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://niem.gov/niem/niem-core/2.0", name = "IdentificationJurisdiction")
+    public JAXBElement<Object> createIdentificationJurisdiction(Object value) {
+        return new JAXBElement<Object>(_IdentificationJurisdiction_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2741,19 +2754,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://niem.gov/niem/niem-core/2.0", name = "IdentificationID")
     public JAXBElement<String> createIdentificationID(String value) {
         return new JAXBElement<String>(_IdentificationID_QNAME, String.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://niem.gov/niem/niem-core/2.0", name = "IdentificationJurisdiction")
-    public JAXBElement<Object> createIdentificationJurisdiction(Object value) {
-        return new JAXBElement<Object>(_IdentificationJurisdiction_QNAME, Object.class, null, value);
     }
 
     /**

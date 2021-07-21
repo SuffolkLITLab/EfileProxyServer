@@ -6,25 +6,25 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * &lt;p&gt;Java class for EYECodeSimpleType.
+ * <p>Java class for EYECodeSimpleType.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
- * &lt;pre&gt;
- * &amp;lt;simpleType name="EYECodeSimpleType"&amp;gt;
- *   &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&amp;gt;
- *     &amp;lt;enumeration value="MUL"/&amp;gt;
- *     &amp;lt;enumeration value="GRY"/&amp;gt;
- *     &amp;lt;enumeration value="BLK"/&amp;gt;
- *     &amp;lt;enumeration value="MAR"/&amp;gt;
- *     &amp;lt;enumeration value="GRN"/&amp;gt;
- *     &amp;lt;enumeration value="BLU"/&amp;gt;
- *     &amp;lt;enumeration value="HAZ"/&amp;gt;
- *     &amp;lt;enumeration value="BRO"/&amp;gt;
- *     &amp;lt;enumeration value="XXX"/&amp;gt;
- *     &amp;lt;enumeration value="PNK"/&amp;gt;
- *   &amp;lt;/restriction&amp;gt;
- * &amp;lt;/simpleType&amp;gt;
- * &lt;/pre&gt;
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * <pre>
+ * &lt;simpleType name="EYECodeSimpleType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&gt;
+ *     &lt;enumeration value="MUL"/&gt;
+ *     &lt;enumeration value="GRY"/&gt;
+ *     &lt;enumeration value="BLK"/&gt;
+ *     &lt;enumeration value="MAR"/&gt;
+ *     &lt;enumeration value="GRN"/&gt;
+ *     &lt;enumeration value="BLU"/&gt;
+ *     &lt;enumeration value="HAZ"/&gt;
+ *     &lt;enumeration value="BRO"/&gt;
+ *     &lt;enumeration value="XXX"/&gt;
+ *     &lt;enumeration value="PNK"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
+ * </pre>
  * 
  */
 @XmlType(name = "EYECodeSimpleType")

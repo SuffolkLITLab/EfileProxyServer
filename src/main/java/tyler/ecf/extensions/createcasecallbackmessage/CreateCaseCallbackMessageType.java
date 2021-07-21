@@ -20,29 +20,31 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.FilingStatus
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.CriminalCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.DomesticCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.juvenilecase_4.JuvenileCaseType;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
  * The message returned from the Court Record MDE to the Filing Review MDE when the case has been created.
  * 
- * &lt;p&gt;Java class for CreateCaseCallbackMessageType complex type.
+ * <p>Java class for CreateCaseCallbackMessageType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="CreateCaseCallbackMessageType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDELocationID"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDEProfileCode"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}Case"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}FilingStatus"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/restriction&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="CreateCaseCallbackMessageType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDELocationID"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDEProfileCode"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}Case"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}FilingStatus"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -119,14 +121,14 @@ public class CreateCaseCallbackMessageType {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     
      */
     public JAXBElement<? extends CaseType> getCase() {
@@ -138,14 +140,14 @@ public class CreateCaseCallbackMessageType {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     
      */
     public void setCase(JAXBElement<? extends CaseType> value) {
@@ -174,6 +176,16 @@ public class CreateCaseCallbackMessageType {
      */
     public void setFilingStatus(FilingStatusType value) {
         this.filingStatus = value;
+    }
+
+    /**
+     * Generates a String representation of the contents of this type.
+     * This is an extension method, produced by the 'ts' xjc plugin
+     * 
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
     }
 
 }

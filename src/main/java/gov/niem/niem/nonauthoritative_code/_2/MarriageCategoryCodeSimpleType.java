@@ -7,19 +7,19 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * &lt;p&gt;Java class for MarriageCategoryCodeSimpleType.
+ * <p>Java class for MarriageCategoryCodeSimpleType.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
- * &lt;pre&gt;
- * &amp;lt;simpleType name="MarriageCategoryCodeSimpleType"&amp;gt;
- *   &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&amp;gt;
- *     &amp;lt;enumeration value="unknown"/&amp;gt;
- *     &amp;lt;enumeration value="married"/&amp;gt;
- *     &amp;lt;enumeration value="common law"/&amp;gt;
- *     &amp;lt;enumeration value="civil union"/&amp;gt;
- *   &amp;lt;/restriction&amp;gt;
- * &amp;lt;/simpleType&amp;gt;
- * &lt;/pre&gt;
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * <pre>
+ * &lt;simpleType name="MarriageCategoryCodeSimpleType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&gt;
+ *     &lt;enumeration value="unknown"/&gt;
+ *     &lt;enumeration value="married"/&gt;
+ *     &lt;enumeration value="common law"/&gt;
+ *     &lt;enumeration value="civil union"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
+ * </pre>
  * 
  */
 @XmlType(name = "MarriageCategoryCodeSimpleType")

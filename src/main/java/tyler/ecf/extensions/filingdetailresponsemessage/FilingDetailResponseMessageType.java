@@ -22,6 +22,8 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryRespons
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.CriminalCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.DomesticCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.juvenilecase_4.JuvenileCaseType;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 import tyler.ecf.extensions.common.DocumentType;
 import tyler.ecf.extensions.common.PaymentType;
 import tyler.ecf.extensions.common.ProcedureRemedyType;
@@ -30,33 +32,34 @@ import tyler.ecf.extensions.common.ProcedureRemedyType;
 /**
  * A court's response to a FilingDetailQueryMessage.
  * 
- * &lt;p&gt;Java class for FilingDetailResponseMessageType complex type.
+ * <p>Java class for FilingDetailResponseMessageType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="FilingDetailResponseMessageType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}QueryResponseMessageType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}FilingSubmissionDate" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}Case" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}ProcedureRemedy" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}EnvelopeFees" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}Payment" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}DocumentIdentification" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}DocumentSubmitter" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}FilingStatus"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}FilingAcceptDate" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}DocumentPostDate" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}ServiceRecipientDetail" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}FilingFees" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}FilingLeadDocument" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="FilingDetailResponseMessageType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}QueryResponseMessageType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}FilingSubmissionDate" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}Case" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}ProcedureRemedy" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}EnvelopeFees" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}Payment" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}DocumentIdentification" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}DocumentSubmitter" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}FilingStatus"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}FilingAcceptDate" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}DocumentPostDate" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}ServiceRecipientDetail" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}FilingFees" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}FilingLeadDocument" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}FilingAssociationParty" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -74,7 +77,8 @@ import tyler.ecf.extensions.common.ProcedureRemedyType;
     "documentPostDate",
     "serviceRecipientDetail",
     "filingFees",
-    "filingLeadDocument"
+    "filingLeadDocument",
+    "filingAssociationParty"
 })
 public class FilingDetailResponseMessageType
     extends QueryResponseMessageType
@@ -106,6 +110,8 @@ public class FilingDetailResponseMessageType
     protected List<ChargeType> filingFees;
     @XmlElement(name = "FilingLeadDocument", namespace = "urn:tyler:ecf:extensions:Common")
     protected List<DocumentType> filingLeadDocument;
+    @XmlElement(name = "FilingAssociationParty", namespace = "urn:tyler:ecf:extensions:Common")
+    protected IdentificationType filingAssociationParty;
 
     /**
      * Gets the value of the filingSubmissionDate property.
@@ -136,14 +142,14 @@ public class FilingDetailResponseMessageType
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     
      */
     public JAXBElement<? extends CaseType> getCase() {
@@ -155,14 +161,14 @@ public class FilingDetailResponseMessageType
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     
      */
     public void setCase(JAXBElement<? extends CaseType> value) {
@@ -196,20 +202,20 @@ public class FilingDetailResponseMessageType
     /**
      * Gets the value of the envelopeFees property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the envelopeFees property.
+     * This is why there is not a <CODE>set</CODE> method for the envelopeFees property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getEnvelopeFees().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link ChargeType }
      * 
@@ -249,20 +255,20 @@ public class FilingDetailResponseMessageType
     /**
      * Gets the value of the documentIdentification property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the documentIdentification property.
+     * This is why there is not a <CODE>set</CODE> method for the documentIdentification property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getDocumentIdentification().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link IdentificationType }
      * 
@@ -374,20 +380,20 @@ public class FilingDetailResponseMessageType
     /**
      * Gets the value of the serviceRecipientDetail property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the serviceRecipientDetail property.
+     * This is why there is not a <CODE>set</CODE> method for the serviceRecipientDetail property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getServiceRecipientDetail().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link ServiceRecipientDetailType }
      * 
@@ -403,20 +409,20 @@ public class FilingDetailResponseMessageType
     /**
      * Gets the value of the filingFees property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the filingFees property.
+     * This is why there is not a <CODE>set</CODE> method for the filingFees property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getFilingFees().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link ChargeType }
      * 
@@ -432,20 +438,20 @@ public class FilingDetailResponseMessageType
     /**
      * Gets the value of the filingLeadDocument property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the filingLeadDocument property.
+     * This is why there is not a <CODE>set</CODE> method for the filingLeadDocument property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getFilingLeadDocument().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link DocumentType }
      * 
@@ -456,6 +462,40 @@ public class FilingDetailResponseMessageType
             filingLeadDocument = new ArrayList<DocumentType>();
         }
         return this.filingLeadDocument;
+    }
+
+    /**
+     * Gets the value of the filingAssociationParty property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link IdentificationType }
+     *     
+     */
+    public IdentificationType getFilingAssociationParty() {
+        return filingAssociationParty;
+    }
+
+    /**
+     * Sets the value of the filingAssociationParty property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link IdentificationType }
+     *     
+     */
+    public void setFilingAssociationParty(IdentificationType value) {
+        this.filingAssociationParty = value;
+    }
+
+    /**
+     * Generates a String representation of the contents of this type.
+     * This is an extension method, produced by the 'ts' xjc plugin
+     * 
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
     }
 
 }

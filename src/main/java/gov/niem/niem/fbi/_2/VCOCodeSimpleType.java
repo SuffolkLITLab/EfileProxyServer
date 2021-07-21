@@ -7,47 +7,47 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * &lt;p&gt;Java class for VCOCodeSimpleType.
+ * <p>Java class for VCOCodeSimpleType.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
- * &lt;pre&gt;
- * &amp;lt;simpleType name="VCOCodeSimpleType"&amp;gt;
- *   &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&amp;gt;
- *     &amp;lt;enumeration value="COM"/&amp;gt;
- *     &amp;lt;enumeration value="BRZ"/&amp;gt;
- *     &amp;lt;enumeration value="MVE"/&amp;gt;
- *     &amp;lt;enumeration value="DGR"/&amp;gt;
- *     &amp;lt;enumeration value="CPR"/&amp;gt;
- *     &amp;lt;enumeration value="BLK"/&amp;gt;
- *     &amp;lt;enumeration value="TRQ"/&amp;gt;
- *     &amp;lt;enumeration value="MAR"/&amp;gt;
- *     &amp;lt;enumeration value="DBL"/&amp;gt;
- *     &amp;lt;enumeration value="BRO"/&amp;gt;
- *     &amp;lt;enumeration value="GLD"/&amp;gt;
- *     &amp;lt;enumeration value="SIL"/&amp;gt;
- *     &amp;lt;enumeration value="TPE"/&amp;gt;
- *     &amp;lt;enumeration value="RED"/&amp;gt;
- *     &amp;lt;enumeration value="CRM"/&amp;gt;
- *     &amp;lt;enumeration value="CAM"/&amp;gt;
- *     &amp;lt;enumeration value="AME"/&amp;gt;
- *     &amp;lt;enumeration value="BLU"/&amp;gt;
- *     &amp;lt;enumeration value="GRY"/&amp;gt;
- *     &amp;lt;enumeration value="ONG"/&amp;gt;
- *     &amp;lt;enumeration value="PNK"/&amp;gt;
- *     &amp;lt;enumeration value="TAN"/&amp;gt;
- *     &amp;lt;enumeration value="TEA"/&amp;gt;
- *     &amp;lt;enumeration value="YEL"/&amp;gt;
- *     &amp;lt;enumeration value="MUL/COL"/&amp;gt;
- *     &amp;lt;enumeration value="GRN"/&amp;gt;
- *     &amp;lt;enumeration value="PLE"/&amp;gt;
- *     &amp;lt;enumeration value="WHI"/&amp;gt;
- *     &amp;lt;enumeration value="LGR"/&amp;gt;
- *     &amp;lt;enumeration value="LBL"/&amp;gt;
- *     &amp;lt;enumeration value="LAV"/&amp;gt;
- *     &amp;lt;enumeration value="BGE"/&amp;gt;
- *   &amp;lt;/restriction&amp;gt;
- * &amp;lt;/simpleType&amp;gt;
- * &lt;/pre&gt;
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * <pre>
+ * &lt;simpleType name="VCOCodeSimpleType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&gt;
+ *     &lt;enumeration value="COM"/&gt;
+ *     &lt;enumeration value="BRZ"/&gt;
+ *     &lt;enumeration value="MVE"/&gt;
+ *     &lt;enumeration value="DGR"/&gt;
+ *     &lt;enumeration value="CPR"/&gt;
+ *     &lt;enumeration value="BLK"/&gt;
+ *     &lt;enumeration value="TRQ"/&gt;
+ *     &lt;enumeration value="MAR"/&gt;
+ *     &lt;enumeration value="DBL"/&gt;
+ *     &lt;enumeration value="BRO"/&gt;
+ *     &lt;enumeration value="GLD"/&gt;
+ *     &lt;enumeration value="SIL"/&gt;
+ *     &lt;enumeration value="TPE"/&gt;
+ *     &lt;enumeration value="RED"/&gt;
+ *     &lt;enumeration value="CRM"/&gt;
+ *     &lt;enumeration value="CAM"/&gt;
+ *     &lt;enumeration value="AME"/&gt;
+ *     &lt;enumeration value="BLU"/&gt;
+ *     &lt;enumeration value="GRY"/&gt;
+ *     &lt;enumeration value="ONG"/&gt;
+ *     &lt;enumeration value="PNK"/&gt;
+ *     &lt;enumeration value="TAN"/&gt;
+ *     &lt;enumeration value="TEA"/&gt;
+ *     &lt;enumeration value="YEL"/&gt;
+ *     &lt;enumeration value="MUL/COL"/&gt;
+ *     &lt;enumeration value="GRN"/&gt;
+ *     &lt;enumeration value="PLE"/&gt;
+ *     &lt;enumeration value="WHI"/&gt;
+ *     &lt;enumeration value="LGR"/&gt;
+ *     &lt;enumeration value="LBL"/&gt;
+ *     &lt;enumeration value="LAV"/&gt;
+ *     &lt;enumeration value="BGE"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
+ * </pre>
  * 
  */
 @XmlType(name = "VCOCodeSimpleType")

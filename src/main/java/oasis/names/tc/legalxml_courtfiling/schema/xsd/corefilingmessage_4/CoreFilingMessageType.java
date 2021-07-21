@@ -26,24 +26,24 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 /**
  * The structure of a Filing including any Payment Information will be documented in this section. This describes the filing transaction between the Filing Assembly MDE and the Filing Review MDE. This information will become part of the Record Docketing between the Filing Review MDE and the Court Record MDE but does not necessarily describe the information that is actually stored in the Court Record.
  * 
- * &lt;p&gt;Java class for CoreFilingMessageType complex type.
+ * <p>Java class for CoreFilingMessageType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="CoreFilingMessageType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}ElectronicFilingMessageType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}Case"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0}FilingConfidentialityIndicator" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0}FilingLeadDocument" maxOccurs="unbounded"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0}FilingConnectedDocument" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="CoreFilingMessageType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}ElectronicFilingMessageType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}Case"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0}FilingConfidentialityIndicator" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0}FilingLeadDocument" maxOccurs="unbounded"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0}FilingConnectedDocument" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -72,14 +72,14 @@ public class CoreFilingMessageType
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     
      */
     public JAXBElement<? extends CaseType> getCase() {
@@ -91,14 +91,14 @@ public class CoreFilingMessageType
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     
      */
     public void setCase(JAXBElement<? extends CaseType> value) {
@@ -132,23 +132,23 @@ public class CoreFilingMessageType
     /**
      * Gets the value of the filingLeadDocument property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the filingLeadDocument property.
+     * This is why there is not a <CODE>set</CODE> method for the filingLeadDocument property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getFilingLeadDocument().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link tyler.ecf.extensions.common.DocumentType }{@code >}
      * {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType }{@code >}
+     * {@link JAXBElement }{@code <}{@link tyler.ecf.extensions.common.DocumentType }{@code >}
      * 
      * 
      */
@@ -162,23 +162,23 @@ public class CoreFilingMessageType
     /**
      * Gets the value of the filingConnectedDocument property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the filingConnectedDocument property.
+     * This is why there is not a <CODE>set</CODE> method for the filingConnectedDocument property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getFilingConnectedDocument().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link tyler.ecf.extensions.common.DocumentType }{@code >}
      * {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType }{@code >}
+     * {@link JAXBElement }{@code <}{@link tyler.ecf.extensions.common.DocumentType }{@code >}
      * 
      * 
      */

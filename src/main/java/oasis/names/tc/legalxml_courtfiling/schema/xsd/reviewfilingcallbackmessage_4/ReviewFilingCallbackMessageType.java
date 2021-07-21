@@ -12,18 +12,18 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 /**
  * The asynchronous message from the Filing Review MDE to the Filing Assembly MDE conveying information concerning the court's actions on the documents submitted for filing in a CoreFilingMessage.
  * 
- * &lt;p&gt;Java class for ReviewFilingCallbackMessageType complex type.
+ * <p>Java class for ReviewFilingCallbackMessageType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="ReviewFilingCallbackMessageType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}ElectronicFilingCallbackMessageType"&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="ReviewFilingCallbackMessageType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}ElectronicFilingCallbackMessageType"&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */

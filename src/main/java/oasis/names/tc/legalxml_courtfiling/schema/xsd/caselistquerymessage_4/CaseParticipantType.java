@@ -17,24 +17,24 @@ import tyler.ecf.extensions.common.CaseAbstractorType;
 /**
  * Placeholder for all case participants, i.e. persons or organizations playing a role in a case. This is where all actor details are expressed.
  * 
- * &lt;p&gt;Java class for CaseParticipantType complex type.
+ * <p>Java class for CaseParticipantType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="CaseParticipantType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;choice&amp;gt;
- *           &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}CaseParticipant"/&amp;gt;
- *           &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListQueryMessage-4.0}FilingSubmissionSubmitterID"/&amp;gt;
- *         &amp;lt;/choice&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="CaseParticipantType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;choice&gt;
+ *           &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}CaseParticipant"/&gt;
+ *           &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListQueryMessage-4.0}FilingSubmissionSubmitterID"/&gt;
+ *         &lt;/choice&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -57,8 +57,8 @@ public class CaseParticipantType
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link CaseAbstractorType }{@code >}
      *     {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CaseAbstractorType }{@code >}
      *     
      */
     public JAXBElement<? extends oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType> getCaseParticipant() {
@@ -70,8 +70,8 @@ public class CaseParticipantType
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link CaseAbstractorType }{@code >}
      *     {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CaseAbstractorType }{@code >}
      *     
      */
     public void setCaseParticipant(JAXBElement<? extends oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType> value) {

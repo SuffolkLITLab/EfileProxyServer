@@ -12,21 +12,21 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * &lt;p&gt;Java class for FingerprintSetType complex type.
+ * <p>Java class for FingerprintSetType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="FingerprintSetType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}Fingerprint" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="FingerprintSetType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}Fingerprint" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -46,8 +46,8 @@ public class FingerprintSetType
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.FingerprintType }{@code >}
      *     {@link JAXBElement }{@code <}{@link gov.niem.niem.ansi_nist._2.FingerprintType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.FingerprintType }{@code >}
      *     
      */
     public JAXBElement<? extends gov.niem.niem.ansi_nist._2.FingerprintType> getFingerprint() {
@@ -59,8 +59,8 @@ public class FingerprintSetType
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.FingerprintType }{@code >}
      *     {@link JAXBElement }{@code <}{@link gov.niem.niem.ansi_nist._2.FingerprintType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.FingerprintType }{@code >}
      *     
      */
     public void setFingerprint(JAXBElement<? extends gov.niem.niem.ansi_nist._2.FingerprintType> value) {

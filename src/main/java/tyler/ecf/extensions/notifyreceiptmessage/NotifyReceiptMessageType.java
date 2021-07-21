@@ -23,33 +23,35 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.FilingStatus
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.CriminalCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.DomesticCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.juvenilecase_4.JuvenileCaseType;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 import tyler.ecf.extensions.common.ReviewedDocumentType;
 
 
 /**
- * &lt;p&gt;Java class for NotifyReceiptMessageType complex type.
+ * <p>Java class for NotifyReceiptMessageType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="NotifyReceiptMessageType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}DocumentFiledDate"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}DocumentIdentification"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}DocumentPostDate"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDELocationID"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDEProfileCode"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}Case"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}FilingStatus"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}ReviewedLeadDocument"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}ReviewedConnectedDocument" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/restriction&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="NotifyReceiptMessageType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}DocumentFiledDate"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}DocumentIdentification"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}DocumentPostDate"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDELocationID"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDEProfileCode"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}Case"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}FilingStatus"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}ReviewedLeadDocument"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}ReviewedConnectedDocument" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -213,14 +215,14 @@ public class NotifyReceiptMessageType {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     
      */
     public JAXBElement<? extends CaseType> getCase() {
@@ -232,14 +234,14 @@ public class NotifyReceiptMessageType {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     
      */
     public void setCase(JAXBElement<? extends CaseType> value) {
@@ -297,20 +299,20 @@ public class NotifyReceiptMessageType {
     /**
      * Gets the value of the reviewedConnectedDocument property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the reviewedConnectedDocument property.
+     * This is why there is not a <CODE>set</CODE> method for the reviewedConnectedDocument property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getReviewedConnectedDocument().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link ReviewedDocumentType }
      * 
@@ -321,6 +323,16 @@ public class NotifyReceiptMessageType {
             reviewedConnectedDocument = new ArrayList<ReviewedDocumentType>();
         }
         return this.reviewedConnectedDocument;
+    }
+
+    /**
+     * Generates a String representation of the contents of this type.
+     * This is an extension method, produced by the 'ts' xjc plugin
+     * 
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
     }
 
 }

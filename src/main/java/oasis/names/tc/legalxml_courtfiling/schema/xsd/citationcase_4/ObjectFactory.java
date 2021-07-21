@@ -15,7 +15,7 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.InsuranceTyp
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
  * generated in the oasis.names.tc.legalxml_courtfiling.schema.xsd.citationcase_4 package. 
- * &lt;p&gt;An ObjectFactory allows you to programatically 
+ * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
  * content can consist of schema derived interfaces 

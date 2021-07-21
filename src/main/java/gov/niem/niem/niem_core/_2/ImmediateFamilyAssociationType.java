@@ -14,23 +14,23 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * &lt;p&gt;Java class for ImmediateFamilyAssociationType complex type.
+ * <p>Java class for ImmediateFamilyAssociationType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="ImmediateFamilyAssociationType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/niem-core/2.0}AssociationType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonParentReference"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonChildReference"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}FamilyKinshipCategory" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="ImmediateFamilyAssociationType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/niem-core/2.0}AssociationType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonParentReference"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonChildReference"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}FamilyKinshipCategory" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -104,8 +104,8 @@ public class ImmediateFamilyAssociationType
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link FamilyKinshipCodeType }{@code >}
      *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link FamilyKinshipCodeType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
@@ -118,8 +118,8 @@ public class ImmediateFamilyAssociationType
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link FamilyKinshipCodeType }{@code >}
      *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link FamilyKinshipCodeType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */

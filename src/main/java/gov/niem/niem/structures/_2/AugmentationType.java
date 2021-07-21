@@ -30,34 +30,34 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *       context of the augmentation and the values of the individual
  *       elements.
  * 
- * &lt;p&gt;Java class for AugmentationType complex type.
+ * <p>Java class for AugmentationType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="AugmentationType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
- *       &amp;lt;attribute ref="{http://niem.gov/niem/structures/2.0}id"/&amp;gt;
- *       &amp;lt;attribute ref="{http://niem.gov/niem/structures/2.0}metadata"/&amp;gt;
- *     &amp;lt;/restriction&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="AugmentationType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;attribute ref="{http://niem.gov/niem/structures/2.0}id"/&gt;
+ *       &lt;attribute ref="{http://niem.gov/niem/structures/2.0}metadata"/&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AugmentationType")
 @XmlSeeAlso({
-    MarriageAssociationAugmentationType.class,
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationAugmentationType.class,
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonAugmentationType.class,
     CaseAugmentationType.class,
     IncidentAugmentationType.class,
     gov.niem.niem.domains.jxdm._4.OrganizationAugmentationType.class,
     gov.niem.niem.domains.jxdm._4.PersonAugmentationType.class,
-    PropertyAugmentationType.class
+    PropertyAugmentationType.class,
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationAugmentationType.class,
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonAugmentationType.class,
+    MarriageAssociationAugmentationType.class
 })
 public abstract class AugmentationType {
 
@@ -98,20 +98,20 @@ public abstract class AugmentationType {
     /**
      * Gets the value of the metadata property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the metadata property.
+     * This is why there is not a <CODE>set</CODE> method for the metadata property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getMetadata().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link Object }
      * 

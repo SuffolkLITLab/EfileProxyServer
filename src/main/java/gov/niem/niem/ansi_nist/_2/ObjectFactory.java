@@ -11,7 +11,7 @@ import javax.xml.namespace.QName;
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
  * generated in the gov.niem.niem.ansi_nist._2 package. 
- * &lt;p&gt;An ObjectFactory allows you to programatically 
+ * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
  * content can consist of schema derived interfaces 
@@ -34,19 +34,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FPCCodeType }
-     * 
-     */
-    public FPCCodeType createFPCCodeType() {
-        return new FPCCodeType();
-    }
-
-    /**
      * Create an instance of {@link FingerprintType }
      * 
      */
     public FingerprintType createFingerprintType() {
         return new FingerprintType();
+    }
+
+    /**
+     * Create an instance of {@link FPCCodeType }
+     * 
+     */
+    public FPCCodeType createFPCCodeType() {
+        return new FPCCodeType();
     }
 
     /**

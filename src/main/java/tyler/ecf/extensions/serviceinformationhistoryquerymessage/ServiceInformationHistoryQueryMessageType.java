@@ -5,28 +5,29 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import gov.niem.niem.proxy.xsd._2.String;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryMessageType;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
  * A message requesting information history concerning the persons entitled to services of filings in a particular court case, together with the electronic addresses and message profiles of their Filing Assembly MDEs and their physical addresses if they are not currently using a Filing Assembly MDE.
  * 
- * &lt;p&gt;Java class for ServiceInformationHistoryQueryMessageType complex type.
+ * <p>Java class for ServiceInformationHistoryQueryMessageType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="ServiceInformationHistoryQueryMessageType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}QueryMessageType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}CaseTrackingID"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="ServiceInformationHistoryQueryMessageType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}QueryMessageType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}CaseTrackingID"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -39,17 +40,17 @@ public class ServiceInformationHistoryQueryMessageType
 {
 
     @XmlElement(name = "CaseTrackingID", namespace = "http://niem.gov/niem/niem-core/2.0", required = true, nillable = true)
-    protected String caseTrackingID;
+    protected gov.niem.niem.proxy.xsd._2.String caseTrackingID;
 
     /**
      * Gets the value of the caseTrackingID property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link gov.niem.niem.proxy.xsd._2.String }
      *     
      */
-    public String getCaseTrackingID() {
+    public gov.niem.niem.proxy.xsd._2.String getCaseTrackingID() {
         return caseTrackingID;
     }
 
@@ -58,11 +59,21 @@ public class ServiceInformationHistoryQueryMessageType
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link gov.niem.niem.proxy.xsd._2.String }
      *     
      */
-    public void setCaseTrackingID(String value) {
+    public void setCaseTrackingID(gov.niem.niem.proxy.xsd._2.String value) {
         this.caseTrackingID = value;
+    }
+
+    /**
+     * Generates a String representation of the contents of this type.
+     * This is an extension method, produced by the 'ts' xjc plugin
+     * 
+     */
+    @Override
+    public java.lang.String toString() {
+        return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
     }
 
 }

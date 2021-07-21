@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlRegistry;
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
  * generated in the gov.niem.niem.proxy.xsd._2 package. 
- * &lt;p&gt;An ObjectFactory allows you to programatically 
+ * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
  * content can consist of schema derived interfaces 
@@ -38,11 +38,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link String }
+     * Create an instance of {@link Duration }
      * 
      */
-    public String createString() {
-        return new String();
+    public Duration createDuration() {
+        return new Duration();
     }
 
     /**
@@ -86,19 +86,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Duration }
-     * 
-     */
-    public Duration createDuration() {
-        return new Duration();
-    }
-
-    /**
      * Create an instance of {@link GYear }
      * 
      */
     public GYear createGYear() {
         return new GYear();
+    }
+
+    /**
+     * Create an instance of {@link String }
+     * 
+     */
+    public String createString() {
+        return new String();
     }
 
     /**

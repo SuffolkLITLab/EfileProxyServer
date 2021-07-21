@@ -17,27 +17,27 @@ import tyler.ecf.extensions.common.OrganizationIdentificationType;
 
 
 /**
- * &lt;p&gt;Java class for OrganizationType complex type.
+ * <p>Java class for OrganizationType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="OrganizationType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}OrganizationIdentification" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}OrganizationLocation" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}OrganizationName" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}OrganizationPrimaryContactInformation" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}OrganizationSubUnitName" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}OrganizationTaxIdentification" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}OrganizationUnitName" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="OrganizationType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}OrganizationIdentification" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}OrganizationLocation" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}OrganizationName" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}OrganizationPrimaryContactInformation" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}OrganizationSubUnitName" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}OrganizationTaxIdentification" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}OrganizationUnitName" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -52,9 +52,9 @@ import tyler.ecf.extensions.common.OrganizationIdentificationType;
     "organizationUnitName"
 })
 @XmlSeeAlso({
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType.class,
     CourtType.class,
-    EnforcementUnitType.class
+    EnforcementUnitType.class,
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType.class
 })
 public class OrganizationType
     extends ComplexObjectType
@@ -80,8 +80,8 @@ public class OrganizationType
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link OrganizationIdentificationType }{@code >}
      *     {@link JAXBElement }{@code <}{@link IdentificationType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link OrganizationIdentificationType }{@code >}
      *     
      */
     public JAXBElement<? extends IdentificationType> getOrganizationIdentification() {
@@ -93,8 +93,8 @@ public class OrganizationType
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link OrganizationIdentificationType }{@code >}
      *     {@link JAXBElement }{@code <}{@link IdentificationType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link OrganizationIdentificationType }{@code >}
      *     
      */
     public void setOrganizationIdentification(JAXBElement<? extends IdentificationType> value) {

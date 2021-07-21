@@ -14,34 +14,36 @@ import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.StatusType;
 import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.proxy.xsd._2.Boolean;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
  * A value describing the status of electronic service on a particular recipient.
  * 
- * &lt;p&gt;Java class for ServiceRecipientDetailType complex type.
+ * <p>Java class for ServiceRecipientDetailType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="ServiceRecipientDetailType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/niem-core/2.0}StatusType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}ServiceRecipientID"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}StatusCode"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}ServedRecipient"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}FirmName"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}IsOpened"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}ServedDate" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}OpenedDate" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}MailServiceIndicator"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}TrackingNumber" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="ServiceRecipientDetailType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/niem-core/2.0}StatusType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}ServiceRecipientID"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}StatusCode"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}ServedRecipient"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}FirmName"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}IsOpened"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}ServedDate" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}OpenedDate" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}MailServiceIndicator"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}TrackingNumber" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -288,6 +290,16 @@ public class ServiceRecipientDetailType
      */
     public void setTrackingNumber(TextType value) {
         this.trackingNumber = value;
+    }
+
+    /**
+     * Generates a String representation of the contents of this type.
+     * This is an extension method, produced by the 'ts' xjc plugin
+     * 
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
     }
 
 }

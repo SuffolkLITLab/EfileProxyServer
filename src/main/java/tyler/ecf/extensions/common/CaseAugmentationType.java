@@ -12,49 +12,55 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import gov.niem.niem.niem_core._2.AmountType;
 import gov.niem.niem.niem_core._2.DateType;
+import gov.niem.niem.niem_core._2.StructuredAddressType;
 import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.proxy.xsd._2.Boolean;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * &lt;p&gt;Java class for CaseAugmentationType complex type.
+ * <p>Java class for CaseAugmentationType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="CaseAugmentationType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}CaseAugmentationType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}CaseTypeText" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}FilerTypeText" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}LowerCourtText" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}LowerCourtJudgeText" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}AttachServiceContactIndicator" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}ProcedureRemedy" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}ProviderCharge" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}PropertyAccountNumber" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}CivilClaimAmount" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}ProbateEstateAmount" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}FilingAssociation" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}PartyService" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}ExtendedData" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}MaxFeeAmount" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}CaseSecurity" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}CaseSubTypeText" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}PhysicalFeature" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}ReturnDate" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}HearingSchedule" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}OutOfStateIndicator" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}CitationAugmentation" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}WillFiledDate" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}DecedentPartyAssociation" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}QuestionAnswer" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="CaseAugmentationType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}CaseAugmentationType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}CaseTypeText" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}FilerTypeText" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}LowerCourtText" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}LowerCourtJudgeText" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}AttachServiceContactIndicator" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}ProcedureRemedy" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}ProviderCharge" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}PropertyAccountNumber" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}CivilClaimAmount" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}ProbateEstateAmount" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}FilingAssociation" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}PartyService" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}ExtendedData" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}MaxFeeAmount" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}CaseSecurity" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}CaseSubTypeText" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}PhysicalFeature" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}ReturnDate" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}HearingSchedule" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}OutOfStateIndicator" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}CitationAugmentation" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}WillFiledDate" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}DecedentPartyAssociation" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}QuestionAnswer" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}Agency" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}LowerCourtCaseTypeText" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}CaseAddress" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -83,7 +89,10 @@ import gov.niem.niem.proxy.xsd._2.Boolean;
     "citationAugmentation",
     "willFiledDate",
     "decedentPartyAssociation",
-    "questionAnswer"
+    "questionAnswer",
+    "agency",
+    "lowerCourtCaseTypeText",
+    "caseAddress"
 })
 public class CaseAugmentationType
     extends oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseAugmentationType
@@ -138,6 +147,12 @@ public class CaseAugmentationType
     protected List<DecedentPartyAssociationType> decedentPartyAssociation;
     @XmlElement(name = "QuestionAnswer")
     protected List<QuestionAnswerType> questionAnswer;
+    @XmlElement(name = "Agency")
+    protected List<AgencyType> agency;
+    @XmlElement(name = "LowerCourtCaseTypeText")
+    protected TextType lowerCourtCaseTypeText;
+    @XmlElement(name = "CaseAddress")
+    protected StructuredAddressType caseAddress;
 
     /**
      * Gets the value of the caseTypeText property.
@@ -310,20 +325,20 @@ public class CaseAugmentationType
     /**
      * Gets the value of the propertyAccountNumber property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the propertyAccountNumber property.
+     * This is why there is not a <CODE>set</CODE> method for the propertyAccountNumber property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getPropertyAccountNumber().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link TextType }
      * 
@@ -387,20 +402,20 @@ public class CaseAugmentationType
     /**
      * Gets the value of the filingAssociation property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the filingAssociation property.
+     * This is why there is not a <CODE>set</CODE> method for the filingAssociation property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getFilingAssociation().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link FilingAssociationType }
      * 
@@ -416,20 +431,20 @@ public class CaseAugmentationType
     /**
      * Gets the value of the partyService property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the partyService property.
+     * This is why there is not a <CODE>set</CODE> method for the partyService property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getPartyService().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link PartyServiceType }
      * 
@@ -445,24 +460,24 @@ public class CaseAugmentationType
     /**
      * Gets the value of the extendedData property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the extendedData property.
+     * This is why there is not a <CODE>set</CODE> method for the extendedData property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getExtendedData().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link ServicePartyDataType }{@code >}
      * {@link JAXBElement }{@code <}{@link CaseEventType }{@code >}
      * {@link JAXBElement }{@code <}{@link ExtendedDataType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ServicePartyDataType }{@code >}
      * 
      * 
      */
@@ -548,20 +563,20 @@ public class CaseAugmentationType
     /**
      * Gets the value of the physicalFeature property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the physicalFeature property.
+     * This is why there is not a <CODE>set</CODE> method for the physicalFeature property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getPhysicalFeature().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link PhysicalFeatureType }
      * 
@@ -649,20 +664,20 @@ public class CaseAugmentationType
     /**
      * Gets the value of the citationAugmentation property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the citationAugmentation property.
+     * This is why there is not a <CODE>set</CODE> method for the citationAugmentation property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getCitationAugmentation().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link CitationAugmentationType }
      * 
@@ -702,20 +717,20 @@ public class CaseAugmentationType
     /**
      * Gets the value of the decedentPartyAssociation property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the decedentPartyAssociation property.
+     * This is why there is not a <CODE>set</CODE> method for the decedentPartyAssociation property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getDecedentPartyAssociation().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link DecedentPartyAssociationType }
      * 
@@ -731,20 +746,20 @@ public class CaseAugmentationType
     /**
      * Gets the value of the questionAnswer property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the questionAnswer property.
+     * This is why there is not a <CODE>set</CODE> method for the questionAnswer property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getQuestionAnswer().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link QuestionAnswerType }
      * 
@@ -755,6 +770,93 @@ public class CaseAugmentationType
             questionAnswer = new ArrayList<QuestionAnswerType>();
         }
         return this.questionAnswer;
+    }
+
+    /**
+     * Gets the value of the agency property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the agency property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getAgency().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link AgencyType }
+     * 
+     * 
+     */
+    public List<AgencyType> getAgency() {
+        if (agency == null) {
+            agency = new ArrayList<AgencyType>();
+        }
+        return this.agency;
+    }
+
+    /**
+     * Gets the value of the lowerCourtCaseTypeText property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TextType }
+     *     
+     */
+    public TextType getLowerCourtCaseTypeText() {
+        return lowerCourtCaseTypeText;
+    }
+
+    /**
+     * Sets the value of the lowerCourtCaseTypeText property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TextType }
+     *     
+     */
+    public void setLowerCourtCaseTypeText(TextType value) {
+        this.lowerCourtCaseTypeText = value;
+    }
+
+    /**
+     * Gets the value of the caseAddress property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link StructuredAddressType }
+     *     
+     */
+    public StructuredAddressType getCaseAddress() {
+        return caseAddress;
+    }
+
+    /**
+     * Sets the value of the caseAddress property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link StructuredAddressType }
+     *     
+     */
+    public void setCaseAddress(StructuredAddressType value) {
+        this.caseAddress = value;
+    }
+
+    /**
+     * Generates a String representation of the contents of this type.
+     * This is an extension method, produced by the 'ts' xjc plugin
+     * 
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
     }
 
 }

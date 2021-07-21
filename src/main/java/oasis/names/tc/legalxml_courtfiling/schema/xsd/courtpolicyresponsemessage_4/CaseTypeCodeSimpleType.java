@@ -7,22 +7,22 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * &lt;p&gt;Java class for CaseTypeCodeSimpleType.
+ * <p>Java class for CaseTypeCodeSimpleType.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
- * &lt;pre&gt;
- * &amp;lt;simpleType name="CaseTypeCodeSimpleType"&amp;gt;
- *   &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}normalizedString"&amp;gt;
- *     &amp;lt;enumeration value="Appellate"/&amp;gt;
- *     &amp;lt;enumeration value="Bankruptcy"/&amp;gt;
- *     &amp;lt;enumeration value="Citation"/&amp;gt;
- *     &amp;lt;enumeration value="Civil"/&amp;gt;
- *     &amp;lt;enumeration value="Criminal"/&amp;gt;
- *     &amp;lt;enumeration value="Domestic"/&amp;gt;
- *     &amp;lt;enumeration value="Juvenile"/&amp;gt;
- *   &amp;lt;/restriction&amp;gt;
- * &amp;lt;/simpleType&amp;gt;
- * &lt;/pre&gt;
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * <pre>
+ * &lt;simpleType name="CaseTypeCodeSimpleType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}normalizedString"&gt;
+ *     &lt;enumeration value="Appellate"/&gt;
+ *     &lt;enumeration value="Bankruptcy"/&gt;
+ *     &lt;enumeration value="Citation"/&gt;
+ *     &lt;enumeration value="Civil"/&gt;
+ *     &lt;enumeration value="Criminal"/&gt;
+ *     &lt;enumeration value="Domestic"/&gt;
+ *     &lt;enumeration value="Juvenile"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
+ * </pre>
  * 
  */
 @XmlType(name = "CaseTypeCodeSimpleType")

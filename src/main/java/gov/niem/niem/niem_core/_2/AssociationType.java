@@ -17,26 +17,29 @@ import tyler.ecf.extensions.common.FilingAssociationType;
 
 
 /**
- * &lt;p&gt;Java class for AssociationType complex type.
+ * <p>Java class for AssociationType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="AssociationType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="AssociationType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AssociationType")
 @XmlSeeAlso({
-    PlacementAssociationType.class,
-    GuardianAssociationType.class,
+    ActivityLocationAssociationType.class,
+    DocumentCourtAssociationType.class,
+    PersonChargeAssociationType.class,
+    DriverLicenseAssociationType.class,
+    ViolatedStatuteAssociationType.class,
     ImmediateFamilyAssociationType.class,
     ActivityConveyanceAssociationType.class,
     OrganizationAssociationType.class,
@@ -45,13 +48,10 @@ import tyler.ecf.extensions.common.FilingAssociationType;
     PersonEmploymentAssociationType.class,
     PersonOrganizationAssociationType.class,
     RelatedActivityAssociationType.class,
-    DriverLicenseAssociationType.class,
-    PersonAssociationType.class,
-    ActivityLocationAssociationType.class,
-    DocumentCourtAssociationType.class,
-    PersonChargeAssociationType.class,
-    ViolatedStatuteAssociationType.class,
-    FilingAssociationType.class
+    FilingAssociationType.class,
+    GuardianAssociationType.class,
+    PlacementAssociationType.class,
+    PersonAssociationType.class
 })
 public class AssociationType
     extends ComplexObjectType
