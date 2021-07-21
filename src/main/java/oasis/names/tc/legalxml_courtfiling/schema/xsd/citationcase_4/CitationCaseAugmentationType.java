@@ -23,30 +23,30 @@ import tyler.ecf.extensions.common.CitationAugmentationType;
 /**
  * A charge issued by a law enforcement officer for a "violation" requiring the person charged to plead guilty to the charge or to appear in court to contest the charge. A citation is issued in lieu of an arrest and booking. "Violations" are a subset of "charges" for which a law enforcement officer is authorized to issue a citation in lieu of arrest and booking. Examples: traffic ticket, parking ticket or ticket issued for some other ordinance violation such as barking dog or illegal dumping. 
  * 
- * &lt;p&gt;Java class for CitationCaseAugmentationType complex type.
+ * <p>Java class for CitationCaseAugmentationType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="CitationCaseAugmentationType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}Citation"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}CaseCharge" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}ViolatedStatuteAssociation" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}CourtAppearance" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0}CitationSubject" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0}Vehicle" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;choice minOccurs="0"&amp;gt;
- *           &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0}DrivingIncident"/&amp;gt;
- *           &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0}ParkingViolation"/&amp;gt;
- *         &amp;lt;/choice&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="CitationCaseAugmentationType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}Citation"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}CaseCharge" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}ViolatedStatuteAssociation" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}CourtAppearance" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0}CitationSubject" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0}Vehicle" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;choice minOccurs="0"&gt;
+ *           &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0}DrivingIncident"/&gt;
+ *           &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0}ParkingViolation"/&gt;
+ *         &lt;/choice&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -112,20 +112,20 @@ public class CitationCaseAugmentationType
     /**
      * Gets the value of the caseCharge property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the caseCharge property.
+     * This is why there is not a <CODE>set</CODE> method for the caseCharge property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getCaseCharge().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link ChargeType }
      * 
@@ -141,20 +141,20 @@ public class CitationCaseAugmentationType
     /**
      * Gets the value of the violatedStatuteAssociation property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the violatedStatuteAssociation property.
+     * This is why there is not a <CODE>set</CODE> method for the violatedStatuteAssociation property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getViolatedStatuteAssociation().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link ViolatedStatuteAssociationType }
      * 
@@ -218,23 +218,23 @@ public class CitationCaseAugmentationType
     /**
      * Gets the value of the vehicle property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the vehicle property.
+     * This is why there is not a <CODE>set</CODE> method for the vehicle property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getVehicle().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link tyler.ecf.extensions.common.VehicleType }{@code >}
      * {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.citationcase_4.VehicleType }{@code >}
+     * {@link JAXBElement }{@code <}{@link tyler.ecf.extensions.common.VehicleType }{@code >}
      * 
      * 
      */

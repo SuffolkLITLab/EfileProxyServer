@@ -12,28 +12,28 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * &lt;p&gt;Java class for PersonNameType complex type.
+ * <p>Java class for PersonNameType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="PersonNameType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonNamePrefixText" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonGivenName" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonMiddleName" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonSurName" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonNameSuffixText" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonMaidenName" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonFullName" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *       &amp;lt;attribute ref="{http://niem.gov/niem/niem-core/2.0}personNameCommentText"/&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="PersonNameType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonNamePrefixText" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonGivenName" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonMiddleName" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonSurName" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonNameSuffixText" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonMaidenName" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonFullName" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute ref="{http://niem.gov/niem/niem-core/2.0}personNameCommentText"/&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */

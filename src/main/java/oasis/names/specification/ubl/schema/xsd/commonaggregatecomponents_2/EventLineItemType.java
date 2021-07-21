@@ -13,24 +13,30 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * &lt;p&gt;Java class for EventLineItemType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <pre>
+ * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Component xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;ccts:ComponentType&gt;ABIE&lt;/ccts:ComponentType&gt;&lt;ccts:DictionaryEntryName&gt;Event Line Item. Details&lt;/ccts:DictionaryEntryName&gt;&lt;ccts:Definition&gt;Information about an Event Line item&lt;/ccts:Definition&gt;&lt;ccts:ObjectClass&gt;Event Line Item&lt;/ccts:ObjectClass&gt;&lt;/ccts:Component&gt;
+ * </pre>
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="EventLineItemType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2}LineNumberNumeric" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}ParticipatingLocationsLocation" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}RetailPlannedImpact" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}SupplyItem"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/restriction&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * 
+ * <p>Java class for EventLineItemType complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+ * <pre>
+ * &lt;complexType name="EventLineItemType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2}LineNumberNumeric" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}ParticipatingLocationsLocation" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}RetailPlannedImpact" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}SupplyItem"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -53,7 +59,11 @@ public class EventLineItemType {
     protected ItemType supplyItem;
 
     /**
-     * Gets the value of the lineNumberNumeric property.
+     * 
+     * <pre>
+     * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Component xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;ccts:ComponentType&gt;BBIE&lt;/ccts:ComponentType&gt;&lt;ccts:DictionaryEntryName&gt;Event Line Item. Line Number. Numeric&lt;/ccts:DictionaryEntryName&gt;&lt;ccts:Definition&gt;Line Number of Event Line Item&lt;/ccts:Definition&gt;&lt;ccts:Cardinality&gt;0..1&lt;/ccts:Cardinality&gt;&lt;ccts:ObjectClass&gt;Event Line Item&lt;/ccts:ObjectClass&gt;&lt;ccts:PropertyTerm&gt;Line Number&lt;/ccts:PropertyTerm&gt;&lt;ccts:RepresentationTerm&gt;Numeric&lt;/ccts:RepresentationTerm&gt;&lt;ccts:DataType&gt;Numeric. Type&lt;/ccts:DataType&gt;&lt;/ccts:Component&gt;
+     * </pre>
+     * 
      * 
      * @return
      *     possible object is
@@ -77,7 +87,11 @@ public class EventLineItemType {
     }
 
     /**
-     * Gets the value of the participatingLocationsLocation property.
+     * 
+     * <pre>
+     * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Component xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;ccts:ComponentType&gt;ASBIE&lt;/ccts:ComponentType&gt;&lt;ccts:DictionaryEntryName&gt;Event Line Item. Participating Locations_ Location. Location&lt;/ccts:DictionaryEntryName&gt;&lt;ccts:Definition&gt;An association to the Locations of the stores involved in the event.&lt;/ccts:Definition&gt;&lt;ccts:Cardinality&gt;0..1&lt;/ccts:Cardinality&gt;&lt;ccts:ObjectClass&gt;Event Line Item&lt;/ccts:ObjectClass&gt;&lt;ccts:PropertyTermQualifier&gt;Participating Locations&lt;/ccts:PropertyTermQualifier&gt;&lt;ccts:PropertyTerm&gt;Location&lt;/ccts:PropertyTerm&gt;&lt;ccts:AssociatedObjectClass&gt;Location&lt;/ccts:AssociatedObjectClass&gt;&lt;/ccts:Component&gt;
+     * </pre>
+     * 
      * 
      * @return
      *     possible object is
@@ -101,22 +115,26 @@ public class EventLineItemType {
     }
 
     /**
+     * 
+     * <pre>
+     * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Component xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;ccts:ComponentType&gt;ASBIE&lt;/ccts:ComponentType&gt;&lt;ccts:DictionaryEntryName&gt;Event Line Item. Retail Planned Impact&lt;/ccts:DictionaryEntryName&gt;&lt;ccts:Definition&gt;Planned Impact of Event Line Item.&lt;/ccts:Definition&gt;&lt;ccts:Cardinality&gt;0..n&lt;/ccts:Cardinality&gt;&lt;ccts:ObjectClass&gt;Event Line Item&lt;/ccts:ObjectClass&gt;&lt;ccts:PropertyTerm&gt;Retail Planned Impact&lt;/ccts:PropertyTerm&gt;&lt;ccts:AssociatedObjectClass&gt;Retail Planned Impact&lt;/ccts:AssociatedObjectClass&gt;&lt;/ccts:Component&gt;
+     * </pre>
      * Gets the value of the retailPlannedImpact property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the retailPlannedImpact property.
+     * This is why there is not a <CODE>set</CODE> method for the retailPlannedImpact property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getRetailPlannedImpact().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link RetailPlannedImpactType }
      * 
@@ -130,7 +148,11 @@ public class EventLineItemType {
     }
 
     /**
-     * Gets the value of the supplyItem property.
+     * 
+     * <pre>
+     * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Component xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;ccts:ComponentType&gt;ASBIE&lt;/ccts:ComponentType&gt;&lt;ccts:DictionaryEntryName&gt;Event Line Item. Supply_ Item. Item&lt;/ccts:DictionaryEntryName&gt;&lt;ccts:Definition&gt;Identifies the product.&lt;/ccts:Definition&gt;&lt;ccts:Cardinality&gt;1&lt;/ccts:Cardinality&gt;&lt;ccts:ObjectClass&gt;Event Line Item&lt;/ccts:ObjectClass&gt;&lt;ccts:PropertyTermQualifier&gt;Supply&lt;/ccts:PropertyTermQualifier&gt;&lt;ccts:PropertyTerm&gt;Item&lt;/ccts:PropertyTerm&gt;&lt;ccts:AssociatedObjectClass&gt;Item&lt;/ccts:AssociatedObjectClass&gt;&lt;/ccts:Component&gt;
+     * </pre>
+     * 
      * 
      * @return
      *     possible object is

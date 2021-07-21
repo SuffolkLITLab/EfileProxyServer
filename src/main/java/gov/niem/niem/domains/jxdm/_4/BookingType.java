@@ -12,21 +12,21 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * &lt;p&gt;Java class for BookingType complex type.
+ * <p>Java class for BookingType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="BookingType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/niem-core/2.0}ActivityType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}BookingAgencyRecordIdentification" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="BookingType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/niem-core/2.0}ActivityType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}BookingAgencyRecordIdentification" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */

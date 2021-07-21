@@ -16,21 +16,21 @@ import tyler.ecf.extensions.common.PersonFilerType;
 
 
 /**
- * &lt;p&gt;Java class for EntityType complex type.
+ * <p>Java class for EntityType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="EntityType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}EntityRepresentation"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="EntityType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}EntityRepresentation"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -39,9 +39,9 @@ import tyler.ecf.extensions.common.PersonFilerType;
     "entityRepresentation"
 })
 @XmlSeeAlso({
-    tyler.ecf.extensions.serviceinformationhistoryresponsemessage.ServiceRecipientType.class,
+    CaseParticipantType.class,
     tyler.ecf.extensions.notifyservicemessage.ServiceRecipientType.class,
-    CaseParticipantType.class
+    tyler.ecf.extensions.serviceinformationhistoryresponsemessage.ServiceRecipientType.class
 })
 public class EntityType
     extends ComplexObjectType
@@ -55,16 +55,16 @@ public class EntityType
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link PersonFilerType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link ReferenceType }{@code >}
      *     {@link JAXBElement }{@code <}{@link ItemType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link gov.niem.niem.niem_core._2.OrganizationType }{@code >}
      *     {@link JAXBElement }{@code <}{@link gov.niem.niem.niem_core._2.PersonType }{@code >}
      *     {@link JAXBElement }{@code <}{@link ReferenceType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType }{@code >}
      *     {@link JAXBElement }{@code <}{@link ReferenceType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link gov.niem.niem.niem_core._2.OrganizationType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link ReferenceType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
+     *     {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link PersonFilerType }{@code >}
      *     
      */
     public JAXBElement<?> getEntityRepresentation() {
@@ -76,16 +76,16 @@ public class EntityType
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link PersonFilerType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link ReferenceType }{@code >}
      *     {@link JAXBElement }{@code <}{@link ItemType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link gov.niem.niem.niem_core._2.OrganizationType }{@code >}
      *     {@link JAXBElement }{@code <}{@link gov.niem.niem.niem_core._2.PersonType }{@code >}
      *     {@link JAXBElement }{@code <}{@link ReferenceType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType }{@code >}
      *     {@link JAXBElement }{@code <}{@link ReferenceType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link gov.niem.niem.niem_core._2.OrganizationType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link ReferenceType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
+     *     {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link PersonFilerType }{@code >}
      *     
      */
     public void setEntityRepresentation(JAXBElement<?> value) {

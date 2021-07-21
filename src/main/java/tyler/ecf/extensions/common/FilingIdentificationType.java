@@ -5,27 +5,28 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import gov.niem.niem.proxy.xsd._2.String;
 import gov.niem.niem.structures._2.ReferenceType;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * &lt;p&gt;Java class for FilingIdentificationType complex type.
+ * <p>Java class for FilingIdentificationType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="FilingIdentificationType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}FilingIdentificationReference"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}CMSID"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/restriction&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="FilingIdentificationType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}FilingIdentificationReference"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}CMSID"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -39,7 +40,7 @@ public class FilingIdentificationType {
     @XmlElement(name = "FilingIdentificationReference", required = true)
     protected ReferenceType filingIdentificationReference;
     @XmlElement(name = "CMSID", required = true)
-    protected String cmsid;
+    protected gov.niem.niem.proxy.xsd._2.String cmsid;
 
     /**
      * Gets the value of the filingIdentificationReference property.
@@ -70,10 +71,10 @@ public class FilingIdentificationType {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link gov.niem.niem.proxy.xsd._2.String }
      *     
      */
-    public String getCMSID() {
+    public gov.niem.niem.proxy.xsd._2.String getCMSID() {
         return cmsid;
     }
 
@@ -82,11 +83,21 @@ public class FilingIdentificationType {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link gov.niem.niem.proxy.xsd._2.String }
      *     
      */
-    public void setCMSID(String value) {
+    public void setCMSID(gov.niem.niem.proxy.xsd._2.String value) {
         this.cmsid = value;
+    }
+
+    /**
+     * Generates a String representation of the contents of this type.
+     * This is an extension method, produced by the 'ts' xjc plugin
+     * 
+     */
+    @Override
+    public java.lang.String toString() {
+        return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
     }
 
 }

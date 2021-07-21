@@ -10,18 +10,18 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * &lt;p&gt;Java class for MeterReadingMethodType complex type.
+ * <p>Java class for MeterReadingMethodType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="MeterReadingMethodType"&amp;gt;
- *   &amp;lt;simpleContent&amp;gt;
- *     &amp;lt;extension base="&amp;lt;urn:oasis:names:specification:ubl:schema:xsd:UnqualifiedDataTypes-2&amp;gt;TextType"&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/simpleContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="MeterReadingMethodType"&gt;
+ *   &lt;simpleContent&gt;
+ *     &lt;extension base="&lt;urn:oasis:names:specification:ubl:schema:xsd:UnqualifiedDataTypes-2&gt;TextType"&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/simpleContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */

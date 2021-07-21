@@ -8,25 +8,27 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import gov.niem.niem.niem_core._2.TextType;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * &lt;p&gt;Java class for ProcedureRemedyType complex type.
+ * <p>Java class for ProcedureRemedyType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="ProcedureRemedyType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}RemedyCode" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}DamageAmountCode" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/restriction&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="ProcedureRemedyType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}RemedyCode" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}DamageAmountCode" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -45,20 +47,20 @@ public class ProcedureRemedyType {
     /**
      * Gets the value of the remedyCode property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the remedyCode property.
+     * This is why there is not a <CODE>set</CODE> method for the remedyCode property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getRemedyCode().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link TextType }
      * 
@@ -93,6 +95,16 @@ public class ProcedureRemedyType {
      */
     public void setDamageAmountCode(TextType value) {
         this.damageAmountCode = value;
+    }
+
+    /**
+     * Generates a String representation of the contents of this type.
+     * This is an extension method, produced by the 'ts' xjc plugin
+     * 
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
     }
 
 }

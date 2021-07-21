@@ -17,23 +17,23 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 /**
  * A financial responsibility of a party in a case ordered by a court.
  * 
- * &lt;p&gt;Java class for FinancialObligationType complex type.
+ * <p>Java class for FinancialObligationType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="FinancialObligationType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/niem-core/2.0}ObligationType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DomesticCase-4.0}ObligationPaymentAmount" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DomesticCase-4.0}ObligationIncomeAttachedIndicator" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DomesticCase-4.0}ObligationStateDisbursementIndicator" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="FinancialObligationType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/niem-core/2.0}ObligationType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DomesticCase-4.0}ObligationPaymentAmount" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DomesticCase-4.0}ObligationIncomeAttachedIndicator" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DomesticCase-4.0}ObligationStateDisbursementIndicator" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -57,20 +57,20 @@ public class FinancialObligationType
     /**
      * Gets the value of the obligationPaymentAmount property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the obligationPaymentAmount property.
+     * This is why there is not a <CODE>set</CODE> method for the obligationPaymentAmount property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getObligationPaymentAmount().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link AmountType }
      * 

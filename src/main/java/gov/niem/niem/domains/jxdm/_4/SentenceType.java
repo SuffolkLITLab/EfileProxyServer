@@ -15,23 +15,23 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * &lt;p&gt;Java class for SentenceType complex type.
+ * <p>Java class for SentenceType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="SentenceType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/niem-core/2.0}ActivityType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}SentenceCharge" maxOccurs="unbounded"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}SentenceDescriptionText" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}SentenceTerm" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="SentenceType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/niem-core/2.0}ActivityType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}SentenceCharge" maxOccurs="unbounded"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}SentenceDescriptionText" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}SentenceTerm" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -58,20 +58,20 @@ public class SentenceType
     /**
      * Gets the value of the sentenceCharge property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the sentenceCharge property.
+     * This is why there is not a <CODE>set</CODE> method for the sentenceCharge property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getSentenceCharge().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link ChargeType }
      * 

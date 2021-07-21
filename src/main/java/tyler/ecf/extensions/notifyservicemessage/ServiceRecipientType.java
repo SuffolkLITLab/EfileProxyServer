@@ -10,27 +10,29 @@ import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.structures._2.ReferenceType;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * &lt;p&gt;Java class for ServiceRecipientType complex type.
+ * <p>Java class for ServiceRecipientType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="ServiceRecipientType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/niem-core/2.0}EntityType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:NotifyServiceMessage}ServiceContactID"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:NotifyServiceMessage}SentDate" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:NotifyServiceMessage}Status"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}EntityPersonReference" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="ServiceRecipientType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/niem-core/2.0}EntityType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:NotifyServiceMessage}ServiceContactID"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:NotifyServiceMessage}SentDate" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:NotifyServiceMessage}Status"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}EntityPersonReference" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -148,6 +150,16 @@ public class ServiceRecipientType
      */
     public void setEntityPersonReference(ReferenceType value) {
         this.entityPersonReference = value;
+    }
+
+    /**
+     * Generates a String representation of the contents of this type.
+     * This is an extension method, produced by the 'ts' xjc plugin
+     * 
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
     }
 
 }

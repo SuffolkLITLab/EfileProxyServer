@@ -27,21 +27,21 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *       itself establish the existence of an object; it relies on a
  *       definition located elsewhere.
  * 
- * &lt;p&gt;Java class for ReferenceType complex type.
+ * <p>Java class for ReferenceType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="ReferenceType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
- *       &amp;lt;attribute ref="{http://niem.gov/niem/structures/2.0}id"/&amp;gt;
- *       &amp;lt;attribute ref="{http://niem.gov/niem/structures/2.0}ref"/&amp;gt;
- *       &amp;lt;attribute ref="{http://niem.gov/niem/structures/2.0}linkMetadata"/&amp;gt;
- *     &amp;lt;/restriction&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="ReferenceType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;attribute ref="{http://niem.gov/niem/structures/2.0}id"/&gt;
+ *       &lt;attribute ref="{http://niem.gov/niem/structures/2.0}ref"/&gt;
+ *       &lt;attribute ref="{http://niem.gov/niem/structures/2.0}linkMetadata"/&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -114,20 +114,20 @@ public class ReferenceType {
     /**
      * Gets the value of the linkMetadata property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the linkMetadata property.
+     * This is why there is not a <CODE>set</CODE> method for the linkMetadata property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getLinkMetadata().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link Object }
      * 

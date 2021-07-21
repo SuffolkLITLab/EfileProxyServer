@@ -19,24 +19,24 @@ import org.w3c.dom.Element;
 
 
 /**
- * &lt;p&gt;Java class for ObjectType complex type.
+ * <p>Java class for ObjectType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="ObjectType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
- *       &amp;lt;sequence maxOccurs="unbounded" minOccurs="0"&amp;gt;
- *         &amp;lt;any processContents='lax'/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *       &amp;lt;attribute name="Id" type="{http://www.w3.org/2001/XMLSchema}ID" /&amp;gt;
- *       &amp;lt;attribute name="MimeType" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
- *       &amp;lt;attribute name="Encoding" type="{http://www.w3.org/2001/XMLSchema}anyURI" /&amp;gt;
- *     &amp;lt;/restriction&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="ObjectType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence maxOccurs="unbounded" minOccurs="0"&gt;
+ *         &lt;any processContents='lax'/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="Id" type="{http://www.w3.org/2001/XMLSchema}ID" /&gt;
+ *       &lt;attribute name="MimeType" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="Encoding" type="{http://www.w3.org/2001/XMLSchema}anyURI" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -63,24 +63,24 @@ public class ObjectType {
     /**
      * Gets the value of the content property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the content property.
+     * This is why there is not a <CODE>set</CODE> method for the content property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getContent().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Element }
      * {@link Object }
      * {@link String }
+     * {@link Element }
      * 
      * 
      */

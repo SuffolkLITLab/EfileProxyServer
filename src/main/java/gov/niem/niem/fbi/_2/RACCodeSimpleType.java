@@ -6,20 +6,20 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * &lt;p&gt;Java class for RACCodeSimpleType.
+ * <p>Java class for RACCodeSimpleType.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
- * &lt;pre&gt;
- * &amp;lt;simpleType name="RACCodeSimpleType"&amp;gt;
- *   &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&amp;gt;
- *     &amp;lt;enumeration value="B"/&amp;gt;
- *     &amp;lt;enumeration value="I"/&amp;gt;
- *     &amp;lt;enumeration value="U"/&amp;gt;
- *     &amp;lt;enumeration value="W"/&amp;gt;
- *     &amp;lt;enumeration value="A"/&amp;gt;
- *   &amp;lt;/restriction&amp;gt;
- * &amp;lt;/simpleType&amp;gt;
- * &lt;/pre&gt;
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * <pre>
+ * &lt;simpleType name="RACCodeSimpleType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&gt;
+ *     &lt;enumeration value="B"/&gt;
+ *     &lt;enumeration value="I"/&gt;
+ *     &lt;enumeration value="U"/&gt;
+ *     &lt;enumeration value="W"/&gt;
+ *     &lt;enumeration value="A"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
+ * </pre>
  * 
  */
 @XmlType(name = "RACCodeSimpleType")

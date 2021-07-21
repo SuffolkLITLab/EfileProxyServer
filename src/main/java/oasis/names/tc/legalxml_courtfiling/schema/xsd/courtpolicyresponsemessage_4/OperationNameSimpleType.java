@@ -7,28 +7,28 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * &lt;p&gt;Java class for OperationNameSimpleType.
+ * <p>Java class for OperationNameSimpleType.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
- * &lt;pre&gt;
- * &amp;lt;simpleType name="OperationNameSimpleType"&amp;gt;
- *   &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}normalizedString"&amp;gt;
- *     &amp;lt;enumeration value="GetFeesCalculation"/&amp;gt;
- *     &amp;lt;enumeration value="GetCase"/&amp;gt;
- *     &amp;lt;enumeration value="GetCaseList"/&amp;gt;
- *     &amp;lt;enumeration value="GetDocument"/&amp;gt;
- *     &amp;lt;enumeration value="GetFilingList"/&amp;gt;
- *     &amp;lt;enumeration value="GetFilingStatus"/&amp;gt;
- *     &amp;lt;enumeration value="GetPolicy"/&amp;gt;
- *     &amp;lt;enumeration value="GetServiceInformation"/&amp;gt;
- *     &amp;lt;enumeration value="NotifyFilingReview"/&amp;gt;
- *     &amp;lt;enumeration value="NotifyDocketing"/&amp;gt;
- *     &amp;lt;enumeration value="RecordFiling"/&amp;gt;
- *     &amp;lt;enumeration value="ReviewFiling"/&amp;gt;
- *     &amp;lt;enumeration value="ServeFiling"/&amp;gt;
- *   &amp;lt;/restriction&amp;gt;
- * &amp;lt;/simpleType&amp;gt;
- * &lt;/pre&gt;
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * <pre>
+ * &lt;simpleType name="OperationNameSimpleType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}normalizedString"&gt;
+ *     &lt;enumeration value="GetFeesCalculation"/&gt;
+ *     &lt;enumeration value="GetCase"/&gt;
+ *     &lt;enumeration value="GetCaseList"/&gt;
+ *     &lt;enumeration value="GetDocument"/&gt;
+ *     &lt;enumeration value="GetFilingList"/&gt;
+ *     &lt;enumeration value="GetFilingStatus"/&gt;
+ *     &lt;enumeration value="GetPolicy"/&gt;
+ *     &lt;enumeration value="GetServiceInformation"/&gt;
+ *     &lt;enumeration value="NotifyFilingReview"/&gt;
+ *     &lt;enumeration value="NotifyDocketing"/&gt;
+ *     &lt;enumeration value="RecordFiling"/&gt;
+ *     &lt;enumeration value="ReviewFiling"/&gt;
+ *     &lt;enumeration value="ServeFiling"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
+ * </pre>
  * 
  */
 @XmlType(name = "OperationNameSimpleType")

@@ -14,24 +14,24 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * &lt;p&gt;Java class for ViolatedStatuteAssociationType complex type.
+ * <p>Java class for ViolatedStatuteAssociationType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="ViolatedStatuteAssociationType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/niem-core/2.0}AssociationType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}SubjectReference" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}VictimReference" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}IncidentReference" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}StatuteReference" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="ViolatedStatuteAssociationType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/niem-core/2.0}AssociationType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}SubjectReference" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}VictimReference" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}IncidentReference" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}StatuteReference" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -82,20 +82,20 @@ public class ViolatedStatuteAssociationType
     /**
      * Gets the value of the victimReference property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the victimReference property.
+     * This is why there is not a <CODE>set</CODE> method for the victimReference property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getVictimReference().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link ReferenceType }
      * 
@@ -135,20 +135,20 @@ public class ViolatedStatuteAssociationType
     /**
      * Gets the value of the statuteReference property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the statuteReference property.
+     * This is why there is not a <CODE>set</CODE> method for the statuteReference property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getStatuteReference().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link ReferenceType }
      * 

@@ -35,24 +35,24 @@ import tyler.ecf.extensions.servicetypesrequestmessage.ServiceTypesRequestMessag
 /**
  * A message returned synchronously as a response to a query.
  * 
- * &lt;p&gt;Java class for QueryMessageType complex type.
+ * <p>Java class for QueryMessageType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="QueryMessageType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDELocationID"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDEProfileCode"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}QuerySubmitter"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}CaseCourt"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="QueryMessageType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDELocationID"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDEProfileCode"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}QuerySubmitter"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}CaseCourt"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -64,21 +64,21 @@ import tyler.ecf.extensions.servicetypesrequestmessage.ServiceTypesRequestMessag
     "caseCourt"
 })
 @XmlSeeAlso({
-    CourtPolicyQueryMessageType.class,
-    CaseListQueryMessageType.class,
+    ServiceInformationQueryMessageType.class,
     CancelFilingMessageType.class,
     SecureCaseMessageType.class,
-    ServiceInformationHistoryQueryMessageType.class,
-    ServiceInformationQueryMessageType.class,
-    FilingServiceQueryMessageType.class,
-    FilingDetailQueryMessageType.class,
-    ServiceAttachCaseListQueryMessageType.class,
-    CaseQueryMessageType.class,
     ServiceTypesRequestMessageType.class,
-    FilingListQueryMessageType.class,
+    CourtPolicyQueryMessageType.class,
+    FilingStatusQueryMessageType.class,
+    FilingDetailQueryMessageType.class,
     FeesCalculationQueryMessageType.class,
+    ServiceAttachCaseListQueryMessageType.class,
     DocumentQueryMessageType.class,
-    FilingStatusQueryMessageType.class
+    CaseQueryMessageType.class,
+    CaseListQueryMessageType.class,
+    ServiceInformationHistoryQueryMessageType.class,
+    FilingListQueryMessageType.class,
+    FilingServiceQueryMessageType.class
 })
 public class QueryMessageType
     extends ComplexObjectType

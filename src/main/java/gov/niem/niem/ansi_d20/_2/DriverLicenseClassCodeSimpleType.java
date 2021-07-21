@@ -6,19 +6,19 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * &lt;p&gt;Java class for DriverLicenseClassCodeSimpleType.
+ * <p>Java class for DriverLicenseClassCodeSimpleType.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
- * &lt;pre&gt;
- * &amp;lt;simpleType name="DriverLicenseClassCodeSimpleType"&amp;gt;
- *   &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&amp;gt;
- *     &amp;lt;enumeration value="M"/&amp;gt;
- *     &amp;lt;enumeration value="B"/&amp;gt;
- *     &amp;lt;enumeration value="C"/&amp;gt;
- *     &amp;lt;enumeration value="A"/&amp;gt;
- *   &amp;lt;/restriction&amp;gt;
- * &amp;lt;/simpleType&amp;gt;
- * &lt;/pre&gt;
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * <pre>
+ * &lt;simpleType name="DriverLicenseClassCodeSimpleType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&gt;
+ *     &lt;enumeration value="M"/&gt;
+ *     &lt;enumeration value="B"/&gt;
+ *     &lt;enumeration value="C"/&gt;
+ *     &lt;enumeration value="A"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
+ * </pre>
  * 
  */
 @XmlType(name = "DriverLicenseClassCodeSimpleType")
@@ -45,7 +45,7 @@ public enum DriverLicenseClassCodeSimpleType {
     C,
 
     /**
-     * Class "A" vehicles - any combination of vehicles with a GCWR of 26,001 or more pounds, provided the GVWR of the vehicle(s) being towed is in excess of 10,000 pounds [49 CFR 383.91(a)(1)]. (Holders of a Class A license may, with the appropriate endorsement, operate all Class B &amp; C vehicles).
+     * Class "A" vehicles - any combination of vehicles with a GCWR of 26,001 or more pounds, provided the GVWR of the vehicle(s) being towed is in excess of 10,000 pounds [49 CFR 383.91(a)(1)]. (Holders of a Class A license may, with the appropriate endorsement, operate all Class B & C vehicles).
      * 
      */
     A;

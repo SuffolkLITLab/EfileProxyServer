@@ -14,21 +14,21 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 /**
  * The court's response to a request for an electronic document in the court's official record. 
  * 
- * &lt;p&gt;Java class for DocumentResponseMessageType complex type.
+ * <p>Java class for DocumentResponseMessageType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="DocumentResponseMessageType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}QueryResponseMessageType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}Document"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="DocumentResponseMessageType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}QueryResponseMessageType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}Document"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -48,8 +48,8 @@ public class DocumentResponseMessageType
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link tyler.ecf.extensions.common.DocumentType }{@code >}
      *     {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link tyler.ecf.extensions.common.DocumentType }{@code >}
      *     
      */
     public JAXBElement<? extends oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType> getDocument() {
@@ -61,8 +61,8 @@ public class DocumentResponseMessageType
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link tyler.ecf.extensions.common.DocumentType }{@code >}
      *     {@link JAXBElement }{@code <}{@link oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link tyler.ecf.extensions.common.DocumentType }{@code >}
      *     
      */
     public void setDocument(JAXBElement<? extends oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType> value) {

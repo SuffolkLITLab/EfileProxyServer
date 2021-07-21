@@ -108,42 +108,61 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *       element of one of these types establishes a relationship between its
  *       value and its context.
  * 
- * &lt;p&gt;Java class for ComplexObjectType complex type.
+ * <p>Java class for ComplexObjectType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="ComplexObjectType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
- *       &amp;lt;attribute ref="{http://niem.gov/niem/structures/2.0}id"/&amp;gt;
- *       &amp;lt;attribute ref="{http://niem.gov/niem/structures/2.0}metadata"/&amp;gt;
- *       &amp;lt;attribute ref="{http://niem.gov/niem/structures/2.0}linkMetadata"/&amp;gt;
- *     &amp;lt;/restriction&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="ComplexObjectType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;attribute ref="{http://niem.gov/niem/structures/2.0}id"/&gt;
+ *       &lt;attribute ref="{http://niem.gov/niem/structures/2.0}metadata"/&gt;
+ *       &lt;attribute ref="{http://niem.gov/niem/structures/2.0}linkMetadata"/&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ComplexObjectType")
 @XmlSeeAlso({
+    CourtCodelistType.class,
+    CourtExtensionType.class,
     DateType.class,
-    DateRangeType.class,
-    CaseParticipantType.class,
+    PublicKeyInformationType.class,
+    RuntimePolicyParametersType.class,
     StatuteType.class,
-    DependencyAllegationType.class,
+    DomesticCaseChildSupportPetitionType.class,
+    DomesticCaseViolencePetitionType.class,
+    ChargeType.class,
+    LocationType.class,
+    EnforcementOfficialType.class,
+    SeverityLevelType.class,
+    CourtAppearanceType.class,
+    ScheduleDayType.class,
+    JudicialOfficialBarMembershipType.class,
+    BiometricType.class,
+    ItemValueType.class,
+    RegisteredOffenderType.class,
+    JurisdictionType.class,
+    SupervisionType.class,
+    VictimType.class,
     AliasType.class,
+    JudicialOfficialType.class,
     CourtEventActorType.class,
     CourtEventOnBehalfOfActorType.class,
     DocumentSignatureType.class,
     ElectronicServiceInformationType.class,
+    OrganizationType.class,
     ErrorType.class,
     SignatureType.class,
+    DateRangeType.class,
     AddressType.class,
-    BiometricType.class,
     BinaryType.class,
+    DispositionType.class,
     CaseDispositionDecisionType.class,
     TelephoneNumberType.class,
     ContactInformationType.class,
@@ -151,65 +170,46 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     DriverLicenseBaseType.class,
     DrivingRestrictionType.class,
     FullTelephoneNumberType.class,
-    LocationType.class,
     InsuranceType.class,
     InternationalTelephoneNumberType.class,
-    ItemValueType.class,
     StreetType.class,
     NANPTelephoneNumberType.class,
     ObligationExemptionType.class,
+    ObligationType.class,
     DNAType.class,
     FingerprintSetType.class,
     PersonNameType.class,
     PhysicalFeatureType.class,
     PersonLanguageType.class,
     StructuredAddressType.class,
-    SupervisionType.class,
     FacilityType.class,
     ItemRegistrationType.class,
-    JurisdictionType.class,
     PropertyType.class,
-    ScheduleDayType.class,
     MeasureType.class,
-    DomesticCaseChildSupportPetitionType.class,
-    DomesticCaseViolencePetitionType.class,
-    ObligationType.class,
+    DevelopmentPolicyParametersType.class,
+    CapabilityType.class,
+    ItemType.class,
+    CitationCaseAugmentationType.class,
+    PersonType.class,
+    CaseAugmentationType.class,
     AppellateCaseAddedPartyType.class,
     AppellateCaseRemovedPartyType.class,
     AppellateCivilCaseType.class,
     AppellateCourtRuleCaseType.class,
+    FingerprintType.class,
+    CaseQueryCriteriaType.class,
+    CaseParticipantType.class,
+    DependencyAllegationType.class,
+    SubjectType.class,
+    EntityType.class,
+    QueryResponseMessageType.class,
     StatusType.class,
+    ActivityType.class,
     DecedentEstateCaseType.class,
     FiduciaryCaseType.class,
-    CourtCodelistType.class,
-    CourtExtensionType.class,
-    PublicKeyInformationType.class,
-    RuntimePolicyParametersType.class,
-    CaseQueryCriteriaType.class,
-    ChargeType.class,
-    EnforcementOfficialType.class,
-    DispositionType.class,
-    SeverityLevelType.class,
-    CourtAppearanceType.class,
-    JudicialOfficialType.class,
-    OrganizationType.class,
-    JudicialOfficialBarMembershipType.class,
-    RegisteredOffenderType.class,
-    VictimType.class,
-    DevelopmentPolicyParametersType.class,
-    CapabilityType.class,
     AssociationType.class,
-    ItemType.class,
-    CitationCaseAugmentationType.class,
-    PersonType.class,
-    EntityType.class,
-    CaseAugmentationType.class,
-    IdentificationType.class,
-    FingerprintType.class,
-    ActivityType.class,
-    SubjectType.class,
-    QueryResponseMessageType.class,
     QueryMessageType.class,
+    IdentificationType.class,
     DocumentType.class
 })
 public abstract class ComplexObjectType {
@@ -255,20 +255,20 @@ public abstract class ComplexObjectType {
     /**
      * Gets the value of the metadata property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the metadata property.
+     * This is why there is not a <CODE>set</CODE> method for the metadata property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getMetadata().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link Object }
      * 
@@ -284,20 +284,20 @@ public abstract class ComplexObjectType {
     /**
      * Gets the value of the linkMetadata property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the linkMetadata property.
+     * This is why there is not a <CODE>set</CODE> method for the linkMetadata property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getLinkMetadata().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link Object }
      * 

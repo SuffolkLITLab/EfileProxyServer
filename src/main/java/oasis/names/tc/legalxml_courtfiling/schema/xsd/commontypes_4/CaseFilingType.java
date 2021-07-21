@@ -22,22 +22,22 @@ import tyler.ecf.extensions.servicecallbackmessage.ServiceCallbackMessageType;
 /**
  * A document or other piece of information filed by someone or something involved in a case.
  * 
- * &lt;p&gt;Java class for CaseFilingType complex type.
+ * <p>Java class for CaseFilingType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="CaseFilingType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/niem-core/2.0}DocumentType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDELocationID"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDEProfileCode"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="CaseFilingType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/niem-core/2.0}DocumentType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDELocationID"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDEProfileCode"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -47,11 +47,11 @@ import tyler.ecf.extensions.servicecallbackmessage.ServiceCallbackMessageType;
     "sendingMDEProfileCode"
 })
 @XmlSeeAlso({
-    MessageReceiptMessageType.class,
-    NotifyServiceMessageType.class,
     CourtPolicyQueryMessageType.class,
-    ElectronicFilingCallbackMessageType.class,
+    NotifyServiceMessageType.class,
+    MessageReceiptMessageType.class,
     ServiceCallbackMessageType.class,
+    ElectronicFilingCallbackMessageType.class,
     ElectronicFilingMessageType.class
 })
 public abstract class CaseFilingType

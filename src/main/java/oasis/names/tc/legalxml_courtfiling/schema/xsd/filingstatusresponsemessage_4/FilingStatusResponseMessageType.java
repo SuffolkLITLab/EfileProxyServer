@@ -25,23 +25,23 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 /**
  * A court's response to a FilingStatusQueryMessage.
  * 
- * &lt;p&gt;Java class for FilingStatusResponseMessageType complex type.
+ * <p>Java class for FilingStatusResponseMessageType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="FilingStatusResponseMessageType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}QueryResponseMessageType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}Case" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}DocumentIdentification" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}FilingStatus"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="FilingStatusResponseMessageType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}QueryResponseMessageType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}Case" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}DocumentIdentification" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}FilingStatus"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -67,14 +67,14 @@ public class FilingStatusResponseMessageType
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     
      */
     public JAXBElement<? extends CaseType> getCase() {
@@ -86,14 +86,14 @@ public class FilingStatusResponseMessageType
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AppellateCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link BankruptcyCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CitationCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CivilCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CriminalCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link DomesticCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      *     
      */
     public void setCase(JAXBElement<? extends CaseType> value) {

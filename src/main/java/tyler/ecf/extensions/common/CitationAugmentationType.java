@@ -9,24 +9,26 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.citationcase_4.CitationCaseAugmentationType;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * &lt;p&gt;Java class for CitationAugmentationType complex type.
+ * <p>Java class for CitationAugmentationType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="CitationAugmentationType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0}CitationCaseAugmentationType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{urn:tyler:ecf:extensions:Common}DrivingIncident" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="CitationAugmentationType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0}CitationCaseAugmentationType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}DrivingIncident" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -44,30 +46,30 @@ public class CitationAugmentationType
     /**
      * Gets the rest of the content model. 
      * 
-     * &lt;p&gt;
+     * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "DrivingIncident" is used by two different parts of a schema. See: 
-     * line 0 of https://illinois-stage.tylerhost.net/EFM/Schema/substitution/Tyler.xsd
-     * line 0 of https://illinois-stage.tylerhost.net/EFM/Schema/casetype/ECF-4.0-CitationCase.xsd
-     * &lt;p&gt;
+     * line 176 of file:/home/litlab/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/filingreview/ecf-60.xsd
+     * line 55 of file:/home/litlab/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/filingreview/ecf-22.xsd
+     * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 
      * Gets the value of the rest property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the rest property.
+     * This is why there is not a <CODE>set</CODE> method for the rest property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getRest().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link JAXBElement }{@code <}{@link DrivingIncidentType }{@code >}
      * 
@@ -78,6 +80,16 @@ public class CitationAugmentationType
             rest = new ArrayList<JAXBElement<DrivingIncidentType>>();
         }
         return this.rest;
+    }
+
+    /**
+     * Generates a String representation of the contents of this type.
+     * This is an extension method, produced by the 'ts' xjc plugin
+     * 
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
     }
 
 }

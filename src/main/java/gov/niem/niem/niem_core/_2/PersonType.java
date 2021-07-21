@@ -23,39 +23,39 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * &lt;p&gt;Java class for PersonType complex type.
+ * <p>Java class for PersonType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="PersonType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonBirthDate" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonCapability" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonCitizenship" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonDNA" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonEthnicity" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonEyeColor" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonFingerprintSet" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonHairColor" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonHeightMeasure" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonLanguageEnglishIndicator" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonName" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonOtherIdentification" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonPhysicalFeature" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonPrimaryLanguage" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonRace" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonSex" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonStateIdentification" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonTaxIdentification" minOccurs="0"/&amp;gt;
- *         &amp;lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonWeightMeasure" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="PersonType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonBirthDate" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonCapability" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonCitizenship" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonDNA" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonEthnicity" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonEyeColor" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonFingerprintSet" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonHairColor" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonHeightMeasure" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonLanguageEnglishIndicator" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonName" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonOtherIdentification" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonPhysicalFeature" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonPrimaryLanguage" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonRace" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonSex" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonStateIdentification" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonTaxIdentification" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/niem-core/2.0}PersonWeightMeasure" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -156,8 +156,8 @@ public class PersonType
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link tyler.ecf.extensions.common.CapabilityType }{@code >}
      *     {@link JAXBElement }{@code <}{@link gov.niem.niem.niem_core._2.CapabilityType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link tyler.ecf.extensions.common.CapabilityType }{@code >}
      *     
      */
     public JAXBElement<? extends gov.niem.niem.niem_core._2.CapabilityType> getPersonCapability() {
@@ -169,8 +169,8 @@ public class PersonType
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link tyler.ecf.extensions.common.CapabilityType }{@code >}
      *     {@link JAXBElement }{@code <}{@link gov.niem.niem.niem_core._2.CapabilityType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link tyler.ecf.extensions.common.CapabilityType }{@code >}
      *     
      */
     public void setPersonCapability(JAXBElement<? extends gov.niem.niem.niem_core._2.CapabilityType> value) {
@@ -180,20 +180,20 @@ public class PersonType
     /**
      * Gets the value of the personCitizenship property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the personCitizenship property.
+     * This is why there is not a <CODE>set</CODE> method for the personCitizenship property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getPersonCitizenship().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link JAXBElement }{@code <}{@link CountryCodeType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
@@ -288,20 +288,20 @@ public class PersonType
     /**
      * Gets the value of the personFingerprintSet property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the personFingerprintSet property.
+     * This is why there is not a <CODE>set</CODE> method for the personFingerprintSet property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getPersonFingerprintSet().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link FingerprintSetType }
      * 
@@ -415,20 +415,20 @@ public class PersonType
     /**
      * Gets the value of the personOtherIdentification property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the personOtherIdentification property.
+     * This is why there is not a <CODE>set</CODE> method for the personOtherIdentification property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getPersonOtherIdentification().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link IdentificationType }
      * 
@@ -444,20 +444,20 @@ public class PersonType
     /**
      * Gets the value of the personPhysicalFeature property.
      * 
-     * &lt;p&gt;
+     * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the personPhysicalFeature property.
+     * This is why there is not a <CODE>set</CODE> method for the personPhysicalFeature property.
      * 
-     * &lt;p&gt;
+     * <p>
      * For example, to add a new item, do as follows:
-     * &lt;pre&gt;
+     * <pre>
      *    getPersonPhysicalFeature().add(newItem);
-     * &lt;/pre&gt;
+     * </pre>
      * 
      * 
-     * &lt;p&gt;
+     * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link PhysicalFeatureType }
      * 

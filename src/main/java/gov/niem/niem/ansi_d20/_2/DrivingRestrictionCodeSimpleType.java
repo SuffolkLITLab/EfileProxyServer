@@ -6,27 +6,27 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * &lt;p&gt;Java class for DrivingRestrictionCodeSimpleType.
+ * <p>Java class for DrivingRestrictionCodeSimpleType.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
- * &lt;pre&gt;
- * &amp;lt;simpleType name="DrivingRestrictionCodeSimpleType"&amp;gt;
- *   &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&amp;gt;
- *     &amp;lt;enumeration value="J"/&amp;gt;
- *     &amp;lt;enumeration value="I"/&amp;gt;
- *     &amp;lt;enumeration value="W"/&amp;gt;
- *     &amp;lt;enumeration value="L"/&amp;gt;
- *     &amp;lt;enumeration value="C"/&amp;gt;
- *     &amp;lt;enumeration value="O"/&amp;gt;
- *     &amp;lt;enumeration value="B"/&amp;gt;
- *     &amp;lt;enumeration value="K"/&amp;gt;
- *     &amp;lt;enumeration value="F"/&amp;gt;
- *     &amp;lt;enumeration value="E"/&amp;gt;
- *     &amp;lt;enumeration value="D"/&amp;gt;
- *     &amp;lt;enumeration value="G"/&amp;gt;
- *   &amp;lt;/restriction&amp;gt;
- * &amp;lt;/simpleType&amp;gt;
- * &lt;/pre&gt;
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * <pre>
+ * &lt;simpleType name="DrivingRestrictionCodeSimpleType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&gt;
+ *     &lt;enumeration value="J"/&gt;
+ *     &lt;enumeration value="I"/&gt;
+ *     &lt;enumeration value="W"/&gt;
+ *     &lt;enumeration value="L"/&gt;
+ *     &lt;enumeration value="C"/&gt;
+ *     &lt;enumeration value="O"/&gt;
+ *     &lt;enumeration value="B"/&gt;
+ *     &lt;enumeration value="K"/&gt;
+ *     &lt;enumeration value="F"/&gt;
+ *     &lt;enumeration value="E"/&gt;
+ *     &lt;enumeration value="D"/&gt;
+ *     &lt;enumeration value="G"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
+ * </pre>
  * 
  */
 @XmlType(name = "DrivingRestrictionCodeSimpleType")

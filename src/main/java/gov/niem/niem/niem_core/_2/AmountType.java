@@ -12,20 +12,20 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * &lt;p&gt;Java class for AmountType complex type.
+ * <p>Java class for AmountType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="AmountType"&amp;gt;
- *   &amp;lt;simpleContent&amp;gt;
- *     &amp;lt;extension base="&amp;lt;http://niem.gov/niem/proxy/xsd/2.0&amp;gt;decimal"&amp;gt;
- *       &amp;lt;attribute ref="{http://niem.gov/niem/niem-core/2.0}currencyCode"/&amp;gt;
- *       &amp;lt;attribute ref="{http://niem.gov/niem/niem-core/2.0}currencyText"/&amp;gt;
- *     &amp;lt;/extension&amp;gt;
- *   &amp;lt;/simpleContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="AmountType"&gt;
+ *   &lt;simpleContent&gt;
+ *     &lt;extension base="&lt;http://niem.gov/niem/proxy/xsd/2.0&gt;decimal"&gt;
+ *       &lt;attribute ref="{http://niem.gov/niem/niem-core/2.0}currencyCode"/&gt;
+ *       &lt;attribute ref="{http://niem.gov/niem/niem-core/2.0}currencyText"/&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/simpleContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
