@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.ws.rs.core.MediaType;
+import javax.xml.ws.Endpoint;
+
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
@@ -58,6 +60,9 @@ public class EfspServer {
       CodeUpdater.downloadAll("https://illinois-stage.tylerhost.net", cd);
     }
     
+    Object implementor = new OasisEcfWsCallback();
+    String baseLocalUrl = "http://0.0.0.0:9000";
+    String address = baseLocalUrl + "/filingassembly/callbacks/FilingAssemblyMDEPort";
     cd.setAutocommit(true);
     ud.setAutocommit(true);
     sf = new JAXRSServerFactoryBean();
@@ -80,8 +85,8 @@ public class EfspServer {
         new JAXBElementProvider(), 
         new JacksonJsonProvider());
     sf.setProviders(providers);
-    //sf.setAddress("http://localhost:9000");
-    sf.setAddress("http://0.0.0.0:9000");
+    sf.setAddress(baseLocalUrl);
+    Endpoint.publish(address, implementor);
     server = sf.create();
   }
   

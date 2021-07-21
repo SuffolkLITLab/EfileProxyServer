@@ -12,10 +12,16 @@ import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import edu.suffolk.litlab.efspserver.services.JsonExtractException;
+import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
+
 import java.io.IOException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class AddressDocassembleJacksonDeserializer extends StdDeserializer<Address> {
+  private static Logger log = LoggerFactory.getLogger(AddressDocassembleJacksonDeserializer.class); 
 
   private static final long serialVersionUID = 1L;
 
@@ -59,7 +65,15 @@ public class AddressDocassembleJacksonDeserializer extends StdDeserializer<Addre
     if (countryNode != null) {
       country = countryNode.asText("US");
     }
-    Address addr = new Address(address, unit, city, state, zip, country);
+    CountryCodeSimpleType countryCode; 
+    try {
+      countryCode = CountryCodeSimpleType.fromValue(country);
+    } catch (IllegalArgumentException ex) {
+      log.error("Country " + country + " isn't a valid country: " + ex);
+      ExtractError err = ExtractError.malformedInterview("Country " + country + " isn't a valid country");
+      return Result.err(err);
+    }
+    Address addr = new Address(address, unit, city, state, zip, countryCode);
     return Result.ok(addr); 
   }
 

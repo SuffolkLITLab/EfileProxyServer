@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 import gov.niem.niem.niem_core._2.AddressType;
 import gov.niem.niem.niem_core._2.StructuredAddressType;
 import javax.xml.bind.JAXBElement;
@@ -18,7 +20,7 @@ public class AddressTest {
   
   @BeforeEach
   public void setUp() {
-    addr = new Address("100 Circle Road", "Apt 2", "Plano", "TX", "75093", "US");
+    addr = new Address("100 Circle Road", "Apt 2", "Plano", "TX", "75093", CountryCodeSimpleType.US);
   }
   
   @Test

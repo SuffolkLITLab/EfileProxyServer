@@ -2,6 +2,8 @@ package edu.suffolk.litlab.efspserver;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 import gov.niem.niem.fips_10_4._2.CountryCodeType;
 import gov.niem.niem.niem_core._2.AddressType;
 import gov.niem.niem.niem_core._2.ProperNameTextType;
@@ -26,13 +28,13 @@ public class Address {
   
   /** Constructor, each address element in order as a string. No qualifications. */
   public Address(String streetLine, String apartmentLine, String cityName, 
-      String stateName, String zipCode, String countryName) {
+      String stateName, String zipCode, CountryCodeSimpleType countryName) {
     this.streetLine = streetLine;
     this.apartmentLine = apartmentLine;
     this.cityName = cityName;
     this.stateName = stateName;
     this.zipCode = zipCode;
-    this.countryName = countryName;
+    this.countryName = countryName.name();
   }
 
   public String getStreet() {
@@ -74,7 +76,13 @@ public class Address {
     pntt.setValue(cityName);
     sat.setLocationCityName(pntt);
     CountryCodeType cct = new CountryCodeType();
-    cct.setValue(countryName);
+    try {
+      cct.setValue(CountryCodeSimpleType.fromValue(countryName));
+    } catch (IllegalArgumentException ex) {
+      System.err.println("DevOps ERROR:" + ex); 
+      // Default to US
+      cct.setValue(CountryCodeSimpleType.US);
+    }
     sat.setLocationCountry(niemObjFac.createLocationCountryFIPS104Code(cct));
     sat.setLocationPostalCode(XmlHelper.convertString(zipCode)); 
     gov.niem.niem.niem_core._2.AddressType at = niemObjFac.createAddressType();
