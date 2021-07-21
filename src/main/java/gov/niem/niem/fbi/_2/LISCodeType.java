@@ -41,8 +41,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 public class LISCodeType {
 
     @XmlValue
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String value;
+    protected LISCodeSimpleType value;
     @XmlAttribute(name = "id", namespace = "http://niem.gov/niem/structures/2.0")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
@@ -62,10 +61,10 @@ public class LISCodeType {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link LISCodeSimpleType }
      *     
      */
-    public String getValue() {
+    public LISCodeSimpleType getValue() {
         return value;
     }
 
@@ -74,10 +73,10 @@ public class LISCodeType {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link LISCodeSimpleType }
      *     
      */
-    public void setValue(String value) {
+    public void setValue(LISCodeSimpleType value) {
         this.value = value;
     }
 

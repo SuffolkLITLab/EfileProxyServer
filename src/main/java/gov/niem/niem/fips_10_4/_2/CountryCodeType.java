@@ -41,8 +41,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 public class CountryCodeType {
 
     @XmlValue
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String value;
+    protected CountryCodeSimpleType value;
     @XmlAttribute(name = "id", namespace = "http://niem.gov/niem/structures/2.0")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
@@ -62,10 +61,10 @@ public class CountryCodeType {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link CountryCodeSimpleType }
      *     
      */
-    public String getValue() {
+    public CountryCodeSimpleType getValue() {
         return value;
     }
 
@@ -74,10 +73,10 @@ public class CountryCodeType {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link CountryCodeSimpleType }
      *     
      */
-    public void setValue(String value) {
+    public void setValue(CountryCodeSimpleType value) {
         this.value = value;
     }
 
