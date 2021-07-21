@@ -5,6 +5,7 @@ import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
+import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.TextType;
 import java.io.File;
@@ -423,7 +424,7 @@ public final class EfmClient {
     contact.setLastName("Cormact");
     contact.setEmail("bwilley@suffolk.edu");
     contact.setAdministrativeCopy("bryce.steven.willey@gmail.com");
-    Address address = new Address("893 E Broadway", "", "Boston", "MA", "02127", "US");
+    Address address = new Address("893 E Broadway", "", "Boston", "MA", "02127", CountryCodeSimpleType.US);
     contact.setAddress(address.getAsTylerAddress());
     contact.setIsInFirmMasterList(efmObjFac.createServiceContactTypeIsInFirmMasterList(true));
     contact.setIsPublic(efmObjFac.createServiceContactTypeIsInFirmMasterList(true));
@@ -886,7 +887,7 @@ public final class EfmClient {
 
     // List<Person> plaintiffs, List<Person> defendants,
     // List<FilingDoc> filings) throws SQLException, IOException
-    Address plaintiffAddress = new Address("83 Fake St", "Apt 2", "Boston", "MA", "02125", "US");
+    Address plaintiffAddress = new Address("83 Fake St", "Apt 2", "Boston", "MA", "02125", CountryCodeSimpleType.US);
     Person plaintiff = new Person(new Name("Plaintiff", "Goth"), "fakeemail@example.com", false);
     Person defendant = new Person(new Name("Defendant", "Zombie"), "fakeemail2@example.com", false);
     List<Person> plaintiffs = List.of(plaintiff);
