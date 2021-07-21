@@ -3,6 +3,8 @@ package edu.suffolk.litlab.efspserver;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -92,30 +94,47 @@ public class XsdDownloader {
 
   private String downloadPrefix;
 
-  private void downloadXsdRecurse(final String xsdUrl, final String pastUrl)
+  private String downloadXsdRecurse(final String xsdUrl, final String pastUrl)
       throws IOException, ParserConfigurationException, SAXException, TransformerException {
-
-    String outputFileName = downloadPrefix;
-    if (fileNamesByprocessedUrls.size() > 0) {
-      outputFileName = outputFileName + "-" + fileNamesByprocessedUrls.size();
-    }
-    outputFileName = outputFileName + ".xsd";
-    fileNamesByprocessedUrls.put(xsdUrl, outputFileName);
-    System.out.println("Download " +  xsdUrl + " (past url is " + pastUrl + ")");
 
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     dbf.setNamespaceAware(true);
     DocumentBuilder db = dbf.newDocumentBuilder();
     Document doc = null;
     String workedUrl = "";
+
     try {
+      if (fileNamesByprocessedUrls.containsKey(xsdUrl)) {
+        // Don't actually need to check this!
+        return xsdUrl;
+      }
+      System.out.println("Download " +  xsdUrl + " (past url is " + pastUrl + ")");
       doc = db.parse(xsdUrl);
       workedUrl = xsdUrl;
     } catch (FileNotFoundException ex) {
-      String baseUrl = pastUrl.substring(0, pastUrl.lastIndexOf('/') + 1);
-      doc = db.parse(baseUrl + xsdUrl);
-      workedUrl = baseUrl + xsdUrl;
+      try {
+        workedUrl = normalizeUrl(xsdUrl, pastUrl);
+      } catch (URISyntaxException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+        return null;
+      } 
+      if (fileNamesByprocessedUrls.containsKey(workedUrl)) {
+        // This is also a duplicate of something else we have!
+        return workedUrl;
+      }
+      doc = db.parse(workedUrl); 
     }
+    
+    System.out.println("workedURL: " + workedUrl);
+
+    String outputFileName = downloadPrefix;
+    if (fileNamesByprocessedUrls.size() > 0) {
+      outputFileName = outputFileName + "-" + fileNamesByprocessedUrls.size();
+    }
+    outputFileName = outputFileName + ".xsd";
+    fileNamesByprocessedUrls.put(workedUrl, outputFileName);
+
     processElementRecurse(doc.getDocumentElement(), workedUrl);
 
     File outputFile = new File(outputFileName);
@@ -124,47 +143,43 @@ public class XsdDownloader {
     Source source = new DOMSource(doc);
     Result result = new StreamResult(outputFile);
     tr.transform(source, result);
+    return workedUrl;
+  }
+  
+  private String normalizeUrl(String xsdUrl, final String pastUrl) throws URISyntaxException {
+    String baseUrl = pastUrl.substring(0, pastUrl.lastIndexOf('/') + 1);
+    return new URI(baseUrl + xsdUrl).normalize().toString();
   }
 
   private void processElementRecurse(final Element node, String pastUrl)
       throws IOException, ParserConfigurationException, SAXException, TransformerException {
-    NodeList nl = node.getChildNodes();
-    for (int i = 0, n = nl.getLength(); i < n; i++) {
-      Node childNode = nl.item(i);
+    NodeList nodeList = node.getChildNodes();
+    int len = nodeList.getLength();
+    for (int i = 0; i < len; i++) {
+      Node childNode = nodeList.item(i);
       if (childNode instanceof Element) {
         Element childElement = (Element) childNode;
-        if ("http://www.w3.org/2001/XMLSchema".equals(childElement.getNamespaceURI())
-            && (childElement.getLocalName().equals("import") 
+        String locAttribute = "";
+        if ((childElement.getLocalName().equals("import") 
                 || childElement.getLocalName().equals("include"))) {
-          System.out.println("New Element Found");
-          String schLoc = childElement.getAttribute("schemaLocation");
-          if (!fileNamesByprocessedUrls.containsKey(schLoc)) {
-            downloadXsdRecurse(schLoc, pastUrl);
-            String newLoc = fileNamesByprocessedUrls.get(schLoc);
-            if (newLoc != null) {
-              childElement.setAttribute("schemaLocation", newLoc);
-            }
+          if ("http://www.w3.org/2001/XMLSchema".equals(childElement.getNamespaceURI())) {
+            locAttribute = "schemaLocation";
+          } else if ("http://schemas.xmlsoap.org/wsdl/".equals(childElement.getNamespaceURI())) {
+            locAttribute = "location";
           } else {
-            String newLoc = fileNamesByprocessedUrls.get(schLoc);
-            childElement.setAttribute("schemaLocation", newLoc);
-          }
-        } else if ("http://schemas.xmlsoap.org/wsdl/".equals(childElement.getNamespaceURI())
-            && (childElement.getLocalName().equals("import") 
-                || childElement.getLocalName().equals("include"))) {
-          System.out.println("WSDL Found");
-          String schLoc = childElement.getAttribute("location");
-          if (!fileNamesByprocessedUrls.containsKey(schLoc)) {
-            downloadXsdRecurse(schLoc, pastUrl);
-            String newLoc = fileNamesByprocessedUrls.get(schLoc);
-            if (newLoc != null) {
-              childElement.setAttribute("location", newLoc);
-            }
-          } else {
-            String newLoc = fileNamesByprocessedUrls.get(schLoc);
-            childElement.setAttribute("location", newLoc);
+            System.out.println("ERROR: unknown namespace?: " + childElement.getNamespaceURI());
           }
         } else {
           processElementRecurse(childElement, pastUrl);
+          continue;
+        }
+
+        String schLoc = childElement.getAttribute(locAttribute);
+        System.out.println("New " + locAttribute + " Element Found: " + schLoc);
+        String workedUrl = downloadXsdRecurse(schLoc, pastUrl);
+        String newLoc = fileNamesByprocessedUrls.get(workedUrl);
+        if (newLoc != null) {
+          childElement.setAttribute(locAttribute, newLoc);
         }
       }
     }
