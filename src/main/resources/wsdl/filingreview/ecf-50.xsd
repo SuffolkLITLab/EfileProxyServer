@@ -13,34 +13,13 @@ The limited permissions granted above are perpetual and will not be revoked by O
 
 This document and the information contained herein is provided on an "AS IS" basis and OASIS DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
---><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DocumentResponseMessage-4.0" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:i="http://niem.gov/niem/appinfo/2.0" xmlns:j="http://niem.gov/niem/domains/jxdm/4.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" xmlns:s="http://niem.gov/niem/structures/2.0" targetNamespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DocumentResponseMessage-4.0" version="4.0">
-	<xsd:annotation>
-		<xsd:documentation>DocumentResponseMessage</xsd:documentation>
-		<xsd:appinfo>
-			<i:ConformantIndicator>true</i:ConformantIndicator>
-		</xsd:appinfo>
-	</xsd:annotation>
-	<xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="ecf-20.xsd"/>
-	<xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-21.xsd"/>
-	<xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="ecf-22.xsd"/>
-	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-23.xsd"/>
-	<xsd:import namespace="http://niem.gov/niem/domains/jxdm/4.0" schemaLocation="ecf-24.xsd"/>
-	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="ecf-30.xsd"/>
-	<xsd:complexType name="DocumentResponseMessageType">
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:PaymentReceiptMessage-4.0" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:payment="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:PaymentMessage-4.0" targetNamespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:PaymentReceiptMessage-4.0" version="4.0">
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="ecf-18.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:PaymentMessage-4.0" schemaLocation="ecf-49.xsd"/>
+	<xsd:import namespace="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" schemaLocation="ecf-39.xsd"/>
+	<xsd:element name="PaymentReceiptMessage" type="payment:PaymentMessageType">
 		<xsd:annotation>
-			<xsd:documentation>The court's response to a request for an electronic document in the court's official record. </xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="ecf:QueryResponseMessageType">
-				<xsd:sequence>
-					<xsd:element ref="ecf:Document"/>
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-	<xsd:element name="DocumentResponseMessage" type="DocumentResponseMessageType">
-		<xsd:annotation>
-			<xsd:documentation>The court's response to a request for an electronic document in the court's official record. </xsd:documentation>
+			<xsd:documentation>A receipt to the payment submitted with a filing.</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 </xsd:schema>

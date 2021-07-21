@@ -5,8 +5,8 @@
       <i:ConformantIndicator>true</i:ConformantIndicator>
     </xsd:appinfo>
   </xsd:annotation>
-  <xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-14.xsd"/>
-  <xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="ecf-15.xsd"/>
+  <xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-3.xsd"/>
+  <xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="ecf-4.xsd"/>
   <xsd:complexType name="anyURI">
     <xsd:annotation>
       <xsd:appinfo>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE" xmlns:wrapper="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/MessageWrappers" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsrmp="http://docs.oasis-open.org/ws-rx/wsrmp/200702" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-361-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE">
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/MessageWrappers" schemaLocation="ecf-v5-1.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<message name="GetCourtScheduleRequest">
+		<part element="wrapper:GetCourtScheduleRequest" name="body"/>
+	</message>
+	<message name="GetCourtScheduleResponse">
+		<part element="wrapper:GetCourtScheduleResponse" name="body"/>
+	</message>
+	<message name="NotifyCourtDateRequest">
+		<part element="wrapper:NotifyCourtDateRequest" name="body"/>
+	</message>
+	<message name="NotifyCourtDateResponse">
+		<part element="wrapper:NotifyCourtDateResponse" name="body"/>
+	</message>
+	<message name="ReserveCourtDateRequest">
+		<part element="wrapper:ReserveCourtDateRequest" name="body"/>
+	</message>
+	<message name="ReserveCourtDateResponse">
+		<part element="wrapper:ReserveCourtDateResponse" name="body"/>
+	</message>
+	<message name="ReserveCourtDateSyncResponse">
+		<part element="wrapper:ReserveCourtDateSyncResponse" name="body"/>
+	</message>
+  <message name="GetReturnDateRequest">
+    <part element="wrapper:ReturnDateRequest" name="body"/>
+  </message>
+  <message name="GetReturnDateResponse">
+    <part element="wrapper:ReturnDateResponse" name="body"/>
+  </message>
+	<portType name="CourtSchedulingMDE">
+		<operation name="GetCourtSchedule">
+			<input message="tns:GetCourtScheduleRequest"/>
+			<output message="tns:GetCourtScheduleResponse"/>
+		</operation>
+		<operation name="NotifyCourtDate">
+			<input message="tns:NotifyCourtDateRequest"/>
+			<output message="tns:NotifyCourtDateResponse"/>
+		</operation>
+		<operation name="ReserveCourtDate">
+			<input message="tns:ReserveCourtDateRequest"/>
+			<output message="tns:ReserveCourtDateResponse"/>
+		</operation>
+		<operation name="ReserveCourtDateSync">
+			<input message="tns:ReserveCourtDateRequest"/>
+			<output message="tns:ReserveCourtDateSyncResponse"/>
+		</operation>
+    <operation name="GetReturnDate">
+      <input message="tns:GetReturnDateRequest"/>
+      <output message="tns:GetReturnDateResponse"/>
+    </operation>
+	</portType>
+	<binding name="CourtSchedulingMDESoap" type="tns:CourtSchedulingMDE">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsp:PolicyReference URI="#EFMPolicy"/>
+		<operation name="GetCourtSchedule">
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE/GetCourtSchedule"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="NotifyCourtDate">
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE/NotifyCourtDate"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="ReserveCourtDate">
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE/ReserveCourtDate"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="ReserveCourtDateSync">
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE/ReserveCourtDateSync"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+    <operation name="GetReturnDate">
+      <soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE/GetReturnDate"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+	</binding>
+	<service name="CourtSchedulingMDE">
+		<port binding="tns:CourtSchedulingMDESoap" name="CourtSchedulingMDEPort">
+			<soap:address location="https://localhost/..."/>
+		</port>
+	</service>
+	<wsp:UsingPolicy wsdl:required="true"/>
+	<wsp:Policy wsu:Id="EFMPolicy">
+		<wsp:ExactlyOne>
+			<wsp:All>
+				<wsoma:OptimizedMimeSerialization xmlns:wsoma="http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization"/>
+				<sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:TransportToken>
+							<wsp:Policy>
+								<sp:HttpsToken RequireClientCertificate="false"/>
+							</wsp:Policy>
+						</sp:TransportToken>
+						<sp:AlgorithmSuite>
+							<wsp:Policy>
+								<sp:Basic256/>
+							</wsp:Policy>
+						</sp:AlgorithmSuite>
+						<sp:Layout>
+							<wsp:Policy>
+								<sp:Lax/>
+							</wsp:Policy>
+						</sp:Layout>
+						<sp:IncludeTimestamp/>
+					</wsp:Policy>
+				</sp:TransportBinding>
+				<sp:EndorsingSupportingTokens xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:X509Token sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+							<wsp:Policy>
+								<sp:WssX509V3Token10/>
+							</wsp:Policy>
+						</sp:X509Token>
+					</wsp:Policy>
+				</sp:EndorsingSupportingTokens>
+				<sp:Wss10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:MustSupportRefKeyIdentifier/>
+						<sp:MustSupportRefIssuerSerial/>
+					</wsp:Policy>
+				</sp:Wss10>
+			</wsp:All>
+		</wsp:ExactlyOne>
+	</wsp:Policy>
+</definitions>

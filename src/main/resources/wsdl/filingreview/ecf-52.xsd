@@ -13,51 +13,49 @@ The limited permissions granted above are perpetual and will not be revoked by O
 
 This document and the information contained herein is provided on an "AS IS" basis and OASIS DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
---><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:i="http://niem.gov/niem/appinfo/2.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" xmlns:s="http://niem.gov/niem/structures/2.0" targetNamespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0" version="4.0">
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:RecordDocketingMessage-4.0" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:i="http://niem.gov/niem/appinfo/2.0" xmlns:j="http://niem.gov/niem/domains/jxdm/4.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" xmlns:s="http://niem.gov/niem/structures/2.0" targetNamespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:RecordDocketingMessage-4.0" version="4.0">
 	<xsd:annotation>
-		<xsd:documentation>CoreFilingMessage</xsd:documentation>
+		<xsd:documentation>RecordDocketingMessage</xsd:documentation>
 		<xsd:appinfo>
 			<i:ConformantIndicator>true</i:ConformantIndicator>
 		</xsd:appinfo>
 	</xsd:annotation>
-	<xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="ecf-20.xsd"/>
-	<xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-21.xsd"/>
-	<xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="ecf-22.xsd"/>
-	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-23.xsd"/>
-	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="ecf-30.xsd"/>
-	<xsd:complexType name="CoreFilingMessageType">
+	<xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="ecf-2.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-3.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="ecf-4.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-13.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/domains/jxdm/4.0" schemaLocation="ecf-17.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="ecf-18.xsd"/>
+	<xsd:complexType name="RecordDocketingMessageType">
 		<xsd:annotation>
-			<xsd:documentation>The structure of a Filing including any Payment Information will be documented in this section. This describes the filing transaction between the Filing Assembly MDE and the Filing Review MDE. This information will become part of the Record Docketing between the Filing Review MDE and the Court Record MDE but does not necessarily describe the information that is actually stored in the Court Record.</xsd:documentation>
+			<xsd:documentation>Message resulting from clerk review and edit of a CoreFilingMessage.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="ecf:ElectronicFilingMessageType">
 				<xsd:sequence>
-					<xsd:element ref="nc:Case"/>
-					<xsd:element minOccurs="0" ref="FilingConfidentialityIndicator"/>
-					<xsd:element maxOccurs="unbounded" ref="FilingLeadDocument"/>
-					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="FilingConnectedDocument"/>
+					<xsd:element ref="j:CaseCourt"/>
+					<xsd:element minOccurs="0" ref="nc:CaseTrackingID"/>
+					<xsd:element ref="ecf:ReviewedLeadDocument"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="ecf:ReviewedConnectedDocument"/>
+					<xsd:element minOccurs="0" ref="SealCaseIndicator"/>
+					<xsd:element minOccurs="0" ref="FilingReviewCommentsText"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	<xsd:element name="CoreFilingMessage" type="CoreFilingMessageType">
+	<xsd:element name="FilingReviewCommentsText" type="nc:TextType">
 		<xsd:annotation>
-			<xsd:documentation>The structure of a Filing including any Payment Information will be documented in this section. This describes the filing transaction between the Filing Assembly MDE and the Filing Review MDE. This information will become part of the Record Docketing between the Filing Review MDE and the Court Record MDE but does not necessarily describe the information that is actually stored in the Court Record.</xsd:documentation>
+			<xsd:documentation>Comments provided by the clerk to the court record system during review.</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:element name="FilingConfidentialityIndicator" type="niem-xsd:boolean">
+	<xsd:element name="RecordDocketingMessage" type="RecordDocketingMessageType">
 		<xsd:annotation>
-			<xsd:documentation>Indicator by the filer that something in the message requires sensitive or confidential treatment. (This replaces the former "request to seal" document metadata.)</xsd:documentation>
+			<xsd:documentation>Message resulting from clerk review and edit of a CoreFilingMessage.</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:element name="FilingConnectedDocument" type="ecf:DocumentType">
+	<xsd:element name="SealCaseIndicator" type="niem-xsd:boolean">
 		<xsd:annotation>
-			<xsd:documentation>A document included in a Filing that supports the Document. This document is not separately entered on the docket or register of actions.</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:element name="FilingLeadDocument" type="ecf:DocumentType">
-		<xsd:annotation>
-			<xsd:documentation>The pleading, motion or order that is the main document in a Filing. A Document may have Attachments.</xsd:documentation>
+			<xsd:documentation>Instruction from the clerk to the court record to represent this case as "sealed."</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 </xsd:schema>

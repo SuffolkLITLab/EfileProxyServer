@@ -16,8 +16,8 @@
 	<xsd:import namespace="http://niem.gov/niem/iso_639-3/2.0" schemaLocation="ecf-11.xsd"/>
 	<xsd:import namespace="http://niem.gov/niem/nonauthoritative-code/2.0" schemaLocation="ecf-12.xsd"/>
 	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-13.xsd"/>
-	<xsd:import namespace="http://niem.gov/niem/unece_rec20-misc/2.0" schemaLocation="ecf-16.xsd"/>
-	<xsd:import namespace="http://niem.gov/niem/usps_states/2.0" schemaLocation="ecf-17.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/unece_rec20-misc/2.0" schemaLocation="ecf-14.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/usps_states/2.0" schemaLocation="ecf-15.xsd"/>
 	<xsd:complexType name="ActivityConveyanceAssociationType">
 		<xsd:complexContent>
 			<xsd:extension base="nc:AssociationType">

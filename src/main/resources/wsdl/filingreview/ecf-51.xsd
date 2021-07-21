@@ -13,34 +13,30 @@ The limited permissions granted above are perpetual and will not be revoked by O
 
 This document and the information contained herein is provided on an "AS IS" basis and OASIS DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
---><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FeesCalculationQueryMessage-4.0" xmlns:core="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:i="http://niem.gov/niem/appinfo/2.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" xmlns:s="http://niem.gov/niem/structures/2.0" targetNamespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FeesCalculationQueryMessage-4.0" version="4.0">
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:RecordDocketingCallbackMessage-4.0" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:i="http://niem.gov/niem/appinfo/2.0" xmlns:j="http://niem.gov/niem/domains/jxdm/4.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" xmlns:s="http://niem.gov/niem/structures/2.0" targetNamespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:RecordDocketingCallbackMessage-4.0" version="4.0">
 	<xsd:annotation>
-		<xsd:documentation>FeesCalculationQueryMessage</xsd:documentation>
+		<xsd:documentation>RecordDocketingCallbackMessage</xsd:documentation>
 		<xsd:appinfo>
 			<i:ConformantIndicator>true</i:ConformantIndicator>
 		</xsd:appinfo>
 	</xsd:annotation>
-	<xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="ecf-20.xsd"/>
-	<xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-21.xsd"/>
-	<xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="ecf-22.xsd"/>
-	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-23.xsd"/>
-	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="ecf-30.xsd"/>
-	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0" schemaLocation="ecf-52.xsd"/>
-	<xsd:complexType name="FeesCalculationQueryMessageType">
+	<xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="ecf-2.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-3.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="ecf-4.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-13.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/domains/jxdm/4.0" schemaLocation="ecf-17.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="ecf-18.xsd"/>
+	<xsd:complexType name="RecordDocketingCallbackMessageType">
 		<xsd:annotation>
-			<xsd:documentation>This query is a request for the total amount of court fees required for filing of one or more documents in a case. </xsd:documentation>
+			<xsd:documentation>The message returned from the Court Record MDE to the Filing Review MDE when the functions of entering information onto the docket or register of actions and commiting a filed document(s) to the official court record have been completed, conveying the results of those functions.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexContent>
-			<xsd:extension base="ecf:QueryMessageType">
-				<xsd:sequence>
-					<xsd:element ref="core:CoreFilingMessage"/>
-				</xsd:sequence>
-			</xsd:extension>
+			<xsd:extension base="ecf:ElectronicFilingCallbackMessageType"/>
 		</xsd:complexContent>
 	</xsd:complexType>
-	<xsd:element name="FeesCalculationQueryMessage" type="FeesCalculationQueryMessageType">
+	<xsd:element name="RecordDocketingCallbackMessage" type="RecordDocketingCallbackMessageType">
 		<xsd:annotation>
-			<xsd:documentation>This query is a request for the total amount of court fees required for filing of one or more documents in a case. </xsd:documentation>
+			<xsd:documentation>The message returned from the Court Record MDE to the Filing Review MDE when the functions of entering information onto the docket or register of actions and commiting a filed document(s) to the official court record have been completed, conveying the results of those functions.</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 </xsd:schema>
