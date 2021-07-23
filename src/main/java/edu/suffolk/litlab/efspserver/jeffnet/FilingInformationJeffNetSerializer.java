@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Person;
+import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +34,14 @@ public class FilingInformationJeffNetSerializer extends StdSerializer<FilingInfo
     caseInfo.participants.addAll(info.getPlaintiffs());
     
     SendingMde mde = new SendingMde();
-    mde.ourUrl = "https://suffolk-operating-url.org";
+    mde.ourUrl = ServiceHelpers.BASE_URL; 
     
     Callback callbackObj = new Callback();
     // TODO(brycew): Setup callback/webhook handler
     // TODO(brycew): add this GUID to the database with the email to alert when we get the hook back
     String filingUid = UUID.randomUUID().toString();
     callbackObj.id = filingUid;
-    callbackObj.callbackUrl = "https://suffolk-operating-url.org/DocassembleHook";
+    callbackObj.callbackUrl = ServiceHelpers.REST_CALLBACK_URL.formatted(info.getCourtLocation()); 
 
     gen.writeStartObject();
     gen.writeObjectField("SendingMDELocationID", mde);

@@ -13,5 +13,6 @@ public class Transaction {
   public UUID transactionId;
   public String apiKeyUsed;
   public String caseType;
+  public String courtId;
   public Timestamp submitted;
 }

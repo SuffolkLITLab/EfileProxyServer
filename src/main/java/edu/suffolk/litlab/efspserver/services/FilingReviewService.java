@@ -138,7 +138,7 @@ public class FilingReviewService {
     }
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
-    Result<UUID, ErrorType> result = 
+    Result<List<UUID>, ErrorType> result = 
         filingInterfaces.get(courtId).sendFiling(info);
     if (result.isErr()) {
       return Response.status(500).entity(result.unwrapErrOrElseThrow()).build();
@@ -160,7 +160,7 @@ public class FilingReviewService {
       ud.addToTable(user.getName().getFullName(), user.getId(), 
           phoneNumber, user.getContactInfo().getEmail().orElse(""), 
           result.unwrapOrElseThrow(), filingInterfaces.get(courtId).getApiKey(),
-          info.getCaseType(), ts);
+          info.getCaseType(), courtId, ts);
     } catch (SQLException ex) {
       log.error("Couldn't add info to the database! Logging here for posterity: " 
                 + "%s %s %s %s %s".formatted(user.getName().getFullName(), user.getId(), 

@@ -60,9 +60,7 @@ public class EfspServer {
       CodeUpdater.downloadAll("https://illinois-stage.tylerhost.net", cd);
     }
     
-    Object implementor = new OasisEcfWsCallback();
     String baseLocalUrl = "http://0.0.0.0:9000";
-    String address = baseLocalUrl + "/filingassembly/callbacks/FilingAssemblyMDEPort";
     cd.setAutocommit(true);
     ud.setAutocommit(true);
     sf = new JAXRSServerFactoryBean();
@@ -86,7 +84,6 @@ public class EfspServer {
         new JacksonJsonProvider());
     sf.setProviders(providers);
     sf.setAddress(baseLocalUrl);
-    Endpoint.publish(address, implementor);
     server = sf.create();
   }
   
@@ -145,7 +142,15 @@ public class EfspServer {
         "Jefferson", jeffersonParish);
     
     UserDatabase ud = new UserDatabase(dbUrl, dbPortInt, userDatabaseName);
+    OrgMessageSender sender = new OrgMessageSender();
     EfmRestCallbackInterface callback = new JeffNetRestCallback(ud, new OrgMessageSender());
+
+    Object implementor = new OasisEcfWsCallback(ud, sender);
+    // TODO(brycew): cleaner way to handle baseLocalUrl?
+    String baseLocalUrl = "http://0.0.0.0:9000";
+    String address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT; 
+    Endpoint.publish(address, implementor);
+    
     Map<String, EfmRestCallbackInterface> callbackMap = Map.of("Jefferson", callback);
     
     EfspServer server = new EfspServer(x509Password, dbUrl, dbPortInt, 

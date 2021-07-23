@@ -17,7 +17,7 @@ public class FilingAssemblyMDEPort_FilingAssemblyMDEPort_Server{
 
     protected FilingAssemblyMDEPort_FilingAssemblyMDEPort_Server() throws java.lang.Exception {
         System.out.println("Starting Server");
-        Object implementor = new OasisEcfWsCallback();
+        Object implementor = new Object(); // new OasisEcfWsCallback();
         String address = "https://Illinois-stage.tylerhost.net/efm/FilingAssemblyMDEPort.svc";
         Endpoint.publish(address, implementor);
     }

@@ -58,11 +58,12 @@ public class UserDatabaseTest {
     UUID transactionId = UUID.randomUUID();
     String name = "User1 McUserFace";
     String email = "test@example.com";
+    String courtId = "jefferson";
     String apiKey = "abcdef12345";
     ud.createTableIfAbsent();
     ud.addToTable(name, userId, 
         Optional.empty(), email, transactionId, apiKey,
-        "Motion to File", new Timestamp(System.currentTimeMillis()));
+        "Motion to File", courtId, new Timestamp(System.currentTimeMillis()));
     ud.commit();
     
     Optional<Transaction> transaction = ud.findTransaction(transactionId);
@@ -70,6 +71,7 @@ public class UserDatabaseTest {
     assertEquals(transaction.get().email, email);
     assertTrue(transaction.get().phoneNumber.isEmpty());
     assertEquals(transaction.get().name, name);
+    assertEquals(transaction.get().courtId, courtId);
     
     ud.removeFromTable(transactionId);
     transaction = ud.findTransaction(transactionId);

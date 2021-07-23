@@ -87,7 +87,7 @@ public class OasisEcfFiler implements EfmFilingInterface {
   } 
   
   @Override
-  public Result<UUID, tyler.efm.services.schema.common.ErrorType> sendFiling(
+  public Result<List<UUID>, tyler.efm.services.schema.common.ErrorType> sendFiling(
       FilingInformation stuff) {
     FilingReviewMDEPort filingPort = makeFilingService(this.headersList);
     EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
@@ -112,7 +112,7 @@ public class OasisEcfFiler implements EfmFilingInterface {
       oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory coreObjFac =
           new oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory();
       CoreFilingMessageType cfm = coreObjFac.createCoreFilingMessageType();
-      cfm.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
+      cfm.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
       cfm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
       cfm.setCase(assembledCase.get());
       int seqNum = 0;
@@ -144,14 +144,19 @@ public class OasisEcfFiler implements EfmFilingInterface {
       List<IdentificationType> ids = mrmt.getDocumentIdentification();
       Optional<String> caseId = ids.stream().filter((id) -> {
         TextType text = (TextType) id.getIdentificationCategory().getValue();
-        return text.getValue().toUpperCase().equals("CASEID");
+        return text.getValue().toUpperCase().equals("FILINGID");
       }).map((id) -> id.getIdentificationID().getValue()).findFirst();
       if (caseId.isEmpty()) {
-        log.error("Couldn't get back the case id from Tyler!");
+        log.error("Couldn't get back the filing id from Tyler!");
+        tyler.efm.services.schema.common.ErrorType err = 
+            new tyler.efm.services.schema.common.ErrorType();
+        err.setErrorCode("-1");
+        err.setErrorText("Got it's filed, but no filingId");
+        return Result.err(err);
       }
 
       log.info(XmlHelper.objectToXmlStrOrError(mrmt, MessageReceiptMessageType.class));
-      return Result.ok(UUID.fromString(caseId.get())); 
+      return Result.ok(List.of(UUID.fromString(caseId.get()))); 
     } catch (IOException ex) {
       tyler.efm.services.schema.common.ErrorType err = 
           new tyler.efm.services.schema.common.ErrorType();

@@ -21,6 +21,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.List;
 import java.util.UUID;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -59,7 +60,7 @@ public class JeffNetFiler implements EfmFilingInterface {
   }
   
   @Override
-  public Result<UUID, ErrorType> sendFiling(FilingInformation info) {
+  public Result<List<UUID>, ErrorType> sendFiling(FilingInformation info) {
     
     if (info.getFilings().isEmpty()) {
       ErrorType err = new ErrorType();
@@ -95,7 +96,8 @@ public class JeffNetFiler implements EfmFilingInterface {
       }
       ApiResult result = mapper.readValue(response.body(), ApiResult.class);
       UUID transactionId = UUID.fromString(result.transactionId);
-      return Result.ok(transactionId); 
+      // TODO(brycew): Break this into multiple: https://trello.com/c/QZaUFT2c/38
+      return Result.ok(List.of(transactionId)); 
     } catch (InterruptedException ex) {
       ErrorType err = new ErrorType();
       err.setErrorCode("-1");
