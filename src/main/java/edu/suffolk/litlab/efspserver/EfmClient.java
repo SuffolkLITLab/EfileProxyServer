@@ -639,7 +639,7 @@ public final class EfmClient {
     m.setQuerySubmitter(typ);
     m.setDocumentSubmitter(null); // cof.createEntityPerson(null));
     m.setCaseCourt(XmlHelper.convertCourtType(courtId));
-    m.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
+    m.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
     m.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     FilingListResponseMessageType resp = port.getFilingList(m);
     if (checkErrors(resp)) {
@@ -671,7 +671,7 @@ public final class EfmClient {
     FilingStatusQueryMessageType status = statusObjFac.createFilingStatusQueryMessageType();
     status.setCaseCourt(XmlHelper.convertCourtType(courtId));
     // TODO(brycew): SendingMDELocationID is the running URL of the server
-    status.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
+    status.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
     status.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     status.setDocumentIdentification(XmlHelper.convertId(filingId));
     status.setQuerySubmitter(typ);
@@ -689,7 +689,7 @@ public final class EfmClient {
         new tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory();
     FilingDetailQueryMessageType details = detailObjFac.createFilingDetailQueryMessageType();
     details.setCaseCourt(XmlHelper.convertCourtType(courtId));
-    details.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
+    details.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
     details.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     details.setDocumentIdentification(XmlHelper.convertId(filingId));
     details.setQuerySubmitter(typ);
@@ -708,7 +708,7 @@ public final class EfmClient {
     CancelFilingMessageType cancel = cancelObjFac.createCancelFilingMessageType();
     cancel.setCaseCourt(XmlHelper.convertCourtType(courtId));
     cancel.setDocumentIdentification(XmlHelper.convertId(filingId));
-    cancel.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
+    cancel.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
     cancel.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     cancel.setQuerySubmitter(typ);
     CancelFilingResponseMessageType cancelResp = port.cancelFiling(cancel);
@@ -791,7 +791,7 @@ public final class EfmClient {
     oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory ecfCfmObjFac = 
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory();
     CoreFilingMessageType cfm = ecfCfmObjFac.createCoreFilingMessageType();
-    cfm.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
+    cfm.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
     cfm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     cfm.setCase(assembledCase.get());
     int seqNum = 0;
@@ -824,7 +824,7 @@ public final class EfmClient {
     typ.setEntityRepresentation(elem2);
     feesQuery.setQuerySubmitter(typ);
 
-    feesQuery.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
+    feesQuery.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
     feesQuery.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     feesQuery.setCoreFilingMessage(cfm.get());
     System.err.println(XmlHelper.objectToXmlStrOrError(feesQuery, FeesCalculationQueryMessageType.class));
@@ -936,7 +936,7 @@ public final class EfmClient {
     JAXBElement<IdentificationType> elem =
     of.createOrganizationIdentification(courtId);
     court.setOrganizationIdentification(elem); // TODO(brycew): change this stuff
-    m.setSendingMDELocationID(makeIDType("https://filingassemblymde.com"));
+    m.setSendingMDELocationID(makeIDType(ServiceHelpers.SERVICE_URL)); 
     m.setSendingMDEProfileCode(MDE_PROFILE_CODE); 
     JAXBElement<PersonType> elem2 = of.createEntityPerson(new PersonType()); 
     EntityType typ = new EntityType();

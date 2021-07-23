@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efspserver;
 
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import gov.niem.niem.domains.jxdm._4.CourtType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.IdentificationType;
@@ -217,7 +218,7 @@ public class CodeUpdater {
     court.setOrganizationIdentification(elem);
     m.setCaseCourt(court);
     // TODO(brycew): change this stuff
-    m.setSendingMDELocationID(XmlHelper.convertId("https://filingassemblymde.com"));
+    m.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
     m.setSendingMDEProfileCode(
         "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0");
     JAXBElement<PersonType> elem2 = of.createEntityPerson(new PersonType());

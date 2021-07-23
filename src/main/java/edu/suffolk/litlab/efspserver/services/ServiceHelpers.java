@@ -13,11 +13,26 @@ import javax.xml.ws.BindingProvider;
 
 import edu.suffolk.litlab.efspserver.ClientCallbackHandler;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
+import edu.suffolk.litlab.efspserver.XmlHelper;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
 
 public class ServiceHelpers {
 
   static Map<String, Integer> tylerToHttp;
-  static String SERVICE_URL = "https://filingassemblymde.com";
+  public static String ASSEMBLY_PORT = "/filingassembly/callbacks/FilingAssemblyMDEPort";
+  public static String BASE_URL;
+  public static String SERVICE_URL; 
+  public static String REST_CALLBACK_URL;
+  static {
+    String env_url = System.getenv("CURRENT_URL");
+    if (env_url == null || env_url.isBlank()) {
+      env_url = "filingassemblymde.com:9000";
+    }
+    // TODO(brycew): fix this to be 
+    BASE_URL = "http://" + env_url;
+    SERVICE_URL = BASE_URL + ASSEMBLY_PORT;
+    REST_CALLBACK_URL = BASE_URL + "/courts/%s/filing/status"; 
+  }
 
   /**
    * One of the ways that you can communicate over ECF. For more information, see
@@ -140,5 +155,10 @@ public class ServiceHelpers {
       return Response.status(422).entity(error.getErrorText()).build(); 
     }
     return defaultRespFunc.get();
+  }
+  
+  public static void setupReplys(CaseFilingType reply) {
+    reply.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
+    reply.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
   }
 }
