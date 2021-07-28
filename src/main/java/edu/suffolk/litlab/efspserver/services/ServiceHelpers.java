@@ -1,13 +1,11 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.xml.ws.BindingProvider;
 
@@ -17,7 +15,6 @@ import edu.suffolk.litlab.efspserver.XmlHelper;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
 
 public class ServiceHelpers {
-
   static Map<String, Integer> tylerToHttp;
   public static String ASSEMBLY_PORT = "/filingassembly/callbacks/FilingAssemblyMDEPort";
   public static String BASE_URL;
@@ -64,27 +61,12 @@ public class ServiceHelpers {
     
   }
   
-  public static Optional<TylerUserNamePassword> userCredsFromHeaders(HttpHeaders httpHeaders) {
-    List<String> headers = httpHeaders.getRequestHeader("authorization");
-    if (headers == null || headers.isEmpty()) {
-      headers = httpHeaders.getRequestHeader("Authorization");
-    }
-    
-    if (headers == null || headers.isEmpty()) {
+  public static Optional<TylerUserNamePassword> userCredsFromAuthorization(String userColonPassword) {
+    if (!userColonPassword.contains(":")) {
       return Optional.empty();
     }
-    // TODO(brycew) is this RFC-7235 conforming?
-    String[] parts = headers.get(0).split(" ");
-    if (parts.length != 2 || !parts[0].equals("Basic")) {
-      return Optional.empty();
-    }
-    
-    System.err.println("Parts: " + parts[0] + ", " + parts[1]);
-    System.err.println("Parts 1 contains 27? " + parts[1].indexOf(27));
-    System.err.println("Parts 1 contains 27? " + parts[1].indexOf(39));
-    String creds = new String(Base64.getDecoder().decode(parts[1]));
-    String email = creds.split(":")[0];
-    String password = creds.split(":")[1];
+    String email = userColonPassword.split(":")[0];
+    String password = userColonPassword.split(":")[1];
     return Optional.of(new TylerUserNamePassword(email, password));
   }
 

@@ -69,10 +69,10 @@ public class XsdDownloader {
       System.out.println("Only two parameters: 1--wsdl-url 2--xsds-prefix");
       return;
     }
-    System.out.println(args[0]);
-    System.out.println(args[1]);
     String xsdUrl = args[0];
     String filePrefix = args[1];
+    System.out.println("XsdUrl: " + xsdUrl); 
+    System.out.println("filePrefix: " + filePrefix); 
     XsdDownloader xsdDownloader = new XsdDownloader();
     xsdDownloader.setDownloadPrefix(filePrefix);
     try {

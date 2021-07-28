@@ -25,19 +25,7 @@
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
+            <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
@@ -296,11 +284,28 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>1.2.1</version>
-                    <configuration>
-                        <mainClass>edu.suffolk.litlab.efspserver.XsdDownloader</mainClass>
-                        <!-- mainClass>edu.suffolk.litlab.efspserver.EfmClient</mainClass-->
-                        <!-- mainClass>edu.suffolk.litlab.efspserver.services.EfspServer</mainClass -->
-                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>XsdDownloader</id>
+                            <goals>
+                                <goal>java</goal>
+                            </goals>
+                            <configuration>
+                                <mainClass>edu.suffolk.litlab.efspserver.XsdDownloader</mainClass>
+                                <!-- mainClass>edu.suffolk.litlab.efspserver.EfmClient</mainClass-->
+                                <!-- mainClass>edu.suffolk.litlab.efspserver.services.EfspServer</mainClass -->
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>LoginAddUser</id>
+                            <goals>
+                                <goal>java</goal>
+                            </goals>
+                            <configuration>
+                                <mainClass>edu.suffolk.litlab.efspserver.LoginDatabase</mainClass>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.jacoco</groupId>
@@ -354,6 +359,17 @@
         </pluginManagement>
     </build>
     
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration></configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+    
     <profiles>
         <profile>
         <!-- This profile is used because the Database tests spin up little
@@ -373,6 +389,7 @@
                         <configuration>
                             <excludes>
                                 <exclude>**/UserDatabaseTest.java</exclude>
+                                <exclude>**/LoginDatabaseTest.java</exclude>
                             </excludes>
                         </configuration>
                     </plugin>

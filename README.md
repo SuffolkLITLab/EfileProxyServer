@@ -31,3 +31,12 @@ mvn clean jacoco:prepare-agent verify jacoco:report
 ```
 
 Then, visit the `target/site/jacoco/index.html` file to see the coverage report.
+
+## Making API Tokens
+
+Login to the java docker container, cd to `/usr/src/app`, and run the following, which will
+add a single server to the database.
+
+```
+mvn exec:java@LoginAddUser -Dexec.args="localhostServer true true"
+```

@@ -6,12 +6,12 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 import java.util.List;
 import java.util.UUID;
 
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
-import tyler.efm.services.schema.common.ErrorType;
-
 public interface EfmFilingInterface {
+  
+  public List<String> getCourts();
+  
   /**
    * Actually sends the filing information to the EFM if it can.
    * @param info All of the information, parsed from an InterviewToFilingEntityConverter
@@ -22,20 +22,19 @@ public interface EfmFilingInterface {
    *   about how that split happens, we just need to know the UUIDs for each of the filings
    *   for the callbacks. If it's > 1, should be the same number as the FilingDocs in info
    */
-  public Result<List<UUID>, ErrorType> sendFiling(FilingInformation info);
+  public Result<List<UUID>, FilingError> sendFiling(FilingInformation info, String apiToken);
   
   public void checkFiling(FilingInformation info, InfoCollector collector);
   
   // TODO(brycew): make this a little more independent of HTTP
-  public Response getFilingList(String courtId, HttpHeaders httpHeaders); 
+  public Response getFilingList(String courtId, String apiToken); 
   
-  public Response getFilingStatus(String courtId, String filingId, HttpHeaders httpHeaders);
+  public Response getFilingStatus(String courtId, String filingId, String apiToken);
   
-  public Response getFilingDetails(String courtId, String filingId, HttpHeaders httpHeaders);
+  public Response getFilingDetails(String courtId, String filingId, String apiToken);
   
-  public Response cancelFiling(String courtId, String filingId, HttpHeaders httpHeaders);
+  public Response cancelFiling(String courtId, String filingId, String apiToken);
   
-  // Used if there is some specific API Key that is needed for this interface to work.
-  // Used to save it in the UserDatabase so it can be used by the Callback 
-  public String getApiKey();
+  /** Used to properly verify with the SecurityHub. */
+  public String getOrgName();
 }
