@@ -18,20 +18,19 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import org.apache.cxf.headers.Header;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.EfmUserService;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.IEfmUserService;
 import tyler.efm.services.schema.adduserrolerequest.AddUserRoleRequestType;
-import tyler.efm.services.schema.authenticaterequest.AuthenticateRequestType;
-import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
 import tyler.efm.services.schema.baseresponse.BaseResponseType;
 import tyler.efm.services.schema.changepasswordrequest.ChangePasswordRequestType;
 import tyler.efm.services.schema.changepasswordresponse.ChangePasswordResponseType;
@@ -87,10 +86,15 @@ import tyler.efm.services.schema.userlistresponse.UserListResponseType;
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 public class AdminUserService {
 
+  private static Logger log = 
+      LoggerFactory.getLogger(AdminUserService.class); 
+
   private EfmFirmService firmServiceFactory;
   private EfmUserService userServiceFactory;
+  private SecurityHub security;
   
-  public AdminUserService() {
+  public AdminUserService(SecurityHub security) {
+    this.security = security;
     init();
   }
 
@@ -103,25 +107,23 @@ public class AdminUserService {
 
   @POST
   @Path("/authenticate/")
-  public Response authenticateUser(UserAuth userAuth) {
-    System.out.println("Invoking User Auth for " + userAuth.getUsername());
-    AuthenticateRequestType authReq = new AuthenticateRequestType();
-    authReq.setEmail(userAuth.getUsername());
-    authReq.setPassword(userAuth.getPassword());
-    if (authReq.getPassword() == null || authReq.getPassword().isBlank()) {
-      return Response.status(403, "Password was not provided; you need to send a password").build();
+  public Response authenticateUser(@Context HttpHeaders httpHeaders,
+      String loginInfo) {
+    String apiKey = httpHeaders.getHeaderString("X-API-KEY");
+    if (apiKey == null || apiKey.isBlank()) {
+      log.error("Call didn't pass in an API Key");
+      return Response.status(401).build();
     }
-    IEfmUserService userPort = makeUserPort(userServiceFactory);
-    AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
-    System.out.println(authRes.getError().getErrorText());
-    if (!authRes.getError().getErrorCode().equals("0")) {
-      return Response.status(403, authRes.getError().getErrorText()).build();
+    log.info("Invoking User Auth for " + apiKey); 
+    Optional<String> activeToken = security.login(apiKey, loginInfo);
+    if (activeToken.isPresent()) {
+      return Response.ok(activeToken.get()).build();
     } else {
-      QName qname = new QName("tyler.test.objectToXml", "objectToXml");
-      JAXBElement<AuthenticateResponseType> jax = new JAXBElement<AuthenticateResponseType>(
-          qname, AuthenticateResponseType.class, authRes);
-      return Response.ok(jax.getValue()).build();
+      return Response.status(403).build();
     }
+    //return activeToken
+    //    .map((tok) -> Response.ok(tok).build())
+    //    .orElse(Response.status(403).build());
   }
   
   @GET
@@ -473,8 +475,15 @@ public class AdminUserService {
   }
   
   private Optional<IEfmFirmService> setupFirmPort(HttpHeaders httpHeaders) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromHeaders(httpHeaders);
+    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
+    Optional<String> tylerCreds = security.checkLogin(activeToken, "tyler");
+    if (tylerCreds.isEmpty()) {
+      log.warn("Couldn't checkLogin");
+      return Optional.empty();
+    }
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerCreds.get());
     if (creds.isEmpty()) {
+      log.warn("No creds?");
       return Optional.empty();
     }
 
@@ -485,7 +494,7 @@ public class AdminUserService {
       List<Header> headersList = List.of(creds.get().toHeader());
       ctx.put(Header.HEADER_LIST, headersList);
     } catch (JAXBException ex) {
-      System.err.println(ex.toString());
+      log.warn(ex.toString());
       return Optional.empty();
     }
 
@@ -498,7 +507,12 @@ public class AdminUserService {
    * @return false if setup didn't work, and subsequent service calls will likely fail
    */
   private Optional<IEfmUserService> setupUserPort(HttpHeaders httpHeaders) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromHeaders(httpHeaders);
+    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
+    Optional<String> tylerCreds = security.checkLogin(activeToken, "tyler");
+    if (tylerCreds.isEmpty()) {
+      return Optional.empty();
+    }
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerCreds.get()); 
     if (creds.isEmpty()) {
       return Optional.empty();
     }
@@ -509,7 +523,7 @@ public class AdminUserService {
       List<Header> headersList = List.of(creds.get().toHeader());
       ctx.put(Header.HEADER_LIST, headersList);
     } catch (JAXBException ex) {
-      System.err.println(ex.toString());
+      log.warn(ex.toString());
       return Optional.empty();
     }
 

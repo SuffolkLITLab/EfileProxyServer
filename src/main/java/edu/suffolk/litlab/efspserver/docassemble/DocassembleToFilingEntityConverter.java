@@ -10,7 +10,7 @@ import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
 import edu.suffolk.litlab.efspserver.Person;
-import edu.suffolk.litlab.efspserver.services.ExtractError;
+import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewToFilingEntityConverter;
 import edu.suffolk.litlab.efspserver.services.JsonExtractException;
@@ -30,7 +30,7 @@ public class DocassembleToFilingEntityConverter extends InterviewToFilingEntityC
   }
 
   @Override
-  public Result<FilingInformation, ExtractError> traverseInterview(String interviewContents,
+  public Result<FilingInformation, FilingError> traverseInterview(String interviewContents,
       InfoCollector collector) {
     SimpleModule module = new SimpleModule();
     module.addDeserializer(FilingDoc.class, 
@@ -44,7 +44,7 @@ public class DocassembleToFilingEntityConverter extends InterviewToFilingEntityC
     try {
       FilingInformation info = mapper.readValue(interviewContents, FilingInformation.class);
       if (info == null) {
-        return Result.err(ExtractError.malformedInterview("The interview contents were null"));
+        return Result.err(FilingError.malformedInterview("The interview contents were null"));
       }
       return Result.ok(info);  
     } catch (JsonExtractException ex) {
@@ -52,7 +52,7 @@ public class DocassembleToFilingEntityConverter extends InterviewToFilingEntityC
       return Result.err(ex.getError());
     } catch (JsonProcessingException ex) {
       log.warn("Parsing Exception: " + ex);
-      return Result.err(ExtractError.malformedInterview("JsonParsing Exception: " + ex));
+      return Result.err(FilingError.malformedInterview("JsonParsing Exception: " + ex));
     }
   }
 

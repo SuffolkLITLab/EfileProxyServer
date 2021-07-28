@@ -5,15 +5,15 @@ import com.fasterxml.jackson.core.JsonParser;
 
 public class JsonExtractException extends JsonParseException {
 
-  private ExtractError err;
+  private FilingError err;
   private static final long serialVersionUID = 1L;
 
-  public JsonExtractException(JsonParser p, ExtractError err) {
+  public JsonExtractException(JsonParser p, FilingError err) {
     super(p, err.toString());
     this.err = err;
   }
   
-  public ExtractError getError() {
+  public FilingError getError() {
     return err;
   }
 }

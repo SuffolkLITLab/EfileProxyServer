@@ -1,10 +1,15 @@
-package edu.suffolk.litlab.efspserver;
+package edu.suffolk.litlab.efspserver.ecf;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.hubspot.algebra.Result;
+import edu.suffolk.litlab.efspserver.PaymentFactory;
+import edu.suffolk.litlab.efspserver.Person;
+import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.codes.PartyType;
+import edu.suffolk.litlab.efspserver.services.FilingError;
+import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import gov.niem.niem.iso_4217._2.CurrencyCodeSimpleType;
 import gov.niem.niem.niem_core._2.AmountType;
 import gov.niem.niem.niem_core._2.TextType;
@@ -16,6 +21,7 @@ import javax.xml.bind.JAXBElement;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.CivilCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.CriminalCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.DomesticCaseType;
 import tyler.ecf.extensions.common.FilingAssociationType;
 import tyler.ecf.extensions.common.ProviderChargeType;
@@ -38,10 +44,9 @@ public class EcfCaseTypeFactory {
    * @param defendants List of defendant person objects
    * @param filingIds The UIDs of all of the filings
    * @param paymentId The UID of the tyler payment account, from GetPaymentAccountList
-   * @param jsonDump Misc info, case dependant, from DA
    * @return
    */
-  public Optional<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>> 
+  public Result<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>, FilingError> 
       makeCaseTypeFromTylerCategory(
       String courtLocationId,
       CaseCategory caseCategory,
@@ -52,10 +57,10 @@ public class EcfCaseTypeFactory {
       String paymentId,
       // HACK(brycew): hacky: needed because fee querys put the payment stuff in the tyler Aug
       String queryType, 
-      JsonNode jsonDump
+      InfoCollector collector
   ) throws SQLException {
     if (caseCategory.code.isEmpty()) {
-      return Optional.empty();
+      return Result.err(FilingError.serverError("Server needs to find out caseCategory code"));
     }
     String caseCategoryCode = Integer.toString(caseCategory.code.get());
     JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug = 
@@ -72,7 +77,7 @@ public class EcfCaseTypeFactory {
               // TODO(brycew) from the gson
               new BigDecimal(500.0));
       myCase.getValue().setCaseCategoryText(XmlHelper.convertText(caseCategoryCode)); 
-      return Optional.of(myCase);
+      return Result.ok(myCase);
     } else if (caseCategory.ecfcasetype.equals("DomesticCase")) {
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase = 
           makeDomesticCaseType(
@@ -81,10 +86,10 @@ public class EcfCaseTypeFactory {
               false
               );
       myCase.getValue().setCaseCategoryText(XmlHelper.convertText(caseCategoryCode)); 
-      return Optional.of(myCase);
+      return Result.ok(myCase);
     } else {
       // TODO(brycew): start passing back why we couldn't make a case from this info
-      return Optional.empty();
+      return Result.err(FilingError.serverError("TODO(brycew): why couldn't we make this case?"));
     }
   }
   
@@ -228,4 +233,20 @@ public class EcfCaseTypeFactory {
     return ecfDomesticObjFac.createDomesticCase(d);
   }
   
+  private JAXBElement<CriminalCaseType> makeCriminalCaseType(
+      JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
+      JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug) {
+    // BIG OLD TODO(brycew): make all of the TODO's separate issues/tickets to implement criminal
+    // stuff. There's alot here.
+    // TODO(brycew): support criminal case filings
+    
+    // TODO(brycew): query the vehicletype table to get what vehicle types the court takes
+    // Stuff like "Four Door, 34 PU, Moped, etc.
+    // TODO(brycew): query the vehiclemake table
+    // TODO(brycew): query the vehiclecolor table
+    
+    // TODO(brycew): as well as statuetypes and statute tables. Empty in IL, but Jesus, there are
+    // a lot
+    return null;
+  }
 }

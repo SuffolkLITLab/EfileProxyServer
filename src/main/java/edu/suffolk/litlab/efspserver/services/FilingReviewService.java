@@ -3,10 +3,11 @@ package edu.suffolk.litlab.efspserver.services;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Person;
+import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.UserDatabase;
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,7 +24,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tyler.efm.services.schema.common.ErrorType;
 
 @Path("/filingreview/")
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -32,35 +32,28 @@ public class FilingReviewService {
   private static Logger log = 
       LoggerFactory.getLogger(FilingReviewService.class); 
 
-  private CodeDatabase cd;
   private UserDatabase ud;
   private Map<String, InterviewToFilingEntityConverter> converterMap;
   private Map<String, EfmFilingInterface> filingInterfaces;
   private Map<String, EfmRestCallbackInterface> callbackInterfaces;
+  private SecurityHub security;
   public FilingReviewService(
-      CodeDatabase cd, 
       UserDatabase ud,
       Map<String, InterviewToFilingEntityConverter> converterMap,
       Map<String, EfmFilingInterface> filingInterfaces,
-      Map<String, EfmRestCallbackInterface> callbackInterfaces) {
+      Map<String, EfmRestCallbackInterface> callbackInterfaces,
+      SecurityHub security) {
     this.converterMap = converterMap;
     this.filingInterfaces = filingInterfaces;
     this.callbackInterfaces = callbackInterfaces;
-    this.cd = cd;
     this.ud = ud;
+    this.security = security;
   }
   
   @GET
   @Path("/courts")
   public Response getCourts(@Context HttpHeaders httpHeaders) {
-    // TODO(brycew): login when we don't need tyler stuff?
-    try {
-      List<String> courtIds = cd.getAllLocations();
-      return Response.ok().entity(courtIds).build();
-    } catch (SQLException ex) {
-      return Response.status(500).entity("DevOps Error: Could not connect to database: " 
-        + ex.toString()).build();
-    }
+    return Response.ok(filingInterfaces.keySet().stream().collect(Collectors.toList())).build();
   }
   
   @GET
@@ -71,7 +64,11 @@ public class FilingReviewService {
     if (!filingInterfaces.containsKey(courtId)) {
       return Response.status(404).entity("Cannot send filing to " + courtId).build();
     }
-    return filingInterfaces.get(courtId).getFilingStatus(courtId, filingId, httpHeaders);
+    Optional<String> activeToken = security.checkLogin(httpHeaders.getHeaderString("X-API-KEY"), filingInterfaces.get(courtId).getOrgName());
+    if (activeToken.isEmpty()) {
+      return Response.status(401).entity("Not logged in to file with " + courtId).build();
+    }
+    return filingInterfaces.get(courtId).getFilingStatus(courtId, filingId, activeToken.get());
  }
   
   @GET
@@ -81,7 +78,11 @@ public class FilingReviewService {
     if (!filingInterfaces.containsKey(courtId)) {
       return Response.status(404).entity("Cannot send filing to " + courtId).build();
     }
-    return filingInterfaces.get(courtId).getFilingList(courtId, httpHeaders);
+    Optional<String> activeToken = security.checkLogin(httpHeaders.getHeaderString("X-API-KEY"), filingInterfaces.get(courtId).getOrgName());
+    if (activeToken.isEmpty()) {
+      return Response.status(401).entity("Not logged in to file with " + courtId).build();
+    }
+    return filingInterfaces.get(courtId).getFilingList(courtId, activeToken.get());
   }
   
   @POST
@@ -128,18 +129,23 @@ public class FilingReviewService {
     if (!filingInterfaces.containsKey(courtId)) {
       return Response.status(404).entity("Cannot send filing to " + courtId).build();
     }
+    Optional<String> activeToken = security.checkLogin(httpHeaders.getHeaderString("X-API-KEY"), 
+        filingInterfaces.get(courtId).getOrgName());
+    if (activeToken.isEmpty()) {
+      return Response.status(401).entity("Not logged in to file with " + courtId).build();
+    }
     if (!converterMap.containsKey(mediaType.toString())) {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     } 
-    Result<FilingInformation, ExtractError> maybeInfo = 
+    Result<FilingInformation, FilingError> maybeInfo = 
         converterMap.get(mediaType.toString()).extractEntities(allVars);
     if (maybeInfo.isErr()) {
       return Response.status(400).entity(maybeInfo.unwrapErrOrElseThrow().toJson()).build();
     }
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
-    Result<List<UUID>, ErrorType> result = 
-        filingInterfaces.get(courtId).sendFiling(info);
+    Result<List<UUID>, FilingError> result = 
+        filingInterfaces.get(courtId).sendFiling(info, activeToken.get());
     if (result.isErr()) {
       return Response.status(500).entity(result.unwrapErrOrElseThrow()).build();
     }
@@ -159,7 +165,7 @@ public class FilingReviewService {
     try {
       ud.addToTable(user.getName().getFullName(), user.getId(), 
           phoneNumber, user.getContactInfo().getEmail().orElse(""), 
-          result.unwrapOrElseThrow(), filingInterfaces.get(courtId).getApiKey(),
+          result.unwrapOrElseThrow(), activeToken.get(), 
           info.getCaseType(), courtId, ts);
     } catch (SQLException ex) {
       log.error("Couldn't add info to the database! Logging here for posterity: " 
@@ -209,7 +215,11 @@ public class FilingReviewService {
     if (!filingInterfaces.containsKey(courtId)) {
       return Response.status(404).entity("Cannot send filing to " + courtId).build();
     }
-    return filingInterfaces.get(courtId).getFilingDetails(courtId, filingId, httpHeaders);
+    Optional<String> activeToken = security.checkLogin(httpHeaders.getHeaderString("X-API-KEY"), filingInterfaces.get(courtId).getOrgName());
+    if (activeToken.isEmpty()) {
+      return Response.status(401).entity("Not logged in to file with " + courtId).build();
+    }
+    return filingInterfaces.get(courtId).getFilingDetails(courtId, filingId, activeToken.get());
   }
 
   @DELETE
@@ -219,7 +229,11 @@ public class FilingReviewService {
     if (!filingInterfaces.containsKey(courtId)) {
       return Response.status(404).entity("Cannot send filing to " + courtId).build();
     }
-    return filingInterfaces.get(courtId).cancelFiling(courtId, filingId, httpHeaders);
+    Optional<String> activeToken = security.checkLogin(httpHeaders.getHeaderString("X-API-KEY"), filingInterfaces.get(courtId).getOrgName());
+    if (activeToken.isEmpty()) {
+      return Response.status(401).entity("Not logged in to file with " + courtId).build();
+    }
+    return filingInterfaces.get(courtId).cancelFiling(courtId, filingId, activeToken.get());
   }
   
 }

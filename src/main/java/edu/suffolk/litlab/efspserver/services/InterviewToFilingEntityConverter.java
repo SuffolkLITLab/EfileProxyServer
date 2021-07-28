@@ -5,7 +5,7 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 
 public abstract class InterviewToFilingEntityConverter {
   
-  public Result<FilingInformation, ExtractError> extractEntities(String interviewContents) {
+  public Result<FilingInformation, FilingError> extractEntities(String interviewContents) {
     FailFastCollector collector = new FailFastCollector();
     return traverseInterview(interviewContents, collector);
   }
@@ -15,6 +15,6 @@ public abstract class InterviewToFilingEntityConverter {
     return;
   }
   
-  protected abstract Result<FilingInformation, ExtractError> 
+  protected abstract Result<FilingInformation, FilingError> 
       traverseInterview(String interviewContents, InfoCollector collector);
 }

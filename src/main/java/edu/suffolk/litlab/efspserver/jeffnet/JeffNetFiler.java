@@ -12,6 +12,7 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.EfmFilingInterface;
+import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 
 import java.io.IOException;
@@ -24,26 +25,22 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.util.List;
 import java.util.UUID;
 
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tyler.efm.services.schema.common.ErrorType;
 
 public class JeffNetFiler implements EfmFilingInterface {
   private static Logger log =
       LoggerFactory.getLogger(JeffNetFiler.class);
 
   private URI filingEndpoint;
-  private String apiToken;
   private SimpleModule module;
   
   /** Constructor that takes the URL endpoint of JeffNet to call, and the API token to call it. */
-  public JeffNetFiler(String filingEndpoint, String apiToken) throws URISyntaxException {
+  //TODO(brycew): NEXT remove apiToken from here, pass it through all methods so it's stateless
+  public JeffNetFiler(String filingEndpoint) throws URISyntaxException {
     this.filingEndpoint = new URI(filingEndpoint);
-    this.apiToken = apiToken;
     
     this.module = new SimpleModule();
     module.addSerializer(new FilingInformationJeffNetSerializer(FilingInformation.class));
@@ -55,18 +52,14 @@ public class JeffNetFiler implements EfmFilingInterface {
   }
   
   @Override
-  public String getApiKey() {
-    return apiToken;
+  public String getOrgName() {
+    return "jeffnet";
   }
   
   @Override
-  public Result<List<UUID>, ErrorType> sendFiling(FilingInformation info) {
-    
+  public Result<List<UUID>, FilingError> sendFiling(FilingInformation info, String apiToken) {
     if (info.getFilings().isEmpty()) {
-      ErrorType err = new ErrorType();
-      err.setErrorCode("-1");
-      err.setErrorText("Error: cannot file with no filings ");
-      return Result.err(err);
+      return Result.err(FilingError.serverError("Error: cannot file with no filings"));
     }
     
     ObjectMapper mapper = new ObjectMapper();
@@ -81,7 +74,7 @@ public class JeffNetFiler implements EfmFilingInterface {
       HttpClient client = HttpClient.newBuilder().build();
       HttpRequest request = HttpRequest.newBuilder()
           .POST(HttpRequest.BodyPublishers.ofString(finalStr))
-          .header("X-API-KEY", this.apiToken)
+          .header("X-API-KEY", apiToken)
           .header("Content-type", "application/json")
           .header("Accept", "application/json")
           .uri(this.filingEndpoint)
@@ -89,31 +82,25 @@ public class JeffNetFiler implements EfmFilingInterface {
       HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
       log.info("Got response code: " + response.body() + " " + response.statusCode());
       if (response.statusCode() != 200) {
-        ErrorType err = new ErrorType();
-        err.setErrorCode(Integer.toString(response.statusCode()));
-        err.setErrorText(response.body());
-        return Result.err(err);
+        return Result.err(FilingError.serverError(response.statusCode() + " " + response.body()));
       }
       ApiResult result = mapper.readValue(response.body(), ApiResult.class);
       UUID transactionId = UUID.fromString(result.transactionId);
       // TODO(brycew): Break this into multiple: https://trello.com/c/QZaUFT2c/38
       return Result.ok(List.of(transactionId)); 
     } catch (InterruptedException ex) {
-      ErrorType err = new ErrorType();
-      err.setErrorCode("-1");
-      err.setErrorText("Error getting response from " + this.filingEndpoint + ", " + ex);
-      return Result.err(err);
+      return Result.err(FilingError.serverError("Interrupted getting response from " + this.filingEndpoint + ", " + ex));
     } catch (JsonMappingException ex) {
-      ErrorType err = new ErrorType();
-      err.setErrorCode("-1");
-      err.setErrorText("Error when trying to understand JeffNet's response b/c: " + ex); 
-      return Result.err(err);
+      return Result.err(FilingError.serverError("Couldn't understand JeffNet's response b/c: " + ex));
     } catch (IOException ex) {
-      ErrorType err = new ErrorType();
-      err.setErrorCode("-1");
-      err.setErrorText("Error connecting to " + this.filingEndpoint + ", " + ex);
-      return Result.err(err);
+      return Result.err(FilingError.serverError("Exception connecting to " + this.filingEndpoint + ", " + ex));
     }
+  }
+
+  @Override
+  public List<String> getCourts() {
+    // TODO Auto-generated method stub
+    return null;
   }
 
   @Override
@@ -123,26 +110,26 @@ public class JeffNetFiler implements EfmFilingInterface {
   }
 
   @Override
-  public Response getFilingDetails(String courtId, String filingId, HttpHeaders httpHeaders) {
+  public Response getFilingDetails(String courtId, String filingId, String apiToken) {
     // TODO Auto-generated method stub
     return Response.status(500).build();
   }
 
   @Override
-  public Response cancelFiling(String courtId, String filingId, HttpHeaders httpHeaders) {
+  public Response cancelFiling(String courtId, String filingId, String apiToken) {
     // TODO Auto-generated method stub
     return Response.status(500).build();
   }
 
   
   @Override
-  public Response getFilingList(String courtId, HttpHeaders httpHeaders) {
+  public Response getFilingList(String courtId, String apiToken) {
     // TODO Auto-generated method stub
     return Response.status(500).build();
   }
 
   @Override
-  public Response getFilingStatus(String courtId, String filingId, HttpHeaders httpHeaders) {
+  public Response getFilingStatus(String courtId, String filingId, String apiToken) {
     // TODO Auto-generated method stub
     return Response.status(500).build();
   }

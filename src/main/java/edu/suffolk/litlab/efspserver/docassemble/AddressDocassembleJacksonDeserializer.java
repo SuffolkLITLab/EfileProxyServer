@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.Address;
-import edu.suffolk.litlab.efspserver.services.ExtractError;
+import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
@@ -30,9 +30,9 @@ public class AddressDocassembleJacksonDeserializer extends StdDeserializer<Addre
   }
 
   /** Parses an address from the DA Json Object. Used by Deserializers that include addresses. */
-  public Result<Address, ExtractError> fromNode(JsonNode node, InfoCollector collector) {
+  public Result<Address, FilingError> fromNode(JsonNode node, InfoCollector collector) {
     if (!node.isObject()) {
-      ExtractError err = ExtractError.malformedInterview(
+      FilingError err = FilingError.malformedInterview(
           "Refusing to parse address that isn't a Json Object: " + node.toPrettyString());
       collector.error(err);
       return Result.err(err);
@@ -44,11 +44,11 @@ public class AddressDocassembleJacksonDeserializer extends StdDeserializer<Addre
             member, "part of the address", "text", List.of());
         collector.addRequired(memberVar);
         if (collector.finished()) {
-          return Result.err(ExtractError.missingRequired(memberVar));
+          return Result.err(FilingError.missingRequired(memberVar));
         }
       }
       if (!node.get(member).isTextual()) {
-        ExtractError err = ExtractError.malformedInterview(
+        FilingError err = FilingError.malformedInterview(
             "Refusing to parse an address where the " + member + " isn't text: " 
             + node.toPrettyString());
         collector.error(err);
@@ -70,7 +70,7 @@ public class AddressDocassembleJacksonDeserializer extends StdDeserializer<Addre
       countryCode = CountryCodeSimpleType.fromValue(country);
     } catch (IllegalArgumentException ex) {
       log.error("Country " + country + " isn't a valid country: " + ex);
-      ExtractError err = ExtractError.malformedInterview("Country " + country + " isn't a valid country");
+      FilingError err = FilingError.malformedInterview("Country " + country + " isn't a valid country");
       return Result.err(err);
     }
     Address addr = new Address(address, unit, city, state, zip, countryCode);
@@ -82,7 +82,7 @@ public class AddressDocassembleJacksonDeserializer extends StdDeserializer<Addre
       throws IOException, JsonProcessingException {
     JsonNode node = p.readValueAsTree();
     InfoCollector collector = new FailFastCollector();
-    Result<Address, ExtractError> address = fromNode(node, collector);
+    Result<Address, FilingError> address = fromNode(node, collector);
     if (address.isErr()) {
       throw new JsonExtractException(p, address.unwrapErrOrElseThrow());
     }

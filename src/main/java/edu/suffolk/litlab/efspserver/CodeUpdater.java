@@ -160,8 +160,8 @@ public class CodeUpdater {
   private boolean downloadSystemTables(String baseUrl, CodeDatabase cd, HeaderSigner signer)
       throws SQLException, OperatorCreationException, GeneralSecurityException, CMSException,
       IOException, JAXBException, XMLStreamException {
-    Map<String, String> codeUrls = Map.of("version", "/CodeService/codes/version/", "location",
-        "/CodeService/codes/location/",
+    Map<String, String> codeUrls = Map.of("version", "/CodeService/codes/version/", 
+        "location", "/CodeService/codes/location/",
         // NOTE: the Tyler docs say this is available from `GetPolicy'. That is wrong.
         "error", "/CodeService/codes/error");
     // TODO(brycew): can tell if court codes will differ if they have a Row in Version codes
