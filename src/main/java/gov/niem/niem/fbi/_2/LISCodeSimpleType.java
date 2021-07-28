@@ -876,7 +876,7 @@ public enum LISCodeSimpleType {
     LF,
 
     /**
-     * CHEYENNE & ARAPAHO TRIBES
+     * CHEYENNE &amp; ARAPAHO TRIBES
      * 
      */
     DA,
@@ -1260,7 +1260,7 @@ public enum LISCodeSimpleType {
     SY,
 
     /**
-     * Sac & Fox
+     * Sac &amp; Fox
      * 
      */
     FX,
@@ -2340,7 +2340,7 @@ public enum LISCodeSimpleType {
     DP,
 
     /**
-     * Cambodia (formerly Khmer Republic& Kampuchea)
+     * Cambodia (formerly Khmer Republic &amp; Kampuchea)
      * 
      */
     CJ,

@@ -11,7 +11,7 @@ import edu.suffolk.litlab.efspserver.Address;
 import edu.suffolk.litlab.efspserver.ContactInformation;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.Person;
-import edu.suffolk.litlab.efspserver.services.ExtractError;
+import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
@@ -42,9 +42,9 @@ public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person
   }
 
   /** Parses a person from the Json Object. Used by Deserializers that include people. */
-  public static Result<Person, ExtractError> fromNode(JsonNode node, InfoCollector collector) {
+  public static Result<Person, FilingError> fromNode(JsonNode node, InfoCollector collector) {
     if (!node.isObject()) {
-      ExtractError err = ExtractError.malformedInterview(
+      FilingError err = FilingError.malformedInterview(
               "Refusing to parse person that isn't a Json Object: " + node.toPrettyString());
       collector.error(err);
       return Result.err(err);
@@ -69,7 +69,7 @@ public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person
           phones.add(phone);
         }
       } else {
-        ExtractError err = ExtractError.malformedInterview("phone number needs to be text: " 
+        FilingError err = FilingError.malformedInterview("phone number needs to be text: " 
             + node.get("phone_number").toPrettyString());
         return Result.err(err);
       }
@@ -84,18 +84,18 @@ public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person
       AddressDocassembleJacksonDeserializer deser = 
           new AddressDocassembleJacksonDeserializer(Address.class);
       collector.pushAttributeStack("address");
-      Result<Address, ExtractError> result = deser.fromNode(node.get("address"), collector);
+      Result<Address, FilingError> result = deser.fromNode(node.get("address"), collector);
       collector.popAttributeStack();
       if (result.isErr()) {
-        ExtractError err = result.unwrapErrOrElseThrow();
-        if (err.getType().equals(ExtractError.Type.MissingRequired)) {
+        FilingError err = result.unwrapErrOrElseThrow();
+        if (err.getType().equals(FilingError.Type.MissingRequired)) {
           InterviewVariable var = collector.requestVar("address", 
               "The address of a person", "Address");
           collector.addRequired(var);
           if (collector.finished()) {
             return Result.err(err);
           }
-        }  else {
+        } else {
           return Result.err(err);
         }
       } else {
@@ -110,12 +110,12 @@ public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person
           "name", "The full name of the person", "IndividualName");
       collector.addRequired(var);
       if (collector.finished()) {
-        ExtractError err = ExtractError.missingRequired(var);
+        FilingError err = FilingError.missingRequired(var);
         return Result.err(err);
       }
     }
     if (!node.get("name").isObject()) {
-      ExtractError err = ExtractError.malformedInterview(
+      FilingError err = FilingError.malformedInterview(
           "Can't parse person with name that's not a JSON object: " + node.get("name").toPrettyString());
       return Result.err(err);
     }
@@ -124,7 +124,7 @@ public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person
           "The first name of a person / name of a business", "text");
       collector.addRequired(var);
       if (collector.finished()) {
-        ExtractError err = ExtractError.missingRequired(var);
+        FilingError err = FilingError.missingRequired(var);
         return Result.err(err);
       }
     }
@@ -153,7 +153,7 @@ public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person
       throws IOException, JsonProcessingException {
     JsonNode node = p.readValueAsTree();
     InfoCollector collector = new FailFastCollector();
-    Result<Person, ExtractError> person = fromNode(node, collector); 
+    Result<Person, FilingError> person = fromNode(node, collector); 
     if (person.isErr()) {
       throw new JsonExtractException(p, person.unwrapErrOrElseThrow());
     }

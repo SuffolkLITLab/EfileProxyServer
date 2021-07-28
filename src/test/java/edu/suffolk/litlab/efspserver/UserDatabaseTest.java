@@ -60,7 +60,7 @@ public class UserDatabaseTest {
     String email = "test@example.com";
     String courtId = "jefferson";
     String apiKey = "abcdef12345";
-    ud.createTableIfAbsent();
+    ud.createTablesIfAbsent();
     ud.addToTable(name, userId, 
         Optional.empty(), email, transactionId, apiKey,
         "Motion to File", courtId, new Timestamp(System.currentTimeMillis()));

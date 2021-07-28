@@ -3,31 +3,32 @@ package edu.suffolk.litlab.efspserver.services;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class ExtractError {
+public class FilingError {
   public enum Type {
     MalformedInterview, /// For when the json is somehow not well formed, or just plain wrong
     MissingRequired, /// For when the json doesn't have a member that is needed, like "users"
+    EfmReplyError,
     ServerError
   }
   
   /** Factory function to make an Server Error, with a human-readable description. */
-  public static ExtractError serverError(String description) {
-    return new ExtractError(Type.ServerError, description);
+  public static FilingError serverError(String description) {
+    return new FilingError(Type.ServerError, description);
   }
   
-  public static ExtractError malformedInterview(String description) {
-    return new ExtractError(Type.MalformedInterview, description);
+  public static FilingError malformedInterview(String description) {
+    return new FilingError(Type.MalformedInterview, description);
   }
   
-  public static ExtractError missingRequired(InterviewVariable missingVariable) {
-    return new ExtractError(Type.MissingRequired, "", Optional.of(missingVariable));
+  public static FilingError missingRequired(InterviewVariable missingVariable) {
+    return new FilingError(Type.MissingRequired, "", Optional.of(missingVariable));
   }
   
-  private ExtractError(Type type, String description) {
+  private FilingError(Type type, String description) {
     this(type, description, Optional.empty());
   }
   
-  private ExtractError(Type type, String description, Optional<InterviewVariable> missingVariable) {
+  private FilingError(Type type, String description, Optional<InterviewVariable> missingVariable) {
     this.type = type;
     this.description = description;
     this.missingVariable = missingVariable;
@@ -35,14 +36,14 @@ public class ExtractError {
   
   @Override
   public boolean equals(Object obj) {
-    if (obj == null || !(obj instanceof ExtractError)) {
+    if (obj == null || !(obj instanceof FilingError)) {
       return false;
     }
     if (obj == this) {
       return true;
     }
     
-    ExtractError other = (ExtractError) obj;
+    FilingError other = (FilingError) obj;
     return this.type.equals(other.type) 
         && this.description.equals(other.description)
         && this.missingVariable.equals(other.missingVariable);

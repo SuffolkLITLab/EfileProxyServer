@@ -9,7 +9,7 @@ import com.hubspot.algebra.Result;
 
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
-import edu.suffolk.litlab.efspserver.services.ExtractError;
+import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
@@ -29,9 +29,9 @@ public class FilingDocDocassembleJacksonDeserializer extends StdDeserializer<Fil
   }
   
   /** Parses a filing from the DA Json Object. Used by Deserializers that include filings. */
-  public static Result<FilingDoc, ExtractError> fromNode(JsonNode node, InfoCollector collector) {
+  public static Result<FilingDoc, FilingError> fromNode(JsonNode node, InfoCollector collector) {
     if (!node.isObject()) {
-      ExtractError err = ExtractError.malformedInterview(
+      FilingError err = FilingError.malformedInterview(
               "Refusing to parse filing doc that isn't a Json Object: " + node.toPrettyString());
       collector.error(err);
       return Result.err(err);
@@ -39,13 +39,13 @@ public class FilingDocDocassembleJacksonDeserializer extends StdDeserializer<Fil
     
     try {
       if (!node.has("data_url") || !node.get("data_url").isTextual()) {
-        ExtractError err = ExtractError.malformedInterview(
+        FilingError err = FilingError.malformedInterview(
             "Refusing to parse filing without data_url");
         collector.error(err);
         return Result.err(err);
       }
       if (!node.has("filename") || !node.get("filename").isTextual()) {
-        ExtractError err = ExtractError.malformedInterview(
+        FilingError err = FilingError.malformedInterview(
             "Refusing to parse filing without filename");
         collector.error(err);
         return Result.err(err);
@@ -64,12 +64,12 @@ public class FilingDocDocassembleJacksonDeserializer extends StdDeserializer<Fil
       conn.setRequestMethod("GET");
       InputStream inStream = conn.getInputStream();
       if (inStream == null) {
-        ExtractError err = ExtractError.serverError("Couldn't connect to " + inUrl.toString());
+        FilingError err = FilingError.serverError("Couldn't connect to " + inUrl.toString());
         return Result.err(err);
       }
       return Result.ok(new FilingDoc(fileName, inStream, regActionDesc));
     } catch (IOException ex)  {
-      ExtractError err = ExtractError.serverError("IOException trying to parse data_url: " + ex);
+      FilingError err = FilingError.serverError("IOException trying to parse data_url: " + ex);
       return Result.err(err);
     }
   }
@@ -79,7 +79,7 @@ public class FilingDocDocassembleJacksonDeserializer extends StdDeserializer<Fil
       throws IOException, JsonProcessingException {
     JsonNode node = p.readValueAsTree();
     InfoCollector collector = new FailFastCollector();
-    Result<FilingDoc, ExtractError> doc = fromNode(node, collector); 
+    Result<FilingDoc, FilingError> doc = fromNode(node, collector); 
     if (doc.isErr()) {
       throw new JsonExtractException(p, doc.unwrapErrOrElseThrow());
     }

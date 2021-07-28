@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import edu.suffolk.litlab.efspserver.services.AllWrongCollector;
-import edu.suffolk.litlab.efspserver.services.ExtractError;
+import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import java.util.List;
@@ -35,7 +35,7 @@ public class InfoCollectorTest {
   @Test
   public void testFailFastShouldStopOnErr() {
     FailFastCollector collector = new FailFastCollector();
-    ExtractError err = ExtractError.serverError("fake error");
+    FilingError err = FilingError.serverError("fake error");
     collector.error(err);
     assertTrue(collector.finished());
     assertFalse(collector.okToSubmit());
@@ -70,7 +70,7 @@ public class InfoCollectorTest {
     // If it throws, it's not valid JSON
     mapper.readTree(json);
     
-    collector.error(ExtractError.serverError(""));
+    collector.error(FilingError.serverError(""));
     assertTrue(collector.finished());
   }
 }

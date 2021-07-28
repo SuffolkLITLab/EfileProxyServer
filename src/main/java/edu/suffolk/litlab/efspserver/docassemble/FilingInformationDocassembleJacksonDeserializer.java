@@ -12,7 +12,7 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
-import edu.suffolk.litlab.efspserver.services.ExtractError;
+import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import edu.suffolk.litlab.efspserver.services.JsonExtractException;
@@ -42,7 +42,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     this.classCollector = collector;
   }
 
-  private Result<List<Person>, ExtractError> collectPeople(JsonNode topObj, 
+  private Result<List<Person>, FilingError> collectPeople(JsonNode topObj, 
       String potentialMember, InfoCollector collector) {
     if (!topObj.has(potentialMember)) {
       return Result.ok(List.of());  // Just an empty list: we don't know if it's required
@@ -50,16 +50,16 @@ public class FilingInformationDocassembleJacksonDeserializer
     if (!(topObj.get(potentialMember).isObject()
           && topObj.get(potentialMember).has("elements")
           && topObj.get(potentialMember).get("elements").isArray())) {
-      return Result.err(ExtractError.malformedInterview(
+      return Result.err(FilingError.malformedInterview(
           potentialMember + " isn't an List with an elements array")); 
     }
     List<Person> people = new ArrayList<Person>();
     JsonNode peopleElements = topObj.get(potentialMember).get("elements");
     for (int i = 0; i < peopleElements.size(); i++) {
-      Result<Person, ExtractError> per = 
+      Result<Person, FilingError> per = 
           PersonDocassembleJacksonDeserializer.fromNode(peopleElements.get(i), collector);
       if (per.isErr()) {
-        ExtractError ex = per.unwrapErrOrElseThrow();
+        FilingError ex = per.unwrapErrOrElseThrow();
         log.warn("Person exception: " + ex);
         return Result.err(ex);
       }
@@ -68,13 +68,13 @@ public class FilingInformationDocassembleJacksonDeserializer
     return Result.ok(people);
   }
 
-  public Result<FilingInformation, ExtractError> fromNode(JsonNode node, InfoCollector collector) {
+  public Result<FilingInformation, FilingError> fromNode(JsonNode node, InfoCollector collector) {
     if (!node.isObject()) {
-      ExtractError err = ExtractError.malformedInterview("interview isn't a json object"); 
+      FilingError err = FilingError.malformedInterview("interview isn't a json object"); 
       collector.error(err);
       return Result.err(err);
     }
-    Result<List<Person>, ExtractError> maybeUsers = collectPeople(node, "users", collector);
+    Result<List<Person>, FilingError> maybeUsers = collectPeople(node, "users", collector);
     if (maybeUsers.isErr()) {
       return maybeUsers.mapOk((per) -> null);
     }
@@ -85,7 +85,7 @@ public class FilingInformationDocassembleJacksonDeserializer
           "the side of the matter that current person answering this interview is on",
           "ALPeopleList", List.of());
       collector.addRequired(varExpected);
-      return Result.err(ExtractError.missingRequired(varExpected));
+      return Result.err(FilingError.missingRequired(varExpected));
     }
 
     if (node.has("user_preferred_language") 
@@ -100,13 +100,13 @@ public class FilingInformationDocassembleJacksonDeserializer
           "users[0].email", "Email is required for at least one user", "text", List.of());
       collector.addRequired(var);
       if (collector.finished()) {
-        return Result.err(ExtractError.missingRequired(var));
+        return Result.err(FilingError.missingRequired(var));
       }
     }
       
     log.debug("Got users");
     // CONTINUE(brycew):
-    Result<List<Person>, ExtractError> maybeOthers = collectPeople(node, "other_parties", collector);
+    Result<List<Person>, FilingError> maybeOthers = collectPeople(node, "other_parties", collector);
     if (maybeOthers.isErr()) {
       return maybeOthers.mapOk((ppl) -> null);
     }
@@ -132,7 +132,7 @@ public class FilingInformationDocassembleJacksonDeserializer
           "Whether or the user is the plantiff or petitioner", "boolean", List.of("true", "false"));
       collector.addRequired(var);
       if (collector.finished()) {
-        return Result.err(ExtractError.missingRequired(var));
+        return Result.err(FilingError.missingRequired(var));
       }
     }
     // TODO(brycew): plaintiff and petitioners are both defined. 
@@ -197,30 +197,30 @@ public class FilingInformationDocassembleJacksonDeserializer
     if (!node.has("al_court_bundle")) {
       collector.addRequired(bundleVar);
       if (collector.finished()) {
-        return Result.err(ExtractError.missingRequired(bundleVar));
+        return Result.err(FilingError.missingRequired(bundleVar));
       }
     }
     if (!node.get("al_court_bundle").isObject() || !node.get("al_court_bundle").has("elements")
         || !node.get("al_court_bundle").get("elements").isArray()) {
-      return Result.err(ExtractError.malformedInterview(
+      return Result.err(FilingError.malformedInterview(
           "al_court_bundle should be a JSON object with a elements array (i.e. a python DAList)"));
     }
     JsonNode elems = node.get("al_court_bundle").get("elements");
     if (elems.isEmpty()) {
       collector.addRequired(bundleVar);
       if (collector.finished()) {
-        return Result.err(ExtractError.missingRequired(bundleVar));
+        return Result.err(FilingError.missingRequired(bundleVar));
       }
     }
     for (int i = 0; i < elems.size(); i++) {
-      Result<FilingDoc, ExtractError> fil = FilingDocDocassembleJacksonDeserializer.fromNode(elems.get(i), collector);
+      Result<FilingDoc, FilingError> fil = FilingDocDocassembleJacksonDeserializer.fromNode(elems.get(i), collector);
       if (fil.isOk()) {
         FilingDoc doc = fil.unwrapOrElseThrow();
         doc.setFilingPartyIds(filingPartyIds);
         filingDocs.add(doc);
       } else {
-        ExtractError err = fil.unwrapErrOrElseThrow();
-        if (err.getType().equals(ExtractError.Type.MissingRequired)) {
+        FilingError err = fil.unwrapErrOrElseThrow();
+        if (err.getType().equals(FilingError.Type.MissingRequired)) {
           collector.addRequired(bundleVar); 
           return Result.err(err);
         }
@@ -243,7 +243,7 @@ public class FilingInformationDocassembleJacksonDeserializer
   public FilingInformation deserialize(JsonParser p, DeserializationContext ctxt)
       throws IOException, JsonProcessingException {
     JsonNode node = p.readValueAsTree();
-    Result<FilingInformation, ExtractError> info = fromNode(node, this.classCollector);
+    Result<FilingInformation, FilingError> info = fromNode(node, this.classCollector);
     if (info.isErr()) {
       throw new JsonExtractException(p, info.unwrapErrOrElseThrow());
     }

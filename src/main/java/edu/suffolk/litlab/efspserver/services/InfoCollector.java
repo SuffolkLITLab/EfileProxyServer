@@ -24,7 +24,7 @@ public abstract class InfoCollector {
   
   protected List<InterviewVariable> optionalVars;
   protected List<InterviewVariable> requiredVars;
-  protected Optional<ExtractError> err;
+  protected Optional<FilingError> err;
   protected Stack<String> variableAttributes;
   
   public InfoCollector() {
@@ -34,7 +34,7 @@ public abstract class InfoCollector {
     this.variableAttributes = new Stack<String>();
   }
   
-  public void error(ExtractError err) {
+  public void error(FilingError err) {
     this.err = Optional.of(err);
   }
   

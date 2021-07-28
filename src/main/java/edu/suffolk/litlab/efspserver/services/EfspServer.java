@@ -3,9 +3,13 @@ package edu.suffolk.litlab.efspserver.services;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import edu.suffolk.litlab.efspserver.ClientCallbackHandler;
 import edu.suffolk.litlab.efspserver.CodeUpdater;
+import edu.suffolk.litlab.efspserver.LoginDatabase;
+import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.UserDatabase;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingEntityConverter;
+import edu.suffolk.litlab.efspserver.ecf.OasisEcfFiler;
+import edu.suffolk.litlab.efspserver.ecf.OasisEcfWsCallback;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetFiler;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetRestCallback;
 
@@ -42,6 +46,7 @@ public class EfspServer {
       Map<String, EfmRestCallbackInterface> callbackMap) throws Exception {
     boolean downloadAll = false;
     CodeDatabase cd = new CodeDatabase(dbUrl, dbPort, codeDatabaseName);
+    LoginDatabase ld = new LoginDatabase(dbUrl, dbPort, userDatabaseName);
     try {
       cd.createDbConnection(dbUser, dbPassword);
       if (cd.getAllLocations().size() == 0) {
@@ -49,7 +54,9 @@ public class EfspServer {
         downloadAll = true;
       }
       ud.createDbConnection(dbUser, dbPassword);
-      ud.createTableIfAbsent();
+      ld.createDbConnection(dbUser, dbPassword);
+      ud.createTablesIfAbsent();
+      ld.createTablesIfAbsent();
     } catch (SQLException ex) {
       downloadAll = true;
     }
@@ -63,18 +70,23 @@ public class EfspServer {
     String baseLocalUrl = "http://0.0.0.0:9000";
     cd.setAutocommit(true);
     ud.setAutocommit(true);
+    ld.setAutocommit(true);
+    SecurityHub security = new SecurityHub(ld);
     sf = new JAXRSServerFactoryBean();
     sf.setResourceClasses(AdminUserService.class,
-        FilingReviewService.class);
+        FilingReviewService.class,
+        FirmAttorneyAndServiceService.class);
     // HACK(brycew): cheap DI. Should have something better, but
     // I don't quite understand Spring yet
     ClientCallbackHandler.setX509Password(x509Password);
     sf.setResourceProvider(AdminUserService.class,
-        new SingletonResourceProvider(new AdminUserService()));
+        new SingletonResourceProvider(new AdminUserService(security)));
     cd.createDbConnection(dbUser, dbPassword);
     sf.setResourceProvider(FilingReviewService.class,
         new SingletonResourceProvider(new FilingReviewService(
-            cd, ud, converterMap, filingMap, callbackMap)));
+            ud, converterMap, filingMap, callbackMap, security)));
+    sf.setResourceProvider(FirmAttorneyAndServiceService.class,
+        new SingletonResourceProvider(new FirmAttorneyAndServiceService(security)));
     Map<Object, Object> extensionMappings = new HashMap<Object, Object>();
     extensionMappings.put("xml", MediaType.APPLICATION_XML);
     extensionMappings.put("json", MediaType.APPLICATION_JSON);
@@ -109,10 +121,9 @@ public class EfspServer {
     if (maybeX509Password.isEmpty()) {
       throw new RuntimeException("X509_PASSWORD can't be null. Did you forget to source .env?");
     }
-    Optional<String> maybeJeffersonToken = GetEnv("JEFFERSON_TOKEN");
     Optional<String> maybeJeffersonEndpoint = GetEnv("JEFFERSON_ENDPOINT");
-    if (maybeJeffersonToken.isEmpty() || maybeJeffersonEndpoint.isEmpty()) {
-      throw new RuntimeException("Both JEFFERSON_TOKEN and JEFFERSON_ENDPOINT need to be the "
+    if (maybeJeffersonEndpoint.isEmpty()) {
+      throw new RuntimeException("JEFFERSON_ENDPOINT needs to be the "
             + "defined. Did you forget to source .env?");
     }
     String x509Password = maybeX509Password.get();
@@ -137,9 +148,17 @@ public class EfspServer {
                "text/json", daJsonConverter);
     
     EfmFilingInterface jeffersonParish = new JeffNetFiler(
-        maybeJeffersonEndpoint.get(), maybeJeffersonToken.get());
-    Map<String, EfmFilingInterface> filingMap = Map.of(
-        "Jefferson", jeffersonParish);
+        maybeJeffersonEndpoint.get());
+    Map<String, EfmFilingInterface> filingMap = new HashMap<String, EfmFilingInterface>(); 
+    filingMap.put("Jefferson", jeffersonParish);
+    CodeDatabase cd = new CodeDatabase(dbUrl, dbPortInt, codeDatabaseName);
+    EfmFilingInterface tylerInterface = new OasisEcfFiler(cd);
+    List<String> hardcodedTylerIds = List.of("adams", "alexander", "bond", "boone", "brown", 
+        "bureau", "calhoun", "carroll", "cass", "clay", "cook", 
+        "peoria", "perry", "scott", "washington");
+    for (String courtId : hardcodedTylerIds) {
+      filingMap.put(courtId, tylerInterface);
+    }
     
     UserDatabase ud = new UserDatabase(dbUrl, dbPortInt, userDatabaseName);
     OrgMessageSender sender = new OrgMessageSender();
