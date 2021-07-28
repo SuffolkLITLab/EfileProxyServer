@@ -29,6 +29,8 @@ public abstract class DatabaseInterface {
     this.pgFullUrl = pgFullUrl;
     this.pgDb = pgDb;
   }
+  
+  public abstract void createTablesIfAbsent() throws SQLException;
 
   /**
    * Creates an internally held connection to the database with the given user and
@@ -38,7 +40,7 @@ public abstract class DatabaseInterface {
    * @param  pgPassword           The password for the above user
    * @throws SQLException         if the connection cannot be completed for some
    *                              reason
-   * @throws InterruptedException if it can't connect to the database for some reason
+   * @throws SQLException if it can't connect to the database for some reason
    */
   public void createDbConnection(String pgUser, String pgPassword) throws SQLException {
     if (conn != null) {

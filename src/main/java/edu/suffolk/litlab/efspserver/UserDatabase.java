@@ -33,8 +33,9 @@ public class UserDatabase extends DatabaseInterface {
   }
   
   /** Creates the userdatabase table if it doesn't exist yet. */
-  public void createTableIfAbsent() throws SQLException {
+  public void createTablesIfAbsent() throws SQLException {
     if (conn == null) {
+      log.error("Connection in createTablesIfAbsert wasn't open yet");
       throw new SQLException();
     }
     // TODO(brycew): maybe refactor: constants is useful, but no longer just for code tables
@@ -43,10 +44,7 @@ public class UserDatabase extends DatabaseInterface {
 
     existsSt.setString(1, tableName);
     ResultSet rs = existsSt.executeQuery();
-    boolean next = rs.next();
-    int i = rs.getInt(1);
-    log.info("Result of " + tableName + " existing: " + next + ", " + i);
-    if (!next || i <= 0) { // There's no table! Make one
+    if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
       String createQuery = """ 
            CREATE TABLE %s (
            "user_id" uuid, "name" text, "phone_number" text,
@@ -77,6 +75,7 @@ public class UserDatabase extends DatabaseInterface {
       UUID filingPartyId, Optional<String> phoneNumber, String email, 
       UUID transactionId, String apiKeyUsed, String caseType, String courtId, Timestamp submitted) throws SQLException {
     if (conn == null) {
+      log.error("Connection in addToTable wasn't open yet!");
       throw new SQLException();
     }
     String insertIntoTable = """

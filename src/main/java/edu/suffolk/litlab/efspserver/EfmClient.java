@@ -1,9 +1,13 @@
 package edu.suffolk.litlab.efspserver;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
+import edu.suffolk.litlab.efspserver.ecf.EcfCaseTypeFactory;
+import edu.suffolk.litlab.efspserver.services.FailFastCollector;
+import edu.suffolk.litlab.efspserver.services.FilingError;
+import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 import gov.niem.niem.niem_core._2.EntityType;
@@ -780,12 +784,13 @@ public final class EfmClient {
       String paymentId, String queryType) throws SQLException, IOException {
     EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
 
-    Optional<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>> assembledCase = ecfCaseFactory
+    InfoCollector collector = new FailFastCollector();
+    Result<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>, FilingError> assembledCase = ecfCaseFactory
         .makeCaseTypeFromTylerCategory(courtLocationId, caseCategoryCode, caseType, caseSubtype,
             plaintiffs, defendants,
             filingDocs.stream().map((f) -> f.getIdString()).collect(Collectors.toList()), paymentId, queryType,
-            JsonNodeFactory.instance.objectNode());
-    if (assembledCase.isEmpty()) {
+            collector);
+    if (assembledCase.isErr()) {
       return Optional.empty();
     }
     oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory ecfCfmObjFac = 
@@ -793,7 +798,7 @@ public final class EfmClient {
     CoreFilingMessageType cfm = ecfCfmObjFac.createCoreFilingMessageType();
     cfm.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
     cfm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
-    cfm.setCase(assembledCase.get());
+    cfm.setCase(assembledCase.unwrapOrElseThrow());
     int seqNum = 0;
     for (FilingDoc filingDoc : filingDocs) {
       if (filingDoc.isLead()) {

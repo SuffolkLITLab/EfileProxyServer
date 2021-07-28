@@ -43,6 +43,11 @@ public class CodeDatabase extends DatabaseInterface {
   public CodeDatabase(String pgFullUrl, String pgDb) {
     super(pgFullUrl, pgDb);
   }
+  
+  public void createTablesIfAbsent() throws SQLException {
+    // TODO(brycew): no-op? 
+    
+  }
 
   public void createTableIfAbsent(String tableName) throws SQLException {
     if (conn == null) {
