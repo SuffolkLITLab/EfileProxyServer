@@ -45,7 +45,7 @@ public class LoginDatabaseTest {
 
     assertTrue(ld.checkLogin(null, null).isEmpty());
     assertTrue(ld.checkLogin(jeffNetOnly, "jeffnet").isEmpty());
-    assertTrue(ld.login("fakeToken", "", okFunctions).isEmpty());
+    assertTrue(ld.login("fakeKey", "", okFunctions).isEmpty());
     
     Optional<String> activeCantDoAnything = ld.login(cantDoAnything, "{}", okFunctions);
     assertTrue(activeCantDoAnything.isPresent());

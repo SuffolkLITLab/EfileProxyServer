@@ -91,12 +91,7 @@ public class UserDatabase extends DatabaseInterface {
     insertSt.setObject(1, filingPartyId);
     insertSt.setString(2, name);
     String phone = phoneNumber.orElse(null); 
-    try {
-      insertSt.setString(3, phone);
-    } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    insertSt.setString(3, phone);
     insertSt.setString(4, email);
     insertSt.setObject(5, transactionId);
     insertSt.setString(6, apiKeyUsed);

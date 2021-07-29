@@ -24,6 +24,10 @@ import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import tyler.efm.services.EfmFirmService;
@@ -109,21 +113,28 @@ public class AdminUserService {
   @Path("/authenticate/")
   public Response authenticateUser(@Context HttpHeaders httpHeaders,
       String loginInfo) {
-    String apiKey = httpHeaders.getHeaderString("X-API-KEY");
-    if (apiKey == null || apiKey.isBlank()) {
-      log.error("Call didn't pass in an API Key");
+    ObjectMapper mapper = new ObjectMapper();
+    String apiKey;
+    try {
+      JsonNode node = mapper.readTree(loginInfo);
+      if (!node.isObject() || !node.has("api_key") || !node.get("api_key").isTextual()) {
+        log.error("Call didn't pass in an api_key in the auth call");
+        return Response.status(401).build();
+      }
+      apiKey = node.get("api_key").asText();
+    } catch (JsonProcessingException e) {
+      log.error(e.toString()); 
       return Response.status(401).build();
     }
-    log.info("Invoking User Auth for " + apiKey); 
-    Optional<String> activeToken = security.login(apiKey, loginInfo);
-    if (activeToken.isPresent()) {
-      return Response.ok(activeToken.get()).build();
-    } else {
-      return Response.status(403).build();
+    if (apiKey == null || apiKey.isBlank()) {
+      log.error("Call passed in a null / blank api_key");
+      return Response.status(401).build();
     }
-    //return activeToken
-    //    .map((tok) -> Response.ok(tok).build())
-    //    .orElse(Response.status(403).build());
+    log.info("Invoking User Auth for an apiKey"); 
+    Optional<String> activeToken = security.login(apiKey, loginInfo);
+    return activeToken
+        .map((tok) -> Response.ok(tok).build())
+        .orElse(Response.status(403).build());
   }
   
   @GET
