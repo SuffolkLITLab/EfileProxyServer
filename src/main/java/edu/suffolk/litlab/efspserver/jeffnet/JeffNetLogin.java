@@ -10,13 +10,13 @@ public class JeffNetLogin implements LoginInterface {
   
   @Override
   public Optional<String> login(JsonNode loginInfo) {
-    // Just let the user directly pass us the JeffNet Token
+    // Just let the user directly pass us the JeffNet Key 
     if (!loginInfo.isObject()
-        || !loginInfo.has("token")
-        || !loginInfo.get("token").isTextual()) {
+        || !loginInfo.has("key")
+        || !loginInfo.get("key").isTextual()) {
       return Optional.empty();
     }
-    return Optional.of(loginInfo.get("token").asText());
+    return Optional.of(loginInfo.get("key").asText());
   }
 
 }

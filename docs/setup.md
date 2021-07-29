@@ -81,7 +81,7 @@ POSTGRES_PORT=5432
 POSTGRES_CODES_DB=tyler_efm_codes
 POSTGRES_USER_DB=user_sumbissions
 JEFFERSON_ENDPOINT=https://ssl.jpclerkofcourt.us/JeffNetAPI/api/LAForms/CoreFiling
-JEFFERSON_TOKEN=
+JEFFERSON_KEY=
 ```
 
 Copy in `Suffolk.pfx` and `client_sign.properties` (also has the password that is in the .env file)

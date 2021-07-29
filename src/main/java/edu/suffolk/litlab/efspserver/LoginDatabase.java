@@ -25,12 +25,12 @@ public class LoginDatabase extends DatabaseInterface {
   private static Logger log = 
       LoggerFactory.getLogger(LoginDatabase.class); 
   
-  private static final String atRestTable = "at_rest_tokens";
+  private static final String atRestTable = "at_rest_keys";
   private static final String activeTable = "active_tokens";
   
   private static final String atRestCreate = """
            CREATE TABLE %s (
-           "server_id" uuid PRIMARY KEY, "server_name" text, "api_token" text,
+           "server_id" uuid PRIMARY KEY, "server_name" text, "api_key" text,
            "tyler_enabled" boolean, "jeffnet_enabled" boolean, 
            "created" timestamp)""".formatted(atRestTable);
 
@@ -83,11 +83,11 @@ public class LoginDatabase extends DatabaseInterface {
       throw new SQLException();
     }
     UUID serverId = UUID.randomUUID();
-    UUID apiToken = UUID.randomUUID();
+    UUID apiKey = UUID.randomUUID();
     Timestamp ts = new Timestamp(System.currentTimeMillis());
     String insertIntoTable = """
                     INSERT INTO %s (
-                        "server_id", "server_name", "api_token", "tyler_enabled",
+                        "server_id", "server_name", "api_key", "tyler_enabled",
                         "jeffnet_enabled", "created"
                     ) VALUES (
                       ?, ?, ?, ?,
@@ -95,37 +95,37 @@ public class LoginDatabase extends DatabaseInterface {
     PreparedStatement insertSt = conn.prepareStatement(insertIntoTable);
     insertSt.setObject(1, serverId);
     insertSt.setString(2, serverName);
-    insertSt.setString(3, apiToken.toString());
+    insertSt.setString(3, apiKey.toString());
     insertSt.setBoolean(4, tylerEnabled);
     insertSt.setBoolean(5, jeffNetEnabled);
     insertSt.setTimestamp(6, ts);
     insertSt.executeUpdate();
-    return apiToken.toString();
+    return apiKey.toString();
   }
   
   /** 
    * Actually completes the REST client's login to the server. Completes each login to the 
    * EFMFiling Interfaces separately.
    *
-   * @apiToken The api token that the server can use for logging in
+   * @apiKey The api key that the server can use for logging in
    * @param jsonLoginInfo The JSON string with login info for whatever modules it's wants to login to
    * @return The new API Token that the REST client should now send to the Server
    */
-  public Optional<String> login(String apiToken, String jsonLoginInfo, Map<String, Function<JsonNode, Optional<String>>> loginFunctions) throws SQLException {
+  public Optional<String> login(String apiKey, String jsonLoginInfo, Map<String, Function<JsonNode, Optional<String>>> loginFunctions) throws SQLException {
     if (conn == null) {
       log.error("Connection in login wasn't open yet!");
       throw new SQLException();
     }
-    String query = "SELECT server_id, server_name, api_token, tyler_enabled, "
+    String query = "SELECT server_id, server_name, api_key, tyler_enabled, "
         + " jeffnet_enabled, created"
         + " FROM " + atRestTable
-        + " WHERE api_token = ?";
+        + " WHERE api_key = ?";
 
     PreparedStatement st = conn.prepareStatement(query);
-    st.setString(1, apiToken);
+    st.setString(1, apiKey);
     ResultSet rs = st.executeQuery();
     if (!rs.next()) {
-      log.warn("API Token not present in at rest: " + apiToken);
+      log.warn("API Key not present in at rest: " + apiKey);
       return Optional.empty();
     }
     UUID serverId = (UUID) rs.getObject(1);
@@ -159,6 +159,9 @@ public class LoginDatabase extends DatabaseInterface {
       Iterator<String> orgs = loginInfo.fieldNames();
       while (orgs.hasNext()) {
         String orgName = orgs.next().toLowerCase();
+        if (orgName.equals("api_key")) {
+          continue;
+        }
         if (!loginFunctions.containsKey(orgName) 
             || !enabled.containsKey(orgName)
             || !enabled.get(orgName)) {
@@ -266,7 +269,7 @@ public class LoginDatabase extends DatabaseInterface {
         Integer.parseInt(System.getenv("POSTGRES_PORT")), System.getenv("POSTGRES_USER_DB"));
     ld.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
     ld.setAutocommit(true);
-    String newApiToken = ld.addNewUser(serverName, Boolean.parseBoolean(tylerEnabled), Boolean.parseBoolean(jeffnetEnabled));
-    System.out.println("New Api Token for " + serverName + ": " + newApiToken);
+    String newApiKey = ld.addNewUser(serverName, Boolean.parseBoolean(tylerEnabled), Boolean.parseBoolean(jeffnetEnabled));
+    System.out.println("New Api Key for " + serverName + ": " + newApiKey);
   }
 }

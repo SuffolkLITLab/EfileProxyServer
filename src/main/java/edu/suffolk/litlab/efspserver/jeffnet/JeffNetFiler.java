@@ -37,8 +37,7 @@ public class JeffNetFiler implements EfmFilingInterface {
   private URI filingEndpoint;
   private SimpleModule module;
   
-  /** Constructor that takes the URL endpoint of JeffNet to call, and the API token to call it. */
-  //TODO(brycew): NEXT remove apiToken from here, pass it through all methods so it's stateless
+  /** Constructor that takes the URL endpoint of JeffNet to call */
   public JeffNetFiler(String filingEndpoint) throws URISyntaxException {
     this.filingEndpoint = new URI(filingEndpoint);
     

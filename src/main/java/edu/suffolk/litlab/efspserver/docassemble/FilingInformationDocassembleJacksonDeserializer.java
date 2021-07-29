@@ -222,8 +222,8 @@ public class FilingInformationDocassembleJacksonDeserializer
         FilingError err = fil.unwrapErrOrElseThrow();
         if (err.getType().equals(FilingError.Type.MissingRequired)) {
           collector.addRequired(bundleVar); 
-          return Result.err(err);
-        }
+        } 
+        return Result.err(err);
       }
     }
     if (node.has("comments_to_clerk") 
