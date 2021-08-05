@@ -3,6 +3,8 @@ target/
 Compiled class file
 *.class
 
+*.key
+
 # Log file
 *.log
 
