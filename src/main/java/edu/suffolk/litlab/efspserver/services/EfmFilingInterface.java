@@ -35,6 +35,13 @@ public interface EfmFilingInterface {
   
   public Response cancelFiling(String courtId, String filingId, String apiToken);
   
+  /** TYLER ONLY at the moment: returns a list of disclaimers that must be shown to the user
+   * before filing.
+   * @param courtId The court location Id where the filing is taking place
+   * @return A response, that has a JSON list of the disclaimer information (code, name, listorder, text)
+   */
+  public Response disclaimers(String courtId);
+  
   /** Used to properly verify with the SecurityHub. */
   public String getOrgName();
 }

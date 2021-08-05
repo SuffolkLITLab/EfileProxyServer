@@ -9,12 +9,18 @@ import java.util.function.Supplier;
 import javax.ws.rs.core.Response;
 import javax.xml.ws.BindingProvider;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.suffolk.litlab.efspserver.ClientCallbackHandler;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
 
 public class ServiceHelpers {
+  private static Logger log = LoggerFactory.getLogger(
+      ServiceHelpers.class);
+
   static Map<String, Integer> tylerToHttp;
   public static String ASSEMBLY_PORT = "/filingassembly/callbacks/FilingAssemblyMDEPort";
   public static String BASE_URL;
@@ -87,7 +93,7 @@ public class ServiceHelpers {
   /** Returns true on errors from the Tyler / Admin side of the API. */
   public static boolean checkErrors(tyler.efm.services.schema.common.ErrorType error) {
     if (!error.getErrorCode().equals("0")) {
-      System.err.println("Error!: " + error.getErrorCode() + ": " + error.getErrorText());
+      log.error("Error!: " + error.getErrorCode() + ": " + error.getErrorText());
       return true;
     }
     return false;
@@ -97,7 +103,7 @@ public class ServiceHelpers {
   public static boolean checkErrors(
       oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType error) {
     if (error.getErrorCode() != null && !error.getErrorCode().getValue().equals("0")) {
-      System.err.println("Error!: " + error.getErrorCode().getValue() 
+      log.error("Error!: " + error.getErrorCode().getValue() 
           + ": " + error.getErrorText());
       return true;
     }

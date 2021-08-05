@@ -4,6 +4,8 @@ import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 public class FilingInformation {
   private String courtLocationId;
   private List<Person> plaintiffs;
@@ -15,6 +17,8 @@ public class FilingInformation {
   private String caseSubtype;
   private List<FilingDoc> filingDocs;
   private String paymentId;
+  
+  private JsonNode miscInfo;
   
   /** Gets all of the peole who are listed by filer ids in the filing docs.
    * This corresponds to the `users` variable in Docassemble interviews.
@@ -76,6 +80,10 @@ public class FilingInformation {
     return paymentId;
   }
   
+  public JsonNode getMiscInfo() {
+    return miscInfo;
+  }
+  
   public void setCourtLocation(String courtLocationId) {
     this.courtLocationId = courtLocationId;
   }
@@ -106,6 +114,10 @@ public class FilingInformation {
   
   public void setPaymentId(String paymentId) {
     this.paymentId = paymentId;
+  }
+  
+  public void setMiscInfo(JsonNode node) {
+    this.miscInfo = node; 
   }
   
 }

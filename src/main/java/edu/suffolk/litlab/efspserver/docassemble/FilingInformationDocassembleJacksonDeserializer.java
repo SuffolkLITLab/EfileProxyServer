@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,7 +157,46 @@ public class FilingInformationDocassembleJacksonDeserializer
       entities.setDefendants(users);
     }
       
+    // TODO(brycew): this approach is a complete mess, don't know
+    // how to best map LIST onto case categories, ECF is too high level
+    String category_var_name = "tyler_case_category";
+    JsonNode category = node.get(category_var_name);
+    if (category != null && !category.isNull() && category.isTextual()) {
+      // TODO(brycew): stop passing in this case category stuff right now
+      CaseCategory caseCat = new CaseCategory(category.asText(), category.asText());
+      entities.setCaseCategory(caseCat);
+    } else {
+      InterviewVariable var = collector.requestVar(category_var_name, "", "text"); 
+      collector.addRequired(var);
+      if (collector.finished()) {
+        return Result.err(FilingError.missingRequired(var));
+      }
+    }
+    String type_var_name = "tyler_case_type";
+    JsonNode type = node.get(type_var_name);
+    if (type != null && type.isTextual()) {
+      String typeStr = type.asText();
+      entities.setCaseType(typeStr);
+    } else {
+      InterviewVariable var = collector.requestVar(type_var_name,  "", "text");
+      collector.addRequired(var);
+      if (collector.finished()) {
+        return Result.err(FilingError.missingRequired(var));
+      }
+    }
+    String subtype_var_name = "tyler_case_subtype";
+    JsonNode subtype = node.get(subtype_var_name);
+    if (subtype != null && subtype.isTextual()) {
+      String subtypeStr = subtype.asText();
+      entities.setCaseType(subtypeStr);
+    } else {
+      InterviewVariable var = collector.requestVar(subtype_var_name, "TODO(brycew)", "text");
+      collector.addOptional(var);
+      entities.setCaseSubtype("");
+    }
+
     // Get the interview metadablock TODO(brycew): just one for now
+    /*
     JsonNode metadataElems = 
         node.get("interview_metadata").get("elements");
     log.info("Keyset: " + metadataElems.fieldNames());
@@ -180,13 +218,14 @@ public class FilingInformationDocassembleJacksonDeserializer
       }
       if (metadata.has("title") && metadata.get("title").isTextual()) {
         entities.setCaseType(metadata.get("title").asText());
-        if (true /* TODO(brycew): fill in subtype? */) {
+        if (true) { // TODO(brycew): fill in subtype?
           InterviewVariable var = collector.requestVar("case_subtype", "TODO(brycew)", "text");
           collector.addOptional(var);
           entities.setCaseSubtype("");
         }
       }
     }
+    */
       
     List<String> filingPartyIds = users.stream()
         .map((per) -> per.getIdString())    
@@ -235,6 +274,7 @@ public class FilingInformationDocassembleJacksonDeserializer
 
     }
     entities.setFilings(filingDocs);
+    entities.setMiscInfo(node);
       
     return Result.ok(entities);
   }

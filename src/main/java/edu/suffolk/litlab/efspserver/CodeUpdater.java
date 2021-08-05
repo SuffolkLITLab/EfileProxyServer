@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.GeneralSecurityException;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.time.Clock;
@@ -24,20 +23,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.PropertyException;
 import javax.xml.stream.XMLStreamException;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtCodelistType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtPolicyResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingReviewMDEPort;
 import org.apache.cxf.headers.Header;
-import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.operator.OperatorCreationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +71,7 @@ public class CodeUpdater {
     ncToTableName.put("nc:LocationStateName", "state");
     ncToTableName.put("ecf:FilingStatusCode", "filingstatus");
     ncToTableName.put("nc:PersonNameSuffixText", "namesuffix");
-    ncToTableName.put("tyler:DataFieldConfigCode", "datafield");
+    ncToTableName.put("tyler:DataFieldConfigCode", "datafieldconfig");
     ncToTableName.put("ecf:ServiceRecipientID/nc:IdentificationSourceText", "servicetype");
     ncToTableName.put("nc:BinaryLocationURI", "filetype");
     ncToTableName.put("j:/ArrestCharge/j:ArrestLocation/nc:LocationName", "arrestlocation");
@@ -110,7 +107,15 @@ public class CodeUpdater {
     ncToTableName.put("tyler:QuestionCode", "question");
     ncToTableName.put("tyler:AnswerCode", "answer");
   }
+  
+  private String pathToKeystore;
+  private String x509Password;
 
+  public CodeUpdater(String pathToKeystore, String x509Password) {
+    this.pathToKeystore = pathToKeystore;
+    this.x509Password = x509Password;
+  }
+  
   /**
    * https://stackoverflow.com/a/1485730/11416267
    *
@@ -128,29 +133,33 @@ public class CodeUpdater {
   private Duration downloads = Duration.ZERO;
   private Duration updates = Duration.ZERO;
 
-  private boolean downloadAndReadZip(String url, String signedTime, String tableName,
-      String location, CodeDatabase cd) throws JAXBException, SQLException, XMLStreamException {
+  private boolean downloadAndProcessZip(String url, String signedTime, String tableName,
+      String location, Function<InputStream, Boolean> process) {
     Instant startTable = Instant.now(Clock.systemUTC());
     try (InputStream urlStream = getHtml(url, signedTime)) {
       // Write out the zip file
       String zipName = tableName + "_" + location + ".zip";
       FileOutputStream fileOut = new FileOutputStream(zipName);
-      long length = urlStream.transferTo(fileOut);
-      log.info(length + " bytes transfered for " + zipName);
+      urlStream.transferTo(fileOut);
       downloads = downloads.plus(Duration.between(startTable, Instant.now(Clock.systemUTC())));
+
       ZipFile zip = new ZipFile(zipName);
       ZipEntry entry = zip.entries().nextElement();
 
       Instant updateTableLoc = Instant.now(Clock.systemUTC());
-      cd.updateTable(tableName, location, zip.getInputStream(entry));
+      boolean success = process.apply(zip.getInputStream(entry));
       updates = updates.plus(Duration.between(updateTableLoc, Instant.now(Clock.systemUTC())));
       zip.close();
-      // Delete the zip file after processing: no need to have it hanging around.
-      File f = new File(zipName);
-      f.delete();
-      return true;
+      if (success) {
+        // Delete the zip file after processing: no need to have it hanging around.
+        File f = new File(zipName);
+        f.delete();
+        return true;
+      } else {
+        return false;
+      }
     } catch (IOException ex) {
-      // Some system codes (everything but "country", "state", "filingstatus", "datafield",
+      // Some system codes (everything but "country", "state", "filingstatus", "datafieldconfig",
       // and "servicetype") are expected to 500. Not really sure why they give us bad URLs.
       log.warn("Skipping " + url + ", got exception downloading zip: " + ex.toString());
       return false;
@@ -158,8 +167,7 @@ public class CodeUpdater {
   }
 
   private boolean downloadSystemTables(String baseUrl, CodeDatabase cd, HeaderSigner signer)
-      throws SQLException, OperatorCreationException, GeneralSecurityException, CMSException,
-      IOException, JAXBException, XMLStreamException {
+      throws SQLException, IOException, JAXBException, XMLStreamException {
     Map<String, String> codeUrls = Map.of("version", "/CodeService/codes/version/", 
         "location", "/CodeService/codes/location/",
         // NOTE: the Tyler docs say this is available from `GetPolicy'. That is wrong.
@@ -175,18 +183,25 @@ public class CodeUpdater {
 
     Optional<String> signedTime = signer.signedCurrentTime();
     if (signedTime.isEmpty()) {
+      log.error("Couldn't sign the current time: rolling back");
       cd.rollback(sp);
       return false;
-      
     }
+
     for (Map.Entry<String, String> urlSuffix : codeUrls.entrySet()) {
       boolean updateSuccess = false;
-      try {
-        updateSuccess = downloadAndReadZip(baseUrl + urlSuffix.getValue(), signedTime.get(),
-            urlSuffix.getKey(), "", cd);
-      } catch (SQLException ex) {
-        updateSuccess = false;
-      }
+      Function<InputStream, Boolean> process = (is) -> {
+        try {
+          // "0" is used as the system court location.
+          cd.updateTable(urlSuffix.getKey(), "0", is);
+          return true;
+        } catch (Exception e1) {
+          log.error(e1.toString());
+          return false;
+        }
+      }; 
+      updateSuccess = downloadAndProcessZip(baseUrl + urlSuffix.getValue(), signedTime.get(),
+          urlSuffix.getKey(), "", process);
       if (!updateSuccess) {
         cd.rollback(sp);
         return false;
@@ -204,11 +219,10 @@ public class CodeUpdater {
    * @param signer
    * @param conn
    */
-  private void downloadCourtTables(String location, Optional<List<String>> codes, CodeDatabase cd,
+  private boolean downloadCourtTables(String location, Optional<List<String>> codes, CodeDatabase cd,
       HeaderSigner signer, FilingReviewMDEPort filingPort)
-      throws JAXBException, OperatorCreationException, IOException, SQLException,
-      XMLStreamException, GeneralSecurityException, CMSException {
-    log.info("Location: " + location);
+      throws JAXBException, IOException, SQLException {
+    log.debug("Location: " + location);
     // final Instant startLoc = Instant.now(Clock.systemUTC());
     CourtPolicyQueryMessageType m = new CourtPolicyQueryMessageType();
     IdentificationType courtId = XmlHelper.convertId(location);
@@ -236,6 +250,7 @@ public class CodeUpdater {
       if (ncToTableName.containsKey(ecfElem)) {
         String tableName = ncToTableName.get(ecfElem);
         if (codes.isEmpty() || codes.get().contains(tableName)) {
+          boolean updateSuccess = false;
           // TODO(brycew): check that the effective date is later than today
           // JAXBElement<?> obj = ccl.getEffectiveDate().getDateRepresentation();
 
@@ -245,9 +260,22 @@ public class CodeUpdater {
           Optional<String> signedTime = signer.signedCurrentTime();
           if (signedTime.isEmpty()) {
             log.error("Couldn't get signed time to download codeds, skipping all");
-            return;
+            return false;
           }
-          downloadAndReadZip(url, signedTime.get(), tableName, location, cd);
+          
+          Function<InputStream, Boolean> process = (is) -> {
+            try {
+              cd.updateTable(tableName, location, is);
+              return true;
+            } catch (Exception e1) {
+              log.error(e1.toString());
+              return false;
+            }
+          }; 
+          updateSuccess = downloadAndProcessZip(url, signedTime.get(), tableName, location, process);
+          if (!updateSuccess) {
+            return false;
+          }
         }
       } else {
         log.error(ecfElem + " not in the nc map!");
@@ -255,14 +283,12 @@ public class CodeUpdater {
     }
     cd.commit();
     log.info("Downloads took: " + downloads + ", and updates took: " + updates);
+    return true;
   }
 
   public void updateAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
-      throws SQLException, OperatorCreationException, GeneralSecurityException, CMSException,
-      IOException, JAXBException, XMLStreamException {
-    Savepoint sp = cd.setSavePoint("mysavepoint");
-    HeaderSigner signer = new HeaderSigner(
-        System.getenv("PATH_TO_KEYSTORE"), System.getenv("X509_PASSWORD"));
+      throws SQLException, IOException, JAXBException, XMLStreamException {
+    HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
     if (!downloadSystemTables(baseUrl, cd, signer)) {
       log.warn("System tables didn't update, but we needed them "
           + " to actually figure out new versions");
@@ -273,26 +299,28 @@ public class CodeUpdater {
     Map<String, List<String>> versionsToUpdate = cd.getVersionsToUpdate();
     for (Entry<String, List<String>> courtAndTables : versionsToUpdate.entrySet()) {
       String courtLocation = courtAndTables.getKey();
+      Savepoint sp = cd.setSavePoint("court" + courtLocation + "savepoint");
       List<String> tables = courtAndTables.getValue();
-      log.info("Updating court " + courtLocation);
       for (String table : tables) {
-        log.info("Refreshing table " + table + " for court " + courtLocation);
         if (!cd.deleteFromTable(table, courtLocation)) {
           log.warn("Couldn't delete from " + table + " at " + courtLocation + ", aborting");
           cd.rollback(sp);
           return;
         }
       }
-      downloadCourtTables(courtLocation, Optional.of(tables), cd, signer, filingPort);
+      log.info("Removed entries for court " + courtLocation + " for tables: " + tables); 
+      if (!downloadCourtTables(courtLocation, Optional.of(tables), cd, signer, filingPort)) {
+        log.warn("Failed updating court " + courtLocation + "'s tables " + tables);
+        cd.rollback(sp);
+        return;
+      }
     }
     cd.commit();
   }
 
   public void downloadAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
-      throws SQLException, OperatorCreationException, PropertyException, GeneralSecurityException,
-      CMSException, IOException, JAXBException, XMLStreamException {
-    HeaderSigner signer = new HeaderSigner(
-        System.getenv("PATH_TO_KEYSTORE"), System.getenv("X509_PASSWORD"));
+      throws SQLException, IOException, JAXBException, XMLStreamException {
+    HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
     log.info("Downloading system tables");
     downloadSystemTables(baseUrl, cd, signer);
 
@@ -312,9 +340,8 @@ public class CodeUpdater {
     cd.commit();
   }
   
-  public static void downloadAll(String codesSite, CodeDatabase cd) throws JAXBException, OperatorCreationException, 
-      SQLException, GeneralSecurityException, CMSException, IOException, XMLStreamException {
-    cd.setAutocommit(false);
+  public static void executeCommand(String command, String codesSite, CodeDatabase cd) throws JAXBException, 
+      SQLException, IOException, XMLStreamException {
     ClientCallbackHandler.setX509Password(System.getenv("X509_PASSWORD"));
     AuthenticateRequestType authReq = new AuthenticateRequestType();
     authReq.setEmail("bwilley@suffolk.edu");
@@ -326,14 +353,64 @@ public class CodeUpdater {
     List<Header> headersList = TylerUserNamePassword.makeHeaderList(authRes);
     FilingReviewMDEPort filingPort = EfmClient
         .makeFilingService(FilingReviewMDEService.WSDL_LOCATION, headersList);
-    CodeUpdater cu = new CodeUpdater();
-    cu.downloadAll(codesSite, filingPort, cd);
+    if (cd == null) {
+      cd = new CodeDatabase(System.getenv("POSTGRES_URL"), 
+          Integer.parseInt(System.getenv("POSTGRES_PORT")), 
+          System.getenv("POSTGRES_CODES_DB"));
+      cd.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
+    }
+    cd.setAutocommit(false);
+    
+    CodeUpdater cu = new CodeUpdater(System.getenv("PATH_TO_KEYSTORE"), System.getenv("X509_PASSWORD"));
+    if (command.equalsIgnoreCase("downloadall")) {
+      cu.downloadAll(codesSite, filingPort, cd);
+    } else if (command.equals("refresh")) {
+      cu.updateAll(codesSite, filingPort, cd);
+    } else {
+      log.error("Command " + command + " isn't a real command"); 
+    }
   }
-
-  public static void main(String[] args) throws Exception {
+  
+  public static void downloadIndiv(String[] args) throws Exception {
+    if (args.length < 3) {
+      log.error("Need to pass in args: downloadIndiv <table> <location>");
+      System.exit(1);
+    }
     CodeDatabase cd = new CodeDatabase(System.getenv("POSTGRES_URL"), 
         Integer.parseInt(System.getenv("POSTGRES_PORT")), 
         System.getenv("POSTGRES_CODES_DB"));
     cd.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
+    
+    String path = System.getenv("PATH_TO_KEYSTORE");
+    String pass = System.getenv("X509_PASSWORD");
+    CodeUpdater cu = new CodeUpdater(path, pass);
+    HeaderSigner hs = new HeaderSigner(path, pass);
+    String location = args[2];
+    String table = args[1];
+    cu.downloadAndProcessZip("https://illinois-stage.tylerhost.net/CodeService/codes/" + table + "/" + location, hs.signedCurrentTime().get(), 
+          table, location, (in) -> {
+            String newFile = location.replace(':', '_') + "_" + table + "_test.xml";
+            try {
+              FileOutputStream fw = new FileOutputStream(newFile);
+              fw.write(in.readAllBytes());
+              fw.close();
+            } catch (IOException e) {
+              log.error(e.toString());
+              return false;
+            }
+            return true;
+          });
+  }
+
+  public static void main(String[] args) throws Exception {
+    if (args.length < 1) {
+      log.error("Need to pass in a subprogram: downloadIndiv, or refresh");
+      System.exit(1);
+    }
+    if (args[0].equals("downloadIndiv")) {
+      downloadIndiv(args);
+    } else { 
+      executeCommand(args[0], "https://illinois-stage.tylerhost.net/", null);
+    }
   }
 }

@@ -1,8 +1,5 @@
 package edu.suffolk.litlab.efspserver;
 
-import gov.niem.niem.niem_core._2.ContactInformationType;
-import gov.niem.niem.niem_core._2.FullTelephoneNumberType;
-import gov.niem.niem.niem_core._2.TelephoneNumberType;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,25 +32,5 @@ public class ContactInformation {
   
   public Optional<Address> getAddress() {
     return address;
-  }
-
-  /** Gets the ECF XML for contact information. */
-  public ContactInformationType getEcfContactInformation() {
-    final gov.niem.niem.niem_core._2.ObjectFactory niemObjFac = 
-        new gov.niem.niem.niem_core._2.ObjectFactory();
-
-    ContactInformationType cit = niemObjFac.createContactInformationType();
-    address.ifPresent((addr) -> cit.getContactMeans().add(addr.getAsNiemContactMeans()));
-    for (String phoneNumber : phoneNumbers) {
-      TelephoneNumberType tnt = niemObjFac.createTelephoneNumberType();
-      FullTelephoneNumberType ftnt = niemObjFac.createFullTelephoneNumberType();
-      ftnt.setTelephoneNumberFullID(XmlHelper.convertString(phoneNumber));
-      tnt.setTelephoneNumberRepresentation(niemObjFac.createFullTelephoneNumber(ftnt));
-      cit.getContactMeans().add(niemObjFac.createContactTelephoneNumber(tnt));
-    }
-    email.ifPresent((em) -> {
-      cit.getContactMeans().add(niemObjFac.createContactEmailID(XmlHelper.convertString(em))); 
-    });
-    return cit;
   }
 }

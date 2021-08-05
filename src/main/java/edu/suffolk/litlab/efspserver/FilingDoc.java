@@ -176,12 +176,14 @@ public class FilingDoc {
     DocumentAttachmentType attachment = oasisObjFac.createDocumentAttachmentType();
     attachment.setBinaryDescriptionText(XmlHelper.convertText(fileName)); 
     attachment.setBinaryCategoryText(XmlHelper.convertText(binaryCategoryComponent));
+    
+    
     attachment.setBinaryFormatStandardName(XmlHelper.convertText(documentTypeFormatStandardName));
     if (sendInBase64) {
       attachment.setBinaryLocationURI(XmlHelper.convertUri(fileName));
       JAXBElement<Base64Binary> n = 
           niemObjFac.createBinaryBase64Object(XmlHelper.convertBase64(fileContents));
-      System.err.println(XmlHelper.objectToXmlStrOrError(n.getValue(), Base64Binary.class));
+      //System.err.println(XmlHelper.objectToXmlStrOrError(n.getValue(), Base64Binary.class));
       attachment.setBinaryObject(n); 
     } else {
       // TODO(brycew): DO this: make the file downloadable from the Proxy server

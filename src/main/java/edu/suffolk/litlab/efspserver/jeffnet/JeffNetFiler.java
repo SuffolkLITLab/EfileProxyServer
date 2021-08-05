@@ -133,6 +133,12 @@ public class JeffNetFiler implements EfmFilingInterface {
     return Response.status(500).build();
   }
 
+  @Override
+  public Response disclaimers(String courtId) {
+    return Response.ok("[]").build();
+  }
+
+
   private static class ApiResult {
     @JsonProperty("ResultCode")
     int resultCode;

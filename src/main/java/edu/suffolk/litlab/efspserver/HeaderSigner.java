@@ -27,8 +27,12 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HeaderSigner {
+  private static Logger log = 
+      LoggerFactory.getLogger(HeaderSigner.class); 
 
   private static final String SIGNATUREALGO = "SHA256withRSA";
   private final String pathToKeystore; 
@@ -107,13 +111,13 @@ public class HeaderSigner {
           setUpProvider(loadKeyStore()));
       return Optional.of(Base64.getEncoder().encodeToString(signedBytes));
     } catch (GeneralSecurityException ex) {
-      System.err.println("Exception when trying to sign info with a X509 cert: " + ex);
+      log.error("Exception when trying to sign info with a X509 cert: " + ex);
     } catch (OperatorCreationException ex) {
-      System.err.println("Exception when trying to sign info with a X509 cert: " + ex);
+      log.error("Exception when trying to sign info with a X509 cert: " + ex);
     } catch (CMSException ex) {
-      System.err.println("Exception when trying to sign info with a X509 cert: " + ex);
+      log.error("Exception when trying to sign info with a X509 cert: " + ex);
     } catch (IOException ex) {
-      System.err.println("Exception when trying to sign info with a X509 cert: " + ex);
+      log.error("Exception when trying to sign info with a X509 cert: " + ex);
     }
     return Optional.empty();
   }

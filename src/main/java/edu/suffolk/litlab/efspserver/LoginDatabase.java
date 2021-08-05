@@ -30,13 +30,13 @@ public class LoginDatabase extends DatabaseInterface {
   
   private static final String atRestCreate = """
            CREATE TABLE %s (
-           "server_id" uuid PRIMARY KEY, "server_name" text, "api_key" text,
+           "server_id" uuid PRIMARY KEY, "server_name" text, "api_key" text NOT NULL,
            "tyler_enabled" boolean, "jeffnet_enabled" boolean, 
            "created" timestamp)""".formatted(atRestTable);
 
   private static final String activeCreate = """
            CREATE TABLE %s (
-           "server_id" uuid PRIMARY KEY, "active_token" text,
+           "server_id" uuid PRIMARY KEY, "active_token" text NOT NULL,
            "tyler_token" text, "jeffnet_token" text, 
            "expires_at" timestamp)""".formatted(activeTable);
 
@@ -103,6 +103,30 @@ public class LoginDatabase extends DatabaseInterface {
     return apiKey.toString();
   }
   
+  private class AtRest {
+    UUID serverId;
+    Map<String, Boolean> enabled;
+  }
+  
+  private Optional<AtRest> getAtRestInfo(String apiKey) throws SQLException {
+    String query = "SELECT server_id, server_name, api_key, tyler_enabled, "
+        + " jeffnet_enabled, created"
+        + " FROM " + atRestTable
+        + " WHERE api_key = ?";
+
+    PreparedStatement st = conn.prepareStatement(query);
+    st.setString(1, apiKey);
+    ResultSet rs = st.executeQuery();
+    if (!rs.next()) {
+      log.warn("API Key not present in at rest: " + apiKey);
+      return Optional.empty();
+    }
+    AtRest atRest = new AtRest();
+    atRest.serverId = (UUID) rs.getObject(1);
+    atRest.enabled = Map.of("tyler", rs.getBoolean(4), "jeffnet", rs.getBoolean(5));
+    return Optional.of(atRest);
+  }
+  
   /** 
    * Actually completes the REST client's login to the server. Completes each login to the 
    * EFMFiling Interfaces separately.
@@ -116,42 +140,42 @@ public class LoginDatabase extends DatabaseInterface {
       log.error("Connection in login wasn't open yet!");
       throw new SQLException();
     }
-    String query = "SELECT server_id, server_name, api_key, tyler_enabled, "
-        + " jeffnet_enabled, created"
-        + " FROM " + atRestTable
-        + " WHERE api_key = ?";
-
-    PreparedStatement st = conn.prepareStatement(query);
-    st.setString(1, apiKey);
-    ResultSet rs = st.executeQuery();
-    if (!rs.next()) {
-      log.warn("API Key not present in at rest: " + apiKey);
+    Optional<AtRest> atRest = getAtRestInfo(apiKey);
+    if (atRest.isEmpty()) {
       return Optional.empty();
     }
-    UUID serverId = (UUID) rs.getObject(1);
+
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode loginInfo;
+    try {
+      loginInfo = mapper.readTree(jsonLoginInfo);
+    } catch (JsonProcessingException e) {
+      log.error(e.toString());
+      return Optional.empty();
+    }
+
     // Check the other table first:
-    String activeQuery = "SELECT server_id, active_token, expires_at FROM %s WHERE server_id = ?".formatted(activeTable);
+    String activeQuery = "SELECT server_id, active_token, expires_at, tyler_token, jeffnet_token FROM %s WHERE server_id = ?".formatted(activeTable);
     PreparedStatement activeSt = conn.prepareStatement(activeQuery);
-    activeSt.setObject(1, serverId);
+    activeSt.setObject(1, atRest.get().serverId);
     ResultSet activeRs = activeSt.executeQuery();
     if (activeRs.next()) {
       if (isExpired(activeRs.getTimestamp(3))) {
         // Remove from old table, but keep going!
         removeActiveToken(activeRs.getString(2));
       } else {
-        log.info("Returning maybe nullable: " + activeRs.getString(2));
-        return Optional.ofNullable(activeRs.getString(2));
+        String tylerToken = activeRs.getString(4);
+        String jeffNetToken = activeRs.getString(5);
+        if (!(tylerToken == null && loginInfo.has("tyler"))
+            && !(jeffNetToken == null && loginInfo.has("jeffnet"))) {
+          log.info("Returning Existing active token: " + activeRs.getString(2));
+          return Optional.ofNullable(activeRs.getString(2));
+        }
       }
     }
     
-    boolean tylerEnabled = rs.getBoolean(4);
-    boolean jeffNetEnabled = rs.getBoolean(5);
-    // TODO(brycew): kinda hacky, how can this be modulized?
-    Map<String, Boolean> enabled = Map.of("tyler", tylerEnabled, "jeffnet", jeffNetEnabled);
+    // TODO(brycew): the only hacky part, how can this be modulized?
     Map<String, String> newTokens = new HashMap<String, String>();
-    ObjectMapper mapper = new ObjectMapper();
-    try {
-      JsonNode loginInfo = mapper.readTree(jsonLoginInfo);
       if (!loginInfo.isObject()) {
         log.error("Can't login with a json that's not an object: " + loginInfo.toPrettyString());
         return Optional.empty();
@@ -159,14 +183,13 @@ public class LoginDatabase extends DatabaseInterface {
       Iterator<String> orgs = loginInfo.fieldNames();
       while (orgs.hasNext()) {
         String orgName = orgs.next().toLowerCase();
-        if (orgName.equals("api_key")) {
+        if (orgName.equalsIgnoreCase("api_key")) {
           continue;
         }
         if (!loginFunctions.containsKey(orgName) 
-            || !enabled.containsKey(orgName)
-            || !enabled.get(orgName)) {
-          log.error("There is no " + orgName + " to login to: tyler enabled: " 
-            + tylerEnabled + " jeffnet enabled: " + jeffNetEnabled);
+            || !atRest.get().enabled.containsKey(orgName)
+            || !atRest.get().enabled.get(orgName)) {
+          log.error("There is no " + orgName + " to login to: enabled map: " + atRest.get().enabled); 
           return Optional.empty();
         }
         Optional<String> newToken = loginFunctions.get(orgName).apply(loginInfo.get(orgName));
@@ -175,6 +198,11 @@ public class LoginDatabase extends DatabaseInterface {
           return Optional.empty();
         }
         newTokens.put(orgName, newToken.get());
+      }
+      for (Map.Entry<String, Boolean> enab : atRest.get().enabled.entrySet()) {
+        if (enab.getValue() && !newTokens.containsKey(enab.getKey())) {
+          log.warn(enab.getKey() + " enabled, but didn't attempt to login");
+        }
       }
      
       UUID activeToken = UUID.randomUUID();
@@ -185,25 +213,13 @@ public class LoginDatabase extends DatabaseInterface {
               ) VALUES (
                 ?, ?, ?, ?, ?)""".formatted(activeTable);
       PreparedStatement insertSt = conn.prepareStatement(insertActive);
-      insertSt.setObject(1, serverId);
+      insertSt.setObject(1, atRest.get().serverId);
       insertSt.setString(2, activeToken.toString());
-      if (newTokens.containsKey("tyler")) {
-        insertSt.setString(3, newTokens.get("tyler"));
-      } else {
-        insertSt.setString(3, null);
-      }
-      if (newTokens.containsKey("jeffnet")) {
-        insertSt.setString(4, newTokens.get("jeffnet"));
-      } else {
-        insertSt.setString(4, null);
-      }
+      insertSt.setString(3, newTokens.getOrDefault("tyler", null));
+      insertSt.setString(4, newTokens.getOrDefault("jeffnet", null));
       insertSt.setTimestamp(5, expire);
       insertSt.executeUpdate();
       return Optional.of(activeToken.toString());
-    } catch (JsonProcessingException e) {
-      log.error(e.toString());
-      return Optional.empty();
-    }
   }
   
   public Optional<String> checkLogin(String activeToken, String orgName) throws SQLException {
@@ -228,12 +244,11 @@ public class LoginDatabase extends DatabaseInterface {
       removeActiveToken(activeToken);
       return Optional.empty();
     }
-    orgName = orgName.toLowerCase();
-    if (orgName.equals("tyler")) {
+    if (orgName.equalsIgnoreCase("tyler")) {
       log.info("Getting for tyler: " + rs.getString(3));
       return Optional.ofNullable(rs.getString(3));
     }
-    if (orgName.equals("jeffnet")) {
+    if (orgName.equalsIgnoreCase("jeffnet")) {
       log.info("Getting for jeffnet: " + rs.getString(4));
       return Optional.ofNullable(rs.getString(4));
     }

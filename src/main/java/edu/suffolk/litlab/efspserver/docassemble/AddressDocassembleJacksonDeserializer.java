@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.hubspot.algebra.Result;
+
 import edu.suffolk.litlab.efspserver.Address;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
@@ -15,7 +16,9 @@ import edu.suffolk.litlab.efspserver.services.JsonExtractException;
 import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +73,12 @@ public class AddressDocassembleJacksonDeserializer extends StdDeserializer<Addre
       countryCode = CountryCodeSimpleType.fromValue(country);
     } catch (IllegalArgumentException ex) {
       log.error("Country " + country + " isn't a valid country: " + ex);
-      FilingError err = FilingError.malformedInterview("Country " + country + " isn't a valid country");
+      List<String> countries = Arrays.stream(CountryCodeSimpleType.values()) 
+          .map((t) -> t.toString())
+          .collect(Collectors.toList());
+      InterviewVariable countryOptions = collector.requestVar("country", 
+          "The 2 letter country code", "choices", countries);
+      FilingError err = FilingError.wrongValue(countryOptions); 
       return Result.err(err);
     }
     Address addr = new Address(address, unit, city, state, zip, countryCode);

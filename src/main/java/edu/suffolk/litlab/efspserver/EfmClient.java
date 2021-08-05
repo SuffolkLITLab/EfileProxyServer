@@ -9,7 +9,6 @@ import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
-import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.TextType;
 import java.io.File;
@@ -428,8 +427,6 @@ public final class EfmClient {
     contact.setLastName("Cormact");
     contact.setEmail("bwilley@suffolk.edu");
     contact.setAdministrativeCopy("bryce.steven.willey@gmail.com");
-    Address address = new Address("893 E Broadway", "", "Boston", "MA", "02127", CountryCodeSimpleType.US);
-    contact.setAddress(address.getAsTylerAddress());
     contact.setIsInFirmMasterList(efmObjFac.createServiceContactTypeIsInFirmMasterList(true));
     contact.setIsPublic(efmObjFac.createServiceContactTypeIsInFirmMasterList(true));
     create.setServiceContact(contact);
@@ -788,7 +785,7 @@ public final class EfmClient {
     Result<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>, FilingError> assembledCase = ecfCaseFactory
         .makeCaseTypeFromTylerCategory(courtLocationId, caseCategoryCode, caseType, caseSubtype,
             plaintiffs, defendants,
-            filingDocs.stream().map((f) -> f.getIdString()).collect(Collectors.toList()), paymentId, queryType,
+            filingDocs.stream().map((f) -> f.getIdString()).collect(Collectors.toList()), paymentId, queryType, null, 
             collector);
     if (assembledCase.isErr()) {
       return Optional.empty();
@@ -892,11 +889,8 @@ public final class EfmClient {
 
     // List<Person> plaintiffs, List<Person> defendants,
     // List<FilingDoc> filings) throws SQLException, IOException
-    Address plaintiffAddress = new Address("83 Fake St", "Apt 2", "Boston", "MA", "02125", CountryCodeSimpleType.US);
     Person plaintiff = new Person(new Name("Plaintiff", "Goth"), "fakeemail@example.com", false);
-    Person defendant = new Person(new Name("Defendant", "Zombie"), "fakeemail2@example.com", false);
     List<Person> plaintiffs = List.of(plaintiff);
-    List<Person> defendants = List.of(defendant);
     // filing code: complaint (27967): got from filing table, location = 'adams',
     // casecategory='210',
     // and filingtype='Both' or 'Initial'
@@ -918,7 +912,7 @@ public final class EfmClient {
     // casecategory='210'
     // Subtype is never used, the table is empty?
     CaseCategory caseCategory = new CaseCategory("210", "Family", "DomesticCase", "Not Available",
-        "Not Available", "Not Available");
+        "Not Available", "Not Available", "Not Available");
     for (PaymentAccountType acc : allAccs.getPaymentAccount()) {
       System.err.println("Acc: " + acc.getAccountName());
       if (acc.getAccountName().equals("Waiver Account")) {
@@ -929,8 +923,6 @@ public final class EfmClient {
       System.err.println("Couldn't find Waiver Account account?");
       System.exit(1);
     }
-    FilingReviewMDEPort filingPort = makeFilingService(FilingReviewMDEService.WSDL_LOCATION,
-        headersList);
     /* EfmClient.sendFiling(filingPort, cd, "adams", plaintiffs, defendants, caseCategory, "25384", "",
           List.of(filing), paymentId);
     
