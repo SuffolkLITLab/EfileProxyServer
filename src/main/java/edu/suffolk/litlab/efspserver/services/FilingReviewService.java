@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Path("/filingreview/")
-@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class FilingReviewService {
 
   private static Logger log = 
@@ -130,13 +130,13 @@ public class FilingReviewService {
     log.trace("New FilingDoc: Media type: " + mediaType);
     log.trace("Court id: " + courtId);
     log.trace("All vars: " + allVars.substring(0, Integer.min(100, allVars.length() - 1)));
-    if (!filingInterfaces.containsKey(courtId)) {
-      return Response.status(404).entity("Cannot send filing to " + courtId).build();
-    }
     Optional<String> activeToken = security.checkLogin(httpHeaders.getHeaderString("X-API-KEY"), 
         filingInterfaces.get(courtId).getOrgName());
     if (activeToken.isEmpty()) {
-      return Response.status(401).entity("Not logged in to file with " + courtId).build();
+      return Response.status(401).entity("Not logged in to efile").build();
+    }
+    if (!filingInterfaces.containsKey(courtId)) {
+      return Response.status(404).entity("Cannot send filing to " + courtId).build();
     }
     if (!converterMap.containsKey(mediaType.toString())) {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();

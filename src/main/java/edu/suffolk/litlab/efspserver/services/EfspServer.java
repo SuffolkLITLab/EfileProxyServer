@@ -150,7 +150,7 @@ public class EfspServer {
     EfmFilingInterface jeffersonParish = new JeffNetFiler(
         maybeJeffersonEndpoint.get());
     Map<String, EfmFilingInterface> filingMap = new HashMap<String, EfmFilingInterface>(); 
-    filingMap.put("Jefferson", jeffersonParish);
+    filingMap.put("jefferson", jeffersonParish);
     CodeDatabase cd = new CodeDatabase(dbUrl, dbPortInt, codeDatabaseName);
     EfmFilingInterface tylerInterface = new OasisEcfFiler(cd);
     List<String> hardcodedTylerIds = List.of("adams", "alexander", "bond", "boone", "brown", 
@@ -170,7 +170,7 @@ public class EfspServer {
     String address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT; 
     Endpoint.publish(address, implementor);
     
-    Map<String, EfmRestCallbackInterface> callbackMap = Map.of("Jefferson", callback);
+    Map<String, EfmRestCallbackInterface> callbackMap = Map.of("jefferson", callback);
     
     EfspServer server = new EfspServer(x509Password, dbUrl, dbPortInt, 
         dbUser, dbPassword, codeDatabaseName, cd, ud, userDatabaseName, 
