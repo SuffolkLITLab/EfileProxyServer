@@ -1,11 +1,20 @@
 package edu.suffolk.litlab.efspserver;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hubspot.algebra.Result;
 
+import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.ecf.EcfCourtSpecificSerializer;
+import edu.suffolk.litlab.efspserver.services.FailFastCollector;
+import edu.suffolk.litlab.efspserver.services.FilingError;
 import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 import gov.niem.niem.niem_core._2.AddressType;
 import gov.niem.niem.niem_core._2.StructuredAddressType;
@@ -17,15 +26,22 @@ import org.junit.jupiter.api.Test;
 public class AddressTest {
 
   Address addr;
+  EcfCourtSpecificSerializer serializer;
   
   @BeforeEach
   public void setUp() {
     addr = new Address("100 Circle Road", "Apt 2", "Plano", "TX", "75093", CountryCodeSimpleType.US);
+    CodeDatabase cd = mock(CodeDatabase.class);
+    when(cd.getStateCodes("US")).thenReturn(List.of("TX", "MA"));
+    serializer = new EcfCourtSpecificSerializer(cd, "adams");
   }
   
   @Test
   public void addressShouldMakeXml() throws JAXBException {
-    JAXBElement<AddressType> addrElem = addr.getAsNiemContactMeans(); 
+    FailFastCollector collector = new FailFastCollector();
+    Result<JAXBElement<AddressType>, FilingError> res = serializer.serializeNiemContactMeans(addr, collector); 
+    assertTrue(res.isOk());
+    JAXBElement<AddressType> addrElem = res.unwrapOrElseThrow();
 
     // Should be able to grab the xml str without an exception
     XmlHelper.objectToXmlStr(addrElem.getValue(), AddressType.class);
@@ -37,7 +53,7 @@ public class AddressTest {
     assertEquals(sat.getLocationPostalCode().getValue(), "75093");
     assertEquals(sat.getLocationCityName().getValue(), "Plano");
     
-    tyler.efm.services.schema.common.AddressType tylerAddr = addr.getAsTylerAddress();
+    tyler.efm.services.schema.common.AddressType tylerAddr = serializer.serializeTylerAddress(addr).unwrapOrElseThrow(); 
     assertEquals(tylerAddr.getAddressLine1(), "100 Circle Road");
     assertEquals(tylerAddr.getAddressLine2(), "Apt 2");
     assertEquals(tylerAddr.getCity(), "Plano");

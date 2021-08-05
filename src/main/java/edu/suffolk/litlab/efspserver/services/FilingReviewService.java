@@ -72,7 +72,7 @@ public class FilingReviewService {
  }
   
   @GET
-  @Path("/court/{court_id}/filings/")
+  @Path("/court/{court_id}/filings")
   public Response getFilingList(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId) {
     if (!filingInterfaces.containsKey(courtId)) {
@@ -98,8 +98,12 @@ public class FilingReviewService {
     if (!converterMap.containsKey(mediaType.toString())) {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     }
-    InfoCollector collector = new AllWrongCollector();
-    converterMap.get(mediaType.toString()).findMissing(allVars, collector);
+    InfoCollector collector = new NeverSubmitCollector();
+    Result<FilingInformation, FilingError> res = converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
+    if (res.isErr()) {
+      return Response.ok(collector.jsonSummary()).build();
+    }
+    filingInterfaces.get(courtId).checkFiling(res.unwrapOrElseThrow(), collector);
     return Response.ok(collector.jsonSummary()).build();
   }
   
@@ -147,7 +151,7 @@ public class FilingReviewService {
     Result<List<UUID>, FilingError> result = 
         filingInterfaces.get(courtId).sendFiling(info, activeToken.get());
     if (result.isErr()) {
-      return Response.status(500).entity(result.unwrapErrOrElseThrow()).build();
+      return Response.status(500).entity(result.unwrapErrOrElseThrow().toJson()).build();
     }
     // Add this information to the transaction database
     List<Person> filers = info.getFilers();

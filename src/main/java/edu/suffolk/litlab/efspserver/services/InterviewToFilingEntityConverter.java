@@ -10,11 +10,6 @@ public abstract class InterviewToFilingEntityConverter {
     return traverseInterview(interviewContents, collector);
   }
   
-  public void findMissing(String interviewContents, InfoCollector collector) {
-    traverseInterview(interviewContents, collector);
-    return;
-  }
-  
-  protected abstract Result<FilingInformation, FilingError> 
+  public abstract Result<FilingInformation, FilingError> 
       traverseInterview(String interviewContents, InfoCollector collector);
 }

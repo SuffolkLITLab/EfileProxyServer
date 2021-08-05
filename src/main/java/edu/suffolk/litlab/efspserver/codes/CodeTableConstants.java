@@ -21,6 +21,9 @@ public class CodeTableConstants {
       new HashMap<String, List<Pair<String, String>>>();
   private static final Map<String, List<Pair<String, String>>> courtTableColumns = 
       new HashMap<String, List<Pair<String, String>>>();
+  
+  private static final Map<String, List<String>> tablePrimaryKeys =
+      new HashMap<String, List<String>>();
 
   // TODO(brycew): the types are confusing here: some are only ever ints, but
   // are coded as normalizedStrings in the XML. Unclear what to make ints in the
@@ -86,6 +89,8 @@ public class CodeTableConstants {
         new ImmutablePair<String, String>("codelist", "text"), 
         new ImmutablePair<String, String>("installedversion", "text") 
     ));
+    
+    tablePrimaryKeys.put("installedversion", List.of("location", "codelist"));
 
     //////////// Tables that are both system wide, and court specific
 
@@ -101,7 +106,7 @@ public class CodeTableConstants {
         List.of(new ImmutablePair<String, String>("code", "text"),
             new ImmutablePair<String, String>("name", "text")));
 
-    bothTableColumns.put("datafield", List.of(new ImmutablePair<String, String>("code", "text"),
+    bothTableColumns.put("datafieldconfig", List.of(new ImmutablePair<String, String>("code", "text"),
         new ImmutablePair<String, String>("name", "text"), 
         new ImmutablePair<String, String>("isvisible", "text"),
         new ImmutablePair<String, String>("isrequired", "text"), 
@@ -138,6 +143,7 @@ public class CodeTableConstants {
             new ImmutablePair<String, String>("procedureremedyinitial", "text"),
             new ImmutablePair<String, String>("procedureremedysubsequent", "text"),
             new ImmutablePair<String, String>("damageamountinitial", "text"),
+            new ImmutablePair<String, String>("damageamountsubsequent", "text"),
             new ImmutablePair<String, String>("efspcode", "text")));
 
     courtTableColumns.put("casesubtype",
@@ -364,14 +370,14 @@ public class CodeTableConstants {
         new ImmutablePair<String, String>("efspcode", "text")));
   }
 
-  private class TableColumns {
+  private static class TableColumns {
     public List<Pair<String, String>> mainList;
+    public List<String> primaryKeys;
     public boolean needsExtraLocCol = false;
   }
 
   private static Optional<TableColumns> getTableColumnInfo(String tableName) {
-    CodeTableConstants ctc = new CodeTableConstants();
-    TableColumns tableCols = ctc.new TableColumns();
+    TableColumns tableCols = new TableColumns();
     if (systemTableColumns.containsKey(tableName)) {
       tableCols.mainList = systemTableColumns.get(tableName);
     } else {
@@ -384,6 +390,11 @@ public class CodeTableConstants {
         return Optional.empty();
       }
     }
+    if (tablePrimaryKeys.containsKey(tableName)) {
+      tableCols.primaryKeys = tablePrimaryKeys.get(tableName);
+    } else {
+      tableCols.primaryKeys = List.of();
+    }
     return Optional.of(tableCols);
   }
   
@@ -395,50 +406,89 @@ public class CodeTableConstants {
   }
 
   public static String getTableExists() {
-    return "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' "
-        + "AND table_name = ? LIMIT 1;";
+    return """ 
+        SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'
+        AND table_name = ? LIMIT 1;""";
   }
   
   public static String updateVersion() {
-    return "UPDATE installedversion SET installedversion = ? WHERE location=? AND codelist=?"; 
+    return """
+        INSERT INTO installedversion (location, codelist, installedversion) VALUES(?, ?, ?)
+        ON CONFLICT (location, codelist) DO UPDATE SET installedversion=?"""; 
   }
   
   public static String needToUpdateVersion() {
-    return "SELECT v.location, v.codelist, iv.installedversion "
-        + "FROM version AS v LEFT OUTER JOIN installedversion as iv "
-        + "  ON (v.location=iv.location AND v.codelist=iv.codelist) " 
-        + "WHERE (iv.installedversion IS NULL) OR (v.version != iv.installedversion)";
+    return """
+        SELECT v.location, v.codelist, iv.installedversion, v.version
+        FROM version AS v LEFT OUTER JOIN installedversion AS iv
+        ON (v.location=iv.location AND v.codelist=iv.codelist)
+        WHERE (iv.installedversion IS NULL) OR (v.version != iv.installedversion)""";
   }
   
   public static String getPartyTypeFromCaseType() {
-    return "SELECT p.code, p.name, p.isavailablefornewparties, c.name, c.fee "
-        + "from partytype AS p " 
-        + "LEFT JOIN casetype AS c ON (p.casetypeid = c.code AND p.location = c.location) "
-        + " where p.location=? AND c.casecategory=?";
+    return """
+        SELECT p.code, p.name, p.isavailablefornewparties, p.casetypeid, p.isrequired, p.amount, p.numberofpartiestoignore, p.sendforredaction, p.dateofdeath, p.displayorder, p.efspcode, p.location 
+        FROM partytype AS p 
+        WHERE p.location=? AND p.casetypeid=?""";
   }
   
-  public static String getCaseCategoryForLoc() {
-    return "SELECT code, name, ecfcasetype, procedureremedyinitial,"
-        + "procedureremedysubsequenty, damageamountinitial"
-        + "FROM casecategory WHERE location=?";
+  public static String getCaseCategoriesForLoc() {
+    return """  
+        SELECT code, name, ecfcasetype, procedureremedyinitial,
+        procedureremedysubsequent, damageamountinitial, damageamountsubsequent
+        FROM casecategory WHERE location=?""";
   }
+
+  public static String getCaseCategoryForLoc() {
+    return """  
+        SELECT code, name, ecfcasetype, procedureremedyinitial,
+        procedureremedysubsequent, damageamountinitial, damageamountsubsequent
+        FROM casecategory WHERE location=? AND name=?""";
+ }
   
   public static String getCaseTypesFor() {
-    return "SELECT code, name, casecategory, initial,"
-        + "fee, willfileddate, efspcode, location"
-        + "FROM casetype WHERE location=? AND casecategory=?";
+    return """
+        SELECT code, name, casecategory, initial,
+        fee, willfileddate, efspcode, location
+        FROM casetype WHERE location=? AND casecategory=?""";
+  }
+
+  public static String getCaseSubtypesFor() {
+    return "SELECT code, name "
+        + "FROM casesubtype WHERE location=? AND casetypeid=?";
+  }
+
+  public static String getDisclaimerRequirements() {
+    return "SELECT code, name, listorder, requirementtext FROM disclaimerrequirement WHERE location=?";
   }
   
-  /** Gets all columns from datafield table
+  /** Gets all columns from datafieldconfig table
    * Need to provide the location (1) and the code (2) of the field.
    * For example, 'adams' and 'FilingEventCaseParties'
    *
    * @return the String to make a SQL PreparedStatement from
    */
-  public static String getAllFromDataFieldForLoc() {
+  public static String getAllFromDataFieldConfigForLoc() {
     return "SELECT code, name, isvisible, isrequired, helptext, ghosttext, contextualhelpdata, "
         + "validationmessage, regularexpression, defaultvalueexpression, isreadonly, location "
-        + "FROM datafield WHERE location=? AND code=?";
+        + "FROM datafieldconfig WHERE location=? AND code=?";
+  }
+  
+  public static String getProcedureOrRemedy() {
+    return "SELECT name, code FROM procedureremedy WHERE location=? AND casecategory=?";
+  }
+
+  public static String getSpecificStatesForCountryForLoc() {
+    return "SELECT code, name, countrycode, location "
+        + " FROM state WHERE location=? and countrycode=?";
+  }
+  
+  public static String getLanguages() {
+    return "SELECT code, name, efspcode, location FROM languages WHERE location=?";
+  }
+
+  public static String getDamageAmount() {
+    return "SELECT code, name, efspcode, location FROM damageamount WHERE location=? AND casecategory=?";
   }
   
   /** Will only delete from non-system tables. */
@@ -477,6 +527,11 @@ public class CodeTableConstants {
     }
     if (tableCols.get().needsExtraLocCol) {
       createLocation.append(", \"location\" text");
+    }
+    if (!tableCols.get().primaryKeys.isEmpty()) {
+      createLocation.append(", PRIMARY KEY(" 
+          + tableCols.get().primaryKeys.stream().collect(Collectors.joining(",")) 
+          + ")");
     }
     createLocation.append(")");
     return createLocation.toString();
@@ -527,4 +582,5 @@ public class CodeTableConstants {
     insertLocation.append(")");
     return insertLocation.toString();
   }
+
 }

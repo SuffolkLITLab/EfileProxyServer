@@ -7,6 +7,7 @@ public class FilingError {
   public enum Type {
     MalformedInterview, /// For when the json is somehow not well formed, or just plain wrong
     MissingRequired, /// For when the json doesn't have a member that is needed, like "users"
+    WrongValue,
     EfmReplyError,
     ServerError
   }
@@ -22,6 +23,10 @@ public class FilingError {
   
   public static FilingError missingRequired(InterviewVariable missingVariable) {
     return new FilingError(Type.MissingRequired, "", Optional.of(missingVariable));
+  }
+  
+  public static FilingError wrongValue(InterviewVariable rightVariableInfo) {
+    return new FilingError(Type.WrongValue, "", Optional.of(rightVariableInfo));
   }
   
   private FilingError(Type type, String description) {

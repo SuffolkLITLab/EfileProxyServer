@@ -121,7 +121,7 @@ public class DocassembleToFilingEntityConverterTest {
     FilingInformation entities = maybeEntities.unwrapOrElseThrow();
     assertNotNull(entities.getCaseCategory());
     assertEquals("CivilCase", entities.getCaseCategory().ecfcasetype);
-    assertEquals("Housing temporary restraining order", entities.getCaseType());
+    assertEquals("Motion", entities.getCaseType());
     assertEquals("", entities.getCaseSubtype());
     
     List<FilingDoc> filingDocs = entities.getFilings();

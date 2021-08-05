@@ -7,6 +7,7 @@ import edu.suffolk.litlab.efspserver.PaymentFactory;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.Disclaimer;
 import edu.suffolk.litlab.efspserver.services.EfmCheckableFilingInterface;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
@@ -116,7 +117,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
               info.getPlaintiffs(), info.getDefendants(),
               info.getFilings().stream().map((f) -> f.getIdString()).collect(Collectors.toList()), 
               info.getPaymentId(), 
-              "review", collector); 
+              "review", info.getMiscInfo(), collector); 
       if (assembledCase.isErr()) {
         return Result.err(assembledCase.unwrapErrOrElseThrow());
       }
@@ -145,11 +146,14 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
 
       log.debug(XmlHelper.objectToXmlStrOrError(
           rfrm, ReviewFilingRequestMessageType.class));
+      if (!collector.okToSubmit()) {
+        return Result.err(FilingError.serverError("Not submitting!"));
+      }
       MessageReceiptMessageType mrmt = filingPort.get().reviewFiling(rfrm);
       if (mrmt.getError().size() > 0) {
         for (oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType err : mrmt
             .getError()) {
-          log.warn(err.getErrorCode().getValue() + ", " + err.getErrorText().getValue());
+          log.warn("Error from Tyler: " + err.getErrorCode().getValue() + ", " + err.getErrorText().getValue());
         }
       }
       List<IdentificationType> ids = mrmt.getDocumentIdentification();
@@ -297,6 +301,17 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   }
 
   @Override
+  public Response disclaimers(String courtId) {
+    try {
+      List<Disclaimer> disclaimers = cd.getDisclaimerRequirements(courtId);
+      return Response.status(200).entity(disclaimers).build();
+    } catch (SQLException e) {
+      log.error("SQLException: " + e);
+      return Response.status(500).build();
+    }
+  }
+
+  @Override
   public String getOrgName() {
     // No real API key we need to save
     return "tyler";
@@ -314,7 +329,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       List<Header> headersList = List.of(creds.get().toHeader());
       ctx.put(Header.HEADER_LIST, headersList);
     } catch (JAXBException ex) {
-      System.err.println(ex.toString());
+      log.error(ex.toString());
       return Optional.empty();
     }
 

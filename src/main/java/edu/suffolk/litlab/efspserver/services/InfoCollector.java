@@ -24,6 +24,7 @@ public abstract class InfoCollector {
   
   protected List<InterviewVariable> optionalVars;
   protected List<InterviewVariable> requiredVars;
+  protected List<InterviewVariable> wrongVars;
   protected Optional<FilingError> err;
   protected Stack<String> variableAttributes;
   
@@ -32,6 +33,7 @@ public abstract class InfoCollector {
     this.optionalVars = new ArrayList<InterviewVariable>();
     this.requiredVars = new ArrayList<InterviewVariable>();
     this.variableAttributes = new Stack<String>();
+    this.wrongVars = new ArrayList<InterviewVariable>();
   }
   
   public void error(FilingError err) {
@@ -43,7 +45,7 @@ public abstract class InfoCollector {
   public abstract boolean finished();
   
   public boolean okToSubmit() {
-    if (err.isPresent() || !requiredVars.isEmpty()) { 
+    if (err.isPresent() || !requiredVars.isEmpty() || !wrongVars.isEmpty()) { 
       return false;
     }
     return true;
@@ -55,6 +57,10 @@ public abstract class InfoCollector {
 
   public void addOptional(InterviewVariable var) {
     optionalVars.add(var);
+  }
+  
+  public void addWrong(InterviewVariable var) {
+    wrongVars.add(var);
   }
 
   public void pushAttributeStack(String variableName) {
@@ -78,8 +84,12 @@ public abstract class InfoCollector {
     return requiredVars;
   }
   
-  public List<InterviewVariable> getOptional() {
+  public List<InterviewVariable> getOptional() { 
     return optionalVars;
+  }
+  
+  public List<InterviewVariable> getWrong() {
+    return wrongVars;
   }
   
   /**
@@ -112,7 +122,12 @@ public abstract class InfoCollector {
     sb.append(optionalVars.stream()
         .map((v) -> v.toJson())
         .collect(Collectors.joining(", ")));
+    sb.append("], \"wrong_vars\": [");
+    sb.append(wrongVars.stream()
+        .map((v) -> v.toJson())
+        .collect(Collectors.joining(", ")));
     sb.append("]}");
+
     return sb.toString();
   }
 }

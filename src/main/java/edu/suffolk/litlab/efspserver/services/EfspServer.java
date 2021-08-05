@@ -39,13 +39,13 @@ public class EfspServer {
       String dbUrl, int dbPort,
       String dbUser, String dbPassword,
       String codeDatabaseName,
+      CodeDatabase cd,
       UserDatabase ud,
       String userDatabaseName,
       Map<String, InterviewToFilingEntityConverter> converterMap,
       Map<String, EfmFilingInterface> filingMap,
       Map<String, EfmRestCallbackInterface> callbackMap) throws Exception {
     boolean downloadAll = false;
-    CodeDatabase cd = new CodeDatabase(dbUrl, dbPort, codeDatabaseName);
     LoginDatabase ld = new LoginDatabase(dbUrl, dbPort, userDatabaseName);
     try {
       cd.createDbConnection(dbUser, dbPassword);
@@ -64,7 +64,7 @@ public class EfspServer {
     if (downloadAll) {
       cd.createDbConnection(dbUser, dbPassword);
       log.debug("Downloading all codes: please wait a bit");
-      CodeUpdater.downloadAll("https://illinois-stage.tylerhost.net", cd);
+      CodeUpdater.executeCommand("downloadAll", "https://illinois-stage.tylerhost.net", cd);
     }
     
     String baseLocalUrl = "http://0.0.0.0:9000";
@@ -173,7 +173,7 @@ public class EfspServer {
     Map<String, EfmRestCallbackInterface> callbackMap = Map.of("Jefferson", callback);
     
     EfspServer server = new EfspServer(x509Password, dbUrl, dbPortInt, 
-        dbUser, dbPassword, codeDatabaseName, ud, userDatabaseName, 
+        dbUser, dbPassword, codeDatabaseName, cd, ud, userDatabaseName, 
         converterMap, filingMap, callbackMap);
 
     // TODO(brycew): use https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ScheduledExecutorService.html

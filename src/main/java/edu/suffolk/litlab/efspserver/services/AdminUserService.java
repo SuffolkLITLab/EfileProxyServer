@@ -444,7 +444,7 @@ public class AdminUserService {
       return Response.status(403).build();
     }
     
-    // TODO(brycew): add a check for global passwords here: in the datafield table, it's name is 'GlobalPassword'
+    // TODO(brycew): add a check for global passwords here: in the datafieldconfig table, it's name is 'GlobalPassword'
     RegistrationResponseType regResp = port.get().registerUser(req);
     return ServiceHelpers.mapTylerCodesToHttp(regResp.getError(), 
         () -> Response.ok(regResp).build());
