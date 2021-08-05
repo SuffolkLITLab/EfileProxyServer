@@ -7,10 +7,10 @@ services:
     env_file: .env
     depends_on:
       - "db"
-  docassemble:
-    image: "jhpyle/docassemble:latest"
-    ports:
-      - "80:80"
+#  docassemble:
+#    image: "jhpyle/docassemble:latest"
+#    ports:
+#      - "80:80"
   db:
     image: "postgres:latest"
     env_file: .env
