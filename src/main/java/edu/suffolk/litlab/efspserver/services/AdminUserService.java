@@ -142,7 +142,7 @@ public class AdminUserService {
   public Response getNotificationPrefs(@Context HttpHeaders httpHeaders) {
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) { 
-      return Response.status(403).build();
+      return Response.status(401).build();
     }
     
     NotificationPreferencesResponseType notifResp = port.get().getNotificationPreferences();
@@ -157,7 +157,7 @@ public class AdminUserService {
       List<NotificationType> notifications) {
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) { 
-      return Response.status(403).build();
+      return Response.status(401).build();
     }
     
     UpdateNotificationPreferencesRequestType updateNotif = 
@@ -177,7 +177,7 @@ public class AdminUserService {
       String emailToSendTo) {
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) {
-      return Response.status(403).build();
+      return Response.status(401).build();
     }
 
     SelfResendActivationEmailRequestType req = 
@@ -194,7 +194,7 @@ public class AdminUserService {
       @PathParam("id") String id) {
     Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
     if (port.isEmpty()) {
-      return Response.status(403).build();
+      return Response.status(401).build();
     }
     
     ResendActivationEmailRequestType req = 
@@ -212,7 +212,7 @@ public class AdminUserService {
       @PathParam("id") String id, String email, String password) {
     Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
     if (port.isEmpty()) {
-      return Response.status(403).build();
+      return Response.status(401).build();
     }
     
     ResetUserPasswordRequestType resetReq = new ResetUserPasswordRequestType();
@@ -231,7 +231,7 @@ public class AdminUserService {
       String oldPassword, String newPassword) {
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) {
-      return Response.status(403).build();
+      return Response.status(401).build();
     }
     
     ChangePasswordRequestType change = new ChangePasswordRequestType();
@@ -248,7 +248,7 @@ public class AdminUserService {
       String emailToSend) {
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) {
-      return Response.status(403).build();
+      return Response.status(401).build();
     }
     
     ResetPasswordRequestType reset = new ResetPasswordRequestType();
@@ -270,7 +270,7 @@ public class AdminUserService {
       @PathParam("id") String id) {
     Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
     if (port.isEmpty()) { 
-      return Response.status(403).build();
+      return Response.status(401).build();
     }
     
     GetUserRequestType getUserReq = new GetUserRequestType();
@@ -285,7 +285,7 @@ public class AdminUserService {
   public Response getUserList(@Context HttpHeaders httpHeaders) {
     Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
     if (port.isEmpty()) { 
-      return Response.status(403).build();
+      return Response.status(401).build();
     }
     
     UserListResponseType resp = port.get().getUserList();
@@ -305,7 +305,7 @@ public class AdminUserService {
       @PathParam("id") String id, UserType updatedUser) {
     Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
     if (port.isEmpty()) {
-      return Response.status(403).build();
+      return Response.status(401).build();
     }
     // Ensure the user exists already.
     GetUserRequestType getUserReq = new GetUserRequestType();
@@ -356,7 +356,7 @@ public class AdminUserService {
       @PathParam("id") String id) {
     Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
     if (port.isEmpty()) { 
-      return Response.status(403).build();
+      return Response.status(401).build();
     }
     
     GetUserRequestType getUserReq = new GetUserRequestType();
@@ -379,7 +379,7 @@ public class AdminUserService {
       @PathParam("id") String id, List<RoleLocationType> toAdd) {
     Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
     if (port.isEmpty()) { 
-      return Response.status(403).build();
+      return Response.status(401).build();
     }
     
     for (RoleLocationType role : toAdd) {
@@ -410,7 +410,7 @@ public class AdminUserService {
       @PathParam("id") String id, List<RoleLocationType> toRm) {
     Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
     if (port.isEmpty()) { 
-      return Response.status(403).build();
+      return Response.status(401).build();
     }
     
     for (RoleLocationType role : toRm) {
@@ -441,7 +441,7 @@ public class AdminUserService {
       RegistrationRequestType req) {
     Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
     if (port.isEmpty()) { 
-      return Response.status(403).build();
+      return Response.status(401).build();
     }
     
     // TODO(brycew): add a check for global passwords here: in the datafieldconfig table, it's name is 'GlobalPassword'
