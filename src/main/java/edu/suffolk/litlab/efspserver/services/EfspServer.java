@@ -1,7 +1,7 @@
 package edu.suffolk.litlab.efspserver.services;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import edu.suffolk.litlab.efspserver.ClientCallbackHandler;
+import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.CodeUpdater;
 import edu.suffolk.litlab.efspserver.LoginDatabase;
 import edu.suffolk.litlab.efspserver.SecurityHub;
@@ -21,6 +21,8 @@ import java.util.Optional;
 import javax.ws.rs.core.MediaType;
 import javax.xml.ws.Endpoint;
 
+import org.apache.cxf.Bus;
+import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
@@ -73,12 +75,15 @@ public class EfspServer {
     ld.setAutocommit(true);
     SecurityHub security = new SecurityHub(ld);
     sf = new JAXRSServerFactoryBean();
+    SpringBusFactory busFac = new SpringBusFactory();
+    Bus bus = busFac.createBus("config/ServerConfig.xml");
+    sf.setBus(bus);
     sf.setResourceClasses(AdminUserService.class,
         FilingReviewService.class,
         FirmAttorneyAndServiceService.class);
     // HACK(brycew): cheap DI. Should have something better, but
     // I don't quite understand Spring yet
-    ClientCallbackHandler.setX509Password(x509Password);
+    SoapX509CallbackHandler.setX509Password(x509Password);
     sf.setResourceProvider(AdminUserService.class,
         new SingletonResourceProvider(new AdminUserService(security)));
     cd.createDbConnection(dbUser, dbPassword);
