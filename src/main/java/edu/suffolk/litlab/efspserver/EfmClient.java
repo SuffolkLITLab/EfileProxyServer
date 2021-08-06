@@ -729,7 +729,7 @@ public final class EfmClient {
     ctx.put("security.username", "bwilley@suffolk.edu");
     ctx.put("security.password", "can-be-anything?");
     ctx.put("security.signature.properties", "client_sign.properties");
-    ctx.put("security.callback-handler", ClientCallbackHandler.class.getName());
+    ctx.put("security.callback-handler", SoapX509CallbackHandler.class.getName());
     ctx.put("security.signature.username", "1");
     return port;
   }
@@ -747,7 +747,7 @@ public final class EfmClient {
     ctx.put("security.username", "bwilley@suffolk.edu");
     ctx.put("security.password", "can-be-anything?");
     ctx.put("security.signature.properties", "client_sign.properties");
-    ctx.put("security.callback-handler", ClientCallbackHandler.class.getName());
+    ctx.put("security.callback-handler", SoapX509CallbackHandler.class.getName());
     ctx.put("security.signature.username", "1");
     return port;
   }
@@ -768,7 +768,7 @@ public final class EfmClient {
     ctx.put("security.username", "bwilley@suffolk.edu");
     ctx.put("security.password", "can-be-anything?");
     ctx.put("security.signature.properties", "client_sign.properties");
-    ctx.put("security.callback-handler", ClientCallbackHandler.class.getName());
+    ctx.put("security.callback-handler", SoapX509CallbackHandler.class.getName());
     ctx.put("security.signature.username", "1");
     return filingPort;
   }
@@ -865,7 +865,7 @@ public final class EfmClient {
     }
     String x509Password = System.getenv("X509_PASSWORD");
     System.err.println("x509 password: " + x509Password);
-    ClientCallbackHandler.setX509Password(x509Password); 
+    SoapX509CallbackHandler.setX509Password(x509Password); 
     IEfmUserService userPort = makeUserService(userWsdlUrl);
     // testUserActionManagement(userPort, "bwilley@suffolk.edu");
     AuthenticateRequestType authReq = new AuthenticateRequestType();

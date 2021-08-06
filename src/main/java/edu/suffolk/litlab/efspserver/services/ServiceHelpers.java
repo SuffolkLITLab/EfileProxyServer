@@ -12,7 +12,7 @@ import javax.xml.ws.BindingProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.suffolk.litlab.efspserver.ClientCallbackHandler;
+import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
@@ -86,7 +86,7 @@ public class ServiceHelpers {
     ctx.put("security.username", "bwilley@suffolk.edu");
     ctx.put("security.password", "can-be-anything?");
     ctx.put("security.signature.properties", "client_sign.properties");
-    ctx.put("security.callback-handler", ClientCallbackHandler.class.getName());
+    ctx.put("security.callback-handler", SoapX509CallbackHandler.class.getName());
     ctx.put("security.signature.username", "1");
   }
 

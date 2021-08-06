@@ -5,7 +5,7 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import org.apache.wss4j.common.ext.WSPasswordCallback;
 
-public class ClientCallbackHandler implements CallbackHandler {
+public class SoapX509CallbackHandler implements CallbackHandler {
   
   private static String x509Password = "";
   

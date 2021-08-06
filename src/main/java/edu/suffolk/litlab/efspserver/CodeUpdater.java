@@ -342,7 +342,7 @@ public class CodeUpdater {
   
   public static void executeCommand(String command, String codesSite, CodeDatabase cd) throws JAXBException, 
       SQLException, IOException, XMLStreamException {
-    ClientCallbackHandler.setX509Password(System.getenv("X509_PASSWORD"));
+    SoapX509CallbackHandler.setX509Password(System.getenv("X509_PASSWORD"));
     AuthenticateRequestType authReq = new AuthenticateRequestType();
     authReq.setEmail("bwilley@suffolk.edu");
     authReq.setPassword(System.getenv("BRYCE_USER_PASSWORD"));
