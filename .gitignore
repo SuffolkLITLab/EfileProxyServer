@@ -1,9 +1,11 @@
 target/
 
-Compiled class file
+# Compiled class file
 *.class
 
+# HTTPS key-cert related stuff
 *.key
+*.jks
 
 # Log file
 *.log
