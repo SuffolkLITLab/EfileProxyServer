@@ -75,9 +75,13 @@ public class EfspServer {
     ld.setAutocommit(true);
     SecurityHub security = new SecurityHub(ld);
     sf = new JAXRSServerFactoryBean();
+    // TODO(brycew): can't get it working, password seems wrong: pausing for now
+    /*
+    log.info("Working dir: " + System.getProperty("user.dir"));
     SpringBusFactory busFac = new SpringBusFactory();
-    Bus bus = busFac.createBus("config/ServerConfig.xml");
+    Bus bus = busFac.createBus("src/main/config/ServerConfig.xml");
     sf.setBus(bus);
+    */
     sf.setResourceClasses(AdminUserService.class,
         FilingReviewService.class,
         FirmAttorneyAndServiceService.class);
