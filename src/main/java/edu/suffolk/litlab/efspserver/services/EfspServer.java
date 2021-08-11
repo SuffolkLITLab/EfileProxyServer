@@ -39,13 +39,15 @@ public class EfspServer {
   private Server server;
 
   static {
-    HttpsCallbackHandler.setCertPassword(System.getenv("CERT_PASSWORD"));
-         log.info("Working dir: " + System.getProperty("user.dir"));
-	  SpringBusFactory factory = new SpringBusFactory();
-	  Bus bus = factory.createBus("src/main/config/ServerConfig.xml");
-	  SpringBusFactory.setDefaultBus(bus);
+    Optional<String> certPassword = GetEnv("CERT_PASSWORD");
+    certPassword.ifPresentOrElse(
+        pass -> HttpsCallbackHandler.setCertPassword(pass),
+        () -> log.error("Didn't enter a CERT_PASSWORD: Did you pass an .env file?"));
+    SpringBusFactory factory = new SpringBusFactory();
+    Bus bus = factory.createBus("src/main/config/ServerConfig.xml");
+    SpringBusFactory.setDefaultBus(bus);
   }
-  
+
   protected EfspServer(String x509Password, 
       String dbUrl, int dbPort,
       String dbUser, String dbPassword,

@@ -27,6 +27,10 @@ TODO(brycew): eventually we should. Look into the below for resources
 
 First, turning the certificate into something that Java can consume, namely, a Java Key Store (jks). 
 
+* https://stackoverflow.com/questions/41416050/installing-an-intermediate-chain-certificate-using-java-key-tool
+* https://www.tbs-certificates.co.uk/FAQ/en/ajouter-certificat-intermediaire-keystore-java.html
+* https://community.datarobot.com/t5/data-prep/how-to-convert-crt-and-key-to-jks-file/td-p/6342
+
 The commands below are how we did it
 ```bash
 # You already have a
