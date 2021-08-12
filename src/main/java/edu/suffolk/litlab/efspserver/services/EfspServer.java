@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efspserver.services;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
+import edu.suffolk.litlab.efspserver.HttpsCallbackHandler; 
 import edu.suffolk.litlab.efspserver.CodeUpdater;
 import edu.suffolk.litlab.efspserver.LoginDatabase;
 import edu.suffolk.litlab.efspserver.SecurityHub;
@@ -36,7 +37,17 @@ public class EfspServer {
   
   private JAXRSServerFactoryBean sf;
   private Server server;
-  
+
+  static {
+    Optional<String> certPassword = GetEnv("CERT_PASSWORD");
+    certPassword.ifPresentOrElse(
+        pass -> HttpsCallbackHandler.setCertPassword(pass),
+        () -> log.error("Didn't enter a CERT_PASSWORD: Did you pass an .env file?"));
+    SpringBusFactory factory = new SpringBusFactory();
+    Bus bus = factory.createBus("src/main/config/ServerConfig.xml");
+    SpringBusFactory.setDefaultBus(bus);
+  }
+
   protected EfspServer(String x509Password, 
       String dbUrl, int dbPort,
       String dbUser, String dbPassword,
@@ -69,19 +80,12 @@ public class EfspServer {
       CodeUpdater.executeCommand("downloadAll", "https://illinois-stage.tylerhost.net", cd);
     }
     
-    String baseLocalUrl = "http://0.0.0.0:9000";
+    String baseLocalUrl = "https://0.0.0.0:9000";
     cd.setAutocommit(true);
     ud.setAutocommit(true);
     ld.setAutocommit(true);
     SecurityHub security = new SecurityHub(ld);
     sf = new JAXRSServerFactoryBean();
-    // TODO(brycew): can't get it working, password seems wrong: pausing for now
-    /*
-    log.info("Working dir: " + System.getProperty("user.dir"));
-    SpringBusFactory busFac = new SpringBusFactory();
-    Bus bus = busFac.createBus("src/main/config/ServerConfig.xml");
-    sf.setBus(bus);
-    */
     sf.setResourceClasses(AdminUserService.class,
         FilingReviewService.class,
         FirmAttorneyAndServiceService.class);
@@ -175,7 +179,7 @@ public class EfspServer {
 
     Object implementor = new OasisEcfWsCallback(ud, sender);
     // TODO(brycew): cleaner way to handle baseLocalUrl?
-    String baseLocalUrl = "http://0.0.0.0:9000";
+    String baseLocalUrl = "https://0.0.0.0:9000";
     String address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT; 
     Endpoint.publish(address, implementor);
     

@@ -10,16 +10,18 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 public class HttpsCallbackHandler implements CallbackHandler {
   
   private static String certPassword;
-
+  
   public static void setCertPassword(String newPassword) {
     certPassword = newPassword;
-  }
+  }  
 
   @Override
   public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
     for (int i = 0; i < callbacks.length; i++) {
-      PasswordCallback pc = (PasswordCallback)callbacks[i];
-      pc.setPassword(certPassword.toCharArray()); 
+      if (callbacks[i] instanceof PasswordCallback) {
+        PasswordCallback pc = (PasswordCallback)callbacks[i];
+        pc.setPassword(certPassword.toCharArray()); 
+      }
     }
   }
 
