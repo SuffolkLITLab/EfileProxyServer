@@ -49,4 +49,19 @@ public class CaseCategory {
   public String getCode() {
     return code.orElse("no code?");
   }
+
+  public static String getCaseCategoriesForLoc() {
+    return """  
+        SELECT code, name, ecfcasetype, procedureremedyinitial,
+        procedureremedysubsequent, damageamountinitial, damageamountsubsequent
+        FROM casecategory WHERE location=?""";
+  }
+
+  public static String getCaseCategoryForLoc() {
+    return """  
+        SELECT code, name, ecfcasetype, procedureremedyinitial,
+        procedureremedysubsequent, damageamountinitial, damageamountsubsequent
+        FROM casecategory WHERE location=? AND name=?""";
+ }
+  
 }

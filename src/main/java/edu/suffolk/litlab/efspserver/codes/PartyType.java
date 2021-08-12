@@ -15,4 +15,12 @@ public class PartyType {
     this.fee = new BigDecimal(Double.parseDouble(fee));
   }
 
+  public static String getPartyTypeFromCaseType() {
+    return """
+        SELECT p.code, p.name, p.isavailablefornewparties, p.casetypeid, p.isrequired, p.amount, p.numberofpartiestoignore, p.sendforredaction, p.dateofdeath, p.displayorder, p.efspcode, p.location 
+        FROM partytype AS p 
+        WHERE p.location=? AND p.casetypeid=?""";
+  }
+  
+
 }

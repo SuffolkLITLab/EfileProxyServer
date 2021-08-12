@@ -15,8 +15,8 @@ public class FilingInformation {
   private CaseCategory caseCategory;
   private String caseType;
   private String caseSubtype;
-  private List<FilingDoc> filingDocs;
   private String paymentId;
+  private List<FilingDoc> filingDocs;
   
   private JsonNode miscInfo;
   

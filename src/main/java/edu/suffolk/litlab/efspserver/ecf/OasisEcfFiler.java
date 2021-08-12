@@ -1,21 +1,28 @@
 package edu.suffolk.litlab.efspserver.ecf;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.PaymentFactory;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
+import edu.suffolk.litlab.efspserver.codes.CaseCategory;
+import edu.suffolk.litlab.efspserver.codes.CaseType;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.Disclaimer;
+import edu.suffolk.litlab.efspserver.codes.FilingCode;
 import edu.suffolk.litlab.efspserver.services.EfmCheckableFilingInterface;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
+import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.TextType;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
@@ -45,6 +52,7 @@ import org.slf4j.LoggerFactory;
 
 import tyler.ecf.extensions.cancelfilingmessage.CancelFilingMessageType;
 import tyler.ecf.extensions.cancelfilingresponsemessage.CancelFilingResponseMessageType;
+import tyler.ecf.extensions.common.DocumentType;
 import tyler.ecf.extensions.filingdetailquerymessage.FilingDetailQueryMessageType;
 import tyler.ecf.extensions.filingdetailresponsemessage.FilingDetailResponseMessageType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
@@ -110,14 +118,73 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
     try {
       // TODO(brycew): mapping from string case categories to Tyler code case categories, etc.
+      EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, info.getCourtLocation());
+    
+      Optional<CaseCategory> maybeCaseCat = cd.getCaseCategoryFor(info.getCourtLocation(), info.getCaseCategory());
+      if (maybeCaseCat.isEmpty()) {
+        List<CaseCategory> categories = cd.getCaseCategoriesFor(info.getCourtLocation());
+        // TODO(brycew): handle that these variables could be different from different deserializers
+        InterviewVariable var = collector.requestVar("tyler_case_category", "", "choice", 
+            categories.stream().map(cat -> cat.name).collect(Collectors.toList()));
+        collector.addWrong(var);
+        // Foundational error: Category is sorely needed
+        return Result.err(FilingError.wrongValue(var));
+      }
+      CaseCategory caseCategory = maybeCaseCat.get();
+      
+      List<CaseType> caseTypes = cd.getCaseTypesFor(info.getCourtLocation(), caseCategory.code.get());
+      if (caseTypes.isEmpty()) {
+        return Result.err(FilingError.serverError("There are no caseTypes for " 
+            + info.getCourtLocation() + " and " + caseCategory.code.get()));
+      }
+      Optional<CaseType> maybeType = caseTypes.stream()
+          .filter(type -> type.name.equals(info.getCaseType()))
+          .findFirst();
+     
+      if (maybeType.isEmpty()) {
+        InterviewVariable var = collector.requestVar("tyler_case_type",  "",  "choice",
+            caseTypes.stream().map(type -> type.name).collect(Collectors.toList()));
+        collector.addWrong(var);
+        return Result.err(FilingError.wrongValue(var));
+      } 
+
+      List<FilingCode> filings = cd.getFilingType(info.getCourtLocation(), 
+          caseCategory.code.get(), maybeType.get().code, maybeType.get().initial);
+      InterviewVariable var = collector.requestVar("filing", "TODO(brycew): descriptin", "text");
+      if (filings.isEmpty()) {
+        log.error("Need a filing type! FilingTypes are empty, so " + caseCategory + " and " + maybeType.get() + " is restricted");
+        collector.addWrong(var);
+        // Is foundational, so returning now
+        return Result.err(FilingError.wrongValue(var));
+      }
+    
+      JsonNode filingJson = info.getMiscInfo().get("filing");
+      if (filingJson == null || filingJson.isNull() || !filingJson.isTextual()) {
+        log.error("filing not present in the info!");
+        collector.addRequired(var);
+        return Result.err(FilingError.missingRequired(var));
+      }
+    
+      Optional<FilingCode> maybeFiling = filings.stream()
+          .filter(fil -> fil.name.equals(filingJson.asText()))
+          .findFirst();
+      if (maybeFiling.isEmpty()) {
+        log.error("Nothing matches filing in the info: " + filingJson.asText());
+        collector.addWrong(var);
+        return Result.err(FilingError.missingRequired(var));
+      }
+    
       Result<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>, FilingError> assembledCase = 
           ecfCaseFactory.makeCaseTypeFromTylerCategory(
-              info.getCourtLocation(), info.getCaseCategory(), info.getCaseType(), 
+              info.getCourtLocation(), caseCategory, maybeType.get(),
+              maybeFiling.get(),
               info.getCaseSubtype(),
               info.getPlaintiffs(), info.getDefendants(),
-              info.getFilings().stream().map((f) -> f.getIdString()).collect(Collectors.toList()), 
+              info.getFilings()
+                  .stream()
+                  .map(f -> f.getIdString()).collect(Collectors.toList()), 
               info.getPaymentId(), 
-              "review", info.getMiscInfo(), collector); 
+              "review", info.getMiscInfo(), serializer, collector); 
       if (assembledCase.isErr()) {
         return Result.err(assembledCase.unwrapErrOrElseThrow());
       }
@@ -129,10 +196,14 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       cfm.setCase(assembledCase.unwrapOrElseThrow());
       int seqNum = 0;
       for (FilingDoc filingDoc : info.getFilings()) {
+        Result<JAXBElement<DocumentType>, FilingError> result = 
+                serializer.filingDocToXml(filingDoc, seqNum, caseCategory, maybeType.get(), maybeFiling.get(), 
+                        info.getMiscInfo(), collector);
+        JAXBElement<DocumentType> d = result.unwrapOrElseThrow();
         if (filingDoc.isLead()) {
-          cfm.getFilingLeadDocument().add(filingDoc.asDocument(seqNum));
+          cfm.getFilingLeadDocument().add(d);
         } else {
-          cfm.getFilingConnectedDocument().add(filingDoc.asDocument(seqNum));
+          cfm.getFilingConnectedDocument().add(d); 
         }
         seqNum += 1;
       }
@@ -169,8 +240,16 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       log.info(XmlHelper.objectToXmlStrOrError(mrmt, MessageReceiptMessageType.class));
       return Result.ok(List.of(UUID.fromString(caseId.get()))); 
     } catch (IOException ex) {
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      ex.printStackTrace(pw);
+      log.error("IO Error when making filing! " + ex.toString() + " " + sw.toString());
       return Result.err(FilingError.serverError("Got IOException assembling the filing: " + ex));
     } catch (SQLException ex) {
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      ex.printStackTrace(pw);
+      log.error("SQL Error when making filing! " + ex.toString() + " " + sw.toString());    
       return Result.err(FilingError.serverError("Got SQLException assembling the filing: " + ex));
     }
   }

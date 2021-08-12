@@ -157,7 +157,7 @@ public class CodeDatabase extends DatabaseInterface {
       log.error("SQL Connection not created in CaseCategories yet");
       throw new SQLException();
     }
-    String query = CodeTableConstants.getCaseCategoriesForLoc();
+    String query = CaseCategory.getCaseCategoriesForLoc();
     PreparedStatement st = conn.prepareStatement(query);
     st.setString(1, courtLocationId);
     ResultSet rs = st.executeQuery();
@@ -176,7 +176,7 @@ public class CodeDatabase extends DatabaseInterface {
       return Optional.empty();
     }
     try {
-      String query = CodeTableConstants.getCaseCategoryForLoc();
+      String query = CaseCategory.getCaseCategoryForLoc();
       PreparedStatement st = conn.prepareStatement(query);
       st.setString(1, courtLocationId);
       st.setString(2, caseCat.name);
@@ -207,15 +207,14 @@ public class CodeDatabase extends DatabaseInterface {
       throw new SQLException();
     }
 
-    String query = CodeTableConstants.getCaseTypesFor();
+    String query = CaseType.getCaseTypesFor();
     PreparedStatement st = conn.prepareStatement(query);
     st.setString(1, courtLocationId);
     st.setString(2, caseCategoryCode);
     ResultSet rs = st.executeQuery();
     List<CaseType> types = new ArrayList<CaseType>();
     while (rs.next()) {
-      types.add(new CaseType(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
-          rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8)));
+      types.add(new CaseType(rs)); 
     }
     return types;
   }
@@ -227,7 +226,7 @@ public class CodeDatabase extends DatabaseInterface {
       throw new SQLException();
     }
     
-    String query = CodeTableConstants.getCaseTypesFor();
+    String query = CodeTableConstants.getCaseSubtypesFor();
     PreparedStatement st = conn.prepareStatement(query);
     st.setString(1, courtLocationId);
     st.setString(2, caseType);
@@ -239,27 +238,29 @@ public class CodeDatabase extends DatabaseInterface {
     return subtypes;
   }
 
-  public DataFieldRow getDataField(String courtLocationId, String dataName)
-      throws SQLException {
+  public DataFieldRow getDataField(String courtLocationId, String dataName) {
     if (conn == null) {
       log.error("SQL connection not created in DataField yet");
-      throw new SQLException();
+      return DataFieldRow.MissingDataField(dataName);
     }
 
-    String query = CodeTableConstants.getAllFromDataFieldConfigForLoc();
-    PreparedStatement st = conn.prepareStatement(query);
-    st.setString(1, courtLocationId);
-    st.setString(2, dataName);
-    ResultSet rs = st.executeQuery();
-    if (!rs.next()) {
-      return DataFieldRow.MissingDataField(dataName); 
+    try {
+      String query = CodeTableConstants.getAllFromDataFieldConfigForLoc();
+      PreparedStatement st = conn.prepareStatement(query);
+      st.setString(1, courtLocationId);
+      st.setString(2, dataName);
+      ResultSet rs = st.executeQuery();
+      if (!rs.next()) {
+        return DataFieldRow.MissingDataField(dataName); 
+      }
+      DataFieldRow dfr = new DataFieldRow(rs.getString(1), rs.getString(2), rs.getString(3),
+          rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8),
+          rs.getString(9), rs.getString(10), rs.getString(11), rs.getString(12));
+      return dfr;
+    } catch (SQLException ex) {
+      log.error("SQLException: " + ex.toString());
+      return DataFieldRow.MissingDataField(dataName);
     }
-
-    DataFieldRow dfr = new DataFieldRow(rs.getString(1), rs.getString(2), rs.getString(3),
-        rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8),
-        rs.getString(9), rs.getString(10), rs.getString(11), rs.getString(12));
-
-    return dfr;
   }
   
   public List<NameAndCode> getProcedureOrRemedy(String courtLocationId, String caseCategory) {
@@ -281,6 +282,40 @@ public class CodeDatabase extends DatabaseInterface {
       return names;
     } catch (SQLException ex) {
       log.error("SQLExeception: " + ex);
+      return List.of();
+    }
+  }
+  
+  public List<FilingCode> getFilingType(String courtLocationId, String categoryCode, String typeCode, boolean initial) {
+    if (conn == null) {
+      log.error("SQL connection not created in FilingType yet");
+      return List.of();
+    }
+    
+    String specificQuery = FilingCode.getFilingWithCaseInfo(initial);
+    try {
+      PreparedStatement specificSt = conn.prepareStatement(specificQuery);
+      specificSt.setString(1, courtLocationId);
+      specificSt.setString(2, categoryCode);
+      specificSt.setString(3, typeCode);
+      ResultSet rs = specificSt.executeQuery();
+      List<FilingCode> filingTypes = new ArrayList<FilingCode>();
+      while (rs.next()) {
+        filingTypes.add(new FilingCode(rs)); 
+      }
+      // If there's nothing for the specific category and type, then get filing types without categories or types
+      if (filingTypes.isEmpty()) {
+        String broadQuery = FilingCode.getFilingNoCaseInfo(initial);
+        PreparedStatement broadSt = conn.prepareStatement(broadQuery); 
+        broadSt.setString(1, courtLocationId);
+        ResultSet broadRs = broadSt.executeQuery();
+        while(broadRs.next()) {
+          filingTypes.add(new FilingCode(rs)); 
+        }
+      }
+      return filingTypes;
+    } catch (SQLException ex) {
+      log.error("SQLException: " + ex);
       return List.of();
     }
   }
@@ -308,18 +343,17 @@ public class CodeDatabase extends DatabaseInterface {
     }
   }
 
-  public List<PartyType> getPartyTypeFor(String courtLocationId, String caseCategory)
+  public List<PartyType> getPartyTypeFor(String courtLocationId, String typeCode)
       throws SQLException {
     if (conn == null) {
+      log.error("SQL connection not created in Party Type yet");
       throw new SQLException();
     }
 
-    String query = CodeTableConstants.getPartyTypeFromCaseType();
+    String query = PartyType.getPartyTypeFromCaseType();
     PreparedStatement st = conn.prepareStatement(query);
     st.setString(1, courtLocationId);
-    // TODO(brycew) get all of the Party Info type from the casetypeid and location
-    //st.set
-    //st.setString(2, caseCategory);
+    st.setString(2, typeCode);
     ResultSet rs = st.executeQuery();
     List<PartyType> partyTypes = new ArrayList<PartyType>();
     while (rs.next()) {
@@ -328,6 +362,42 @@ public class CodeDatabase extends DatabaseInterface {
     }
     return partyTypes;
   }
+
+  public List<DocumentTypeTableRow> getDocumentTypes(String courtLocationId, String filingCodeId) {
+    if (conn == null) {
+      log.error("SQL connection not created in Document Type yet");
+      return List.of();
+    }
+
+    try {
+      String specificQuery = DocumentTypeTableRow.getDocumentTypeWithFilingCode();
+      PreparedStatement specificSt = conn.prepareStatement(specificQuery);
+      specificSt.setString(1, courtLocationId);
+      specificSt.setString(2, filingCodeId);
+      ResultSet rs = specificSt.executeQuery();
+      List<DocumentTypeTableRow> docTypes = new ArrayList<DocumentTypeTableRow>();
+      while (rs.next()) {
+        docTypes.add(new DocumentTypeTableRow(rs.getString(1), rs.getString(2), 
+            rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7)));
+      }
+      if (docTypes.isEmpty()) {
+        String broadQuery = DocumentTypeTableRow.getDocumentTypeNoFiling();
+        PreparedStatement broadSt = conn.prepareStatement(broadQuery);
+        broadSt.setString(1, courtLocationId);
+        ResultSet broadRs = broadSt.executeQuery();
+        while (rs.next()) {
+        docTypes.add(new DocumentTypeTableRow(broadRs.getString(1), broadRs.getString(2), 
+            broadRs.getString(3), broadRs.getString(4), broadRs.getString(5), broadRs.getString(6), 
+            broadRs.getString(7)));
+        }
+      }
+      return docTypes;
+    } catch (SQLException ex) {
+      log.error("SQLException: " + ex.toString());
+      return List.of();
+    }
+  }
+
   
   public List<String> getStateCodes(String country) {
     if (conn == null) {
@@ -477,7 +547,7 @@ public class CodeDatabase extends DatabaseInterface {
       throw new SQLException();
     }
 
-    String query = CodeTableConstants.getDisclaimerRequirements();
+    String query = Disclaimer.getDisclaimerRequirements();
     PreparedStatement st = conn.prepareStatement(query);
     st.setString(1, courtLocation);
     ResultSet rs = st.executeQuery();

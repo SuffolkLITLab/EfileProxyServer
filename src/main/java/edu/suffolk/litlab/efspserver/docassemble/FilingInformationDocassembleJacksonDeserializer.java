@@ -162,8 +162,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     // how to best map LIST onto case categories, ECF is too high level
     String category_var_name = "tyler_case_category";
     JsonNode category = node.get(category_var_name);
-    JsonNode metadataElems = 
-        node.get("interview_metadata").get("elements");
+    JsonNode metadataElems = node.get("interview_metadata").get("elements");
     String key = metadataElems.fieldNames().next();
     if (metadataElems.size() >= 1) {
       log.warn("Only the first metadata element will be looked at: " + key); 
@@ -249,6 +248,7 @@ public class FilingInformationDocassembleJacksonDeserializer
         return Result.err(FilingError.missingRequired(bundleVar));
       }
     }
+
     for (int i = 0; i < elems.size(); i++) {
       Result<FilingDoc, FilingError> fil = FilingDocDocassembleJacksonDeserializer.fromNode(elems.get(i), collector);
       if (fil.isOk()) {

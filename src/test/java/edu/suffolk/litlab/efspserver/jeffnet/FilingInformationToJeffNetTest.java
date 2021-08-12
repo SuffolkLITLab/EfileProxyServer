@@ -12,7 +12,6 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
-import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -45,13 +44,15 @@ public class FilingInformationToJeffNetTest {
     Person defendant = new Person(new Name("Company LLC"), "", true);
     info.setDefendants(List.of(defendant));
     
-    NameAndCode regActionDesc = new NameAndCode("Complaint", "27967");
+    // TODO(brycew): CONTINUE
+    // Give the Filing this code
+    //NameAndCode regActionDesc = new NameAndCode("Complaint", "27967");
     // SELECT * from filingcomponent where location = 'adams' and
     // filingcodeid='27967';
     String componentCode = "332";
     String fileName = "quality_check_overlay.pdf";
     InputStream x = this.getClass().getResourceAsStream("/" + fileName); 
-    FilingDoc filingDoc = new FilingDoc(fileName, x, regActionDesc,
+    FilingDoc filingDoc = new FilingDoc(fileName, x,
         info.getPlaintiffs().stream().map((p) -> p.getIdString()).collect(
             Collectors.toList()), "5766",
         componentCode, FilingTypeType.E_FILE);

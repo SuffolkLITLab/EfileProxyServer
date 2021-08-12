@@ -47,3 +47,4 @@ client_sign.properties
 *:Zone.Identifier
 .history
 .vscode
+/bin/

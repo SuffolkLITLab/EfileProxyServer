@@ -1,6 +1,8 @@
 package edu.suffolk.litlab.efspserver.codes;
 
 import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class CaseType {
   public String code;
@@ -22,6 +24,16 @@ public class CaseType {
     this.willfileddate = willfileddate;
     this.efspcode = efspcode;
     this.location = location;
+  }
+  
+  /** A constructor that takes a result set (DOES NOT modify it), gotten from
+   * executing the below {@link getCaseTypesFor} query.
+   * @param rs
+ * @throws SQLException 
+   */
+  public CaseType(ResultSet rs) throws SQLException {
+      this(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
+              rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8));
   }
   
   // HACK(brycew): here for when CaseType isn't present, but we have AllWrong collector
@@ -50,4 +62,12 @@ public class CaseType {
     sb.append(location);
     return sb.toString();
   }
+
+  public static String getCaseTypesFor() {
+    return """
+        SELECT code, name, casecategory, initial,
+        fee, willfileddate, efspcode, location
+        FROM casetype WHERE location=? AND casecategory=?""";
+  }
+
 }

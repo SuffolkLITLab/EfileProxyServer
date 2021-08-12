@@ -17,4 +17,7 @@ public class Disclaimer {
     this(code, name, Integer.parseInt(listOrder), requirementText);
   }
 
+  public static String getDisclaimerRequirements() {
+    return "SELECT code, name, listorder, requirementtext FROM disclaimerrequirement WHERE location=?";
+  }
 }

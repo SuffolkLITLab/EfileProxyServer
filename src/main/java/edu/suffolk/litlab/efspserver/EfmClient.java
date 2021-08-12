@@ -1,13 +1,7 @@
 package edu.suffolk.litlab.efspserver;
 
-import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
-import edu.suffolk.litlab.efspserver.codes.NameAndCode;
-import edu.suffolk.litlab.efspserver.ecf.EcfCaseTypeFactory;
-import edu.suffolk.litlab.efspserver.services.FailFastCollector;
-import edu.suffolk.litlab.efspserver.services.FilingError;
-import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.TextType;
@@ -21,9 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collectors;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -31,9 +23,6 @@ import javax.xml.ws.BindingProvider;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.CoreFilingMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.feescalculationquerymessage_4.FeesCalculationQueryMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.feescalculationresponsemessage_4.FeesCalculationResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.FilingListQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistresponsemessage_4.FilingListResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistresponsemessage_4.MatchingFilingType;
@@ -43,7 +32,6 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
 import org.apache.cxf.headers.Header;
 import tyler.ecf.extensions.cancelfilingmessage.CancelFilingMessageType;
 import tyler.ecf.extensions.cancelfilingresponsemessage.CancelFilingResponseMessageType;
-import tyler.ecf.extensions.common.FilingTypeType;
 import tyler.ecf.extensions.filingdetailquerymessage.FilingDetailQueryMessageType;
 import tyler.ecf.extensions.filingdetailresponsemessage.FilingDetailResponseMessageType;
 import tyler.efm.services.EfmFirmService;
@@ -775,6 +763,7 @@ public final class EfmClient {
 
   // TODO(brycew): figure out how to pass in person information
   // TODO(brycew): not handling attorneys, only SRLs right now
+  /*
   public static Optional<CoreFilingMessageType> makeCivilCase(CodeDatabase cd,
       String courtLocationId, List<Person> plaintiffs, List<Person> defendants,
       CaseCategory caseCategoryCode, String caseType, String caseSubtype, List<FilingDoc> filingDocs,
@@ -839,6 +828,7 @@ public final class EfmClient {
       System.exit(1);
     }
   }
+  */
 
   public static void main(String[] args) throws JAXBException, SQLException, IOException {
     URL userWsdlUrl = EfmUserService.WSDL_LOCATION;
@@ -894,15 +884,17 @@ public final class EfmClient {
     // filing code: complaint (27967): got from filing table, location = 'adams',
     // casecategory='210',
     // and filingtype='Both' or 'Initial'
-    NameAndCode regActionDesc = new NameAndCode("Complaint", "27967");
+    //NameAndCode regActionDesc = new NameAndCode("Complaint", "27967");
     // SELECT * from filingcomponent where location = 'adams' and
     // filingcodeid='27967';
     String componentCode = "332";
     String fileName = "quality_check_overlay.pdf";
     InputStream x = EfmClient.class.getClassLoader().getResourceAsStream("/" + fileName); 
-    FilingDoc filingDoc = new FilingDoc(fileName, x, regActionDesc,
+    /*
+    FilingDoc filingDoc = new FilingDoc(fileName, x, "Complaint",// regActionDesc,
         plaintiffs.stream().map((p) -> p.getIdString()).collect(Collectors.toList()), "5766",
         componentCode, FilingTypeType.E_FILE);
+    */
 
     PaymentAccountListResponseType allAccs = firmPort.getPaymentAccountList();
     String paymentId = "";

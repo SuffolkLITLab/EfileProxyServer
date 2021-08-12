@@ -8,15 +8,16 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.hubspot.algebra.Result;
 
 import edu.suffolk.litlab.efspserver.FilingDoc;
-import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import edu.suffolk.litlab.efspserver.services.JsonExtractException;
+import tyler.ecf.extensions.common.FilingTypeType;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -54,12 +55,18 @@ public class FilingDocDocassembleJacksonDeserializer extends StdDeserializer<Fil
       URL inUrl = new URL(node.get("data_url").asText().replace("localhost", "docassemble"));
       // Get: filename
       String fileName = node.get("filename").asText() + ".pdf";
-      if (true /* TODO(brycew): put some check for motion here. */) {
+      if (true /* TODO(brycew): CONTINUE put some check for motion here. */) {
         InterviewVariable var = collector.requestVar("motion",
             "The Type of Motion that this interview is", "text");
         collector.addOptional(var);
       }
-      NameAndCode regActionDesc = new NameAndCode("Motion", "");
+      // TODO(brycew): CONTINUE
+      //NameAndCode regActionDesc = new NameAndCode("Motion", "");
+      String documentTypeFormatName = "";
+      if (node.has("document_type") && node.get("document_type").isTextual()) {
+        documentTypeFormatName = node.get("document_type").asText();
+        // Doesn't have to be a document type
+      }
       HttpURLConnection conn = (HttpURLConnection) inUrl.openConnection();
       conn.setRequestMethod("GET");
       InputStream inStream = conn.getInputStream();
@@ -67,7 +74,8 @@ public class FilingDocDocassembleJacksonDeserializer extends StdDeserializer<Fil
         FilingError err = FilingError.serverError("Couldn't connect to " + inUrl.toString());
         return Result.err(err);
       }
-      return Result.ok(new FilingDoc(fileName, inStream, regActionDesc));
+      return Result.ok(new FilingDoc(fileName, inStream,
+              List.of(), documentTypeFormatName, "", FilingTypeType.E_FILE));
     } catch (IOException ex)  {
       FilingError err = FilingError.serverError("IOException trying to parse data_url: " + ex);
       return Result.err(err);

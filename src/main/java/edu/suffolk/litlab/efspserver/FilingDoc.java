@@ -1,48 +1,38 @@
 package edu.suffolk.litlab.efspserver;
 
-import edu.suffolk.litlab.efspserver.codes.NameAndCode;
-import gov.niem.niem.niem_core._2.DateType;
-import gov.niem.niem.proxy.xsd._2.Base64Binary;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import javax.xml.bind.JAXBElement;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentAttachmentType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentMetadataType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentRenditionMetadataType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentRenditionType;
-import tyler.ecf.extensions.common.DocumentType;
 import tyler.ecf.extensions.common.FilingTypeType;
 
 // TODO(brycew): this class is a mess. Redo please
 public class FilingDoc {
   // Provides Document Type code / BinaryFormatStandardName
-  String fileName; 
-  byte[] fileContents;
-  Optional<String> userProvidedDescription;
+  private String fileName; 
+  private byte[] fileContents;
+  private Optional<String> userProvidedDescription;
   // TODO(brycew): what is this? Might be able to be a dup of the GUID,
   // it's returned with Get FilingList
-  String documentFileControlId; 
+  private String documentFileControlId; 
   // See DueDateAvailableForFilers datafield and DocumentInformationCutOffDate
-  Optional<LocalDate> dueDate; 
+  private Optional<LocalDate> dueDate; 
   // A valid filing code (complaint, motion, Appearance, Motion, etc.)
-  NameAndCode regActionDesc;
+  // Sets the RegActionDesc attribute
+  //private String filingCodeName;
   private UUID id;
   
   // Required to at least have one
-  List<String> filingPartyIds;
+  private List<String> filingPartyIds;
   // TODO(brycew): see FilingFilingAttorneyView data field config
-  Optional<String> filingAttorney; 
+  private Optional<String> filingAttorney; 
   
   // This is, "determined via configuration within the EFM for each EFSP"?
   // So, we can just say yes?
-  boolean sendInBase64 = true;
-  // Literally should just be if it's confidential or not. (or "Hot fix" or public).
-  // Search options in "documenttype" table with location
   String documentTypeFormatStandardName;
+  boolean sendInBase64 = true;
   String binaryCategoryComponent;
   
   // From filer, about this filing
@@ -55,8 +45,8 @@ public class FilingDoc {
 
   private boolean isLeadDoc;
   
-  public FilingDoc(String fileName, InputStream fileStream, NameAndCode regActionDesc) throws IOException {
-    this(fileName, fileStream, regActionDesc, List.of(), "");
+  public FilingDoc(String fileName, InputStream fileStream) throws IOException {
+    this(fileName, fileStream, List.of(), "");
   }
   
   /** FilingDoc constructor for Jefferson Parish data. 
@@ -64,22 +54,19 @@ public class FilingDoc {
    * @throws IOException If the input stream can't be opened or read from
    */
   public FilingDoc(String fileName, InputStream fileStream,
-      NameAndCode regActionDesc, List<String> filingPartyIds,
+      List<String> filingPartyIds,
       String filingComments) throws IOException  {
-    this(fileName, fileStream.readAllBytes(), Optional.empty(), "", Optional.empty(), regActionDesc,
+    this(fileName, fileStream.readAllBytes(), Optional.empty(), "", Optional.empty(), 
         filingPartyIds, Optional.empty(), "", "", "", Optional.empty(),
         List.of(), List.of(), FilingTypeType.E_FILE, true);
-    String[] splits = fileName.split("\\.");
-    if (splits.length > 1) {
-      documentTypeFormatStandardName = splits[1]; 
-    }
+    this.documentTypeFormatStandardName = ""; // Default to blank: we can't get the confidential code
   }
   
   public FilingDoc(String fileName, InputStream fileStream,
-      NameAndCode regActionDesc, List<String> filingPartyIds,
+      List<String> filingPartyIds,
       String documentTypeFormatStandardName,
       String binaryCategoryComponent, FilingTypeType filingAction) throws IOException {
-    this(fileName, fileStream.readAllBytes(), Optional.empty(), "", Optional.empty(), regActionDesc,
+    this(fileName, fileStream.readAllBytes(), Optional.empty(), "", Optional.empty(), 
         filingPartyIds, Optional.empty(), documentTypeFormatStandardName, 
         binaryCategoryComponent, "", Optional.empty(), List.of(), List.of(), 
         filingAction, true);
@@ -87,7 +74,7 @@ public class FilingDoc {
 
   /** Full constructor, in all it's mess. */
   public FilingDoc(String fileName, byte[] fileContents, Optional<String> userProvidedDescription,
-      String documentFileControlId, Optional<LocalDate> dueDate, NameAndCode regActionDesc,
+      String documentFileControlId, Optional<LocalDate> dueDate, 
       List<String> filingPartyIds, Optional<String> filingAttorney,
       String documentTypeFormatStandardName, String binaryCategoryComponent,
       String filingComments, Optional<String> motionType,
@@ -98,7 +85,6 @@ public class FilingDoc {
     this.userProvidedDescription = userProvidedDescription;
     this.documentFileControlId = documentFileControlId;
     this.dueDate = dueDate;
-    this.regActionDesc = regActionDesc;
     this.id = UUID.randomUUID();
     this.filingPartyIds = filingPartyIds;
     this.filingAttorney = filingAttorney;
@@ -133,85 +119,14 @@ public class FilingDoc {
     this.filingPartyIds = filingPartyIds;
   }
   
-  public NameAndCode getRegisterAction() {
-    return regActionDesc;
+  public String getDescription() {
+    return userProvidedDescription.orElse(fileName);
   }
   
   public byte[] getFileContents() {
     return fileContents;
   }
   
-  public JAXBElement<DocumentType> asDocument(int sequenceNum) throws IOException {
-    tyler.ecf.extensions.common.ObjectFactory tylerObjFac = 
-        new tyler.ecf.extensions.common.ObjectFactory();
-    gov.niem.niem.niem_core._2.ObjectFactory niemObjFac = 
-        new gov.niem.niem.niem_core._2.ObjectFactory();
-    DocumentType docType = tylerObjFac.createDocumentType();
-    String desc = userProvidedDescription.orElse(fileName);
-    docType.setDocumentDescriptionText(XmlHelper.convertText(desc));
-
-    docType.setDocumentFileControlID(XmlHelper.convertString(documentFileControlId)); 
-    dueDate.ifPresent((date) -> {
-      DateType cutOffDate = XmlHelper.convertDate(date); 
-      docType.setDocumentInformationCutOffDate(cutOffDate);
-    });
-    
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory oasisObjFac = 
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-    docType.setDocumentSequenceID(XmlHelper.convertString(Integer.toString(sequenceNum)));
-    DocumentMetadataType metadata = oasisObjFac.createDocumentMetadataType();
-    metadata.setRegisterActionDescriptionText(XmlHelper.convertText(regActionDesc.getCode()));
-    if (filingAttorney.isPresent()) {
-      metadata.setFilingAttorneyID(XmlHelper.convertId(filingAttorney.get(), "REFERENCE"));
-    } else {
-      // "This field should contain empty values for Individual filers"
-      metadata.setFilingAttorneyID(XmlHelper.convertId("", "")); 
-    }
-    for (String filingPartyId : filingPartyIds) {
-      metadata.getFilingPartyID().add(XmlHelper.convertId(filingPartyId, "REFERENCE"));
-    }
-    docType.setDocumentMetadata(metadata);
-    
-    // TODO(brycew): what should this actually be? Very unclear
-    DocumentAttachmentType attachment = oasisObjFac.createDocumentAttachmentType();
-    attachment.setBinaryDescriptionText(XmlHelper.convertText(fileName)); 
-    attachment.setBinaryCategoryText(XmlHelper.convertText(binaryCategoryComponent));
-    
-    
-    attachment.setBinaryFormatStandardName(XmlHelper.convertText(documentTypeFormatStandardName));
-    if (sendInBase64) {
-      attachment.setBinaryLocationURI(XmlHelper.convertUri(fileName));
-      JAXBElement<Base64Binary> n = 
-          niemObjFac.createBinaryBase64Object(XmlHelper.convertBase64(fileContents));
-      //System.err.println(XmlHelper.objectToXmlStrOrError(n.getValue(), Base64Binary.class));
-      attachment.setBinaryObject(n); 
-    } else {
-      // TODO(brycew): DO this: make the file downloadable from the Proxy server
-    }
-    // The document itself
-    DocumentRenditionMetadataType renditionMetadata = 
-        oasisObjFac.createDocumentRenditionMetadataType();
-    renditionMetadata.getDocumentAttachment().add(attachment);
-    
-    DocumentRenditionType rendition = oasisObjFac.createDocumentRenditionType();
-    rendition.setDocumentRenditionMetadata(renditionMetadata);
-    docType.getDocumentRendition().add(rendition);
-    
-    String cc = courtesyCopies.stream().reduce("", (base, str) -> base + "," + str);
-    docType.setCourtesyCopiesText(XmlHelper.convertText(cc));
-    String prelim = preliminaryCopies.stream().reduce("", (base, str) -> base + "," + str);
-    docType.setPreliminaryCopiesText(XmlHelper.convertText(prelim));
-    docType.setFilingCommentsText(XmlHelper.convertText(filingComments));
-    motionType.ifPresent((mt) -> docType.setMotionTypeCode(XmlHelper.convertText(mt)));
-    docType.setFilingAction(filingAction);
-
-    if (isLeadDoc) {
-      return tylerObjFac.createFilingLeadDocument(docType);
-    } else {
-      return tylerObjFac.createFilingConnectedDocument(docType);
-    }
-  }
-
   public String getFilingComments() {
     return filingComments;
   }
@@ -222,5 +137,45 @@ public class FilingDoc {
 
   public String getFileName() {
     return fileName;
+  }
+  
+  public String getDocumentFileControlId() {
+    return documentFileControlId;
+  }
+  
+  public Optional<String> getFilingAttorney() {
+    return filingAttorney;
+  }
+  
+  public Optional<LocalDate> getDueDate() {
+    return dueDate;
+  }
+  
+  public boolean getInBase64() {
+    return sendInBase64;
+  }
+  
+  public String getBinaryCategoryComponent() {
+    return binaryCategoryComponent;
+  }
+  
+  public String getDocumentTypeFormatStandardName() {
+    return documentTypeFormatStandardName;
+  }
+  
+  public List<String> getCourtesyCopies() {
+    return courtesyCopies;
+  }
+  
+  public List<String> getPreliminaryCopies() {
+    return preliminaryCopies;
+  }
+  
+  public Optional<String> getMotionType() {
+    return motionType;
+  }
+  
+  public FilingTypeType getFilingAction() {
+    return filingAction;
   }
 }

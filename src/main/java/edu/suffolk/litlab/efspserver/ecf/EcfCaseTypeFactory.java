@@ -9,6 +9,7 @@ import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import edu.suffolk.litlab.efspserver.codes.CaseType;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
+import edu.suffolk.litlab.efspserver.codes.FilingCode;
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.codes.PartyType;
 import edu.suffolk.litlab.efspserver.services.FilingError;
@@ -63,7 +64,8 @@ public class EcfCaseTypeFactory {
       makeCaseTypeFromTylerCategory(
       String courtLocationId,
       CaseCategory initialCaseCategory,
-      String caseType,
+      CaseType caseType,
+      FilingCode filing,
       String caseSubType,
       List<Person> plaintiffs, List<Person> defendants,
       List<String> filingIds,
@@ -71,27 +73,17 @@ public class EcfCaseTypeFactory {
       // HACK(brycew): hacky: needed because fee querys put the payment stuff in the tyler Aug
       String queryType, 
       JsonNode miscInfo, // TODO(brycew): if we get XML Answer files, this isn't generic
+      EcfCourtSpecificSerializer serializer,
       InfoCollector collector
   ) throws SQLException {
-    Optional<CaseCategory> maybeCaseCat = cd.getCaseCategoryFor(courtLocationId, initialCaseCategory);
-    if (maybeCaseCat.isEmpty()) {
-      List<CaseCategory> categories = cd.getCaseCategoriesFor(courtLocationId);
-      // TODO(brycew): handle that these variables could be different from different deserializers
-      InterviewVariable var = collector.requestVar("tyler_case_category", "", "choice", 
-          categories.stream().map(cat -> cat.name).collect(Collectors.toList()));
-      collector.addWrong(var);
-      // Foundational error: Category is sorely needed
-      return Result.err(FilingError.wrongValue(var));
-    }
-    
-    CaseCategory caseCategory = maybeCaseCat.get();
+    CaseCategory caseCategory = initialCaseCategory; 
     String caseCategoryCode = caseCategory.code.get();
     JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug = 
         makeNiemCaseAug(courtLocationId);
     Result<JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType>, FilingError> tylerAug = 
               makeTylerCaseAug(courtLocationId, caseCategory, 
                   caseType, caseSubType, plaintiffs, defendants, filingIds,
-                  paymentId, queryType, miscInfo, collector);
+                  paymentId, queryType, miscInfo, serializer, collector);
     if (tylerAug.isErr()) {
       return tylerAug.mapOk(o -> null);
     }
@@ -99,7 +91,7 @@ public class EcfCaseTypeFactory {
     if (caseCategory.ecfcasetype.equals("CivilCase")) {
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase = 
           makeCivilCaseType(
-              caseAug, tylerAug.unwrapOrElseThrow(),
+              caseAug, tylerAug.unwrapOrElseThrow(), filing,
               // TODO(brycew) from the gson
               new BigDecimal(500.0));
       myCase.getValue().setCaseCategoryText(XmlHelper.convertText(caseCategoryCode)); 
@@ -128,12 +120,13 @@ public class EcfCaseTypeFactory {
       makeTylerCaseAug(
           String courtLocationId,
           CaseCategory caseCategory,
-          String caseType,
+          CaseType caseType,
           String caseSubtype,
           List<Person> plaintiffs, List<Person> defendants,
           List<String> filingIds,
           String paymentId, String queryType, 
           JsonNode miscInfo,
+          EcfCourtSpecificSerializer serializer,
           InfoCollector collector
   ) throws SQLException {
     // NOTE: in the code tables, only a handful of outliers have more than 1 code for the same category per location
@@ -151,46 +144,27 @@ public class EcfCaseTypeFactory {
     gov.niem.niem.niem_core._2.ObjectFactory of = new gov.niem.niem.niem_core._2.ObjectFactory();
 
     
-    List<CaseType> caseTypes = cd.getCaseTypesFor(courtLocationId, caseCategory.code.get());
-    if (caseTypes.isEmpty()) {
-      return Result.err(FilingError.serverError("There are no caseTypes for " + courtLocationId + " and " + caseCategory.code.get()));
+    if (caseType.code.isEmpty()){
+      log.warn("Type's code is empty?: " + caseType); 
+    } 
+    else {
+      log.info("Setting case type text to " + caseType.toString());
+      ecfAug.setCaseTypeText(XmlHelper.convertText(caseType.code));
     }
-    Optional<CaseType> maybeType = caseTypes.stream()
-        .filter(type -> type.name.equals(caseType))
-        .findFirst();
+
     
-    if (maybeType.isEmpty()) {
-      InterviewVariable var = collector.requestVar("tyler_case_type",  "",  "choice",
-          caseTypes.stream().map(type -> type.name).collect(Collectors.toList()));
-      collector.addWrong(var);
-      if (collector.finished()) {
-        return Result.err(FilingError.wrongValue(var));
-      }
-    } else if (maybeType.get().code.isEmpty()){
-      log.warn("Type's code is empty?: " + maybeType.get());
-    } else {
-      log.info("Setting case type text to " + maybeType.get().toString());
-      ecfAug.setCaseTypeText(XmlHelper.convertText(maybeType.get().code));
-    }
-
-
-    List<NameAndCode> subTypes = cd.getCaseSubtypesFor(courtLocationId, maybeType.get().name);
+    List<NameAndCode> subTypes = cd.getCaseSubtypesFor(courtLocationId, caseType.code);
     Optional<NameAndCode> maybeSubtype = subTypes.stream()
-        .filter(type -> type.equals(caseType))
+        .filter(type -> type.getName().equals(caseType))
         .findFirst();
     
-    if (maybeSubtype.isEmpty()) {
-      // TODO(brycew): it's empty right now! Not sure how to handle.
-    } else {
+    if (maybeSubtype.isPresent()) {
       ecfAug.setCaseSubTypeText(XmlHelper.convertText(maybeSubtype.get().getCode()));
+    } else {
+      // TODO(brycew): it's empty right now! Not sure how to handle.
     }
     
-    List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocationId, caseCategory.name);
-    
-    EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, courtLocationId);
-
-    // TODO(brycew): continue
-    //cd.getPartyTypeFor();
+    List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocationId, caseType.code); 
     
     for (Person plaintiff : plaintiffs) {
       Result<CaseParticipantType, FilingError> partip = serializer.serializeEcfCaseParticipant(plaintiff, collector); 
@@ -225,7 +199,7 @@ public class EcfCaseTypeFactory {
     gov.niem.niem.proxy.xsd._2.Boolean falseVal = XmlHelper.convertBool(false); 
     ecfAug.setAttachServiceContactIndicator(falseVal);
     
-    boolean initial = maybeType.orElse(CaseType.DummyCase()).initial;
+    boolean initial = caseType.initial;
     Result<Optional<ProcedureRemedyType>, FilingError> res = makeProcedureRemedyType(initial, 
         caseCategory, courtLocationId, miscInfo, collector);
     if (res.isErr()) {
@@ -242,7 +216,12 @@ public class EcfCaseTypeFactory {
         ecfAug.setProcedureRemedy(procRem.get());
       }
     });
+
+    // Filing
     // TODO(brycew): FilerType is an empty table, so can't tell what it might be
+    // TODO(brycew): FilingComponent
+    // TODO(brycew): optional service
+    
 
     DataFieldRow filingcaseparties = 
         cd.getDataField(courtLocationId, "FilingEventCaseParties");
@@ -384,6 +363,7 @@ public class EcfCaseTypeFactory {
   private JAXBElement<CivilCaseType> makeCivilCaseType(
       JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
       JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
+      FilingCode filing,
       BigDecimal amountInControversy) {
     oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory ecfCivilObjFac = 
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory();
@@ -396,10 +376,12 @@ public class EcfCaseTypeFactory {
     JAXBElement<TextType> causeOfAction = ecfCommonObjFac.createCauseOfActionCode(new TextType());
     c.getRest().add(causeOfAction);
 
-    AmountType amount = new AmountType();
-    amount.setValue(amountInControversy);
-    amount.setCurrencyCode(CurrencyCodeSimpleType.USD);
-    c.getRest().add(ecfCivilObjFac.createAmountInControversy(amount));
+    if (filing.amountincontroversy.equals("Required")) {
+      AmountType amount = new AmountType();
+      amount.setValue(amountInControversy);
+      amount.setCurrencyCode(CurrencyCodeSimpleType.USD);
+      c.getRest().add(ecfCivilObjFac.createAmountInControversy(amount));
+    }
     c.getRest().add(ecfCivilObjFac.createClassActionIndicator(XmlHelper.convertBool(false)));
     c.getRest().add(ecfCivilObjFac.createJurisdictionalGroundsCode(XmlHelper.convertText("")));
     c.getRest().add(ecfCivilObjFac.createJuryDemandIndicator(XmlHelper.convertBool(false)));

@@ -425,42 +425,12 @@ public class CodeTableConstants {
         WHERE (iv.installedversion IS NULL) OR (v.version != iv.installedversion)""";
   }
   
-  public static String getPartyTypeFromCaseType() {
-    return """
-        SELECT p.code, p.name, p.isavailablefornewparties, p.casetypeid, p.isrequired, p.amount, p.numberofpartiestoignore, p.sendforredaction, p.dateofdeath, p.displayorder, p.efspcode, p.location 
-        FROM partytype AS p 
-        WHERE p.location=? AND p.casetypeid=?""";
-  }
-  
-  public static String getCaseCategoriesForLoc() {
-    return """  
-        SELECT code, name, ecfcasetype, procedureremedyinitial,
-        procedureremedysubsequent, damageamountinitial, damageamountsubsequent
-        FROM casecategory WHERE location=?""";
-  }
-
-  public static String getCaseCategoryForLoc() {
-    return """  
-        SELECT code, name, ecfcasetype, procedureremedyinitial,
-        procedureremedysubsequent, damageamountinitial, damageamountsubsequent
-        FROM casecategory WHERE location=? AND name=?""";
- }
-  
-  public static String getCaseTypesFor() {
-    return """
-        SELECT code, name, casecategory, initial,
-        fee, willfileddate, efspcode, location
-        FROM casetype WHERE location=? AND casecategory=?""";
-  }
-
   public static String getCaseSubtypesFor() {
     return "SELECT code, name "
         + "FROM casesubtype WHERE location=? AND casetypeid=?";
   }
 
-  public static String getDisclaimerRequirements() {
-    return "SELECT code, name, listorder, requirementtext FROM disclaimerrequirement WHERE location=?";
-  }
+  
   
   /** Gets all columns from datafieldconfig table
    * Need to provide the location (1) and the code (2) of the field.
