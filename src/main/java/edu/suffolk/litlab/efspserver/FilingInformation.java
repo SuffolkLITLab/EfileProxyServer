@@ -9,7 +9,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class FilingInformation {
   private String courtLocationId;
   private List<Person> plaintiffs;
+  private String plaintiffPartyType;
   private List<Person> defendants;
+  private String defendantPartyType;
 
   // TODO(brycew): refactor so this is selected only in Tyler stuff
   private CaseCategory caseCategory;
@@ -56,8 +58,16 @@ public class FilingInformation {
     return plaintiffs;
   }
   
+  public String getPlantiffPartyType() {
+    return plaintiffPartyType;
+  }
+  
   public List<Person> getDefendants() {
     return defendants;
+  }
+  
+  public String getDefendantPartyType() {
+    return defendantPartyType;
   }
   
   public CaseCategory getCaseCategory() {
@@ -88,14 +98,22 @@ public class FilingInformation {
     this.courtLocationId = courtLocationId;
   }
   
-  public void setDefendants(List<Person> defendants) {
-    this.defendants = defendants;
-  }
-
   public void setPlaintiffs(List<Person> plaintiffs) {
     this.plaintiffs = plaintiffs;
   }
   
+  public void setPlaintiffPartyType(String plaintiffPartyType) {
+    this.plaintiffPartyType = plaintiffPartyType;
+  }
+  
+  public void setDefendants(List<Person> defendants) {
+    this.defendants = defendants;
+  }
+  
+  public void setDefendantPartyType(String defendantPartyType) {
+    this.defendantPartyType = defendantPartyType;
+  }
+
   public void setCaseCategory(CaseCategory caseCategory) {
     this.caseCategory = caseCategory;
   }

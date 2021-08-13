@@ -90,6 +90,7 @@ public class EcfCourtSpecificSerializer {
       ((OrganizationAugmentationType) aug).getContactInformation().add(cit.unwrapOrElseThrow());
       OrganizationType ot = ecfOf.createOrganizationType();
       ot.setOrganizationName(XmlHelper.convertText(per.getName().getFullName()));
+      ot.setId(per.getIdString());
       ot.getRest().add(ecfOf.createOrganizationAugmentation((OrganizationAugmentationType) aug));
       CaseParticipantType cpt = ecfOf.createCaseParticipantType();
       cpt.setEntityRepresentation(ecfOf.createEntityOrganization(ot));
@@ -240,8 +241,7 @@ public class EcfCourtSpecificSerializer {
     gov.niem.niem.niem_core._2.ObjectFactory niemObjFac = 
         new gov.niem.niem.niem_core._2.ObjectFactory();
     DocumentType docType = tylerObjFac.createDocumentType();
-    String desc = doc.getDescription(); 
-    docType.setDocumentDescriptionText(XmlHelper.convertText(desc));
+    docType.setDocumentDescriptionText(XmlHelper.convertText(doc.getDescription()));
 
     docType.setDocumentFileControlID(XmlHelper.convertString(doc.getDocumentFileControlId())); 
     doc.getDueDate().ifPresent((date) -> {
@@ -255,11 +255,9 @@ public class EcfCourtSpecificSerializer {
     DocumentMetadataType metadata = oasisObjFac.createDocumentMetadataType();
     
     
-    // TODO(brycew): make a filing / document / filing component split between everything
-    // TODO(brycew): a new Filing class, and a separate document class
+    // TODO(brycew): make a document / filing component split between everything,
+    metadata.setRegisterActionDescriptionText(XmlHelper.convertText(filing.code));
 
-    // TODO(brycew): CONTINUE
-    metadata.setRegisterActionDescriptionText(XmlHelper.convertText("")); //doc.getRegisterAction().getCode()));
     if (doc.getFilingAttorney().isPresent()) {
       metadata.setFilingAttorneyID(XmlHelper.convertId(doc.getFilingAttorney().get(), "REFERENCE"));
     } else {
@@ -363,8 +361,12 @@ public class EcfCourtSpecificSerializer {
 
         USStateCodeType stateCode = new USStateCodeType();
         stateCode.setValue(stateSimple);
-        sat.setLocationState(coreObjFac.createLocationStateUSPostalServiceCode(stateCode));
-        return true;
+        // NOTE(brycew): we used to be able to set the USPostalServiceCode element, but
+        // Tyler responds with "Incomplete address ... LocationStateName ... required.
+        // Letting this fall through to the bottom 
+
+        //sat.setLocationState(coreObjFac.createLocationStateUSPostalServiceCode(stateCode));
+        //return true;
       } catch (IllegalArgumentException ex) {
         log.error("DevOps ERROR: " + ex);
         return false;

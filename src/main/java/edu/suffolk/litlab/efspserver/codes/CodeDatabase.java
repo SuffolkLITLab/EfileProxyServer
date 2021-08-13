@@ -357,8 +357,7 @@ public class CodeDatabase extends DatabaseInterface {
     ResultSet rs = st.executeQuery();
     List<PartyType> partyTypes = new ArrayList<PartyType>();
     while (rs.next()) {
-      partyTypes
-          .add(new PartyType(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(5)));
+      partyTypes.add(new PartyType(rs)); 
     }
     return partyTypes;
   }

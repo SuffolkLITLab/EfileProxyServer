@@ -67,7 +67,10 @@ public class EcfCaseTypeFactory {
       CaseType caseType,
       FilingCode filing,
       String caseSubType,
-      List<Person> plaintiffs, List<Person> defendants,
+      List<Person> plaintiffs, 
+      String plaintiffPartyType,
+      List<Person> defendants,
+      String defendantPartyType,
       List<String> filingIds,
       String paymentId,
       // HACK(brycew): hacky: needed because fee querys put the payment stuff in the tyler Aug
@@ -82,7 +85,9 @@ public class EcfCaseTypeFactory {
         makeNiemCaseAug(courtLocationId);
     Result<JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType>, FilingError> tylerAug = 
               makeTylerCaseAug(courtLocationId, caseCategory, 
-                  caseType, caseSubType, plaintiffs, defendants, filingIds,
+                  caseType, caseSubType, plaintiffs, plaintiffPartyType, defendants, 
+                  defendantPartyType, 
+                  filingIds,
                   paymentId, queryType, miscInfo, serializer, collector);
     if (tylerAug.isErr()) {
       return tylerAug.mapOk(o -> null);
@@ -122,7 +127,10 @@ public class EcfCaseTypeFactory {
           CaseCategory caseCategory,
           CaseType caseType,
           String caseSubtype,
-          List<Person> plaintiffs, List<Person> defendants,
+          List<Person> plantiffs, 
+          String plantiffPartyType,
+          List<Person> defendants,
+          String defendantPartyType,
           List<String> filingIds,
           String paymentId, String queryType, 
           JsonNode miscInfo,
@@ -155,7 +163,7 @@ public class EcfCaseTypeFactory {
     
     List<NameAndCode> subTypes = cd.getCaseSubtypesFor(courtLocationId, caseType.code);
     Optional<NameAndCode> maybeSubtype = subTypes.stream()
-        .filter(type -> type.getName().equals(caseType))
+        .filter(type -> type.getName().equals(caseSubtype))
         .findFirst();
     
     if (maybeSubtype.isPresent()) {
@@ -165,18 +173,41 @@ public class EcfCaseTypeFactory {
     }
     
     List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocationId, caseType.code); 
+    List<PartyType> requiredTypes = partyTypes.stream().filter(t -> t.isrequired).collect(Collectors.toList());
+    if (requiredTypes.size() > 2) { 
+      FilingError err = FilingError.serverError("DEV ERROR: there are more than 2 required parties ("
+          + requiredTypes + "), but only 2 are supported");
+      collector.error(err);
+      return Result.err(err);
+    }
+    List<String> partyTypeNames = requiredTypes.stream().map(p -> p.name).collect(Collectors.toList());
+    if (!partyTypeNames.contains(plantiffPartyType)) {
+      InterviewVariable plantiffVar = collector.requestVar("plantiff_party_type", "Legal role of the plantiff", "choices", partyTypeNames);
+      collector.addWrong(plantiffVar);
+      if (collector.finished()) {
+        return Result.err(FilingError.wrongValue(plantiffVar));
+      }
+    }
+
+    if (!partyTypeNames.contains(defendantPartyType)) {
+      InterviewVariable defendantVar = collector.requestVar("defendant_party_type", "Legal role of the defendant", "choices", partyTypeNames);
+      collector.addWrong(defendantVar);
+      if (collector.finished()) {
+        return Result.err(FilingError.wrongValue(defendantVar));
+      }
+    }
     
-    for (Person plaintiff : plaintiffs) {
-      Result<CaseParticipantType, FilingError> partip = serializer.serializeEcfCaseParticipant(plaintiff, collector); 
+    for (Person plantiff : plantiffs) {
+      Result<CaseParticipantType, FilingError> partip = serializer.serializeEcfCaseParticipant(plantiff, collector); 
       if (partip.isErr()) {
         return partip.mapOk(o -> null);
       }
       CaseParticipantType cp = partip.unwrapOrElseThrow();
       TextType tt = of.createTextType();
       partyTypes.stream()
-          .filter((pt) -> pt.partyTypeName.toLowerCase().contains("plaintiff"))
+          .filter(pt -> pt.name.equalsIgnoreCase(plantiffPartyType))
           .findFirst()
-          .ifPresent((pt) -> tt.setValue(pt.partyTypeCode));
+          .ifPresent(pt -> tt.setValue(pt.code));
       cp.setCaseParticipantRoleCode(tt);
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
     }
@@ -189,9 +220,9 @@ public class EcfCaseTypeFactory {
       CaseParticipantType cp = partip.unwrapOrElseThrow();
       TextType tt = of.createTextType();
       partyTypes.stream()
-          .filter((pt) -> pt.partyTypeName.toLowerCase().contains("defendant"))
+          .filter((pt) -> pt.name.equalsIgnoreCase(defendantPartyType))
           .findFirst()
-          .ifPresent((pt) -> tt.setValue(pt.partyTypeCode));
+          .ifPresent((pt) -> tt.setValue(pt.code));
       cp.setCaseParticipantRoleCode(tt);
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
     }

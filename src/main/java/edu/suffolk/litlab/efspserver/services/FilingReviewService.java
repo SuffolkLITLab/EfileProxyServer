@@ -92,6 +92,11 @@ public class FilingReviewService {
     MediaType mediaType = httpHeaders.getMediaType();
     log.trace("Checking a filing: Media type: " + mediaType);  
     log.trace("Court id: " + courtId);
+    Optional<String> activeToken = security.checkLogin(httpHeaders.getHeaderString("X-API-KEY"), 
+        filingInterfaces.get(courtId).getOrgName());
+    if (activeToken.isEmpty()) {
+      return Response.status(401).entity("Not logged in to efile").build();
+    }
     if (!filingInterfaces.containsKey(courtId)) {
       return Response.status(404).entity("Cannot send filing to " + courtId).build();
     }
@@ -103,7 +108,9 @@ public class FilingReviewService {
     if (res.isErr()) {
       return Response.ok(collector.jsonSummary()).build();
     }
-    filingInterfaces.get(courtId).checkFiling(res.unwrapOrElseThrow(), collector);
+    FilingInformation info = res.unwrapOrElseThrow();
+    info.setCourtLocation(courtId);
+    filingInterfaces.get(courtId).checkFiling(info, collector);
     return Response.ok(collector.jsonSummary()).build();
   }
   
