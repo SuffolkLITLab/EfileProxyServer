@@ -6,26 +6,39 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBException;
 import javax.xml.ws.BindingProvider;
 
+import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
+import tyler.efm.services.EfmFirmService;
+import tyler.efm.services.IEfmFirmService;
 
 public class ServiceHelpers {
   private static Logger log = LoggerFactory.getLogger(
       ServiceHelpers.class);
 
-  static Map<String, Integer> tylerToHttp;
+  /**
+   * One of the ways that you can communicate over ECF. For more information, see
+   * https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Toc425241629
+   */
+  public static final String MDE_PROFILE_CODE = 
+      "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0";
+
   public static String ASSEMBLY_PORT = "/filingassembly/callbacks/FilingAssemblyMDEPort";
   public static String BASE_URL;
   public static String SERVICE_URL; 
   public static String REST_CALLBACK_URL;
+  static Map<String, Integer> tylerToHttp;
   static {
     String env_url = System.getenv("CURRENT_URL");
     if (env_url == null || env_url.isBlank()) {
@@ -35,16 +48,7 @@ public class ServiceHelpers {
     BASE_URL = "http://" + env_url;
     SERVICE_URL = BASE_URL + ASSEMBLY_PORT;
     REST_CALLBACK_URL = BASE_URL + "/courts/%s/filing/status"; 
-  }
 
-  /**
-   * One of the ways that you can communicate over ECF. For more information, see
-   * https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Toc425241629
-   */
-  public static final String MDE_PROFILE_CODE = 
-      "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0";
-
-  static {
     tylerToHttp = new HashMap<String, Integer>();
     // First three are ones that the proxy should handle well. If we don't then it's our fault.
     // Message received in substitution message format but extended message format expected.
@@ -63,10 +67,12 @@ public class ServiceHelpers {
     tylerToHttp.put("0", 200); 
     tylerToHttp.put("169", 422); // Invalid birthdate
     tylerToHttp.put("170", 422); // Invalid password (when making an account? TODO(brycew))
-    
-    
   }
   
+  private static EfmFirmService firmFactory = new EfmFirmService(
+      EfmFirmService.WSDL_LOCATION, 
+      EfmFirmService.SERVICE);
+
   public static Optional<TylerUserNamePassword> userCredsFromAuthorization(String userColonPassword) {
     if (!userColonPassword.contains(":")) {
       return Optional.empty();
@@ -149,4 +155,33 @@ public class ServiceHelpers {
     reply.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
     reply.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
   }
+
+  public static Optional<IEfmFirmService> setupFirmPort(HttpHeaders httpHeaders, 
+      SecurityHub security) {
+    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
+    Optional<String> tylerCreds = security.checkLogin(activeToken, "tyler");
+    if (tylerCreds.isEmpty()) {
+      log.warn("Couldn't checkLogin");
+      return Optional.empty();
+    }
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerCreds.get());
+    if (creds.isEmpty()) {
+      log.warn("No creds?");
+      return Optional.empty();
+    }
+
+    IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
+    ServiceHelpers.setupServicePort((BindingProvider) port);
+    Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
+    try {
+      List<Header> headersList = List.of(creds.get().toHeader());
+      ctx.put(Header.HEADER_LIST, headersList);
+    } catch (JAXBException ex) {
+      log.warn(ex.toString());
+      return Optional.empty();
+    }
+
+    return Optional.of(port);
+  }
+
 }

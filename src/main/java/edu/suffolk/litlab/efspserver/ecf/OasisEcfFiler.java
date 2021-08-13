@@ -111,10 +111,6 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   @Override
   public Result<List<UUID>, FilingError> submitFilingIfReady(FilingInformation info,
       InfoCollector collector, String apiToken) {
-    Optional<FilingReviewMDEPort> filingPort = makeFilingService(apiToken); 
-    if (filingPort.isEmpty()) {
-      return Result.err(FilingError.serverError("Couldn't create SOAP port object with token: " + apiToken));
-    }
     EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
     try {
       // TODO(brycew): mapping from string case categories to Tyler code case categories, etc.
@@ -134,8 +130,10 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       
       List<CaseType> caseTypes = cd.getCaseTypesFor(info.getCourtLocation(), caseCategory.code.get());
       if (caseTypes.isEmpty()) {
-        return Result.err(FilingError.serverError("There are no caseTypes for " 
-            + info.getCourtLocation() + " and " + caseCategory.code.get()));
+        FilingError err = FilingError.serverError("There are no caseTypes for " 
+            + info.getCourtLocation() + " and " + caseCategory.code.get());
+        collector.error(err);
+        return Result.err(err);
       }
       Optional<CaseType> maybeType = caseTypes.stream()
           .filter(type -> type.name.equals(info.getCaseType()))
@@ -150,17 +148,18 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
 
       List<FilingCode> filings = cd.getFilingType(info.getCourtLocation(), 
           caseCategory.code.get(), maybeType.get().code, maybeType.get().initial);
-      InterviewVariable var = collector.requestVar("filing", "TODO(brycew): descriptin", "text");
       if (filings.isEmpty()) {
-        log.error("Need a filing type! FilingTypes are empty, so " + caseCategory + " and " + maybeType.get() + " is restricted");
+        log.error("Need a filing type! FilingTypes are empty, so " + caseCategory + " and " + maybeType.get() + " are restricted");
+        InterviewVariable var = collector.requestVar("filing", "TODO(brycew): description", "text");
         collector.addWrong(var);
         // Is foundational, so returning now
         return Result.err(FilingError.wrongValue(var));
       }
     
+      InterviewVariable var = collector.requestVar("filing", "TODO(brycew): description", "text", filings.stream().map(f -> f.name).collect(Collectors.toList()));
       JsonNode filingJson = info.getMiscInfo().get("filing");
       if (filingJson == null || filingJson.isNull() || !filingJson.isTextual()) {
-        log.error("filing not present in the info!");
+        log.error("filing not present in the info!: " + info.getMiscInfo());
         collector.addRequired(var);
         return Result.err(FilingError.missingRequired(var));
       }
@@ -179,13 +178,16 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
               info.getCourtLocation(), caseCategory, maybeType.get(),
               maybeFiling.get(),
               info.getCaseSubtype(),
-              info.getPlaintiffs(), info.getDefendants(),
+              info.getPlaintiffs(), info.getPlantiffPartyType(),
+              info.getDefendants(), info.getDefendantPartyType(),
               info.getFilings()
                   .stream()
-                  .map(f -> f.getIdString()).collect(Collectors.toList()), 
+                  .map(f -> f.getIdString())
+                  .collect(Collectors.toList()), 
               info.getPaymentId(), 
               "review", info.getMiscInfo(), serializer, collector); 
       if (assembledCase.isErr()) {
+        collector.error(assembledCase.unwrapErrOrElseThrow());
         return Result.err(assembledCase.unwrapErrOrElseThrow());
       }
       oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory coreObjFac =
@@ -219,6 +221,13 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
           rfrm, ReviewFilingRequestMessageType.class));
       if (!collector.okToSubmit()) {
         return Result.err(FilingError.serverError("Not submitting!"));
+      }
+
+      Optional<FilingReviewMDEPort> filingPort = makeFilingService(apiToken); 
+      if (filingPort.isEmpty()) {
+        FilingError err = FilingError.serverError("Couldn't create SOAP port object with token: " + apiToken);
+        collector.error(err);
+        return Result.err(err);
       }
       MessageReceiptMessageType mrmt = filingPort.get().reviewFiling(rfrm);
       if (mrmt.getError().size() > 0) {

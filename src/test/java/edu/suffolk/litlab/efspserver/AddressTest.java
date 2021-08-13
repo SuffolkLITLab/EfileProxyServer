@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -17,6 +18,7 @@ import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 import gov.niem.niem.niem_core._2.AddressType;
+import gov.niem.niem.niem_core._2.ProperNameTextType;
 import gov.niem.niem.niem_core._2.StructuredAddressType;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -52,6 +54,9 @@ public class AddressTest {
         (StructuredAddressType) addrElem.getValue().getAddressRepresentation().getValue();
     assertEquals(sat.getLocationPostalCode().getValue(), "75093");
     assertEquals(sat.getLocationCityName().getValue(), "Plano");
+    assertNotEquals(sat.getLocationCountry().getValue(), null);
+    JAXBElement<?> state = sat.getLocationState();
+    assertTrue(state.getValue() instanceof ProperNameTextType);
     
     tyler.efm.services.schema.common.AddressType tylerAddr = serializer.serializeTylerAddress(addr).unwrapOrElseThrow(); 
     assertEquals(tylerAddr.getAddressLine1(), "100 Circle Road");

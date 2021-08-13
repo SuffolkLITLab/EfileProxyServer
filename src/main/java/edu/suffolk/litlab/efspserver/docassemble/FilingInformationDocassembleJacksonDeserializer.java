@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.hubspot.algebra.Result;
 
@@ -105,7 +106,6 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
       
     log.debug("Got users");
-    // CONTINUE(brycew):
     Result<List<Person>, FilingError> maybeOthers = collectPeople(node, "other_parties", collector);
     if (maybeOthers.isErr()) {
       return maybeOthers.mapOk((ppl) -> null);
@@ -137,6 +137,25 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
     // TODO(brycew): plaintiff and petitioners are both defined. 
     // Typical role might have the difference, take which is available
+    // TODO(brycew): better way to get the parties types?
+    // TODO(brycew): make the party types use the SALI standard
+    JsonNode plantiffPartyJson = node.get("plantiff_party_type");
+    if (plantiffPartyJson == null || !plantiffPartyJson.isTextual()) {
+      InterviewVariable var = collector.requestVar("plantiff_party_type", 
+          "What legal role the plaintiff fulfills", "text"); 
+      collector.addOptional(var);
+      plantiffPartyJson = NullNode.getInstance(); 
+    }
+    entities.setPlaintiffPartyType(plantiffPartyJson.asText(""));
+    JsonNode defendantPartyJson = node.get("defendant_party_type");
+    if (defendantPartyJson == null || !defendantPartyJson.isTextual()) {
+      InterviewVariable var = collector.requestVar("defendant_party_type", 
+          "What legal role the defendant fulfills", "text"); 
+      collector.addOptional(var);
+      defendantPartyJson = NullNode.getInstance();
+    }
+    entities.setDefendantPartyType(defendantPartyJson.asText(""));
+
     boolean started = userStartedCase.get(); 
     if (started) {
       users.forEach((user) -> {
@@ -241,8 +260,16 @@ public class FilingInformationDocassembleJacksonDeserializer
       return Result.err(FilingError.malformedInterview(
           "al_court_bundle should be a JSON object with a elements array (i.e. a python DAList)"));
     }
-    JsonNode elems = node.get("al_court_bundle").get("elements");
-    if (elems.isEmpty()) {
+    JsonNode bundle = node.get("al_court_bundle");
+    if (bundle == null) {
+      collector.addRequired(bundleVar);
+      if (collector.finished()) {
+        return Result.err(FilingError.missingRequired(bundleVar));
+      }
+    }
+
+    JsonNode elems = bundle.get("elements");
+    if (elems == null || elems.isEmpty()) {
       collector.addRequired(bundleVar);
       if (collector.finished()) {
         return Result.err(FilingError.missingRequired(bundleVar));
@@ -250,11 +277,13 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
 
     for (int i = 0; i < elems.size(); i++) {
-      Result<FilingDoc, FilingError> fil = FilingDocDocassembleJacksonDeserializer.fromNode(elems.get(i), collector);
+      Result<Optional<FilingDoc>, FilingError> fil = FilingDocDocassembleJacksonDeserializer.fromNode(elems.get(i), i, collector);
       if (fil.isOk()) {
-        FilingDoc doc = fil.unwrapOrElseThrow();
-        doc.setFilingPartyIds(filingPartyIds);
-        filingDocs.add(doc);
+        Optional<FilingDoc> maybeDoc = fil.unwrapOrElseThrow();
+        maybeDoc.ifPresent(doc -> {
+          doc.setFilingPartyIds(filingPartyIds);
+          filingDocs.add(doc);
+        });
       } else {
         FilingError err = fil.unwrapErrOrElseThrow();
         if (err.getType().equals(FilingError.Type.MissingRequired)) {

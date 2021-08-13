@@ -1,36 +1,25 @@
 package edu.suffolk.litlab.efspserver.docassemble;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.hubspot.algebra.Result;
 
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.services.FilingError;
-import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
-import edu.suffolk.litlab.efspserver.services.JsonExtractException;
 import tyler.ecf.extensions.common.FilingTypeType;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class FilingDocDocassembleJacksonDeserializer extends StdDeserializer<FilingDoc> {
+public class FilingDocDocassembleJacksonDeserializer {
 
-  private static final long serialVersionUID = 1L;
-
-  protected FilingDocDocassembleJacksonDeserializer(Class<FilingDoc> t) {
-    super(t);
-  }
-  
   /** Parses a filing from the DA Json Object. Used by Deserializers that include filings. */
-  public static Result<FilingDoc, FilingError> fromNode(JsonNode node, InfoCollector collector) {
+  public static Result<Optional<FilingDoc>, FilingError> fromNode(JsonNode node, int sequenceNum, InfoCollector collector) {
     if (!node.isObject()) {
       FilingError err = FilingError.malformedInterview(
               "Refusing to parse filing doc that isn't a Json Object: " + node.toPrettyString());
@@ -51,6 +40,11 @@ public class FilingDocDocassembleJacksonDeserializer extends StdDeserializer<Fil
         collector.error(err);
         return Result.err(err);
       }
+      
+      if (!node.has("enabled") || !node.get("enabled").asBoolean(false)) {
+        return Result.ok(Optional.empty());
+      }
+      
       // TODO(brycew): we need to put URLs of all of the other filings and read in those files
       URL inUrl = new URL(node.get("data_url").asText().replace("localhost", "docassemble"));
       // Get: filename
@@ -74,24 +68,11 @@ public class FilingDocDocassembleJacksonDeserializer extends StdDeserializer<Fil
         FilingError err = FilingError.serverError("Couldn't connect to " + inUrl.toString());
         return Result.err(err);
       }
-      return Result.ok(new FilingDoc(fileName, inStream,
-              List.of(), documentTypeFormatName, "", FilingTypeType.E_FILE));
+      return Result.ok(Optional.of(new FilingDoc(fileName, inStream,
+              List.of(), documentTypeFormatName, "", FilingTypeType.E_FILE, sequenceNum == 0)));
     } catch (IOException ex)  {
       FilingError err = FilingError.serverError("IOException trying to parse data_url: " + ex);
       return Result.err(err);
     }
   }
-
-  @Override
-  public FilingDoc deserialize(JsonParser p, DeserializationContext ctxt)
-      throws IOException, JsonProcessingException {
-    JsonNode node = p.readValueAsTree();
-    InfoCollector collector = new FailFastCollector();
-    Result<FilingDoc, FilingError> doc = fromNode(node, collector); 
-    if (doc.isErr()) {
-      throw new JsonExtractException(p, doc.unwrapErrOrElseThrow());
-    }
-    return doc.unwrapOrElseThrow();
-  }
-
 }

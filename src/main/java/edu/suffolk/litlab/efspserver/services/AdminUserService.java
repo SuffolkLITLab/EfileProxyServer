@@ -30,7 +30,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
-import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.EfmUserService;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.IEfmUserService;
@@ -93,8 +92,7 @@ public class AdminUserService {
   private static Logger log = 
       LoggerFactory.getLogger(AdminUserService.class); 
 
-  private EfmFirmService firmServiceFactory;
-  private EfmUserService userServiceFactory;
+  private EfmUserService userFactory;
   private SecurityHub security;
   
   public AdminUserService(SecurityHub security) {
@@ -103,10 +101,8 @@ public class AdminUserService {
   }
 
   final void init() {
-    URL firmWsdlUrl = EfmFirmService.WSDL_LOCATION;
-    firmServiceFactory = AdminUserService.makeFirmServiceFactory(firmWsdlUrl);
     URL userWsdlUrl = EfmUserService.WSDL_LOCATION;
-    userServiceFactory = AdminUserService.makeUserServiceFactory(userWsdlUrl);
+    userFactory = AdminUserService.makeUserServiceFactory(userWsdlUrl);
   }
 
   @POST
@@ -192,7 +188,7 @@ public class AdminUserService {
   @Path("/users/{id}/resend_activation_email")
   public Response resendActivationEmail(@Context HttpHeaders httpHeaders, 
       @PathParam("id") String id) {
-    Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -210,7 +206,7 @@ public class AdminUserService {
   //TODO(brycew) NEXT: THIS IS BROKEN! Can't take two string params, needs an object
   public Response resetPassword(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, String email, String password) {
-    Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -268,7 +264,7 @@ public class AdminUserService {
   @Path("/users/{id}")
   public Response getUser(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
-    Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) { 
       return Response.status(401).build();
     }
@@ -283,7 +279,7 @@ public class AdminUserService {
   @GET
   @Path("/users")
   public Response getUserList(@Context HttpHeaders httpHeaders) {
-    Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) { 
       return Response.status(401).build();
     }
@@ -303,7 +299,7 @@ public class AdminUserService {
   @Path("/users/{id}")
   public Response updateUser(@Context HttpHeaders httpHeaders, 
       @PathParam("id") String id, UserType updatedUser) {
-    Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -354,7 +350,7 @@ public class AdminUserService {
   @Path("/users/{id}/roles")
   public Response getRoles(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
-    Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) { 
       return Response.status(401).build();
     }
@@ -377,7 +373,7 @@ public class AdminUserService {
   @Path("/users/{id}/roles")
   public Response addRoles(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, List<RoleLocationType> toAdd) {
-    Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) { 
       return Response.status(401).build();
     }
@@ -408,7 +404,7 @@ public class AdminUserService {
   @Path("/users/{id}/roles")
   public Response removeRoles(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, List<RoleLocationType> toRm) {
-    Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) { 
       return Response.status(401).build();
     }
@@ -439,7 +435,7 @@ public class AdminUserService {
   @Path("/users")
   public Response registerUser(@Context HttpHeaders httpHeaders,
       RegistrationRequestType req) {
-    Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) { 
       return Response.status(401).build();
     }
@@ -460,7 +456,7 @@ public class AdminUserService {
   @Path("/users/{id}")
   public Response removeUser(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
-    Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(407).build();
     }
@@ -475,7 +471,7 @@ public class AdminUserService {
   @GET
   @Path("/notification_options")
   public Response getNotificationPreferenceList(@Context HttpHeaders httpHeaders) {
-    Optional<IEfmFirmService> port = setupFirmPort(httpHeaders);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(407).build();
     }
@@ -485,33 +481,6 @@ public class AdminUserService {
         () -> Response.ok(resp.getNotificationListItem()).build());
   }
   
-  private Optional<IEfmFirmService> setupFirmPort(HttpHeaders httpHeaders) {
-    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<String> tylerCreds = security.checkLogin(activeToken, "tyler");
-    if (tylerCreds.isEmpty()) {
-      log.warn("Couldn't checkLogin");
-      return Optional.empty();
-    }
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerCreds.get());
-    if (creds.isEmpty()) {
-      log.warn("No creds?");
-      return Optional.empty();
-    }
-
-    IEfmFirmService port = firmServiceFactory.getBasicHttpBindingIEfmFirmService();
-    ServiceHelpers.setupServicePort((BindingProvider) port);
-    Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    try {
-      List<Header> headersList = List.of(creds.get().toHeader());
-      ctx.put(Header.HEADER_LIST, headersList);
-    } catch (JAXBException ex) {
-      log.warn(ex.toString());
-      return Optional.empty();
-    }
-
-    return Optional.of(port);
-  }
-
   /** Creates a connection to Tyler's SOAP API that is has the right Auth Headers.
    *
    * @param httpHeaders The context tag from the server method
@@ -528,7 +497,7 @@ public class AdminUserService {
       return Optional.empty();
     }
 
-    IEfmUserService port = makeUserPort(userServiceFactory); 
+    IEfmUserService port = makeUserPort(userFactory); 
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
     try {
       List<Header> headersList = List.of(creds.get().toHeader());
@@ -553,10 +522,6 @@ public class AdminUserService {
     return port;
   }
   
-  private static EfmFirmService makeFirmServiceFactory(URL firmWsdlUrl) {
-    return new EfmFirmService(firmWsdlUrl, EfmFirmService.SERVICE); 
-  }
-
   public static EfmUserService makeUserServiceFactory(URL userWsdlUrl) {
     return new EfmUserService(userWsdlUrl, EfmUserService.SERVICE);
   }

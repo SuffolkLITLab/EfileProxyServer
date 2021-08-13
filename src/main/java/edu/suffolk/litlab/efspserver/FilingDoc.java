@@ -65,11 +65,11 @@ public class FilingDoc {
   public FilingDoc(String fileName, InputStream fileStream,
       List<String> filingPartyIds,
       String documentTypeFormatStandardName,
-      String binaryCategoryComponent, FilingTypeType filingAction) throws IOException {
+      String binaryCategoryComponent, FilingTypeType filingAction, boolean isLeadDoc) throws IOException {
     this(fileName, fileStream.readAllBytes(), Optional.empty(), "", Optional.empty(), 
         filingPartyIds, Optional.empty(), documentTypeFormatStandardName, 
         binaryCategoryComponent, "", Optional.empty(), List.of(), List.of(), 
-        filingAction, true);
+        filingAction, isLeadDoc);
   }
 
   /** Full constructor, in all it's mess. */

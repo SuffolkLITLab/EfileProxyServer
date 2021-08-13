@@ -36,6 +36,21 @@ public class InterviewVariable {
   }
   
   public String toJson() {
+    String choicesStr = "[]";
+    if (!choices.isEmpty()) {
+      StringBuilder sb = new StringBuilder();
+      boolean firstTime = true;
+      sb.append("[");
+      for (String choice : choices) {
+        if (!firstTime) {
+          sb.append(",");
+        }
+        sb.append("\"").append(choice).append("\"");
+        firstTime = false;
+      }
+      sb.append("]");
+      choicesStr = sb.toString();
+    }
       return """
              { 
                "name": "%s",
@@ -43,7 +58,7 @@ public class InterviewVariable {
                "datatype": "%s",
                "choices": %s
              }
-             """.formatted(name, description, datatype, choices);
+             """.formatted(name, description, datatype, choicesStr);
   }
   
   @Override

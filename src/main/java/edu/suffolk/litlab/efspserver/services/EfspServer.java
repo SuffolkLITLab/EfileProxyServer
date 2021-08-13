@@ -39,6 +39,7 @@ public class EfspServer {
   private Server server;
 
   static {
+    if (false) {
     Optional<String> certPassword = GetEnv("CERT_PASSWORD");
     certPassword.ifPresentOrElse(
         pass -> HttpsCallbackHandler.setCertPassword(pass),
@@ -46,6 +47,7 @@ public class EfspServer {
     SpringBusFactory factory = new SpringBusFactory();
     Bus bus = factory.createBus("src/main/config/ServerConfig.xml");
     SpringBusFactory.setDefaultBus(bus);
+    }
   }
 
   protected EfspServer(String x509Password, 
@@ -80,7 +82,7 @@ public class EfspServer {
       CodeUpdater.executeCommand("downloadAll", "https://illinois-stage.tylerhost.net", cd);
     }
     
-    String baseLocalUrl = "https://0.0.0.0:9000";
+    String baseLocalUrl = "http://0.0.0.0:9000";
     cd.setAutocommit(true);
     ud.setAutocommit(true);
     ld.setAutocommit(true);
@@ -179,7 +181,7 @@ public class EfspServer {
 
     Object implementor = new OasisEcfWsCallback(ud, sender);
     // TODO(brycew): cleaner way to handle baseLocalUrl?
-    String baseLocalUrl = "https://0.0.0.0:9000";
+    String baseLocalUrl = "http://0.0.0.0:9000";
     String address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT; 
     Endpoint.publish(address, implementor);
     

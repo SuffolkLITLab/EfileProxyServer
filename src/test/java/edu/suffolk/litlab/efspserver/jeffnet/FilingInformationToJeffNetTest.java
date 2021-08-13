@@ -55,7 +55,7 @@ public class FilingInformationToJeffNetTest {
     FilingDoc filingDoc = new FilingDoc(fileName, x,
         info.getPlaintiffs().stream().map((p) -> p.getIdString()).collect(
             Collectors.toList()), "5766",
-        componentCode, FilingTypeType.E_FILE);
+        componentCode, FilingTypeType.E_FILE, true);
     info.setFilings(List.of(filingDoc));
   }
   

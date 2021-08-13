@@ -61,7 +61,9 @@ public class FilingCode {
   /** @param initial true if its an initial filing, false if it's a subsequent. */
   public static String getFilingWithCaseInfo(boolean initial) {
     String mainQuery = """
-          SELECT code, name, fee, filingtype, iscourtuseonly, civilclaimnamount, probateestateamount, amountincontroversy, useduedate, isproposedorder
+          SELECT code, name, fee, casecategory, casetypeid, filingtype, iscourtuseonly, 
+                 civilclaimamount, probateestateamount, amountincontroversy, useduedate, 
+                 isproposedorder, efspcode, location
           FROM filing 
           WHERE location=? AND iscourtuseonly='False' AND (casecategory=? OR casetypeid=?) """;
     if (initial) {
@@ -73,7 +75,9 @@ public class FilingCode {
   
   public static String getFilingNoCaseInfo(boolean initial) {
     String mainQuery = """
-          SELECT code, name, fee, filingtype, iscourtuseonly, civilclaimnamount, probateestateamount, amountincontroversy, useduedate, isproposedorder
+          SELECT code, name, fee, casecategory, casetypeid, filingtype, iscourtuseonly, 
+                 civilclaimamount, probateestateamount, amountincontroversy, useduedate, 
+                 isproposedorder, efspcode, location
           FROM filing 
           WHERE location=? AND iscourtuseonly='False' AND 
             ((casecategory='' OR casecategory=null) AND (casetypeid='' OR casetypeid=null)) """;
