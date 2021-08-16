@@ -83,11 +83,12 @@ public class EfspServer {
       //downloadAll = true;
     }
 
+    cd.createDbConnection(dbUser, dbPassword);
     if (downloadAll) {
-      cd.createDbConnection(dbUser, dbPassword);
       log.info("Downloading all codes: please wait a bit");
       CodeUpdater.executeCommand("downloadAll", "https://illinois-stage.tylerhost.net", cd);
     }
+
     // HACK(brycew): cheap DI. Should have something better, but
     // I don't quite understand Spring yet
     SoapX509CallbackHandler.setX509Password(x509Password);
@@ -97,6 +98,7 @@ public class EfspServer {
     ud.setAutocommit(true);
     ld.setAutocommit(true);
     SecurityHub security = new SecurityHub(ld);
+
     sf = new JAXRSServerFactoryBean();
     sf.setResourceClasses(AdminUserService.class,
         FilingReviewService.class,
@@ -105,7 +107,6 @@ public class EfspServer {
         MessageSettingsService.class);
     sf.setResourceProvider(AdminUserService.class,
         new SingletonResourceProvider(new AdminUserService(security)));
-    cd.createDbConnection(dbUser, dbPassword);
     sf.setResourceProvider(FilingReviewService.class,
         new SingletonResourceProvider(new FilingReviewService(
             ud, converterMap, filingMap, callbackMap, security, sender)));
