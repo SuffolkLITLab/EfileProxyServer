@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efspserver;
+package edu.suffolk.litlab.efspserver.db;
 
 import edu.suffolk.litlab.efspserver.codes.CodeTableConstants;
 import java.sql.PreparedStatement;
@@ -48,7 +48,7 @@ public class UserDatabase extends DatabaseInterface {
       String createQuery = """ 
            CREATE TABLE %s (
            "user_id" uuid, "name" text, "phone_number" text,
-           "email" text, "transaction_id" uuid PRIMARY KEY, "api_key_used" text, 
+           "email" text, "transaction_id" uuid PRIMARY KEY, "server_id" uuid, "api_key_used" text, 
            "court_id" text, "casetype" text, 
            "submitted" date)""".formatted(tableName);
       PreparedStatement createSt = conn.prepareStatement(createQuery);
@@ -62,9 +62,9 @@ public class UserDatabase extends DatabaseInterface {
   
   public void addToTable(String name,
       UUID filingPartyId, Optional<String> phoneNumber, String email,
-      List<UUID> transactionIds, String apiKeyUsed, String caseType, String courtId, Timestamp submitted) throws SQLException {
+      List<UUID> transactionIds, UUID serverId, String apiKeyUsed, String caseType, String courtId, Timestamp submitted) throws SQLException {
     for (UUID id : transactionIds) {
-      addToTable(name, filingPartyId, phoneNumber, email, id, apiKeyUsed, caseType, courtId, submitted);
+      addToTable(name, filingPartyId, phoneNumber, email, id, serverId, apiKeyUsed, caseType, courtId, submitted);
     }
   }
   
@@ -73,7 +73,7 @@ public class UserDatabase extends DatabaseInterface {
   /** Adds the given values as a row in the submitted table. */
   public void addToTable(String name,
       UUID filingPartyId, Optional<String> phoneNumber, String email, 
-      UUID transactionId, String apiKeyUsed, String caseType, String courtId, Timestamp submitted) throws SQLException {
+      UUID transactionId, UUID serverId, String apiKeyUsed, String caseType, String courtId, Timestamp submitted) throws SQLException {
     if (conn == null) {
       log.error("Connection in addToTable wasn't open yet!");
       throw new SQLException();
@@ -81,11 +81,11 @@ public class UserDatabase extends DatabaseInterface {
     String insertIntoTable = """
                     INSERT INTO %s (
                         "user_id", "name", 
-                        "phone_number", "email", "transaction_id", 
+                        "phone_number", "email", "transaction_id", "server_id",
                         "api_key_used", "casetype", "court_id", "submitted" 
                     ) VALUES (
                         ?, ?, 
-                        ?, ?, ?, 
+                        ?, ?, ?, ?,
                         ?, ?, ?, ?)""".formatted(tableName);
     PreparedStatement insertSt = conn.prepareStatement(insertIntoTable);
     insertSt.setObject(1, filingPartyId);
@@ -94,10 +94,11 @@ public class UserDatabase extends DatabaseInterface {
     insertSt.setString(3, phone);
     insertSt.setString(4, email);
     insertSt.setObject(5, transactionId);
-    insertSt.setString(6, apiKeyUsed);
-    insertSt.setString(7, caseType);
-    insertSt.setString(8, courtId);
-    insertSt.setTimestamp(9, submitted);
+    insertSt.setObject(6, serverId);
+    insertSt.setString(7, apiKeyUsed);
+    insertSt.setString(8, caseType);
+    insertSt.setString(9, courtId);
+    insertSt.setTimestamp(10, submitted);
 
     insertSt.executeUpdate();
   }
@@ -110,7 +111,7 @@ public class UserDatabase extends DatabaseInterface {
       log.error("Connection in findTransaction wasn't open yet!");
       throw new SQLException();
     }
-    String query = "SELECT name, user_id, phone_number, email, transaction_id, "
+    String query = "SELECT name, user_id, phone_number, email, transaction_id, server_id,"
         + " api_key_used, casetype, court_id, submitted"
         + " FROM " + tableName
         + " WHERE transaction_id = ?";
@@ -131,10 +132,11 @@ public class UserDatabase extends DatabaseInterface {
     }
     trans.email = rs.getString(4);
     trans.transactionId = (UUID) rs.getObject(5);
-    trans.apiKeyUsed = rs.getString(6);
-    trans.caseType = rs.getString(7);
-    trans.courtId = rs.getString(8);
-    trans.submitted = rs.getTimestamp(9);
+    trans.serverId = (UUID) rs.getObject(6);
+    trans.apiKeyUsed = rs.getString(7);
+    trans.caseType = rs.getString(8);
+    trans.courtId = rs.getString(9);
+    trans.submitted = rs.getTimestamp(10);
     return Optional.of(trans);
   }
   

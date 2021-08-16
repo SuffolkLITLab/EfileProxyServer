@@ -3,6 +3,8 @@ package edu.suffolk.litlab.efspserver;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import edu.suffolk.litlab.efspserver.codes.CodeTableConstants;
+import edu.suffolk.litlab.efspserver.codes.CodeUpdater;
+
 import java.util.Collection;
 import java.util.List;
 import org.junit.jupiter.api.Test;

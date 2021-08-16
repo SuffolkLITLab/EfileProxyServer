@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efspserver;
+package edu.suffolk.litlab.efspserver.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
