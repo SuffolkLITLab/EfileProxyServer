@@ -8,9 +8,9 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.suffolk.litlab.efspserver.Transaction;
-import edu.suffolk.litlab.efspserver.UserDatabase;
 import edu.suffolk.litlab.efspserver.XmlHelper;
+import edu.suffolk.litlab.efspserver.db.Transaction;
+import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import gov.niem.niem.niem_core._2.IdentificationType;

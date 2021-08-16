@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
+import edu.suffolk.litlab.efspserver.db.LoginInfo;
 import gov.niem.niem.niem_core._2.CaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseListQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseParticipantType;
@@ -74,12 +75,12 @@ public class CasesService {
 
   private Optional<CourtRecordMDEPort> setupRecordPort(HttpHeaders httpHeaders) {
     String activeToken = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<String> tylerCreds = security.checkLogin(activeToken, "tyler");
+    Optional<LoginInfo> tylerCreds = security.checkLogin(activeToken, "tyler");
     if (tylerCreds.isEmpty()) {
       log.warn("Couldn't checkLogin");
       return Optional.empty();
     }
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerCreds.get());
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerCreds.get().usableToken);
     if (creds.isEmpty()) {
       log.warn("No creds?");
       return Optional.empty();

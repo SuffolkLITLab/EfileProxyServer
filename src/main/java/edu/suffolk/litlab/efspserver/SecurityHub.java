@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import edu.suffolk.litlab.efspserver.db.LoginDatabase;
+import edu.suffolk.litlab.efspserver.db.LoginInfo;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetLogin;
 import edu.suffolk.litlab.efspserver.services.LoginInterface;
@@ -65,7 +67,7 @@ public class SecurityHub {
     return checkLogin(activeToken, "").isPresent();
   }
 
-  public Optional<String> checkLogin(String activeToken, String orgName) {
+  public Optional<LoginInfo> checkLogin(String activeToken, String orgName) {
     try {
       return ld.checkLogin(activeToken, orgName);
     } catch (SQLException e) {

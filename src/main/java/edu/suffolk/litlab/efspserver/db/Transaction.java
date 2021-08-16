@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efspserver;
+package edu.suffolk.litlab.efspserver.db;
 
 import java.sql.Timestamp;
 import java.util.Optional;
@@ -11,6 +11,7 @@ public class Transaction {
   public Optional<String> phoneNumber;
   public String email;
   public UUID transactionId;
+  public UUID serverId;
   public String apiKeyUsed;
   public String caseType;
   public String courtId;

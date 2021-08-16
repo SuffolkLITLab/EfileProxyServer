@@ -15,8 +15,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.suffolk.litlab.efspserver.Transaction;
-import edu.suffolk.litlab.efspserver.UserDatabase;
+import edu.suffolk.litlab.efspserver.db.Transaction;
+import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.services.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
 

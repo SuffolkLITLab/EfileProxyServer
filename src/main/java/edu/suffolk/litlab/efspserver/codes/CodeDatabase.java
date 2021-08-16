@@ -1,7 +1,5 @@
 package edu.suffolk.litlab.efspserver.codes;
 
-import edu.suffolk.litlab.efspserver.DatabaseInterface;
-
 import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,6 +22,8 @@ import org.oasis_open.docs.codelist.ns.genericode._1.Row;
 import org.oasis_open.docs.codelist.ns.genericode._1.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import edu.suffolk.litlab.efspserver.db.DatabaseInterface;
 
 /** The class that interfaces with the database tables that contain the Tyler case codes.
  *

@@ -2,12 +2,13 @@ package edu.suffolk.litlab.efspserver.services;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
-import edu.suffolk.litlab.efspserver.HttpsCallbackHandler; 
-import edu.suffolk.litlab.efspserver.CodeUpdater;
-import edu.suffolk.litlab.efspserver.LoginDatabase;
+import edu.suffolk.litlab.efspserver.HttpsCallbackHandler;
 import edu.suffolk.litlab.efspserver.SecurityHub;
-import edu.suffolk.litlab.efspserver.UserDatabase;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.CodeUpdater;
+import edu.suffolk.litlab.efspserver.db.LoginDatabase;
+import edu.suffolk.litlab.efspserver.db.MessageSettingsDatabase;
+import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingEntityConverter;
 import edu.suffolk.litlab.efspserver.ecf.OasisEcfFiler;
 import edu.suffolk.litlab.efspserver.ecf.OasisEcfWsCallback;
@@ -56,6 +57,7 @@ public class EfspServer {
       String codeDatabaseName,
       CodeDatabase cd,
       UserDatabase ud,
+      MessageSettingsDatabase md,
       String userDatabaseName,
       Map<String, InterviewToFilingEntityConverter> converterMap,
       Map<String, EfmFilingInterface> filingMap,
@@ -70,17 +72,24 @@ public class EfspServer {
       }
       ud.createDbConnection(dbUser, dbPassword);
       ld.createDbConnection(dbUser, dbPassword);
+      md.createDbConnection(dbUser, dbPassword);
       ud.createTablesIfAbsent();
       ld.createTablesIfAbsent();
+      md.createTablesIfAbsent();
     } catch (SQLException ex) {
-      downloadAll = true;
+      log.error("SQLException: " + ex);
+      System.exit(2);
+      //downloadAll = true;
     }
 
     if (downloadAll) {
       cd.createDbConnection(dbUser, dbPassword);
-      log.debug("Downloading all codes: please wait a bit");
+      log.info("Downloading all codes: please wait a bit");
       CodeUpdater.executeCommand("downloadAll", "https://illinois-stage.tylerhost.net", cd);
     }
+    // HACK(brycew): cheap DI. Should have something better, but
+    // I don't quite understand Spring yet
+    SoapX509CallbackHandler.setX509Password(x509Password);
     
     String baseLocalUrl = "http://0.0.0.0:9000";
     cd.setAutocommit(true);
@@ -90,10 +99,9 @@ public class EfspServer {
     sf = new JAXRSServerFactoryBean();
     sf.setResourceClasses(AdminUserService.class,
         FilingReviewService.class,
-        FirmAttorneyAndServiceService.class);
-    // HACK(brycew): cheap DI. Should have something better, but
-    // I don't quite understand Spring yet
-    SoapX509CallbackHandler.setX509Password(x509Password);
+        FirmAttorneyAndServiceService.class,
+        PaymentsService.class,
+        MessageSettingsService.class);
     sf.setResourceProvider(AdminUserService.class,
         new SingletonResourceProvider(new AdminUserService(security)));
     cd.createDbConnection(dbUser, dbPassword);
@@ -102,6 +110,13 @@ public class EfspServer {
             ud, converterMap, filingMap, callbackMap, security)));
     sf.setResourceProvider(FirmAttorneyAndServiceService.class,
         new SingletonResourceProvider(new FirmAttorneyAndServiceService(security)));
+    sf.setResourceProvider(PaymentsService.class,
+        new SingletonResourceProvider(new PaymentsService(security)));
+    sf.setResourceProvider(CasesService.class,
+        new SingletonResourceProvider(new CasesService(security)));
+    sf.setResourceProvider(MessageSettingsService.class,
+        new SingletonResourceProvider(new MessageSettingsService(security, md)));
+
     Map<Object, Object> extensionMappings = new HashMap<Object, Object>();
     extensionMappings.put("xml", MediaType.APPLICATION_XML);
     extensionMappings.put("json", MediaType.APPLICATION_JSON);
@@ -176,8 +191,9 @@ public class EfspServer {
     }
     
     UserDatabase ud = new UserDatabase(dbUrl, dbPortInt, userDatabaseName);
-    OrgMessageSender sender = new OrgMessageSender();
-    EfmRestCallbackInterface callback = new JeffNetRestCallback(ud, new OrgMessageSender());
+    MessageSettingsDatabase md = new MessageSettingsDatabase(dbUrl, dbPortInt, userDatabaseName);
+    OrgMessageSender sender = new OrgMessageSender(md);
+    EfmRestCallbackInterface callback = new JeffNetRestCallback(ud, new OrgMessageSender(md));
 
     Object implementor = new OasisEcfWsCallback(ud, sender);
     // TODO(brycew): cleaner way to handle baseLocalUrl?
@@ -188,7 +204,7 @@ public class EfspServer {
     Map<String, EfmRestCallbackInterface> callbackMap = Map.of("jefferson", callback);
     
     EfspServer server = new EfspServer(x509Password, dbUrl, dbPortInt, 
-        dbUser, dbPassword, codeDatabaseName, cd, ud, userDatabaseName, 
+        dbUser, dbPassword, codeDatabaseName, cd, ud, md, userDatabaseName, 
         converterMap, filingMap, callbackMap);
 
     // TODO(brycew): use https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ScheduledExecutorService.html

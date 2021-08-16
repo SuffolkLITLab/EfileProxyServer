@@ -18,6 +18,9 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
+import edu.suffolk.litlab.efspserver.db.Transaction;
+import edu.suffolk.litlab.efspserver.db.UserDatabase;
+
 public class UserDatabaseTest {
   
   private UserDatabase ud;
@@ -56,13 +59,14 @@ public class UserDatabaseTest {
   public void testFromNothing() throws SQLException {
     UUID userId = UUID.randomUUID();
     UUID transactionId = UUID.randomUUID();
+    UUID serverId = UUID.randomUUID();
     String name = "User1 McUserFace";
     String email = "test@example.com";
     String courtId = "jefferson";
     String apiKey = "abcdef12345";
     ud.createTablesIfAbsent();
     ud.addToTable(name, userId, 
-        Optional.empty(), email, transactionId, apiKey,
+        Optional.empty(), email, transactionId, serverId, apiKey,
         "Motion to File", courtId, new Timestamp(System.currentTimeMillis()));
     ud.commit();
     
@@ -71,6 +75,7 @@ public class UserDatabaseTest {
     assertEquals(transaction.get().email, email);
     assertTrue(transaction.get().phoneNumber.isEmpty());
     assertEquals(transaction.get().name, name);
+    assertEquals(transaction.get().serverId, serverId);
     assertEquals(transaction.get().courtId, courtId);
     
     ud.removeFromTable(transactionId);

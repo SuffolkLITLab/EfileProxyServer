@@ -16,6 +16,8 @@ import org.testcontainers.utility.DockerImageName;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import edu.suffolk.litlab.efspserver.db.LoginDatabase;
+
 public class LoginDatabaseTest {
 
   private LoginDatabase ld;

@@ -19,6 +19,7 @@ import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
+import edu.suffolk.litlab.efspserver.db.LoginInfo;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
 import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.IEfmFirmService;
@@ -159,12 +160,12 @@ public class ServiceHelpers {
   public static Optional<IEfmFirmService> setupFirmPort(HttpHeaders httpHeaders, 
       SecurityHub security) {
     String activeToken = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<String> tylerCreds = security.checkLogin(activeToken, "tyler");
+    Optional<LoginInfo> tylerCreds = security.checkLogin(activeToken, "tyler");
     if (tylerCreds.isEmpty()) {
       log.warn("Couldn't checkLogin");
       return Optional.empty();
     }
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerCreds.get());
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerCreds.get().usableToken);
     if (creds.isEmpty()) {
       log.warn("No creds?");
       return Optional.empty();

@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
+import edu.suffolk.litlab.efspserver.db.LoginInfo;
 import tyler.efm.services.EfmUserService;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.IEfmUserService;
@@ -129,7 +130,7 @@ public class AdminUserService {
     log.info("Invoking User Auth for an apiKey"); 
     Optional<String> activeToken = security.login(apiKey, loginInfo);
     return activeToken
-        .map((tok) -> Response.ok(tok).build())
+        .map((tok) -> Response.ok("\"" + tok + "\"").build())
         .orElse(Response.status(403).build());
   }
   
@@ -488,11 +489,11 @@ public class AdminUserService {
    */
   private Optional<IEfmUserService> setupUserPort(HttpHeaders httpHeaders) {
     String activeToken = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<String> tylerCreds = security.checkLogin(activeToken, "tyler");
+    Optional<LoginInfo> tylerCreds = security.checkLogin(activeToken, "tyler");
     if (tylerCreds.isEmpty()) {
       return Optional.empty();
     }
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerCreds.get()); 
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerCreds.get().usableToken); 
     if (creds.isEmpty()) {
       return Optional.empty();
     }
