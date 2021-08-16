@@ -166,8 +166,9 @@ public class LoginDatabase extends DatabaseInterface {
       } else {
         String tylerToken = activeRs.getString(4);
         String jeffNetToken = activeRs.getString(5);
-        if (!(tylerToken == null && loginInfo.has("tyler"))
-            && !(jeffNetToken == null && loginInfo.has("jeffnet"))) {
+        boolean newTyler = (tylerToken == null && loginInfo.has("tyler"));
+        boolean newJeffNet = (jeffNetToken == null && loginInfo.has("jeffnet"));
+        if (!newTyler && !newJeffNet) {
           log.info("Returning Existing active token: " + activeRs.getString(2));
           return Optional.ofNullable(activeRs.getString(2));
         }
@@ -176,50 +177,56 @@ public class LoginDatabase extends DatabaseInterface {
     
     // TODO(brycew): the only hacky part, how can this be modulized?
     Map<String, String> newTokens = new HashMap<String, String>();
-      if (!loginInfo.isObject()) {
-        log.error("Can't login with a json that's not an object: " + loginInfo.toPrettyString());
+    if (!loginInfo.isObject()) {
+      log.error("Can't login with a json that's not an object: " + loginInfo.toPrettyString());
+      return Optional.empty();
+    }
+    Iterator<String> orgs = loginInfo.fieldNames();
+    while (orgs.hasNext()) {
+      String orgName = orgs.next().toLowerCase();
+      if (orgName.equalsIgnoreCase("api_key")) {
+        continue;
+      }
+      if (!loginFunctions.containsKey(orgName) 
+          || !atRest.get().enabled.containsKey(orgName)
+          || !atRest.get().enabled.get(orgName)) {
+        log.error("There is no " + orgName + " to login to: enabled map: " + atRest.get().enabled); 
         return Optional.empty();
       }
-      Iterator<String> orgs = loginInfo.fieldNames();
-      while (orgs.hasNext()) {
-        String orgName = orgs.next().toLowerCase();
-        if (orgName.equalsIgnoreCase("api_key")) {
-          continue;
-        }
-        if (!loginFunctions.containsKey(orgName) 
-            || !atRest.get().enabled.containsKey(orgName)
-            || !atRest.get().enabled.get(orgName)) {
-          log.error("There is no " + orgName + " to login to: enabled map: " + atRest.get().enabled); 
-          return Optional.empty();
-        }
-        Optional<String> newToken = loginFunctions.get(orgName).apply(loginInfo.get(orgName));
-        if (newToken.isEmpty()) {
-          log.error("Couldn't login to " + orgName);
-          return Optional.empty();
-        }
-        newTokens.put(orgName, newToken.get());
+      Optional<String> newToken = loginFunctions.get(orgName).apply(loginInfo.get(orgName));
+      if (newToken.isEmpty()) {
+        log.error("Couldn't login to " + orgName);
+        return Optional.empty();
       }
+      newTokens.put(orgName, newToken.get());
+    }
       for (Map.Entry<String, Boolean> enab : atRest.get().enabled.entrySet()) {
         if (enab.getValue() && !newTokens.containsKey(enab.getKey())) {
           log.warn(enab.getKey() + " enabled, but didn't attempt to login");
         }
       }
      
-      UUID activeToken = UUID.randomUUID();
-      Timestamp expire = new Timestamp(System.currentTimeMillis() + expirationTime);
-      String insertActive = """
-              INSERT INTO %s (
-                  "server_id", "active_token", "tyler_token", "jeffnet_token", "expires_at"
-              ) VALUES (
-                ?, ?, ?, ?, ?)""".formatted(activeTable);
-      PreparedStatement insertSt = conn.prepareStatement(insertActive);
-      insertSt.setObject(1, atRest.get().serverId);
-      insertSt.setString(2, activeToken.toString());
-      insertSt.setString(3, newTokens.getOrDefault("tyler", null));
-      insertSt.setString(4, newTokens.getOrDefault("jeffnet", null));
-      insertSt.setTimestamp(5, expire);
-      insertSt.executeUpdate();
-      return Optional.of(activeToken.toString());
+    UUID activeToken = UUID.randomUUID();
+    Timestamp expire = new Timestamp(System.currentTimeMillis() + expirationTime);
+    String insertActive = """
+            INSERT INTO %s (
+                "server_id", "active_token", "tyler_token", "jeffnet_token", "expires_at"
+            ) VALUES (
+              ?, ?, ?, ?, ?
+            ) ON CONFLICT (server_id) DO UPDATE SET 
+                active_token=?, tyler_token=?, jeffnet_token=?, expires_at=?""".formatted(activeTable);
+    PreparedStatement insertSt = conn.prepareStatement(insertActive);
+    insertSt.setObject(1, atRest.get().serverId);
+    insertSt.setString(2, activeToken.toString());
+    insertSt.setString(6, activeToken.toString());
+    insertSt.setString(3, newTokens.getOrDefault("tyler", null));
+    insertSt.setString(7, newTokens.getOrDefault("tyler", null));
+    insertSt.setString(4, newTokens.getOrDefault("jeffnet", null));
+    insertSt.setString(8, newTokens.getOrDefault("jeffnet", null));
+    insertSt.setTimestamp(5, expire);
+    insertSt.setTimestamp(9, expire);
+    insertSt.executeUpdate();
+    return Optional.of(activeToken.toString());
   }
   
   public Optional<String> checkLogin(String activeToken, String orgName) throws SQLException {

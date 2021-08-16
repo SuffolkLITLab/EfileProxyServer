@@ -12,6 +12,7 @@ import edu.suffolk.litlab.efspserver.codes.CaseType;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.Disclaimer;
 import edu.suffolk.litlab.efspserver.codes.FilingCode;
+import edu.suffolk.litlab.efspserver.codes.FilingComponent;
 import edu.suffolk.litlab.efspserver.services.EfmCheckableFilingInterface;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
@@ -190,6 +191,16 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         collector.error(assembledCase.unwrapErrOrElseThrow());
         return Result.err(assembledCase.unwrapErrOrElseThrow());
       }
+
+      List<FilingComponent> components = cd.getFilingComponents(info.getCourtLocation(), maybeFiling.get().code);
+      if (components.isEmpty()) {
+        InterviewVariable filingComponentVar = collector.requestVar("filing_component", "The filing component: Lead or Attachment", "text");
+        collector.addRequired(filingComponentVar);
+       if (collector.finished()) {
+         return Result.err(FilingError.missingRequired(filingComponentVar));
+        }
+      }
+      
       oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory coreObjFac =
           new oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory();
       CoreFilingMessageType cfm = coreObjFac.createCoreFilingMessageType();
@@ -199,8 +210,12 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       int seqNum = 0;
       for (FilingDoc filingDoc : info.getFilings()) {
         Result<JAXBElement<DocumentType>, FilingError> result = 
-                serializer.filingDocToXml(filingDoc, seqNum, caseCategory, maybeType.get(), maybeFiling.get(), 
+                serializer.filingDocToXml(filingDoc, seqNum, caseCategory, maybeType.get(), 
+                    maybeFiling.get(), components,
                         info.getMiscInfo(), collector);
+        if (result.isErr()) {
+          return result.mapOk(ok -> null);
+        }
         JAXBElement<DocumentType> d = result.unwrapOrElseThrow();
         if (filingDoc.isLead()) {
           cfm.getFilingLeadDocument().add(d);

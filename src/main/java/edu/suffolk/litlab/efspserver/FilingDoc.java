@@ -33,7 +33,7 @@ public class FilingDoc {
   // So, we can just say yes?
   String documentTypeFormatStandardName;
   boolean sendInBase64 = true;
-  String binaryCategoryComponent;
+  String filingComponentName;
   
   // From filer, about this filing
   String filingComments;
@@ -65,10 +65,10 @@ public class FilingDoc {
   public FilingDoc(String fileName, InputStream fileStream,
       List<String> filingPartyIds,
       String documentTypeFormatStandardName,
-      String binaryCategoryComponent, FilingTypeType filingAction, boolean isLeadDoc) throws IOException {
+      String filingComponentName, FilingTypeType filingAction, boolean isLeadDoc) throws IOException {
     this(fileName, fileStream.readAllBytes(), Optional.empty(), "", Optional.empty(), 
         filingPartyIds, Optional.empty(), documentTypeFormatStandardName, 
-        binaryCategoryComponent, "", Optional.empty(), List.of(), List.of(), 
+        filingComponentName, "", Optional.empty(), List.of(), List.of(), 
         filingAction, isLeadDoc);
   }
 
@@ -76,7 +76,7 @@ public class FilingDoc {
   public FilingDoc(String fileName, byte[] fileContents, Optional<String> userProvidedDescription,
       String documentFileControlId, Optional<LocalDate> dueDate, 
       List<String> filingPartyIds, Optional<String> filingAttorney,
-      String documentTypeFormatStandardName, String binaryCategoryComponent,
+      String documentTypeFormatStandardName, String filingComponentName,
       String filingComments, Optional<String> motionType,
       List<String> courtesyCopies, List<String> preliminaryCopies, FilingTypeType filingAction,
       boolean isLeadDoc) {
@@ -89,7 +89,7 @@ public class FilingDoc {
     this.filingPartyIds = filingPartyIds;
     this.filingAttorney = filingAttorney;
     this.documentTypeFormatStandardName = documentTypeFormatStandardName;
-    this.binaryCategoryComponent = binaryCategoryComponent;
+    this.filingComponentName = filingComponentName;
     
     this.filingComments = filingComments;
     this.motionType = motionType;
@@ -155,8 +155,8 @@ public class FilingDoc {
     return sendInBase64;
   }
   
-  public String getBinaryCategoryComponent() {
-    return binaryCategoryComponent;
+  public String getFilingComponentName() {
+    return filingComponentName;
   }
   
   public String getDocumentTypeFormatStandardName() {

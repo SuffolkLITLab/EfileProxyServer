@@ -24,6 +24,7 @@ import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.codes.DocumentTypeTableRow;
 import edu.suffolk.litlab.efspserver.codes.FilingCode;
+import edu.suffolk.litlab.efspserver.codes.FilingComponent;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
@@ -234,7 +235,8 @@ public class EcfCourtSpecificSerializer {
   }
 
   public Result<JAXBElement<DocumentType>, FilingError> filingDocToXml(FilingDoc doc, 
-          int sequenceNum, CaseCategory caseCategory, CaseType motionType, FilingCode filing,
+          int sequenceNum, CaseCategory caseCategory, CaseType motionType, FilingCode filing, 
+          List<FilingComponent> components,
           JsonNode miscInfo, InfoCollector collector) throws IOException {
     tyler.ecf.extensions.common.ObjectFactory tylerObjFac = 
         new tyler.ecf.extensions.common.ObjectFactory();
@@ -254,8 +256,6 @@ public class EcfCourtSpecificSerializer {
     docType.setDocumentSequenceID(XmlHelper.convertString(Integer.toString(sequenceNum)));
     DocumentMetadataType metadata = oasisObjFac.createDocumentMetadataType();
     
-    
-    // TODO(brycew): make a document / filing component split between everything,
     metadata.setRegisterActionDescriptionText(XmlHelper.convertText(filing.code));
 
     if (doc.getFilingAttorney().isPresent()) {
@@ -268,20 +268,51 @@ public class EcfCourtSpecificSerializer {
       metadata.getFilingPartyID().add(XmlHelper.convertId(filingPartyId, "REFERENCE"));
     }
     docType.setDocumentMetadata(metadata);
-    
+
+    String cc = doc.getCourtesyCopies().stream().reduce("", (base, str) -> base + "," + str);
+    docType.setCourtesyCopiesText(XmlHelper.convertText(cc));
+    String prelim = doc.getPreliminaryCopies().stream().reduce("", (base, str) -> base + "," + str);
+    docType.setPreliminaryCopiesText(XmlHelper.convertText(prelim));
+    docType.setFilingCommentsText(XmlHelper.convertText(doc.getFilingComments()));
+    doc.getMotionType().ifPresent((mt) -> docType.setMotionTypeCode(XmlHelper.convertText(mt)));
+    docType.setFilingAction(doc.getFilingAction());
+
     // TODO(brycew): what should this actually be? Very unclear
     DocumentAttachmentType attachment = oasisObjFac.createDocumentAttachmentType();
     attachment.setBinaryDescriptionText(XmlHelper.convertText(doc.getFileName())); 
-    attachment.setBinaryCategoryText(XmlHelper.convertText(doc.getBinaryCategoryComponent()));
     
+    // TODO(brycew): hacky: this should be easier to understand: we're modifying a param that's passed
+    // to other objects
+    InterviewVariable var = collector.requestVar("filing_component", "Filing component: Lead or attachment", "text");
+    if (components.isEmpty()) {
+      log.error("Filing Components List is empty! There are no other documents that can be added! Stopping at " + doc.getFileName());
+      collector.addRequired(var);
+      if (collector.finished()) {
+        return Result.err(FilingError.missingRequired(var));
+      }
+    }
+    
+    Optional<FilingComponent> filtered = components.stream().filter(c -> c.name.equalsIgnoreCase(doc.getFilingComponentName())).findFirst();
+    if (filtered.isEmpty()) {
+      log.error("Filing Components (" + components + ") don't match " + doc.getFilingComponentName()); 
+      collector.addRequired(var);
+      if (collector.finished()) {
+        return Result.err(FilingError.missingRequired(var));
+      }
+    }
+    
+    attachment.setBinaryCategoryText(XmlHelper.convertText(filtered.get().code)); 
+    if (!filtered.get().allowmultiple) {
+      components.remove(filtered.get());
+    }
     
     // Literally should just be if it's confidential or not. (or "Hot fix" or public).
     // Search options in "documenttype" table with location
-    DataFieldRow documentType = cd.getDataField(this.courtId, "DocumentTypeTableRow");
-    InterviewVariable docTypeVar = collector.requestVar("document_type", 
-        documentType.helptext +  " " + documentType.validationmessage, "text");
+    DataFieldRow documentType = cd.getDataField(this.courtId, "DocumentType");
     if (documentType.isvisible) { 
       List<DocumentTypeTableRow> docTypes = cd.getDocumentTypes(courtId, filing.code);
+      InterviewVariable docTypeVar = collector.requestVar("document_type", 
+          documentType.helptext +  " " + documentType.validationmessage, "choices", docTypes.stream().map(dt -> dt.name).collect(Collectors.toList()));
       String docTypeStr = doc.getDocumentTypeFormatStandardName();
       if (documentType.isrequired) {
         if (docTypeStr.isBlank()) {
@@ -299,6 +330,7 @@ public class EcfCourtSpecificSerializer {
       }
     }
     
+    log.info("Filing code: " + filing.code + " " + filing.name + ": " + docType + "///////" + attachment);
     if (doc.getInBase64()) {
       attachment.setBinaryLocationURI(XmlHelper.convertUri(doc.getFileName()));
       JAXBElement<Base64Binary> n = 
@@ -317,14 +349,6 @@ public class EcfCourtSpecificSerializer {
     rendition.setDocumentRenditionMetadata(renditionMetadata);
     docType.getDocumentRendition().add(rendition);
     
-    String cc = doc.getCourtesyCopies().stream().reduce("", (base, str) -> base + "," + str);
-    docType.setCourtesyCopiesText(XmlHelper.convertText(cc));
-    String prelim = doc.getPreliminaryCopies().stream().reduce("", (base, str) -> base + "," + str);
-    docType.setPreliminaryCopiesText(XmlHelper.convertText(prelim));
-    docType.setFilingCommentsText(XmlHelper.convertText(doc.getFilingComments()));
-    doc.getMotionType().ifPresent((mt) -> docType.setMotionTypeCode(XmlHelper.convertText(mt)));
-    docType.setFilingAction(doc.getFilingAction());
-
     if (doc.isLead()) {
       return Result.ok(tylerObjFac.createFilingLeadDocument(docType));
     } else {
