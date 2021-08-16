@@ -1,6 +1,5 @@
 package tyler.efm.wsdl.webservicesprofile_implementation_4_0;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebEndpoint;
@@ -25,12 +24,9 @@ public class CourtRecordMDEService extends Service {
     public final static QName SERVICE = new QName("urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0", "CourtRecordMDEService");
     public final static QName CourtRecordMDEPort = new QName("urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0", "CourtRecordMDEPort");
     static {
-        URL url = null;
-        try {
-            url = new URL("file:/home/litlab/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/filingreview/ECF-4.0-CourtRecordMDEService.wsdl");
-        } catch (MalformedURLException e) {
-            java.util.logging.Logger.getLogger(CourtRecordMDEService.class.getName())
-                .log(java.util.logging.Level.INFO,
+        URL url = CourtRecordMDEService.class.getClassLoader().getResource("wsdl/filingreview/ECF-4.0-CourtRecordMDEService.wsdl");
+        if (url == null) {
+          org.slf4j.LoggerFactory.getLogger(CourtRecordMDEService.class.getName()).info(
                      "Can not initialize the default wsdl from {0}", "file:/home/litlab/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/filingreview/ECF-4.0-CourtRecordMDEService.wsdl");
         }
         WSDL_LOCATION = url;
