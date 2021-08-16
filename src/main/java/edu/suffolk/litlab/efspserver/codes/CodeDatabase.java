@@ -118,8 +118,6 @@ public class CodeDatabase extends DatabaseInterface {
           if (rowsVals.containsKey(colName)) {
             stmt.setString(idx, rowsVals.get(colName));
           } else {
-            // TODO(brycew): import java.sql.Types; is fritzing out. Figure out why.
-            //stmt.setNull(idx, Types.VARCHAR);
             stmt.setString(idx, null);
           }
           idx += 1;
@@ -373,24 +371,44 @@ public class CodeDatabase extends DatabaseInterface {
       PreparedStatement specificSt = conn.prepareStatement(specificQuery);
       specificSt.setString(1, courtLocationId);
       specificSt.setString(2, filingCodeId);
-      ResultSet rs = specificSt.executeQuery();
+      ResultSet spefRs = specificSt.executeQuery();
       List<DocumentTypeTableRow> docTypes = new ArrayList<DocumentTypeTableRow>();
-      while (rs.next()) {
-        docTypes.add(new DocumentTypeTableRow(rs.getString(1), rs.getString(2), 
-            rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7)));
+      while (spefRs.next()) {
+        docTypes.add(new DocumentTypeTableRow(spefRs)); 
       }
       if (docTypes.isEmpty()) {
         String broadQuery = DocumentTypeTableRow.getDocumentTypeNoFiling();
         PreparedStatement broadSt = conn.prepareStatement(broadQuery);
         broadSt.setString(1, courtLocationId);
         ResultSet broadRs = broadSt.executeQuery();
-        while (rs.next()) {
-        docTypes.add(new DocumentTypeTableRow(broadRs.getString(1), broadRs.getString(2), 
-            broadRs.getString(3), broadRs.getString(4), broadRs.getString(5), broadRs.getString(6), 
-            broadRs.getString(7)));
+        while (broadRs.next()) {
+        docTypes.add(new DocumentTypeTableRow(broadRs)); 
         }
       }
       return docTypes;
+    } catch (SQLException ex) {
+      log.error("SQLException: " + ex.toString());
+      return List.of();
+    }
+  }
+  
+  public List<FilingComponent> getFilingComponents(String courtLocationId, String filingCodeId) {
+    if (conn == null) {
+      log.error("SQL connection not created in FilingComponents yet");
+      return List.of();
+    }
+    
+    try {
+      String query = FilingComponent.getFilingComponents();
+      PreparedStatement st = conn.prepareStatement(query);
+      st.setString(1, courtLocationId);
+      st.setString(2, filingCodeId);
+      ResultSet rs = st.executeQuery();
+      List<FilingComponent> components = new ArrayList<FilingComponent>();
+      while (rs.next()) {
+        components.add(new FilingComponent(rs));
+      }
+      return components;
     } catch (SQLException ex) {
       log.error("SQLException: " + ex.toString());
       return List.of();

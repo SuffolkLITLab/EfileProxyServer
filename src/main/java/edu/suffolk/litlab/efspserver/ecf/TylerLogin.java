@@ -27,9 +27,9 @@ public class TylerLogin implements LoginInterface {
     URL userWsdlUrl = EfmUserService.WSDL_LOCATION;
     userServiceFactory = makeUserServiceFactory(userWsdlUrl);
   }
+
   @Override
   public Optional<String> login(JsonNode loginInfo) {
-    log.info("Invoking User Auth for " + loginInfo.toPrettyString()); 
     if (!loginInfo.isObject()
         || !loginInfo.has("username")
         || !loginInfo.get("username").isTextual()) {
@@ -37,6 +37,7 @@ public class TylerLogin implements LoginInterface {
       return Optional.empty();
     }
     String username = loginInfo.get("username").asText();
+    log.info("Invoking User Auth for " + username); 
     if (!loginInfo.has("password")
         || !loginInfo.get("password").isTextual()) {
       log.warn("Tried to login without passing in a password");

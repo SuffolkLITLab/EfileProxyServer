@@ -298,8 +298,12 @@ public class FilingInformationDocassembleJacksonDeserializer
       if (!filingDocs.isEmpty()) {
         filingDocs.get(0).setFilingComments(filingComments);
       }
-
     }
+    JsonNode paymentIdJson = node.get("tyler_payment_id");
+    if (paymentIdJson != null && paymentIdJson.isTextual()) {
+      entities.setPaymentId(paymentIdJson.asText());
+    }
+    
     entities.setFilings(filingDocs);
     entities.setMiscInfo(node);
       
