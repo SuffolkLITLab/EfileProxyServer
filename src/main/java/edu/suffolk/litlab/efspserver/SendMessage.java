@@ -15,7 +15,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SendMessage {
+  private static Logger log = 
+      LoggerFactory.getLogger(SendMessage.class); 
 
   /** Main just for testing. */
   public static void main(String[] args) throws IOException {
@@ -48,18 +53,13 @@ public class SendMessage {
     Mail mail = new Mail(new Email(from), subject, new Email(to), 
         new Content("text/plain", renderedTemplate));
 
-    try {
-      request.setMethod(Method.POST);
-      request.setEndpoint("mail/send");
-      request.setBody(mail.build());
-      Response response = sg.api(request);
-      System.out.println(response.getStatusCode());
-      System.out.println(response.getBody());
-      System.out.println(response.getHeaders());
-      return response.getStatusCode();
-    } catch (IOException ex) {
-      throw ex;
-    }
+    request.setMethod(Method.POST);
+    request.setEndpoint("mail/send");
+    request.setBody(mail.build());
+    Response response = sg.api(request);
+    log.info(response.getStatusCode() + " " 
+        + response.getHeaders() + " " + response.getBody());
+    return response.getStatusCode();
   }
 
   /**
