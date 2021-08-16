@@ -41,7 +41,7 @@ public class MessageSettingsDatabase extends DatabaseInterface {
       String createQuery = """
           CREATE TABLE %s (
           "server_id" uuid PRIMARY KEY, "from_email" text, "subject_line" text,
-          "email_template" text)""".formatted(tableName);
+          "email_template" text, "email_confirmation" text)""".formatted(tableName);
       PreparedStatement createSt = conn.prepareStatement(createQuery);
       int retVal = createSt.executeUpdate();
       if (retVal < 0) {
@@ -51,10 +51,12 @@ public class MessageSettingsDatabase extends DatabaseInterface {
   }
   
   public void updateTable(MessageInfo info) throws SQLException {
-    updateTable(info.serverId, info.fromEmail, info.subjectLine, info.emailTemplate);
+    updateTable(info.serverId, info.fromEmail, info.subjectLine, info.emailTemplate,
+        info.emailConfirmation);
   }
   
-  public void updateTable(UUID serverId, String toEmail, String subjectLine, String emailTemplate) throws SQLException {
+  public void updateTable(UUID serverId, String toEmail, String subjectLine, 
+      String emailTemplate, String emailConfirmation) throws SQLException {
     if (conn == null) {
       log.error("Connection in addToTable wasn't open yet!");
       throw new SQLException();
@@ -62,9 +64,10 @@ public class MessageSettingsDatabase extends DatabaseInterface {
     
     String insertIntoTable = """
         INSERT INTO %s (
-            "server_id", "from_email", "subject_line", "email_template"
+            "server_id", "from_email", "subject_line", "email_template", "email_confirmation"
         ) VALUES (
-          ?, ?, ?, ?) ON CONFLICT (server_id) DO UPDATE SET from_email=?, subject_line=?, email_template=?
+          ?, ?, ?, ?, ?) ON CONFLICT (server_id) DO UPDATE SET from_email=?, subject_line=?, 
+              email_template=?, email_confirmation=?
         """.formatted(tableName);
     
     PreparedStatement insertSt = conn.prepareStatement(insertIntoTable);
@@ -72,9 +75,11 @@ public class MessageSettingsDatabase extends DatabaseInterface {
     insertSt.setString(2, toEmail);
     insertSt.setString(3, subjectLine);
     insertSt.setString(4, emailTemplate);
-    insertSt.setString(5, toEmail);
-    insertSt.setString(6, subjectLine);
-    insertSt.setString(7, emailTemplate);
+    insertSt.setString(5, emailConfirmation);
+    insertSt.setString(6, toEmail);
+    insertSt.setString(7, subjectLine);
+    insertSt.setString(8, emailTemplate);
+    insertSt.setString(9, emailConfirmation);
     insertSt.executeUpdate();
   }
   
@@ -84,14 +89,15 @@ public class MessageSettingsDatabase extends DatabaseInterface {
       return Optional.empty();
     }
     
-    String query = "SELECT server_id, from_email, subject_line, email_template FROM message_settings WHERE server_id=?";
+    String query = "SELECT server_id, from_email, subject_line, email_template, email_confirmation FROM message_settings WHERE server_id=?";
     PreparedStatement st;
     try {
       st = conn.prepareStatement(query);
       st.setObject(1, serverId);
       ResultSet rs = st.executeQuery();
       if (rs.next()) {
-        MessageInfo info = new MessageInfo((UUID)rs.getObject(1), rs.getString(2), rs.getString(3), rs.getString(4));
+        MessageInfo info = new MessageInfo((UUID)rs.getObject(1), rs.getString(2), 
+            rs.getString(3), rs.getString(4), rs.getString(5));
         return Optional.of(info);
       }
     } catch (SQLException e) {

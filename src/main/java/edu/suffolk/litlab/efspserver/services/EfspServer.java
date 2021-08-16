@@ -58,6 +58,7 @@ public class EfspServer {
       CodeDatabase cd,
       UserDatabase ud,
       MessageSettingsDatabase md,
+      OrgMessageSender sender,
       String userDatabaseName,
       Map<String, InterviewToFilingEntityConverter> converterMap,
       Map<String, EfmFilingInterface> filingMap,
@@ -107,7 +108,7 @@ public class EfspServer {
     cd.createDbConnection(dbUser, dbPassword);
     sf.setResourceProvider(FilingReviewService.class,
         new SingletonResourceProvider(new FilingReviewService(
-            ud, converterMap, filingMap, callbackMap, security)));
+            ud, converterMap, filingMap, callbackMap, security, sender)));
     sf.setResourceProvider(FirmAttorneyAndServiceService.class,
         new SingletonResourceProvider(new FirmAttorneyAndServiceService(security)));
     sf.setResourceProvider(PaymentsService.class,
@@ -204,7 +205,7 @@ public class EfspServer {
     Map<String, EfmRestCallbackInterface> callbackMap = Map.of("jefferson", callback);
     
     EfspServer server = new EfspServer(x509Password, dbUrl, dbPortInt, 
-        dbUser, dbPassword, codeDatabaseName, cd, ud, md, userDatabaseName, 
+        dbUser, dbPassword, codeDatabaseName, cd, ud, md, sender, userDatabaseName, 
         converterMap, filingMap, callbackMap);
 
     // TODO(brycew): use https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ScheduledExecutorService.html

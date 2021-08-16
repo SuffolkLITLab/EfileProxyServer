@@ -77,7 +77,7 @@ public class MessageSettingsService {
     MessageInfo newInfo = new MessageInfo(node);
     
     MessageInfo existingInfo = this.md.findMessageInfo(activeToken.get().serverId) 
-        .orElse(new MessageInfo(activeToken.get().serverId, null, null, null));
+        .orElse(new MessageInfo(activeToken.get().serverId, null, null, null, null));
     existingInfo.emailTemplate = newInfo.emailTemplate;
     existingInfo.subjectLine = newInfo.subjectLine;
     existingInfo.fromEmail = newInfo.fromEmail;

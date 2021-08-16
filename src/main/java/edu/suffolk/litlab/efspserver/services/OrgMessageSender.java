@@ -44,6 +44,19 @@ public class OrgMessageSender {
       Best,
       Court Forms Online
       """;
+  private String defaultConfirmation = 
+      """
+      Dear {{ name }},
+      
+      The {{ court_id }} has received your filing in {{ case_type }}!
+      
+      They will send you a response shortly.
+
+      You should contact the court directly if you have questions.
+      
+      Best,
+      Court Forms Online
+      """;
   
   public OrgMessageSender(MessageSettingsDatabase md) {
     this.md = md;
@@ -63,10 +76,13 @@ public class OrgMessageSender {
       if (info.emailTemplate == null) {
         info.emailTemplate = defaultTemplate;
       }
+      if (info.emailConfirmation == null) {
+        info.emailConfirmation = defaultConfirmation;
+      }
       return info;
     } else {
       log.error("Couldn't get message settings, using defaults");
-      return new MessageInfo(serverId, defaultFrom, defaultSubject, defaultTemplate); 
+      return new MessageInfo(serverId, defaultFrom, defaultSubject, defaultTemplate, defaultConfirmation); 
     }
   }
   
@@ -90,6 +106,27 @@ public class OrgMessageSender {
     }
       
     // TODO(brycew): handle sending SMS as well
+    return false;
+  }
+  
+  public boolean sendConfirmation(String email, UUID serverId, String name, String courtId, String caseType) {
+    MessageInfo msgSettings = getSettings(serverId);
+    Map<String, Object> templateVars = new HashMap<String, Object>();
+    templateVars.put("name", name);
+    templateVars.put("court_id", courtId);
+    templateVars.put("case_type", caseType);
+    boolean canEmail = email != null && SendMessage.isValidEmail(email);
+    if (canEmail) {
+      int result;
+      try {
+        result = SendMessage.sendEmail(msgSettings.fromEmail, msgSettings.subjectLine, email, msgSettings.emailConfirmation, templateVars);
+        return (result == 200);
+      } catch (IOException e) {
+        log.error(e.toString());
+        return false;
+      }
+    }
+    
     return false;
   }
 }
