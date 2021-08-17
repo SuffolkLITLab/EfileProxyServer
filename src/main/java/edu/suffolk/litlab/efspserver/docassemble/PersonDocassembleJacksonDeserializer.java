@@ -105,45 +105,17 @@ public class PersonDocassembleJacksonDeserializer extends StdDeserializer<Person
     Optional<String> email = getStringMember(node, "email"); 
     final ContactInformation info = new ContactInformation(phones, addr, email);
 
-    if (!node.has("name")) {
-      InterviewVariable var = collector.requestVar(
-          "name", "The full name of the person", "IndividualName");
-      collector.addRequired(var);
-      if (collector.finished()) {
-        FilingError err = FilingError.missingRequired(var);
-        return Result.err(err);
-      }
-    }
-    if (!node.get("name").isObject()) {
-      FilingError err = FilingError.malformedInterview(
-          "Can't parse person with name that's not a JSON object: " + node.get("name").toPrettyString());
-      return Result.err(err);
-    }
-    if (!node.get("name").has("first")) {
-      InterviewVariable var = collector.requestVar("name.first", 
-          "The first name of a person / name of a business", "text");
-      collector.addRequired(var);
-      if (collector.finished()) {
-        FilingError err = FilingError.missingRequired(var);
-        return Result.err(err);
-      }
-    }
-
-    JsonNode nameSubset = node.get("name");
-    boolean isOrg = !(nameSubset.has("middle") || nameSubset.has("last"));
-    Name name = new Name(
-          "", // TODO(brycew): where should we handle prefixes? Are they always empty?
-          getStringMember(nameSubset, "first").orElse(""),
-          getStringMember(nameSubset, "middle").orElse(""),
-          getStringMember(nameSubset, "last").orElse(""),
-          getStringMember(nameSubset, "suffix").orElse(""),
-          "" // TODO(brycew): where would Maiden name go, if asked for?
-    );
       
     Optional<String> language = getStringMember(node, "prefered_language");
     Optional<String> gender = getStringMember(node, "gender");
     Optional<LocalDate> birthdate = Optional.empty(); // TODO(brycew): read in birthdate
-    Person per = new Person(name, info, gender, language, birthdate, isOrg);
+    Result<Name, FilingError> maybeName = NameDocassembleDeserializer.fromNode(node.get("name"), collector); 
+    if (maybeName.isErr()) {
+      return maybeName.mapOk(o -> null);
+    }
+    Name name = maybeName.unwrapOrElseThrow();
+    boolean isPer = !name.getMiddleName().isBlank() || !name.getLastName().isBlank();
+    Person per = new Person(name, info, gender, language, birthdate, isPer);
     log.debug("Read in a new person: " + per.getName().getFullName());
     return Result.ok(per);
   }

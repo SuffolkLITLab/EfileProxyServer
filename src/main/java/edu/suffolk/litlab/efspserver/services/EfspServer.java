@@ -104,7 +104,8 @@ public class EfspServer {
         FilingReviewService.class,
         FirmAttorneyAndServiceService.class,
         PaymentsService.class,
-        MessageSettingsService.class);
+        MessageSettingsService.class,
+        CasesService.class);
     sf.setResourceProvider(AdminUserService.class,
         new SingletonResourceProvider(new AdminUserService(security)));
     sf.setResourceProvider(FilingReviewService.class,
