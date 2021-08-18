@@ -62,7 +62,7 @@ public class FilingReviewService {
   }
   
   @GET
-  @Path("/court/{court_id}/filings/{filing_id}/status")
+  @Path("/courts/{court_id}/filings/{filing_id}/status")
   public Response getFilingStatus(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, 
       @PathParam("filing_id") String filingId) {
@@ -77,7 +77,7 @@ public class FilingReviewService {
  }
   
   @GET
-  @Path("/court/{court_id}/filings")
+  @Path("/courts/{court_id}/filings")
   public Response getFilingList(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId) {
     if (!filingInterfaces.containsKey(courtId)) {
@@ -91,7 +91,7 @@ public class FilingReviewService {
   }
   
   @POST
-  @Path("/court/{court_id}/check_filing")
+  @Path("/courts/{court_id}/check-filing")
   public Response checkFilingForReview(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, String allVars) {
     MediaType mediaType = httpHeaders.getMediaType();
@@ -120,7 +120,7 @@ public class FilingReviewService {
   }
   
   @POST
-  @Path("/court/{court_id}/filing/status")
+  @Path("/courts/{court_id}/filing/status")
   public Response filingUpdateWebhook(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, String statusReport) {
     MediaType mediaType = httpHeaders.getMediaType();
@@ -135,7 +135,7 @@ public class FilingReviewService {
   }
   
   @POST
-  @Path("/court/{court_id}/filing")
+  @Path("/courts/{court_id}/filings")
   public Response submitFilingForReview(@Context HttpHeaders httpHeaders, 
       @PathParam("court_id") String courtId, String allVars) {
     MediaType mediaType = httpHeaders.getMediaType();
@@ -228,7 +228,7 @@ public class FilingReviewService {
   }
 
   @GET
-  @Path("/court/{court_id}/filings/{filing_id}")
+  @Path("/courts/{court_id}/filings/{filing_id}")
   public Response getFilingDetails(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, @PathParam("filing_id") String filingId) {
     if (!filingInterfaces.containsKey(courtId)) {
@@ -242,7 +242,7 @@ public class FilingReviewService {
   }
 
   @DELETE
-  @Path("/court/{court_id}/filings/{filing_id}")
+  @Path("/courts/{court_id}/filings/{filing_id}")
   public Response cancelFiling(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, @PathParam("filing_id") String filingId) {
     if (!filingInterfaces.containsKey(courtId)) {

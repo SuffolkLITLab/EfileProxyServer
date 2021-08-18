@@ -135,7 +135,7 @@ public class AdminUserService {
   }
   
   @GET
-  @Path("/user/notification_preferences")
+  @Path("/user/notification-preferences")
   public Response getNotificationPrefs(@Context HttpHeaders httpHeaders) {
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) { 
@@ -149,7 +149,7 @@ public class AdminUserService {
   }
   
   @POST
-  @Path("/user/notification_preferences")
+  @Path("/user/notification-preferences")
   public Response updateNotificationPrefs(@Context HttpHeaders httpHeaders,
       List<NotificationType> notifications) {
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
@@ -169,7 +169,7 @@ public class AdminUserService {
   }
   
   @POST
-  @Path("/user/resend_activation_email")
+  @Path("/user/resend-activation-email")
   public Response selfResendActivationEmail(@Context HttpHeaders httpHeaders,
       String emailToSendTo) {
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
@@ -186,7 +186,7 @@ public class AdminUserService {
   }
   
   @POST
-  @Path("/users/{id}/resend_activation_email")
+  @Path("/users/{id}/resend-activation-email")
   public Response resendActivationEmail(@Context HttpHeaders httpHeaders, 
       @PathParam("id") String id) {
     Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
@@ -203,7 +203,7 @@ public class AdminUserService {
   }
   
   @POST
-  @Path("/users/{id}/change_password")
+  @Path("/users/{id}/change-password")
   //TODO(brycew) NEXT: THIS IS BROKEN! Can't take two string params, needs an object
   public Response resetPassword(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, String email, String password) {
@@ -222,7 +222,7 @@ public class AdminUserService {
   }
   
   @POST
-  @Path("/user/change_password")
+  @Path("/user/change-password")
   //TODO(brycew) NEXT: THIS IS BROKEN! Can't take two string params, needs an object
   public Response setPassword(@Context HttpHeaders httpHeaders,
       String oldPassword, String newPassword) {
@@ -240,7 +240,7 @@ public class AdminUserService {
   }
   
   @POST
-  @Path("/user/reset_password")
+  @Path("/user/reset-password")
   public Response selfResetPassword(@Context HttpHeaders httpHeaders,
       String emailToSend) {
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
@@ -470,7 +470,7 @@ public class AdminUserService {
   }
   
   @GET
-  @Path("/notification_options")
+  @Path("/notification-options")
   public Response getNotificationPreferenceList(@Context HttpHeaders httpHeaders) {
     Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) {

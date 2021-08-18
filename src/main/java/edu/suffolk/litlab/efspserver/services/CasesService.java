@@ -8,7 +8,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -72,7 +71,7 @@ public class CasesService {
   }
   
   @GET
-  @Path("/court/{court_id}/case")
+  @Path("/courts/{court_id}/cases")
   public Response getCaseList(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
       String queryInfo) throws JsonMappingException, JsonProcessingException, JAXBException {
@@ -122,7 +121,7 @@ public class CasesService {
   }
   
   @GET
-  @Path("/court/{court_id}/case/{case_tracking_id}")
+  @Path("/courts/{court_id}/cases/{case_tracking_id}")
   public Response getCase(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, @PathParam("case_tracking_id") String caseId) {
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
@@ -163,14 +162,14 @@ public class CasesService {
    * @return
    */
   @GET
-  @Path("/court/{court_id}/case/{case_tracking_id}/document")
+  @Path("/courts/{court_id}/cases/{case_tracking_id}/documents")
   public Response getDocument(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, @PathParam("case_tracking_id") String caseId) {
     return Response.status(405).build();
   }
   
   @GET
-  @Path("/court/{court_id}/service_contact/{service_contact_id}/cases")
+  @Path("/courts/{court_id}/service-contacts/{service_contact_id}/cases")
   public Response getServiceAttachCaseList(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, 
       @PathParam("service_contact_id") String serviceId) {
@@ -196,7 +195,7 @@ public class CasesService {
   }
   
   @GET
-  @Path("/court/{court_id}/case/{case_tracking_id}/service_information")
+  @Path("/courts/{court_id}/cases/{case_tracking_id}/service-information")
   public Response getServiceInformation(@Context HttpHeaders httpHeaders, 
       @PathParam("court_id") String courtId, @PathParam("case_tracking_id") String caseId) {
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
@@ -221,7 +220,7 @@ public class CasesService {
   }
   
   @GET
-  @Path("/court/{court_id}/case/{case_tracking_id}/service_information_history")
+  @Path("/courts/{court_id}/cases/{case_tracking_id}/service-information-history")
   public Response getServiceInformationHistory(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, @PathParam("case_tracking_id") String caseId) {
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
