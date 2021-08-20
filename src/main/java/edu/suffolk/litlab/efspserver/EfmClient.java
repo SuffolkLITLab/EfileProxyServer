@@ -20,9 +20,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.FilingListQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistresponsemessage_4.FilingListResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistresponsemessage_4.MatchingFilingType;
@@ -38,60 +36,29 @@ import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.EfmUserService;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.IEfmUserService;
-import tyler.efm.services.schema.adduserrolerequest.AddUserRoleRequestType;
-import tyler.efm.services.schema.attachservicecontactrequest.AttachServiceContactRequestType;
-import tyler.efm.services.schema.attorneylistresponse.AttorneyListResponseType;
 import tyler.efm.services.schema.authenticaterequest.AuthenticateRequestType;
 import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
 import tyler.efm.services.schema.baseresponse.BaseResponseType;
 import tyler.efm.services.schema.changepasswordrequest.ChangePasswordRequestType;
 import tyler.efm.services.schema.changepasswordresponse.ChangePasswordResponseType;
-import tyler.efm.services.schema.common.AttorneyType;
 import tyler.efm.services.schema.common.NotificationType;
 import tyler.efm.services.schema.common.PaymentAccountType;
 import tyler.efm.services.schema.common.PaymentAccountTypeType;
-import tyler.efm.services.schema.common.RegistrationType;
-import tyler.efm.services.schema.common.RoleType;
-import tyler.efm.services.schema.common.ServiceContactType;
 import tyler.efm.services.schema.common.UserType;
-import tyler.efm.services.schema.createattorneyrequest.CreateAttorneyRequestType;
-import tyler.efm.services.schema.createattorneyresponse.CreateAttorneyResponseType;
 import tyler.efm.services.schema.createpaymentaccountrequest.CreatePaymentAccountRequestType;
 import tyler.efm.services.schema.createpaymentaccountresponse.CreatePaymentAccountResponseType;
-import tyler.efm.services.schema.createservicecontactrequest.CreateServiceContactRequestType;
-import tyler.efm.services.schema.createservicecontactresponse.CreateServiceContactResponseType;
-import tyler.efm.services.schema.detachservicecontactrequest.DetachServiceContactRequestType;
-import tyler.efm.services.schema.getattorneyrequest.GetAttorneyRequestType;
-import tyler.efm.services.schema.getattorneyresponse.GetAttorneyResponseType;
-import tyler.efm.services.schema.getfirmresponse.GetFirmResponseType;
-import tyler.efm.services.schema.getservicecontactrequest.GetServiceContactRequestType;
-import tyler.efm.services.schema.getservicecontactresponse.GetServiceContactResponseType;
 import tyler.efm.services.schema.getuserrequest.GetUserRequestType;
 import tyler.efm.services.schema.getuserresponse.GetUserResponseType;
 import tyler.efm.services.schema.notificationpreferencesresponse.NotificationPreferencesResponseType;
 import tyler.efm.services.schema.paymentaccountlistresponse.PaymentAccountListResponseType;
 import tyler.efm.services.schema.paymentaccounttypelistresponse.PaymentAccountTypeListResponseType;
-import tyler.efm.services.schema.registrationrequest.RegistrationRequestType;
-import tyler.efm.services.schema.registrationresponse.RegistrationResponseType;
-import tyler.efm.services.schema.removeattorneyrequest.RemoveAttorneyRequestType;
 import tyler.efm.services.schema.removepaymentaccountrequest.RemovePaymentAccountRequestType;
-import tyler.efm.services.schema.removeservicecontactrequest.RemoveServiceContactRequestType;
-import tyler.efm.services.schema.removeuserrequest.RemoveUserRequestType;
-import tyler.efm.services.schema.removeuserrolerequest.RemoveUserRoleRequestType;
-import tyler.efm.services.schema.resendactivationemailrequest.ResendActivationEmailRequestType;
 import tyler.efm.services.schema.resetpasswordrequest.ResetPasswordRequestType;
 import tyler.efm.services.schema.resetpasswordresponse.ResetPasswordResponseType;
 import tyler.efm.services.schema.selfresendactivationemailrequest.SelfResendActivationEmailRequestType;
-import tyler.efm.services.schema.servicecontactlistresponse.ServiceContactListResponseType;
-import tyler.efm.services.schema.updateattorneyrequest.UpdateAttorneyRequestType;
-import tyler.efm.services.schema.updateattorneyresponse.UpdateAttorneyResponseType;
-import tyler.efm.services.schema.updatefirmrequest.UpdateFirmRequestType;
 import tyler.efm.services.schema.updatenotificationpreferencesrequest.UpdateNotificationPreferencesRequestType;
-import tyler.efm.services.schema.updateservicecontactrequest.UpdateServiceContactRequestType;
-import tyler.efm.services.schema.updateservicecontactresponse.UpdateServiceContactResponseType;
 import tyler.efm.services.schema.updateuserrequest.UpdateUserRequestType;
 import tyler.efm.services.schema.updateuserresponse.UpdateUserResponseType;
-import tyler.efm.services.schema.userlistresponse.UserListResponseType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 
 public final class EfmClient {
@@ -100,139 +67,6 @@ public final class EfmClient {
       "EfmUserService");
   private static final QName FIRM_SERVICE_NAME = new QName("urn:tyler:efm:services",
       "EfmFirmService");
-
-  /** Returns true on errors from the Tyler / Admin side of the API. */
-  public static boolean checkErrors(BaseResponseType resp) {
-    if (!resp.getError().getErrorCode().equals("0")) {
-      System.err.println(
-          "Error!: " + resp.getError().getErrorCode() + ": " + resp.getError().getErrorText());
-      return true;
-    }
-    return false;
-  }
-
-  /** Returns true if error are present from the Oasis side of the API. */
-  public static boolean checkErrors(QueryResponseMessageType resp) {
-    if (resp.getError().size() > 0) {
-      for (ErrorType error : resp.getError()) {
-        if (error.getErrorCode().getValue().equals("0")) {
-          continue;
-        }
-        System.err.println(
-            "Errors!: " + error.getErrorCode().getValue() + ": " + error.getErrorText().getValue());
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public static void testFirmManagement(IEfmUserService userPort, IEfmFirmService firmPort)
-      throws JAXBException {
-    AuthenticateRequestType authReq = new AuthenticateRequestType();
-    authReq.setEmail("bwilley@suffolk.edu");
-    authReq.setPassword(System.getenv("BRYCE_USER_PASSWORD"));
-    AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
-
-    List<Header> headersList = Arrays
-        .asList(TylerUserNamePassword.makeHeader(authRes.getEmail(), authRes.getPasswordHash()));
-    ((BindingProvider) firmPort).getRequestContext().put(Header.HEADER_LIST, headersList);
-    ((BindingProvider) userPort).getRequestContext().put(Header.HEADER_LIST, headersList);
-
-    GetFirmResponseType firm = firmPort.getFirm();
-    System.out.println("Firm info: " + firm.getFirm().getFirmID() + ", "
-        + firm.getFirm().getFirmName() + ", " + firm.getFirm().getPhoneNumber() + ", "
-        + firm.getFirm().getAddress().getAddressLine1());
-    final String oldNumber = firm.getFirm().getPhoneNumber();
-    firm.getFirm().setPhoneNumber("1234567890");
-    UpdateFirmRequestType update = new UpdateFirmRequestType();
-    update.setFirm(firm.getFirm());
-    firmPort.updateFirm(update);
-    firm = firmPort.getFirm();
-    System.out.println("Firm's updated phone is: " + firm.getFirm().getPhoneNumber());
-    // Change it back
-    firm.getFirm().setPhoneNumber(oldNumber);
-    update = new UpdateFirmRequestType();
-    update.setFirm(firm.getFirm());
-    firmPort.updateFirm(update);
-
-    // RegisterUser
-    RegistrationRequestType regUser = new RegistrationRequestType();
-    regUser.setEmail("bryce.steven.willey+tylertesting@gmail.com");
-    regUser.setFirstName("Bryce");
-    regUser.setMiddleName("Steven");
-    regUser.setLastName("Wiley");
-    regUser.setPassword("testingPassword1@");
-    regUser.setPasswordQuestion("Again, password Qs are deprecated");
-    regUser.setPasswordAnswer("Yes, lol");
-    regUser.setCountryCode("US");
-    regUser.setCity("Houston");
-    regUser.setPhoneNumber("4093563492");
-    regUser.setRegistrationType(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
-    // RegistrationType.INDIVIDUAL doesn't let you have any control over the user or
-    // let you delete
-    // the account in any way
-    regUser.setStateCode("TX");
-    regUser.setZipCode("77098");
-    regUser.setStreetAddressLine1("123 Fake St");
-    regUser.setStreetAddressLine2("Apt 1");
-    regUser.setFirmName(firm.getFirm().getFirmName());
-    RegistrationResponseType userRes = firmPort.registerUser(regUser);
-    System.out.println("New user errors: " + userRes.getError().getErrorCode() + ", "
-        + userRes.getError().getErrorText());
-    System.out.println("New User for gmail: " + userRes.getUserID() + ", " + userRes.getFirmID()
-        + ", " + userRes.getExpirationDateTime());
-
-    // ResendActivationEmail
-    ResendActivationEmailRequestType newEmail = new ResendActivationEmailRequestType();
-    newEmail.setUserID(userRes.getUserID());
-    BaseResponseType newEmailRes = firmPort.resendActivationEmail(newEmail);
-    System.out.println("New email res error: " + newEmailRes.getError().getErrorText());
-
-    // AddUserRole
-    AddUserRoleRequestType req = new AddUserRoleRequestType();
-    req.setRole(RoleType.FIRM_ADMIN);
-    req.setUserID(userRes.getUserID());
-    BaseResponseType res = firmPort.addUserRole(req);
-    System.out.println("Set new role error: " + res.getError().getErrorText());
-
-    // UpdateUser
-    UserType correctUser = new UserType();
-    correctUser.setFirstName("Bryce");
-    correctUser.setFirstName("Steven");
-    correctUser.setLastName("Willey");
-    correctUser.setEmail("bryce.steven.willey+tylertesting@gmail.com");
-    correctUser.setUserID(userRes.getUserID());
-    UpdateUserRequestType updateUser = new UpdateUserRequestType();
-    updateUser.setUser(correctUser);
-    UpdateUserResponseType correctUserRes = firmPort.updateUser(updateUser);
-    System.out.println(correctUserRes.getError().getErrorText());
-
-    // GetUser
-
-    // GetUserList
-    UserListResponseType userList = firmPort.getUserList();
-    System.out.println(userList.getUser().size() + " users");
-    for (UserType u : userList.getUser()) {
-      System.out.println(u.getEmail());
-    }
-
-    // GetNotificationPreferencesList
-
-    // RemoveUserRole
-    RemoveUserRoleRequestType removeRole = new RemoveUserRoleRequestType();
-    removeRole.setUserID(userRes.getUserID());
-    removeRole.setRole(RoleType.FIRM_ADMIN);
-    BaseResponseType removedRoleRes = firmPort.removeUserRole(removeRole);
-    System.out.println("Remove role error: " + removedRoleRes.getError().getErrorText());
-
-    // RemoveUser
-    RemoveUserRequestType removeUser = new RemoveUserRequestType();
-    removeUser.setUserID(userRes.getUserID());
-    BaseResponseType removeUserRes = firmPort.removeUser(removeUser);
-    System.out.println("Remove user error: " + removeUserRes.getError().getErrorText());
-
-    // ResetUserPassword
-  }
 
   public static void testUserManagement(IEfmUserService port) throws JAXBException {
     AuthenticateRequestType authReq = new AuthenticateRequestType();
@@ -350,150 +184,6 @@ public final class EfmClient {
     System.out.println(resetPasswordResp.getError().getErrorText());
   }
 
-  public static void testAttorneyAndServiceManagement(IEfmFirmService port, boolean remove) {
-    AttorneyType newAtt = new AttorneyType();
-    newAtt.setFirstName("Valarie");
-    newAtt.setMiddleName("DONTUSE_REALPERSON");
-    newAtt.setLastName("Franklin");
-    // https://www.iardc.org/HB_RB_Disp_Html.asp?id=13441
-    newAtt.setBarNumber("6224951");
-    CreateAttorneyRequestType attorney = new CreateAttorneyRequestType();
-    attorney.setAttorney(newAtt);
-    CreateAttorneyResponseType resp = port.createAttorney(attorney);
-    if (checkErrors(resp)) {
-      return;
-    }
-
-    AttorneyListResponseType list = port.getAttorneyList();
-    if (checkErrors(list)) {
-      return;
-    }
-    for (AttorneyType att : list.getAttorney()) {
-      System.err.println(att.getFirstName() + " " + att.getMiddleName() + " " + att.getLastName());
-      System.err
-          .println(att.getFirmID() + ", " + att.getAttorneyID() + ", " + att.getBarNumber() + "\n");
-    }
-
-    UpdateAttorneyRequestType updateAtt = new UpdateAttorneyRequestType();
-    newAtt.setMiddleName("Lobert");
-    newAtt.setAttorneyID(resp.getAttorneyID());
-    updateAtt.setAttorney(newAtt);
-    UpdateAttorneyResponseType updatedAtt = port.updateAttorney(updateAtt);
-    if (checkErrors(updatedAtt)) {
-      return;
-    }
-
-    GetAttorneyRequestType attReq = new GetAttorneyRequestType();
-    attReq.setAttorneyID(updatedAtt.getAttorneyID());
-    GetAttorneyResponseType getResp = port.getAttorney(attReq);
-    if (checkErrors(getResp)) {
-      return;
-    }
-    AttorneyType att = getResp.getAttorney();
-    System.err.println(att.getFirstName() + " " + att.getMiddleName() + " " + att.getLastName());
-    System.err
-        .println(att.getFirmID() + ", " + att.getAttorneyID() + ", " + att.getBarNumber() + "\n");
-
-    if (remove) {
-      RemoveAttorneyRequestType rart = new RemoveAttorneyRequestType();
-      rart.setAttorneyID(getResp.getAttorney().getAttorneyID());
-      BaseResponseType rartResp = port.removeAttorney(rart);
-      if (checkErrors(rartResp)) {
-        return;
-      }
-    }
-
-    //////////// Service
-    // TODO(brycew): service contacts can only be at particular firms, so kinda
-    // useless?
-    //////////// 
-    tyler.efm.services.schema.common.ObjectFactory efmObjFac = new tyler.efm.services.schema.common.ObjectFactory();
-    CreateServiceContactRequestType create = new CreateServiceContactRequestType();
-    ServiceContactType contact = efmObjFac.createServiceContactType();
-    contact.setFirstName("Sterve");
-    contact.setMiddleName("\"Not Me\"");
-    contact.setLastName("Cormact");
-    contact.setEmail("bwilley@suffolk.edu");
-    contact.setAdministrativeCopy("bryce.steven.willey@gmail.com");
-    contact.setIsInFirmMasterList(efmObjFac.createServiceContactTypeIsInFirmMasterList(true));
-    contact.setIsPublic(efmObjFac.createServiceContactTypeIsInFirmMasterList(true));
-    create.setServiceContact(contact);
-    CreateServiceContactResponseType servResp = port.createServiceContact(create);
-    if (checkErrors(servResp)) {
-      return;
-    }
-    System.err.println("Service contact id: " + servResp.getServiceContactID());
-
-    ServiceContactListResponseType listResp = port.getServiceContactList();
-    if (checkErrors(listResp)) {
-      return;
-    }
-    if (listResp.getServiceContact().size() == 0) {
-      System.err.println("Service contacts are empty");
-    }
-    for (ServiceContactType c : listResp.getServiceContact()) {
-      System.err.println("List: " + c.getServiceContactID() + ", " + c.getFirstName() + " "
-          + c.getMiddleName() + " " + c.getLastName());
-    }
-    contact.setServiceContactID(servResp.getServiceContactID());
-
-    UpdateServiceContactRequestType update = new UpdateServiceContactRequestType();
-    contact.setMiddleName("\"Not a computer\"");
-    update.setServiceContact(contact);
-    UpdateServiceContactResponseType updateResp = port.updateServiceContact(update);
-    if (checkErrors(updateResp)) {
-      return;
-    }
-
-    GetServiceContactRequestType getReq = new GetServiceContactRequestType();
-    getReq.setServiceContactID(servResp.getServiceContactID());
-    GetServiceContactResponseType getServResp = port.getServiceContact(getReq);
-    if (checkErrors(getServResp)) {
-      return;
-    }
-    contact = getServResp.getServiceContact();
-    System.err.println("GetResp: " + contact.getFirstName() + " " + contact.getMiddleName() + " "
-        + contact.getLastName());
-
-    String preSetupCaseId = "f3d9b420-18e1-4e70-ac39-3270928bc29c";
-    AttachServiceContactRequestType attachServ = new AttachServiceContactRequestType();
-    attachServ.setCaseID(preSetupCaseId);
-    attachServ.setServiceContactID(getServResp.getServiceContact().getServiceContactID());
-    // attachServ.setCasePartyID(); TODO(brycew): what should this be? is optional
-    BaseResponseType attachBase = port.attachServiceContact(attachServ);
-    if (checkErrors(attachBase)) {
-      System.exit(-1);
-    }
-
-    DetachServiceContactRequestType detachServ = new DetachServiceContactRequestType();
-    detachServ.setCaseID(preSetupCaseId);
-    detachServ.setServiceContactID(getServResp.getServiceContact().getServiceContactID());
-    BaseResponseType detachBase = port.detachServiceContact(detachServ);
-    if (checkErrors(detachBase)) {
-      System.exit(-1);
-    }
-
-    RemoveServiceContactRequestType rmReq = new RemoveServiceContactRequestType();
-    rmReq.setServiceContactID(contact.getServiceContactID());
-
-    BaseResponseType base = port.removeServiceContact(rmReq);
-    if (checkErrors(base)) {
-      return;
-    }
-
-    listResp = port.getServiceContactList();
-    if (checkErrors(listResp)) {
-      return;
-    }
-    if (listResp.getServiceContact().size() == 0) {
-      System.err.println("Service contacts are empty");
-    }
-    for (ServiceContactType c : listResp.getServiceContact()) {
-      System.err.println("List: " + c.getServiceContactID() + ", " + c.getFirstName() + " "
-          + c.getMiddleName() + " " + c.getLastName());
-    }
-  }
-
   public static void paymentAccounts(IEfmFirmService port, boolean global) {
     // Remove all
     if (global) {
@@ -503,7 +193,7 @@ public final class EfmClient {
             + acc.getAccountToken());
         RemovePaymentAccountRequestType rmReq = new RemovePaymentAccountRequestType();
         rmReq.setPaymentAccountID(acc.getPaymentAccountID());
-        if (checkErrors(port.removeGlobalPaymentAccount(rmReq))) {
+        if (ServiceHelpers.checkErrors(port.removeGlobalPaymentAccount(rmReq).getError())) {
           return;
         }
       }
@@ -514,7 +204,7 @@ public final class EfmClient {
             + acc.getAccountToken());
         RemovePaymentAccountRequestType rmReq = new RemovePaymentAccountRequestType();
         rmReq.setPaymentAccountID(acc.getPaymentAccountID());
-        if (checkErrors(port.removePaymentAccount(rmReq))) {
+        if (ServiceHelpers.checkErrors(port.removePaymentAccount(rmReq).getError())) {
           return;
         }
       }
@@ -568,7 +258,7 @@ public final class EfmClient {
       } else {
         createResp = port.createPaymentAccount(createAccount);
       }
-      if (checkErrors(createResp)) {
+      if (ServiceHelpers.checkErrors(createResp.getError())) {
         PaymentAccountListResponseType allAccs = port.getGlobalPaymentAccountList();
         for (PaymentAccountType acc : allAccs.getPaymentAccount()) {
           System.err.println("Existing global acc: " + acc.getPaymentAccountID() + ", with token: "
@@ -631,10 +321,6 @@ public final class EfmClient {
     m.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
     m.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     FilingListResponseMessageType resp = port.getFilingList(m);
-    if (checkErrors(resp)) {
-      System.exit(-1);
-    }
-
     System.out.println("FilingDoc List: " 
         + XmlHelper.objectToXmlStrOrError(resp, FilingListResponseMessageType.class));
 
@@ -665,10 +351,6 @@ public final class EfmClient {
     status.setDocumentIdentification(XmlHelper.convertId(filingId));
     status.setQuerySubmitter(typ);
     FilingStatusResponseMessageType statusResp = port.getFilingStatus(status);
-    if (checkErrors(statusResp)) {
-      System.exit(-1);
-    }
-
     System.out.println("FilingDoc Status: " 
         + XmlHelper.objectToXmlStrOrError(statusResp, FilingStatusResponseMessageType.class));
     System.out.println(statusResp.getFilingStatus().getStatusDescriptionText().stream()
@@ -683,9 +365,6 @@ public final class EfmClient {
     details.setDocumentIdentification(XmlHelper.convertId(filingId));
     details.setQuerySubmitter(typ);
     FilingDetailResponseMessageType detailsResp = port.getFilingDetails(details);
-    if (checkErrors(detailsResp)) {
-      System.exit(-1);
-    }
 
     System.out.println("FilingDoc Details: "
         + XmlHelper.objectToXmlStrOrError(detailsResp, FilingDetailResponseMessageType.class));
@@ -701,9 +380,6 @@ public final class EfmClient {
     cancel.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     cancel.setQuerySubmitter(typ);
     CancelFilingResponseMessageType cancelResp = port.cancelFiling(cancel);
-    if (checkErrors(cancelResp)) {
-      System.exit(-1);
-    }
 
     System.err.println(cancelResp.getFilingStatus().getStatusText().getValue());
   }

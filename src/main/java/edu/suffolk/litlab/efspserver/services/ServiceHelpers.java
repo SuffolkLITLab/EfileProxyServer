@@ -21,8 +21,10 @@ import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.db.LoginInfo;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
 import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.IEfmFirmService;
+import tyler.efm.services.schema.baseresponse.BaseResponseType;
 
 public class ServiceHelpers {
   private static Logger log = LoggerFactory.getLogger(
@@ -66,6 +68,18 @@ public class ServiceHelpers {
     tylerToHttp.put("-2", 401); // Caller not authenticated
     tylerToHttp.put("-1", 502); // Unknown error
     tylerToHttp.put("0", 200); 
+    tylerToHttp.put("77", 400); // IncludeParticipants is empty, this is a required query element
+    tylerToHttp.put("78", 428);  // User has already been activated
+    tylerToHttp.put("87", 428);  // Service Contact already attached to case
+    tylerToHttp.put("88", 428);  // Service Contact already attached to case
+    tylerToHttp.put("90", 400); // Invalid QuerySubmitterID
+    tylerToHttp.put("91", 400); // Invalid DocumentSubmitterID 
+    tylerToHttp.put("92", 400); // Invalid CaseTrackingID 
+    tylerToHttp.put("93", 400); // Invalid StartDate 
+    tylerToHttp.put("94", 400); // Invalid EndDate 
+    tylerToHttp.put("95", 400); // Invalid FilingAttorneyID 
+    tylerToHttp.put("96", 400); // Invalid FilingPartyID 
+    tylerToHttp.put("97", 400); // Invalid PaymentID
     tylerToHttp.put("169", 422); // Invalid birthdate
     tylerToHttp.put("170", 422); // Invalid password (when making an account? TODO(brycew))
   }
@@ -95,6 +109,18 @@ public class ServiceHelpers {
     ctx.put("security.signature.properties", "client_sign.properties");
     ctx.put("security.callback-handler", SoapX509CallbackHandler.class.getName());
     ctx.put("security.signature.username", "1");
+  }
+  
+  public static Response makeResponse(BaseResponseType resp, Supplier<Response> defaultRespFunc) {
+    return mapTylerCodesToHttp(resp.getError(), defaultRespFunc);
+  }
+
+  public static Response makeResponse(QueryResponseMessageType resp, Supplier<Response> defaultRespFunc) {
+    return mapTylerCodesToHttp(resp.getError(), defaultRespFunc);
+  }
+  
+  public static boolean hasError(BaseResponseType resp) {
+    return checkErrors(resp.getError());
   }
 
   /** Returns true on errors from the Tyler / Admin side of the API. */

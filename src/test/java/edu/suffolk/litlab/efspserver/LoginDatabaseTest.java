@@ -41,9 +41,9 @@ public class LoginDatabaseTest {
     String tylerOnly = ld.addNewUser("tylerOnly", true, false);
     String jeffNetOnly = ld.addNewUser("jeffNetOnly", false, true);
     String everything = ld.addNewUser("everything", true, true);
-    Map<String, Function<JsonNode, Optional<String>>> okFunctions = Map.of(
-        "tyler", (info) -> Optional.of("tylerID"),
-        "jeffnet", (info) -> Optional.of("jeffNetToken123"));
+    Map<String, Function<JsonNode, Optional<Map<String, String>>>> okFunctions = Map.of(
+        "tyler", (info) -> Optional.of(Map.of("tyler_token", "tylerTOKEN", "tyler_id", "12345")),
+        "jeffnet", (info) -> Optional.of(Map.of("jeffnet_token", "jeffNetToken123")));
 
     assertTrue(ld.checkLogin(null, null).isEmpty());
     assertTrue(ld.checkLogin(jeffNetOnly, "jeffnet").isEmpty());

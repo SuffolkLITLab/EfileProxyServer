@@ -23,7 +23,9 @@ import edu.suffolk.litlab.efspserver.services.LoginInterface;
  * piece of info, not two.
  * 
  * "Token" on the other hand, holds the same purpose, but is ephemeral,
- * and not intended to be saved for a long time.
+ * and not intended to be saved for a long time. The login token is
+ * generated when the server receives an api key, and the client
+ * should use the token for subsequent logins, not the key.
  *
  * @author litlab
  *
@@ -51,7 +53,7 @@ public class SecurityHub {
    * @return The new API Token that the REST client should now send to the Server
    */
   public Optional<String> login(String apiKey, String jsonLoginInfo) {
-    Map<String, Function<JsonNode, Optional<String>>> loginFunctions = Map.of(
+    Map<String, Function<JsonNode, Optional<Map<String, String>>>> loginFunctions = Map.of(
         "tyler", (info) -> tylerLoginObj.login(info),
         "jeffnet", (info) -> jeffNetLoginObj.login(info));
     
@@ -71,9 +73,37 @@ public class SecurityHub {
     try {
       return ld.checkLogin(activeToken, orgName);
     } catch (SQLException e) {
-      // TODO Auto-generated catch block
       log.error(e.toString());
       return Optional.empty();
+    }
+  }
+
+  /**
+   * Force a logout for the given active login token. 
+   * 
+   * Called when the user resets for a new Tyler password
+   * @param activeToken
+   * @return True if the given token was actually removed (i.e. it was presenet in the login table)
+   */
+  public boolean removeLogin(String activeToken) {
+    try {
+      ld.removeActiveToken(activeToken);
+      return true;
+    } catch (SQLException ex) {
+      log.error(ex.toString());
+      return false;
+    }
+  }
+
+  /** Serves a similar purpose to {@link removeLogin}, but is used when the client resets 
+   * someone else's Tyler password. */
+  public boolean removeTylerUserId(String id) {
+    try {
+      ld.removeTylerUserId(id);
+      return true;
+    } catch (SQLException ex) {
+      log.error(ex.toString());
+      return false;
     }
   }
   

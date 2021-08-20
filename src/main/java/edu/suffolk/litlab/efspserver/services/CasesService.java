@@ -79,6 +79,8 @@ public class CasesService {
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
     }
+    //TODO(brycew): use the AdvancedSearchLocationAllLocations datafieldconfig to see if users should
+    // be able to search all courts with the "1" location
     
     CaseListQueryMessageType query = new CaseListQueryMessageType();
     EntityType typ = new EntityType();
