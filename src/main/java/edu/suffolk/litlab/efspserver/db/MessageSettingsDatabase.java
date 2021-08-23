@@ -104,7 +104,7 @@ public class MessageSettingsDatabase extends DatabaseInterface {
       log.error("Exception getting message settings: " + e);
       return Optional.empty();
     }
-    log.error("No settings for " + serverId.toString());
+    log.warn("No settings for " + serverId.toString());
     return Optional.empty();
   }
 }

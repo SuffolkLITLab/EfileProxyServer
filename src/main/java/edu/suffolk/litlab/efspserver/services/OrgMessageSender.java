@@ -87,7 +87,7 @@ public class OrgMessageSender {
       }
       return info;
     } else {
-      log.error("Couldn't get message settings, using defaults");
+      log.warn("Couldn't get message settings, using defaults");
       return new MessageInfo(serverId, defaultFrom, defaultSubject, defaultTemplate, defaultConfirmation); 
     }
   }
@@ -105,7 +105,7 @@ public class OrgMessageSender {
       int result;
       try {
         result = SendMessage.sendEmail(msgSettings.fromEmail, msgSettings.subjectLine, transaction.email, msgSettings.emailTemplate, templateVars);
-        return (result == 200);
+        return (result == 200 || result == 202 || result == 204);
       } catch (IOException e) {
         log.error(e.toString());
         return false;
@@ -130,7 +130,7 @@ public class OrgMessageSender {
       int result;
       try {
         result = SendMessage.sendEmail(msgSettings.fromEmail, msgSettings.subjectLine, email, msgSettings.emailConfirmation, templateVars);
-        return (result == 200);
+        return (result == 200 || result == 202 || result == 204);
       } catch (IOException e) {
         log.error(e.toString());
         return false;
