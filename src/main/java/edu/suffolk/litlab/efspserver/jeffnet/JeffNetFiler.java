@@ -11,6 +11,7 @@ import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.Person;
+import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.services.EfmFilingInterface;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
@@ -70,6 +71,7 @@ public class JeffNetFiler implements EfmFilingInterface {
       log.debug("Final Json object: " + finalStr);
     
       log.info("Sending to " + this.filingEndpoint);
+      log.info("They'll send back to " + ServiceHelpers.REST_CALLBACK_URL.formatted(info.getCourtLocation())); 
       HttpClient client = HttpClient.newBuilder().build();
       HttpRequest request = HttpRequest.newBuilder()
           .POST(HttpRequest.BodyPublishers.ofString(finalStr))
