@@ -1,11 +1,20 @@
 package edu.suffolk.litlab.efspserver.jeffnet;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +54,21 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
     FileResponse resp;
     try {
       resp = mapper.readValue(statusReport, FileResponse.class);
+    } catch (JsonProcessingException e) {
+      // Trying to parse XML
+      try {
+      JAXBContext jaxContext = JAXBContext.newInstance(FileResponse.class);
+      Unmarshaller unmar = jaxContext.createUnmarshaller();
+      InputStream stream = new ByteArrayInputStream(statusReport.getBytes(StandardCharsets.UTF_8));
+      resp = (FileResponse) unmar.unmarshal(stream);
+      } catch (JAXBException jaxbEx) {
+        e.printStackTrace();
+        log.error("Couldn't process the status report in XML or JSON: " + statusReport);
+        log.error(e.toString());
+        return Response.status(400).build();
+      }
+    }
+    try {
       Optional<Transaction> maybeTrans = ud.findTransaction(UUID.fromString(resp.transactionId));
       if (maybeTrans.isEmpty()) {
         log.error("Transaction " + resp.transactionId + " isn't present in the database!");
@@ -63,24 +87,22 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
         log.error("Grabed info from db: couldn't send message");
         return Response.status(500).build();
       }
-    } catch (JsonProcessingException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      log.error("Couldn't process the status report: " + statusReport);
-      log.error(e.toString());
-      return Response.status(400).build();
     } catch (SQLException e) {
-      // TODO Auto-generated catch block
       log.error("Couldn't connect to the SQL database to get the transaction: ");
       log.error(e.toString());
       return Response.status(500).build();
     }
-  }
-  
-  private static class FileResponse {
+
+    } 
+
+  @XmlType(name="")
+  @XmlRootElement(name= "FileResponse")
+  public static class FileResponse {
+    @XmlElement(name = "TransactionID")
     @JsonProperty("TransactionID")
     String transactionId;
 
+    @XmlElement(name = "Status")
     @JsonProperty("Status")
     String status;
   }
