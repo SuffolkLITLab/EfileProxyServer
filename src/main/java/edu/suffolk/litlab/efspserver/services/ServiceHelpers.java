@@ -48,9 +48,9 @@ public class ServiceHelpers {
       env_url = "filingassemblymde.com:9000";
     }
     // TODO(brycew): fix this to be 
-    BASE_URL = "http://" + env_url;
+    BASE_URL = env_url;
     SERVICE_URL = BASE_URL + ASSEMBLY_PORT;
-    REST_CALLBACK_URL = BASE_URL + "/courts/%s/filing/status"; 
+    REST_CALLBACK_URL = BASE_URL + "/filingreview/courts/%s/filing/status"; 
 
     tylerToHttp = new HashMap<String, Integer>();
     // First three are ones that the proxy should handle well. If we don't then it's our fault.
