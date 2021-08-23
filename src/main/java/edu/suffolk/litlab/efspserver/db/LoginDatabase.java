@@ -37,7 +37,7 @@ public class LoginDatabase extends DatabaseInterface {
   private static final String activeCreate = """
            CREATE TABLE %s (
            "server_id" uuid PRIMARY KEY, "active_token" text NOT NULL,
-           "tyler_token" text, "jeffnet_token" text, 
+           "tyler_token" text, "tyler_id" text, "jeffnet_token" text, 
            "expires_at" timestamp)""".formatted(activeTable);
 
   private final long expirationTime;
@@ -135,7 +135,8 @@ public class LoginDatabase extends DatabaseInterface {
    * @param jsonLoginInfo The JSON string with login info for whatever modules it's wants to login to
    * @return The new API Token that the REST client should now send to the Server
    */
-  public Optional<String> login(String apiKey, String jsonLoginInfo, Map<String, Function<JsonNode, Optional<String>>> loginFunctions) throws SQLException {
+  public Optional<String> login(String apiKey, String jsonLoginInfo, 
+      Map<String, Function<JsonNode, Optional<Map<String, String>>>> loginFunctions) throws SQLException {
     if (conn == null) {
       log.error("Connection in login wasn't open yet!");
       throw new SQLException();
@@ -155,7 +156,9 @@ public class LoginDatabase extends DatabaseInterface {
     }
 
     // Check the other table first:
-    String activeQuery = "SELECT server_id, active_token, expires_at, tyler_token, jeffnet_token FROM %s WHERE server_id = ?".formatted(activeTable);
+    String activeQuery = """
+        SELECT server_id, active_token, expires_at, tyler_token, tyler_id, jeffnet_token 
+        FROM %s WHERE server_id = ?""".formatted(activeTable);
     PreparedStatement activeSt = conn.prepareStatement(activeQuery);
     activeSt.setObject(1, atRest.get().serverId);
     ResultSet activeRs = activeSt.executeQuery();
@@ -165,7 +168,7 @@ public class LoginDatabase extends DatabaseInterface {
         removeActiveToken(activeRs.getString(2));
       } else {
         String tylerToken = activeRs.getString(4);
-        String jeffNetToken = activeRs.getString(5);
+        String jeffNetToken = activeRs.getString(6);
         boolean newTyler = (tylerToken == null && loginInfo.has("tyler"));
         boolean newJeffNet = (jeffNetToken == null && loginInfo.has("jeffnet"));
         if (!newTyler && !newJeffNet) {
@@ -193,38 +196,41 @@ public class LoginDatabase extends DatabaseInterface {
         log.error("There is no " + orgName + " to login to: enabled map: " + atRest.get().enabled); 
         return Optional.empty();
       }
-      Optional<String> newToken = loginFunctions.get(orgName).apply(loginInfo.get(orgName));
+      Optional<Map<String, String>> newToken = loginFunctions.get(orgName).apply(loginInfo.get(orgName));
       if (newToken.isEmpty()) {
         log.error("Couldn't login to " + orgName);
         return Optional.empty();
       }
-      newTokens.put(orgName, newToken.get());
+      log.info("New tokens: " + newToken.get());
+      newTokens.putAll(newToken.get());
     }
-      for (Map.Entry<String, Boolean> enab : atRest.get().enabled.entrySet()) {
-        if (enab.getValue() && !newTokens.containsKey(enab.getKey())) {
-          log.warn(enab.getKey() + " enabled, but didn't attempt to login");
-        }
+    for (Map.Entry<String, Boolean> enab : atRest.get().enabled.entrySet()) {
+      if (enab.getValue() && !newTokens.containsKey(enab.getKey())) {
+        log.warn(enab.getKey() + " enabled, but didn't attempt to login");
       }
+    }
      
     UUID activeToken = UUID.randomUUID();
     Timestamp expire = new Timestamp(System.currentTimeMillis() + expirationTime);
     String insertActive = """
             INSERT INTO %s (
-                "server_id", "active_token", "tyler_token", "jeffnet_token", "expires_at"
+              "server_id", "active_token", "tyler_token", "tyler_id", "jeffnet_token", "expires_at"
             ) VALUES (
-              ?, ?, ?, ?, ?
+              ?, ?, ?, ?, ?, ?
             ) ON CONFLICT (server_id) DO UPDATE SET 
-                active_token=?, tyler_token=?, jeffnet_token=?, expires_at=?""".formatted(activeTable);
+              active_token=?, tyler_token=?, tyler_id=?, jeffnet_token=?, expires_at=?""".formatted(activeTable);
     PreparedStatement insertSt = conn.prepareStatement(insertActive);
     insertSt.setObject(1, atRest.get().serverId);
     insertSt.setString(2, activeToken.toString());
-    insertSt.setString(6, activeToken.toString());
-    insertSt.setString(3, newTokens.getOrDefault("tyler", null));
-    insertSt.setString(7, newTokens.getOrDefault("tyler", null));
-    insertSt.setString(4, newTokens.getOrDefault("jeffnet", null));
-    insertSt.setString(8, newTokens.getOrDefault("jeffnet", null));
-    insertSt.setTimestamp(5, expire);
-    insertSt.setTimestamp(9, expire);
+    insertSt.setString(7, activeToken.toString());
+    insertSt.setString(3, newTokens.getOrDefault("tyler_token", null));
+    insertSt.setString(8, newTokens.getOrDefault("tyler_token", null));
+    insertSt.setString(4, newTokens.getOrDefault("tyler_id", null));
+    insertSt.setString(9, newTokens.getOrDefault("tyler_id", null));
+    insertSt.setString(5, newTokens.getOrDefault("jeffnet_token", null));
+    insertSt.setString(10, newTokens.getOrDefault("jeffnet_token", null));
+    insertSt.setTimestamp(6, expire);
+    insertSt.setTimestamp(11, expire);
     insertSt.executeUpdate();
     return Optional.of(activeToken.toString());
   }
@@ -235,7 +241,7 @@ public class LoginDatabase extends DatabaseInterface {
       throw new SQLException();
     }
     String query = """
-            SELECT "server_id", "active_token", "tyler_token", "jeffnet_token", "expires_at"
+            SELECT "server_id", "active_token", "tyler_token", "tyler_id", "jeffnet_token", "expires_at"
             FROM %s
             WHERE active_token=?""".formatted(activeTable);
     PreparedStatement st = conn.prepareStatement(query);
@@ -245,7 +251,7 @@ public class LoginDatabase extends DatabaseInterface {
       log.error("Couldn't find an active token: " + activeToken);
       return Optional.empty();
     }
-    Timestamp expires = rs.getTimestamp(5);
+    Timestamp expires = rs.getTimestamp(6);
     if (isExpired(expires)) { 
       log.warn("Token expired! Removing");
       removeActiveToken(activeToken);
@@ -258,11 +264,11 @@ public class LoginDatabase extends DatabaseInterface {
       if (token == null) {
         return Optional.empty();
       }
-      return Optional.of(new LoginInfo(serverId, token)); 
+      return Optional.of(new LoginInfo(serverId, rs.getString(4), token)); 
     }
     if (orgName.equalsIgnoreCase("jeffnet")) {
-      log.info("Getting for jeffnet: " + rs.getString(4));
-      String token = rs.getString(4);
+      String token = rs.getString(5);
+      log.info("Getting for jeffnet: " + token); 
       if (token == null) {
         return Optional.empty();
       }
@@ -276,10 +282,17 @@ public class LoginDatabase extends DatabaseInterface {
     return Optional.of(new LoginInfo(serverId, ""));
   }
   
-  private void removeActiveToken(String activeToken) throws SQLException {
+  public void removeActiveToken(String activeToken) throws SQLException {
     String rm = "DELETE FROM %s WHERE active_token = ?".formatted(activeTable);
     PreparedStatement rmSt = conn.prepareStatement(rm);
     rmSt.setString(1, activeToken);
+    rmSt.executeUpdate();
+  }
+
+  public void removeTylerUserId(String id) throws SQLException {
+    String rm = "DELETE FROM %s WHERE tyler_id=?".formatted(activeTable);
+    PreparedStatement rmSt = conn.prepareStatement(rm);
+    rmSt.setString(1, id);
     rmSt.executeUpdate();
   }
   
@@ -300,7 +313,9 @@ public class LoginDatabase extends DatabaseInterface {
         Integer.parseInt(System.getenv("POSTGRES_PORT")), System.getenv("POSTGRES_USER_DB"));
     ld.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
     ld.setAutocommit(true);
-    String newApiKey = ld.addNewUser(serverName, Boolean.parseBoolean(tylerEnabled), Boolean.parseBoolean(jeffnetEnabled));
+    String newApiKey = ld.addNewUser(serverName, Boolean.parseBoolean(tylerEnabled), 
+        Boolean.parseBoolean(jeffnetEnabled));
     System.out.println("New Api Key for " + serverName + ": " + newApiKey);
   }
+
 }

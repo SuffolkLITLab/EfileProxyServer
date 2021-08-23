@@ -1,12 +1,12 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import java.net.URI;
+import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
+
 import java.util.Optional;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -15,9 +15,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -28,18 +25,20 @@ import edu.suffolk.litlab.efspserver.SecurityHub;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.schema.baseresponse.BaseResponseType;
 import tyler.efm.services.schema.common.PaymentAccountType;
-import tyler.efm.services.schema.createpaymentaccountrequest.CreatePaymentAccountRequestType;
-import tyler.efm.services.schema.createpaymentaccountresponse.CreatePaymentAccountResponseType;
 import tyler.efm.services.schema.getpaymentaccountrequest.GetPaymentAccountRequestType;
 import tyler.efm.services.schema.getpaymentaccountresponse.GetPaymentAccountResponseType;
 import tyler.efm.services.schema.paymentaccountlistresponse.PaymentAccountListResponseType;
 import tyler.efm.services.schema.paymentaccounttypelistresponse.PaymentAccountTypeListResponseType;
+import tyler.efm.services.schema.removepaymentaccountrequest.RemovePaymentAccountRequestType;
+import tyler.efm.services.schema.updatepaymentaccountrequest.UpdatePaymentAccountRequestType;
+import tyler.efm.services.schema.updatepaymentaccountresponse.UpdatePaymentAccountResponseType;
 
 @Path("/payments/")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class PaymentsService {
 
-  private static Logger log = LoggerFactory.getLogger(PaymentsService.class);
+  private tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac = 
+      new tyler.efm.services.schema.common.ObjectFactory();
    
   @Context
   UriInfo uri;
@@ -59,10 +58,7 @@ public class PaymentsService {
     }
     
     PaymentAccountListResponseType accounts = firmPort.get().getGlobalPaymentAccountList();
-    if (hasError(accounts)) {
-      return Response.status(400).entity(accounts.getError()).build();
-    }
-    return Response.ok(accounts.getPaymentAccount()).build();
+    return makeResponse(accounts, () -> Response.ok(accounts.getPaymentAccount()).build());
   }
   
   @GET
@@ -77,12 +73,11 @@ public class PaymentsService {
     GetPaymentAccountRequestType req = new GetPaymentAccountRequestType();
     req.setPaymentAccountID(accountId);
     GetPaymentAccountResponseType account = firmPort.get().getGlobalPaymentAccount(req);
-    if (hasError(account)) {
-      return Response.status(400).entity(account.getError()).build();
-    }
-    return Response.ok(account.getPaymentAccount()).build();
+    return makeResponse(account, () -> Response.ok(account.getPaymentAccount()).build());
   }
   
+
+  // TODO(#25): Can't write this until we have TOGA integration
   /*
   @PUT
   @Path("/global-accounts")
@@ -91,19 +86,48 @@ public class PaymentsService {
     
     
   }
+  */
   
   @PATCH
   @Path("/global-accounts/{account_id}")
   public Response updateGlobalPaymentAccount(@Context HttpHeaders httpHeaders,
-      String json) {
+      @PathParam("account_id") String accountId,
+      String json) throws JsonMappingException, JsonProcessingException {
+
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    if (firmPort.isEmpty()) {
+      return Response.status(403).build();
+    }
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode node = mapper.readTree(json);
+    
+    GetPaymentAccountRequestType query = new GetPaymentAccountRequestType();
+    query.setPaymentAccountID(accountId);
+    GetPaymentAccountResponseType existingResp = firmPort.get().getGlobalPaymentAccount(query);
+    if (ServiceHelpers.hasError(existingResp)) {
+      return Response.status(400).entity(existingResp.getError()).build();
+    }
+
+    UpdatePaymentAccountRequestType update = new UpdatePaymentAccountRequestType();
+    update.setPaymentAccount(updateAccountType(existingResp.getPaymentAccount(), node));
+    UpdatePaymentAccountResponseType resp = firmPort.get().updateGlobalPaymentAccount(update);
+    return makeResponse(resp, () -> Response.ok().build());
   }
   
   @DELETE
   @Path("/global-accounts/{account_id}")
-  public Response removeGlobalPaymentAccount(@Context HttpHeaders httpHeaders) {
+  public Response removeGlobalPaymentAccount(@Context HttpHeaders httpHeaders,
+      @PathParam("account_id") String accountId) {
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    if (firmPort.isEmpty()) {
+      return Response.status(403).build();
+    }
     
+    RemovePaymentAccountRequestType req = new RemovePaymentAccountRequestType();
+    req.setPaymentAccountID(accountId);
+    BaseResponseType resp = firmPort.get().removeGlobalPaymentAccount(req);
+    return makeResponse(resp, () -> Response.ok().build());
   }
-  */
   
   @GET
   @Path("/payment-accounts")
@@ -114,14 +138,9 @@ public class PaymentsService {
     }
     
     PaymentAccountListResponseType list = firmPort.get().getPaymentAccountList();
-    if (hasError(list)) {
-      return Response.status(400).entity(list.getError()).build();
-    }
-    
-    return Response.ok(list.getPaymentAccount()).build();
+    return makeResponse(list, () -> Response.ok(list.getPaymentAccount()).build());
   }
   
-  /*
   @GET
   @Path("/payment-accounts/{account_id}")
   public Response getPaymentAccount(@Context HttpHeaders httpHeaders, 
@@ -131,10 +150,13 @@ public class PaymentsService {
       return Response.status(403).build();
     }
     
+    GetPaymentAccountRequestType req = new GetPaymentAccountRequestType();
+    req.setPaymentAccountID(accountId);
+    GetPaymentAccountResponseType resp = firmPort.get().getPaymentAccount(req);
+
+    return makeResponse(resp, () -> Response.ok(resp.getPaymentAccount()).build());
   }
-  */
   
-  /*
   @DELETE
   @Path("/payment-accounts/{account_id}")
   public Response removePaymentAccount(@Context HttpHeaders httpHeaders,
@@ -144,18 +166,26 @@ public class PaymentsService {
       return Response.status(403).build();
     }
     
+    RemovePaymentAccountRequestType req = new RemovePaymentAccountRequestType();
+    req.setPaymentAccountID(accountId);
+    BaseResponseType resp = firmPort.get().removePaymentAccount(req);
+    return makeResponse(resp, () -> Response.ok().build());
   }
-  */
   
-  @PUT
+  // TODO(#25): can't write this until we have TOGA integration
+  /*
+  @POST
   @Path("/payment-accounts")
   public Response createPaymentAccount(@Context HttpHeaders httpHeaders,
-      PaymentAccountType newAccount) {
+      String jsonAccount) {
     Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
     
+    ObjectMapper mapper = new ObjectMapper();
+    
+
     CreatePaymentAccountRequestType createAccount = new CreatePaymentAccountRequestType();
     createAccount.setPaymentAccount(newAccount);
     CreatePaymentAccountResponseType resp = firmPort.get().createPaymentAccount(createAccount);
@@ -166,8 +196,8 @@ public class PaymentsService {
     URI newUri = uri.getBaseUriBuilder().path("/payment-account/" + resp.getPaymentAccountID()).build();
     return Response.created(newUri).build();
   }
+  */
   
-  /*
   @PATCH
   @Path("/payment-accounts/{account_id}")
   public Response updatePaymentAccount(@Context HttpHeaders httpHeaders,
@@ -183,17 +213,18 @@ public class PaymentsService {
     GetPaymentAccountRequestType query = new GetPaymentAccountRequestType();
     query.setPaymentAccountID(accountId);
     GetPaymentAccountResponseType existingResp = firmPort.get().getPaymentAccount(query);
-    if (hasError(existingResp)) {
+    if (ServiceHelpers.hasError(existingResp)) {
       return Response.status(400).entity(existingResp.getError()).build();
     }
-    
-    PaymentAccountType existingAccount = existingResp.getPaymentAccount();
-    
+
+    UpdatePaymentAccountRequestType update = new UpdatePaymentAccountRequestType();
+    update.setPaymentAccount(updateAccountType(existingResp.getPaymentAccount(), node));
+    UpdatePaymentAccountResponseType resp = firmPort.get().updatePaymentAccount(update);
+    return makeResponse(resp, () -> Response.ok().build());
   }
-  */
 
   @GET
-  @Path("/payment-account-types")
+  @Path("/types")
   public Response getPaymentAccountTypeList(@Context HttpHeaders httpHeaders) {
     Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (firmPort.isEmpty()) {
@@ -201,15 +232,23 @@ public class PaymentsService {
     }
     
     PaymentAccountTypeListResponseType types = firmPort.get().getPaymentAccountTypeList();
-    if (hasError(types)) {
-      return Response.status(400).entity(types.getError()).build();
+    return makeResponse(types, () -> Response.ok(types.getPaymentAccountType()).build());
+  }
+  
+  /** Fluid interface, but modifies the input. */
+  private PaymentAccountType updateAccountType(PaymentAccountType existingAccount,
+      JsonNode updateInfo) {
+    JsonNode active = updateInfo.get("active");
+    if (active != null && active.isBoolean()) {
+      existingAccount.setActive(tylerCommonObjFac.createPaymentAccountTypeActive(active.asBoolean()));
     }
     
-    return Response.ok(types.getPaymentAccountType()).build();
-  }
-
-  private boolean hasError(BaseResponseType resp) {
-    return !resp.getError().getErrorCode().equals("0");
+    JsonNode name = updateInfo.get("account_name");
+    if (name != null && name.isTextual()) {
+      existingAccount.setAccountName(name.asText());
+    }
+    
+    return existingAccount;
   }
   
 }

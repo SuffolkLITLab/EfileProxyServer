@@ -14,6 +14,7 @@ import edu.suffolk.litlab.efspserver.codes.Disclaimer;
 import edu.suffolk.litlab.efspserver.codes.FilingCode;
 import edu.suffolk.litlab.efspserver.codes.FilingComponent;
 import edu.suffolk.litlab.efspserver.services.EfmCheckableFilingInterface;
+import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
@@ -37,7 +38,12 @@ import javax.xml.bind.JAXBException;
 import javax.xml.ws.BindingProvider;
 
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.CoreFilingMessageType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtPolicyResponseMessageType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.feescalculationquerymessage_4.FeesCalculationQueryMessageType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.feescalculationresponsemessage_4.FeesCalculationResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.FilingListQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistresponsemessage_4.FilingListResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistresponsemessage_4.MatchingFilingType;
@@ -56,6 +62,9 @@ import tyler.ecf.extensions.cancelfilingresponsemessage.CancelFilingResponseMess
 import tyler.ecf.extensions.common.DocumentType;
 import tyler.ecf.extensions.filingdetailquerymessage.FilingDetailQueryMessageType;
 import tyler.ecf.extensions.filingdetailresponsemessage.FilingDetailResponseMessageType;
+import tyler.ecf.extensions.filingservicequerymessage.FilingServiceQueryMessageType;
+import tyler.ecf.extensions.filingservicequerymessage.ServiceContactIdentificationType;
+import tyler.ecf.extensions.filingserviceresponsemessage.FilingServiceResponseMessageType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 
 public class OasisEcfFiler extends EfmCheckableFilingInterface {
@@ -78,6 +87,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     statusObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory();
     listObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory();
     commonObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+    niemObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
     init();
   }
   
@@ -109,8 +119,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     }
   }
 
-  @Override
-  public Result<List<UUID>, FilingError> submitFilingIfReady(FilingInformation info,
+  private Result<CoreFilingMessageType, FilingError> prepareFiling(FilingInformation info,
       InfoCollector collector, String apiToken) {
     EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
     try {
@@ -224,45 +233,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         }
         seqNum += 1;
       }
-      oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory wsOf = 
-          new oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory();
-      PaymentFactory pf = new PaymentFactory();
-      PaymentMessageType pmt = pf.makePaymentMessage(info.getPaymentId());
-      ReviewFilingRequestMessageType rfrm = wsOf.createReviewFilingRequestMessageType();
-      rfrm.setCoreFilingMessage(cfm);
-      rfrm.setPaymentMessage(pmt);
-
-      log.debug(XmlHelper.objectToXmlStrOrError(
-          rfrm, ReviewFilingRequestMessageType.class));
-      if (!collector.okToSubmit()) {
-        return Result.err(FilingError.serverError("Not submitting!"));
-      }
-
-      Optional<FilingReviewMDEPort> filingPort = makeFilingService(apiToken); 
-      if (filingPort.isEmpty()) {
-        FilingError err = FilingError.serverError("Couldn't create SOAP port object with token: " + apiToken);
-        collector.error(err);
-        return Result.err(err);
-      }
-      MessageReceiptMessageType mrmt = filingPort.get().reviewFiling(rfrm);
-      if (mrmt.getError().size() > 0) {
-        for (oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType err : mrmt
-            .getError()) {
-          log.warn("Error from Tyler: " + err.getErrorCode().getValue() + ", " + err.getErrorText().getValue());
-        }
-      }
-      List<IdentificationType> ids = mrmt.getDocumentIdentification();
-      Optional<String> caseId = ids.stream().filter((id) -> {
-        TextType text = (TextType) id.getIdentificationCategory().getValue();
-        return text.getValue().toUpperCase().equals("FILINGID");
-      }).map((id) -> id.getIdentificationID().getValue()).findFirst();
-      if (caseId.isEmpty()) {
-        log.error("Couldn't get back the filing id from Tyler!");
-        return Result.err(FilingError.serverError("Couldn't get back filing id from tyler: " + mrmt.toString()));
-      }
-
-      log.info(XmlHelper.objectToXmlStrOrError(mrmt, MessageReceiptMessageType.class));
-      return Result.ok(List.of(UUID.fromString(caseId.get()))); 
+      return Result.ok(cfm);
     } catch (IOException ex) {
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
@@ -277,7 +248,84 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       return Result.err(FilingError.serverError("Got SQLException assembling the filing: " + ex));
     }
   }
+      
+  public Result<List<UUID>, FilingError> submitFilingIfReady(FilingInformation info,
+    InfoCollector collector, String apiToken) {
+    Result<CoreFilingMessageType, FilingError> maybeCfm = prepareFiling(info, collector, apiToken);
+    if (maybeCfm.isErr()) {
+      return maybeCfm.mapOk(ok -> null);
+    }
 
+    oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory wsOf = 
+        new oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory();
+    PaymentFactory pf = new PaymentFactory();
+    PaymentMessageType pmt = pf.makePaymentMessage(info.getPaymentId());
+    ReviewFilingRequestMessageType rfrm = wsOf.createReviewFilingRequestMessageType();
+    rfrm.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
+    rfrm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+    rfrm.setCoreFilingMessage(maybeCfm.unwrapOrElseThrow());
+    rfrm.setPaymentMessage(pmt);
+
+    log.debug(XmlHelper.objectToXmlStrOrError(rfrm, ReviewFilingRequestMessageType.class));
+    if (!collector.okToSubmit()) {
+      return Result.err(FilingError.serverError("Not submitting!"));
+    }
+
+    Optional<FilingReviewMDEPort> filingPort = makeFilingService(apiToken);
+    if (filingPort.isEmpty()) {
+      FilingError err = FilingError
+          .serverError("Couldn't create SOAP port object with token: " + apiToken);
+      collector.error(err);
+      return Result.err(err);
+    }
+    MessageReceiptMessageType mrmt = filingPort.get().reviewFiling(rfrm);
+    if (mrmt.getError().size() > 0) {
+      for (oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType err : mrmt
+          .getError()) {
+        log.warn("Error from Tyler: " + err.getErrorCode().getValue() + ", "
+            + err.getErrorText().getValue());
+      }
+    }
+    List<IdentificationType> ids = mrmt.getDocumentIdentification();
+    Optional<String> caseId = ids.stream().filter((id) -> {
+      TextType text = (TextType) id.getIdentificationCategory().getValue();
+      return text.getValue().toUpperCase().equals("FILINGID");
+    }).map((id) -> id.getIdentificationID().getValue()).findFirst();
+    if (caseId.isEmpty()) {
+      log.error("Couldn't get back the filing id from Tyler!");
+      return Result.err(
+          FilingError.serverError("Couldn't get back filing id from tyler: " + mrmt.toString()));
+    }
+
+    log.info(XmlHelper.objectToXmlStrOrError(mrmt, MessageReceiptMessageType.class));
+    return Result.ok(List.of(UUID.fromString(caseId.get())));
+  }
+
+  @Override
+  public Result<Response, FilingError> getFilingFees(FilingInformation info, String apiToken) {
+    FailFastCollector collector = new FailFastCollector();
+    Result<CoreFilingMessageType, FilingError> maybeCfm = prepareFiling(info, collector, apiToken);
+    if (maybeCfm.isErr()) {
+      return maybeCfm.mapOk(ok -> null);
+    }
+    Optional<FilingReviewMDEPort> filingPort = makeFilingService(apiToken);
+    if (filingPort.isEmpty()) {
+      FilingError err = FilingError
+          .serverError("Couldn't create SOAP port object with token: " + apiToken);
+      return Result.err(err);
+    }
+    
+    FeesCalculationQueryMessageType query = new FeesCalculationQueryMessageType();
+    query.setCoreFilingMessage(maybeCfm.unwrapOrElseThrow());
+    query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
+    query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+    FeesCalculationResponseMessageType resp = filingPort.get().getFeesCalculation(query);
+    
+    Response httpResponse = ServiceHelpers.makeResponse(resp, () -> Response.ok(resp).build());
+    return Result.ok(httpResponse);
+  }
+
+  
   @Override
   public Response getFilingList(String courtId, String apiToken) {
     try {
@@ -290,15 +338,8 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       if (port.isEmpty()) { 
         return Response.status(403).build();
       }
-      FilingListQueryMessageType m = listObjFac.createFilingListQueryMessageType();
-      EntityType typ = new EntityType();
-      JAXBElement<PersonType> elem2 = commonObjFac.createEntityPerson(new PersonType());
-      typ.setEntityRepresentation(elem2);
-      m.setQuerySubmitter(typ);
+      FilingListQueryMessageType m = prep(listObjFac.createFilingListQueryMessageType(), courtId);
       m.setDocumentSubmitter(null); // cof.createEntityPerson(null));
-      m.setCaseCourt(XmlHelper.convertCourtType(courtId));
-      m.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
-      m.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
       m.getDateRange().add(null);
       FilingListResponseMessageType resp = port.get().getFilingList(m);
       for (MatchingFilingType match : resp.getMatchingFiling()) {
@@ -328,15 +369,8 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       if (port.isEmpty()) { 
         return Response.status(403).build();
       }
-      FilingStatusQueryMessageType status = statusObjFac.createFilingStatusQueryMessageType();
-      status.setCaseCourt(XmlHelper.convertCourtType(courtId));
-      status.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
-      status.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+      FilingStatusQueryMessageType status = prep(statusObjFac.createFilingStatusQueryMessageType(), courtId);
       status.setDocumentIdentification(XmlHelper.convertId(filingId));
-      JAXBElement<PersonType> elem2 = commonObjFac.createEntityPerson(new PersonType());
-      EntityType typ = new EntityType();
-      typ.setEntityRepresentation(elem2);
-      status.setQuerySubmitter(typ);
       FilingStatusResponseMessageType statusResp = port.get().getFilingStatus(status);
       return ServiceHelpers.mapTylerCodesToHttp(statusResp.getError(), 
           () -> Response.ok().entity(status).build());
@@ -344,6 +378,23 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
     }
   }
+  
+  @Override
+  public Response getFilingService(String courtId, String filingId, String contactId, String apiToken) {
+    Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
+    if (port.isEmpty()) { 
+      return Response.status(403).build();
+    }
+    FilingServiceQueryMessageType req = new FilingServiceQueryMessageType();
+    ServiceContactIdentificationType id = new ServiceContactIdentificationType();
+    id.setIdentificationCategory(niemObjFac.createIdentificationCategoryText(
+        XmlHelper.convertText("SERVICECONTACTID")));
+    id.setIdentificationID(XmlHelper.convertString(contactId));
+    req.setServiceContactIdentification(id);
+    FilingServiceResponseMessageType resp = port.get().getFilingService(req);
+    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), () -> Response.ok(resp).build());
+  }
+  
   
   @Override
   public Response getFilingDetails(String courtId, String filingId, String apiToken) {
@@ -357,14 +408,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       if (port.isEmpty()) { 
         return Response.status(403).build();
       }
-      FilingDetailQueryMessageType m = detailObjFac.createFilingDetailQueryMessageType();
-      EntityType typ = new EntityType();
-      JAXBElement<PersonType> elem2 = commonObjFac.createEntityPerson(new PersonType());
-      typ.setEntityRepresentation(elem2);
-      m.setQuerySubmitter(typ);
-      m.setCaseCourt(XmlHelper.convertCourtType(courtId));
-      m.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
-      m.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+      FilingDetailQueryMessageType m = prep(detailObjFac.createFilingDetailQueryMessageType(), courtId);
       m.setDocumentIdentification(XmlHelper.convertId(filingId));
       FilingDetailResponseMessageType resp = port.get().getFilingDetails(m);
       return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
@@ -372,6 +416,27 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     } catch (SQLException ex) {
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
     }
+  }
+
+  @Override
+  public Response getPolicy(String courtId, String apiToken) {
+    try {
+      List<String> courtIds = cd.getAllLocations();
+      if (!courtIds.contains(courtId)) {
+        return Response.status(422).entity("Court " + courtId + " not in jurisdiction").build();
+      }       
+    } catch (SQLException ex) {
+      return Response.status(500).entity("Couldn't access database: " + ex).build();
+    }
+    Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
+    if (port.isEmpty()) { 
+      return Response.status(403).build();
+    }
+    
+    CourtPolicyQueryMessageType query = prep(new CourtPolicyQueryMessageType(), courtId);
+    CourtPolicyResponseMessageType resp = port.get().getPolicy(query);
+    
+    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), () -> Response.ok(resp).build());
   }
   
   @Override
@@ -386,14 +451,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       if (port.isEmpty()) { 
         return Response.status(403).build();
       }
-      CancelFilingMessageType cancel = cancelObjFac.createCancelFilingMessageType();
-      EntityType typ = new EntityType();
-      JAXBElement<PersonType> elem2 = commonObjFac.createEntityPerson(new PersonType());
-      typ.setEntityRepresentation(elem2);
-      cancel.setQuerySubmitter(typ);
-      cancel.setCaseCourt(XmlHelper.convertCourtType(courtId));
-      cancel.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
-      cancel.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+      CancelFilingMessageType cancel = prep(cancelObjFac.createCancelFilingMessageType(), courtId);
       cancel.setDocumentIdentification(XmlHelper.convertId(filingId));
       CancelFilingResponseMessageType resp = port.get().cancelFiling(cancel);
       return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
@@ -418,6 +476,17 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   public String getOrgName() {
     // No real API key we need to save
     return "tyler";
+  }
+
+  private <T extends QueryMessageType> T prep(T newMsg, String courtId) {
+    EntityType typ = new EntityType();
+    JAXBElement<PersonType> elem2 = commonObjFac.createEntityPerson(new PersonType());
+    typ.setEntityRepresentation(elem2);
+    newMsg.setQuerySubmitter(typ);
+    newMsg.setCaseCourt(XmlHelper.convertCourtType(courtId));
+    newMsg.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
+    newMsg.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+    return newMsg;
   }
 
   private Optional<FilingReviewMDEPort> setupFilingPort(String apiToken) {
@@ -456,5 +525,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       cancelObjFac;
   private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory 
       commonObjFac;
+  private gov.niem.niem.niem_core._2.ObjectFactory
+      niemObjFac;
 
 }

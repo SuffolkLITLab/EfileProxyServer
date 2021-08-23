@@ -1,14 +1,16 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
+
 import java.net.URL;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -30,6 +32,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
+import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.db.LoginInfo;
 import tyler.efm.services.EfmUserService;
 import tyler.efm.services.IEfmFirmService;
@@ -41,10 +45,12 @@ import tyler.efm.services.schema.changepasswordresponse.ChangePasswordResponseTy
 import tyler.efm.services.schema.common.NotificationType;
 import tyler.efm.services.schema.common.RoleLocationType;
 import tyler.efm.services.schema.common.UserType;
+import tyler.efm.services.schema.getpasswordquestionrequest.GetPasswordQuestionRequestType;
 import tyler.efm.services.schema.getuserrequest.GetUserRequestType;
 import tyler.efm.services.schema.getuserresponse.GetUserResponseType;
 import tyler.efm.services.schema.notificationpreferenceslistresponse.NotificationPreferencesListResponseType;
 import tyler.efm.services.schema.notificationpreferencesresponse.NotificationPreferencesResponseType;
+import tyler.efm.services.schema.passwordquestionresponse.PasswordQuestionResponseType;
 import tyler.efm.services.schema.registrationrequest.RegistrationRequestType;
 import tyler.efm.services.schema.registrationresponse.RegistrationResponseType;
 import tyler.efm.services.schema.removeuserrequest.RemoveUserRequestType;
@@ -95,9 +101,11 @@ public class AdminUserService {
 
   private EfmUserService userFactory;
   private SecurityHub security;
+  private CodeDatabase cd;
   
-  public AdminUserService(SecurityHub security) {
+  public AdminUserService(SecurityHub security, CodeDatabase cd) {
     this.security = security;
+    this.cd = cd;
     init();
   }
 
@@ -107,7 +115,7 @@ public class AdminUserService {
   }
 
   @POST
-  @Path("/authenticate/")
+  @Path("/authenticate")
   public Response authenticateUser(@Context HttpHeaders httpHeaders,
       String loginInfo) {
     ObjectMapper mapper = new ObjectMapper();
@@ -135,6 +143,29 @@ public class AdminUserService {
   }
   
   @GET
+  @Path("/user")
+  public Response getSelfUser(@Context HttpHeaders httpHeaders) {
+    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
+    Optional<LoginInfo> tylerCreds = security.checkLogin(activeToken, "tyler");
+    if (tylerCreds.isEmpty()) {
+      return Response.status(401).build();
+    }
+    if (tylerCreds.get().userId.isEmpty()) {
+      return Response.status(500).entity(
+          "Server dose not have a Tyler UUID for the current account. Can you give it to me?").build();
+    }
+    Optional<IEfmUserService> port = setupUserPort(tylerCreds.get());
+    if (port.isEmpty()) { 
+      return Response.status(401).build();
+    }
+    
+    GetUserRequestType req = new GetUserRequestType();
+    tylerCreds.get().userId.ifPresent(id -> req.setUserID(id)); 
+    GetUserResponseType resp = port.get().getUser(req);
+    return makeResponse(resp, () -> Response.ok(resp.getUser()).build());
+  }
+  
+  @GET
   @Path("/user/notification-preferences")
   public Response getNotificationPrefs(@Context HttpHeaders httpHeaders) {
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
@@ -148,7 +179,22 @@ public class AdminUserService {
         () -> Response.ok(notifResp.getNotification()).build());
   }
   
-  @POST
+  @GET
+  @Path("/user/password-question")
+  public Response getPasswordQuestion(@Context HttpHeaders httpHeaders, String email) {
+    // TODO(brycew): should be able to work without creds in httpHeaders 
+    Optional<IEfmUserService> port = setupUserPort(httpHeaders);
+    if (port.isEmpty()) { 
+      return Response.status(401).build();
+    }
+    
+    GetPasswordQuestionRequestType req = new GetPasswordQuestionRequestType();
+    req.setEmail(email);
+    PasswordQuestionResponseType resp = port.get().getPasswordQuestion(req);
+    return ServiceHelpers.makeResponse(resp, () -> Response.ok("\"" + resp.getPasswordQuestion() + "\"").build());
+  }
+  
+  @PATCH
   @Path("/user/notification-preferences")
   public Response updateNotificationPrefs(@Context HttpHeaders httpHeaders,
       List<NotificationType> notifications) {
@@ -165,7 +211,7 @@ public class AdminUserService {
 
     BaseResponseType notifResp = port.get().updateNotificationPreferences(updateNotif);
     return ServiceHelpers.mapTylerCodesToHttp(notifResp.getError(), 
-        () -> Response.noContent().build()); 
+        () -> Response.ok().build()); 
   }
   
   @POST
@@ -181,8 +227,7 @@ public class AdminUserService {
         new SelfResendActivationEmailRequestType();
     req.setEmail(emailToSendTo);
     BaseResponseType resp = port.get().selfResendActivationEmail(req);
-    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
-        () -> Response.noContent().build()); 
+    return makeResponse(resp, () -> Response.noContent().build()); 
   }
   
   @POST
@@ -198,51 +243,77 @@ public class AdminUserService {
         new ResendActivationEmailRequestType();
     req.setUserID(id);
     BaseResponseType resp = port.get().resendActivationEmail(req);
-    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
-        () -> Response.noContent().build()); 
+    return makeResponse(resp, () -> Response.noContent().build()); 
+  }
+
+  public static class ResetPasswordParams {
+    public String email;
+    public String newPassword;
   }
   
   @POST
-  @Path("/users/{id}/change-password")
-  //TODO(brycew) NEXT: THIS IS BROKEN! Can't take two string params, needs an object
+  @Path("/users/{id}/password")
   public Response resetPassword(@Context HttpHeaders httpHeaders,
-      @PathParam("id") String id, String email, String password) {
+      @PathParam("id") String id, ResetPasswordParams params) {
     Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
     
+    // The "1" is the default for all courts. There's no way to enforce court specific passwords
+    DataFieldRow globalPasswordRow = cd.getDataField("1", "GlobalPassword");
+    if (!passwordOk(globalPasswordRow, params.newPassword)) {
+      return Response.status(400).entity(globalPasswordRow.validationmessage).build();
+    }
     ResetUserPasswordRequestType resetReq = new ResetUserPasswordRequestType();
     resetReq.setUserID(id);
-    resetReq.setEmail(email);
-    resetReq.setPassword(password);
+    resetReq.setEmail(params.email);
+    resetReq.setPassword(params.newPassword);
     ResetPasswordResponseType resp = port.get().resetUserPassword(resetReq);
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
-        () -> Response.ok(resp.getPasswordHash()).build()); 
+        () -> {
+          security.removeTylerUserId(id);
+          return Response.ok(resp.getPasswordHash()).build(); 
+        });
+  }
+  
+  public static class SetPasswordParams {
+    public String currentPassword;
+    public String newPassword;
   }
   
   @POST
-  @Path("/user/change-password")
-  //TODO(brycew) NEXT: THIS IS BROKEN! Can't take two string params, needs an object
+  @Path("/user/password")
   public Response setPassword(@Context HttpHeaders httpHeaders,
-      String oldPassword, String newPassword) {
+      SetPasswordParams params) {
+    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    
+    // The "1" is the default for all courts. There's no way to enforce court specific passwords
+    DataFieldRow globalPasswordRow = cd.getDataField("1", "GlobalPassword");
+    if (!passwordOk(globalPasswordRow, params.newPassword)) {
+      return Response.status(400).entity(globalPasswordRow.validationmessage).build();
+    }
     ChangePasswordRequestType change = new ChangePasswordRequestType();
-    change.setOldPassword(oldPassword);
-    change.setNewPassword(newPassword);
+    change.setOldPassword(params.currentPassword);
+    change.setNewPassword(params.newPassword);
+    change.setPasswordQuestion("");
+    change.setPasswordAnswer("");
     ChangePasswordResponseType resp = port.get().changePassword(change);
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
-        () -> Response.ok(resp.getPasswordHash()).build()); 
+        () -> { 
+          security.removeLogin(activeToken);
+          return Response.ok(resp.getPasswordHash()).build(); 
+        });
   }
   
   @POST
-  @Path("/user/reset-password")
+  @Path("/user/password/reset")
   public Response selfResetPassword(@Context HttpHeaders httpHeaders,
       String emailToSend) {
+    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -252,7 +323,10 @@ public class AdminUserService {
     reset.setEmail(emailToSend);
     ResetPasswordResponseType resp = port.get().resetPassword(reset);
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
-        () -> Response.ok(resp.getPasswordHash()).build()); 
+        () -> {
+          security.removeLogin(activeToken);
+          return Response.ok(resp.getPasswordHash()).build();
+        });
   }
 
   /**
@@ -273,6 +347,7 @@ public class AdminUserService {
     GetUserRequestType getUserReq = new GetUserRequestType();
     getUserReq.setUserID(id);
     GetUserResponseType userRes = port.get().getUser(getUserReq);
+
     return ServiceHelpers.mapTylerCodesToHttp(userRes.getError(), 
         () -> Response.ok(userRes.getUser()).build()); 
   }
@@ -293,10 +368,11 @@ public class AdminUserService {
   /**
    * For UpdateUser (AdminUserService).
    * @param id The id of the user, embedded in the URL
-   * @param updatedUser
+   * @param updatedUser, null fields are ignored
    * @return
    */
-  @POST
+  // TODO(brycew): retry these same things on the user port if it doesn't have firm permissions
+  @PATCH
   @Path("/users/{id}")
   public Response updateUser(@Context HttpHeaders httpHeaders, 
       @PathParam("id") String id, UserType updatedUser) {
@@ -311,28 +387,22 @@ public class AdminUserService {
     if (ServiceHelpers.checkErrors(userRes.getError())) {
       return Response.status(401, userRes.getError().getErrorText()).build();
     }
-    if (updatedUser.getRole().size() > 0) {
-      // Will need to make update and remove Role calls.
-      Set<RoleLocationType> newRoles = updatedUser.getRole()
-          .stream().collect(Collectors.toSet());
-      Set<RoleLocationType> existingRoles = userRes.getUser().getRole()
-          .stream().collect(Collectors.toSet());
-      Set<RoleLocationType> toAdd = new HashSet<RoleLocationType>();
-      for (RoleLocationType role : newRoles) {
-        if (!existingRoles.contains(role)) {
-          toAdd.add(role);
-        }
-      }
-      Set<RoleLocationType> toRm = new HashSet<RoleLocationType>();
-      for (RoleLocationType role : existingRoles) {
-        if (!newRoles.contains(role)) {
-          toRm.add(role);
-        }
-      }
-    }
     
+    UserType existingUser = userRes.getUser();
+    if (updatedUser.getEmail() != null) {
+      existingUser.setEmail(updatedUser.getEmail());
+    }
+    if (updatedUser.getFirstName() != null) {
+      existingUser.setFirstName(updatedUser.getFirstName());
+    }
+    if (updatedUser.getMiddleName() != null) {
+      existingUser.setMiddleName(updatedUser.getMiddleName());
+    }
+    if (updatedUser.getLastName() != null) {
+      existingUser.setLastName(updatedUser.getLastName());
+    }
     UpdateUserRequestType updateReq = new UpdateUserRequestType();
-    updateReq.setUser(updatedUser);
+    updateReq.setUser(existingUser);
     UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
     if (ServiceHelpers.checkErrors(updateResp.getError())) {
       return Response.status(401).entity(updateResp.getError().getErrorText()).build();
@@ -409,6 +479,9 @@ public class AdminUserService {
     if (port.isEmpty()) { 
       return Response.status(401).build();
     }
+    if (toRm == null) {
+      return Response.ok().build();
+    }
     
     for (RoleLocationType role : toRm) {
       RemoveUserRoleRequestType rmRole = new RemoveUserRoleRequestType();
@@ -423,7 +496,6 @@ public class AdminUserService {
     }
     
     return Response.ok().build();
-    
   }
   
   /**
@@ -441,10 +513,13 @@ public class AdminUserService {
       return Response.status(401).build();
     }
     
-    // TODO(brycew): add a check for global passwords here: in the datafieldconfig table, it's name is 'GlobalPassword'
+    // The "1" is the default for all courts. There's no way to enforce court specific passwords
+    DataFieldRow globalPasswordRow = cd.getDataField("1", "GlobalPassword");
+    if (!passwordOk(globalPasswordRow, req.getPassword())) {
+      return Response.status(400).entity(globalPasswordRow.validationmessage).build();
+    }
     RegistrationResponseType regResp = port.get().registerUser(req);
-    return ServiceHelpers.mapTylerCodesToHttp(regResp.getError(), 
-        () -> Response.ok(regResp).build());
+    return makeResponse(regResp, () -> Response.ok(regResp).build());
   }
   
   /**
@@ -459,7 +534,7 @@ public class AdminUserService {
       @PathParam("id") String id) {
     Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) {
-      return Response.status(407).build();
+      return Response.status(401).build();
     }
     
     RemoveUserRequestType rmUser = new RemoveUserRequestType();
@@ -482,6 +557,18 @@ public class AdminUserService {
         () -> Response.ok(resp.getNotificationListItem()).build());
   }
   
+  private boolean passwordOk(DataFieldRow row, String password) {
+    if (row.isvisible && row.isrequired 
+        && password != null && !password.isEmpty()) {
+      Pattern pattern = Pattern.compile(row.regularexpression);
+      Matcher matcher = pattern.matcher(password); 
+      if (!matcher.find()) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
   /** Creates a connection to Tyler's SOAP API that is has the right Auth Headers.
    *
    * @param httpHeaders The context tag from the server method
@@ -493,7 +580,11 @@ public class AdminUserService {
     if (tylerCreds.isEmpty()) {
       return Optional.empty();
     }
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerCreds.get().usableToken); 
+    return setupUserPort(tylerCreds.get());
+  }
+    
+  private Optional<IEfmUserService> setupUserPort(LoginInfo tylerCreds) {
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerCreds.usableToken); 
     if (creds.isEmpty()) {
       return Optional.empty();
     }

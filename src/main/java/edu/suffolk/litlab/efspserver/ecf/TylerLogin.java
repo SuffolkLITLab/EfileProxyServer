@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efspserver.ecf;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.xml.ws.BindingProvider;
@@ -29,7 +30,7 @@ public class TylerLogin implements LoginInterface {
   }
 
   @Override
-  public Optional<String> login(JsonNode loginInfo) {
+  public Optional<Map<String, String>> login(JsonNode loginInfo) {
     if (!loginInfo.isObject()
         || !loginInfo.has("username")
         || !loginInfo.get("username").isTextual()) {
@@ -56,7 +57,9 @@ public class TylerLogin implements LoginInterface {
       log.warn("Got Tyler error when authing: " + authRes.toString());
       return Optional.empty(); 
     } else {
-      return Optional.of(authRes.getEmail() + ":" + authRes.getPasswordHash()); 
+      return Optional.of(Map.of(
+          "tyler_token", authRes.getEmail() + ":" + authRes.getPasswordHash(),
+          "tyler_id", authRes.getUserID())); 
     }
   }
 

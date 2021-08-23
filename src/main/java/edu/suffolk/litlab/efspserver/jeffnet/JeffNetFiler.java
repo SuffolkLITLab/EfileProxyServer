@@ -11,6 +11,7 @@ import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.Person;
+import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.services.EfmFilingInterface;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
@@ -70,6 +71,7 @@ public class JeffNetFiler implements EfmFilingInterface {
       log.debug("Final Json object: " + finalStr);
     
       log.info("Sending to " + this.filingEndpoint);
+      log.info("They'll send back to " + ServiceHelpers.REST_CALLBACK_URL.formatted(info.getCourtLocation())); 
       HttpClient client = HttpClient.newBuilder().build();
       HttpRequest request = HttpRequest.newBuilder()
           .POST(HttpRequest.BodyPublishers.ofString(finalStr))
@@ -115,11 +117,15 @@ public class JeffNetFiler implements EfmFilingInterface {
   }
 
   @Override
+  public Result<Response, FilingError> getFilingFees(FilingInformation info, String apiToken) {
+    return Result.err(FilingError.serverError("JeffNet doesn't support getting filing fees"));
+  }
+
+  @Override
   public Response cancelFiling(String courtId, String filingId, String apiToken) {
     // TODO Auto-generated method stub
     return Response.status(500).build();
   }
-
   
   @Override
   public Response getFilingList(String courtId, String apiToken) {
@@ -130,6 +136,17 @@ public class JeffNetFiler implements EfmFilingInterface {
   @Override
   public Response getFilingStatus(String courtId, String filingId, String apiToken) {
     // TODO Auto-generated method stub
+    return Response.status(500).build();
+  }
+
+  @Override
+  public Response getFilingService(String courtId, String filingId, String contactId,
+      String apiToken) {
+    return Response.status(500).build();
+  }
+
+  @Override
+  public Response getPolicy(String courtId, String apiToken) {
     return Response.status(500).build();
   }
 
@@ -149,5 +166,7 @@ public class JeffNetFiler implements EfmFilingInterface {
     @JsonProperty("TransactionID")
     String transactionId;
   }
+
+
 
 }

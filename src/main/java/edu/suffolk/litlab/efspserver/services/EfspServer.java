@@ -107,7 +107,7 @@ public class EfspServer {
         MessageSettingsService.class,
         CasesService.class);
     sf.setResourceProvider(AdminUserService.class,
-        new SingletonResourceProvider(new AdminUserService(security)));
+        new SingletonResourceProvider(new AdminUserService(security, cd)));
     sf.setResourceProvider(FilingReviewService.class,
         new SingletonResourceProvider(new FilingReviewService(
             ud, converterMap, filingMap, callbackMap, security, sender)));

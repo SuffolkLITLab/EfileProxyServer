@@ -26,12 +26,18 @@ public interface EfmFilingInterface {
   
   public void checkFiling(FilingInformation info, InfoCollector collector);
   
+  public Result<Response, FilingError> getFilingFees(FilingInformation info, String apiToken);
+  
   // TODO(brycew): make this a little more independent of HTTP
   public Response getFilingList(String courtId, String apiToken); 
   
   public Response getFilingStatus(String courtId, String filingId, String apiToken);
   
   public Response getFilingDetails(String courtId, String filingId, String apiToken);
+
+  public Response getFilingService(String courtId, String filingId, String contactId, String apiToken);
+  
+  public Response getPolicy(String courtId, String apiToken);
   
   public Response cancelFiling(String courtId, String filingId, String apiToken);
   
