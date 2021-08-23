@@ -2,9 +2,11 @@ package edu.suffolk.litlab.efspserver.services;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +36,8 @@ public class OrgMessageSender {
       """
       Dear {{ name }},
       
-      The {{ court_id }} has sent a response to your filing in {{ case_type }}:
+      The {{ court_id }} has sent a response to your filing in {{ case_type }} 
+      (transaction ID is {{ transaction_id }}):
       
       {{ status }}
       
@@ -49,6 +52,9 @@ public class OrgMessageSender {
       Dear {{ name }},
       
       The {{ court_id }} has received your filing in {{ case_type }}!
+      
+      Its transaction ID is {{ transaction_id }}. You should keep track of this; the court might
+      need it in your interactions with them.
       
       They will send you a response shortly.
 
@@ -93,6 +99,7 @@ public class OrgMessageSender {
     templateVars.put("court_id", transaction.courtId);
     templateVars.put("case_type", transaction.caseType);
     templateVars.put("status", status);
+    templateVars.put("transaction_id", transaction.transactionId.toString());
     boolean canEmail = transaction.email != null && SendMessage.isValidEmail(transaction.email);
     if (canEmail) {
       int result;
@@ -109,12 +116,15 @@ public class OrgMessageSender {
     return false;
   }
   
-  public boolean sendConfirmation(String email, UUID serverId, String name, String courtId, String caseType) {
+  public boolean sendConfirmation(String email, UUID serverId, String name, 
+      List<UUID> transactionIds, String courtId, String caseType) {
     MessageInfo msgSettings = getSettings(serverId);
+    String ids = transactionIds.stream().map(t -> t.toString()).collect(Collectors.joining(", "));
     Map<String, Object> templateVars = new HashMap<String, Object>();
     templateVars.put("name", name);
     templateVars.put("court_id", courtId);
     templateVars.put("case_type", caseType);
+    templateVars.put("transaction_id", ids);
     boolean canEmail = email != null && SendMessage.isValidEmail(email);
     if (canEmail) {
       int result;

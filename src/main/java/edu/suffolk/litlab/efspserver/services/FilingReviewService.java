@@ -232,7 +232,8 @@ public class FilingReviewService {
           info.getCaseType(), courtId, ts);
       
       msgSender.sendConfirmation(user.getContactInfo().getEmail().orElse(""), 
-          activeToken.get().serverId, user.getName().getFullName(), courtId, info.getCaseType());
+          activeToken.get().serverId, user.getName().getFullName(), result.unwrapOrElseThrow(), 
+          courtId, info.getCaseType());
     } catch (SQLException ex) {
       log.error("Couldn't add info to the database! Logging here for posterity: " 
                 + "%s %s %s %s %s".formatted(user.getName().getFullName(), user.getId(), 
