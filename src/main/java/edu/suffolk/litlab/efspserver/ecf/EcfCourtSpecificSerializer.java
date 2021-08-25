@@ -23,8 +23,10 @@ import edu.suffolk.litlab.efspserver.codes.CaseType;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.codes.DocumentTypeTableRow;
+import edu.suffolk.litlab.efspserver.codes.FileType;
 import edu.suffolk.litlab.efspserver.codes.FilingCode;
 import edu.suffolk.litlab.efspserver.codes.FilingComponent;
+import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
@@ -244,6 +246,10 @@ public class EcfCourtSpecificSerializer {
         new gov.niem.niem.niem_core._2.ObjectFactory();
     DocumentType docType = tylerObjFac.createDocumentType();
     docType.setDocumentDescriptionText(XmlHelper.convertText(doc.getDescription()));
+    
+    List<FileType> allowedFileTypes = cd.getAllowedFileTypes(this.courtId);
+    List<FileType> correctExtension = allowedFileTypes.stream().filter(t -> t.matchesFile(doc.getFileName())).collect(Collectors.toList());
+    // TODO(brycew): finish extension
 
     docType.setDocumentFileControlID(XmlHelper.convertString(doc.getDocumentFileControlId())); 
     doc.getDueDate().ifPresent((date) -> {
@@ -274,7 +280,13 @@ public class EcfCourtSpecificSerializer {
     String prelim = doc.getPreliminaryCopies().stream().reduce("", (base, str) -> base + "," + str);
     docType.setPreliminaryCopiesText(XmlHelper.convertText(prelim));
     docType.setFilingCommentsText(XmlHelper.convertText(doc.getFilingComments()));
-    doc.getMotionType().ifPresent((mt) -> docType.setMotionTypeCode(XmlHelper.convertText(mt)));
+    doc.getMotionType().ifPresent(mt -> {
+      
+      List<NameAndCode> motiontypes = cd.getMotionTypes(this.courtId, filing.code);
+      // TODO(brycew): "A motion type may be required for a filing type, and may or may not allow multiple occurances"
+      // What does it actually mean? Motion types are empty for IL, so IDK what to do if there's nothing there
+      docType.setMotionTypeCode(XmlHelper.convertText(mt));
+    });
     docType.setFilingAction(doc.getFilingAction());
 
     // TODO(brycew): what should this actually be? Very unclear

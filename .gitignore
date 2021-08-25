@@ -34,9 +34,11 @@ target/
 hs_err_pid*
 
 # Contains key info
-client_sign.properties
+*.properties
 *.pfx
 .env
+.bash_env
+.checkstyle
 
 # Wireshark dumps
 *.pcapng

@@ -41,8 +41,13 @@ public class OrgMessageSender {
       
       {{ status }}
       
-      You should contact the court directly if you have questions
-      about this status.
+      {{ message_text }}
+      
+      {% if variable is defined %}
+      You can visit {{ message_url }} for more details.
+      {% endif %}
+      
+      You should contact the court directly if you have questions.
       
       Best,
       Court Forms Online
@@ -92,13 +97,13 @@ public class OrgMessageSender {
     }
   }
   
-  public boolean sendMessage(Transaction transaction, String status) {
+  public boolean sendMessage(Transaction transaction, Map<String, String> statuses) {
     MessageInfo msgSettings = getSettings(transaction.serverId);
     Map<String, Object> templateVars = new HashMap<String, Object>();
     templateVars.put("name", transaction.name);
     templateVars.put("court_id", transaction.courtId);
     templateVars.put("case_type", transaction.caseType);
-    templateVars.put("status", status);
+    templateVars.putAll(statuses);
     templateVars.put("transaction_id", transaction.transactionId.toString());
     boolean canEmail = transaction.email != null && SendMessage.isValidEmail(transaction.email);
     if (canEmail) {

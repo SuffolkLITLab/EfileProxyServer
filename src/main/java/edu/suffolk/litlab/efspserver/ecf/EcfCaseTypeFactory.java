@@ -249,7 +249,11 @@ public class EcfCaseTypeFactory {
     });
 
     // Filing
-    // TODO(brycew): FilerType is an empty table, so can't tell what it might be
+    DataFieldRow filertype = cd.getDataField(courtLocationId, "FilingFilerType");
+    if (filertype.isrequired) {
+      // TODO(brycew): FilerType is an empty table, so can't tell what it might be
+
+    }
     // TODO(brycew): FilingComponent
     // TODO(brycew): optional service
     

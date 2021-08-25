@@ -40,7 +40,11 @@ public class JeffNetFiler implements EfmFilingInterface {
   
   /** Constructor that takes the URL endpoint of JeffNet to call */
   public JeffNetFiler(String filingEndpoint) throws URISyntaxException {
-    this.filingEndpoint = new URI(filingEndpoint);
+    this(new URI(filingEndpoint));
+  }
+  
+  public JeffNetFiler(URI filingEndpoint) {
+    this.filingEndpoint = filingEndpoint;
     
     this.module = new SimpleModule();
     module.addSerializer(new FilingInformationJeffNetSerializer(FilingInformation.class));
