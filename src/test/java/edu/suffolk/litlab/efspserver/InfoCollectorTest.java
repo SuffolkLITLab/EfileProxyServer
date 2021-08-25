@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efspserver;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import edu.suffolk.litlab.efspserver.services.AllWrongCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
@@ -26,7 +27,12 @@ public class InfoCollectorTest {
     collector.addOptional(var);
     assertFalse(collector.finished());
     InterviewVariable var2 = new InterviewVariable("fake_var2", "", "text", List.of());
-    collector.addRequired(var2);
+    try {
+      collector.addRequired(var2);
+      fail("Should have thrown error");
+    } catch (FilingError err) {
+      // All good
+    }
     assertTrue(collector.finished());
 
     assertFalse(collector.okToSubmit());
@@ -44,7 +50,12 @@ public class InfoCollectorTest {
   @Test
   public void testFailFastShouldTrackStack() {
     FailFastCollector collector = new FailFastCollector();
-    collector.addRequired(collector.requestVar("hi", "", "text"));
+    try {
+      collector.addRequired(collector.requestVar("hi", "", "text"));
+      fail("Should have thrown filing error");
+    } catch (FilingError err) {
+      // N/A
+    }
     collector.pushAttributeStack("one");
     collector.pushAttributeStack("two");
     collector.addOptional(collector.requestVar("bye", "", "text"));
@@ -58,11 +69,15 @@ public class InfoCollectorTest {
   }
   
   @Test
-  public void testAllWrongShouldGetAll() throws JsonMappingException, JsonProcessingException {
+  public void testAllWrongShouldGetAll() throws JsonMappingException, JsonProcessingException { 
     AllWrongCollector collector = new AllWrongCollector();
     assertFalse(collector.finished());
     assertTrue(collector.okToSubmit());
-    collector.addRequired(collector.requestVar("hi", "", "text"));
+    try {
+      collector.addRequired(collector.requestVar("hi", "", "text"));
+    } catch (FilingError e) {
+      fail("Should NOT have thrown a filing error");
+    }
     assertFalse(collector.finished());
     assertFalse(collector.okToSubmit());
     String json = collector.jsonSummary();

@@ -119,8 +119,8 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     }
   }
 
-  private Result<CoreFilingMessageType, FilingError> prepareFiling(FilingInformation info,
-      InfoCollector collector, String apiToken) {
+  private CoreFilingMessageType prepareFiling(FilingInformation info,
+      InfoCollector collector, String apiToken) throws FilingError {
     EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
     try {
       // TODO(brycew): mapping from string case categories to Tyler code case categories, etc.
@@ -134,7 +134,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
             categories.stream().map(cat -> cat.name).collect(Collectors.toList()));
         collector.addWrong(var);
         // Foundational error: Category is sorely needed
-        return Result.err(FilingError.wrongValue(var));
+        throw FilingError.wrongValue(var);
       }
       CaseCategory caseCategory = maybeCaseCat.get();
       
@@ -143,7 +143,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         FilingError err = FilingError.serverError("There are no caseTypes for " 
             + info.getCourtLocation() + " and " + caseCategory.code.get());
         collector.error(err);
-        return Result.err(err);
+        throw err;
       }
       Optional<CaseType> maybeType = caseTypes.stream()
           .filter(type -> type.name.equals(info.getCaseType()))
@@ -153,7 +153,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         InterviewVariable var = collector.requestVar("tyler_case_type",  "",  "choice",
             caseTypes.stream().map(type -> type.name).collect(Collectors.toList()));
         collector.addWrong(var);
-        return Result.err(FilingError.wrongValue(var));
+        throw FilingError.wrongValue(var);
       } 
 
       List<FilingCode> filings = cd.getFilingType(info.getCourtLocation(), 
@@ -163,7 +163,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         InterviewVariable var = collector.requestVar("filing", "TODO(brycew): description", "text");
         collector.addWrong(var);
         // Is foundational, so returning now
-        return Result.err(FilingError.wrongValue(var));
+        throw FilingError.wrongValue(var);
       }
     
       InterviewVariable var = collector.requestVar("filing", "TODO(brycew): description", "text", filings.stream().map(f -> f.name).collect(Collectors.toList()));
@@ -171,7 +171,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       if (filingJson == null || filingJson.isNull() || !filingJson.isTextual()) {
         log.error("filing not present in the info!: " + info.getMiscInfo());
         collector.addRequired(var);
-        return Result.err(FilingError.missingRequired(var));
+        throw FilingError.missingRequired(var);
       }
     
       Optional<FilingCode> maybeFiling = filings.stream()
@@ -180,7 +180,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       if (maybeFiling.isEmpty()) {
         log.error("Nothing matches filing in the info: " + filingJson.asText());
         collector.addWrong(var);
-        return Result.err(FilingError.missingRequired(var));
+        throw FilingError.missingRequired(var);
       }
     
       Result<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>, FilingError> assembledCase = 
@@ -198,15 +198,15 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
               "review", info.getMiscInfo(), serializer, collector); 
       if (assembledCase.isErr()) {
         collector.error(assembledCase.unwrapErrOrElseThrow());
-        return Result.err(assembledCase.unwrapErrOrElseThrow());
+        throw assembledCase.unwrapErrOrElseThrow();
       }
 
       List<FilingComponent> components = cd.getFilingComponents(info.getCourtLocation(), maybeFiling.get().code);
       if (components.isEmpty()) {
         InterviewVariable filingComponentVar = collector.requestVar("filing_component", "The filing component: Lead or Attachment", "text");
         collector.addRequired(filingComponentVar);
-       if (collector.finished()) {
-         return Result.err(FilingError.missingRequired(filingComponentVar));
+        if (collector.finished()) {
+          throw FilingError.missingRequired(filingComponentVar);
         }
       }
       
@@ -218,42 +218,40 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       cfm.setCase(assembledCase.unwrapOrElseThrow());
       int seqNum = 0;
       for (FilingDoc filingDoc : info.getFilings()) {
-        Result<JAXBElement<DocumentType>, FilingError> result = 
+        JAXBElement<DocumentType> result = 
                 serializer.filingDocToXml(filingDoc, seqNum, caseCategory, maybeType.get(), 
                     maybeFiling.get(), components,
                         info.getMiscInfo(), collector);
-        if (result.isErr()) {
-          return result.mapOk(ok -> null);
-        }
-        JAXBElement<DocumentType> d = result.unwrapOrElseThrow();
         if (filingDoc.isLead()) {
-          cfm.getFilingLeadDocument().add(d);
+          cfm.getFilingLeadDocument().add(result);
         } else {
-          cfm.getFilingConnectedDocument().add(d); 
+          cfm.getFilingConnectedDocument().add(result); 
         }
         seqNum += 1;
       }
-      return Result.ok(cfm);
+      return cfm;
     } catch (IOException ex) {
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
       ex.printStackTrace(pw);
       log.error("IO Error when making filing! " + ex.toString() + " " + sw.toString());
-      return Result.err(FilingError.serverError("Got IOException assembling the filing: " + ex));
+      throw FilingError.serverError("Got IOException assembling the filing: " + ex);
     } catch (SQLException ex) {
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
       ex.printStackTrace(pw);
       log.error("SQL Error when making filing! " + ex.toString() + " " + sw.toString());    
-      return Result.err(FilingError.serverError("Got SQLException assembling the filing: " + ex));
+      throw FilingError.serverError("Got SQLException assembling the filing: " + ex);
     }
   }
       
   public Result<List<UUID>, FilingError> submitFilingIfReady(FilingInformation info,
     InfoCollector collector, String apiToken) {
-    Result<CoreFilingMessageType, FilingError> maybeCfm = prepareFiling(info, collector, apiToken);
-    if (maybeCfm.isErr()) {
-      return maybeCfm.mapOk(ok -> null);
+    CoreFilingMessageType cfm;
+    try {
+      cfm = prepareFiling(info, collector, apiToken);
+    } catch (FilingError err) {
+      return Result.err(err); 
     }
 
     oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory wsOf = 
@@ -263,7 +261,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     ReviewFilingRequestMessageType rfrm = wsOf.createReviewFilingRequestMessageType();
     rfrm.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
     rfrm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
-    rfrm.setCoreFilingMessage(maybeCfm.unwrapOrElseThrow());
+    rfrm.setCoreFilingMessage(cfm);
     rfrm.setPaymentMessage(pmt);
 
     log.debug(XmlHelper.objectToXmlStrOrError(rfrm, ReviewFilingRequestMessageType.class));
@@ -304,9 +302,11 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   @Override
   public Result<Response, FilingError> getFilingFees(FilingInformation info, String apiToken) {
     FailFastCollector collector = new FailFastCollector();
-    Result<CoreFilingMessageType, FilingError> maybeCfm = prepareFiling(info, collector, apiToken);
-    if (maybeCfm.isErr()) {
-      return maybeCfm.mapOk(ok -> null);
+    CoreFilingMessageType cfm;
+    try {
+      cfm = prepareFiling(info, collector, apiToken);
+    } catch (FilingError err) {
+      return Result.err(err); 
     }
     Optional<FilingReviewMDEPort> filingPort = makeFilingService(apiToken);
     if (filingPort.isEmpty()) {
@@ -316,7 +316,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     }
     
     FeesCalculationQueryMessageType query = new FeesCalculationQueryMessageType();
-    query.setCoreFilingMessage(maybeCfm.unwrapOrElseThrow());
+    query.setCoreFilingMessage(cfm);
     query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     FeesCalculationResponseMessageType resp = filingPort.get().getFeesCalculation(query);

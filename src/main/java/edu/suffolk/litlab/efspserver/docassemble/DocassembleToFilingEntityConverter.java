@@ -5,10 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.hubspot.algebra.Result;
 import com.opencsv.exceptions.CsvValidationException;
-import edu.suffolk.litlab.efspserver.Address;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
-import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewToFilingEntityConverter;
@@ -32,10 +30,6 @@ public class DocassembleToFilingEntityConverter extends InterviewToFilingEntityC
   public Result<FilingInformation, FilingError> traverseInterview(String interviewContents,
       InfoCollector collector) {
     SimpleModule module = new SimpleModule();
-    //module.addDeserializer(FilingDoc.class, 
-    //    new FilingDocDocassembleJacksonDeserializer()); 
-    module.addDeserializer(Address.class, new AddressDocassembleJacksonDeserializer(Address.class));
-    module.addDeserializer(Person.class, new PersonDocassembleJacksonDeserializer(Person.class));
     module.addDeserializer(FilingInformation.class, 
         new FilingInformationDocassembleJacksonDeserializer(FilingInformation.class, codes, collector));
     ObjectMapper mapper = new ObjectMapper();

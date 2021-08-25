@@ -119,13 +119,14 @@ public class CasesService {
     }
     if (node.has("person_name") && node.get("person_name").isObject()) {
       FailFastCollector collector = new FailFastCollector();
-      Result<Name, FilingError> maybeName = 
-          NameDocassembleDeserializer.fromNode(node.get("person_name"), collector);
-      if (maybeName.isErr()) {
+      Name maybeName;
+      try {
+        maybeName = NameDocassembleDeserializer.fromNode(node.get("person_name"), collector);
+      } catch (FilingError err) {
         return Response.status(400).entity("Name needs to be a JSON object with first, middle, last, etc.").build();
       }
       PersonType pt = ecfOf.createPersonType();
-      pt.setPersonName(maybeName.unwrapOrElseThrow().getNameType());
+      pt.setPersonName(maybeName.getNameType());
       
       
       commonCpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
