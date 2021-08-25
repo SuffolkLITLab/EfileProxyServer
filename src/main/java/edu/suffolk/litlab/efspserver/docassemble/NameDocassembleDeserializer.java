@@ -3,7 +3,6 @@ package edu.suffolk.litlab.efspserver.docassemble;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.hubspot.algebra.Result;
 
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.services.FilingError;
@@ -21,29 +20,21 @@ public class NameDocassembleDeserializer {
   }
 
 
-  public static Result<Name, FilingError> fromNode(JsonNode node, InfoCollector collector) {
+  public static Name fromNode(JsonNode node, InfoCollector collector) throws FilingError {
     if (node == null) {
       InterviewVariable var = collector.requestVar(
           "name", "The full name of the person", "IndividualName");
       collector.addRequired(var);
-      if (collector.finished()) {
-        FilingError err = FilingError.missingRequired(var);
-        return Result.err(err);
-      }
     }
     if (!node.isObject()) {
       FilingError err = FilingError.malformedInterview(
           "Can't parse person with name that's not a JSON object: " + node.get("name").toPrettyString());
-      return Result.err(err);
+      throw err;
     }
     if (!node.has("first")) {
       InterviewVariable var = collector.requestVar("name.first", 
           "The first name of a person / name of a business", "text");
       collector.addRequired(var);
-      if (collector.finished()) {
-        FilingError err = FilingError.missingRequired(var);
-        return Result.err(err);
-      }
     }
 
     Name name = new Name(
@@ -55,6 +46,6 @@ public class NameDocassembleDeserializer {
           "" // TODO(brycew): where would Maiden name go, if asked for?
     );
     
-    return Result.ok(name);
+    return name;
   }
 }

@@ -3,7 +3,9 @@ package edu.suffolk.litlab.efspserver.services;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class FilingError {
+public class FilingError extends Exception {
+  private static final long serialVersionUID = 1L;
+
   public enum Type {
     MalformedInterview, /// For when the json is somehow not well formed, or just plain wrong
     MissingRequired, /// For when the json doesn't have a member that is needed, like "users"
