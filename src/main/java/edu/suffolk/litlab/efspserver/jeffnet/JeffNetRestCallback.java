@@ -84,7 +84,7 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
       if (success) {
         return Response.status(204).build();
       } else {
-        log.error("Grabed info from db: couldn't send message");
+        log.error("Grabed info from db, but couldn't send message");
         return Response.status(500).build();
       }
     } catch (SQLException e) {
