@@ -406,6 +406,7 @@ public class CodeUpdater {
           });
   }
 
+  /** Run with `mvn exec:java@CodeUpdater -Dexec.args="refresh". */
   public static void main(String[] args) throws Exception {
     if (args.length < 1) {
       log.error("Need to pass in a subprogram: downloadIndiv, or refresh");
