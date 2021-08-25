@@ -43,16 +43,16 @@ public class FilingInformationDocassembleJacksonDeserializer
     this.classCollector = collector;
   }
 
-  private Result<List<Person>, FilingError> collectPeople(JsonNode topObj, 
-      String potentialMember, InfoCollector collector) {
+  private List<Person> collectPeople(JsonNode topObj, 
+      String potentialMember, InfoCollector collector) throws FilingError {
     if (!topObj.has(potentialMember)) {
-      return Result.ok(List.of());  // Just an empty list: we don't know if it's required
+      return List.of();  // Just an empty list: we don't know if it's required
     }
     if (!(topObj.get(potentialMember).isObject()
           && topObj.get(potentialMember).has("elements")
           && topObj.get(potentialMember).get("elements").isArray())) {
-      return Result.err(FilingError.malformedInterview(
-          potentialMember + " isn't an List with an elements array")); 
+      throw FilingError.malformedInterview(
+          potentialMember + " isn't an List with an elements array"); 
     }
     List<Person> people = new ArrayList<Person>();
     JsonNode peopleElements = topObj.get(potentialMember).get("elements");
@@ -62,31 +62,27 @@ public class FilingInformationDocassembleJacksonDeserializer
       if (per.isErr()) {
         FilingError ex = per.unwrapErrOrElseThrow();
         log.warn("Person exception: " + ex);
-        return Result.err(ex);
+        throw ex;
       }
       people.add(per.unwrapOrElseThrow());
     }
-    return Result.ok(people);
+    return people;
   }
 
-  public Result<FilingInformation, FilingError> fromNode(JsonNode node, InfoCollector collector) {
+  public Result<FilingInformation, FilingError> fromNode(JsonNode node, InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
       FilingError err = FilingError.malformedInterview("interview isn't a json object"); 
       collector.error(err);
       return Result.err(err);
     }
-    Result<List<Person>, FilingError> maybeUsers = collectPeople(node, "users", collector);
-    if (maybeUsers.isErr()) {
-      return maybeUsers.mapOk((per) -> null);
-    }
-    List<Person> users = maybeUsers.unwrapOrElseThrow();
+    List<Person> users = collectPeople(node, "users", collector);
     if (users.isEmpty()) {
       // TODO(brycew): does this need to be split up into every single thing that could be in users?
       InterviewVariable varExpected = new InterviewVariable("users", 
           "the side of the matter that current person answering this interview is on",
           "ALPeopleList", List.of());
       collector.addRequired(varExpected);
-      return Result.err(FilingError.missingRequired(varExpected));
+      throw FilingError.missingRequired(varExpected);
     }
 
     if (node.has("user_preferred_language") 
@@ -100,17 +96,10 @@ public class FilingInformationDocassembleJacksonDeserializer
       InterviewVariable var = new InterviewVariable(
           "users[0].email", "Email is required for at least one user", "text", List.of());
       collector.addRequired(var);
-      if (collector.finished()) {
-        return Result.err(FilingError.missingRequired(var));
-      }
     }
       
     log.debug("Got users");
-    Result<List<Person>, FilingError> maybeOthers = collectPeople(node, "other_parties", collector);
-    if (maybeOthers.isErr()) {
-      return maybeOthers.mapOk((ppl) -> null);
-    }
-    final List<Person> otherParties = maybeOthers.unwrapOrElseThrow(); 
+    final List<Person> otherParties = collectPeople(node, "other_parties", collector);
     if (otherParties.isEmpty()) {
       InterviewVariable othersExpected = new InterviewVariable("other_parties", 
           "the side of the matter that current person answering this interview is on",
@@ -131,9 +120,6 @@ public class FilingInformationDocassembleJacksonDeserializer
       InterviewVariable var = collector.requestVar("user_started_case", 
           "Whether or the user is the plantiff or petitioner", "boolean", List.of("true", "false"));
       collector.addRequired(var);
-      if (collector.finished()) {
-        return Result.err(FilingError.missingRequired(var));
-      }
     }
     // TODO(brycew): plaintiff and petitioners are both defined. 
     // Typical role might have the difference, take which is available
@@ -207,9 +193,6 @@ public class FilingInformationDocassembleJacksonDeserializer
     } else {
       InterviewVariable var = collector.requestVar(category_var_name, "", "text"); 
       collector.addRequired(var);
-      if (collector.finished()) {
-        return Result.err(FilingError.missingRequired(var));
-      }
     }
 
     String type_var_name = "tyler_case_type";
@@ -222,9 +205,6 @@ public class FilingInformationDocassembleJacksonDeserializer
     } else { 
       InterviewVariable var = collector.requestVar(type_var_name,  "", "text");
       collector.addRequired(var);
-      if (collector.finished()) {
-        return Result.err(FilingError.missingRequired(var));
-      }
     }
 
     String subtype_var_name = "tyler_case_subtype";
@@ -251,9 +231,6 @@ public class FilingInformationDocassembleJacksonDeserializer
         "The full court bundle", "ALDocumentBundle");
     if (!node.has("al_court_bundle")) {
       collector.addRequired(bundleVar);
-      if (collector.finished()) {
-        return Result.err(FilingError.missingRequired(bundleVar));
-      }
     }
     if (!node.get("al_court_bundle").isObject() || !node.get("al_court_bundle").has("elements")
         || !node.get("al_court_bundle").get("elements").isArray()) {
@@ -263,17 +240,11 @@ public class FilingInformationDocassembleJacksonDeserializer
     JsonNode bundle = node.get("al_court_bundle");
     if (bundle == null) {
       collector.addRequired(bundleVar);
-      if (collector.finished()) {
-        return Result.err(FilingError.missingRequired(bundleVar));
-      }
     }
 
     JsonNode elems = bundle.get("elements");
     if (elems == null || elems.isEmpty()) {
       collector.addRequired(bundleVar);
-      if (collector.finished()) {
-        return Result.err(FilingError.missingRequired(bundleVar));
-      }
     }
 
     for (int i = 0; i < elems.size(); i++) {
@@ -314,11 +285,15 @@ public class FilingInformationDocassembleJacksonDeserializer
   public FilingInformation deserialize(JsonParser p, DeserializationContext ctxt)
       throws IOException, JsonProcessingException {
     JsonNode node = p.readValueAsTree();
-    Result<FilingInformation, FilingError> info = fromNode(node, this.classCollector);
-    if (info.isErr()) {
-      throw new JsonExtractException(p, info.unwrapErrOrElseThrow());
+    try {
+      Result<FilingInformation, FilingError> info = fromNode(node, this.classCollector);
+      if (info.isErr()) {
+        throw new JsonExtractException(p, info.unwrapErrOrElseThrow()); 
+      }
+      return info.unwrapOrElseThrow();
+    } catch (FilingError err) {
+      throw new JsonExtractException(p, err); 
     }
-    return info.unwrapOrElseThrow();
   }
 
 }

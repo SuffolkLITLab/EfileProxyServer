@@ -52,7 +52,7 @@ working in. For us it's mostly `illinois-stage`.
       That's what `edu.suffolk.litlab.efspserver.XsdDownloader` does! It should be setup through 
       the pom file's exec-maven-plugin, and just runs the `main` function. The command is below:
       ```bash
-      mvn exec:java -Dexec.args="https://example.tylerhost.net/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf"
+      mvn exec:java@XsdDownloader -Dexec.args="https://example.tylerhost.net/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf"
       ```
       
       This will download all of the ECF files, giving them a single specific prefix. You'll need to move them
@@ -73,7 +73,7 @@ working in. For us it's mostly `illinois-stage`.
       The last one is v5/CourtSchedulingMDE.wsdl. It _doesn't_ have the same XSDs as the rest, as it's based on 
       ECF v5, not ECF v4. So just run 
       ```
-      mvn exec:java -Dexec.args="https://example.tylerhost.net/EFM/Schema/v5/CourtScheduling.wsdl ecf-v5"
+      mvn exec:java@XsdDownloader -Dexec.args="https://example.tylerhost.net/EFM/Schema/v5/CourtScheduling.wsdl ecf-v5"
       ```
       and move all the files to a different resource directory, this time `src/main/resources/wsdl/v5`.
       Don't forget to rename `ecf-v5` to `CourtSchedulingMDE.wsdl`

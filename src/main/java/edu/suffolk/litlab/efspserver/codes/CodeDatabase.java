@@ -392,6 +392,29 @@ public class CodeDatabase extends DatabaseInterface {
     }
   }
   
+  public List<NameAndCode> getMotionTypes(String courtLocationId, String filingCodeId) {
+    if (conn == null) {
+      log.error("SQL connection not created in MotionTypes yet");
+      return List.of();
+    }
+    
+    try {
+      String query = CodeTableConstants.getMotionTypes();
+      PreparedStatement st = conn.prepareStatement(query);
+      st.setString(1, courtLocationId);
+      st.setString(2, filingCodeId);
+      ResultSet rs = st.executeQuery();
+      List<NameAndCode> motions = new ArrayList<NameAndCode>();
+      while (rs.next()) {
+        motions.add(new NameAndCode(rs.getString(1), rs.getString(2)));
+      }
+      return motions;
+    } catch (SQLException ex) {
+      log.error("SQLException: " + ex.toString());
+      return List.of();
+    }
+  }
+  
   public List<FilingComponent> getFilingComponents(String courtLocationId, String filingCodeId) {
     if (conn == null) {
       log.error("SQL connection not created in FilingComponents yet");
@@ -418,7 +441,7 @@ public class CodeDatabase extends DatabaseInterface {
   
   public List<String> getStateCodes(String country) {
     if (conn == null) {
-      log.error("Can't get state codes?");
+      log.error("Connection not started in state codes?");
       return List.of();
     }
     
@@ -440,6 +463,29 @@ public class CodeDatabase extends DatabaseInterface {
       return List.of();
     }
   }
+
+  public List<FileType> getAllowedFileTypes(String courtId) {
+    if (conn == null) {
+      log.error("connection no started in AllowedFileTypes");
+      return List.of();
+    }
+    
+    String query = FileType.fileTypeQueries();
+    try {
+      PreparedStatement st = conn.prepareStatement(query);
+      st.setString(1, courtId);
+      ResultSet rs = st.executeQuery();
+      List<FileType> types = new ArrayList<FileType>();
+      while (rs.next()) {
+        types.add(new FileType(rs));
+      }
+      return types;
+    } catch (SQLException ex) {
+      log.error("SQL exception!: " + ex);
+      return List.of();
+    }
+  }
+
 
   public List<String> getLanguages(String courtLocationId) {
     if (conn == null) {
@@ -545,17 +591,26 @@ public class CodeDatabase extends DatabaseInterface {
    */
   public List<String> getAllLocations() throws SQLException {
     if (conn == null) {
-      throw new SQLException();
+      log.error("SQL connection is null during getAllLocations");
+      return List.of();
     }
-    Statement st = conn.createStatement();
-    String query = "SELECT DISTINCT code FROM location ORDER BY code";
-    ResultSet rs = st.executeQuery(query);
-    List<String> locs = new ArrayList<String>();
-    while (rs.next()) {
-      locs.add(rs.getString(1));
-    }
+    try {
+      Statement st = conn.createStatement();
+      String query = "SELECT DISTINCT code FROM location ORDER BY code";
+      ResultSet rs = st.executeQuery(query);
+      List<String> locs = new ArrayList<String>();
+      while (rs.next()) {
+        locs.add(rs.getString(1));
+      }
 
-    return locs;
+      return locs;
+    } catch (SQLException ex) {
+      log.error("SQLException: " + ex);
+      if (!conn.getAutoCommit()) {
+        conn.commit();
+      }
+      return List.of();
+    }
   }
 
   public List<Disclaimer> getDisclaimerRequirements(String courtLocation) throws SQLException {

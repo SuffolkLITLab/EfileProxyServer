@@ -30,7 +30,9 @@ import org.xml.sax.SAXException;
  * Downloaded the FilingReviewMDE wsdl, necessary for it to run faster. Slightly modified to handle
  * relative paths on the server.
  * Runs like:
- * mvn exec:java -Dexec.args="https://illinois-stage.tylerhost.net/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf"
+ * ```
+ * mvn exec:java@XsdDownloader -Dexec.args="https://illinois-stage.tylerhost.net/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf"
+ * ```
  * Then move all of the ecf files into src/main/resources/wsdl/, and point the FilingReviewMDE 
  * URL to it.
  * <a href="https://github.com/pablod/xsd-downloader">Github here</a>

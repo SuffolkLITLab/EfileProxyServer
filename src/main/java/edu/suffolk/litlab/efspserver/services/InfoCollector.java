@@ -51,16 +51,22 @@ public abstract class InfoCollector {
     return true;
   }
   
-  public void addRequired(InterviewVariable var) {
+  public void addRequired(InterviewVariable var) throws FilingError {
     requiredVars.add(var);
+    if (finished()) {
+      throw FilingError.missingRequired(var);
+    }
   }
 
   public void addOptional(InterviewVariable var) {
     optionalVars.add(var);
   }
   
-  public void addWrong(InterviewVariable var) {
+  public void addWrong(InterviewVariable var) throws FilingError{
     wrongVars.add(var);
+    if (finished()) {
+      throw FilingError.wrongValue(var);
+    }
   }
 
   public void pushAttributeStack(String variableName) {

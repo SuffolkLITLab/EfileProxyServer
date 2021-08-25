@@ -1,21 +1,13 @@
 package edu.suffolk.litlab.efspserver.docassemble;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.hubspot.algebra.Result;
 
 import edu.suffolk.litlab.efspserver.Address;
 import edu.suffolk.litlab.efspserver.services.FilingError;
-import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
-import edu.suffolk.litlab.efspserver.services.JsonExtractException;
 import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,22 +15,19 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AddressDocassembleJacksonDeserializer extends StdDeserializer<Address> {
+public class AddressDocassembleJacksonDeserializer {
   private static Logger log = LoggerFactory.getLogger(AddressDocassembleJacksonDeserializer.class); 
 
-  private static final long serialVersionUID = 1L;
+  protected AddressDocassembleJacksonDeserializer() {} 
 
-  protected AddressDocassembleJacksonDeserializer(Class<Address> t) {
-    super(t);
-  }
-
-  /** Parses an address from the DA Json Object. Used by Deserializers that include addresses. */
-  public Result<Address, FilingError> fromNode(JsonNode node, InfoCollector collector) {
+  /** Parses an address from the DA Json Object. Used by Deserializers that include addresses. 
+   * @throws FilingError */
+  public Address fromNode(JsonNode node, InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
       FilingError err = FilingError.malformedInterview(
           "Refusing to parse address that isn't a Json Object: " + node.toPrettyString());
       collector.error(err);
-      return Result.err(err);
+      throw err;
     }
 
     for (String member : List.of("address", "unit", "city", "state", "zip")) {
@@ -46,16 +35,13 @@ public class AddressDocassembleJacksonDeserializer extends StdDeserializer<Addre
         InterviewVariable memberVar = new InterviewVariable(
             member, "part of the address", "text", List.of());
         collector.addRequired(memberVar);
-        if (collector.finished()) {
-          return Result.err(FilingError.missingRequired(memberVar));
-        }
       }
       if (!node.get(member).isTextual()) {
         FilingError err = FilingError.malformedInterview(
             "Refusing to parse an address where the " + member + " isn't text: " 
             + node.toPrettyString());
         collector.error(err);
-        return Result.err(err);
+        throw err;
       }
     }
     String address = node.get("address").asText("");
@@ -79,21 +65,9 @@ public class AddressDocassembleJacksonDeserializer extends StdDeserializer<Addre
       InterviewVariable countryOptions = collector.requestVar("country", 
           "The 2 letter country code", "choices", countries);
       FilingError err = FilingError.wrongValue(countryOptions); 
-      return Result.err(err);
+      throw err;
     }
     Address addr = new Address(address, unit, city, state, zip, countryCode);
-    return Result.ok(addr); 
-  }
-
-  @Override
-  public Address deserialize(JsonParser p, DeserializationContext ctxt)
-      throws IOException, JsonProcessingException {
-    JsonNode node = p.readValueAsTree();
-    InfoCollector collector = new FailFastCollector();
-    Result<Address, FilingError> address = fromNode(node, collector);
-    if (address.isErr()) {
-      throw new JsonExtractException(p, address.unwrapErrOrElseThrow());
-    }
-    return address.unwrapOrElseThrow();
+    return addr; 
   }
 }

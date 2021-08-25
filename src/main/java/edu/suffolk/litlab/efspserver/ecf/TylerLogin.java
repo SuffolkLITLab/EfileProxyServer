@@ -54,7 +54,8 @@ public class TylerLogin implements LoginInterface {
     IEfmUserService userPort = makeUserPort(userServiceFactory);
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
     if (!authRes.getError().getErrorCode().equals("0")) {
-      log.warn("Got Tyler error when authing: " + authRes.toString());
+      log.warn("Got Tyler error when authing: " + authRes.getError().getErrorCode() + ", "
+          + authRes.getError().getErrorText());
       return Optional.empty(); 
     } else {
       return Optional.of(Map.of(

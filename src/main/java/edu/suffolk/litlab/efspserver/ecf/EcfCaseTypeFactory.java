@@ -59,6 +59,7 @@ public class EcfCaseTypeFactory {
    * @param filingIds The UIDs of all of the filings
    * @param paymentId The UID of the tyler payment account, from GetPaymentAccountList
    * @return
+   * @throws FilingError 
    */
   public Result<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>, FilingError> 
       makeCaseTypeFromTylerCategory(
@@ -78,32 +79,29 @@ public class EcfCaseTypeFactory {
       JsonNode miscInfo, // TODO(brycew): if we get XML Answer files, this isn't generic
       EcfCourtSpecificSerializer serializer,
       InfoCollector collector
-  ) throws SQLException {
+  ) throws SQLException, FilingError {
     CaseCategory caseCategory = initialCaseCategory; 
     String caseCategoryCode = caseCategory.code.get();
     JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug = 
         makeNiemCaseAug(courtLocationId);
-    Result<JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType>, FilingError> tylerAug = 
+    JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug = 
               makeTylerCaseAug(courtLocationId, caseCategory, 
                   caseType, caseSubType, plaintiffs, plaintiffPartyType, defendants, 
                   defendantPartyType, 
                   filingIds,
                   paymentId, queryType, miscInfo, serializer, collector);
-    if (tylerAug.isErr()) {
-      return tylerAug.mapOk(o -> null);
-    }
     // TODO(brycew): handle ensuring the passed in values work with the court codes
     if (caseCategory.ecfcasetype.equals("CivilCase")) {
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase = 
           makeCivilCaseType(
-              caseAug, tylerAug.unwrapOrElseThrow(), filing,
+              caseAug, tylerAug, filing,
               // TODO(brycew) from the gson
               new BigDecimal(500.0));
       myCase.getValue().setCaseCategoryText(XmlHelper.convertText(caseCategoryCode)); 
       return Result.ok(myCase);
     } else if (caseCategory.ecfcasetype.equals("DomesticCase")) {
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase = 
-          makeDomesticCaseType(caseAug, tylerAug.unwrapOrElseThrow(), miscInfo);
+          makeDomesticCaseType(caseAug, tylerAug, miscInfo);
       myCase.getValue().setCaseCategoryText(XmlHelper.convertText(caseCategoryCode)); 
       return Result.ok(myCase);
     } else {
@@ -121,7 +119,7 @@ public class EcfCaseTypeFactory {
     return jof.createCaseAugmentation(caseAug);
   }
   
-  private Result<JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType>, FilingError> 
+  private JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> 
       makeTylerCaseAug(
           String courtLocationId,
           CaseCategory caseCategory,
@@ -136,7 +134,7 @@ public class EcfCaseTypeFactory {
           JsonNode miscInfo,
           EcfCourtSpecificSerializer serializer,
           InfoCollector collector
-  ) throws SQLException {
+  ) throws SQLException, FilingError {
     // NOTE: in the code tables, only a handful of outliers have more than 1 code for the same category per location
     // SELECT x.code_count, x.name, x.location from 
     //    (select COUNT(code) as code_count, name, location from casecategory group by name, location) 
@@ -161,15 +159,20 @@ public class EcfCaseTypeFactory {
     }
 
     
-    List<NameAndCode> subTypes = cd.getCaseSubtypesFor(courtLocationId, caseType.code);
-    Optional<NameAndCode> maybeSubtype = subTypes.stream()
-        .filter(type -> type.getName().equals(caseSubtype))
-        .findFirst();
+    DataFieldRow subTypeConfig = cd.getDataField(courtLocationId, "CaseInformationCaseSubType");
+    if (subTypeConfig.isvisible) {
+      List<NameAndCode> subTypes = cd.getCaseSubtypesFor(courtLocationId, caseType.code);
+      Optional<NameAndCode> maybeSubtype = subTypes.stream()
+          .filter(type -> type.getName().equals(caseSubtype))
+          .findFirst();
     
-    if (maybeSubtype.isPresent()) {
-      ecfAug.setCaseSubTypeText(XmlHelper.convertText(maybeSubtype.get().getCode()));
-    } else {
-      // TODO(brycew): it's empty right now! Not sure how to handle.
+      if (maybeSubtype.isPresent()) {
+        ecfAug.setCaseSubTypeText(XmlHelper.convertText(maybeSubtype.get().getCode()));
+      } else if (subTypeConfig.isrequired) {
+        InterviewVariable subTypeVar = collector.requestVar("tyler_case_subtype", "Sub type of the case", "choices", 
+            subTypes.stream().map(nac -> nac.getName()).collect(Collectors.toList()));
+        collector.addWrong(subTypeVar);
+      }
     }
     
     List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocationId, caseType.code); 
@@ -178,31 +181,21 @@ public class EcfCaseTypeFactory {
       FilingError err = FilingError.serverError("DEV ERROR: there are more than 2 required parties ("
           + requiredTypes + "), but only 2 are supported");
       collector.error(err);
-      return Result.err(err);
+      throw err;
     }
     List<String> partyTypeNames = requiredTypes.stream().map(p -> p.name).collect(Collectors.toList());
     if (!partyTypeNames.contains(plantiffPartyType)) {
       InterviewVariable plantiffVar = collector.requestVar("plantiff_party_type", "Legal role of the plantiff", "choices", partyTypeNames);
       collector.addWrong(plantiffVar);
-      if (collector.finished()) {
-        return Result.err(FilingError.wrongValue(plantiffVar));
-      }
     }
 
     if (!partyTypeNames.contains(defendantPartyType)) {
       InterviewVariable defendantVar = collector.requestVar("defendant_party_type", "Legal role of the defendant", "choices", partyTypeNames);
       collector.addWrong(defendantVar);
-      if (collector.finished()) {
-        return Result.err(FilingError.wrongValue(defendantVar));
-      }
     }
     
     for (Person plantiff : plantiffs) {
-      Result<CaseParticipantType, FilingError> partip = serializer.serializeEcfCaseParticipant(plantiff, collector); 
-      if (partip.isErr()) {
-        return partip.mapOk(o -> null);
-      }
-      CaseParticipantType cp = partip.unwrapOrElseThrow();
+      CaseParticipantType cp = serializer.serializeEcfCaseParticipant(plantiff, collector); 
       TextType tt = of.createTextType();
       partyTypes.stream()
           .filter(pt -> pt.name.equalsIgnoreCase(plantiffPartyType))
@@ -213,11 +206,7 @@ public class EcfCaseTypeFactory {
     }
 
     for (Person defendant : defendants) {
-      Result<CaseParticipantType, FilingError> partip = serializer.serializeEcfCaseParticipant(defendant, collector);
-      if (partip.isErr()) {
-        return partip.mapOk(o -> null);
-      }
-      CaseParticipantType cp = partip.unwrapOrElseThrow();
+      CaseParticipantType cp = serializer.serializeEcfCaseParticipant(defendant, collector);
       TextType tt = of.createTextType();
       partyTypes.stream()
           .filter((pt) -> pt.name.equalsIgnoreCase(defendantPartyType))
@@ -231,25 +220,21 @@ public class EcfCaseTypeFactory {
     ecfAug.setAttachServiceContactIndicator(falseVal);
     
     boolean initial = caseType.initial;
-    Result<Optional<ProcedureRemedyType>, FilingError> res = makeProcedureRemedyType(initial, 
+    Optional<ProcedureRemedyType> res = makeProcedureRemedyType(initial, 
         caseCategory, courtLocationId, miscInfo, collector);
-    if (res.isErr()) {
-      return res.mapOk(ignoredOk-> null);
-    }
 
-    Result<Optional<ProcedureRemedyType>, FilingError> resPlus = addDamageAmountType(
-        res.unwrapOrElseThrow(), initial, caseCategory, courtLocationId, miscInfo, collector);
-    if (resPlus.isErr()) {
-      return res.mapOk(ignoredOk-> null);
+    Optional<ProcedureRemedyType> resPlus = addDamageAmountType(
+        res, initial, caseCategory, courtLocationId, miscInfo, collector);
+    if (resPlus.isPresent()) {
+      ecfAug.setProcedureRemedy(resPlus.get());
     }
-    resPlus.ifOk(procRem -> {
-      if (procRem.isPresent()) {
-        ecfAug.setProcedureRemedy(procRem.get());
-      }
-    });
 
     // Filing
-    // TODO(brycew): FilerType is an empty table, so can't tell what it might be
+    DataFieldRow filertype = cd.getDataField(courtLocationId, "FilingFilerType");
+    if (filertype.isrequired) {
+      // TODO(brycew): FilerType is an empty table, so can't tell what it might be
+
+    }
     // TODO(brycew): FilingComponent
     // TODO(brycew): optional service
     
@@ -276,13 +261,13 @@ public class EcfCaseTypeFactory {
     
     log.info("Full ecfAug: " + ecfAug);
 
-    return Result.ok(tylerObjFac.createCaseAugmentation(ecfAug));
+    return tylerObjFac.createCaseAugmentation(ecfAug);
   }
   
-  private Result<Optional<ProcedureRemedyType>, FilingError> makeProcedureRemedyType(
+  private Optional<ProcedureRemedyType> makeProcedureRemedyType(
       boolean initial, 
       CaseCategory cat,
-      String courtLocationId, JsonNode miscInfo, InfoCollector collector) throws SQLException {
+      String courtLocationId, JsonNode miscInfo, InfoCollector collector) throws SQLException, FilingError {
     List<NameAndCode> procedureRemedies = cd.getProcedureOrRemedy(courtLocationId, cat.getCode());
     DataFieldRow procedureView = DataFieldRow.MissingDataField(cat.name);
     String procBehavior = (initial) ? cat.procedureremedyinitial : cat.procedureremedysubsequent;
@@ -308,32 +293,26 @@ public class EcfCaseTypeFactory {
           for (NameAndCode nac : maybeProcedures) { 
             type.getRemedyCode().add(XmlHelper.convertText(nac.getCode())); 
           }
-          return Result.ok(Optional.of(type));
+          return Optional.of(type);
         }
         collector.addWrong(var);
-        if (collector.finished()) {
-          return Result.err(FilingError.wrongValue(var));
-        } 
       } else {
         log.info("Dropping procedure_remedy " + proRem.asText() + ", since isvisible is false for " + courtLocationId);
       }
     } else {
       if (procedureView.isrequired) {
         collector.addRequired(var);
-        if (collector.finished()) {
-          return Result.err(FilingError.wrongValue(var));
-        } 
       } else {
         collector.addOptional(var);
       }
     }
-    return Result.ok(Optional.empty());
+    return Optional.empty();
   }
   
-  private Result<Optional<ProcedureRemedyType>, FilingError> addDamageAmountType(
+  private Optional<ProcedureRemedyType> addDamageAmountType(
       Optional<ProcedureRemedyType> existingType,
       boolean initial, CaseCategory cat,
-      String courtLocationId, JsonNode miscInfo, InfoCollector collector) throws SQLException {
+      String courtLocationId, JsonNode miscInfo, InfoCollector collector) throws SQLException, FilingError {
     List<NameAndCode> damageAmounts = cd.getDamageAmount(courtLocationId, cat.getCode());
     // TODO(brycew): what the heck to do with the DataFieldConfig code = "DamageAmount"? No examples
     DataFieldRow damageConfig = DataFieldRow.MissingDataField(cat.name);
@@ -358,12 +337,9 @@ public class EcfCaseTypeFactory {
         if (maybeDmg.isPresent()) {
           ProcedureRemedyType type = existingType.orElse(new ProcedureRemedyType()); 
           type.setDamageAmountCode(XmlHelper.convertText(maybeDmg.get().getCode()));
-          return Result.ok(Optional.of(type));
+          return Optional.of(type);
         } else {
           collector.addWrong(var);
-           if (collector.finished()) {
-            return Result.err(FilingError.wrongValue(var));
-          } 
         }
       } else {
         log.info("Dropping damage_amount " + jsonDmg.asText() + ", since isvisible is false for " + courtLocationId);
@@ -371,14 +347,11 @@ public class EcfCaseTypeFactory {
     } else {
       if (damageConfig.isrequired) {
         collector.addRequired(var);
-        if (collector.finished()) {
-          return Result.err(FilingError.wrongValue(var));
-        } 
       } else {
         collector.addOptional(var);
       }
     }
-    return Result.ok(existingType); 
+    return existingType; 
   }
   
   /**

@@ -29,8 +29,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -55,10 +55,8 @@ public class CodeUpdater {
   public static final Map<String, String> ncToTableName = new HashMap<String, String>();
 
   static {
-    // TODO(brycew): there's little more info on these mappings and how they combine
-    // besides:
-    // The name of an ECF element to be substituted by a court-specific codelist or
-    // extension
+    // TODO(brycew): there's little more info on these mappings and how they combine besides:
+    // The name of an ECF element to be substituted by a court-specific codelist or extension
     // Is this actually an XPath? Should figure it out
     ncToTableName.put("nc:CaseCategoryText", "casecategory");
     ncToTableName.put("tyler:CaseTypeText", "casetype");
@@ -112,8 +110,8 @@ public class CodeUpdater {
     ncToTableName.put("tyler:AnswerCode", "answer");
   }
   
-  private String pathToKeystore;
-  private String x509Password;
+  private final String pathToKeystore;
+  private final String x509Password;
 
   public CodeUpdater(String pathToKeystore, String x509Password) {
     this.pathToKeystore = pathToKeystore;
@@ -142,26 +140,17 @@ public class CodeUpdater {
     Instant startTable = Instant.now(Clock.systemUTC());
     try (InputStream urlStream = getHtml(url, signedTime)) {
       // Write out the zip file
-      String zipName = tableName + "_" + location + ".zip";
-      FileOutputStream fileOut = new FileOutputStream(zipName);
-      urlStream.transferTo(fileOut);
       downloads = downloads.plus(Duration.between(startTable, Instant.now(Clock.systemUTC())));
 
-      ZipFile zip = new ZipFile(zipName);
-      ZipEntry entry = zip.entries().nextElement();
+      // TODO(brycew): test and time this version
+      ZipInputStream zip = new ZipInputStream(urlStream); 
+      zip.getNextEntry(); 
 
       Instant updateTableLoc = Instant.now(Clock.systemUTC());
-      boolean success = process.apply(zip.getInputStream(entry));
+      boolean success = process.apply(zip);
       updates = updates.plus(Duration.between(updateTableLoc, Instant.now(Clock.systemUTC())));
       zip.close();
-      if (success) {
-        // Delete the zip file after processing: no need to have it hanging around.
-        File f = new File(zipName);
-        f.delete();
-        return true;
-      } else {
-        return false;
-      }
+      return success; 
     } catch (IOException ex) {
       // Some system codes (everything but "country", "state", "filingstatus", "datafieldconfig",
       // and "servicetype") are expected to 500. Not really sure why they give us bad URLs.
@@ -344,12 +333,13 @@ public class CodeUpdater {
     cd.commit();
   }
   
-  public static void executeCommand(String command, String codesSite, CodeDatabase cd) throws JAXBException, 
+  public static void executeCommand(String command, String codesSite, CodeDatabase cd, 
+      String x509Password) throws JAXBException, 
       SQLException, IOException, XMLStreamException {
-    SoapX509CallbackHandler.setX509Password(System.getenv("X509_PASSWORD"));
+    SoapX509CallbackHandler.setX509Password(x509Password);
     AuthenticateRequestType authReq = new AuthenticateRequestType();
-    authReq.setEmail("bwilley@suffolk.edu");
-    authReq.setPassword(System.getenv("BRYCE_USER_PASSWORD"));
+    authReq.setEmail(System.getenv("TYLER_USER_EMAIL")); 
+    authReq.setPassword(System.getenv("TYLER_USER_PASSWORD"));
     URL userWsdlUrl = EfmUserService.WSDL_LOCATION;
     IEfmUserService userPort = EfmClient.makeUserService(userWsdlUrl);
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
@@ -365,7 +355,7 @@ public class CodeUpdater {
     }
     cd.setAutocommit(false);
     
-    CodeUpdater cu = new CodeUpdater(System.getenv("PATH_TO_KEYSTORE"), System.getenv("X509_PASSWORD"));
+    CodeUpdater cu = new CodeUpdater(System.getenv("PATH_TO_KEYSTORE"), x509Password);
     if (command.equalsIgnoreCase("downloadall")) {
       cu.downloadAll(codesSite, filingPort, cd);
     } else if (command.equals("refresh")) {
@@ -391,7 +381,7 @@ public class CodeUpdater {
     HeaderSigner hs = new HeaderSigner(path, pass);
     String location = args[2];
     String table = args[1];
-    cu.downloadAndProcessZip("https://illinois-stage.tylerhost.net/CodeService/codes/" + table + "/" + location, hs.signedCurrentTime().get(), 
+    cu.downloadAndProcessZip(System.getenv("TYLER_ENDPOINT") + "CodeService/codes/" + table + "/" + location, hs.signedCurrentTime().get(), 
           table, location, (in) -> {
             String newFile = location.replace(':', '_') + "_" + table + "_test.xml";
             try {
@@ -406,6 +396,7 @@ public class CodeUpdater {
           });
   }
 
+  /** Run with `mvn exec:java@CodeUpdater -Dexec.args="refresh". */
   public static void main(String[] args) throws Exception {
     if (args.length < 1) {
       log.error("Need to pass in a subprogram: downloadIndiv, or refresh");
@@ -414,7 +405,7 @@ public class CodeUpdater {
     if (args[0].equals("downloadIndiv")) {
       downloadIndiv(args);
     } else { 
-      executeCommand(args[0], "https://illinois-stage.tylerhost.net/", null);
+      executeCommand(args[0], System.getenv("TYLER_ENDPOINT"), null, System.getenv("X509_PASSWORD"));
     }
   }
 }

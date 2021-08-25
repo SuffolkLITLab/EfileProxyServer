@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.hubspot.algebra.Result;
 
 import edu.suffolk.litlab.efspserver.Address;
 import edu.suffolk.litlab.efspserver.ContactInformation;
@@ -23,8 +22,10 @@ import edu.suffolk.litlab.efspserver.codes.CaseType;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.codes.DocumentTypeTableRow;
+import edu.suffolk.litlab.efspserver.codes.FileType;
 import edu.suffolk.litlab.efspserver.codes.FilingCode;
 import edu.suffolk.litlab.efspserver.codes.FilingComponent;
+import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
@@ -75,31 +76,29 @@ public class EcfCourtSpecificSerializer {
     this.courtId = courtId;
   }
   
-  /** Needs to have participant role set. */
-  public Result<CaseParticipantType, FilingError> serializeEcfCaseParticipant(Person per, InfoCollector collector) {
+  /** Needs to have participant role set. 
+   * @throws FilingError */
+  public CaseParticipantType serializeEcfCaseParticipant(Person per, InfoCollector collector) throws FilingError {
     AugmentationType aug;
     if (per.isOrg()) {
       aug = ecfOf.createOrganizationAugmentationType();
     } else {
       aug = ecfOf.createPersonAugmentationType();
     }
-    Result<ContactInformationType, FilingError> cit = serializeEcfContactInformation(per.getContactInfo(), collector);
-    if (cit.isErr()) {
-      return cit.mapOk((o) -> null);
-    }
+    ContactInformationType cit = serializeEcfContactInformation(per.getContactInfo(), collector);
     if (per.isOrg()) {
-      ((OrganizationAugmentationType) aug).getContactInformation().add(cit.unwrapOrElseThrow());
+      ((OrganizationAugmentationType) aug).getContactInformation().add(cit);
       OrganizationType ot = ecfOf.createOrganizationType();
       ot.setOrganizationName(XmlHelper.convertText(per.getName().getFullName()));
       ot.setId(per.getIdString());
       ot.getRest().add(ecfOf.createOrganizationAugmentation((OrganizationAugmentationType) aug));
       CaseParticipantType cpt = ecfOf.createCaseParticipantType();
       cpt.setEntityRepresentation(ecfOf.createEntityOrganization(ot));
-      return Result.ok(cpt);
+      return cpt;
     }
 
     // Else, it's a person: add other optional person stuff
-    ((PersonAugmentationType) aug).getContactInformation().add(cit.unwrapOrElseThrow());
+    ((PersonAugmentationType) aug).getContactInformation().add(cit);
 
     PersonType pt = ecfOf.createPersonType();
     pt.setId(per.getIdString()); 
@@ -118,12 +117,12 @@ public class EcfCourtSpecificSerializer {
       pt.setPersonSex(niemObjFac.createPersonSexCode(sct));
     });
 
-    per.getLanguage().ifPresent((lang) -> {
+    if (per.getLanguage().isPresent()) {
+      String lang = per.getLanguage().get();
       List<String> langs = cd.getLanguages(this.courtId);
       if (!langs.isEmpty() && !langs.contains(lang)) {
         log.info("Can't have language: " + lang);
         collector.addWrong(collector.requestVar("language", "The primary language of this person", "choice", langs));
-        return;
       }
       final gov.niem.niem.iso_639_3._2.ObjectFactory lctOf =
           new gov.niem.niem.iso_639_3._2.ObjectFactory();
@@ -132,10 +131,7 @@ public class EcfCourtSpecificSerializer {
       PersonLanguageType plt = niemObjFac.createPersonLanguageType();
       plt.getLanguage().add(niemObjFac.createLanguageCode(lct));
       pt.setPersonPrimaryLanguage(plt);
-    });
-    if (collector.finished()) {
-      return Result.err(FilingError.wrongValue(collector.getWrong().get(collector.getWrong().size() - 1)));
-    }
+    };
 
     per.getBirthdate().ifPresent((bd) -> {
       pt.setPersonBirthDate(XmlHelper.convertDate(bd));
@@ -143,35 +139,44 @@ public class EcfCourtSpecificSerializer {
 
     CaseParticipantType cpt = ecfOf.createCaseParticipantType();
     cpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
-    return Result.ok(cpt);
+    return cpt;
   }
   
-  public Result<ContactInformationType, FilingError> serializeEcfContactInformation(
-      ContactInformation contactInfo, InfoCollector collector) {
+  public ContactInformationType serializeEcfContactInformation(
+      ContactInformation contactInfo, InfoCollector collector) throws FilingError {
     ContactInformationType cit = niemObjFac.createContactInformationType();
     if (contactInfo.getAddress().isPresent()) {
       Address addr = contactInfo.getAddress().get();
-      Result<JAXBElement<AddressType>, FilingError> contactMeans = serializeNiemContactMeans(addr, collector);
-      if (contactMeans.isErr()) {
-        return contactMeans.mapOk((o) -> null);
-      }
-      cit.getContactMeans().add(contactMeans.unwrapOrElseThrow()); 
+      JAXBElement<AddressType> contactMeans = serializeNiemContactMeans(addr, collector);
+      cit.getContactMeans().add(contactMeans); 
     }
       
-    for (String phoneNumber : contactInfo.getPhoneNumbers()) {
-      TelephoneNumberType tnt = niemObjFac.createTelephoneNumberType();
-      FullTelephoneNumberType ftnt = niemObjFac.createFullTelephoneNumberType();
-      ftnt.setTelephoneNumberFullID(XmlHelper.convertString(phoneNumber));
-      tnt.setTelephoneNumberRepresentation(niemObjFac.createFullTelephoneNumber(ftnt));
-      cit.getContactMeans().add(niemObjFac.createContactTelephoneNumber(tnt));
+    DataFieldRow phoneRow = cd.getDataField(this.courtId, "PartyPhone");
+    if (phoneRow.isvisible) {
+      List<String> numbers = contactInfo.getPhoneNumbers();
+      InterviewVariable var = collector.requestVar("phone_number", "Phone number", "text");
+      if (phoneRow.isrequired && numbers.isEmpty()) {
+        collector.addRequired(var);
+      }
+      for (String phoneNumber : contactInfo.getPhoneNumbers()) {
+        if (!phoneRow.matchRegex(phoneNumber)) {
+          collector.addWrong(var);
+        }
+
+        TelephoneNumberType tnt = niemObjFac.createTelephoneNumberType();
+        FullTelephoneNumberType ftnt = niemObjFac.createFullTelephoneNumberType();
+        ftnt.setTelephoneNumberFullID(XmlHelper.convertString(phoneNumber));
+        tnt.setTelephoneNumberRepresentation(niemObjFac.createFullTelephoneNumber(ftnt));
+        cit.getContactMeans().add(niemObjFac.createContactTelephoneNumber(tnt));
+      }
     }
     contactInfo.getEmail().ifPresent((em) -> {
       cit.getContactMeans().add(niemObjFac.createContactEmailID(XmlHelper.convertString(em))); 
     });
-    return Result.ok(cit);
+    return cit;
   }
 
-  public Result<tyler.efm.services.schema.common.AddressType, FilingError> serializeTylerAddress(Address myAddr) {
+  public tyler.efm.services.schema.common.AddressType serializeTylerAddress(Address myAddr) throws FilingError {
     tyler.efm.services.schema.common.ObjectFactory efmObjFac = 
         new tyler.efm.services.schema.common.ObjectFactory();
     tyler.efm.services.schema.common.AddressType addr = efmObjFac.createAddressType();
@@ -181,19 +186,19 @@ public class EcfCourtSpecificSerializer {
     FailFastCollector collector = new FailFastCollector();
     Optional<CountryCodeType> cct = strToCountryCode(myAddr.getCountry(), collector);
     if (cct.isEmpty()) {
-      return Result.err(FilingError.serverError("Country Code is wrong"));
+      throw FilingError.serverError("Country Code is wrong");
     }
     addr.setState(myAddr.getState()); 
     addr.setZipCode(myAddr.getZip()); 
     addr.setCountry(myAddr.getCountry()); 
-    return Result.ok(addr);
+    return addr;
   }
   
   /** Returns the "ContactMeans" XML object from this address. Can be used in the 
    * ContactInformation element.
    */
-  public Result<JAXBElement<AddressType>, FilingError> serializeNiemContactMeans(Address address,
-      InfoCollector collector) {
+  public JAXBElement<AddressType> serializeNiemContactMeans(Address address,
+      InfoCollector collector) throws FilingError {
     StreetType st = niemObjFac.createStreetType();
     st.setStreetFullText(XmlHelper.convertText(address.getStreet() + " " + address.getApartment())); 
     StructuredAddressType sat = niemObjFac.createStructuredAddressType();
@@ -209,41 +214,39 @@ public class EcfCourtSpecificSerializer {
       InterviewVariable var = collector.requestVar("country", "County of the World, in an address", 
           "choices", countries);
       collector.addWrong(var);
-      if (collector.finished()) {
-        return Result.err(FilingError.wrongValue(var));
-      }
     }
     sat.setLocationCountry(niemObjFac.createLocationCountryFIPS104Code(cct.get()));
     if (!fillStateCode(address.getState(), cct.get(), sat)) {
       String countryString = cct.get().getValue().value();
       List<String> stateCodes = cd.getStateCodes(countryString); 
       InterviewVariable var = collector.requestVar("state", "State in a country", "choices", stateCodes);
-      collector.addWrong(var);
       if (stateCodes.isEmpty()) {
         FilingError err = FilingError.malformedInterview("There are no allowed states for " + countryString);
         collector.error(err);
-        return Result.err(err);
+        throw err;
       }
-      if (collector.finished()) {
-        return Result.err(FilingError.wrongValue(var));
-      }
+      collector.addWrong(var);
     }
     sat.setLocationPostalCode(XmlHelper.convertString(address.getZip())); 
     gov.niem.niem.niem_core._2.AddressType at = niemObjFac.createAddressType();
     at.setAddressRepresentation(niemObjFac.createStructuredAddress(sat));
-    return Result.ok(niemObjFac.createContactMailingAddress(at));
+    return niemObjFac.createContactMailingAddress(at);
   }
 
-  public Result<JAXBElement<DocumentType>, FilingError> filingDocToXml(FilingDoc doc, 
+  public JAXBElement<DocumentType> filingDocToXml(FilingDoc doc, 
           int sequenceNum, CaseCategory caseCategory, CaseType motionType, FilingCode filing, 
           List<FilingComponent> components,
-          JsonNode miscInfo, InfoCollector collector) throws IOException {
+          JsonNode miscInfo, InfoCollector collector) throws IOException, FilingError {
     tyler.ecf.extensions.common.ObjectFactory tylerObjFac = 
         new tyler.ecf.extensions.common.ObjectFactory();
     gov.niem.niem.niem_core._2.ObjectFactory niemObjFac = 
         new gov.niem.niem.niem_core._2.ObjectFactory();
     DocumentType docType = tylerObjFac.createDocumentType();
     docType.setDocumentDescriptionText(XmlHelper.convertText(doc.getDescription()));
+    
+    List<FileType> allowedFileTypes = cd.getAllowedFileTypes(this.courtId);
+    List<FileType> correctExtension = allowedFileTypes.stream().filter(t -> t.matchesFile(doc.getFileName())).collect(Collectors.toList());
+    // TODO(brycew): finish extension
 
     docType.setDocumentFileControlID(XmlHelper.convertString(doc.getDocumentFileControlId())); 
     doc.getDueDate().ifPresent((date) -> {
@@ -274,7 +277,13 @@ public class EcfCourtSpecificSerializer {
     String prelim = doc.getPreliminaryCopies().stream().reduce("", (base, str) -> base + "," + str);
     docType.setPreliminaryCopiesText(XmlHelper.convertText(prelim));
     docType.setFilingCommentsText(XmlHelper.convertText(doc.getFilingComments()));
-    doc.getMotionType().ifPresent((mt) -> docType.setMotionTypeCode(XmlHelper.convertText(mt)));
+    doc.getMotionType().ifPresent(mt -> {
+      
+      List<NameAndCode> motiontypes = cd.getMotionTypes(this.courtId, filing.code);
+      // TODO(brycew): "A motion type may be required for a filing type, and may or may not allow multiple occurances"
+      // What does it actually mean? Motion types are empty for IL, so IDK what to do if there's nothing there
+      docType.setMotionTypeCode(XmlHelper.convertText(mt));
+    });
     docType.setFilingAction(doc.getFilingAction());
 
     // TODO(brycew): what should this actually be? Very unclear
@@ -287,18 +296,12 @@ public class EcfCourtSpecificSerializer {
     if (components.isEmpty()) {
       log.error("Filing Components List is empty! There are no other documents that can be added! Stopping at " + doc.getFileName());
       collector.addRequired(var);
-      if (collector.finished()) {
-        return Result.err(FilingError.missingRequired(var));
-      }
     }
     
     Optional<FilingComponent> filtered = components.stream().filter(c -> c.name.equalsIgnoreCase(doc.getFilingComponentName())).findFirst();
     if (filtered.isEmpty()) {
       log.error("Filing Components (" + components + ") don't match " + doc.getFilingComponentName()); 
       collector.addRequired(var);
-      if (collector.finished()) {
-        return Result.err(FilingError.missingRequired(var));
-      }
     }
     
     attachment.setBinaryCategoryText(XmlHelper.convertText(filtered.get().code)); 
@@ -316,14 +319,14 @@ public class EcfCourtSpecificSerializer {
       String docTypeStr = doc.getDocumentTypeFormatStandardName();
       if (documentType.isrequired) {
         if (docTypeStr.isBlank()) {
-          return Result.err(FilingError.missingRequired(docTypeVar));
+          collector.addRequired(docTypeVar);
         }
         
         Optional<DocumentTypeTableRow> code = docTypes.stream()
                 .filter(d -> d.name.equals(docTypeStr))
                 .findFirst();
         if (code.isEmpty()) {
-          return Result.err(FilingError.wrongValue(docTypeVar));
+          collector.addWrong(docTypeVar);
         }
         
         attachment.setBinaryFormatStandardName(XmlHelper.convertText(code.get().code));
@@ -350,9 +353,9 @@ public class EcfCourtSpecificSerializer {
     docType.getDocumentRendition().add(rendition);
     
     if (doc.isLead()) {
-      return Result.ok(tylerObjFac.createFilingLeadDocument(docType));
+      return tylerObjFac.createFilingLeadDocument(docType);
     } else {
-      return Result.ok(tylerObjFac.createFilingConnectedDocument(docType));
+      return tylerObjFac.createFilingConnectedDocument(docType);
     }
     
   }

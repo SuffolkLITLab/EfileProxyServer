@@ -6,8 +6,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
@@ -273,7 +271,7 @@ public class AdminUserService {
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
         () -> {
           security.removeTylerUserId(id);
-          return Response.ok(resp.getPasswordHash()).build(); 
+          return Response.ok("\"" + resp.getPasswordHash() + "\"").build(); 
         });
   }
   
@@ -305,7 +303,7 @@ public class AdminUserService {
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
         () -> { 
           security.removeLogin(activeToken);
-          return Response.ok(resp.getPasswordHash()).build(); 
+          return Response.ok("\"" + resp.getPasswordHash() + "\"").build(); 
         });
   }
   
@@ -325,7 +323,7 @@ public class AdminUserService {
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
         () -> {
           security.removeLogin(activeToken);
-          return Response.ok(resp.getPasswordHash()).build();
+          return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
         });
   }
 
@@ -560,11 +558,7 @@ public class AdminUserService {
   private boolean passwordOk(DataFieldRow row, String password) {
     if (row.isvisible && row.isrequired 
         && password != null && !password.isEmpty()) {
-      Pattern pattern = Pattern.compile(row.regularexpression);
-      Matcher matcher = pattern.matcher(password); 
-      if (!matcher.find()) {
-        return false;
-      }
+      return row.matchRegex(password);
     }
     return true;
   }

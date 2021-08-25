@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hubspot.algebra.Result;
 
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.ecf.EcfCourtSpecificSerializer;
@@ -39,11 +38,9 @@ public class AddressTest {
   }
   
   @Test
-  public void addressShouldMakeXml() throws JAXBException {
+  public void addressShouldMakeXml() throws JAXBException, FilingError {
     FailFastCollector collector = new FailFastCollector();
-    Result<JAXBElement<AddressType>, FilingError> res = serializer.serializeNiemContactMeans(addr, collector); 
-    assertTrue(res.isOk());
-    JAXBElement<AddressType> addrElem = res.unwrapOrElseThrow();
+    JAXBElement<AddressType> addrElem = serializer.serializeNiemContactMeans(addr, collector); 
 
     // Should be able to grab the xml str without an exception
     XmlHelper.objectToXmlStr(addrElem.getValue(), AddressType.class);
@@ -58,7 +55,7 @@ public class AddressTest {
     JAXBElement<?> state = sat.getLocationState();
     assertTrue(state.getValue() instanceof ProperNameTextType);
     
-    tyler.efm.services.schema.common.AddressType tylerAddr = serializer.serializeTylerAddress(addr).unwrapOrElseThrow(); 
+    tyler.efm.services.schema.common.AddressType tylerAddr = serializer.serializeTylerAddress(addr); 
     assertEquals(tylerAddr.getAddressLine1(), "100 Circle Road");
     assertEquals(tylerAddr.getAddressLine2(), "Apt 2");
     assertEquals(tylerAddr.getCity(), "Plano");
