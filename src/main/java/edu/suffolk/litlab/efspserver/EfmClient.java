@@ -70,8 +70,8 @@ public final class EfmClient {
 
   public static void testUserManagement(IEfmUserService port) throws JAXBException {
     AuthenticateRequestType authReq = new AuthenticateRequestType();
-    authReq.setEmail("bwilley@suffolk.edu");
-    authReq.setPassword(System.getenv("BRYCE_USER_PASSWORD"));
+    authReq.setEmail(System.getenv("TYLER_USER_EMAIL"));
+    authReq.setPassword(System.getenv("TYLER_USER_PASSWORD"));
     AuthenticateResponseType authRes = port.authenticateUser(authReq);
 
     // GetUser
@@ -134,7 +134,7 @@ public final class EfmClient {
 
     // ChangePassword
     ChangePasswordRequestType changePass = new ChangePasswordRequestType();
-    changePass.setOldPassword(System.getenv("BRYCE_USER_PASSWORD"));
+    changePass.setOldPassword(System.getenv("TYLER_USER_PASSWORD"));
     StringBuilder builder = new StringBuilder();
     for (int i = 0; i < 25; i++) {
       Random random = new Random();
@@ -157,7 +157,7 @@ public final class EfmClient {
 
     // Change it back please, lol
     changePass.setOldPassword(builder.toString());
-    changePass.setNewPassword(System.getenv("BRYCE_USER_PASSWORD"));
+    changePass.setNewPassword(System.getenv("TYLER_USER_PASSWORD"));
     changePassResp = port.changePassword(changePass);
     System.out.println("Changed back successfully?: " + changePassResp.getError().getErrorText());
 
@@ -535,8 +535,8 @@ public final class EfmClient {
     IEfmUserService userPort = makeUserService(userWsdlUrl);
     // testUserActionManagement(userPort, "bwilley@suffolk.edu");
     AuthenticateRequestType authReq = new AuthenticateRequestType();
-    authReq.setEmail("bwilley@suffolk.edu");
-    authReq.setPassword(System.getenv("BRYCE_USER_PASSWORD"));
+    authReq.setEmail(System.getenv("TYLER_USER_EMAIL")); 
+    authReq.setPassword(System.getenv("TYLER_USER_PASSWORD"));
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
     System.out.println("Auth'd?: " + authRes.getError().getErrorText());
     List<Header> headersList = TylerUserNamePassword.makeHeaderList(authRes);

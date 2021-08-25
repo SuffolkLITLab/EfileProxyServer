@@ -1,5 +1,12 @@
-FROM maven:3.8.1-openjdk-15 AS build
-COPY pom.xml client_sign.properties Suffolk.pfx /usr/src/app/
+ARG EFM_SUPPORT=tyler
+
+FROM maven:3.8.1-openjdk-15 AS build_tyler
+ONBUILD COPY pom.xml client_sign.properties Suffolk.pfx /usr/src/app/
+
+FROM maven:3.8.1-openjdk-15 AS build_no_tyler
+ONBUILD COPY pom.xml /usr/src/app/
+
+FROM build_${EFM_SUPPORT}
 # Install all of the maven packages, so we don't have to every time we change code
 RUN mvn -f /usr/src/app/pom.xml clean dependency:resolve dependency:go-offline test package && mvn -f /usr/src/app/pom.xml test
 COPY src /usr/src/app/src

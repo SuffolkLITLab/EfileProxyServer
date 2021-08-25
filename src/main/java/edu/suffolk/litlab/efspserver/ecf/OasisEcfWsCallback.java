@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efspserver.ecf;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -90,7 +91,11 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
         return reply;
       }
       reply.setCaseCourt(XmlHelper.convertCourtType(trans.get().courtId));
-      boolean success = msgSender.sendMessage(trans.get(), revFiling.getFilingStatus().getStatusText().getValue());
+      Map<String, String> statuses = Map.of(
+          "status", revFiling.getFilingStatus().getStatusText().getValue(),
+          "message_text", revFiling.getFilingStatus().getStatusDescriptionText().stream().reduce("", (des, tt) -> des + tt.getValue(), (des1, des2) -> des1 + des2)
+          );
+      boolean success = msgSender.sendMessage(trans.get(), statuses); 
       if (!success) {
         log.error("Couldn't properly send message to " + trans.get().name + "!");
       }

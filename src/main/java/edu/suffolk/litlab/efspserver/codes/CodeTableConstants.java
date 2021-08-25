@@ -448,6 +448,10 @@ public class CodeTableConstants {
     return "SELECT name, code FROM procedureremedy WHERE location=? AND casecategory=?";
   }
 
+  public static String getMotionTypes() {
+    return "SELECT name, code FROM motiontypes WHERE location=? AND filingcodeid=?";
+  }
+
   public static String getSpecificStatesForCountryForLoc() {
     return "SELECT code, name, countrycode, location "
         + " FROM state WHERE location=? and countrycode=?";

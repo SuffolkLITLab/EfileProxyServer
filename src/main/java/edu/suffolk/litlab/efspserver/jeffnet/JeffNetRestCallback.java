@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -80,7 +81,11 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
         return Response.status(401).build();
       }
       // Done all the checks: now sending the message to the user
-      boolean success = msgSender.sendMessage(transaction, resp.status);
+      Map<String, String> statuses = Map.of(
+          "status", resp.status, 
+          "message_text", resp.messageText, 
+          "message_url", resp.messageUrl); 
+      boolean success = msgSender.sendMessage(transaction, statuses); 
       if (success) {
         return Response.status(204).build();
       } else {
@@ -105,6 +110,14 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
     @XmlElement(name = "Status")
     @JsonProperty("Status")
     String status;
+    
+    @XmlElement(name = "MessageText")
+    @JsonProperty("MessageText")
+    String messageText;
+    
+    @XmlElement(name = "MessageURL")
+    @JsonProperty("MessageURL")
+    String messageUrl;
   }
 
 }
