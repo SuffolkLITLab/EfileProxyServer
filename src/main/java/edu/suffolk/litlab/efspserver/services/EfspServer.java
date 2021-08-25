@@ -113,7 +113,7 @@ public class EfspServer {
     sf.setResourceProvider(PaymentsService.class,
         new SingletonResourceProvider(new PaymentsService(security)));
     sf.setResourceProvider(CasesService.class,
-        new SingletonResourceProvider(new CasesService(security)));
+        new SingletonResourceProvider(new CasesService(security, cd)));
     sf.setResourceProvider(MessageSettingsService.class,
         new SingletonResourceProvider(new MessageSettingsService(security, md)));
 

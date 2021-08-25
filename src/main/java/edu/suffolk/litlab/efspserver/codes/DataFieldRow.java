@@ -1,5 +1,8 @@
 package edu.suffolk.litlab.efspserver.codes;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class DataFieldRow {
   public String code;
   public String name;
@@ -9,7 +12,7 @@ public class DataFieldRow {
   public String ghosttext;
   public String contextualhelpdata;
   public String validationmessage;
-  public String regularexpression;
+  public Pattern regularexpression;
   public String defaultvalueexpression;
   public String isreadonly;
   public String location;
@@ -27,7 +30,11 @@ public class DataFieldRow {
     this.ghosttext = ghosttext;
     this.contextualhelpdata = contextualhelpdata;
     this.validationmessage = validationmessage;
-    this.regularexpression = regularexpression;
+    if (regularexpression == null || regularexpression.isEmpty()) {
+      this.regularexpression = null; 
+    } else {
+      this.regularexpression = Pattern.compile(regularexpression);
+    }
     this.defaultvalueexpression = defaultvalueexpression;
     this.isreadonly = isreadonly;
     this.location = location;
@@ -40,6 +47,14 @@ public class DataFieldRow {
    */
   public static DataFieldRow MissingDataField(String name) {
     return new DataFieldRow("", name, "false", "false", "", "", "", "", "", "", "", "");
+  }
+  
+  public boolean matchRegex(String value) {
+    if (this.regularexpression == null) {
+      return true;
+    }
+    Matcher matcher = this.regularexpression.matcher(value);
+    return matcher.find();
   }
 
 }
