@@ -273,7 +273,7 @@ public class AdminUserService {
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
         () -> {
           security.removeTylerUserId(id);
-          return Response.ok(resp.getPasswordHash()).build(); 
+          return Response.ok("\"" + resp.getPasswordHash() + "\"").build(); 
         });
   }
   
@@ -305,7 +305,7 @@ public class AdminUserService {
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
         () -> { 
           security.removeLogin(activeToken);
-          return Response.ok(resp.getPasswordHash()).build(); 
+          return Response.ok("\"" + resp.getPasswordHash() + "\"").build(); 
         });
   }
   
@@ -325,7 +325,7 @@ public class AdminUserService {
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
         () -> {
           security.removeLogin(activeToken);
-          return Response.ok(resp.getPasswordHash()).build();
+          return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
         });
   }
 

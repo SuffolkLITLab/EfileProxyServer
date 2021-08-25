@@ -167,11 +167,8 @@ public class LoginDatabase extends DatabaseInterface {
         // Remove from old table, but keep going!
         removeActiveToken(activeRs.getString(2));
       } else {
-        String tylerToken = activeRs.getString(4);
-        String jeffNetToken = activeRs.getString(6);
-        boolean newTyler = (tylerToken == null && loginInfo.has("tyler"));
-        boolean newJeffNet = (jeffNetToken == null && loginInfo.has("jeffnet"));
-        if (!newTyler && !newJeffNet) {
+        boolean noNewLogins = !loginInfo.has("tyler") && !loginInfo.has("jeffnet");
+        if (noNewLogins) {
           log.info("Returning Existing active token: " + activeRs.getString(2));
           return Optional.ofNullable(activeRs.getString(2));
         }
@@ -203,11 +200,6 @@ public class LoginDatabase extends DatabaseInterface {
       }
       log.info("New tokens: " + newToken.get());
       newTokens.putAll(newToken.get());
-    }
-    for (Map.Entry<String, Boolean> enab : atRest.get().enabled.entrySet()) {
-      if (enab.getValue() && !newTokens.containsKey(enab.getKey())) {
-        log.warn(enab.getKey() + " enabled, but didn't attempt to login");
-      }
     }
      
     UUID activeToken = UUID.randomUUID();
