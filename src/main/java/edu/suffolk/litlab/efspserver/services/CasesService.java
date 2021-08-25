@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,6 +31,8 @@ import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
+import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.db.LoginInfo;
 import edu.suffolk.litlab.efspserver.docassemble.NameDocassembleDeserializer;
 import gov.niem.niem.niem_core._2.CaseType;
@@ -56,6 +59,7 @@ public class CasesService {
 
   private static Logger log = LoggerFactory.getLogger(CasesService.class);
   private SecurityHub security;
+  private CodeDatabase cd;
   private static CourtRecordMDEService recordFactory = new CourtRecordMDEService(
       CourtRecordMDEService.WSDL_LOCATION, 
       CourtRecordMDEService.SERVICE);
@@ -66,8 +70,9 @@ public class CasesService {
   private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType commonCpt = 
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType();
 
-  public CasesService(SecurityHub security) {
+  public CasesService(SecurityHub security, CodeDatabase cd) {
     this.security = security;
+    this.cd = cd;
   }
   
   @GET
@@ -79,8 +84,22 @@ public class CasesService {
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
     }
-    //TODO(brycew): use the AdvancedSearchLocationAllLocations datafieldconfig to see if users should
-    // be able to search all courts with the "1" location
+
+    try {
+      List<String> allLocs = cd.getAllLocations();
+      if (!allLocs.contains(courtId)) {
+        return Response.status(404).entity(courtId + " not in available courts to search").build();
+      }
+    } catch (SQLException e) {
+      log.error(e.toString()); 
+    }
+    
+    if (courtId.equals("1")) {
+      DataFieldRow row = cd.getDataField("1", "AdvancedSearchLocationAllLocations");
+      if (!row.isvisible) {
+        return Response.status(400).entity("Can't search all locations").build();
+      }
+    }
     
     CaseListQueryMessageType query = new CaseListQueryMessageType();
     EntityType typ = new EntityType();

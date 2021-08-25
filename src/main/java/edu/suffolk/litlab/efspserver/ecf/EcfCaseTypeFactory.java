@@ -161,15 +161,23 @@ public class EcfCaseTypeFactory {
     }
 
     
-    List<NameAndCode> subTypes = cd.getCaseSubtypesFor(courtLocationId, caseType.code);
-    Optional<NameAndCode> maybeSubtype = subTypes.stream()
-        .filter(type -> type.getName().equals(caseSubtype))
-        .findFirst();
+    DataFieldRow subTypeConfig = cd.getDataField(courtLocationId, "CaseInformationCaseSubType");
+    if (subTypeConfig.isvisible) {
+      List<NameAndCode> subTypes = cd.getCaseSubtypesFor(courtLocationId, caseType.code);
+      Optional<NameAndCode> maybeSubtype = subTypes.stream()
+          .filter(type -> type.getName().equals(caseSubtype))
+          .findFirst();
     
-    if (maybeSubtype.isPresent()) {
-      ecfAug.setCaseSubTypeText(XmlHelper.convertText(maybeSubtype.get().getCode()));
-    } else {
-      // TODO(brycew): it's empty right now! Not sure how to handle.
+      if (maybeSubtype.isPresent()) {
+        ecfAug.setCaseSubTypeText(XmlHelper.convertText(maybeSubtype.get().getCode()));
+      } else if (subTypeConfig.isrequired) {
+        InterviewVariable subTypeVar = collector.requestVar("tyler_case_subtype", "Sub type of the case", "choices", 
+            subTypes.stream().map(nac -> nac.getName()).collect(Collectors.toList()));
+        collector.addWrong(subTypeVar);
+        if (collector.finished()) {
+          return Result.err(FilingError.wrongValue(subTypeVar));
+        }
+      }
     }
     
     List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocationId, caseType.code); 

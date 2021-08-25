@@ -160,12 +160,30 @@ public class EcfCourtSpecificSerializer {
       cit.getContactMeans().add(contactMeans.unwrapOrElseThrow()); 
     }
       
-    for (String phoneNumber : contactInfo.getPhoneNumbers()) {
-      TelephoneNumberType tnt = niemObjFac.createTelephoneNumberType();
-      FullTelephoneNumberType ftnt = niemObjFac.createFullTelephoneNumberType();
-      ftnt.setTelephoneNumberFullID(XmlHelper.convertString(phoneNumber));
-      tnt.setTelephoneNumberRepresentation(niemObjFac.createFullTelephoneNumber(ftnt));
-      cit.getContactMeans().add(niemObjFac.createContactTelephoneNumber(tnt));
+    DataFieldRow phoneRow = cd.getDataField(this.courtId, "PartyPhone");
+    if (phoneRow.isvisible) {
+      List<String> numbers = contactInfo.getPhoneNumbers();
+      InterviewVariable var = collector.requestVar("phone_number", "Phone number", "text");
+      if (phoneRow.isrequired && numbers.isEmpty()) {
+        collector.addRequired(var);
+        if (collector.finished()) {
+          return Result.err(FilingError.missingRequired(var));
+        }
+      }
+      for (String phoneNumber : contactInfo.getPhoneNumbers()) {
+        if (!phoneRow.matchRegex(phoneNumber)) {
+          collector.addWrong(var);
+          if (collector.finished()) {
+            return Result.err(FilingError.wrongValue(var));
+          }
+        }
+
+        TelephoneNumberType tnt = niemObjFac.createTelephoneNumberType();
+        FullTelephoneNumberType ftnt = niemObjFac.createFullTelephoneNumberType();
+        ftnt.setTelephoneNumberFullID(XmlHelper.convertString(phoneNumber));
+        tnt.setTelephoneNumberRepresentation(niemObjFac.createFullTelephoneNumber(ftnt));
+        cit.getContactMeans().add(niemObjFac.createContactTelephoneNumber(tnt));
+      }
     }
     contactInfo.getEmail().ifPresent((em) -> {
       cit.getContactMeans().add(niemObjFac.createContactEmailID(XmlHelper.convertString(em))); 
