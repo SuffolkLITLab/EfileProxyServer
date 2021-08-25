@@ -2,11 +2,15 @@ package edu.suffolk.litlab.efspserver.services;
 
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -15,6 +19,15 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -25,6 +38,8 @@ import edu.suffolk.litlab.efspserver.SecurityHub;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.schema.baseresponse.BaseResponseType;
 import tyler.efm.services.schema.common.PaymentAccountType;
+import tyler.efm.services.schema.createpaymentaccountrequest.CreatePaymentAccountRequestType;
+import tyler.efm.services.schema.createpaymentaccountresponse.CreatePaymentAccountResponseType;
 import tyler.efm.services.schema.getpaymentaccountrequest.GetPaymentAccountRequestType;
 import tyler.efm.services.schema.getpaymentaccountresponse.GetPaymentAccountResponseType;
 import tyler.efm.services.schema.paymentaccountlistresponse.PaymentAccountListResponseType;
@@ -36,6 +51,7 @@ import tyler.efm.services.schema.updatepaymentaccountresponse.UpdatePaymentAccou
 @Path("/payments/")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class PaymentsService {
+  private static Logger log = LoggerFactory.getLogger(CasesService.class);
 
   private tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac = 
       new tyler.efm.services.schema.common.ObjectFactory();
@@ -182,7 +198,7 @@ public class PaymentsService {
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
-    
+
     ObjectMapper mapper = new ObjectMapper();
     
 
@@ -233,6 +249,55 @@ public class PaymentsService {
     
     PaymentAccountTypeListResponseType types = firmPort.get().getPaymentAccountTypeList();
     return makeResponse(types, () -> Response.ok(types.getPaymentAccountType()).build());
+  }
+  
+  @XmlType(name="")
+  @XmlRootElement(name="PaymentResponse")
+  private static class TogaResponseXml {
+    @XmlElement(name="ClientKey")
+    String clientKey;
+    @XmlElement(name="TransactionID")
+    String transactionId;
+    @XmlElement(name="Amount")
+    String amount;
+    @XmlElement(name="ReferenceNumber")
+    String referenceNumber;
+    @XmlElement(name="PayorToken")
+    String payorToken;
+    @XmlElement(name="PayorName")
+    String payorName;
+    @XmlElement(name="TenderDescription")
+    String tenderDescription;
+    @XmlElement(name="ExpirationMonth")
+    String expirationMonth;
+    @XmlElement(name="ExpirationYear")
+    String expirationYear;
+    @XmlElement(name="PaymentTimestamp")
+    String paymentTimestamp;
+  }
+  
+  @POST
+  @Path("/toga_account")
+  public Response makeNewPaymentAccount(@Context HttpHeaders httpHeaders, String body) {
+    log.info("Making new payment account: " + body);
+    try {
+      JAXBContext jaxContext = JAXBContext.newInstance(TogaResponseXml.class);
+      Unmarshaller unmar = jaxContext.createUnmarshaller();
+      InputStream stream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
+      TogaResponseXml resp = (TogaResponseXml) unmar.unmarshal(stream);
+      
+      CreatePaymentAccountRequestType createAccount = new CreatePaymentAccountRequestType();
+      //createAccount.setPaymentAccount(newAccount);
+      //CreatePaymentAccountResponseType resp = firmPort.get().createPaymentAccount(createAccount);
+      //if (ServiceHelpers.hasError(resp)) {
+      //  return Response.status(400).entity(resp.getError()).build();
+     // }
+      return Response.status(500).build();
+    } catch (JAXBException jaxbEx) {
+      log.error("Couldn't process the TOGA response in XML: " + body);
+      log.error(jaxbEx.toString());
+      return Response.status(400).build();
+    }
   }
   
   /** Fluid interface, but modifies the input. */

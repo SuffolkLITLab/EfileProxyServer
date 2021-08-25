@@ -58,14 +58,13 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
     } catch (JsonProcessingException e) {
       // Trying to parse XML
       try {
-      JAXBContext jaxContext = JAXBContext.newInstance(FileResponse.class);
-      Unmarshaller unmar = jaxContext.createUnmarshaller();
-      InputStream stream = new ByteArrayInputStream(statusReport.getBytes(StandardCharsets.UTF_8));
-      resp = (FileResponse) unmar.unmarshal(stream);
+        JAXBContext jaxContext = JAXBContext.newInstance(FileResponse.class);
+        Unmarshaller unmar = jaxContext.createUnmarshaller();
+        InputStream stream = new ByteArrayInputStream(statusReport.getBytes(StandardCharsets.UTF_8));
+        resp = (FileResponse) unmar.unmarshal(stream);
       } catch (JAXBException jaxbEx) {
-        e.printStackTrace();
         log.error("Couldn't process the status report in XML or JSON: " + statusReport);
-        log.error(e.toString());
+        log.error(jaxbEx.toString());
         return Response.status(400).build();
       }
     }
