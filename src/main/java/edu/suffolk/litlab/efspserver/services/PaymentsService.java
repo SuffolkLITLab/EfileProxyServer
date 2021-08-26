@@ -34,6 +34,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.suffolk.litlab.efspserver.RandomString;
 import edu.suffolk.litlab.efspserver.SecurityHub;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.schema.baseresponse.BaseResponseType;
@@ -59,9 +60,16 @@ public class PaymentsService {
   UriInfo uri;
 
   private SecurityHub security;
+  private RandomString transactionIdGen;
+  private final String togaKey;
+  private final String redirectUrl = ServiceHelpers.BASE_URL + "/payments/toga_account";
+  private final String togaUrl;
   
-  public PaymentsService(SecurityHub security) {
+  public PaymentsService(SecurityHub security, String togaKey, String togaUrl) {
     this.security = security;
+    this.transactionIdGen = new RandomString(21);
+    this.togaKey = togaKey;
+    this.togaUrl = togaUrl;
   }
 
   @GET
@@ -280,6 +288,9 @@ public class PaymentsService {
   @Produces("text/html")
   public Response redirectToToga(@Context HttpHeaders httpHeaders) {
     // TODO(brycew): save some basic info about the transactionId
+    
+    String transactionId = transactionIdGen.nextString();
+    log.info("Redirecting with transactionId: " + transactionId);
     String fullHtml = """
 <html>
     <head>
@@ -290,14 +301,14 @@ public class PaymentsService {
     </body>
     <script>
       data ='<PaymentRequest>'+
-        '<ClientKey>CJOFS-ILSTAGE-EFSP</ClientKey>' +
-        '<TransactionID>201001020111111</TransactionID>'+
-        '<RedirectURL>https://efile.suffolklitlab.org/payments/toga_account</RedirectURL>'+
+        '<ClientKey>%s</ClientKey>' +
+        '<TransactionID>%s</TransactionID>'+
+        '<RedirectURL>%s</RedirectURL>'+
         '<Amount>-1</Amount>' +
         '<GetToken>1</GetToken>' +
         '</PaymentRequest>'
       $('#inset_form').html(
-        '<form action="https://togatest.tylerhost.net/EPayments/Webs/EPayment.aspx" ' +
+        '<form action="%s" ' +
         '  name="temp" method="post"> ' +
         '  <input type="text" name="RequestXML" value="' + data + '" style="display:none;"/> ' +
         ' <button>Click here if you aren't redirected automatically</button>' +
@@ -305,7 +316,7 @@ public class PaymentsService {
       document.forms['temp'].submit()
     </script>
 </html>
-        """;
+        """.formatted(this.togaKey, transactionId, this.redirectUrl, this.togaUrl);
     return Response.ok(fullHtml).build();
   }
   

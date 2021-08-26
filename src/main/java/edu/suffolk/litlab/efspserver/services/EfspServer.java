@@ -113,7 +113,7 @@ public class EfspServer {
         new SingletonResourceProvider(new FirmAttorneyAndServiceService(security)));
     // TODO(brycew): refactor to reduce the number of services, or make just "Tyler services" and "JeffNet services" Providers
     sf.setResourceProvider(PaymentsService.class,
-        new SingletonResourceProvider(new PaymentsService(security)));
+        new SingletonResourceProvider(new PaymentsService(security, System.getenv("TOGA_CLIENT_KEY"), System.getenv("TOGA_URL"))));
     sf.setResourceProvider(CasesService.class,
         new SingletonResourceProvider(new CasesService(security, cd)));
     sf.setResourceProvider(CodesService.class,

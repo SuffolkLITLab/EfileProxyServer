@@ -32,6 +32,11 @@ public class TylerModuleSetup implements EfmModuleSetup {
   private final String tylerEndpoint;
   private final String x509Password;
   
+  // Payments Stuff
+  // TODO(brycew): these params create the Payments service, but haven't hooked up ModulesSetup with
+  // Providers yet
+  private final String togaKey;
+  private final String togaUrl;
   private UserDatabase ud;
   private OrgMessageSender sender;
   private JaxWsServerFactoryBean svrFactory; 
@@ -41,6 +46,8 @@ public class TylerModuleSetup implements EfmModuleSetup {
     public String dbPassword;
     public String tylerEndpoint;
     public String x509Password;
+    public String togaKey;
+    public String togaUrl;
   }
 
   /** Use this factory method instead of the class constructor. */
@@ -62,6 +69,8 @@ public class TylerModuleSetup implements EfmModuleSetup {
     this.dbPassword = args.dbPassword;
     this.tylerEndpoint = args.tylerEndpoint;
     this.x509Password = args.x509Password;
+    this.togaKey = args.togaKey;
+    this.togaUrl = args.togaUrl;
     this.ud = ud;
     this.sender = sender;
   }
@@ -89,6 +98,19 @@ public class TylerModuleSetup implements EfmModuleSetup {
       return Optional.empty();
     }
     args.dbPassword = maybeDbPassword.get();
+
+    Optional<String> maybeTogaKey = EfmModuleSetup.GetEnv("TOGA_CLIENT_KEY");
+    if (maybeTogaKey.isEmpty()) {
+      log.warn("You need to define a TOGA_CLIENT_KEY (Tyler payments (TOGA) client key)");
+      return Optional.empty();
+    }
+    args.togaKey = maybeTogaKey.get();
+    Optional<String> maybeTogaUrl = EfmModuleSetup.GetEnv("TOGA_URL");
+    if (maybeTogaUrl.isEmpty()) {
+      log.warn("You need to define a TOGA_URL");
+      return Optional.empty();
+    }
+    args.togaUrl = maybeTogaUrl.get();
     return Optional.of(args);
   }
 
