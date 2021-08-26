@@ -39,7 +39,6 @@ import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.schema.baseresponse.BaseResponseType;
 import tyler.efm.services.schema.common.PaymentAccountType;
 import tyler.efm.services.schema.createpaymentaccountrequest.CreatePaymentAccountRequestType;
-import tyler.efm.services.schema.createpaymentaccountresponse.CreatePaymentAccountResponseType;
 import tyler.efm.services.schema.getpaymentaccountrequest.GetPaymentAccountRequestType;
 import tyler.efm.services.schema.getpaymentaccountresponse.GetPaymentAccountResponseType;
 import tyler.efm.services.schema.paymentaccountlistresponse.PaymentAccountListResponseType;
@@ -274,6 +273,40 @@ public class PaymentsService {
     String expirationYear;
     @XmlElement(name="PaymentTimestamp")
     String paymentTimestamp;
+  }
+  
+  @GET
+  @Path("/new_toga_account")
+  @Produces("text/html")
+  public Response redirectToToga(@Context HttpHeaders httpHeaders) {
+    // TODO(brycew): save some basic info about the transactionId
+    String fullHtml = """
+<html>
+    <head>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    </head>
+    <body>
+      <span id="inset_form"></span>
+    </body>
+    <script>
+      data ='<PaymentRequest>'+
+        '<ClientKey>CJOFS-ILSTAGE-EFSP</ClientKey>' +
+        '<TransactionID>201001020111111</TransactionID>'+
+        '<RedirectURL>https://efile.suffolklitlab.org/payments/toga_account</RedirectURL>'+
+        '<Amount>-1</Amount>' +
+        '<GetToken>1</GetToken>' +
+        '</PaymentRequest>'
+      $('#inset_form').html(
+        '<form action="https://togatest.tylerhost.net/EPayments/Webs/EPayment.aspx" ' +
+        '  name="temp" method="post"> ' +
+        '  <input type="text" name="RequestXML" value="' + data + '" style="display:none;"/> ' +
+        ' <button>Click here if you aren't redirected automatically</button>' +
+        '</form>')
+      document.forms['temp'].submit()
+    </script>
+</html>
+        """;
+    return Response.ok(fullHtml).build();
   }
   
   @POST
