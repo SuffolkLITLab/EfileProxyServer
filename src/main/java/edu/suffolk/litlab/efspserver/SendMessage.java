@@ -64,11 +64,14 @@ public class SendMessage {
       Map<String, Object> context) throws IOException {
 
     String sendingMethod = System.getenv("EMAIL_METHOD");
-    if (sendingMethod == "sendgrid") {
+    if (sendingMethod.equals("sendgrid")) {
       return sendSendgridEmail(from, subject, to, messageTemplate, context);
-    } else {
+    } else if (sendingMethod.equals("smtp")) {
       boolean success = sendSmtpEmail(from, subject, to, messageTemplate, context);
       return (success) ? 200 : 400; // Should remove the status code and make this a void method
+    } else {
+      log.error("No email method not correctly specified. Should be sendgrid or smtp, is: " + sendingMethod);
+      return 400;
     }
   }
 
