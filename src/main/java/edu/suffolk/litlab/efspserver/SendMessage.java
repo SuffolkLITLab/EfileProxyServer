@@ -67,8 +67,8 @@ public class SendMessage {
     if (sendingMethod == "sendgrid") {
       return sendSendgridEmail(from, subject, to, messageTemplate, context);
     } else {
-      sendSmtpEmail(from, subject, to, messageTemplate, context);
-      return 200; // Should remove the status code and make this a void method
+      boolean success = sendSmtpEmail(from, subject, to, messageTemplate, context);
+      return (success) ? 200 : 400; // Should remove the status code and make this a void method
     }
   }
 
@@ -84,7 +84,7 @@ public class SendMessage {
    *                        substituted in the message_template
    * @throws IOException If there's a network error
    */
-  public static void sendSmtpEmail(String from, String subject, String to, String messageTemplate,
+  public static boolean sendSmtpEmail(String from, String subject, String to, String messageTemplate,
       Map<String, Object> context) throws IOException {
 
     Properties props = new Properties();
@@ -111,8 +111,10 @@ public class SendMessage {
       msg.setSentDate(new Date());
       msg.setText(renderedTemplate);
       Transport.send(msg);
+      return true;
     } catch (MessagingException mex) {
       log.error("Email send failed, exception: " + mex);
+      return false;
     }
 
   }
@@ -150,7 +152,9 @@ public class SendMessage {
 
   /**
    * Send an SMS Message, currently using Twilio SMS API. Depends on env variables
-   * - TWILIO_ACCOUNT_SID. - TWILIO_AUTH_TOKEN, and - TWILIO_SENDING_NUMBER.
+   * - TWILIO_ACCOUNT_SID. 
+   * - TWILIO_AUTH_TOKEN, and 
+   * - TWILIO_SENDING_NUMBER.
    *
    * @param to              a valid phone number for SMS messaging, in ISO format.
    * @param messageTemplate A string with Jinja2 template variables. Will be
