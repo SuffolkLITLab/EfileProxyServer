@@ -27,10 +27,11 @@ public class TylerModuleSetup implements EfmModuleSetup {
   private static Logger log = 
       LoggerFactory.getLogger(TylerModuleSetup.class); 
   private CodeDatabase cd;
-  private String dbUser;
-  private String dbPassword;
-  private String tylerEndpoint;
-  private String x509Password;
+  private final String dbUser;
+  private final String dbPassword;
+  private final String tylerEndpoint;
+  private final String x509Password;
+  
   private UserDatabase ud;
   private OrgMessageSender sender;
   private JaxWsServerFactoryBean svrFactory; 
@@ -84,7 +85,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     args.dbUser = EfmModuleSetup.GetEnv("POSTGRES_USER").orElse("postgres"); 
     Optional<String> maybeDbPassword = EfmModuleSetup.GetEnv("POSTGRES_PASSWORD"); 
     if (maybeDbPassword.isEmpty()) {
-      log.warn("You need to pass a POSTGRES password in");
+      log.warn("You need to define a POSTGRES_PASSWORD");
       return Optional.empty();
     }
     args.dbPassword = maybeDbPassword.get();

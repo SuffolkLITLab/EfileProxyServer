@@ -19,6 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.suffolk.litlab.efspserver.RandomString;
 import edu.suffolk.litlab.efspserver.codes.CodeTableConstants;
 
 public class LoginDatabase extends DatabaseInterface {
@@ -41,15 +42,18 @@ public class LoginDatabase extends DatabaseInterface {
            "expires_at" timestamp)""".formatted(activeTable);
 
   private final long expirationTime;
+  private RandomString tokenGenerator;
 
   public LoginDatabase(String pgUrl, int pgPort, String pgDb) {
     super(pgUrl, pgPort, pgDb);
     this.expirationTime = 3_600_000; // Expire 1 hour from login 
+    this.tokenGenerator = new RandomString();
   }
 
   public LoginDatabase(String pgFullUrl, String pgDb) {
     super(pgFullUrl, pgDb);
     this.expirationTime = 3_600_000; // Expire 1 hour from login 
+    this.tokenGenerator = new RandomString();
   }
   
   public void createTablesIfAbsent() throws SQLException {
@@ -83,7 +87,7 @@ public class LoginDatabase extends DatabaseInterface {
       throw new SQLException();
     }
     UUID serverId = UUID.randomUUID();
-    UUID apiKey = UUID.randomUUID();
+    String apiKey = tokenGenerator.nextString();
     Timestamp ts = new Timestamp(System.currentTimeMillis());
     String insertIntoTable = """
                     INSERT INTO %s (
@@ -95,12 +99,12 @@ public class LoginDatabase extends DatabaseInterface {
     PreparedStatement insertSt = conn.prepareStatement(insertIntoTable);
     insertSt.setObject(1, serverId);
     insertSt.setString(2, serverName);
-    insertSt.setString(3, apiKey.toString());
+    insertSt.setString(3, apiKey);
     insertSt.setBoolean(4, tylerEnabled);
     insertSt.setBoolean(5, jeffNetEnabled);
     insertSt.setTimestamp(6, ts);
     insertSt.executeUpdate();
-    return apiKey.toString();
+    return apiKey;
   }
   
   private class AtRest {
@@ -202,7 +206,7 @@ public class LoginDatabase extends DatabaseInterface {
       newTokens.putAll(newToken.get());
     }
      
-    UUID activeToken = UUID.randomUUID();
+    String activeToken = tokenGenerator.nextString();
     Timestamp expire = new Timestamp(System.currentTimeMillis() + expirationTime);
     String insertActive = """
             INSERT INTO %s (
@@ -213,8 +217,8 @@ public class LoginDatabase extends DatabaseInterface {
               active_token=?, tyler_token=?, tyler_id=?, jeffnet_token=?, expires_at=?""".formatted(activeTable);
     PreparedStatement insertSt = conn.prepareStatement(insertActive);
     insertSt.setObject(1, atRest.get().serverId);
-    insertSt.setString(2, activeToken.toString());
-    insertSt.setString(7, activeToken.toString());
+    insertSt.setString(2, activeToken);
+    insertSt.setString(7, activeToken);
     insertSt.setString(3, newTokens.getOrDefault("tyler_token", null));
     insertSt.setString(8, newTokens.getOrDefault("tyler_token", null));
     insertSt.setString(4, newTokens.getOrDefault("tyler_id", null));
@@ -224,7 +228,7 @@ public class LoginDatabase extends DatabaseInterface {
     insertSt.setTimestamp(6, expire);
     insertSt.setTimestamp(11, expire);
     insertSt.executeUpdate();
-    return Optional.of(activeToken.toString());
+    return Optional.of(activeToken);
   }
   
   public Optional<LoginInfo> checkLogin(String activeToken, String orgName) throws SQLException {

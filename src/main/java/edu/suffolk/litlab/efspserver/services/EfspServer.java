@@ -110,6 +110,7 @@ public class EfspServer {
             ud, converterMap, filingMap, callbackMap, security, sender)));
     sf.setResourceProvider(FirmAttorneyAndServiceService.class,
         new SingletonResourceProvider(new FirmAttorneyAndServiceService(security)));
+    // TODO(brycew): refactor to reduce the number of services, or make just "Tyler services" and "JeffNet services" Providers
     sf.setResourceProvider(PaymentsService.class,
         new SingletonResourceProvider(new PaymentsService(security)));
     sf.setResourceProvider(CasesService.class,
