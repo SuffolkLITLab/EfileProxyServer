@@ -448,7 +448,7 @@ public class CodeDatabase extends DatabaseInterface {
     String query = CodeTableConstants.getSpecificStatesForCountryForLoc();
     try {
       PreparedStatement st = conn.prepareStatement(query);
-      // TODO(brycew): Tyler docs say state is a system table, but there's on per court?
+      // TODO(brycew): Tyler docs say state is a system table, but there's one per court?
       // Hardcoding the system "0" for now
       st.setString(1, "0");
       st.setString(2, country);
