@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  efspjava2:
+    build: .
+    ports:
+      - "9001:9000"
+    env_file: .devenv
+    depends_on:
+      - "db2"
+  db2:
+    image: "postgres:latest"
+    env_file: .devenv
+    volumes:
+      - data-volume2:/var/lib/postgresql/data
+
+volumes:
+  data-volume2:

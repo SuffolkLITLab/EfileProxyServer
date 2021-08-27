@@ -37,6 +37,7 @@ hs_err_pid*
 *.properties
 *.pfx
 .env
+.devenv
 .bash_env
 .checkstyle
 
