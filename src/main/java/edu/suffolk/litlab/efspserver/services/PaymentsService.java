@@ -80,7 +80,7 @@ public class PaymentsService {
   private RandomString transactionIdGen;
   private final String togaKey;
   // TODO(brycew): go back to BASE_URL
-  private final String redirectUrl = "http://172.19.0.3:9000/payments/toga_account"; // ServiceHelpers.BASE_URL + "/payments/toga_account";
+  private final String redirectUrl = "http://172.19.0.3:9000/payments/toga-account"; // ServiceHelpers.BASE_URL + "/payments/toga-account";
   private final String togaUrl;
 
   public PaymentsService(SecurityHub security, String togaKey, String togaUrl) {
@@ -303,7 +303,7 @@ public class PaymentsService {
   }
   
   @GET
-  @Path("/new_toga_account")
+  @Path("/new-toga-account")
   @Produces("text/html")
   public Response redirectToToga(@Context HttpHeaders httpHeaders) {
     // TODO(brycew): save some basic info about the transactionId
@@ -341,7 +341,7 @@ public class PaymentsService {
   
   @POST
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-  @Path("/toga_account")
+  @Path("/toga-account")
   public Response makeNewPaymentAccount(@Context HttpHeaders httpHeaders, 
       @FormParam("ResponseXML") String body) {
     log.info("Making new payment account: " + body);
