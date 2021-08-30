@@ -19,7 +19,8 @@ import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
-import edu.suffolk.litlab.efspserver.db.LoginInfo;
+import edu.suffolk.litlab.efspserver.db.AtRest;
+import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
 import tyler.efm.services.EfmFirmService;
@@ -45,7 +46,7 @@ public class ServiceHelpers {
   static {
     String env_url = System.getenv("CURRENT_URL");
     if (env_url == null || env_url.isBlank()) {
-      env_url = "filingassemblymde.com:9000";
+      env_url = "filingassemblymde.com:9001";
     }
     // TODO(brycew): fix this to be 
     BASE_URL = env_url;
@@ -89,6 +90,9 @@ public class ServiceHelpers {
       EfmFirmService.SERVICE);
 
   public static Optional<TylerUserNamePassword> userCredsFromAuthorization(String userColonPassword) {
+    if (userColonPassword == null) {
+      return Optional.empty();
+    }
     if (!userColonPassword.contains(":")) {
       return Optional.empty();
     }
@@ -186,12 +190,18 @@ public class ServiceHelpers {
   public static Optional<IEfmFirmService> setupFirmPort(HttpHeaders httpHeaders, 
       SecurityHub security) {
     String activeToken = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<LoginInfo> tylerCreds = security.checkLogin(activeToken, "tyler");
-    if (tylerCreds.isEmpty()) {
-      log.warn("Couldn't checkLogin");
+    Optional<AtRest> atRest= security.getAtRestInfo(activeToken); 
+    if (atRest.isEmpty()) {
+      log.warn("Couldn't find server api key");
       return Optional.empty();
     }
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerCreds.get().usableToken);
+    TylerLogin login = new TylerLogin();
+    String tylerToken = httpHeaders.getHeaderString(login.getHeaderKey());
+    return setupFirmPort(tylerToken);
+  }
+    
+  public static Optional<IEfmFirmService> setupFirmPort(String tylerToken) {
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds?");
       return Optional.empty();

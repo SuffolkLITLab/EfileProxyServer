@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
-import edu.suffolk.litlab.efspserver.db.LoginInfo;
+import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetLogin;
 import edu.suffolk.litlab.efspserver.services.LoginInterface;
@@ -50,9 +50,11 @@ public class SecurityHub {
    *
    * @apiKey The api key that the server can use for logging in
    * @param jsonLoginInfo The JSON string with login info for whatever modules it's wants to login to
-   * @return The new API Token that the REST client should now send to the Server
+   * @return A map of expected Headers that subsequent calls should have to their expected values.
+   *   For example, TYLER-TOKEN will have the provided Tyler email + ":" + password Hash, used to authenticate the
+   *   user. 
    */
-  public Optional<String> login(String apiKey, String jsonLoginInfo) {
+  public Optional<Map<String, String>> login(String apiKey, String jsonLoginInfo) {
     Map<String, Function<JsonNode, Optional<Map<String, String>>>> loginFunctions = Map.of(
         "tyler", (info) -> tylerLoginObj.login(info),
         "jeffnet", (info) -> jeffNetLoginObj.login(info));
@@ -65,46 +67,18 @@ public class SecurityHub {
     }
   }
   
-  public boolean checkLogin(String activeToken) {
-    return checkLogin(activeToken, "").isPresent();
-  }
-
-  public Optional<LoginInfo> checkLogin(String activeToken, String orgName) {
+  public Optional<AtRest> getAtRestInfo(String apiKey) {
+    if (apiKey == null || apiKey.isBlank()) {
+      return Optional.empty();
+    }
     try {
-      return ld.checkLogin(activeToken, orgName);
+      return ld.getAtRestInfo(apiKey); 
     } catch (SQLException e) {
       log.error(e.toString());
       return Optional.empty();
     }
   }
-
-  /**
-   * Force a logout for the given active login token. 
-   * 
-   * Called when the user resets for a new Tyler password
-   * @param activeToken
-   * @return True if the given token was actually removed (i.e. it was presenet in the login table)
-   */
-  public boolean removeLogin(String activeToken) {
-    try {
-      ld.removeActiveToken(activeToken);
-      return true;
-    } catch (SQLException ex) {
-      log.error(ex.toString());
-      return false;
-    }
-  }
-
-  /** Serves a similar purpose to {@link removeLogin}, but is used when the client resets 
-   * someone else's Tyler password. */
-  public boolean removeTylerUserId(String id) {
-    try {
-      ld.removeTylerUserId(id);
-      return true;
-    } catch (SQLException ex) {
-      log.error(ex.toString());
-      return false;
-    }
-  }
+  
+  
   
 }

@@ -59,7 +59,7 @@ public class TylerLogin implements LoginInterface {
       return Optional.empty(); 
     } else {
       return Optional.of(Map.of(
-          "tyler_token", authRes.getEmail() + ":" + authRes.getPasswordHash(),
+          getHeaderKey(), authRes.getEmail() + ":" + authRes.getPasswordHash(),
           "tyler_id", authRes.getUserID())); 
     }
   }
@@ -78,6 +78,11 @@ public class TylerLogin implements LoginInterface {
 
   public static EfmUserService makeUserServiceFactory(URL userWsdlUrl) {
     return new EfmUserService(userWsdlUrl, EfmUserService.SERVICE);
+  }
+
+  @Override
+  public String getHeaderKey() {
+    return "TYLER-TOKEN";
   }
 
 }

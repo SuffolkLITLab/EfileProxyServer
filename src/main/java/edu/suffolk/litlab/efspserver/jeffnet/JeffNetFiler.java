@@ -37,6 +37,7 @@ public class JeffNetFiler implements EfmFilingInterface {
 
   private URI filingEndpoint;
   private SimpleModule module;
+  private final String headerKey;
   
   /** Constructor that takes the URL endpoint of JeffNet to call */
   public JeffNetFiler(String filingEndpoint) throws URISyntaxException {
@@ -45,6 +46,8 @@ public class JeffNetFiler implements EfmFilingInterface {
   
   public JeffNetFiler(URI filingEndpoint) {
     this.filingEndpoint = filingEndpoint;
+    JeffNetLogin login = new JeffNetLogin();
+    this.headerKey = login.getHeaderKey();
     
     this.module = new SimpleModule();
     module.addSerializer(new FilingInformationJeffNetSerializer(FilingInformation.class));
@@ -58,6 +61,11 @@ public class JeffNetFiler implements EfmFilingInterface {
   @Override
   public String getOrgName() {
     return "jeffnet";
+  }
+  
+  @Override
+  public String getHeaderKey() {
+    return headerKey;
   }
   
   @Override

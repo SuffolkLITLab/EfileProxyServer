@@ -5,9 +5,13 @@ import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
@@ -36,10 +40,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.RandomString;
 import edu.suffolk.litlab.efspserver.SecurityHub;
+import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.schema.baseresponse.BaseResponseType;
 import tyler.efm.services.schema.common.PaymentAccountType;
 import tyler.efm.services.schema.createpaymentaccountrequest.CreatePaymentAccountRequestType;
+import tyler.efm.services.schema.createpaymentaccountresponse.CreatePaymentAccountResponseType;
 import tyler.efm.services.schema.getpaymentaccountrequest.GetPaymentAccountRequestType;
 import tyler.efm.services.schema.getpaymentaccountresponse.GetPaymentAccountResponseType;
 import tyler.efm.services.schema.paymentaccountlistresponse.PaymentAccountListResponseType;
@@ -51,10 +57,21 @@ import tyler.efm.services.schema.updatepaymentaccountresponse.UpdatePaymentAccou
 @Path("/payments/")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class PaymentsService {
-  private static Logger log = LoggerFactory.getLogger(CasesService.class);
+  private static Logger log =
+      LoggerFactory.getLogger(PaymentsService.class); 
 
   private tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac = 
       new tyler.efm.services.schema.common.ObjectFactory();
+  
+  private static class TempAccount {
+    String name;
+    String loginInfo;
+    boolean global;
+    String typeCode;
+    String originalUrl;
+  }
+  
+  private Map<String, TempAccount> tempAccounts;
    
   @Context
   UriInfo uri;
@@ -62,14 +79,16 @@ public class PaymentsService {
   private SecurityHub security;
   private RandomString transactionIdGen;
   private final String togaKey;
-  private final String redirectUrl = ServiceHelpers.BASE_URL + "/payments/toga_account";
+  // TODO(brycew): go back to BASE_URL
+  private final String redirectUrl = "http://172.19.0.3:9000/payments/toga_account"; // ServiceHelpers.BASE_URL + "/payments/toga_account";
   private final String togaUrl;
-  
+
   public PaymentsService(SecurityHub security, String togaKey, String togaUrl) {
     this.security = security;
     this.transactionIdGen = new RandomString(21);
     this.togaKey = togaKey;
     this.togaUrl = togaUrl;
+    tempAccounts = new HashMap<String, TempAccount>();
   }
 
   @GET
@@ -276,9 +295,9 @@ public class PaymentsService {
     @XmlElement(name="TenderDescription")
     String tenderDescription;
     @XmlElement(name="ExpirationMonth")
-    String expirationMonth;
+    int expirationMonth;
     @XmlElement(name="ExpirationYear")
-    String expirationYear;
+    int expirationYear;
     @XmlElement(name="PaymentTimestamp")
     String paymentTimestamp;
   }
@@ -294,35 +313,37 @@ public class PaymentsService {
     String fullHtml = """
 <html>
     <head>
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     </head>
     <body>
-      <span id="inset_form"></span>
+    ...
     </body>
     <script>
-      data ='<PaymentRequest>'+
-        '<ClientKey>%s</ClientKey>' +
-        '<TransactionID>%s</TransactionID>'+
-        '<RedirectURL>%s</RedirectURL>'+
-        '<Amount>-1</Amount>' +
-        '<GetToken>1</GetToken>' +
-        '</PaymentRequest>'
-      $('#inset_form').html(
-        '<form action="%s" ' +
-        '  name="temp" method="post"> ' +
-        '  <input type="text" name="RequestXML" value="' + data + '" style="display:none;"/> ' +
-        ' <button>Click here if you aren't redirected automatically</button>' +
-        '</form>')
-      document.forms['temp'].submit()
+      data = '<PaymentRequest><ClientKey>%s</ClientKey><TransactionID>%s</TransactionID>' +
+          '<RedirectURL>%s</RedirectURL><Amount>-1</Amount><GetToken>1</GetToken></PaymentRequest>'; 
+      
+      const form = document.createElement('form');
+      form.method = 'post';
+      //form.target = '_blank';
+      form.action = '%s'; 
+      
+      const hiddenField = document.createElement('input');
+      hiddenField.type = 'hidden';
+      hiddenField.name = 'RequestXML';
+      hiddenField.value = data;
+      form.appendChild(hiddenField);
+      document.body.appendChild(form);
+      form.submit();
     </script>
 </html>
-        """.formatted(this.togaKey, transactionId, this.redirectUrl, this.togaUrl);
+                """.formatted(this.togaKey, transactionId, this.redirectUrl, this.togaUrl);
     return Response.ok(fullHtml).build();
   }
   
   @POST
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Path("/toga_account")
-  public Response makeNewPaymentAccount(@Context HttpHeaders httpHeaders, String body) {
+  public Response makeNewPaymentAccount(@Context HttpHeaders httpHeaders, 
+      @FormParam("ResponseXML") String body) {
     log.info("Making new payment account: " + body);
     try {
       JAXBContext jaxContext = JAXBContext.newInstance(TogaResponseXml.class);
@@ -331,12 +352,34 @@ public class PaymentsService {
       TogaResponseXml resp = (TogaResponseXml) unmar.unmarshal(stream);
       
       CreatePaymentAccountRequestType createAccount = new CreatePaymentAccountRequestType();
-      //createAccount.setPaymentAccount(newAccount);
-      //CreatePaymentAccountResponseType resp = firmPort.get().createPaymentAccount(createAccount);
-      //if (ServiceHelpers.hasError(resp)) {
-      //  return Response.status(400).entity(resp.getError()).build();
-     // }
-      return Response.status(500).build();
+      TempAccount tempInfo = tempAccounts.get(resp.transactionId);
+      PaymentAccountType newAccount = new PaymentAccountType();
+      newAccount.setPaymentAccountTypeCode(tempInfo.typeCode);
+      newAccount.setAccountName(tempInfo.name);
+      newAccount.setAccountToken(resp.payorToken);
+      newAccount.setCardHolderName(tylerCommonObjFac.createPaymentAccountTypeCardHolderName(resp.payorName));
+      String[] tenderDesc = resp.tenderDescription.split(" ");
+      String cardType = tenderDesc[0];
+      newAccount.setCardType(tylerCommonObjFac.createPaymentAccountTypeCardType(cardType));
+      newAccount.setCardMonth(tylerCommonObjFac.createPaymentAccountTypeCardMonth(resp.expirationMonth));
+      newAccount.setCardYear(tylerCommonObjFac.createPaymentAccountTypeCardYear(resp.expirationYear));
+      String last4 = tenderDesc[1].substring(tenderDesc[1].length() - 4);
+      newAccount.setCardLast4(last4);
+      createAccount.setPaymentAccount(newAccount);
+      Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(tempInfo.loginInfo);
+      if (firmPort.isEmpty()) {
+        return Response.status(403).build();
+      }
+      CreatePaymentAccountResponseType accountResp; 
+      if (tempInfo.global) {
+        accountResp = firmPort.get().createGlobalPaymentAccount(createAccount);
+      } else {
+        accountResp = firmPort.get().createPaymentAccount(createAccount);
+      }
+      if (ServiceHelpers.hasError(accountResp)) {
+        return Response.status(400).entity(accountResp.getError()).build();
+      }
+      return Response.status(302).header("Location", tempInfo.originalUrl).build();
     } catch (JAXBException jaxbEx) {
       log.error("Couldn't process the TOGA response in XML: " + body);
       log.error(jaxbEx.toString());

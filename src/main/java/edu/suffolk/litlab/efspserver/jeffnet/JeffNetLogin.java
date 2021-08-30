@@ -17,7 +17,12 @@ public class JeffNetLogin implements LoginInterface {
         || !loginInfo.get("key").isTextual()) {
       return Optional.empty();
     }
-    return Optional.of(Map.of("jeffnet_token", loginInfo.get("key").asText()));
+    return Optional.of(Map.of(getHeaderKey(), loginInfo.get("key").asText()));
+  }
+
+  @Override
+  public String getHeaderKey() {
+    return "JEFFNET-TOKEN";
   }
 
 }

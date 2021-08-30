@@ -32,7 +32,8 @@ import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
-import edu.suffolk.litlab.efspserver.db.LoginInfo;
+import edu.suffolk.litlab.efspserver.db.AtRest;
+import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import tyler.efm.services.EfmUserService;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.IEfmUserService;
@@ -134,31 +135,27 @@ public class AdminUserService {
       return Response.status(401).build();
     }
     log.info("Invoking User Auth for an apiKey"); 
-    Optional<String> activeToken = security.login(apiKey, loginInfo);
+    Optional<Map<String, String>> activeToken = security.login(apiKey, loginInfo);
     return activeToken
-        .map((tok) -> Response.ok("\"" + tok + "\"").build())
+        .map((tok) -> Response.ok(tok).build())
         .orElse(Response.status(403).build());
   }
   
   @GET
   @Path("/user")
   public Response getSelfUser(@Context HttpHeaders httpHeaders) {
-    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<LoginInfo> tylerCreds = security.checkLogin(activeToken, "tyler");
-    if (tylerCreds.isEmpty()) {
-      return Response.status(401).build();
-    }
-    if (tylerCreds.get().userId.isEmpty()) {
-      return Response.status(500).entity(
-          "Server dose not have a Tyler UUID for the current account. Can you give it to me?").build();
-    }
-    Optional<IEfmUserService> port = setupUserPort(tylerCreds.get());
+    Optional<IEfmUserService> port = setupUserPort(httpHeaders); 
     if (port.isEmpty()) { 
       return Response.status(401).build();
     }
+    String tylerId = httpHeaders.getHeaderString("TYLER-ID");
+    if (tylerId == null || tylerId.isBlank()) {
+      return Response.status(500).entity(
+          "Server dose not have a Tyler UUID for the current account. Can you give it to me?").build();
+    }
     
     GetUserRequestType req = new GetUserRequestType();
-    tylerCreds.get().userId.ifPresent(id -> req.setUserID(id)); 
+    req.setUserID(tylerId); 
     GetUserResponseType resp = port.get().getUser(req);
     return makeResponse(resp, () -> Response.ok(resp.getUser()).build());
   }
@@ -270,7 +267,6 @@ public class AdminUserService {
     ResetPasswordResponseType resp = port.get().resetUserPassword(resetReq);
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
         () -> {
-          security.removeTylerUserId(id);
           return Response.ok("\"" + resp.getPasswordHash() + "\"").build(); 
         });
   }
@@ -284,7 +280,6 @@ public class AdminUserService {
   @Path("/user/password")
   public Response setPassword(@Context HttpHeaders httpHeaders,
       SetPasswordParams params) {
-    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -302,7 +297,6 @@ public class AdminUserService {
     ChangePasswordResponseType resp = port.get().changePassword(change);
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
         () -> { 
-          security.removeLogin(activeToken);
           return Response.ok("\"" + resp.getPasswordHash() + "\"").build(); 
         });
   }
@@ -311,7 +305,6 @@ public class AdminUserService {
   @Path("/user/password/reset")
   public Response selfResetPassword(@Context HttpHeaders httpHeaders,
       String emailToSend) {
-    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -322,7 +315,6 @@ public class AdminUserService {
     ResetPasswordResponseType resp = port.get().resetPassword(reset);
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
         () -> {
-          security.removeLogin(activeToken);
           return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
         });
   }
@@ -569,16 +561,17 @@ public class AdminUserService {
    * @return false if setup didn't work, and subsequent service calls will likely fail
    */
   private Optional<IEfmUserService> setupUserPort(HttpHeaders httpHeaders) {
-    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<LoginInfo> tylerCreds = security.checkLogin(activeToken, "tyler");
-    if (tylerCreds.isEmpty()) {
+    String apiKey = httpHeaders.getHeaderString("X-API-KEY");
+    Optional<AtRest> atRest = security.getAtRestInfo(apiKey);
+    if (atRest.isEmpty()) {
       return Optional.empty();
     }
-    return setupUserPort(tylerCreds.get());
+    TylerLogin login = new TylerLogin();
+    return setupUserPort(httpHeaders.getHeaderString(login.getHeaderKey())); 
   }
     
-  private Optional<IEfmUserService> setupUserPort(LoginInfo tylerCreds) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerCreds.usableToken); 
+  private Optional<IEfmUserService> setupUserPort(String tylerToken) {
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken); 
     if (creds.isEmpty()) {
       return Optional.empty();
     }

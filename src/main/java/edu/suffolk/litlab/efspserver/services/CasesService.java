@@ -32,8 +32,9 @@ import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
-import edu.suffolk.litlab.efspserver.db.LoginInfo;
+import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.docassemble.NameDocassembleDeserializer;
+import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import gov.niem.niem.niem_core._2.CaseType;
 import gov.niem.niem.niem_core._2.EntityType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseListQueryMessageType;
@@ -270,13 +271,15 @@ public class CasesService {
   }
 
   private Optional<CourtRecordMDEPort> setupRecordPort(HttpHeaders httpHeaders) {
-    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<LoginInfo> tylerCreds = security.checkLogin(activeToken, "tyler");
-    if (tylerCreds.isEmpty()) {
+    String apiKey = httpHeaders.getHeaderString("X-API-KEY");
+    Optional<AtRest> atRest = security.getAtRestInfo(apiKey); 
+    if (atRest.isEmpty()) {
       log.warn("Couldn't checkLogin");
       return Optional.empty();
     }
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerCreds.get().usableToken);
+    TylerLogin login = new TylerLogin();
+    String tylerToken = login.getHeaderKey();
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken); 
     if (creds.isEmpty()) {
       log.warn("No creds?");
       return Optional.empty();

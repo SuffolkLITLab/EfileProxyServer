@@ -221,13 +221,6 @@
             <artifactId>twilio</artifactId>
             <version>8.15.0</version>
         </dependency>		
-<!--
-        <dependency>
-            <groupId>com.sun.activation</groupId>
-            <artifactId>jakarta.activation</artifactId>
-            <version>1.2.1</version>
-        </dependency>    
--->                
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
@@ -312,7 +305,7 @@
                             </configuration>
                         </execution>
                         <execution>
-                            <id>LoginAddUser</id>
+                            <id>LoginDatabase</id>
                             <goals>
                                 <goal>java</goal>
                             </goals>

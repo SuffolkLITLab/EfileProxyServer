@@ -73,6 +73,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   
   private FilingReviewMDEService filingServiceFactory;
   private CodeDatabase cd;
+  private final String headerKey;
 
   final void init() {
     URL filingReviewUrl = FilingReviewMDEService.WSDL_LOCATION;
@@ -88,7 +89,14 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     listObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory();
     commonObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     niemObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
+    TylerLogin login = new TylerLogin();
+    this.headerKey = login.getHeaderKey();
     init();
+  }
+  
+  @Override
+  public String getHeaderKey() {
+    return this.headerKey;
   }
   
   private Optional<FilingReviewMDEPort> makeFilingService(String tylerToken) { 

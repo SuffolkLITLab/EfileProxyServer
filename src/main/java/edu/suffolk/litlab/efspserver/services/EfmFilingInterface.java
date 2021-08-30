@@ -50,4 +50,7 @@ public interface EfmFilingInterface {
   
   /** Used to properly verify with the SecurityHub. */
   public String getOrgName();
+
+  /** Used to get the proper header that contains the right token. */
+  public String getHeaderKey();
 }
