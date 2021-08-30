@@ -8,5 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public interface LoginInterface {
   
   Optional<Map<String, String>> login(JsonNode loginInfo);
+  
+  String getHeaderKey();
 
 }
