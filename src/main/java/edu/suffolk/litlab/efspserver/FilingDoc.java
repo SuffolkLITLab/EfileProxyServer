@@ -119,8 +119,8 @@ public class FilingDoc {
     this.filingPartyIds = filingPartyIds;
   }
   
-  public String getDescription() {
-    return userProvidedDescription.orElse(fileName);
+  public Optional<String> getDescription() {
+    return userProvidedDescription;
   }
   
   public byte[] getFileContents() {

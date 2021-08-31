@@ -11,7 +11,10 @@ import tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,6 +25,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -79,18 +83,30 @@ public class FilingReviewService {
     return filingInterfaces.get(courtId).getFilingStatus(courtId, filingId, activeToken.get());
  }
   
+  /** If 0 is passed for court, search all courts. */
   @GET
   @Path("/courts/{court_id}/filings")
   public Response getFilingList(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId) {
+      @PathParam("court_id") String courtId,
+      @QueryParam("user_id") String userId, @QueryParam("start_date") String startStr,
+      @QueryParam("end_date") String endStr) {
     if (!filingInterfaces.containsKey(courtId)) {
-      return Response.status(404).entity("Cannot send filing to " + courtId).build();
+      return Response.status(404).entity("Cannot check for filings in " + courtId).build();
     }
     Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    return filingInterfaces.get(courtId).getFilingList(courtId, activeToken.get());
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    try {
+      Date startDate = dateFormat.parse(startStr);
+      Date endDate = dateFormat.parse(endStr);
+      return filingInterfaces.get(courtId).getFilingList(courtId, userId, startDate, endDate, 
+          activeToken.get());
+    } catch (ParseException ex) {
+      return Response.status(400).entity(
+          "Dates given were incorrect, should be of the form: yyyy-MM-dd: " + ex).build();
+    }
   }
   
   @GET

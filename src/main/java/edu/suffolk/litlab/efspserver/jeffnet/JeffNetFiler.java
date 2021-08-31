@@ -23,6 +23,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -140,7 +141,7 @@ public class JeffNetFiler implements EfmFilingInterface {
   }
   
   @Override
-  public Response getFilingList(String courtId, String apiToken) {
+  public Response getFilingList(String courtId, String userId, Date startDate, Date endDate, String apiToken) {
     // TODO Auto-generated method stub
     return Response.status(500).build();
   }

@@ -8,7 +8,9 @@ import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import edu.suffolk.litlab.efspserver.codes.CaseType;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
+import edu.suffolk.litlab.efspserver.codes.FilerType;
 import edu.suffolk.litlab.efspserver.codes.FilingCode;
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.codes.PartyType;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 import java.util.Optional;
 import javax.xml.bind.JAXBElement;
 
+import org.codehaus.stax2.LocationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +66,7 @@ public class EcfCaseTypeFactory {
    */
   public Result<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>, FilingError> 
       makeCaseTypeFromTylerCategory(
-      String courtLocationId,
+      CourtLocationInfo courtLocation,
       CaseCategory initialCaseCategory,
       CaseType caseType,
       FilingCode filing,
@@ -83,9 +86,9 @@ public class EcfCaseTypeFactory {
     CaseCategory caseCategory = initialCaseCategory; 
     String caseCategoryCode = caseCategory.code.get();
     JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug = 
-        makeNiemCaseAug(courtLocationId);
+        makeNiemCaseAug(courtLocation.code);
     JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug = 
-              makeTylerCaseAug(courtLocationId, caseCategory, 
+              makeTylerCaseAug(courtLocation, caseCategory, 
                   caseType, caseSubType, plaintiffs, plaintiffPartyType, defendants, 
                   defendantPartyType, 
                   filingIds,
@@ -121,7 +124,7 @@ public class EcfCaseTypeFactory {
   
   private JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> 
       makeTylerCaseAug(
-          String courtLocationId,
+          CourtLocationInfo courtLocation,
           CaseCategory caseCategory,
           CaseType caseType,
           String caseSubtype,
@@ -159,9 +162,9 @@ public class EcfCaseTypeFactory {
     }
 
     
-    DataFieldRow subTypeConfig = cd.getDataField(courtLocationId, "CaseInformationCaseSubType");
+    DataFieldRow subTypeConfig = cd.getDataField(courtLocation.code, "CaseInformationCaseSubType");
     if (subTypeConfig.isvisible) {
-      List<NameAndCode> subTypes = cd.getCaseSubtypesFor(courtLocationId, caseType.code);
+      List<NameAndCode> subTypes = cd.getCaseSubtypesFor(courtLocation.code, caseType.code);
       Optional<NameAndCode> maybeSubtype = subTypes.stream()
           .filter(type -> type.getName().equals(caseSubtype))
           .findFirst();
@@ -175,7 +178,7 @@ public class EcfCaseTypeFactory {
       }
     }
     
-    List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocationId, caseType.code); 
+    List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocation.code, caseType.code); 
     List<PartyType> requiredTypes = partyTypes.stream().filter(t -> t.isrequired).collect(Collectors.toList());
     if (requiredTypes.size() > 2) { 
       FilingError err = FilingError.serverError("DEV ERROR: there are more than 2 required parties ("
@@ -221,26 +224,46 @@ public class EcfCaseTypeFactory {
     
     boolean initial = caseType.initial;
     Optional<ProcedureRemedyType> res = makeProcedureRemedyType(initial, 
-        caseCategory, courtLocationId, miscInfo, collector);
+        caseCategory, courtLocation.code, miscInfo, collector);
 
     Optional<ProcedureRemedyType> resPlus = addDamageAmountType(
-        res, initial, caseCategory, courtLocationId, miscInfo, collector);
+        res, initial, caseCategory, courtLocation.code, miscInfo, collector);
     if (resPlus.isPresent()) {
       ecfAug.setProcedureRemedy(resPlus.get());
     }
 
     // Filing
-    DataFieldRow filertype = cd.getDataField(courtLocationId, "FilingFilerType");
-    if (filertype.isrequired) {
-      // TODO(brycew): FilerType is an empty table, so can't tell what it might be
-
+    DataFieldRow filertype = cd.getDataField(courtLocation.code, "FilingFilerType");
+    if (filertype.isvisible) {
+      List<FilerType> allTypes = cd.getFilerTypes(courtLocation.code);
+      String filerTypeName = "filer_type";
+      JsonNode filerTypeNode = miscInfo.get(filerTypeName);
+      InterviewVariable var = collector.requestVar("filer_type", 
+         "Metadata about the filer of this case", "choices", 
+         allTypes.stream().map(t -> t.name).collect(Collectors.toList()));
+      if (filerTypeNode != null && filerTypeNode.isTextual()) {
+        String filerType = filerTypeNode.asText();
+        Optional<FilerType> typeInfo = allTypes.stream().filter(t -> t.name.equalsIgnoreCase(filerType)).findFirst();
+        if (typeInfo.isPresent()) {
+          ecfAug.setFilerTypeText(XmlHelper.convertText(typeInfo.get().code));
+        } else {
+          collector.addWrong(var);
+        }
+      } else {
+        Optional<FilerType> defaultType = allTypes.stream().filter(t -> t.isDefault).findFirst();
+        if (defaultType.isPresent()) {
+          ecfAug.setFilerTypeText(XmlHelper.convertText(defaultType.get().code));
+        } else if (filertype.isrequired) {
+          collector.addRequired(var);
+        }
+      }
     }
     // TODO(brycew): FilingComponent
     // TODO(brycew): optional service
     
 
     DataFieldRow filingcaseparties = 
-        cd.getDataField(courtLocationId, "FilingEventCaseParties");
+        cd.getDataField(courtLocation.code, "FilingEventCaseParties");
     gov.niem.niem.structures._2.ObjectFactory structOf = 
         new gov.niem.niem.structures._2.ObjectFactory();
     if (filingcaseparties.isrequired) {
@@ -257,6 +280,18 @@ public class EcfCaseTypeFactory {
       PaymentFactory pf = new PaymentFactory();
       ProviderChargeType pct = pf.makeProviderChargeType(paymentId);
       ecfAug.setProviderCharge(pct);
+    }
+    if (miscInfo.has("max_fee_amount") && courtLocation.allowmaxfeeamount) {
+      AmountType amountType = new AmountType();
+      amountType.setCurrencyCode(CurrencyCodeSimpleType.USD);
+      // TODO(brycew): should I parse from String instead? Unclear
+      if (miscInfo.get("max_fee_amount").isBigDecimal()) {
+        BigDecimal amnt = miscInfo.get("max_fee_amount").decimalValue();
+        amountType.setValue(amnt);
+        ecfAug.setMaxFeeAmount(amountType);
+      } else {
+        throw FilingError.malformedInterview("max_fee_amount needs to be a decimal (float) value");
+      }
     }
     
     log.info("Full ecfAug: " + ecfAug);

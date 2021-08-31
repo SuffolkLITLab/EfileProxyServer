@@ -20,6 +20,7 @@ import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import edu.suffolk.litlab.efspserver.codes.CaseType;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.codes.DocumentTypeTableRow;
 import edu.suffolk.litlab.efspserver.codes.FileType;
@@ -63,7 +64,7 @@ public class EcfCourtSpecificSerializer {
   private static Logger log = LoggerFactory.getLogger(EcfCourtSpecificSerializer.class); 
   
   private CodeDatabase cd;
-  private String courtId;
+  private CourtLocationInfo court;
   gov.niem.niem.niem_core._2.ObjectFactory niemObjFac =
       new gov.niem.niem.niem_core._2.ObjectFactory();
   gov.niem.niem.niem_core._2.ObjectFactory coreObjFac = 
@@ -71,9 +72,9 @@ public class EcfCourtSpecificSerializer {
   oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf = 
       new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
 
-  public EcfCourtSpecificSerializer(CodeDatabase cd, String courtId) {
+  public EcfCourtSpecificSerializer(CodeDatabase cd, CourtLocationInfo court) {
     this.cd = cd;
-    this.courtId = courtId;
+    this.court = court;
   }
   
   /** Needs to have participant role set. 
@@ -119,7 +120,7 @@ public class EcfCourtSpecificSerializer {
 
     if (per.getLanguage().isPresent()) {
       String lang = per.getLanguage().get();
-      List<String> langs = cd.getLanguages(this.courtId);
+      List<String> langs = cd.getLanguages(this.court.code);
       if (!langs.isEmpty() && !langs.contains(lang)) {
         log.info("Can't have language: " + lang);
         collector.addWrong(collector.requestVar("language", "The primary language of this person", "choice", langs));
@@ -151,7 +152,7 @@ public class EcfCourtSpecificSerializer {
       cit.getContactMeans().add(contactMeans); 
     }
       
-    DataFieldRow phoneRow = cd.getDataField(this.courtId, "PartyPhone");
+    DataFieldRow phoneRow = cd.getDataField(this.court.code, "PartyPhone");
     if (phoneRow.isvisible) {
       List<String> numbers = contactInfo.getPhoneNumbers();
       InterviewVariable var = collector.requestVar("phone_number", "Phone number", "text");
@@ -242,11 +243,18 @@ public class EcfCourtSpecificSerializer {
     gov.niem.niem.niem_core._2.ObjectFactory niemObjFac = 
         new gov.niem.niem.niem_core._2.ObjectFactory();
     DocumentType docType = tylerObjFac.createDocumentType();
-    docType.setDocumentDescriptionText(XmlHelper.convertText(doc.getDescription()));
-    
-    List<FileType> allowedFileTypes = cd.getAllowedFileTypes(this.courtId);
+    DataFieldRow row = cd.getDataField(this.court.code, "DocumentDescription");
+    if (row.isvisible) {
+      docType.setDocumentDescriptionText(XmlHelper.convertText(
+          findDocumentDescription(doc.getDescription(), row, doc, filing, collector)));
+    }
+    List<FileType> allowedFileTypes = cd.getAllowedFileTypes(this.court.code);
     List<FileType> correctExtension = allowedFileTypes.stream().filter(t -> t.matchesFile(doc.getFileName())).collect(Collectors.toList());
-    // TODO(brycew): finish extension
+    if (correctExtension.isEmpty()) {
+      FilingError err = FilingError.malformedInterview("Extension of " + doc.getFileName() + " not allowed! Try these instead: " + allowedFileTypes);
+      collector.error(err);
+      throw err;
+    }
 
     docType.setDocumentFileControlID(XmlHelper.convertString(doc.getDocumentFileControlId())); 
     doc.getDueDate().ifPresent((date) -> {
@@ -279,7 +287,7 @@ public class EcfCourtSpecificSerializer {
     docType.setFilingCommentsText(XmlHelper.convertText(doc.getFilingComments()));
     doc.getMotionType().ifPresent(mt -> {
       
-      List<NameAndCode> motiontypes = cd.getMotionTypes(this.courtId, filing.code);
+      List<NameAndCode> motiontypes = cd.getMotionTypes(this.court.code, filing.code);
       // TODO(brycew): "A motion type may be required for a filing type, and may or may not allow multiple occurances"
       // What does it actually mean? Motion types are empty for IL, so IDK what to do if there's nothing there
       docType.setMotionTypeCode(XmlHelper.convertText(mt));
@@ -311,9 +319,9 @@ public class EcfCourtSpecificSerializer {
     
     // Literally should just be if it's confidential or not. (or "Hot fix" or public).
     // Search options in "documenttype" table with location
-    DataFieldRow documentType = cd.getDataField(this.courtId, "DocumentType");
+    DataFieldRow documentType = cd.getDataField(this.court.code, "DocumentType");
     if (documentType.isvisible) { 
-      List<DocumentTypeTableRow> docTypes = cd.getDocumentTypes(courtId, filing.code);
+      List<DocumentTypeTableRow> docTypes = cd.getDocumentTypes(court.code, filing.code);
       InterviewVariable docTypeVar = collector.requestVar("document_type", 
           documentType.helptext +  " " + documentType.validationmessage, "choices", docTypes.stream().map(dt -> dt.name).collect(Collectors.toList()));
       String docTypeStr = doc.getDocumentTypeFormatStandardName();
@@ -358,6 +366,30 @@ public class EcfCourtSpecificSerializer {
       return tylerObjFac.createFilingConnectedDocument(docType);
     }
     
+  }
+  
+  private String findDocumentDescription(Optional<String> userProvidedDescription,
+      DataFieldRow descriptionRow, FilingDoc doc, FilingCode filing, 
+      InfoCollector collector) throws FilingError {
+      if (userProvidedDescription.isPresent()) {
+        return userProvidedDescription.get();
+      } else {
+        if (this.court.defaultdocumentdescription.equals("1")) {
+          return filing.name;
+        } else if (this.court.defaultdocumentdescription.equals("2")) {
+          return doc.getFileName();
+        } else if (descriptionRow.defaultvalueexpression.equals("{{FilingCodeDescription}}")) {
+          return filing.name;
+        } else if (descriptionRow.defaultvalueexpression.equals("{{FileName}}")) {
+          return doc.getFileName();
+        } else if (descriptionRow.isrequired) {
+          InterviewVariable var = collector.requestVar("description", "TODO(brycew): fill in", "text");
+          collector.addRequired(var);
+          throw FilingError.missingRequired(var);
+        } else {
+          return descriptionRow.defaultvalueexpression;
+        }
+      }
   }
   
   
