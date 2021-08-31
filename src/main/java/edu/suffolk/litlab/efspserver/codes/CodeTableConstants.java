@@ -48,9 +48,9 @@ public class CodeTableConstants {
     locationColumns.add(new ImmutablePair<String, String>("allowmaxfeeamount", "text"));
     locationColumns.add(new ImmutablePair<String, String>("transferwaivedfeestocms", "text"));
     locationColumns.add(new ImmutablePair<String, String>("skippreauth", "text"));
-    locationColumns.add(new ImmutablePair<String, String>("allowhearing", "text"));
-    locationColumns.add(new ImmutablePair<String, String>("allowreturndate", "text"));
-    locationColumns.add(new ImmutablePair<String, String>("showdamageamount", "text"));
+    locationColumns.add(new ImmutablePair<String, String>("allowhearing", "text")); // Isn't in documentation anymore?
+    locationColumns.add(new ImmutablePair<String, String>("allowreturndate", "text")); // Isn't in documentation anymore?
+    locationColumns.add(new ImmutablePair<String, String>("showdamageamount", "text")); // Isn't in document anymore?
     locationColumns.add(new ImmutablePair<String, String>("hasconditionalservicetypes", "text"));
     locationColumns.add(new ImmutablePair<String, String>("hasprotectedcasetypes", "text"));
     locationColumns.add(new ImmutablePair<String, String>("protectedcasetypes", "text"));
@@ -60,16 +60,19 @@ public class CodeTableConstants {
     locationColumns.add(new ImmutablePair<String, String>("allowredaction", "text"));
     locationColumns.add(new ImmutablePair<String, String>("redactionurl", "text"));
     locationColumns.add(new ImmutablePair<String, String>("redactionviewerurl", "text"));
+    locationColumns.add(new ImmutablePair<String, String>("redactiontargetconfig", "text"));
     locationColumns.add(new ImmutablePair<String, String>("enforceredaction", "text"));
     locationColumns.add(new ImmutablePair<String, String>("redactiondocumenttype", "text"));
     locationColumns.add(new ImmutablePair<String, String>("defaultdocumentdescription", "text"));
     locationColumns.add(new ImmutablePair<String, String>("allowwaiveronmail", "text"));
     locationColumns.add(new ImmutablePair<String, String>("showreturnonreject", "text"));
     locationColumns.add(new ImmutablePair<String, String>("protectedcasereplacementstring", "text"));
-    locationColumns.add(new ImmutablePair<String, String>("allowchargeupdate", "text"));
-    locationColumns.add(new ImmutablePair<String, String>("allowpartyid", "text"));
+    locationColumns.add(new ImmutablePair<String, String>("allowchargeupdate", "text")); // Isn't in document anymore?
+    locationColumns.add(new ImmutablePair<String, String>("allowpartyid", "text")); // Isn't in documentation anymore?
     locationColumns.add(new ImmutablePair<String, String>("redactionfee", "text"));
     locationColumns.add(new ImmutablePair<String, String>("allowwaiveronredaction", "text"));
+    locationColumns.add(new ImmutablePair<String, String>("disallowelectronicserviceonnewcontacts", "text"));
+    locationColumns.add(new ImmutablePair<String, String>("allowindividualregistration", "text"));
     systemTableColumns.put("location", locationColumns);
 
     systemTableColumns.put("error", List.of(
@@ -455,6 +458,10 @@ public class CodeTableConstants {
   public static String getSpecificStatesForCountryForLoc() {
     return "SELECT code, name, countrycode, location "
         + " FROM state WHERE location=? and countrycode=?";
+  }
+  
+  public static String getFilingStatuses() {
+    return "SELECT name, code FROM filingstatus WHERE location=?";
   }
   
   public static String getLanguages() {

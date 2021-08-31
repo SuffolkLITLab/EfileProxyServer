@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
@@ -42,6 +43,7 @@ import tyler.efm.services.schema.baseresponse.BaseResponseType;
 import tyler.efm.services.schema.changepasswordrequest.ChangePasswordRequestType;
 import tyler.efm.services.schema.changepasswordresponse.ChangePasswordResponseType;
 import tyler.efm.services.schema.common.NotificationType;
+import tyler.efm.services.schema.common.RegistrationType;
 import tyler.efm.services.schema.common.RoleLocationType;
 import tyler.efm.services.schema.common.UserType;
 import tyler.efm.services.schema.getpasswordquestionrequest.GetPasswordQuestionRequestType;
@@ -501,6 +503,14 @@ public class AdminUserService {
     Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) { 
       return Response.status(401).build();
+    }
+    
+    Optional<CourtLocationInfo> system = cd.getFullLocationInfo("0");
+    if (system.isPresent()) {
+      if (req.getRegistrationType().equals(RegistrationType.INDIVIDUAL)
+          && !system.get().allowindividualregistration) {
+        return Response.status(400).entity("System does not allow individual registration").build();
+      }
     }
     
     // The "1" is the default for all courts. There's no way to enforce court specific passwords

@@ -10,6 +10,7 @@ import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import edu.suffolk.litlab.efspserver.codes.CaseType;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.Disclaimer;
 import edu.suffolk.litlab.efspserver.codes.FilingCode;
 import edu.suffolk.litlab.efspserver.codes.FilingComponent;
@@ -19,14 +20,19 @@ import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
+import gov.niem.niem.niem_core._2.DateRangeType;
+import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.TextType;
+import gov.niem.niem.proxy.xsd._2.Date;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,6 +41,9 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.BindingProvider;
 
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
@@ -74,6 +83,18 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   private FilingReviewMDEService filingServiceFactory;
   private CodeDatabase cd;
   private final String headerKey;
+  private FilingReviewMDEService filingFactory;
+  private oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory 
+      statusObjFac;
+  private oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory 
+      listObjFac;
+  private tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory detailObjFac;
+  private tyler.ecf.extensions.cancelfilingmessage.ObjectFactory cancelObjFac;
+  private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory 
+      commonObjFac;
+  private gov.niem.niem.niem_core._2.ObjectFactory niemObjFac;
+  private gov.niem.niem.proxy.xsd._2.ObjectFactory proxyObjFac;
+
 
   final void init() {
     URL filingReviewUrl = FilingReviewMDEService.WSDL_LOCATION;
@@ -89,6 +110,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     listObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory();
     commonObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     niemObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
+    proxyObjFac = new gov.niem.niem.proxy.xsd._2.ObjectFactory();
     TylerLogin login = new TylerLogin();
     this.headerKey = login.getHeaderKey();
     init();
@@ -131,8 +153,13 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       InfoCollector collector, String apiToken) throws FilingError {
     EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
     try {
+      Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(info.getCourtLocation());
+      if (locationInfo.isEmpty()) {
+        throw FilingError.serverError("Court setup wrong: can't find full location info for " + info.getCourtLocation());
+      }
+      
       // TODO(brycew): mapping from string case categories to Tyler code case categories, etc.
-      EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, info.getCourtLocation());
+      EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo.get()); 
     
       Optional<CaseCategory> maybeCaseCat = cd.getCaseCategoryFor(info.getCourtLocation(), info.getCaseCategory());
       if (maybeCaseCat.isEmpty()) {
@@ -163,7 +190,14 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         collector.addWrong(var);
         throw FilingError.wrongValue(var);
       } 
-
+      
+      // Check if the court doesn't handle this type (initial vs subsequent) of filing
+      if ((maybeType.get().initial && !locationInfo.get().initial) 
+          || (!maybeType.get().initial && !locationInfo.get().subsequent)) {
+        throw FilingError.malformedInterview("Filing type (" + ((maybeType.get().initial) ? "Initial" : "Subsequent") 
+            + ") can't be filed at " + locationInfo.get().name);
+      }
+      
       List<FilingCode> filings = cd.getFilingType(info.getCourtLocation(), 
           caseCategory.code.get(), maybeType.get().code, maybeType.get().initial);
       if (filings.isEmpty()) {
@@ -193,7 +227,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     
       Result<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>, FilingError> assembledCase = 
           ecfCaseFactory.makeCaseTypeFromTylerCategory(
-              info.getCourtLocation(), caseCategory, maybeType.get(),
+              locationInfo.get(), caseCategory, maybeType.get(),
               maybeFiling.get(),
               info.getCaseSubtype(),
               info.getPlaintiffs(), info.getPlantiffPartyType(),
@@ -335,7 +369,8 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
 
   
   @Override
-  public Response getFilingList(String courtId, String apiToken) {
+  public Response getFilingList(String courtId, String userId, java.util.Date startDate, 
+      java.util.Date endDate, String apiToken) {
     try {
       List<String> courtIds = cd.getAllLocations();
       if (!courtIds.contains(courtId)) {
@@ -347,8 +382,42 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         return Response.status(403).build();
       }
       FilingListQueryMessageType m = prep(listObjFac.createFilingListQueryMessageType(), courtId);
-      m.setDocumentSubmitter(null); // cof.createEntityPerson(null));
-      m.getDateRange().add(null);
+      if (courtId.equals("0")) {
+        // Search all courts
+        m.setCaseCourt(null);
+      }
+      if (userId != null && !userId.isBlank()) {
+        IdentificationType id = niemObjFac.createIdentificationType();
+        id.setIdentificationID(XmlHelper.convertString(userId));
+        gov.niem.niem.niem_core._2.PersonType per = niemObjFac.createPersonType();
+        per.getPersonOtherIdentification().add(id); 
+        EntityType entity = niemObjFac.createEntityType(); 
+        entity.setEntityRepresentation(niemObjFac.createPerson(per));
+        m.setDocumentSubmitter(entity); 
+      } else {
+        m.setDocumentSubmitter(null);
+      }
+      if (startDate != null && endDate != null) {
+        GregorianCalendar startCal = new GregorianCalendar();
+        startCal.setTime(startDate);
+        DatatypeFactory fac = DatatypeFactory.newInstance();
+        Date actualStart = proxyObjFac.createDate();
+        actualStart.setValue(fac.newXMLGregorianCalendar(startCal));
+        DateType niemStart = niemObjFac.createDateType();
+        niemStart.setDateRepresentation(niemObjFac.createDate(actualStart));
+        
+        GregorianCalendar endCal = new GregorianCalendar();
+        endCal.setTime(endDate);
+        Date actualEnd = proxyObjFac.createDate();
+        actualEnd.setValue(fac.newXMLGregorianCalendar(endCal));
+        DateType niemEnd = niemObjFac.createDateType();
+        niemEnd.setDateRepresentation(niemObjFac.createDate(actualEnd));
+
+        DateRangeType range = niemObjFac.createDateRangeType();
+        range.setStartDate(niemStart);
+        range.setEndDate(niemEnd);
+        m.getDateRange().add(range);
+      }
       FilingListResponseMessageType resp = port.get().getFilingList(m);
       for (MatchingFilingType match : resp.getMatchingFiling()) {
         log.trace("Matched: " + match.getCaseTrackingID() + ", " + match);
@@ -361,7 +430,11 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
             return Response.ok().entity(resp.getMatchingFiling()).build();
           });
     } catch (SQLException ex) {
+      log.error("Couldn't connect to database?" + ex);
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
+    } catch (DatatypeConfigurationException ex) {
+      log.error("Why is datatypeconfigurationexception checked?: " + ex);
+      return Response.status(500).build();
     }
   }
 
@@ -522,18 +595,4 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     return port;
   }
   
-  private FilingReviewMDEService filingFactory;
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory 
-      statusObjFac;
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory 
-      listObjFac;
-  private tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory 
-      detailObjFac;
-  private tyler.ecf.extensions.cancelfilingmessage.ObjectFactory 
-      cancelObjFac;
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory 
-      commonObjFac;
-  private gov.niem.niem.niem_core._2.ObjectFactory
-      niemObjFac;
-
 }

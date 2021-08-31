@@ -167,7 +167,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public void setupGlobals() {
-    OasisEcfWsCallback implementor = new OasisEcfWsCallback(ud, sender);
+    OasisEcfWsCallback implementor = new OasisEcfWsCallback(ud, cd, sender);
     // TODO(brycew): cleaner way to handle baseLocalUrl?
     String baseLocalUrl = "http://0.0.0.0:9000";
     String address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT; 

@@ -95,7 +95,7 @@ public class PersonDocassembleJacksonDeserializer {
     Optional<LocalDate> birthdate = Optional.empty(); // TODO(brycew): read in birthdate
     Name name = NameDocassembleDeserializer.fromNode(node.get("name"), collector); 
     boolean isPer = !name.getMiddleName().isBlank() || !name.getLastName().isBlank();
-    Person per = new Person(name, info, gender, language, birthdate, isPer);
+    Person per = new Person(name, info, gender, language, birthdate, !isPer);
     log.debug("Read in a new person: " + per.getName().getFullName());
     return Result.ok(per);
   }

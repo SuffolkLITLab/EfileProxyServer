@@ -195,29 +195,27 @@ public class FilingInformationDocassembleJacksonDeserializer
       collector.addRequired(var);
     }
 
-    String type_var_name = "tyler_case_type";
-    JsonNode type = node.get(type_var_name);
+    String typeVarName = "tyler_case_type";
+    JsonNode type = node.get(typeVarName);
     if (type != null && type.isTextual()) {
-      String typeStr = type.asText();
-      entities.setCaseType(typeStr);
+      entities.setCaseType(type.asText());
     } else if (metadata.has("title") && metadata.get("title").isTextual()) {
       entities.setCaseType(metadata.get("title").asText());
     } else { 
-      InterviewVariable var = collector.requestVar(type_var_name,  "", "text");
+      InterviewVariable var = collector.requestVar(typeVarName,  "", "text");
       collector.addRequired(var);
     }
 
-    String subtype_var_name = "tyler_case_subtype";
-    JsonNode subtype = node.get(subtype_var_name);
+    String subtypeVarName = "tyler_case_subtype";
+    JsonNode subtype = node.get(subtypeVarName);
     if (subtype != null && subtype.isTextual()) {
-      String subtypeStr = subtype.asText();
-      entities.setCaseType(subtypeStr);
+      entities.setCaseType(subtype.asText());
     } else {
-      InterviewVariable var = collector.requestVar(subtype_var_name, "TODO(brycew)", "text");
+      InterviewVariable var = collector.requestVar(subtypeVarName, "TODO(brycew)", "text");
       collector.addOptional(var);
       entities.setCaseSubtype("");
     }
-
+    
     // Get the interview metadablock TODO(brycew): just one for now
     /*
     log.info("Keyset: " + metadataElems.fieldNames());

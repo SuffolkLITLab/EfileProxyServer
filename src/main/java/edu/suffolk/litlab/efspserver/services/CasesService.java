@@ -31,22 +31,28 @@ import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.docassemble.NameDocassembleDeserializer;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import gov.niem.niem.niem_core._2.CaseType;
 import gov.niem.niem.niem_core._2.EntityType;
+import gov.niem.niem.niem_core._2.TextType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseListQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistresponsemessage_4.CaseListResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryCriteriaType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.CivilCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.CriminalCaseType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.DomesticCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.serviceinformationquerymessage_4.ServiceInformationQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.serviceinformationresponsemessage_4.ServiceInformationResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.CourtRecordMDEPort;
+import tyler.ecf.extensions.common.CaseAugmentationType;
 import tyler.ecf.extensions.serviceattachcaselistquerymessage.ServiceAttachCaseListQueryMessageType;
 import tyler.ecf.extensions.serviceattachcaselistresponsemessage.ServiceAttachCaseListResponseMessageType;
 import tyler.ecf.extensions.serviceinformationhistoryquerymessage.ServiceInformationHistoryQueryMessageType;
@@ -151,6 +157,12 @@ public class CasesService {
       return Response.status(401).build();
     }
     
+    Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId);
+    if (locationInfo.isEmpty()) {
+      log.warn("Can't find court location for " + courtId + " when getting case");
+      return Response.status(404).entity("No court " + courtId).build();
+    }
+    
     CaseQueryMessageType query = new CaseQueryMessageType();
     EntityType typ = new EntityType();
     JAXBElement<PersonType> elem2 = ecfOf.createEntityPerson(new PersonType());
@@ -171,6 +183,18 @@ public class CasesService {
     CaseResponseMessageType resp = maybePort.get().getCase(query);
     if (hasError(resp)) {
       return Response.status(400).entity(resp.getError()).build();
+    }
+    
+    if (locationInfo.get().hasprotectedcasetypes) {
+      CaseType caseType = resp.getCase().getValue();
+      Optional<CaseAugmentationType> caseAug = getCaseTypeCode(caseType);
+      caseAug.ifPresent(aug -> {
+        if (locationInfo.get().protectedcasetypes.contains(aug.getCaseTypeText().getValue())) {
+          TextType protectedText = XmlHelper.convertText(locationInfo.get().protectedcasereplacementstring);
+          aug.setCaseTypeText(protectedText);
+          caseType.setCaseCategoryText(protectedText);
+        }
+      });
     }
     return Response.ok(resp.getCase()).build();
   }
@@ -268,6 +292,29 @@ public class CasesService {
   private boolean hasError(QueryResponseMessageType resp) {
     return resp.getError().size() > 1 || 
         (resp.getError().size() == 1 && !resp.getError().get(0).getErrorCode().getValue().equals("0"));
+  }
+  
+  private Optional<CaseAugmentationType> getCaseTypeCode(CaseType filedCase) {
+    List<JAXBElement<?>> restList = List.of();
+    if (filedCase instanceof CivilCaseType) {
+      CivilCaseType civilCase = (CivilCaseType) filedCase;
+      civilCase.getRest();
+      restList = civilCase.getRest();
+    } else if (filedCase instanceof DomesticCaseType) {
+      DomesticCaseType domesCase = (DomesticCaseType) filedCase;
+      restList = domesCase.getRest();
+    } else if (filedCase instanceof CriminalCaseType) {
+      CriminalCaseType criminalCase = (CriminalCaseType) filedCase;
+      restList = criminalCase.getRest();
+    }
+    for (JAXBElement<?> elem : restList) {
+      if (elem.getValue() instanceof CaseAugmentationType) {
+        CaseAugmentationType aug = (CaseAugmentationType) elem.getValue();
+        return Optional.of(aug); 
+      }
+    }
+
+    return Optional.empty();
   }
 
   private Optional<CourtRecordMDEPort> setupRecordPort(HttpHeaders httpHeaders) {

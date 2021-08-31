@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.ecf.EcfCourtSpecificSerializer;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
@@ -34,7 +35,9 @@ public class AddressTest {
     addr = new Address("100 Circle Road", "Apt 2", "Plano", "TX", "75093", CountryCodeSimpleType.US);
     CodeDatabase cd = mock(CodeDatabase.class);
     when(cd.getStateCodes("US")).thenReturn(List.of("TX", "MA"));
-    serializer = new EcfCourtSpecificSerializer(cd, "adams");
+    CourtLocationInfo loc = new CourtLocationInfo();
+    loc.code = "adams";
+    serializer = new EcfCourtSpecificSerializer(cd, loc); 
   }
   
   @Test

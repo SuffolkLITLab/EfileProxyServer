@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.suffolk.litlab.efspserver.XmlHelper;
+import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.db.Transaction;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
@@ -32,11 +34,13 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   
   private ObjectFactory recepitFac;
   private UserDatabase ud;
+  private CodeDatabase cd;
   private OrgMessageSender msgSender;
   
-  public OasisEcfWsCallback(UserDatabase ud, OrgMessageSender msgSender) {
+  public OasisEcfWsCallback(UserDatabase ud, CodeDatabase cd, OrgMessageSender msgSender) {
     recepitFac = new ObjectFactory();
     this.ud = ud;
+    this.cd = cd;
     this.msgSender = msgSender;
   }
 
@@ -91,8 +95,13 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
         return reply;
       }
       reply.setCaseCourt(XmlHelper.convertCourtType(trans.get().courtId));
+      List<NameAndCode> names = cd.getFilingStatuses(trans.get().courtId);
+      String replyCode = revFiling.getFilingStatus().getStatusText().getValue();
+      Optional<String> statusText = names.stream()
+          .filter(nac -> nac.getCode().equalsIgnoreCase(replyCode)) 
+          .map(nac -> nac.getName()).findFirst();
       Map<String, String> statuses = Map.of(
-          "status", revFiling.getFilingStatus().getStatusText().getValue(),
+          "status", statusText.orElse(replyCode),
           "message_text", revFiling.getFilingStatus().getStatusDescriptionText().stream().reduce("", (des, tt) -> des + tt.getValue(), (des1, des2) -> des1 + des2)
           );
       boolean success = msgSender.sendMessage(trans.get(), statuses); 
