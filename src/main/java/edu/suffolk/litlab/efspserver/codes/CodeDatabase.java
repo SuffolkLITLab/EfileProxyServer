@@ -354,10 +354,53 @@ public class CodeDatabase extends DatabaseInterface {
     st.setString(2, typeCode);
     ResultSet rs = st.executeQuery();
     List<PartyType> partyTypes = new ArrayList<PartyType>();
+    // TODO(brycew): this could benefit from a refactor, but can't do new T(); Find a workaround
     while (rs.next()) {
       partyTypes.add(new PartyType(rs)); 
     }
     return partyTypes;
+  }
+  
+  public List<CrossReference> getCrossReference(String courtLocationId, String caseTypeId) {
+    if (conn == null) {
+      log.error("SQL connection not created in CrossReference");
+      return List.of();
+    }
+    
+    try {
+      PreparedStatement st = conn.prepareStatement(CrossReference.query());
+      st.setString(1, courtLocationId);
+      st.setString(2, caseTypeId);
+      ResultSet rs = st.executeQuery();
+      List<CrossReference> types = new ArrayList<CrossReference>();
+      while (rs.next()) {
+        types.add(new CrossReference(rs));
+      }
+      return types;
+    } catch (SQLException ex) {
+      return List.of();
+    }
+  }
+  
+  public List<ServiceCodeType> getServiceTypes(String courtLocationId) {
+    if (conn == null) {
+      log.error("SQL connection not created in ServiceType");
+      return List.of();
+    }
+    try {
+      String query  = ServiceCodeType.query();
+      PreparedStatement st = conn.prepareStatement(query);
+      st.setString(1, courtLocationId);
+      ResultSet rs = st.executeQuery();
+      List<ServiceCodeType> types = new ArrayList<ServiceCodeType>();
+      while (rs.next()) {
+        types.add(new ServiceCodeType(rs));
+      }
+      return types;
+    } catch (SQLException ex) {
+      log.error("SQL excption: " + ex);
+      return List.of();
+    }
   }
 
   public List<DocumentTypeTableRow> getDocumentTypes(String courtLocationId, String filingCodeId) {
@@ -403,6 +446,28 @@ public class CodeDatabase extends DatabaseInterface {
       PreparedStatement st = conn.prepareStatement(query);
       st.setString(1, courtLocationId);
       st.setString(2, filingCodeId);
+      ResultSet rs = st.executeQuery();
+      List<NameAndCode> motions = new ArrayList<NameAndCode>();
+      while (rs.next()) {
+        motions.add(new NameAndCode(rs.getString(1), rs.getString(2)));
+      }
+      return motions;
+    } catch (SQLException ex) {
+      log.error("SQLException: " + ex.toString());
+      return List.of();
+    }
+  }
+  
+  public List<NameAndCode> getNameSuffixes(String courtLocationId) {
+    if (conn == null) {
+      log.error("SQL connection not created in NameSuffixes yet");
+      return List.of();
+    }
+    
+    try {
+      String query = CodeTableConstants.getNameSuffixes();
+      PreparedStatement st = conn.prepareStatement(query);
+      st.setString(1, courtLocationId);
       ResultSet rs = st.executeQuery();
       List<NameAndCode> motions = new ArrayList<NameAndCode>();
       while (rs.next()) {
@@ -529,7 +594,27 @@ public class CodeDatabase extends DatabaseInterface {
       return List.of();
     }
   }
-
+  
+  public List<OptionalServices> getOptionalServices(String courtId, String filingCode) {
+    if (conn == null) {
+      log.error("connection not started in OptionalServices");
+      return List.of();
+    }
+    
+    try  {
+      PreparedStatement st = OptionalServices.prepQuery(conn, courtId, filingCode);
+      ResultSet rs = st.executeQuery();
+      List<OptionalServices> services = new ArrayList<OptionalServices>();
+      while (rs.next()) {
+        services.add(new OptionalServices(rs));
+      }
+      return services;
+    } catch (SQLException ex) {
+      log.error("SQL exception: " + ex);
+      return List.of();
+    }
+  }
+  
   public List<String> getLanguages(String courtLocationId) {
     if (conn == null) {
       log.error("Can't get language codes?");   

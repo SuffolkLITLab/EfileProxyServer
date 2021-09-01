@@ -4,7 +4,6 @@ import gov.niem.niem.niem_core._2.ObjectFactory;
 import gov.niem.niem.niem_core._2.PersonNameTextType;
 import gov.niem.niem.niem_core._2.PersonNameType;
 import java.util.stream.Stream;
-import javax.xml.bind.JAXBElement;
 
 public class Name {
   private String firstName;
@@ -91,8 +90,4 @@ public class Name {
     return personName;
   }
 
-  public JAXBElement<gov.niem.niem.niem_core._2.PersonNameType> getNiemStruct() {
-    ObjectFactory of = new ObjectFactory();
-    return of.createPersonName(getNameType());
-  }
 }

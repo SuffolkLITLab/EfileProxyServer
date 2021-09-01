@@ -471,6 +471,11 @@ public class CodeTableConstants {
   public static String getDamageAmount() {
     return "SELECT code, name, efspcode, location FROM damageamount WHERE location=? AND casecategory=?";
   }
+
+  public static String getNameSuffixes() {
+    return "SELECT name, code FROM namesuffix WHERE location=?";
+  }
+
   
   /** Will only delete from non-system tables. */
   public static String deleteFromTable(String tableName) {

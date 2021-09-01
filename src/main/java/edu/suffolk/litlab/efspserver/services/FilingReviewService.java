@@ -168,6 +168,37 @@ public class FilingReviewService {
   }
   
   @GET
+  @Path("/courts/{court_id}/filing/servicetypes")
+  public Response getServiceTypes(@Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId, String allVars) {
+    MediaType mediaType = httpHeaders.getMediaType();
+    log.trace("Checking a filing: Media type: " + mediaType);  
+    log.trace("Court id: " + courtId);
+    Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
+    if (activeToken.isEmpty()) {
+      return Response.status(401).entity("Not logged in to file with " + courtId).build();
+    }
+    if (!filingInterfaces.containsKey(courtId)) {
+      return Response.status(404).entity("Cannot send filing to " + courtId).build();
+    }
+    if (!converterMap.containsKey(mediaType.toString())) {
+      return Response.status(415).entity("We only support " + converterMap.keySet()).build();
+    }
+    InfoCollector collector = new FailFastCollector();
+    Result<FilingInformation, FilingError> res = converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
+    if (res.isErr()) {
+      return Response.status(400).entity(collector.jsonSummary()).build();
+    }
+    FilingInformation info = res.unwrapOrElseThrow();
+    info.setCourtLocation(courtId);
+    Result<Response, FilingError> fees = filingInterfaces.get(courtId).getServiceTypes(info, activeToken.get());
+    return fees.match(
+        err -> Response.status(400).entity(err.toJson()).build(),
+        respon -> respon);
+  }
+  
+  
+  @GET
   @Path("/courts/{court_id}/policy")
   public Response getPolicy(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId) {

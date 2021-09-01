@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efspserver;
+package edu.suffolk.litlab.efspserver.codes;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 

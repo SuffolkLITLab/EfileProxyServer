@@ -168,6 +168,12 @@ public class JeffNetFiler implements EfmFilingInterface {
     return Response.ok("[]").build();
   }
 
+  @Override
+  public Result<Response, FilingError> getServiceTypes(FilingInformation info, String apiToken) {
+    return Result.ok(Response.status(500).build());
+  }
+
+
 
   private static class ApiResult {
     @JsonProperty("ResultCode")
@@ -179,7 +185,6 @@ public class JeffNetFiler implements EfmFilingInterface {
     @JsonProperty("TransactionID")
     String transactionId;
   }
-
 
 
 }

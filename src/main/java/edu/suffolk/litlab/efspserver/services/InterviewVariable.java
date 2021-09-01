@@ -27,6 +27,14 @@ public class InterviewVariable {
     return description;
   }
   
+  public void setDescription(String description) {
+    this.description = description;
+  }
+  
+  public void appendDescription(String newDescription) {
+    this.description += newDescription;
+  }
+  
   public String getDatatype() {
     return datatype;
   }

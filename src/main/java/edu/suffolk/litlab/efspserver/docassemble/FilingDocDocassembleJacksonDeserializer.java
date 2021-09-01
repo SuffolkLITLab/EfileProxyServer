@@ -57,7 +57,10 @@ public class FilingDocDocassembleJacksonDeserializer {
 
       // TODO(brycew): we need to put URLs of all of the other filings and read in those files
       URL inUrl = new URL(node.get("data_url").asText().replace("localhost", "docassemble"));
-      if (true /* TODO(brycew): CONTINUE put some check for motion here. */) {
+      Optional<String> motionName = Optional.empty();
+      if (node.has("motion_type") && node.get("motion_type").isTextual()) {
+        motionName = Optional.of(node.get("motion_type").asText());
+      } else {
         InterviewVariable var = collector.requestVar("motion",
             "The Type of Motion that this interview is", "text");
         collector.addOptional(var);
@@ -81,9 +84,21 @@ public class FilingDocDocassembleJacksonDeserializer {
         FilingError err = FilingError.serverError("Couldn't connect to " + inUrl.toString());
         return Result.err(err);
       }
-      return Result.ok(Optional.of(new FilingDoc(fileName, inStream,
-              List.of(), documentTypeFormatName, filingComponentCode, 
-              FilingTypeType.E_FILE, sequenceNum == 0)));
+      return Result.ok(Optional.of(
+          new FilingDoc(fileName, 
+              inStream.readAllBytes(),
+              Optional.empty(),
+              "", 
+              Optional.empty(),
+              List.of(), 
+              Optional.empty(),
+              documentTypeFormatName, filingComponentCode,
+              "",
+              motionName,
+              List.of(),
+              List.of(),
+              FilingTypeType.E_FILE, 
+              sequenceNum == 0)));
     } catch (IOException ex)  {
       FilingError err = FilingError.serverError("IOException trying to parse data_url: " + ex);
       return Result.err(err);

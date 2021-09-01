@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efspserver.services;
 
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.ws.rs.DELETE;
@@ -26,6 +27,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.SecurityHub;
+import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.schema.attachservicecontactrequest.AttachServiceContactRequestType;
 import tyler.efm.services.schema.attorneylistresponse.AttorneyListResponseType;
@@ -68,12 +71,14 @@ public class FirmAttorneyAndServiceService {
       LoggerFactory.getLogger(FirmAttorneyAndServiceService.class); 
 
   private SecurityHub security;
+  private CodeDatabase cd;
   
   private tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac = 
       new tyler.efm.services.schema.common.ObjectFactory();
    
-  public FirmAttorneyAndServiceService(SecurityHub security) {
+  public FirmAttorneyAndServiceService(SecurityHub security, CodeDatabase cd) {
     this.security = security;
+    this.cd = cd;
   }
 
   @GET
@@ -161,6 +166,14 @@ public class FirmAttorneyAndServiceService {
     }
     CreateAttorneyRequestType req = new CreateAttorneyRequestType();
     req.setAttorney(attorney);
+    // TODO(brycew): what happens if a court has an additional requirement on the attorney number?
+    DataFieldRow row = cd.getDataField("1", "GlobalAttorneyNumber");
+    if (row.isrequired && attorney.getBarNumber().isBlank()) {
+      return Response.status(400).entity("Bar number required").build();
+    }
+    if (!row.matchRegex(attorney.getBarNumber())) {
+      return Response.status(400).entity("Bar number doesn't match regex: " + row.regularexpression).build();
+    }
     
     CreateAttorneyResponseType resp = firmPort.get().createAttorney(req);
     return makeResponse(resp, () -> Response.ok("\"" + resp.getAttorneyID() + "\"").build());
@@ -382,7 +395,21 @@ public class FirmAttorneyAndServiceService {
       getJsonString(node, "firmName").ifPresent(firmName-> msg.setFirstName(firmName));
       getJsonString(node, "email").ifPresent(email-> msg.setFirstName(email));
       ServiceContactListResponseType resp = firmPort.get().getPublicList(msg);
-      return makeResponse(resp, () -> Response.ok(resp.getServiceContact()).build());
+      // TODO(brycew): PublicServiceContactShowEmail data config says emails 
+      //  "must not be displayed in a menner that allows programmatic harvesting of the email address."
+      // How do you do that over a REST API?
+      return makeResponse(resp, 
+          () -> {
+            DataFieldRow row = cd.getDataField("1", "PublicServiceContactShowFreeFormFirmName");
+            List<ServiceContactType> contacts = resp.getServiceContact();
+            contacts.stream().forEach(con -> {
+              if (!row.isvisible) {
+                // Hide the FirmName, but leave the AddByFirmName alone
+                con.setFirmName(null);
+              }
+            }); 
+            return Response.ok(contacts).build();
+          });
     } catch (JsonProcessingException e) {
       return Response.status(400).entity(e.toString()).build();
     }
