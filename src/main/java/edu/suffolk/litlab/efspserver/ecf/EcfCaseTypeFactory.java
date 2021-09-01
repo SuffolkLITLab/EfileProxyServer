@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import java.util.Optional;
 import javax.xml.bind.JAXBElement;
 
-import org.codehaus.stax2.LocationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

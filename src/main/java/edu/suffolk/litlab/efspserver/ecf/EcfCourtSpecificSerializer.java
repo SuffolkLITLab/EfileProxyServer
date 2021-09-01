@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.xml.bind.JAXBElement;
 
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efspserver.Address;
 import edu.suffolk.litlab.efspserver.ContactInformation;
 import edu.suffolk.litlab.efspserver.FilingDoc;
+import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
@@ -41,6 +43,8 @@ import gov.niem.niem.niem_core._2.ContactInformationType;
 import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.FullTelephoneNumberType;
 import gov.niem.niem.niem_core._2.PersonLanguageType;
+import gov.niem.niem.niem_core._2.PersonNameTextType;
+import gov.niem.niem.niem_core._2.PersonNameType;
 import gov.niem.niem.niem_core._2.ProperNameTextType;
 import gov.niem.niem.niem_core._2.StreetType;
 import gov.niem.niem.niem_core._2.StructuredAddressType;
@@ -90,6 +94,16 @@ public class EcfCourtSpecificSerializer {
     if (per.isOrg()) {
       ((OrganizationAugmentationType) aug).getContactInformation().add(cit);
       OrganizationType ot = ecfOf.createOrganizationType();
+      DataFieldRow orgNameRow = cd.getDataField(this.court.code, "PartyBusinessName");
+      if (!orgNameRow.matchRegex(per.getName().getFullName())) {
+        InterviewVariable var = 
+            collector.requestVar("name", "Name needs to match the regex: " + orgNameRow.regularexpression, "text");
+        collector.addWrong(var);
+      } else if (per.getName().getFullName().length() > 400) {
+        InterviewVariable var = 
+            collector.requestVar("name", "Name needs to be shorter that 400 characters", "text"); 
+        collector.addWrong(var);
+      }
       ot.setOrganizationName(XmlHelper.convertText(per.getName().getFullName()));
       ot.setId(per.getIdString());
       ot.getRest().add(ecfOf.createOrganizationAugmentation((OrganizationAugmentationType) aug));
@@ -103,20 +117,27 @@ public class EcfCourtSpecificSerializer {
 
     PersonType pt = ecfOf.createPersonType();
     pt.setId(per.getIdString()); 
-    pt.setPersonName(per.getName().getNameType());
+    pt.setPersonName(serializeNameType(per.getName(), collector)); 
     pt.setPersonAugmentation((PersonAugmentationType) aug);
 
-    per.getGender().ifPresent((gen) -> {
-      SEXCodeType sct = new SEXCodeType();
-      if (gen.equalsIgnoreCase("male") || gen.equalsIgnoreCase("m")) {
-        sct.setValue(SEXCodeSimpleType.M);
-      } else if (gen.equalsIgnoreCase("female") || gen.equals("f")) {
-        sct.setValue(SEXCodeSimpleType.F);
-      } else {
-        sct.setValue(SEXCodeSimpleType.U);
+    DataFieldRow genderRow = cd.getDataField(this.court.code, "PartyGender");
+    if (genderRow.isvisible) {
+      if (per.getGender().isPresent()) {
+        String gen = per.getGender().get();
+        SEXCodeType sct = new SEXCodeType();
+        if (gen.equalsIgnoreCase("male") || gen.equalsIgnoreCase("m")) {
+          sct.setValue(SEXCodeSimpleType.M);
+        } else if (gen.equalsIgnoreCase("female") || gen.equals("f")) {
+          sct.setValue(SEXCodeSimpleType.F);
+        } else {
+          sct.setValue(SEXCodeSimpleType.U);
+        }
+        pt.setPersonSex(niemObjFac.createPersonSexCode(sct));
+      } else if (genderRow.isrequired) {
+        InterviewVariable var = collector.requestVar("gender", "Gender of this filer", "text");
+        collector.addRequired(var);
       }
-      pt.setPersonSex(niemObjFac.createPersonSexCode(sct));
-    });
+    }
 
     if (per.getLanguage().isPresent()) {
       String lang = per.getLanguage().get();
@@ -233,6 +254,48 @@ public class EcfCourtSpecificSerializer {
     at.setAddressRepresentation(niemObjFac.createStructuredAddress(sat));
     return niemObjFac.createContactMailingAddress(at);
   }
+  
+  /** Returns the PersonNameType XML object from the given Name. 
+   * @throws FilingError */
+  public gov.niem.niem.niem_core._2.PersonNameType serializeNameType(Name name, InfoCollector collector) throws FilingError {
+    Function<String, PersonNameTextType> wrapName = (n) -> {
+      PersonNameTextType t = niemObjFac.createPersonNameTextType();
+      t.setValue(n);
+      return t;
+    };
+    PersonNameType personName = niemObjFac.createPersonNameType();
+    personName.setPersonGivenName(checkName(name.getFirstName(), 
+        cd.getDataField(this.court.code, "PartyFirstName"), collector,
+        collector.requestVar("name.first", "First name of a case party", "text")));
+    personName.setPersonMaidenName(wrapName.apply(name.getMaidenName()));
+    personName.setPersonMiddleName(checkName(name.getMiddleName(),
+        cd.getDataField(this.court.code, "PartyMiddleName"), collector,
+        collector.requestVar("name.middle", "Middle name of the case party", "text")));
+    personName.setPersonSurName(checkName(name.getLastName(),
+        cd.getDataField(this.court.code, "PartyLastName"), collector,
+        collector.requestVar("name.last", "Last name of the case party", "text")));
+    personName.setPersonNamePrefixText(wrapName.apply(name.getPrefix()));
+    // TODO(brycew)
+    //DataFieldRow suffixRow = cd.getDataField(this.court.code, "PartyFirstName");
+    personName.setPersonNameSuffixText(wrapName.apply(name.getSuffix()));
+    return personName;
+  }
+  
+  private PersonNameTextType checkName(String name, DataFieldRow row, 
+      InfoCollector collector,
+      InterviewVariable var) throws FilingError {
+    if (!row.matchRegex(name)) {
+      var.appendDescription(": must match regex: " + row.regularexpression); 
+      collector.addWrong(var);
+    }
+    if (name.length() > 100) {
+      var.appendDescription(": can't exceed 100 characters");
+      collector.addWrong(var);
+    }
+    PersonNameTextType t = niemObjFac.createPersonNameTextType();
+    t.setValue(name);
+    return t;
+  }
 
   public JAXBElement<DocumentType> filingDocToXml(FilingDoc doc, 
           int sequenceNum, CaseCategory caseCategory, CaseType motionType, FilingCode filing, 
@@ -269,12 +332,21 @@ public class EcfCourtSpecificSerializer {
     
     metadata.setRegisterActionDescriptionText(XmlHelper.convertText(filing.code));
 
-    if (doc.getFilingAttorney().isPresent()) {
-      metadata.setFilingAttorneyID(XmlHelper.convertId(doc.getFilingAttorney().get(), "REFERENCE"));
-    } else {
-      // "This field should contain empty values for Individual filers"
-      metadata.setFilingAttorneyID(XmlHelper.convertId("", "")); 
+    DataFieldRow attorneyRow = cd.getDataField(this.court.code, "FilingFilingAttorneyView");
+    if (attorneyRow.isvisible) {
+      if (doc.getFilingAttorney().isPresent()) {
+        metadata.setFilingAttorneyID(XmlHelper.convertId(doc.getFilingAttorney().get(), "REFERENCE"));
+      } else if (!attorneyRow.isrequired){
+        // "This field should contain empty values for Individual filers"
+        metadata.setFilingAttorneyID(XmlHelper.convertId("", "")); 
+      } else {
+        FilingError err = FilingError.malformedInterview("Court " + this.court.code 
+            + " requires that there be an associated Filing Attorney");
+        collector.error(err);
+        throw err;
+      }
     }
+
     for (String filingPartyId : doc.getFilingPartyIds()) {
       metadata.getFilingPartyID().add(XmlHelper.convertId(filingPartyId, "REFERENCE"));
     }
@@ -284,14 +356,41 @@ public class EcfCourtSpecificSerializer {
     docType.setCourtesyCopiesText(XmlHelper.convertText(cc));
     String prelim = doc.getPreliminaryCopies().stream().reduce("", (base, str) -> base + "," + str);
     docType.setPreliminaryCopiesText(XmlHelper.convertText(prelim));
-    docType.setFilingCommentsText(XmlHelper.convertText(doc.getFilingComments()));
-    doc.getMotionType().ifPresent(mt -> {
+    DataFieldRow commentRow = cd.getDataField(this.court.code, "FilingFilingComments");
+    if (commentRow.isvisible) {
+      String comment = doc.getFilingComments();
+      if (!commentRow.matchRegex(comment)) {
+        InterviewVariable var = collector.requestVar("comment", "", "text");
+        collector.addWrong(var);
+      }
+      // I absolutely refuse to require comments from the user on each individual document. 
+      if (commentRow.isrequired) {
+        log.error("Dev Ops Error: Comments are required per filing document apparently. "
+            + "Not being forced yet");
+      }
+      docType.setFilingCommentsText(XmlHelper.convertText(doc.getFilingComments()));
+    }
+    
+    DataFieldRow motionRow = cd.getDataField(this.court.code, "FilingMotionType"); 
+    if (motionRow.isvisible) {
+      List<NameAndCode> motionTypes = cd.getMotionTypes(this.court.code, filing.code);
+      InterviewVariable var = collector.requestVar("motion_type", "the motion type (?)", "choices", 
+          motionTypes.stream().map(m -> m.getName()).collect(Collectors.toList()));
+      if (doc.getMotionType().isPresent()) {
+        String mt = doc.getMotionType().get();
+        Optional<NameAndCode> matchedMotion = motionTypes.stream().filter(m -> m.getName().equalsIgnoreCase(mt)).findFirst();
+        if (matchedMotion.isPresent()) {
+          docType.setMotionTypeCode(XmlHelper.convertText(matchedMotion.get().getCode()));
+        } else {
+          collector.addWrong(var);
+        }
+      } else if (motionRow.isrequired) {
+        // TODO(brycew): "A motion type may be required for a filing type, and may or may not allow multiple occurances"
+        // What does it actually mean? Motion types are empty for IL, so IDK what to do if there's nothing there
+        collector.addRequired(var);
+      }
       
-      List<NameAndCode> motiontypes = cd.getMotionTypes(this.court.code, filing.code);
-      // TODO(brycew): "A motion type may be required for a filing type, and may or may not allow multiple occurances"
-      // What does it actually mean? Motion types are empty for IL, so IDK what to do if there's nothing there
-      docType.setMotionTypeCode(XmlHelper.convertText(mt));
-    });
+    }
     docType.setFilingAction(doc.getFilingAction());
 
     // TODO(brycew): what should this actually be? Very unclear

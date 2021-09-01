@@ -21,6 +21,7 @@ import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import edu.suffolk.litlab.efspserver.codes.CaseType;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
+import edu.suffolk.litlab.efspserver.codes.CrossReference;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.codes.Disclaimer;
 import edu.suffolk.litlab.efspserver.codes.DocumentTypeTableRow;
@@ -28,7 +29,9 @@ import edu.suffolk.litlab.efspserver.codes.FileType;
 import edu.suffolk.litlab.efspserver.codes.FilingCode;
 import edu.suffolk.litlab.efspserver.codes.FilingComponent;
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
+import edu.suffolk.litlab.efspserver.codes.OptionalServices;
 import edu.suffolk.litlab.efspserver.codes.PartyType;
+import edu.suffolk.litlab.efspserver.codes.ServiceCodeType;
 
 @Path("/codes/")
 @Produces({MediaType.APPLICATION_JSON})
@@ -85,6 +88,18 @@ public class CodesService {
 
     return Response.ok(caseTypes).build();
   }
+  
+  @GET
+  @Path("/courts/{court_id}/name_suffixes")
+  public Response getNameSuffixes(@Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId) throws SQLException {
+    if (!cd.getAllLocations().contains(courtId)) {
+      return Response.status(404).entity("Court does not exist " + courtId).build();
+    }
+    
+    List<NameAndCode> suffixes = cd.getNameSuffixes(courtId);
+    return Response.ok(suffixes).build();
+  }
 
   @GET
   @Path("/courts/{court_id}/case_types/{case_type_id}/case_subtypes")
@@ -98,6 +113,17 @@ public class CodesService {
       List<NameAndCode> caseSubtypes = cd.getCaseSubtypesFor(courtId, caseTypeId);
 
     return Response.ok(caseSubtypes).build();
+  }
+  
+  @GET
+  @Path("/courts/{court_id}/service_types")
+  public Response getServiceTypes(@Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId) throws SQLException {
+    if (!cd.getAllLocations().contains(courtId)) {
+      return Response.status(404).entity("Court does not exist: " + courtId).build();
+    }
+    List<ServiceCodeType> types= cd.getServiceTypes(courtId); 
+    return Response.ok(types).build();
   }
 
   @GET
@@ -148,27 +174,39 @@ public class CodesService {
   @GET
   @Path("/courts/{court_id}/case_types/{case_type_id}/party_types")
   public Response getPartyTypes(@Context HttpHeaders httpHeaders, 
-    @PathParam("court_id") String courtId,
-    @PathParam("case_type_id}") String caseTypeId) throws SQLException {
-
-      if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
-      }
-      List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, caseTypeId);
+      @PathParam("court_id") String courtId,
+      @PathParam("case_type_id}") String caseTypeId) throws SQLException {
+    if (!cd.getAllLocations().contains(courtId)) {
+      return Response.status(404).entity("Court does not exist " + courtId).build();
+    }
+    List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, caseTypeId);
 
     return Response.ok(partyTypes).build();
   }
 
   @GET
+  @Path("/courts/{court_id}/casetypes/{case_type_id}/cross_references")
+  public Response getCrossReferences(@Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId,
+      @PathParam("case_type_id") String caseTypeId) throws SQLException {
+    if (!cd.getAllLocations().contains(courtId)) {
+      return Response.status(404).entity("Court does not exist " + courtId).build();
+    }
+    
+    List<CrossReference> refs = cd.getCrossReference(courtId, caseTypeId);
+    return Response.ok(refs).build();
+  }
+
+
+  @GET
   @Path("/courts/{court_id}/filing_codes/{filing_code_id}/document_types")
   public Response getDocumentTypes(@Context HttpHeaders httpHeaders, 
-    @PathParam("court_id") String courtId,
-    @PathParam("filing_code_id}") String filingCodeId) throws SQLException {
-
-      if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
-      }
-      List<DocumentTypeTableRow> documentTypes = cd.getDocumentTypes(courtId, filingCodeId);
+      @PathParam("court_id") String courtId,
+      @PathParam("filing_code_id}") String filingCodeId) throws SQLException {
+    if (!cd.getAllLocations().contains(courtId)) {
+      return Response.status(404).entity("Court does not exist " + courtId).build();
+    }
+    List<DocumentTypeTableRow> documentTypes = cd.getDocumentTypes(courtId, filingCodeId);
 
     return Response.ok(documentTypes).build();
   }
@@ -215,15 +253,27 @@ public class CodesService {
   public Response getFilingComponents(@Context HttpHeaders httpHeaders, 
       @PathParam("court_id") String courtId,
       @PathParam("filing_code_id}") String filingCodeId) throws SQLException {
-
-      if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
-      }
-      List<FilingComponent> filingComponents = cd.getFilingComponents(courtId, filingCodeId);
+    if (!cd.getAllLocations().contains(courtId)) {
+      return Response.status(404).entity("Court does not exist " + courtId).build();
+    }
+    List<FilingComponent> filingComponents = cd.getFilingComponents(courtId, filingCodeId);
 
     return Response.ok(filingComponents).build();
   }  
-
+  
+  @GET
+  @Path("/courts/{court_id}/filing_codes/{filing_code_id}/optional_services")
+  public Response getOptionalServices(@Context HttpHeaders httpHeaders, 
+      @PathParam("court_id") String courtId,
+      @PathParam("filing_code_id") String filingCodeId) throws SQLException {
+    if (cd.getAllLocations().contains(courtId)) {
+      return Response.status(400).entity("Court does not exist " + courtId).build();
+    }
+    
+    List<OptionalServices> optionalServices = cd.getOptionalServices(courtId, filingCodeId);
+    return Response.ok(optionalServices).build();
+  }
+  
   @GET
   @Path("/countries/{country}/states")
   public Response getStates(@Context HttpHeaders httpHeaders, 

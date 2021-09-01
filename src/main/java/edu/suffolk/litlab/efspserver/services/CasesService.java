@@ -91,13 +91,13 @@ public class CasesService {
       return Response.status(401).build();
     }
 
-    try {
-      List<String> allLocs = cd.getAllLocations();
-      if (!allLocs.contains(courtId)) {
-        return Response.status(404).entity(courtId + " not in available courts to search").build();
-      }
-    } catch (SQLException e) {
-      log.error(e.toString()); 
+    Optional<CourtLocationInfo> info = cd.getFullLocationInfo(courtId);
+    if (info.isEmpty()) {
+      return Response.status(404).entity(courtId + " not in available courts to search").build();
+    }
+    DataFieldRow legacyRow = cd.getDataField(courtId, "LegacyLocationCaseSearch");
+    if (!legacyRow.isvisible && info.get().initial) {
+      return Response.status(400).entity(courtId + " doesn't allow for case searches").build();
     }
     
     if (courtId.equals("1")) {
