@@ -3,15 +3,46 @@ package edu.suffolk.litlab.efspserver;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class FilingInformation {
+
   private String courtLocationId;
   private List<Person> plaintiffs;
   private String plaintiffPartyType;
   private List<Person> defendants;
   private String defendantPartyType;
+  
+  /** A list of attorney UIDs. 
+   * 
+   * For Tyler at least, the Attorneys are registered in the system beforehand. In that case, these
+   * are the GUIDs of the Attorneys in that system.
+   * 
+   * TODO(brycew): this isn't super general, and relies on registering Attorneys elsewhere. 
+   * Make it more generic if possible.
+   */
+  private List<String> attorneyIds;
+  /** A map from party Ids (in the person Objs) to a list of their Attorneys
+   * 
+   * A party not present in the map means you don't know who the attorney is (or for subsequent filings,
+   * don't want to modify any attorneys). 
+   * A party with an empty list means the party is Pro Se.
+   */
+  private Map<String, List<String>> partyToAttorneyIds;
+  
+  
+  /** List of service contacts to add to the case. Contacts are mostly an ID of the contact already
+   * registered within the EFM system.
+   */
+  private List<CaseServiceContact> serviceContacts;
+ 
+  /** A tracking ID from the EFM system for the existing case. For subsequent filing. */
+  private Optional<String> prevCaseId = Optional.empty();
+  /** Existing docket number, NOT from EFM system. For subsequent filing into non-indexed cases. */
+  private Optional<String> caseDocketNumber = Optional.empty();
 
   // TODO(brycew): refactor so this is selected only in Tyler stuff
   private CaseCategory caseCategory;
@@ -70,12 +101,24 @@ public class FilingInformation {
     return defendantPartyType;
   }
   
+  public List<String> getAttorneyIds() {
+    return attorneyIds;
+  }
+  
+  public Map<String, List<String>> getPartyAttorneyMap() {
+    return partyToAttorneyIds;
+  }
+  
   public CaseCategory getCaseCategory() {
     return caseCategory;
   }
   
   public String getCaseType() {
     return caseType;
+  }
+  
+  public List<CaseServiceContact> getServiceContacts() {
+    return serviceContacts;
   }
   
   public String getCaseSubtype() {
@@ -88,6 +131,14 @@ public class FilingInformation {
   
   public String getPaymentId() {
     return paymentId;
+  }
+  
+  public Optional<String> getPreviousCaseId() {
+    return prevCaseId;
+  }
+
+  public Optional<String> getCaseDocketNumber() {
+    return caseDocketNumber;
   }
   
   public JsonNode getMiscInfo() {
@@ -114,8 +165,28 @@ public class FilingInformation {
     this.defendantPartyType = defendantPartyType;
   }
 
+  public void setAttorneyIds(List<String> attorneyIds) {
+    this.attorneyIds = attorneyIds;
+  }
+  
+  public void setPartyAttorneyMap(Map<String, List<String>> partyToAttorneyIds) {
+    this.partyToAttorneyIds = partyToAttorneyIds; 
+  }
+  
+  public void setServiceContacts(List<CaseServiceContact> serviceContacts) {
+    this.serviceContacts = serviceContacts;
+  }
+
   public void setCaseCategory(CaseCategory caseCategory) {
     this.caseCategory = caseCategory;
+  }
+  
+  public void setPreviousCaseId(String id) {
+    this.prevCaseId = Optional.of(id);
+  }
+
+  public void setCaseDocketNumber(String num) {
+    this.caseDocketNumber = Optional.of(num);
   }
   
   public void setCaseType(String caseType) {

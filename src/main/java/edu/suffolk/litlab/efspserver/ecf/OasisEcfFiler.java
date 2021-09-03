@@ -2,6 +2,8 @@ package edu.suffolk.litlab.efspserver.ecf;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hubspot.algebra.Result;
+
+import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.PaymentFactory;
@@ -12,9 +14,11 @@ import edu.suffolk.litlab.efspserver.codes.CaseType;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.CrossReference;
+import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.codes.Disclaimer;
 import edu.suffolk.litlab.efspserver.codes.FilingCode;
 import edu.suffolk.litlab.efspserver.codes.FilingComponent;
+import edu.suffolk.litlab.efspserver.codes.ServiceCodeType;
 import edu.suffolk.litlab.efspserver.services.EfmCheckableFilingInterface;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
@@ -51,6 +55,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.ws.BindingProvider;
 
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ElectronicServiceInformationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.CoreFilingMessageType;
@@ -165,9 +170,18 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         throw FilingError.serverError("Court setup wrong: can't find full location info for " + info.getCourtLocation());
       }
       
+      if (!locationInfo.get().allowfilingintononindexedcase && info.getCaseDocketNumber().isPresent() 
+          && info.getPreviousCaseId().isEmpty()) {
+        FilingError err = FilingError.malformedInterview("Court " + info.getCourtLocation() 
+            + " doesn't allow subsequent filing into non-indexed cases. If this case is in the court system, provide the Case tracking ID. If it's not,"
+            + " don't provide the docket number.");
+        collector.error(err);
+        throw err;
+      }
+      
       // TODO(brycew): mapping from string case categories to Tyler code case categories, etc.
       EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo.get()); 
-    
+      
       Optional<CaseCategory> maybeCaseCat = cd.getCaseCategoryFor(info.getCourtLocation(), info.getCaseCategory());
       if (maybeCaseCat.isEmpty()) {
         List<CaseCategory> categories = cd.getCaseCategoriesFor(info.getCourtLocation());
@@ -201,8 +215,16 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       // Check if the court doesn't handle this type (initial vs subsequent) of filing
       if ((maybeType.get().initial && !locationInfo.get().initial) 
           || (!maybeType.get().initial && !locationInfo.get().subsequent)) {
-        throw FilingError.malformedInterview("Filing type (" + ((maybeType.get().initial) ? "Initial" : "Subsequent") 
+        FilingError err = FilingError.malformedInterview("Filing type (" + ((maybeType.get().initial) ? "Initial" : "Subsequent") 
             + ") can't be filed at " + locationInfo.get().name);
+        collector.error(err);
+        throw err;
+      }
+
+      if (maybeType.get().initial && info.getCaseDocketNumber().isPresent()) {
+        FilingError err = FilingError.malformedInterview("Initial filing case type can't have docket number");
+        collector.error(err);
+        throw err;
       }
       
       List<FilingCode> filings = cd.getFilingType(info.getCourtLocation(), 
@@ -215,12 +237,12 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         throw FilingError.wrongValue(var);
       }
     
-      InterviewVariable var = collector.requestVar("filing", "TODO(brycew): description", "text", filings.stream().map(f -> f.name).collect(Collectors.toList()));
+      InterviewVariable filingVar = collector.requestVar("filing", "TODO(brycew): description", "text", filings.stream().map(f -> f.name).collect(Collectors.toList()));
       JsonNode filingJson = info.getMiscInfo().get("filing");
       if (filingJson == null || filingJson.isNull() || !filingJson.isTextual()) {
         log.error("filing not present in the info!: " + info.getMiscInfo());
-        collector.addRequired(var);
-        throw FilingError.missingRequired(var);
+        collector.addRequired(filingVar);
+        throw FilingError.missingRequired(filingVar);
       }
     
       Optional<FilingCode> maybeFiling = filings.stream()
@@ -228,22 +250,19 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
           .findFirst();
       if (maybeFiling.isEmpty()) {
         log.error("Nothing matches filing in the info: " + filingJson.asText());
-        collector.addWrong(var);
-        throw FilingError.missingRequired(var);
+        collector.addWrong(filingVar);
+        throw FilingError.missingRequired(filingVar);
       }
     
       Result<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>, FilingError> assembledCase = 
           ecfCaseFactory.makeCaseTypeFromTylerCategory(
               locationInfo.get(), caseCategory, maybeType.get(),
+              info, 
               maybeFiling.get(),
-              info.getCaseSubtype(),
-              info.getPlaintiffs(), info.getPlantiffPartyType(),
-              info.getDefendants(), info.getDefendantPartyType(),
               info.getFilings()
                   .stream()
                   .map(f -> f.getIdString())
                   .collect(Collectors.toList()), 
-              info.getPaymentId(), 
               "review", info.getMiscInfo(), serializer, collector); 
       if (assembledCase.isErr()) {
         collector.error(assembledCase.unwrapErrOrElseThrow());
@@ -299,6 +318,42 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       if (!reqRefs.isEmpty()) {
         refsVar.appendDescription(": the following refs are required: " + reqRefs);
         collector.addRequired(refsVar);
+      }
+      Optional<Boolean> serviceOnInitial = locationInfo.get().allowserviceoninitial;
+      if (serviceOnInitial.isEmpty()) {
+        serviceOnInitial = Optional.of(cd.getDataField(locationInfo.get().code, "FilingServiceCheckBoxInitial").isvisible);
+      }
+      if (maybeType.get().initial && !serviceOnInitial.get() 
+          && info.getServiceContacts().size() > 0) {
+        FilingError err = FilingError.malformedInterview("Court " + locationInfo.get().name + " doesn't allow service on initial filings");
+        collector.error(err);
+        throw err;
+      }
+      DataFieldRow checkBoxSub = cd.getDataField(locationInfo.get().code, "FilingServiceCheckBoxSubsequent");
+      if (!maybeType.get().initial && !checkBoxSub.isvisible && info.getServiceContacts().size() > 0) {
+        FilingError err = FilingError.malformedInterview("Court " + locationInfo.get().name + " doesn't allow service on subsequent filings");
+        collector.error(err);
+        throw err;
+      }
+
+      int i = 0; 
+      for (CaseServiceContact servContact : info.getServiceContacts()) {
+        ElectronicServiceInformationType servInfo = commonObjFac.createElectronicServiceInformationType();
+        List<ServiceCodeType> types =  cd.getServiceTypes(info.getCourtLocation());
+        Optional<ServiceCodeType> code = types.stream().filter(t -> t.name.equalsIgnoreCase(servContact.serviceType)).findFirst();
+        InterviewVariable var = collector.requestVar("service_contact[" + i + "].service_type", "service type should be", "choices", 
+            types.stream().map(t -> t.name).collect(Collectors.toList()));
+        if (code.isEmpty()) {
+          collector.addWrong(var);
+        }
+        if (code.get().code.equals("-580") && maybeType.get().initial && locationInfo.get().disallowelectronicserviceonnewcontacts) { // Eservice
+
+        }
+        IdentificationType id = niemObjFac.createIdentificationType();
+        id.setIdentificationSourceText(XmlHelper.convertText(code.get().code));
+        servInfo.setServiceRecipientID(id);
+        servInfo.setId(servContact.refId);
+        cfm.getElectronicServiceInformation().add(servInfo); 
       }
 
       cfm.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 

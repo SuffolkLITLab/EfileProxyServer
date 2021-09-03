@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.hubspot.algebra.Result;
 
 import edu.suffolk.litlab.efspserver.FilingDoc;
+import edu.suffolk.litlab.efspserver.OptionalService;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
@@ -11,6 +12,8 @@ import tyler.ecf.extensions.common.FilingTypeType;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,6 +75,19 @@ public class FilingDocDocassembleJacksonDeserializer {
         // Doesn't have to be a document type
       }
       
+      List<OptionalService> optServices = new ArrayList<OptionalService>();
+      if (node.has("optional_services") && node.get("optional_services").isArray()) {
+        JsonNode optServs = node.get("optional_services");
+        optServs.elements().forEachRemaining(optServ -> {
+          String code = optServ.get("code").asText();
+          JsonNode multJson = optServ.get("multiplier");
+          Optional<Integer> mult = (multJson.isInt()) ? Optional.of(multJson.asInt()) : Optional.empty();
+          JsonNode feeJson = optServ.get("fee_amount");
+          Optional<BigDecimal> fee = (feeJson.isBigDecimal()) ? Optional.of(feeJson.decimalValue()) : Optional.empty();
+          optServices.add(new OptionalService(code, mult, fee));
+        });
+      }
+      
       String filingComponentCode = "";
       JsonNode filingComponentJson = node.get("filing_component");
       if (filingComponentJson != null && filingComponentJson.isTextual()) {
@@ -95,6 +111,7 @@ public class FilingDocDocassembleJacksonDeserializer {
               documentTypeFormatName, filingComponentCode,
               "",
               motionName,
+              optServices,
               List.of(),
               List.of(),
               FilingTypeType.E_FILE, 

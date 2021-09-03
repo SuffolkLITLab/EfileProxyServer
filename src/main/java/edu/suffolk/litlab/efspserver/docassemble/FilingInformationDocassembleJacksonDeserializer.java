@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.hubspot.algebra.Result;
 
+import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
@@ -19,10 +20,15 @@ import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import edu.suffolk.litlab.efspserver.services.JsonExtractException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +82,12 @@ public class FilingInformationDocassembleJacksonDeserializer
       return Result.err(err);
     }
     List<Person> users = collectPeople(node, "users", collector);
+    Map<String, String> varToId = new HashMap<String, String>();
+    int perIdx = 0;
+    for (Person user : users) {
+      varToId.put("users[" + perIdx + "]", user.getIdString());
+      perIdx++;
+    }
     if (users.isEmpty()) {
       // TODO(brycew): does this need to be split up into every single thing that could be in users?
       InterviewVariable varExpected = new InterviewVariable("users", 
@@ -90,7 +102,8 @@ public class FilingInformationDocassembleJacksonDeserializer
       users.get(0).setLanguage(
           node.get("user_preferred_language").asText());
     }
-    // TODO(brycew): optional
+    log.debug("Got users");
+
     Optional<String> userEmail = users.get(0).getContactInfo().getEmail(); 
     if (userEmail.isEmpty() || userEmail.get().isBlank()) { 
       InterviewVariable var = new InterviewVariable(
@@ -98,13 +111,17 @@ public class FilingInformationDocassembleJacksonDeserializer
       collector.addRequired(var);
     }
       
-    log.debug("Got users");
     final List<Person> otherParties = collectPeople(node, "other_parties", collector);
     if (otherParties.isEmpty()) {
       InterviewVariable othersExpected = new InterviewVariable("other_parties", 
           "the side of the matter that current person answering this interview is on",
           "ALPeopleList", List.of());
       collector.addOptional(othersExpected);
+    }
+    perIdx = 0;
+    for (Person party : otherParties) {
+      varToId.put("other_parties[" + perIdx + "]", party.getIdString());
+      perIdx++;
     }
     log.debug("Got other parties");
       
@@ -162,7 +179,43 @@ public class FilingInformationDocassembleJacksonDeserializer
       });
       entities.setDefendants(users);
     }
+    
+    JsonNode attorneyIds = node.get("attorney_ids");
+    if (attorneyIds != null && attorneyIds.isArray()) {
+      List<String> ids = new ArrayList<String>(); 
+      attorneyIds.elements().forEachRemaining(jId -> ids.add(jId.asText()));
+      entities.setAttorneyIds(ids);
       
+      JsonNode partyToAttorneyJson = node.get("party_to_attorneys");
+      if (partyToAttorneyJson != null && partyToAttorneyJson.isObject()) {
+        Map<String, List<String>> partyToAttorney = new HashMap<String, List<String>>();
+        Iterator<Entry<String, JsonNode>> elems = partyToAttorneyJson.fields();
+        while (elems.hasNext()) {
+          Entry<String, JsonNode> elem = elems.next();
+          List<String> theseAttorneys = new ArrayList<String>();
+          elem.getValue().elements().forEachRemaining(v -> theseAttorneys.add(v.asText()));
+          partyToAttorney.put(elem.getKey(), theseAttorneys);
+        }
+      }
+    }
+    
+    JsonNode serviceContactsJson = node.get("service_contacts");
+    if (serviceContactsJson != null && serviceContactsJson.isArray()) {
+      List<CaseServiceContact> contacts = new ArrayList<CaseServiceContact>();
+      serviceContactsJson.elements().forEachRemaining(servObj -> {
+        Optional<String> partyPerId = Optional.empty(); 
+        if (servObj.has("party_association")) {
+          JsonNode partyAssocJson = servObj.get("party_association");
+          partyPerId = Optional.of(varToId.get(partyAssocJson.asText()));
+        }
+        CaseServiceContact contact = new CaseServiceContact(
+            servObj.get("contact_id").asText(),
+            servObj.get("service_type").asText(), partyPerId);
+        contacts.add(contact);
+      });
+    }
+    
+    
     // TODO(brycew): this approach is a complete mess, don't know
     // how to best map LIST onto case categories, ECF is too high level
     String category_var_name = "tyler_case_category";
@@ -214,6 +267,16 @@ public class FilingInformationDocassembleJacksonDeserializer
       InterviewVariable var = collector.requestVar(subtypeVarName, "TODO(brycew)", "text");
       collector.addOptional(var);
       entities.setCaseSubtype("");
+    }
+
+    JsonNode prevCaseId = node.get("previous_case_id");
+    if (prevCaseId != null && prevCaseId.isTextual()) {
+      entities.setPreviousCaseId(prevCaseId.asText());
+    }
+
+    JsonNode docketNumber = node.get("docket_number"); 
+    if (docketNumber != null && docketNumber.isTextual()) {
+      entities.setCaseDocketNumber(docketNumber.asText());
     }
     
     // Get the interview metadablock TODO(brycew): just one for now
@@ -268,6 +331,7 @@ public class FilingInformationDocassembleJacksonDeserializer
         filingDocs.get(0).setFilingComments(filingComments);
       }
     }
+    
     JsonNode paymentIdJson = node.get("tyler_payment_id");
     if (paymentIdJson != null && paymentIdJson.isTextual()) {
       entities.setPaymentId(paymentIdJson.asText());

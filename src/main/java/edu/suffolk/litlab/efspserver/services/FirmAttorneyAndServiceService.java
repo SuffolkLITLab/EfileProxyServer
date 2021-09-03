@@ -19,9 +19,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,9 +63,6 @@ import tyler.efm.services.schema.updateservicecontactresponse.UpdateServiceConta
 @Path("/firmattorneyservice/")
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 public class FirmAttorneyAndServiceService {
-
-  private static Logger log = 
-      LoggerFactory.getLogger(FirmAttorneyAndServiceService.class); 
 
   private SecurityHub security;
   private CodeDatabase cd;

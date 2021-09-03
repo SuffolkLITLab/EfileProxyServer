@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class OptionalServices {
+public class OptionalServiceCode {
   public final String code;
   public final String name;
   /** An int to represent the order in which to present the optional services. 
@@ -26,7 +26,7 @@ public class OptionalServices {
   /** Text presented to the filer when prompting for the fee amount. */
   public final String feeprompttext;
   
-  public OptionalServices(String code, String name, String displayorder, String fee, String filingcodeid,
+  public OptionalServiceCode(String code, String name, String displayorder, String fee, String filingcodeid,
       String multiplier, String altfeedesc, String hasfeeprompt, String feeprompttext) {
     this.code = code;
     this.name = name;
@@ -39,7 +39,7 @@ public class OptionalServices {
     this.feeprompttext = feeprompttext;
   }
   
-  public OptionalServices(ResultSet rs) throws SQLException {
+  public OptionalServiceCode(ResultSet rs) throws SQLException {
     this(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), 
         rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9));
   }

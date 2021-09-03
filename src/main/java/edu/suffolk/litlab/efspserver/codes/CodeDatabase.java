@@ -595,18 +595,18 @@ public class CodeDatabase extends DatabaseInterface {
     }
   }
   
-  public List<OptionalServices> getOptionalServices(String courtId, String filingCode) {
+  public List<OptionalServiceCode> getOptionalServices(String courtId, String filingCode) {
     if (conn == null) {
       log.error("connection not started in OptionalServices");
       return List.of();
     }
     
     try  {
-      PreparedStatement st = OptionalServices.prepQuery(conn, courtId, filingCode);
+      PreparedStatement st = OptionalServiceCode.prepQuery(conn, courtId, filingCode);
       ResultSet rs = st.executeQuery();
-      List<OptionalServices> services = new ArrayList<OptionalServices>();
+      List<OptionalServiceCode> services = new ArrayList<OptionalServiceCode>();
       while (rs.next()) {
-        services.add(new OptionalServices(rs));
+        services.add(new OptionalServiceCode(rs));
       }
       return services;
     } catch (SQLException ex) {
