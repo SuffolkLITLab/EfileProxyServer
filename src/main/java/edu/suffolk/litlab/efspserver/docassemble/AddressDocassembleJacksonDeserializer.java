@@ -65,6 +65,7 @@ public class AddressDocassembleJacksonDeserializer {
       InterviewVariable countryOptions = collector.requestVar("country", 
           "The 2 letter country code", "choices", countries);
       FilingError err = FilingError.wrongValue(countryOptions); 
+      collector.error(err);
       throw err;
     }
     Address addr = new Address(address, unit, city, state, zip, countryCode);

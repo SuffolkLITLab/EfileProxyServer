@@ -1,13 +1,17 @@
 package edu.suffolk.litlab.efspserver.ecf;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.xml.bind.JAXBElement;
 
+import org.bouncycastle.jcajce.provider.asymmetric.dsa.DSASigner.detDSA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +21,7 @@ import edu.suffolk.litlab.efspserver.Address;
 import edu.suffolk.litlab.efspserver.ContactInformation;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.Name;
+import edu.suffolk.litlab.efspserver.OptionalService;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
@@ -29,6 +34,7 @@ import edu.suffolk.litlab.efspserver.codes.FileType;
 import edu.suffolk.litlab.efspserver.codes.FilingCode;
 import edu.suffolk.litlab.efspserver.codes.FilingComponent;
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
+import edu.suffolk.litlab.efspserver.codes.OptionalServiceCode;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
@@ -50,6 +56,7 @@ import gov.niem.niem.niem_core._2.StreetType;
 import gov.niem.niem.niem_core._2.StructuredAddressType;
 import gov.niem.niem.niem_core._2.TelephoneNumberType;
 import gov.niem.niem.proxy.xsd._2.Base64Binary;
+import gov.niem.niem.proxy.xsd._2.Decimal;
 import gov.niem.niem.structures._2.AugmentationType;
 import gov.niem.niem.usps_states._2.USStateCodeSimpleType;
 import gov.niem.niem.usps_states._2.USStateCodeType;
@@ -62,6 +69,7 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.Organization
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonAugmentationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
+import tyler.ecf.extensions.common.DocumentOptionalServiceType;
 import tyler.ecf.extensions.common.DocumentType;
 
 public class EcfCourtSpecificSerializer {
@@ -275,9 +283,26 @@ public class EcfCourtSpecificSerializer {
         cd.getDataField(this.court.code, "PartyLastName"), collector,
         collector.requestVar("name.last", "Last name of the case party", "text")));
     personName.setPersonNamePrefixText(wrapName.apply(name.getPrefix()));
-    // TODO(brycew)
-    //DataFieldRow suffixRow = cd.getDataField(this.court.code, "PartyFirstName");
-    personName.setPersonNameSuffixText(wrapName.apply(name.getSuffix()));
+    DataFieldRow suffixRow = cd.getDataField(this.court.code, "PartyFirstName");
+    if (suffixRow.isvisible) {
+      List<NameAndCode> suffixes = cd.getNameSuffixes(this.court.code);
+      InterviewVariable var = collector.requestVar("name.suffix", "Suffix of the name of the party", 
+          "choices", suffixes.stream().map(s -> s.getName()).collect(Collectors.toList()));
+      if (name.getSuffix().isBlank()) {
+        if (suffixRow.isrequired) {
+          collector.addRequired(var);
+        } else {
+          personName.setPersonNameSuffixText(wrapName.apply(name.getSuffix()));
+        }
+      } else {
+        Optional<NameAndCode> suffix = suffixes.stream().filter(s -> s.getName().equalsIgnoreCase(name.getSuffix())).findFirst();
+        if (suffix.isEmpty()) {
+          collector.addWrong(var);
+        } else {
+          personName.setPersonNameSuffixText(wrapName.apply(name.getSuffix()));
+        }
+      }
+    }
     return personName;
   }
   
@@ -414,6 +439,51 @@ public class EcfCourtSpecificSerializer {
     attachment.setBinaryCategoryText(XmlHelper.convertText(filtered.get().code)); 
     if (!filtered.get().allowmultiple) {
       components.remove(filtered.get());
+    }
+    
+    List<OptionalServiceCode> codes = cd.getOptionalServices(this.court.code, filing.code);
+    Map<String, OptionalServiceCode> codeMap = codes.stream().reduce(new HashMap<String, OptionalServiceCode>(), 
+      (m, s) -> {
+        m.put(s.code, s);
+        return m;
+      }, (m1, m2) -> {
+        m1.putAll(m2);
+        return m1;
+    });
+    InterviewVariable servVar = collector.requestVar("optional_services", "things the court can do", "DADict");
+    
+    for (OptionalService serv : doc.getOptionalServices()) {
+      DocumentOptionalServiceType xmlServ = tylerObjFac.createDocumentOptionalServiceType();
+      if (!codeMap.containsKey(serv.code)) {
+        collector.addWrong(servVar);
+      }
+      xmlServ.setIdentificationID(XmlHelper.convertString(serv.code));
+      OptionalServiceCode codeSettings = codeMap.get(serv.code);
+      if (codeSettings.hasfeeprompt) {
+        if (serv.feeAmount.isEmpty()) {
+          servVar.appendDescription(": needs fee prompt");
+          collector.addWrong(servVar);
+        } else {
+          Decimal dec = new Decimal();
+          dec.setValue(serv.feeAmount.get());
+          xmlServ.setFeeAmount(dec); 
+        }
+      }
+      if (!codeSettings.hasfeeprompt && serv.feeAmount.isPresent()) {
+        servVar.appendDescription(": doesn't need fee prompt");
+        collector.addWrong(servVar);
+      }
+      if (codeSettings.multiplier.equalsIgnoreCase("true")) {
+        if (serv.multiplier.isEmpty()) {
+          servVar.appendDescription(": needs multiplier");
+          collector.addWrong(servVar);
+        } else {
+          Decimal dec = new Decimal();
+          dec.setValue(new BigDecimal(serv.multiplier.get()));
+          xmlServ.setMultiplier(dec);
+        }
+      }
+      docType.getDocumentOptionalService().add(xmlServ);
     }
     
     // Literally should just be if it's confidential or not. (or "Hot fix" or public).

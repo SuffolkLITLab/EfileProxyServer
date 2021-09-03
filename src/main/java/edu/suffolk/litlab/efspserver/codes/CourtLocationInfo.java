@@ -15,8 +15,8 @@ public class CourtLocationInfo {
   public boolean initial;
   /** True if the court allows filing to existing cases. */
   public boolean subsequent;
-  public String disallowcopyingenvelopemultipletimes;
-  public String allowfilingintononindexedcase;
+  public boolean disallowcopyingenvelopemultipletimes;
+  public boolean allowfilingintononindexedcase;
   public List<String> allowablecardtypes;
   /** From Reference Guide: 
    *   "The Odyssey NodeID for a court location that is integrated with Tyler's Odyssey Case Manager"
@@ -109,8 +109,8 @@ public class CourtLocationInfo {
     this.name = rs.getString(2);
     this.initial = Boolean.parseBoolean(rs.getString(3));
     this.subsequent = Boolean.parseBoolean(rs.getString(4));
-    this.disallowcopyingenvelopemultipletimes = rs.getString(5);
-    this.allowfilingintononindexedcase = rs.getString(6);
+    this.disallowcopyingenvelopemultipletimes = Boolean.parseBoolean(rs.getString(5));
+    this.allowfilingintononindexedcase = Boolean.parseBoolean(rs.getString(6));
     String cardTypes = rs.getString(7);
     if (cardTypes == null || cardTypes.isBlank()) {
       this.allowablecardtypes = List.of(); 

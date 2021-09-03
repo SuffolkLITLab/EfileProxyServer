@@ -8,7 +8,8 @@ import java.util.Optional;
 import java.util.UUID;
 import tyler.ecf.extensions.common.FilingTypeType;
 
-// TODO(brycew): this class is a mess. Redo please
+// TODO(brycew): this class is a mess. Redo please. Consider the same pattern that's in 
+// FilingInformation: add a JsonNode / generic container for EFM specific settings
 public class FilingDoc {
   // Provides Document Type code / BinaryFormatStandardName
   private String fileName; 
@@ -42,6 +43,8 @@ public class FilingDoc {
   List<String> courtesyCopies;
   List<String> preliminaryCopies;
   FilingTypeType filingAction;
+  
+  List<OptionalService> optServices;
 
   private boolean isLeadDoc;
   
@@ -58,7 +61,7 @@ public class FilingDoc {
       String filingComments) throws IOException  {
     this(fileName, fileStream.readAllBytes(), Optional.empty(), "", Optional.empty(), 
         filingPartyIds, Optional.empty(), "", "", "", Optional.empty(),
-        List.of(), List.of(), FilingTypeType.E_FILE, true);
+        List.of(), List.of(), List.of(), FilingTypeType.E_FILE, true);
     this.documentTypeFormatStandardName = ""; // Default to blank: we can't get the confidential code
   }
   
@@ -68,7 +71,7 @@ public class FilingDoc {
       String filingComponentName, FilingTypeType filingAction, boolean isLeadDoc) throws IOException {
     this(fileName, fileStream.readAllBytes(), Optional.empty(), "", Optional.empty(), 
         filingPartyIds, Optional.empty(), documentTypeFormatStandardName, 
-        filingComponentName, "", Optional.empty(), List.of(), List.of(), 
+        filingComponentName, "", Optional.empty(), List.of(), List.of(), List.of(), 
         filingAction, isLeadDoc);
   }
 
@@ -77,7 +80,7 @@ public class FilingDoc {
       String documentFileControlId, Optional<LocalDate> dueDate, 
       List<String> filingPartyIds, Optional<String> filingAttorney,
       String documentTypeFormatStandardName, String filingComponentName,
-      String filingComments, Optional<String> motionType,
+      String filingComments, Optional<String> motionType, List<OptionalService> optionalServices,
       List<String> courtesyCopies, List<String> preliminaryCopies, FilingTypeType filingAction,
       boolean isLeadDoc) {
     this.fileName = fileName;
@@ -92,6 +95,7 @@ public class FilingDoc {
     this.filingComponentName = filingComponentName;
     
     this.filingComments = filingComments;
+    this.optServices = optionalServices;
     this.motionType = motionType;
     this.courtesyCopies = courtesyCopies;
     this.preliminaryCopies = preliminaryCopies;
@@ -173,6 +177,10 @@ public class FilingDoc {
   
   public Optional<String> getMotionType() {
     return motionType;
+  }
+  
+  public List<OptionalService> getOptionalServices() {
+    return optServices;
   }
   
   public FilingTypeType getFilingAction() {

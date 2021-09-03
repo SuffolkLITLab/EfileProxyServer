@@ -1,6 +1,5 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

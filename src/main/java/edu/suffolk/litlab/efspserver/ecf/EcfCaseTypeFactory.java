@@ -2,6 +2,9 @@ package edu.suffolk.litlab.efspserver.ecf;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hubspot.algebra.Result;
+
+import edu.suffolk.litlab.efspserver.CaseServiceContact;
+import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.PaymentFactory;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.XmlHelper;
@@ -19,10 +22,15 @@ import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import gov.niem.niem.iso_4217._2.CurrencyCodeSimpleType;
 import gov.niem.niem.niem_core._2.AmountType;
+import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.TextType;
+import gov.niem.niem.structures._2.ReferenceType;
+
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.Optional;
 import javax.xml.bind.JAXBElement;
@@ -31,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.CivilCaseType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseOfficialType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.CriminalCaseType;
@@ -38,6 +47,7 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.DomesticCas
 import tyler.ecf.extensions.common.FilingAssociationType;
 import tyler.ecf.extensions.common.ProcedureRemedyType;
 import tyler.ecf.extensions.common.ProviderChargeType;
+import tyler.ecf.extensions.common.ServicePartyDataType;
 
 public class EcfCaseTypeFactory {
   private static Logger log = 
@@ -68,14 +78,9 @@ public class EcfCaseTypeFactory {
       CourtLocationInfo courtLocation,
       CaseCategory initialCaseCategory,
       CaseType caseType,
+      FilingInformation info,
       FilingCode filing,
-      String caseSubType,
-      List<Person> plaintiffs, 
-      String plaintiffPartyType,
-      List<Person> defendants,
-      String defendantPartyType,
       List<String> filingIds,
-      String paymentId,
       // HACK(brycew): hacky: needed because fee querys put the payment stuff in the tyler Aug
       String queryType, 
       JsonNode miscInfo, // TODO(brycew): if we get XML Answer files, this isn't generic
@@ -88,10 +93,8 @@ public class EcfCaseTypeFactory {
         makeNiemCaseAug(courtLocation.code);
     JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug = 
               makeTylerCaseAug(courtLocation, caseCategory, 
-                  caseType, caseSubType, plaintiffs, plaintiffPartyType, defendants, 
-                  defendantPartyType, 
-                  filingIds,
-                  paymentId, queryType, miscInfo, serializer, collector);
+                  caseType, info, 
+                  filingIds, queryType, miscInfo, serializer, collector);
     // TODO(brycew): handle ensuring the passed in values work with the court codes
     if (caseCategory.ecfcasetype.equals("CivilCase")) {
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase = 
@@ -126,13 +129,9 @@ public class EcfCaseTypeFactory {
           CourtLocationInfo courtLocation,
           CaseCategory caseCategory,
           CaseType caseType,
-          String caseSubtype,
-          List<Person> plantiffs, 
-          String plantiffPartyType,
-          List<Person> defendants,
-          String defendantPartyType,
+          FilingInformation info,
           List<String> filingIds,
-          String paymentId, String queryType, 
+          String queryType, 
           JsonNode miscInfo,
           EcfCourtSpecificSerializer serializer,
           InfoCollector collector
@@ -147,9 +146,12 @@ public class EcfCaseTypeFactory {
         new tyler.ecf.extensions.common.ObjectFactory();
     oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfCommonObjFac = 
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+    gov.niem.niem.niem_core._2.ObjectFactory of = new gov.niem.niem.niem_core._2.ObjectFactory();
+    gov.niem.niem.structures._2.ObjectFactory structObjFac = 
+        new gov.niem.niem.structures._2.ObjectFactory();
+
     tyler.ecf.extensions.common.CaseAugmentationType ecfAug = 
         tylerObjFac.createCaseAugmentationType();
-    gov.niem.niem.niem_core._2.ObjectFactory of = new gov.niem.niem.niem_core._2.ObjectFactory();
 
     
     if (caseType.code.isEmpty()){
@@ -165,7 +167,7 @@ public class EcfCaseTypeFactory {
     if (subTypeConfig.isvisible) {
       List<NameAndCode> subTypes = cd.getCaseSubtypesFor(courtLocation.code, caseType.code);
       Optional<NameAndCode> maybeSubtype = subTypes.stream()
-          .filter(type -> type.getName().equals(caseSubtype))
+          .filter(type -> type.getName().equals(info.getCaseSubtype()))
           .findFirst();
     
       if (maybeSubtype.isPresent()) {
@@ -186,40 +188,111 @@ public class EcfCaseTypeFactory {
       throw err;
     }
     List<String> partyTypeNames = requiredTypes.stream().map(p -> p.name).collect(Collectors.toList());
-    if (!partyTypeNames.contains(plantiffPartyType)) {
+    if (!partyTypeNames.contains(info.getPlantiffPartyType())) {
       InterviewVariable plantiffVar = collector.requestVar("plantiff_party_type", "Legal role of the plantiff", "choices", partyTypeNames);
       collector.addWrong(plantiffVar);
     }
 
-    if (!partyTypeNames.contains(defendantPartyType)) {
+    if (!partyTypeNames.contains(info.getDefendantPartyType())) {
       InterviewVariable defendantVar = collector.requestVar("defendant_party_type", "Legal role of the defendant", "choices", partyTypeNames);
       collector.addWrong(defendantVar);
     }
     
-    for (Person plantiff : plantiffs) {
+    for (Person plantiff : info.getPlaintiffs()) {
       CaseParticipantType cp = serializer.serializeEcfCaseParticipant(plantiff, collector); 
       TextType tt = of.createTextType();
       partyTypes.stream()
-          .filter(pt -> pt.name.equalsIgnoreCase(plantiffPartyType))
+          .filter(pt -> pt.name.equalsIgnoreCase(info.getPlantiffPartyType()))
           .findFirst()
           .ifPresent(pt -> tt.setValue(pt.code));
       cp.setCaseParticipantRoleCode(tt);
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
     }
 
-    for (Person defendant : defendants) {
+    for (Person defendant : info.getDefendants()) {
       CaseParticipantType cp = serializer.serializeEcfCaseParticipant(defendant, collector);
       TextType tt = of.createTextType();
       partyTypes.stream()
-          .filter((pt) -> pt.name.equalsIgnoreCase(defendantPartyType))
+          .filter((pt) -> pt.name.equalsIgnoreCase(info.getDefendantPartyType()))
           .findFirst()
           .ifPresent((pt) -> tt.setValue(pt.code));
       cp.setCaseParticipantRoleCode(tt);
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
     }
+
+    int attorneyCount = 1;
+    Map<String, String> attorneyIdToXmlId = new HashMap<String, String>();
+    for (String attorneyId : info.getAttorneyIds()) {
+      IdentificationType id = of.createIdentificationType();
+      id.setIdentificationCategory(of.createIdentificationCategoryText(XmlHelper.convertText("ATTORNEYID")));
+      id.setIdentificationID(XmlHelper.convertString(attorneyId));
+      PersonType pt = ecfCommonObjFac.createPersonType();
+      pt.getPersonOtherIdentification().add(id);
+      String xmlId = Integer.toString(attorneyCount);
+      pt.setId(xmlId);
+      CaseParticipantType cp = ecfCommonObjFac.createCaseParticipantType();
+      cp.setEntityRepresentation(ecfCommonObjFac.createEntityPerson(pt));
+      // All attorneys have the role code of ATTY
+      cp.setCaseParticipantRoleCode(XmlHelper.convertText("ATTY"));
+      ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
+      attorneyIdToXmlId.put(attorneyId, xmlId);
+      attorneyCount += 1;
+    }
     
-    gov.niem.niem.proxy.xsd._2.Boolean falseVal = XmlHelper.convertBool(false); 
-    ecfAug.setAttachServiceContactIndicator(falseVal);
+    DataFieldRow attRow = cd.getDataField(info.getCourtLocation(), "PartyAttorney");
+    for (Map.Entry<String, List<String>> partyAtts : info.getPartyAttorneyMap().entrySet()) {
+      String partyId = partyAtts.getKey();
+      ReferenceType repdRef = structObjFac.createReferenceType();
+      repdRef.setRef(partyId);
+      if (!attRow.isvisible) {
+        continue;
+      }
+      if (partyAtts.getValue().isEmpty()) {
+        if (attRow.isrequired) {
+          InterviewVariable var = collector.requestVar("party_to_attorney", 
+              "Attorneys are required for this court", "DADict");
+          collector.addRequired(var); 
+        }
+        CaseOfficialType t = ecfCommonObjFac.createCaseOfficialType();
+        t.getCaseRepresentedPartyReference().add(repdRef);
+        ReferenceType attRef = structObjFac.createReferenceType();
+        attRef.setRef(partyId);
+        t.setRoleOfPersonReference(attRef);
+      
+        ecfAug.getCaseOtherEntityAttorney().add(t);
+      } else {
+        if (!courtLocation.allowmultipleattorneys && partyAtts.getValue().size() > 1) {
+          FilingError err = FilingError.malformedInterview("Court " + info.getCourtLocation() + " doesn't allow multiple lawyers per case party.");
+          collector.error(err);
+          throw err;
+        }
+        for (String attId : partyAtts.getValue()) {
+          CaseOfficialType t = ecfCommonObjFac.createCaseOfficialType();
+          t.getCaseRepresentedPartyReference().add(repdRef);
+          ReferenceType attRef = structObjFac.createReferenceType();
+          attRef.setRef(attorneyIdToXmlId.get(attId));
+          t.setRoleOfPersonReference(attRef);
+      
+          ecfAug.getCaseOtherEntityAttorney().add(t);
+        }
+      }
+    }
+    
+    List<CaseServiceContact> attachedContacts = info.getServiceContacts().stream().filter(c -> c.partyAssociated.isPresent()).collect(Collectors.toList());
+    boolean anyServicePartyAttached = attachedContacts.size() > 0;
+    gov.niem.niem.proxy.xsd._2.Boolean servPartyIndic = XmlHelper.convertBool(anyServicePartyAttached); 
+    ecfAug.setAttachServiceContactIndicator(servPartyIndic);
+    for (CaseServiceContact attachedContact : attachedContacts) {
+      ServicePartyDataType ref = tylerObjFac.createServicePartyDataType();
+      ReferenceType servRef = structObjFac.createReferenceType();
+      servRef.setRef(attachedContact.refId);
+      ref.setServiceReference(servRef); 
+      ReferenceType partyRef = structObjFac.createReferenceType();
+      partyRef.setRef(attachedContact.partyAssociated.get());
+      ref.setPartyReference(partyRef);
+      ecfAug.getExtendedData().add(tylerObjFac.createServicePartyReference(ref));
+    }
+    
     
     boolean initial = caseType.initial;
     Optional<ProcedureRemedyType> res = makeProcedureRemedyType(initial, 
@@ -277,7 +350,7 @@ public class EcfCaseTypeFactory {
     
     if (queryType.equalsIgnoreCase("fees")) {
       PaymentFactory pf = new PaymentFactory();
-      ProviderChargeType pct = pf.makeProviderChargeType(paymentId);
+      ProviderChargeType pct = pf.makeProviderChargeType(info.getPaymentId());
       ecfAug.setProviderCharge(pct);
     }
     if (miscInfo.has("max_fee_amount") && courtLocation.allowmaxfeeamount) {

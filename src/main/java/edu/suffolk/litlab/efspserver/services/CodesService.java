@@ -29,7 +29,7 @@ import edu.suffolk.litlab.efspserver.codes.FileType;
 import edu.suffolk.litlab.efspserver.codes.FilingCode;
 import edu.suffolk.litlab.efspserver.codes.FilingComponent;
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
-import edu.suffolk.litlab.efspserver.codes.OptionalServices;
+import edu.suffolk.litlab.efspserver.codes.OptionalServiceCode;
 import edu.suffolk.litlab.efspserver.codes.PartyType;
 import edu.suffolk.litlab.efspserver.codes.ServiceCodeType;
 
@@ -270,8 +270,8 @@ public class CodesService {
       return Response.status(400).entity("Court does not exist " + courtId).build();
     }
     
-    List<OptionalServices> optionalServices = cd.getOptionalServices(courtId, filingCodeId);
-    return Response.ok(optionalServices).build();
+    List<OptionalServiceCode> optionalServiceCode = cd.getOptionalServices(courtId, filingCodeId);
+    return Response.ok(optionalServiceCode).build();
   }
   
   @GET
@@ -286,39 +286,37 @@ public class CodesService {
   @GET
   @Path("/courts/{court_id}/languages")
   public Response getLanguages(@Context HttpHeaders httpHeaders, 
-    @PathParam("court_id") String courtId) throws SQLException {
-
-      if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
-      }
-      List<String> languages = cd.getLanguages(courtId);
+      @PathParam("court_id") String courtId) throws SQLException {
+    if (!cd.getAllLocations().contains(courtId)) {
+      return Response.status(404).entity("Court does not exist " + courtId).build();
+    }
+    List<String> languages = cd.getLanguages(courtId);
 
     return Response.ok(languages).build();
   }
 
   @GET
   @Path("/courts/{court_id}/datafields/{field_name}")
+  // TODO(brycew): consider a bulk way of getting multiple codes, will be used heavily in the DA UI
   public Response getDataField(@Context HttpHeaders httpHeaders, 
-    @PathParam("court_id") String courtId,
-    @PathParam("field_name") String fieldName) throws SQLException {
-
-      if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
-      }
-      DataFieldRow datafieldrow = cd.getDataField(courtId, fieldName);
+      @PathParam("court_id") String courtId,
+      @PathParam("field_name") String fieldName) throws SQLException {
+    if (!cd.getAllLocations().contains(courtId)) {
+      return Response.status(404).entity("Court does not exist " + courtId).build();
+    }
+    DataFieldRow datafieldrow = cd.getDataField(courtId, fieldName);
 
     return Response.ok(datafieldrow).build();
-  }  
-
+  }
+  
   @GET
   @Path("/courts/{court_id}/disclaimer_requirements")
   public Response getDisclaimerRequirements(@Context HttpHeaders httpHeaders, 
-    @PathParam("court_id") String courtId) throws SQLException {
-
-      if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
-      }
-      List<Disclaimer> disclaimers = cd.getDisclaimerRequirements(courtId);
+      @PathParam("court_id") String courtId) throws SQLException {
+    if (!cd.getAllLocations().contains(courtId)) {
+      return Response.status(404).entity("Court does not exist " + courtId).build();
+    }
+    List<Disclaimer> disclaimers = cd.getDisclaimerRequirements(courtId);
 
     return Response.ok(disclaimers).build();
   }

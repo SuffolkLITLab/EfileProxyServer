@@ -126,7 +126,7 @@ public class EfspServer {
     extensionMappings.put("json", MediaType.APPLICATION_JSON);
     sf.setExtensionMappings(extensionMappings);
     List<Object> providers = List.of(
-        new JAXBElementProvider(), 
+        new JAXBElementProvider<Object>(), 
         new JacksonJsonProvider());
     sf.setProviders(providers);
     sf.setAddress(baseLocalUrl);

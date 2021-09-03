@@ -17,10 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import java.io.*;
-import java.net.InetAddress;
-
-
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;

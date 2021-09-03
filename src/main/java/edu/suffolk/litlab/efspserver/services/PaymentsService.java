@@ -40,7 +40,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.RandomString;
 import edu.suffolk.litlab.efspserver.SecurityHub;
-import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.schema.baseresponse.BaseResponseType;
 import tyler.efm.services.schema.common.PaymentAccountType;

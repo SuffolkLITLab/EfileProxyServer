@@ -29,6 +29,7 @@ public class NameDocassembleDeserializer {
     if (!node.isObject()) {
       FilingError err = FilingError.malformedInterview(
           "Can't parse person with name that's not a JSON object: " + node.get("name").toPrettyString());
+      collector.error(err);
       throw err;
     }
     if (!node.has("first")) {
