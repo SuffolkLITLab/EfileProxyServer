@@ -407,6 +407,7 @@
                             <excludes>
                                 <exclude>**/UserDatabaseTest.java</exclude>
                                 <exclude>**/LoginDatabaseTest.java</exclude>
+                                <exclude>**/CodeDatabaseTest.java</exclude>
                             </excludes>
                         </configuration>
                     </plugin>

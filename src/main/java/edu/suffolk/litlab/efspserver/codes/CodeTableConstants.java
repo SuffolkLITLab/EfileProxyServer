@@ -452,7 +452,7 @@ public class CodeTableConstants {
   }
 
   public static String getMotionTypes() {
-    return "SELECT name, code FROM motiontypes WHERE location=? AND filingcodeid=?";
+    return "SELECT name, code FROM motiontype WHERE location=? AND filingcodeid=?";
   }
 
   public static String getSpecificStatesForCountryForLoc() {

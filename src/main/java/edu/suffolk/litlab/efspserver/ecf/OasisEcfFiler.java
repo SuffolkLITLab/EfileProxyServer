@@ -194,7 +194,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       }
       CaseCategory caseCategory = maybeCaseCat.get();
       
-      List<CaseType> caseTypes = cd.getCaseTypesFor(info.getCourtLocation(), caseCategory.code.get());
+      List<CaseType> caseTypes = cd.getCaseTypesFor(info.getCourtLocation(), caseCategory.code.get(), Optional.empty());
       if (caseTypes.isEmpty()) {
         FilingError err = FilingError.serverError("There are no caseTypes for " 
             + info.getCourtLocation() + " and " + caseCategory.code.get());
@@ -237,8 +237,8 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         throw FilingError.wrongValue(var);
       }
     
-      InterviewVariable filingVar = collector.requestVar("filing", "TODO(brycew): description", "text", filings.stream().map(f -> f.name).collect(Collectors.toList()));
-      JsonNode filingJson = info.getMiscInfo().get("filing");
+      InterviewVariable filingVar = collector.requestVar("tyler_filing_type", "TODO(brycew): description", "text", filings.stream().map(f -> f.name).collect(Collectors.toList()));
+      JsonNode filingJson = info.getMiscInfo().get("tyler_filing_type");
       if (filingJson == null || filingJson.isNull() || !filingJson.isTextual()) {
         log.error("filing not present in the info!: " + info.getMiscInfo());
         collector.addRequired(filingVar);

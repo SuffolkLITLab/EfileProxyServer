@@ -47,7 +47,7 @@ public class OptionalServiceCode {
   public static PreparedStatement prepQuery(Connection conn, String courtId, String filingCodeId) throws SQLException {
     PreparedStatement st = conn.prepareStatement(query());
     st.setString(1, courtId);
-    st.setString(1, filingCodeId);
+    st.setString(2, filingCodeId);
     return st;
   }
   

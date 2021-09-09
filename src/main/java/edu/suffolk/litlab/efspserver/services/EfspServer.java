@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efspserver.services;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import edu.suffolk.litlab.efspserver.HttpsCallbackHandler;
 import edu.suffolk.litlab.efspserver.SecurityHub;
+import edu.suffolk.litlab.efspserver.SendMessage;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.db.MessageSettingsDatabase;
@@ -38,14 +39,14 @@ public class EfspServer {
   private Server server;
 
   static {
-    if (false) {
     Optional<String> certPassword = GetEnv("CERT_PASSWORD");
-    certPassword.ifPresentOrElse(
-        pass -> HttpsCallbackHandler.setCertPassword(pass),
-        () -> log.error("Didn't enter a CERT_PASSWORD: Did you pass an .env file?"));
-    SpringBusFactory factory = new SpringBusFactory();
-    Bus bus = factory.createBus("src/main/config/ServerConfig.xml");
-    SpringBusFactory.setDefaultBus(bus);
+    if (certPassword.isPresent()) {
+      HttpsCallbackHandler.setCertPassword(certPassword.get());
+      SpringBusFactory factory = new SpringBusFactory();
+      Bus bus = factory.createBus("src/main/config/ServerConfig.xml");
+      SpringBusFactory.setDefaultBus(bus);
+    } else {
+      log.warn("Didn't enter a CERT_PASSWORD. Falling back to HTTP. Did you pass an .env file?");
     }
   }
 
@@ -61,6 +62,7 @@ public class EfspServer {
       Map<String, InterviewToFilingEntityConverter> converterMap
       ) throws Exception {
     try {
+      cd.createDbConnection(dbUser, dbPassword);
       ud.createDbConnection(dbUser, dbPassword);
       ld.createDbConnection(dbUser, dbPassword);
       md.createDbConnection(dbUser, dbPassword);
@@ -69,7 +71,7 @@ public class EfspServer {
       ld.createTablesIfAbsent();
       md.createTablesIfAbsent();
     } catch (SQLException ex) {
-      log.error("SQLException: " + ex);
+      log.error("SQLException: " + ex.toString());
       System.exit(2);
       //downloadAll = true;
     }
@@ -89,7 +91,7 @@ public class EfspServer {
     }
     
 
-    String baseLocalUrl = "http://0.0.0.0:9000";
+    String baseLocalUrl = System.getenv("BASE_LOCAL_URL"); //"https://0.0.0.0:9000";
     cd.setAutocommit(true);
     ud.setAutocommit(true);
     ld.setAutocommit(true);
@@ -176,11 +178,15 @@ public class EfspServer {
     UserDatabase ud = new UserDatabase(dbUrl, dbPortInt, userDatabaseName);
     LoginDatabase ld = new LoginDatabase(dbUrl, dbPortInt, userDatabaseName);
     MessageSettingsDatabase md = new MessageSettingsDatabase(dbUrl, dbPortInt, userDatabaseName);
-    OrgMessageSender sender = new OrgMessageSender(md);
+    Optional<SendMessage> sendMsg = SendMessage.create();
+    if (sendMsg.isEmpty()) {
+      throw new RuntimeException("You didn't pass enough info to create the SendMessage class");
+    }
+    OrgMessageSender sender = new OrgMessageSender(md, sendMsg.get());
 
     List<EfmModuleSetup> modules = new ArrayList<EfmModuleSetup>();
     TylerModuleSetup.create(cd, ud, sender).ifPresent(mod -> modules.add(mod));
-    JeffNetModuleSetup.create(ud, new OrgMessageSender(md)).ifPresent(mod -> modules.add(mod));
+    JeffNetModuleSetup.create(ud, new OrgMessageSender(md, sendMsg.get())).ifPresent(mod -> modules.add(mod));
     if (modules.isEmpty()) {
       log.error("Couldn't load enough parameters to start either the Tyler or JeffNet filer modules."
               + "Please check your environment variables and try again.");

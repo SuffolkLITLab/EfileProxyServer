@@ -133,7 +133,6 @@ public class CasesService {
       PersonType pt = ecfOf.createPersonType();
       pt.setPersonName(maybeName.getNameType());
       
-      
       commonCpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
       commonCpt.setCaseParticipantRoleCode(XmlHelper.convertText(""));
 
@@ -324,7 +323,7 @@ public class CasesService {
       return Optional.empty();
     }
     TylerLogin login = new TylerLogin();
-    String tylerToken = login.getHeaderKey();
+    String tylerToken = httpHeaders.getHeaderString(login.getHeaderKey());
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken); 
     if (creds.isEmpty()) {
       log.warn("No creds?");

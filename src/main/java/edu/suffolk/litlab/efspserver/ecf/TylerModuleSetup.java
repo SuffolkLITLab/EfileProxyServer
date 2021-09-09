@@ -169,7 +169,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
   public void setupGlobals() {
     OasisEcfWsCallback implementor = new OasisEcfWsCallback(ud, cd, sender);
     // TODO(brycew): cleaner way to handle baseLocalUrl?
-    String baseLocalUrl = "http://0.0.0.0:9000";
+    String baseLocalUrl = System.getenv("BASE_LOCAL_URL"); //"http://0.0.0.0:9000";
     String address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT; 
     svrFactory = new JaxWsServerFactoryBean();
     svrFactory.setServiceClass(FilingAssemblyMDEPort.class);

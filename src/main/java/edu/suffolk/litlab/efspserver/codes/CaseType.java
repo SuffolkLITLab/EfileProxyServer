@@ -69,5 +69,9 @@ public class CaseType {
         fee, willfileddate, efspcode, location
         FROM casetype WHERE location=? AND casecategory=?""";
   }
+  
+  public static String getCaseTypesForInitial() {
+    return getCaseTypesFor() + " AND initial ILIKE ?";
+  }
 
 }

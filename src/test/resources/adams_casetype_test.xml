@@ -1,0 +1,3459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://docs.oasis-open.org/codelist/ns/genericode/1.0/">
+  <Identification xmlns="">
+    <ShortName>CaseTypeCode</ShortName>
+    <LongName>CaseTypeCode</LongName>
+    <Version>F82C4C2C894F5BF6373114BB9BEF06F3D10AD02F2340CE5F4C4B6D750F95E80A7EE67B96957E57958403352A80C3C66F12BF6FCBC6F4877687B1064816C36C56</Version>
+    <CanonicalUri>urn:oasis:names:tc:legalxml-courtfiling:codelist:gc:CaseTypeCode</CanonicalUri>
+    <CanonicalVersionUri>urn:oasis:names:tc:legalxml-courtfiling:codelist:gc:CaseTypeCode-1.0</CanonicalVersionUri>
+    <Agency>
+      <LongName>OASIS LegalXML Electronic Court Filing Technical Committee</LongName>
+    </Agency>
+  </Identification>
+  <ColumnSet xmlns="">
+    <Column Id="code" Use="required">
+      <ShortName>Code</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="name" Use="optional">
+      <ShortName>Name</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="casecategory" Use="optional">
+      <ShortName>Case Category</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="initial" Use="optional">
+      <ShortName>Allow Initial</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="fee" Use="optional">
+      <ShortName>Fee</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="willfileddate" Use="optional">
+      <ShortName>Will Filed Date</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="casestreetaddress" Use="optional">
+      <ShortName>Case Street Address</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="efspcode" Use="optional">
+      <ShortName>EFSPCode</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Key Id="codeKey">
+      <ShortName>CodeKey</ShortName>
+      <ColumnRef Ref="code" />
+    </Key>
+  </ColumnSet>
+  <SimpleCodeList xmlns="">
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25361</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Adoption</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>7306</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>89.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25362</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Construction of Inter Vivos Trust</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25364</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Exhume a Body</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25365</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Injunction (Except in Tax and Dissolution cases)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25367</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Partition</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25368</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Partnership Dissolution</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25369</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Quiet Title</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25371</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Recision of Contract</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25372</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Retailer's Occupation Tax</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25373</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Specific Performance</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25374</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Trust Administration</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25379</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition for Parental Responsibility of Child(ren) (Visitation)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25381</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Delayed Record of Birth</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25382</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Emancipation of Minor</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25384</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Parentage</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25386</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition for Confidential Intermediary</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25387</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition for Custody</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25398</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition for Discharge</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6194</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25399</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition for Hospitalization</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6194</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25400</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition for Restoration</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6194</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25401</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition to Administer Treatment</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6194</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25402</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Abatement of Nuisance</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25403</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Appointment of Receiver</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25404</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Attachment (Original Action)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25405</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Burnt Records</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25406</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Certiorari</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25408</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Corporation Dissolution</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25409</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Declaratory Judgment</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25410</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Demolition</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25412</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Election Contest</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25413</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Escheat</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25414</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Extradition</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25415</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Fictitious Vital Record</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25416</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Forfeiture of Seized Property</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25417</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Habeas Corpus (Civil or Criminal)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25420</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition for Discovery or to Depose</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25421</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Prohibition</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25422</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Quo Warranto</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25423</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Rendition</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>25426</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Sexually Violent Person Commitment Proceeding</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>27888</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition for the Creation of a Drainage District</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6196</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>27892</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition to Organize Municipal Corporation</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6196</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>27893</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Statutory Summary Suspension (If no DT Case is Filed)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>27894</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Civil No Contact Order</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>7062</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>27895</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Order of Protection</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>7062</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue>OFPCaseEFSP</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>27898</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Construction of Will</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6197</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>256.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>27907</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Annual Tax Sale</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6199</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>27908</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Drainage Assessment</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6199</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>27909</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Foreclosure of Lien for Special Assessment</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6199</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>27910</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Review of Administrative Proceedings</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6199</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>27912</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Scavenger Tax Sale</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6199</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>39266</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Foreclosure (Commercial)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>56449</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Foreclosure (Residential) Tier #1</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>806.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>56450</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Foreclosure (Residential) Tier #2</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>556.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>56451</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Foreclosure (Residential) Tier #3</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>356.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>56452</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Foreclosure of Security Interest in Personal Property</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>59731</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Interpleader</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>59733</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Mandamus</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>61003</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Adoption</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>7306</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>61209</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Probable Cause (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>61211</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Subpoena (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>61213</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Violation/Order of Protection (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>61218</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Civil Law Violation (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>61220</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Stalking No Contact Order</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>7062</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>61224</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Will (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6197</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>61229</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Adverse Possession (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>75995</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Chancery</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>75996</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Dissolution</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6190</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>75997</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Eminent Domain</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6191</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76000</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Family</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76005</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Law</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>183528</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76009</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Law Magistrate</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>183527</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76010</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Municipal Corporation</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6196</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76011</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Mental Health</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6194</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76013</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Change of Name</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue>NameChangeAdultEFSP</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76014</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Miscellaneous Remedy</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76015</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Order of Protection</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>7062</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76017</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Probate</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6197</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76018</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Small Claims</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6198</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76020</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Tax</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6199</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>78220</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Search Warrant</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122661</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Construction of Testamentary Trust</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122662</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Contract Actions</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122663</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Equitable Lien</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122664</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Mechanic's Lien Foreclosure</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122667</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Eminent Domain</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6191</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122668</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Abandoned Baby</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122669</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Child of Assisted Reproduction</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122670</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Gestational Surrogacy</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122671</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Notice to Putative Father/Adoption Act</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122672</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Notice to Putative Father/Juvenile Court Act</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122675</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition for Parental Responsibility (Child Support)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122677</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition for Visitation of Child(ren)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122678</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition Under the Parental Notification of Abortion Act</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122698</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Eviction (Possession Only)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>183527</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>89.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122706</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Other Routine Matters of Municipal Corporations</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6196</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122707</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition of Annexation for Election</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6196</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122708</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Application for Order - Eavesdropping</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122709</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Application for Order - Electronic Criminal Surveillance</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122710</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Appointment of Special Prosecutor</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122711</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Building Code Violation</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122712</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Certificate of Innocence</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122713</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Confirmation of Election Judge</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122714</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Contagious Disease</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122715</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Interstate Probationer Transfer (Adult)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122716</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Intrastate Probationer Transfer (Adult)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122717</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Intrastate Probationer Transfer (Juvenile)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122718</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Lost Goods or Money (Estray)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122719</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Ne Exeat (Original Action)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122720</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Peace Bond Complaint (Fugitive from Justice)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122721</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition to Destroy Evidence</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122722</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition to Expunge (No Criminal Case)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>60.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122723</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Petition to Seal (No Existing Case)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122724</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Sale in Error (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122725</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Sexually Transmissible Disease Control Proceeding</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122726</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Statewide Grand Jury Proceedings</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122745</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Missing Person</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6197</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>356.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122763</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Special Assessment (To Change or Restrain Collection)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6199</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122764</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Tax Commission (Review of Decision)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6199</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>306.00</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122766</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Claim&gt;$10,000 (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6197</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122767</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Claim&gt;$500&lt;=$10000 (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6197</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122768</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Claim&gt;=$150&lt;=$500 (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6197</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122769</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Comm Lien Foreclosure (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122770</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Comm Mortgage Foreclosure (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122771</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Comm Property Foreclosure (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122772</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Condemnation (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6191</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122773</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Confession of Judgment (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>183528</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122774</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Contract-Damages (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6198</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122775</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Contract-Dmg&gt;$2500&lt;=$5000 (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6198</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122776</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Contract-Dmg&gt;$500&lt;=$2500 (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>6198</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>122777</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Contract-Dmg&gt;$5000&lt;=$15000 (N)</SimpleValue>
+      </Value>
+      <Value ColumnRef="casecategory">
+        <SimpleValue>183527</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="fee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="willfileddate">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="casestreetaddress">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+  </SimpleCodeList>
+</CodeList>

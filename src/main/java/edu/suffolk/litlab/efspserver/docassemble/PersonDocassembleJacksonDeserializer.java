@@ -75,15 +75,13 @@ public class PersonDocassembleJacksonDeserializer {
           new AddressDocassembleJacksonDeserializer();
       collector.pushAttributeStack("address");
       try {
-        Address result = deser.fromNode(node.get("address"), collector);
+        addr = deser.fromNode(node.get("address"), collector);
         collector.popAttributeStack();
-        addr = Optional.of(result);
       } catch (FilingError err) {
-        if (err.getType().equals(FilingError.Type.MissingRequired)) {
-          InterviewVariable var = collector.requestVar("address", 
-              "The address of a person", "Address");
-          collector.addRequired(var);
-        } 
+        if (!err.getType().equals(FilingError.Type.MissingRequired)) {
+          // Roughly speaking, the address isn't required. Rethrow anything els.
+          throw err;
+        }
       }
     }
     Optional<String> email = getStringMember(node, "email"); 

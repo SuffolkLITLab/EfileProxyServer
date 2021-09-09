@@ -28,7 +28,8 @@ public class OrgMessageSender {
   private static Logger log = 
       LoggerFactory.getLogger(OrgMessageSender.class); 
   
-  private MessageSettingsDatabase md;
+  private final MessageSettingsDatabase md;
+  private final SendMessage sendMsg;
 
   private String defaultFrom = "massaccess@suffolk.edu";
   private String defaultSubject = "An update on your filing";
@@ -69,8 +70,9 @@ public class OrgMessageSender {
       Court Forms Online
       """;
   
-  public OrgMessageSender(MessageSettingsDatabase md) {
+  public OrgMessageSender(MessageSettingsDatabase md, SendMessage sendMsg) {
     this.md = md;
+    this.sendMsg = sendMsg;
   }
   
   private MessageInfo getSettings(UUID serverId) {
@@ -109,7 +111,7 @@ public class OrgMessageSender {
     if (canEmail) {
       int result;
       try {
-        result = SendMessage.sendEmail(msgSettings.fromEmail, msgSettings.subjectLine, transaction.email, msgSettings.emailTemplate, templateVars);
+        result = sendMsg.sendEmail(msgSettings.fromEmail, msgSettings.subjectLine, transaction.email, msgSettings.emailTemplate, templateVars);
         return (result == 200 || result == 202 || result == 204);
       } catch (IOException e) {
         log.error(e.toString());
@@ -134,7 +136,7 @@ public class OrgMessageSender {
     if (canEmail) {
       int result;
       try {
-        result = SendMessage.sendEmail(msgSettings.fromEmail, msgSettings.subjectLine, email, msgSettings.emailConfirmation, templateVars);
+        result = sendMsg.sendEmail(msgSettings.fromEmail, msgSettings.subjectLine, email, msgSettings.emailConfirmation, templateVars);
         return (result == 200 || result == 202 || result == 204);
       } catch (IOException e) {
         log.error(e.toString());

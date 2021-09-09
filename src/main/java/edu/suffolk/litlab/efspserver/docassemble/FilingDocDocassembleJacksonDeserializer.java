@@ -76,8 +76,8 @@ public class FilingDocDocassembleJacksonDeserializer {
       }
       
       List<OptionalService> optServices = new ArrayList<OptionalService>();
-      if (node.has("optional_services") && node.get("optional_services").isArray()) {
-        JsonNode optServs = node.get("optional_services");
+      JsonNode optServs = node.get("optional_services");
+      if (optServs != null && optServs.isArray()) {
         optServs.elements().forEachRemaining(optServ -> {
           String code = optServ.get("code").asText();
           JsonNode multJson = optServ.get("multiplier");

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.hubspot.algebra.Result;
@@ -135,21 +136,21 @@ public class FilingInformationDocassembleJacksonDeserializer
     FilingInformation entities = new FilingInformation();
     if (userStartedCase.isEmpty()) {
       InterviewVariable var = collector.requestVar("user_started_case", 
-          "Whether or the user is the plantiff or petitioner", "boolean", List.of("true", "false"));
+          "Whether or not the user is the plaintiff or petitioner", "boolean", List.of("true", "false"));
       collector.addRequired(var);
     }
     // TODO(brycew): plaintiff and petitioners are both defined. 
     // Typical role might have the difference, take which is available
     // TODO(brycew): better way to get the parties types?
     // TODO(brycew): make the party types use the SALI standard
-    JsonNode plantiffPartyJson = node.get("plantiff_party_type");
-    if (plantiffPartyJson == null || !plantiffPartyJson.isTextual()) {
-      InterviewVariable var = collector.requestVar("plantiff_party_type", 
+    JsonNode plaintiffPartyJson = node.get("plaintiff_party_type");
+    if (plaintiffPartyJson == null || !plaintiffPartyJson.isTextual()) {
+      InterviewVariable var = collector.requestVar("plaintiff_party_type", 
           "What legal role the plaintiff fulfills", "text"); 
       collector.addOptional(var);
-      plantiffPartyJson = NullNode.getInstance(); 
+      plaintiffPartyJson = NullNode.getInstance(); 
     }
-    entities.setPlaintiffPartyType(plantiffPartyJson.asText(""));
+    entities.setPlaintiffPartyType(plaintiffPartyJson.asText("Plaintiff"));
     JsonNode defendantPartyJson = node.get("defendant_party_type");
     if (defendantPartyJson == null || !defendantPartyJson.isTextual()) {
       InterviewVariable var = collector.requestVar("defendant_party_type", 
@@ -157,27 +158,27 @@ public class FilingInformationDocassembleJacksonDeserializer
       collector.addOptional(var);
       defendantPartyJson = NullNode.getInstance();
     }
-    entities.setDefendantPartyType(defendantPartyJson.asText(""));
+    entities.setDefendantPartyType(defendantPartyJson.asText("Defendant"));
 
-    boolean started = userStartedCase.get(); 
+    boolean started = userStartedCase.get();
     if (started) {
       users.forEach((user) -> {
-        user.setRole("Plaintiff");
+        user.setRole(entities.getPlaintiffPartyType());
       });
       entities.setPlaintiffs(users);
       otherParties.forEach((other) -> {
-        other.setRole("Defendant");
+        other.setRole(entities.getDefendantPartyType());
       });
       entities.setDefendants(otherParties);
     } else {
       users.forEach((user) -> {
-        user.setRole("Defendant");
-      });
-      entities.setPlaintiffs(otherParties);
-      otherParties.forEach((other) -> {
-        other.setRole("Plaintiff");
+        user.setRole(entities.getDefendantPartyType()); 
       });
       entities.setDefendants(users);
+      otherParties.forEach((other) -> {
+        other.setRole(entities.getPlaintiffPartyType()); 
+      });
+      entities.setPlaintiffs(otherParties);
     }
     
     JsonNode attorneyIds = node.get("attorney_ids");
@@ -197,6 +198,8 @@ public class FilingInformationDocassembleJacksonDeserializer
           partyToAttorney.put(elem.getKey(), theseAttorneys);
         }
       }
+    } else {
+      entities.setAttorneyIds(List.of());
     }
     
     JsonNode serviceContactsJson = node.get("service_contacts");
@@ -213,20 +216,25 @@ public class FilingInformationDocassembleJacksonDeserializer
             servObj.get("service_type").asText(), partyPerId);
         contacts.add(contact);
       });
+    } else {
+      entities.setServiceContacts(List.of());
     }
     
     
     // TODO(brycew): this approach is a complete mess, don't know
     // how to best map LIST onto case categories, ECF is too high level
-    String category_var_name = "tyler_case_category";
-    JsonNode category = node.get(category_var_name);
-    JsonNode metadataElems = node.get("interview_metadata").get("elements");
-    String key = metadataElems.fieldNames().next();
-    if (metadataElems.size() >= 1) {
-      log.warn("Only the first metadata element will be looked at: " + key); 
+    JsonNode metadata = JsonNodeFactory.instance.nullNode();
+    if (node.has("interview_metadata") && node.get("interview_metadata").has("elements")) {
+      JsonNode metadataElems = node.get("interview_metadata").get("elements");
+      String key = metadataElems.fieldNames().next();
+      if (metadataElems.size() >= 1) {
+        log.warn("Only the first metadata element will be looked at: " + key); 
+      }
+      metadata = metadataElems.get(key).get("elements"); 
     }
 
-    JsonNode metadata = metadataElems.get(key).get("elements"); 
+    String category_var_name = "tyler_case_category";
+    JsonNode category = node.get(category_var_name);
     if (category != null && !category.isNull() && category.isTextual()) {
       // TODO(brycew): stop passing in this case category stuff right now
       CaseCategory caseCat = new CaseCategory(category.asText(), category.asText());

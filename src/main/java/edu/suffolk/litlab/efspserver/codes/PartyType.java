@@ -10,7 +10,7 @@ public class PartyType {
   public boolean isAvailableForNewParties;
   public String casetypeid;
   public boolean isrequired;
-  public BigDecimal fee;
+  public BigDecimal amount;
   public String numberofpartiestoignore;
   public String sendforredaction;
   public String dateofdeath;
@@ -27,11 +27,15 @@ public class PartyType {
     this.isAvailableForNewParties = Boolean.parseBoolean(isAvailable);
     this.casetypeid = casetypeid;
     this.isrequired = Boolean.parseBoolean(isrequired);
-    this.fee = new BigDecimal(Double.parseDouble(fee));
+    this.amount = new BigDecimal(Double.parseDouble(fee));
     this.numberofpartiestoignore = numberofpartiestoignore;
     this.sendforredaction = sendforredaction;
     this.dateofdeath = dateofdeath;
-    this.displayorder = Integer.parseInt(displayorder);
+    if (displayorder.isBlank()) {
+      this.displayorder = 100;
+    } else {
+      this.displayorder = Integer.parseInt(displayorder);
+    }
     this.efspcode = efspcode;
     this.location = location;
   }
@@ -48,13 +52,24 @@ public class PartyType {
                p.numberofpartiestoignore, p.sendforredaction, p.dateofdeath, p.displayorder, 
                p.efspcode, p.location 
         FROM partytype AS p 
-        WHERE p.location=? AND p.casetypeid=?""";
+        WHERE p.location=? AND p.casetypeid=?
+        ORDER BY isrequired DESC, displayorder, casetypeid DESC""";
+  }
+  
+  public static String getPartyTypeNoCaseType() {
+    return """
+        SELECT p.code, p.name, p.isavailablefornewparties, p.casetypeid, p.isrequired, p.amount, 
+               p.numberofpartiestoignore, p.sendforredaction, p.dateofdeath, p.displayorder, 
+               p.efspcode, p.location 
+        FROM partytype AS p 
+        WHERE p.location=? AND p.casetypeid=''
+        ORDER BY isrequired DESC, displayorder, casetypeid DESC""";
   }
   
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append(code).append(", ").append(name).append(", ").append(isrequired).append(fee);
+    sb.append(code).append(", ").append(name).append(", ").append(isrequired).append(", ").append(amount);
     return sb.toString();
   }
   

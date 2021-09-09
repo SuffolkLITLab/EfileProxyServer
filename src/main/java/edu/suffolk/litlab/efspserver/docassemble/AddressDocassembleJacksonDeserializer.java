@@ -9,6 +9,8 @@ import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +24,7 @@ public class AddressDocassembleJacksonDeserializer {
 
   /** Parses an address from the DA Json Object. Used by Deserializers that include addresses. 
    * @throws FilingError */
-  public Address fromNode(JsonNode node, InfoCollector collector) throws FilingError {
+  public Optional<Address> fromNode(JsonNode node, InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
       FilingError err = FilingError.malformedInterview(
           "Refusing to parse address that isn't a Json Object: " + node.toPrettyString());
@@ -30,13 +32,15 @@ public class AddressDocassembleJacksonDeserializer {
       throw err;
     }
 
+    List<InterviewVariable> potentiallyReq = new ArrayList<InterviewVariable>();
+    boolean onePresent = false;
     for (String member : List.of("address", "unit", "city", "state", "zip")) {
       if (!node.has(member)) {
-        InterviewVariable memberVar = new InterviewVariable(
-            member, "part of the address", "text", List.of());
-        collector.addRequired(memberVar);
+        potentiallyReq.add(collector.requestVar(member, "part of the address", "text"));
+	continue;
       }
-      if (!node.get(member).isTextual()) {
+      onePresent = true;
+      if (node.has(member) && !node.get(member).isTextual()) {
         FilingError err = FilingError.malformedInterview(
             "Refusing to parse an address where the " + member + " isn't text: " 
             + node.toPrettyString());
@@ -44,16 +48,21 @@ public class AddressDocassembleJacksonDeserializer {
         throw err;
       }
     }
-    String address = node.get("address").asText("");
-    String unit = node.get("unit").asText("");
-    String city = node.get("city").asText("");
-    String state = node.get("state").asText("");
-    String zip = node.get("zip").asText("");
-    String country = "US"; 
-    JsonNode countryNode = node.get("country");
-    if (countryNode != null) {
-      country = countryNode.asText("US");
+    if (!onePresent) {
+	 log.info("None of the address parts are present, won't try to build address");
+      return Optional.empty();
     }
+    if (onePresent && !potentiallyReq.isEmpty()) {
+      for (InterviewVariable memberVar: potentiallyReq) {
+        collector.addRequired(memberVar);
+      }
+    }
+    String address = (node.has("address")) ? node.get("address").asText("") : "";
+    String unit = (node.has("unit")) ? node.get("unit").asText("") : "";
+    String city = (node.has("city")) ? node.get("city").asText("") : "";
+    String state = (node.has("state")) ? node.get("state").asText("") : "";
+    String zip = (node.has("zip")) ? node.get("zip").asText("") : "";
+    String country = (node.has("country")) ? node.get("country").asText("US") : "US"; 
     CountryCodeSimpleType countryCode; 
     try {
       countryCode = CountryCodeSimpleType.fromValue(country);
@@ -69,6 +78,6 @@ public class AddressDocassembleJacksonDeserializer {
       throw err;
     }
     Address addr = new Address(address, unit, city, state, zip, countryCode);
-    return addr; 
+    return Optional.of(addr); 
   }
 }
