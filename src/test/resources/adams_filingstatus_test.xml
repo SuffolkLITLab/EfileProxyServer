@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://docs.oasis-open.org/codelist/ns/genericode/1.0/">
+  <Identification xmlns="">
+    <ShortName>FilingStatusCode</ShortName>
+    <LongName>FilingStatusCode</LongName>
+    <Version>00CE5B9168DD3D2051FAB786C149BAAB7366EE8707ABF3E28DEC6A73AA981E7F169F67EA00B57225D5E2B9FDEF8F63B4B1A8C6290A52166F54360CCD27F1B569</Version>
+    <CanonicalUri>urn:oasis:names:tc:legalxml-courtfiling:codelist:gc:FilingStatusCode</CanonicalUri>
+    <CanonicalVersionUri>urn:oasis:names:tc:legalxml-courtfiling:codelist:gc:FilingStatusCode-1.0</CanonicalVersionUri>
+    <Agency>
+      <LongName>OASIS LegalXML Electronic Court Filing Technical Committee</LongName>
+    </Agency>
+  </Identification>
+  <ColumnSet xmlns="">
+    <Column Id="code" Use="required">
+      <ShortName>Code</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="name" Use="optional">
+      <ShortName>Name</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Key Id="codeKey">
+      <ShortName>CodeKey</ShortName>
+      <ColumnRef Ref="code" />
+    </Key>
+  </ColumnSet>
+  <SimpleCodeList xmlns="">
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>denied</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Filing has been denied</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>granted</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Filing has been granted</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>moot</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Filing has been mooted</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>receipted</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Filing is receipted</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>under-review</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Filing is under review</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>submitting</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Filing is submitting</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>submitted</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Filing has been submitted</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>failed</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Filing submission has failed</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>served</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Filing has been served</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>reviewed</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Filing has been reviewed</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>rejected</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Filing has been rejected</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>error</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Filing is in an error state</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>deferred</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Filing has been deferred for later review</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>cancelled</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Filing has been cancelled</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>accepted</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Filing has been accepted by the court</SimpleValue>
+      </Value>
+    </Row>
+  </SimpleCodeList>
+</CodeList>

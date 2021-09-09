@@ -11,9 +11,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class FilingInformation {
 
   private String courtLocationId;
-  private List<Person> plaintiffs;
+  private List<Person> plaintiffs = List.of();
   private String plaintiffPartyType;
-  private List<Person> defendants;
+  private List<Person> defendants = List.of();
   private String defendantPartyType;
   
   /** A list of attorney UIDs. 
@@ -24,20 +24,20 @@ public class FilingInformation {
    * TODO(brycew): this isn't super general, and relies on registering Attorneys elsewhere. 
    * Make it more generic if possible.
    */
-  private List<String> attorneyIds;
+  private List<String> attorneyIds = List.of();
   /** A map from party Ids (in the person Objs) to a list of their Attorneys
    * 
    * A party not present in the map means you don't know who the attorney is (or for subsequent filings,
    * don't want to modify any attorneys). 
    * A party with an empty list means the party is Pro Se.
    */
-  private Map<String, List<String>> partyToAttorneyIds;
+  private Map<String, List<String>> partyToAttorneyIds = Map.of();
   
   
   /** List of service contacts to add to the case. Contacts are mostly an ID of the contact already
    * registered within the EFM system.
    */
-  private List<CaseServiceContact> serviceContacts;
+  private List<CaseServiceContact> serviceContacts = List.of();
  
   /** A tracking ID from the EFM system for the existing case. For subsequent filing. */
   private Optional<String> prevCaseId = Optional.empty();
@@ -49,7 +49,7 @@ public class FilingInformation {
   private String caseType;
   private String caseSubtype;
   private String paymentId;
-  private List<FilingDoc> filingDocs;
+  private List<FilingDoc> filingDocs = List.of();
   
   private JsonNode miscInfo;
   
@@ -89,7 +89,7 @@ public class FilingInformation {
     return plaintiffs;
   }
   
-  public String getPlantiffPartyType() {
+  public String getPlaintiffPartyType() {
     return plaintiffPartyType;
   }
   

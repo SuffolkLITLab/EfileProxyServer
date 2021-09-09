@@ -79,7 +79,7 @@ public class PaymentsService {
   private RandomString transactionIdGen;
   private final String togaKey;
   // TODO(brycew): go back to BASE_URL
-  private final String redirectUrl = "http://172.19.0.3:9000/payments/toga-account"; // ServiceHelpers.BASE_URL + "/payments/toga-account";
+  private final String redirectUrl = System.getenv("CURRENT_URL") + "/payments/toga-account"; // ServiceHelpers.BASE_URL + "/payments/toga-account";
   private final String togaUrl;
 
   public PaymentsService(SecurityHub security, String togaKey, String togaUrl) {

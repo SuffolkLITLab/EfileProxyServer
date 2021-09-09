@@ -187,10 +187,16 @@ public class EcfCaseTypeFactory {
       collector.error(err);
       throw err;
     }
-    List<String> partyTypeNames = requiredTypes.stream().map(p -> p.name).collect(Collectors.toList());
-    if (!partyTypeNames.contains(info.getPlantiffPartyType())) {
-      InterviewVariable plantiffVar = collector.requestVar("plantiff_party_type", "Legal role of the plantiff", "choices", partyTypeNames);
-      collector.addWrong(plantiffVar);
+    if (requiredTypes.stream().filter(t -> !t.name.equals(info.getPlaintiffPartyType()) && !t.name.equals(info.getDefendantPartyType())).findAny().isPresent()) {
+      FilingError err = FilingError.serverError("DEV ERROR: All required parties (" + requiredTypes + ") not covered by plaintiff and defendant party types. ("
+          + info.getPlaintiffPartyType() + " " + info.getDefendantPartyType()); 
+      collector.error(err);
+      throw err;
+    }
+    List<String> partyTypeNames = partyTypes.stream().map(p -> p.name).collect(Collectors.toList());
+    if (!partyTypeNames.contains(info.getPlaintiffPartyType())) {
+      InterviewVariable plaintiffVar = collector.requestVar("plaintiff_party_type", "Legal role of the plaintiff", "choices", partyTypeNames);
+      collector.addWrong(plaintiffVar);
     }
 
     if (!partyTypeNames.contains(info.getDefendantPartyType())) {
@@ -198,11 +204,11 @@ public class EcfCaseTypeFactory {
       collector.addWrong(defendantVar);
     }
     
-    for (Person plantiff : info.getPlaintiffs()) {
-      CaseParticipantType cp = serializer.serializeEcfCaseParticipant(plantiff, collector); 
+    for (Person plaintiff : info.getPlaintiffs()) {
+      CaseParticipantType cp = serializer.serializeEcfCaseParticipant(plaintiff, collector); 
       TextType tt = of.createTextType();
       partyTypes.stream()
-          .filter(pt -> pt.name.equalsIgnoreCase(info.getPlantiffPartyType()))
+          .filter(pt -> pt.name.equalsIgnoreCase(info.getPlaintiffPartyType()))
           .findFirst()
           .ifPresent(pt -> tt.setValue(pt.code));
       cp.setCaseParticipantRoleCode(tt);

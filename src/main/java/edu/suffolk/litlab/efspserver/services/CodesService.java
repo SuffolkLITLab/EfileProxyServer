@@ -14,6 +14,9 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 // import org.slf4j.Logger;
 // import org.slf4j.LoggerFactory;
 
@@ -36,8 +39,7 @@ import edu.suffolk.litlab.efspserver.codes.ServiceCodeType;
 @Path("/codes/")
 @Produces({MediaType.APPLICATION_JSON})
 public class CodesService {
-  // TODO(qs): is there anything that should be logged in this class?
-  // private static Logger log = LoggerFactory.getLogger(CodesService.class); 
+  private static Logger log = LoggerFactory.getLogger(CodesService.class); 
 
   private CodeDatabase cd;
   public CodesService(CodeDatabase cd) {
@@ -79,12 +81,23 @@ public class CodesService {
   @Path("/courts/{court_id}/case_types")
   public Response getCaseTypes(@Context HttpHeaders httpHeaders, 
     @PathParam("court_id") String courtId,
-    @QueryParam("category_id") String categoryId) throws SQLException {
+    @QueryParam("category_id") String categoryId,
+    @QueryParam("timing") String timing) throws SQLException {
 
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("Court does not exist " + courtId).build();
       }
-      List<CaseType> caseTypes = cd.getCaseTypesFor(courtId, categoryId);
+      Optional<Boolean> isInitial = Optional.empty();
+      if (timing == null || timing.isBlank()) {
+        isInitial = Optional.empty();
+      } else if (timing.equalsIgnoreCase("Initial")) {
+        isInitial = Optional.of(true);
+      } else if (timing.equalsIgnoreCase("Subsequent")) {
+        isInitial = Optional.of(false);
+      } else {
+        log.warn("timing param expected to be initial / subsequent: was: " + timing);
+      }
+      List<CaseType> caseTypes = cd.getCaseTypesFor(courtId, categoryId, isInitial);
 
     return Response.ok(caseTypes).build();
   }
@@ -105,7 +118,7 @@ public class CodesService {
   @Path("/courts/{court_id}/case_types/{case_type_id}/case_subtypes")
   public Response getCaseSubtypes(@Context HttpHeaders httpHeaders, 
     @PathParam("court_id") String courtId,
-    @PathParam("case_type_id}") String caseTypeId) throws SQLException {
+    @PathParam("case_type_id") String caseTypeId) throws SQLException {
 
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("Court does not exist " + courtId).build();
@@ -175,7 +188,7 @@ public class CodesService {
   @Path("/courts/{court_id}/case_types/{case_type_id}/party_types")
   public Response getPartyTypes(@Context HttpHeaders httpHeaders, 
       @PathParam("court_id") String courtId,
-      @PathParam("case_type_id}") String caseTypeId) throws SQLException {
+      @PathParam("case_type_id") String caseTypeId) throws SQLException {
     if (!cd.getAllLocations().contains(courtId)) {
       return Response.status(404).entity("Court does not exist " + courtId).build();
     }
@@ -202,7 +215,7 @@ public class CodesService {
   @Path("/courts/{court_id}/filing_codes/{filing_code_id}/document_types")
   public Response getDocumentTypes(@Context HttpHeaders httpHeaders, 
       @PathParam("court_id") String courtId,
-      @PathParam("filing_code_id}") String filingCodeId) throws SQLException {
+      @PathParam("filing_code_id") String filingCodeId) throws SQLException {
     if (!cd.getAllLocations().contains(courtId)) {
       return Response.status(404).entity("Court does not exist " + courtId).build();
     }
@@ -215,7 +228,7 @@ public class CodesService {
   @Path("/courts/{court_id}/filing_codes/{filing_code_id}/motion_types")
   public Response getMotionTypes(@Context HttpHeaders httpHeaders, 
     @PathParam("court_id") String courtId,
-    @PathParam("filing_code_id}") String filingCodeId) throws SQLException {
+    @PathParam("filing_code_id") String filingCodeId) throws SQLException {
 
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("Court does not exist " + courtId).build();
@@ -252,7 +265,7 @@ public class CodesService {
   @Path("/courts/{court_id}/filing_codes/{filing_code_id}/filing_components")
   public Response getFilingComponents(@Context HttpHeaders httpHeaders, 
       @PathParam("court_id") String courtId,
-      @PathParam("filing_code_id}") String filingCodeId) throws SQLException {
+      @PathParam("filing_code_id") String filingCodeId) throws SQLException {
     if (!cd.getAllLocations().contains(courtId)) {
       return Response.status(404).entity("Court does not exist " + courtId).build();
     }
@@ -266,7 +279,7 @@ public class CodesService {
   public Response getOptionalServices(@Context HttpHeaders httpHeaders, 
       @PathParam("court_id") String courtId,
       @PathParam("filing_code_id") String filingCodeId) throws SQLException {
-    if (cd.getAllLocations().contains(courtId)) {
+    if (!cd.getAllLocations().contains(courtId)) {
       return Response.status(400).entity("Court does not exist " + courtId).build();
     }
     

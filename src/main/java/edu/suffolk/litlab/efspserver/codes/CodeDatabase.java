@@ -46,8 +46,7 @@ public class CodeDatabase extends DatabaseInterface {
   
   @Override
   public void createTablesIfAbsent() throws SQLException {
-    // TODO(brycew): no-op? 
-    
+    createTableIfAbsent("installedversion");
   }
 
   public void createTableIfAbsent(String tableName) throws SQLException {
@@ -85,7 +84,7 @@ public class CodeDatabase extends DatabaseInterface {
   public void updateTable(String tableName, String courtName, InputStream inStream)
       throws JAXBException, SQLException, XMLStreamException {
     if (conn == null) {
-      throw new SQLException();
+      throw new SQLException("Null connection!");
     }
     if (tableName.contains("(") || tableName.contains(")") || tableName.contains(" ")) {
       log.warn("Must be valid table name: " + tableName + " is not");
@@ -153,18 +152,23 @@ public class CodeDatabase extends DatabaseInterface {
   public List<CaseCategory> getCaseCategoriesFor(String courtLocationId) throws SQLException {
     if (conn == null) {
       log.error("SQL Connection not created in CaseCategories yet");
-      throw new SQLException();
+      return List.of();
     }
-    String query = CaseCategory.getCaseCategoriesForLoc();
-    PreparedStatement st = conn.prepareStatement(query);
-    st.setString(1, courtLocationId);
-    ResultSet rs = st.executeQuery();
-    List<CaseCategory> cats = new ArrayList<CaseCategory>();
-    while (rs.next()) {
-      cats.add(new CaseCategory(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
-          rs.getString(5), rs.getString(6), rs.getString(7)));
+    try {
+      String query = CaseCategory.getCaseCategoriesForLoc();
+      PreparedStatement st = conn.prepareStatement(query);
+      st.setString(1, courtLocationId);
+      ResultSet rs = st.executeQuery();
+      List<CaseCategory> cats = new ArrayList<CaseCategory>();
+      while (rs.next()) {
+        cats.add(new CaseCategory(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
+            rs.getString(5), rs.getString(6), rs.getString(7)));
+      }
+      return cats;
+    } catch (SQLException ex) {
+      log.error("SQLException: " + ex);
+      return List.of();
     }
-    return cats;
   }
   
   /* Put in a partially filled case category, get out a full on from the tables. */
@@ -198,17 +202,20 @@ public class CodeDatabase extends DatabaseInterface {
     }
   }
 
-  public List<CaseType> getCaseTypesFor(String courtLocationId, String caseCategoryCode)
+  public List<CaseType> getCaseTypesFor(String courtLocationId, String caseCategoryCode, Optional<Boolean> initial)
       throws SQLException {
     if (conn == null) {
       log.error("SQL connection not created in CaseTypes yet");
       throw new SQLException();
     }
 
-    String query = CaseType.getCaseTypesFor();
+    String query = (initial.isPresent()) ? CaseType.getCaseTypesForInitial() : CaseType.getCaseTypesFor();
     PreparedStatement st = conn.prepareStatement(query);
     st.setString(1, courtLocationId);
     st.setString(2, caseCategoryCode);
+    if (initial.isPresent()) {
+      st.setString(3, initial.get().toString());
+    }
     ResultSet rs = st.executeQuery();
     List<CaseType> types = new ArrayList<CaseType>();
     while (rs.next()) {
@@ -349,14 +356,23 @@ public class CodeDatabase extends DatabaseInterface {
     }
 
     String query = PartyType.getPartyTypeFromCaseType();
-    PreparedStatement st = conn.prepareStatement(query);
-    st.setString(1, courtLocationId);
-    st.setString(2, typeCode);
-    ResultSet rs = st.executeQuery();
+    PreparedStatement caseSt = conn.prepareStatement(query);
+    caseSt.setString(1, courtLocationId);
+    caseSt.setString(2, typeCode);
+    ResultSet rs = caseSt.executeQuery();
     List<PartyType> partyTypes = new ArrayList<PartyType>();
     // TODO(brycew): this could benefit from a refactor, but can't do new T(); Find a workaround
     while (rs.next()) {
       partyTypes.add(new PartyType(rs)); 
+    }
+    if (partyTypes.isEmpty()) {
+      String broadQuery = PartyType.getPartyTypeNoCaseType();
+      PreparedStatement broadSt = conn.prepareStatement(broadQuery);
+      broadSt.setString(1, courtLocationId);
+      ResultSet broadRs = broadSt.executeQuery();
+      while (broadRs.next()) {
+        partyTypes.add(new PartyType(broadRs)); 
+      }
     }
     return partyTypes;
   }
@@ -425,7 +441,7 @@ public class CodeDatabase extends DatabaseInterface {
         broadSt.setString(1, courtLocationId);
         ResultSet broadRs = broadSt.executeQuery();
         while (broadRs.next()) {
-        docTypes.add(new DocumentTypeTableRow(broadRs)); 
+          docTypes.add(new DocumentTypeTableRow(broadRs)); 
         }
       }
       return docTypes;
@@ -502,7 +518,6 @@ public class CodeDatabase extends DatabaseInterface {
       return List.of();
     }
   }
-
   
   public List<String> getStateCodes(String country) {
     if (conn == null) {

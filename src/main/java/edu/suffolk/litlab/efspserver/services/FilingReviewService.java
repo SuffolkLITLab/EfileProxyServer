@@ -129,7 +129,7 @@ public class FilingReviewService {
     InfoCollector collector = new NeverSubmitCollector();
     Result<FilingInformation, FilingError> res = converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
     if (res.isErr()) {
-      return Response.ok(collector.jsonSummary()).build();
+      return Response.status(400).entity(collector.jsonSummary()).build();
     }
     FilingInformation info = res.unwrapOrElseThrow();
     info.setCourtLocation(courtId);

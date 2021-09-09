@@ -187,17 +187,27 @@ public class ServiceHelpers {
     reply.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
   }
 
+  public static Optional<IEfmFirmService> setupFirmPort(HttpHeaders httpHeaders, SecurityHub security) {
+    return setupFirmPort(httpHeaders, security, true);
+  }
+  
   public static Optional<IEfmFirmService> setupFirmPort(HttpHeaders httpHeaders, 
-      SecurityHub security) {
+      SecurityHub security, boolean needsSoapHeader) {
     String activeToken = httpHeaders.getHeaderString("X-API-KEY");
     Optional<AtRest> atRest= security.getAtRestInfo(activeToken); 
     if (atRest.isEmpty()) {
       log.warn("Couldn't find server api key");
       return Optional.empty();
     }
-    TylerLogin login = new TylerLogin();
-    String tylerToken = httpHeaders.getHeaderString(login.getHeaderKey());
-    return setupFirmPort(tylerToken);
+
+    if (needsSoapHeader) {
+      TylerLogin login = new TylerLogin();
+      String tylerToken = httpHeaders.getHeaderString(login.getHeaderKey());
+      return setupFirmPort(tylerToken);
+    }
+    IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
+    ServiceHelpers.setupServicePort((BindingProvider) port);
+    return Optional.of(port);
   }
     
   public static Optional<IEfmFirmService> setupFirmPort(String tylerToken) {
@@ -220,7 +230,4 @@ public class ServiceHelpers {
 
     return Optional.of(port);
   }
-  
-  
-
 }

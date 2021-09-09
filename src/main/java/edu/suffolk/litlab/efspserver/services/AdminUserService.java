@@ -215,7 +215,7 @@ public class AdminUserService {
   @Path("/user/resend-activation-email")
   public Response selfResendActivationEmail(@Context HttpHeaders httpHeaders,
       String emailToSendTo) {
-    Optional<IEfmUserService> port = setupUserPort(httpHeaders);
+    Optional<IEfmUserService> port = setupUserPort(httpHeaders, false);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -307,7 +307,7 @@ public class AdminUserService {
   @Path("/user/password/reset")
   public Response selfResetPassword(@Context HttpHeaders httpHeaders,
       String emailToSend) {
-    Optional<IEfmUserService> port = setupUserPort(httpHeaders);
+    Optional<IEfmUserService> port = setupUserPort(httpHeaders, false);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -315,6 +315,7 @@ public class AdminUserService {
     ResetPasswordRequestType reset = new ResetPasswordRequestType();
     reset.setEmail(emailToSend);
     ResetPasswordResponseType resp = port.get().resetPassword(reset);
+    // TODO(brycew): why would we reply with the password hash? They still shouldn't be able to log in?
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
         () -> {
           return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
@@ -500,7 +501,8 @@ public class AdminUserService {
   @Path("/users")
   public Response registerUser(@Context HttpHeaders httpHeaders,
       RegistrationRequestType req) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    boolean needsAuth = !req.getRegistrationType().equals(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security, needsAuth);
     if (port.isEmpty()) { 
       return Response.status(401).build();
     }
@@ -564,38 +566,41 @@ public class AdminUserService {
     }
     return true;
   }
+
+  /** Default needsSoapHeader to True: most ops need Tyler Authentication in the SOAP header. */
+  private Optional<IEfmUserService> setupUserPort(HttpHeaders httpHeaders) {
+    return setupUserPort(httpHeaders, true);
+  }
   
   /** Creates a connection to Tyler's SOAP API that is has the right Auth Headers.
    *
    * @param httpHeaders The context tag from the server method
+   * @param needsSoapHeader True if the operation needs Authenticated Tyler creds to work 
    * @return false if setup didn't work, and subsequent service calls will likely fail
    */
-  private Optional<IEfmUserService> setupUserPort(HttpHeaders httpHeaders) {
+  private Optional<IEfmUserService> setupUserPort(HttpHeaders httpHeaders, boolean needsSoapHeader) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
     Optional<AtRest> atRest = security.getAtRestInfo(apiKey);
     if (atRest.isEmpty()) {
       return Optional.empty();
     }
-    TylerLogin login = new TylerLogin();
-    return setupUserPort(httpHeaders.getHeaderString(login.getHeaderKey())); 
-  }
-    
-  private Optional<IEfmUserService> setupUserPort(String tylerToken) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken); 
-    if (creds.isEmpty()) {
-      return Optional.empty();
-    }
-
     IEfmUserService port = makeUserPort(userFactory); 
-    Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    try {
-      List<Header> headersList = List.of(creds.get().toHeader());
-      ctx.put(Header.HEADER_LIST, headersList);
-    } catch (JAXBException ex) {
-      log.warn(ex.toString());
-      return Optional.empty();
+    if (needsSoapHeader) {
+      TylerLogin login = new TylerLogin();
+      Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(
+          httpHeaders.getHeaderString(login.getHeaderKey())); 
+      if (creds.isEmpty()) {
+        return Optional.empty();
+      }
+      Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
+      try {
+        List<Header> headersList = List.of(creds.get().toHeader());
+        ctx.put(Header.HEADER_LIST, headersList);
+      } catch (JAXBException ex) {
+        log.warn(ex.toString());
+        return Optional.empty();
+      }
     }
-
     return Optional.of(port);
   }
   

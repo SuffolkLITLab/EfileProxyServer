@@ -11,7 +11,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.xml.bind.JAXBElement;
 
-import org.bouncycastle.jcajce.provider.asymmetric.dsa.DSASigner.detDSA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -283,13 +282,15 @@ public class EcfCourtSpecificSerializer {
         cd.getDataField(this.court.code, "PartyLastName"), collector,
         collector.requestVar("name.last", "Last name of the case party", "text")));
     personName.setPersonNamePrefixText(wrapName.apply(name.getPrefix()));
-    DataFieldRow suffixRow = cd.getDataField(this.court.code, "PartyFirstName");
+    DataFieldRow suffixRow = cd.getDataField(this.court.code, "PartyNameSuffix");
     if (suffixRow.isvisible) {
       List<NameAndCode> suffixes = cd.getNameSuffixes(this.court.code);
       InterviewVariable var = collector.requestVar("name.suffix", "Suffix of the name of the party", 
           "choices", suffixes.stream().map(s -> s.getName()).collect(Collectors.toList()));
       if (name.getSuffix().isBlank()) {
         if (suffixRow.isrequired) {
+          // TODO(brycew): 
+          log.error("DEV WARNING: why the hell would you ever require a suffix? There aren't empty suffix codes at all.");
           collector.addRequired(var);
         } else {
           personName.setPersonNameSuffixText(wrapName.apply(name.getSuffix()));
