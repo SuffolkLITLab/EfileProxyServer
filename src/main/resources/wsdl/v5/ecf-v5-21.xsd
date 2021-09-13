@@ -1,121 +1,45 @@
-<?xml version="1.0" encoding="US-ASCII" standalone="no"?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:appinfo="http://release.niem.gov/niem/appinfo/4.0/" xmlns:ct="http://release.niem.gov/niem/conformanceTargets/3.0/" xmlns:mmucc="http://release.niem.gov/niem/codes/mmucc/4.0/" xmlns:structures="http://release.niem.gov/niem/structures/4.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ct:conformanceTargets="http://reference.niem.gov/niem/specification/naming-and-design-rules/4.0/#ReferenceSchemaDocument" targetNamespace="http://release.niem.gov/niem/codes/mmucc/4.0/" version="1" xsi:schemaLocation="http://release.niem.gov/niem/appinfo/4.0/ ../../../utility/appinfo/4.0/appinfo.xsd http://release.niem.gov/niem/conformanceTargets/3.0/ ../../../utility/conformanceTargets/3.0/conformanceTargets.xsd">
-  <xs:annotation>
-    <xs:documentation>Source: Model Minimum Uniform Crash Criteria (MMUCC); Publication: MMUCC Guideline - Model Minimum Uniform Crash Criteria - 4th Edition; 
-Version: 4.0; 
-Date: 2012; 
-Source Updates: 2012;</xs:documentation>
-  </xs:annotation>
-  <xs:import namespace="http://release.niem.gov/niem/structures/4.0/" schemaLocation="ecf-v5-7.xsd"/>
-  <xs:simpleType name="DrivingRestrictionCodeSimpleType">
-    <xs:annotation>
-      <xs:documentation>A data type for restrictions assigned to an individuals driver license by the license examiner.</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="0">
-        <xs:annotation>
-          <xs:documentation>None</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="1">
-        <xs:annotation>
-          <xs:documentation>Corrective Lenses</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="10">
-        <xs:annotation>
-          <xs:documentation>Limited - Other</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="11">
-        <xs:annotation>
-          <xs:documentation>CDL Intrastate Only</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="12">
-        <xs:annotation>
-          <xs:documentation>Motor Vehicles without Air Brakes</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="13">
-        <xs:annotation>
-          <xs:documentation>Military Vehicles Only</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="14">
-        <xs:annotation>
-          <xs:documentation>Except Class A Bus</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="15">
-        <xs:annotation>
-          <xs:documentation>Except Class A and Class B Bus</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="16">
-        <xs:annotation>
-          <xs:documentation>Except Tractor-Trailer</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="17">
-        <xs:annotation>
-          <xs:documentation>Farm Waiver</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="2">
-        <xs:annotation>
-          <xs:documentation>Mechanical Devices (special brakes, hand controls, or other adaptive devices)</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="3">
-        <xs:annotation>
-          <xs:documentation>Prosthetic Aid</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="4">
-        <xs:annotation>
-          <xs:documentation>Automatic Transmission</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="5">
-        <xs:annotation>
-          <xs:documentation>Outside Mirror</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="6">
-        <xs:annotation>
-          <xs:documentation>Limit to Daylight Only</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="7">
-        <xs:annotation>
-          <xs:documentation>Limit to Employment</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="8">
-        <xs:annotation>
-          <xs:documentation>Learner&#8217;s Permit Restrictions</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="9">
-        <xs:annotation>
-          <xs:documentation>Intermediate License Restrictions</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-      <xs:enumeration value="98">
-        <xs:annotation>
-          <xs:documentation>Other</xs:documentation>
-        </xs:annotation>
-      </xs:enumeration>
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:complexType name="DrivingRestrictionCodeType">
-    <xs:annotation>
-      <xs:documentation>A data type for restrictions assigned to an individuals driver license by the license examiner.</xs:documentation>
-    </xs:annotation>
-    <xs:simpleContent>
-      <xs:extension base="mmucc:DrivingRestrictionCodeSimpleType">
-        <xs:attributeGroup ref="structures:SimpleObjectAttributeGroup"/>
-      </xs:extension>
-    </xs:simpleContent>
-  </xs:complexType>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+     WS-Calendar Version 1.0
+     Committee Specification 01
+     30 July 2011
+     Source: http://docs.oasis-open.org/ws-calendar/ws-calendar-spec/v1.0/cs01/xsd/
+     Copyright (c) The Calendaring and Scheduling Consortium 2010-2011. All Rights Reserved.
+     Copyright (c) OASIS Open 2010-2011. All Rights Reserved. --><!-- iCalendar link extensions schema is intended to work
+     in conjunction with conformant implementations of
+     IETF RFC 5545 ( http://www.rfc-editor.org/rfc/rfc5545.txt ),
+     the normative specification of iCalendar. --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xcal="urn:ietf:params:xml:ns:icalendar-2.0" elementFormDefault="qualified" targetNamespace="urn:ietf:params:xml:ns:icalendar-2.0">
+	<!--Definition for the LINK extension property for icalendar -->
+	<xs:include schemaLocation="ecf-v5-22.xsd"/>
+	<!-- ===================== Properties =================================  -->
+	<xs:include schemaLocation="ecf-v5-23.xsd"/>
+	<!-- ===================== Properties =================================  -->
+	<xs:include schemaLocation="ecf-v5-24.xsd"/>
+	<!-- =====================================================================
+       3.2 Property parameter definitions
+       ===================================================================== -->
+	<!-- REL defines the type of relationship and may be a predefined value as
+       below or a URI which is globally unique and understood within the context
+       of its use.
+       
+       The standard relation types are:
+             "PARENT"    ; Parent relationship - Default
+             "CHILD"     ; Child relationship
+             "SIBLING"   ; Sibling relationship
+   -->
+	<xs:element name="rel" substitutionGroup="xcal:baseParameter" type="xcal:TextParameterType"/>
+	<!-- =====================================================================
+       3.7 Calendar Properties
+       ===================================================================== -->
+	<xs:complexType mixed="false" name="LinkPropType">
+		<xs:complexContent>
+			<xs:extension base="xcal:BasePropertyType">
+				<xs:choice>
+					<xs:element ref="xcal:uri"/>
+					<xs:element name="uid" type="xs:string"/>
+					<xs:element name="reference" type="xs:string"/>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="link" substitutionGroup="xcal:baseProperty" type="xcal:LinkPropType"/>
 </xs:schema>

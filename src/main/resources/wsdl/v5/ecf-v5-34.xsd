@@ -1,155 +1,28 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
-     WS-Calendar Version 1.0
-     Committee Specification 01
-     30 July 2011
-     Source: http://docs.oasis-open.org/ws-calendar/ws-calendar-spec/v1.0/cs01/xsd/
-     Copyright (c) The Calendaring and Scheduling Consortium 2010-2011. All Rights Reserved.
-     Copyright (c) OASIS Open 2010-2011. All Rights Reserved. --><!-- iCalendar service functionality extensions schema
-     is intended to work in conjunction with conformant
-     implementations of IETF RFC 5545
-     ( http://www.rfc-editor.org/rfc/rfc5545.txt ),
-     the normative specification of iCalendar. --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xcal="urn:ietf:params:xml:ns:icalendar-2.0" elementFormDefault="qualified" targetNamespace="urn:ietf:params:xml:ns:icalendar-2.0">
-	<xs:include schemaLocation="ecf-v5-27.xsd"/>
-	<!-- ===================== Properties =================================  -->
-	<xs:include schemaLocation="ecf-v5-29.xsd"/>
-	<!-- ===================== Components =================================  -->
-	<xs:include schemaLocation="ecf-v5-33.xsd"/>
-	<!-- =====================================================================
-       3.2 Property parameter definitions
-       ===================================================================== -->
-	<!-- Parameters that take a duration value -->
-	<xs:complexType mixed="false" name="DurationParameterType">
-		<xs:complexContent>
-			<xs:extension base="xcal:BaseParameterType">
-				<xs:sequence>
-					<xs:element name="duration" type="xs:duration"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<!-- Gap is used in the RELATED-TO property -->
-	<xs:element name="gap" substitutionGroup="xcal:baseParameter" type="xcal:DurationParameterType"/>
-	<!-- Granularity is used in the VAVAILABILITY and AVAILABILITY components -->
-	<xs:element name="granularity" substitutionGroup="xcal:baseProperty" type="xcal:DurationPropType"/>
-	<xs:complexType mixed="false" name="ToleranceValueType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">
-         A tolerance value is a set of durations which indicate the allowed
-         tolerance for the indicated value, e.g. startafter=PT5M indicates that
-         5 minutes late is acceptable. 
-      </xs:documentation>
-		</xs:annotation>
-		<xs:sequence>
-			<xs:element maxOccurs="1" minOccurs="0" name="startbefore" type="xcal:DurationValueType"/>
-			<xs:element maxOccurs="1" minOccurs="0" name="startafter" type="xcal:DurationValueType"/>
-			<xs:element maxOccurs="1" minOccurs="0" name="endbefore" type="xcal:DurationValueType"/>
-			<xs:element maxOccurs="1" minOccurs="0" name="endafter" type="xcal:DurationValueType"/>
-			<xs:element maxOccurs="1" minOccurs="0" name="durationlong" type="xcal:DurationValueType"/>
-			<xs:element maxOccurs="1" minOccurs="0" name="durationshort" type="xcal:DurationValueType"/>
-			<xs:element maxOccurs="1" minOccurs="0" name="precision" type="xcal:DurationValueType"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:element name="tolerance" substitutionGroup="xcal:baseProperty" type="xcal:TolerancePropType"/>
-	<xs:complexType mixed="false" name="TolerancePropType">
-		<xs:complexContent>
-			<xs:extension base="xcal:BasePropertyType">
-				<xs:sequence>
-					<xs:element name="tolerate" type="xcal:ToleranceValueType"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<!-- =====================================================================
-       3.4 Calendar Components
-       ===================================================================== -->
-	<xs:complexType mixed="false" name="WsCalendarGluonType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">
-         A gluon takes vavailability.
-      </xs:documentation>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="xcal:VcalendarContainedComponentType">
-				<xs:sequence>
-					<xs:element name="components" type="xcal:ArrayOfGluonContainedComponents"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:complexType mixed="false" name="ArrayOfGluonContainedComponents">
-		<xs:sequence>
-			<xs:choice maxOccurs="unbounded" minOccurs="0">
-				<xs:element ref="xcal:vavailability"/>
-			</xs:choice>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:element name="gluon" substitutionGroup="xcal:vcalendarContainedComponent" type="xcal:WsCalendarGluonType"/>
-	<xs:complexType mixed="false" name="WsCalendarIntervalType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">
-         An interval takes no sub-components.
-      </xs:documentation>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="xcal:VcalendarContainedComponentType"/>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:element name="interval" substitutionGroup="xcal:vcalendarContainedComponent" type="xcal:WsCalendarIntervalType"/>
-	<!-- =====================================================================
-       3.7 Calendar Properties
-       ===================================================================== -->
-	<xs:complexType mixed="false" name="WsCalendarTypeType">
-		<xs:complexContent>
-			<xs:extension base="xcal:TextPropertyType"/>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:complexType mixed="false" name="WsCalendarAttachType">
-		<xs:annotation>
-			<xs:documentation>types the content of the xCal attach element</xs:documentation>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="xcal:BasePropertyType">
-				<xs:choice maxOccurs="unbounded" minOccurs="0">
-					<xs:element ref="xcal:artifact"/>
-					<xs:element ref="xcal:artifactBase"/>
-					<xs:element ref="xcal:uri"/>
-					<xs:element ref="xcal:text"/>
-				</xs:choice>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:element name="x-wsCalendar-attach" substitutionGroup="xcal:baseProperty" type="xcal:WsCalendarAttachType"/>
-	<xs:element name="x-wscalendar-type" substitutionGroup="xcal:baseProperty" type="xcal:WsCalendarTypeType"/>
-	<xs:element name="artifact" type="xcal:ArtifactType"/>
-	<xs:complexType name="ArtifactType">
-		<xs:annotation>
-			<xs:documentation>
-        The artifact is here to handle elements that are not proper extensions 
-        of wsCalendar.
-      </xs:documentation>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:restriction base="xs:anyType">
-				<xs:anyAttribute namespace="##other" processContents="lax"/>
-			</xs:restriction>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:element block="" name="artifactBase" type="xcal:ArtifactBaseType">
-		<xs:annotation>
-			<xs:documentation>
-        The artifact Base is here for use in extending by other specifications 
-        allowing attributes from other namespaces to be added to 
-        ws-calendar-based schemas.
-      </xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:complexType abstract="true" block="" name="ArtifactBaseType">
-		<xs:annotation>
-			<xs:documentation>
-        The artifact Base is here for use in extending by other specifications, 
-        to to allow attributes from other namespaces to be added to 
-        ws-calendar-based schemas.
-      </xs:documentation>
-		</xs:annotation>
-	</xs:complexType>
+<?xml version="1.0" encoding="US-ASCII" standalone="no"?><!-- NIEM extension schema generated by BOUML niemtools plug_out (https://github.com/cabralje/niem-tools) --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/datecallback" xmlns:clsa="http://reference.niem.gov/niem/specification/code-lists/1.0/code-lists-schema-appinfo/" xmlns:ct="http://release.niem.gov/niem/conformanceTargets/3.0/" xmlns:datecallback="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/datecallback" xmlns:ecf="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" xmlns:j="http://release.niem.gov/niem/domains/jxdm/6.0/" xmlns:local="local" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" xmlns:term="http://release.niem.gov/niem/localTerminology/3.0/" xmlns:xcal="urn:ietf:params:xml:ns:icalendar-2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" ct:conformanceTargets="http://reference.niem.gov/niem/specification/naming-and-design-rules/3.0/#ExtensionSchemaDocument http://reference.niem.gov/niem/specification/code-lists/1.0/#SchemaDocument" elementFormDefault="qualified" targetNamespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/datecallback" version="5.0">
+<xs:annotation>
+<xs:documentation> Schema for namespace https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/datecallback</xs:documentation>
+</xs:annotation><xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" schemaLocation="ecf-v5-3.xsd"/><xs:import namespace="http://release.niem.gov/niem/domains/jxdm/6.0/" schemaLocation="ecf-v5-15.xsd"/><xs:import namespace="http://release.niem.gov/niem/niem-core/4.0/" schemaLocation="ecf-v5-5.xsd"/><xs:import namespace="urn:ietf:params:xml:ns:icalendar-2.0" schemaLocation="ecf-v5-20.xsd"/><xs:complexType name="NotifyCourtDateMessageType">
+<xs:annotation>
+<xs:documentation>The message returned when the a court date is scheduled, generally in response to a ReserveCourtDateRequest.</xs:documentation>
+</xs:annotation>
+<xs:complexContent>
+<xs:extension base="ecf:CaseFilingType">
+<xs:sequence>
+<xs:element maxOccurs="1" minOccurs="0" ref="nc:Case"/>
+<xs:element maxOccurs="1" minOccurs="0" ref="xcal:icalendar"/>
+<xs:element maxOccurs="unbounded" minOccurs="0" ref="datecallback:NotifyCourtDateMessageAugmentationPoint"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="NotifyCourtDateMessage" nillable="false" type="datecallback:NotifyCourtDateMessageType">
+<xs:annotation>
+<xs:documentation>The message returned when the a court date is scheduled, generally in response to a ReserveCourtDateRequest.</xs:documentation>
+</xs:annotation>
+</xs:element>
+<xs:element abstract="true" name="NotifyCourtDateMessageAugmentationPoint">
+<xs:annotation>
+<xs:documentation>An augmentation</xs:documentation>
+</xs:annotation>
+</xs:element>
 </xs:schema>
