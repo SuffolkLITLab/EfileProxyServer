@@ -102,3 +102,15 @@ working in. For us it's mostly `illinois-stage`.
    * `-d` puts all of the generated java into that directory. This is outside of the project root, so I don't accidentaly
      overwrite anything when running the tool.
 
+   For the CourtSchedulingMDE.wsdl, we need to add a sub package, so it doesn't conflict with the ecfv4 generated files from the other
+   services. This should be able to be done with the `-p` flag in the [`wsdl2java` tool](https://cxf.apache.org/docs/wsdl-to-java.html).
+   However, that flag collapses all of the wsdl namespaces into a single namespace. Generating the java files with the same command above,
+   and running the below script on it to add an additional package works instead.
+
+   ```bash
+   for fname in `find . -type f`
+   do
+     sed -i 's/import \(gov.niem.release.niem\|https.docs_oasis_open_org\|ietf.params.xml.ns.icalendar_2\|org.w3._2000._09.xmldsig_\|oasis.names.specification.ubl.schema.xsd\|tyler.ecf.v5_0\|un.unece.uncefact.data.specification\)/import ecfv5.\1/g' $fname
+   done
+   ```
+

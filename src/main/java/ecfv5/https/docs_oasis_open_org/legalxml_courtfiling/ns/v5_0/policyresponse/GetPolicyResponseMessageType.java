@@ -1,0 +1,115 @@
+
+package ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementRefs;
+import javax.xml.bind.annotation.XmlType;
+import ecfv5.gov.niem.release.niem.niem_core._4.IdentificationType;
+import ecfv5.gov.niem.release.niem.niem_core._4.MetadataType;
+import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+
+
+/**
+ * The response to a request for a court Court Policy.
+ * 
+ * <p>Java class for GetPolicyResponseMessageType complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+ * <pre>
+ * &lt;complexType name="GetPolicyResponseMessageType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ResponseMessageType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Metadata" maxOccurs="unbounded"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse}DevelopmentPolicy"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse}PolicyVersionID"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse}RuntimePolicy"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse}GetPolicyResponseMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "GetPolicyResponseMessageType", propOrder = {
+    "rest"
+})
+public class GetPolicyResponseMessageType
+    extends ResponseMessageType
+{
+
+    @XmlElementRefs({
+        @XmlElementRef(name = "Metadata", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "DevelopmentPolicy", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "PolicyVersionID", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "RuntimePolicy", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "GetPolicyResponseMessageAugmentationPoint", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", type = JAXBElement.class, required = false)
+    })
+    protected List<JAXBElement<?>> rest;
+
+    /**
+     * Gets the rest of the content model. 
+     * 
+     * <p>
+     * You are getting this "catch-all" property because of the following reason: 
+     * The field name "Metadata" is used by two different parts of a schema. See: 
+     * line 61 of file:/home/litlab/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/v5/ecf-v5-52.xsd
+     * line 25 of file:/home/litlab/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/v5/ecf-v5-7.xsd
+     * <p>
+     * To get rid of this property, apply a property customization to one 
+     * of both of the following declarations to change their names: 
+     * Gets the value of the rest property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the rest property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRest().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link JAXBElement }{@code <}{@link IdentificationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link MetadataType }{@code >}
+     * {@link JAXBElement }{@code <}{@link DevelopmentPolicyType }{@code >}
+     * {@link JAXBElement }{@code <}{@link RuntimePolicyType }{@code >}
+     * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * 
+     */
+    public List<JAXBElement<?>> getRest() {
+        if (rest == null) {
+            rest = new ArrayList<JAXBElement<?>>();
+        }
+        return this.rest;
+    }
+
+    /**
+     * Generates a String representation of the contents of this type.
+     * This is an extension method, produced by the 'ts' xjc plugin
+     * 
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
+    }
+
+}

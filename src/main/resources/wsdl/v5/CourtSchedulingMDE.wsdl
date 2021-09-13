@@ -40,10 +40,13 @@
 			<input message="tns:NotifyCourtDateRequest"/>
 			<output message="tns:NotifyCourtDateResponse"/>
 		</operation>
-		<operation name="ReserveCourtDate">
+		<!-- NOTE(brycew): modified from original: Tyler docs only mention the Sync version of
+			this operation, and it's not possible for Two operations on a port to have the same Arg signature,
+		which this and ReserveCourtDateSync do. So this must go. -->
+		<!--operation name="ReserveCourtDate">
 			<input message="tns:ReserveCourtDateRequest"/>
 			<output message="tns:ReserveCourtDateResponse"/>
-		</operation>
+		</operation-->
 		<operation name="ReserveCourtDateSync">
 			<input message="tns:ReserveCourtDateRequest"/>
 			<output message="tns:ReserveCourtDateSyncResponse"/>
@@ -74,7 +77,7 @@
 				<soap:body use="literal"/>
 			</output>
 		</operation>
-		<operation name="ReserveCourtDate">
+		<!--operation name="ReserveCourtDate">
 			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE/ReserveCourtDate"/>
 			<input>
 				<soap:body use="literal"/>
@@ -82,7 +85,7 @@
 			<output>
 				<soap:body use="literal"/>
 			</output>
-		</operation>
+		</operation-->
 		<operation name="ReserveCourtDateSync">
 			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE/ReserveCourtDateSync"/>
 			<input>
