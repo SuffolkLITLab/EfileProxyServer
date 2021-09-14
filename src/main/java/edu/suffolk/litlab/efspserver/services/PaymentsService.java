@@ -40,6 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.RandomString;
 import edu.suffolk.litlab.efspserver.SecurityHub;
+import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.schema.baseresponse.BaseResponseType;
 import tyler.efm.services.schema.common.PaymentAccountType;
@@ -57,11 +58,11 @@ import tyler.efm.services.schema.updatepaymentaccountresponse.UpdatePaymentAccou
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class PaymentsService {
   private static Logger log =
-      LoggerFactory.getLogger(PaymentsService.class); 
+      LoggerFactory.getLogger(PaymentsService.class);
 
-  private tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac = 
+  private tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac =
       new tyler.efm.services.schema.common.ObjectFactory();
-  
+
   private static class TempAccount {
     String name;
     String loginInfo;
@@ -69,9 +70,9 @@ public class PaymentsService {
     String typeCode;
     String originalUrl;
   }
-  
+
   private Map<String, TempAccount> tempAccounts;
-   
+
   @Context
   UriInfo uri;
 
@@ -97,11 +98,11 @@ public class PaymentsService {
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
-    
+
     PaymentAccountListResponseType accounts = firmPort.get().getGlobalPaymentAccountList();
     return makeResponse(accounts, () -> Response.ok(accounts.getPaymentAccount()).build());
   }
-  
+
   @GET
   @Path("/global-accounts/{account_id}")
   public Response getGlobalPaymentAccount(@Context HttpHeaders httpHeaders,
@@ -110,13 +111,13 @@ public class PaymentsService {
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
-    
+
     GetPaymentAccountRequestType req = new GetPaymentAccountRequestType();
     req.setPaymentAccountID(accountId);
     GetPaymentAccountResponseType account = firmPort.get().getGlobalPaymentAccount(req);
     return makeResponse(account, () -> Response.ok(account.getPaymentAccount()).build());
   }
-  
+
 
   // TODO(#25): Can't write this until we have TOGA integration
   /*
@@ -124,11 +125,11 @@ public class PaymentsService {
   @Path("/global-accounts")
   public Response createPaymentAccount(@Context HttpHeaders httpHeaders,
       String json) {
-    
-    
+
+
   }
   */
-  
+
   @PATCH
   @Path("/global-accounts/{account_id}")
   public Response updateGlobalPaymentAccount(@Context HttpHeaders httpHeaders,
@@ -141,7 +142,7 @@ public class PaymentsService {
     }
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node = mapper.readTree(json);
-    
+
     GetPaymentAccountRequestType query = new GetPaymentAccountRequestType();
     query.setPaymentAccountID(accountId);
     GetPaymentAccountResponseType existingResp = firmPort.get().getGlobalPaymentAccount(query);
@@ -154,7 +155,7 @@ public class PaymentsService {
     UpdatePaymentAccountResponseType resp = firmPort.get().updateGlobalPaymentAccount(update);
     return makeResponse(resp, () -> Response.ok().build());
   }
-  
+
   @DELETE
   @Path("/global-accounts/{account_id}")
   public Response removeGlobalPaymentAccount(@Context HttpHeaders httpHeaders,
@@ -163,13 +164,13 @@ public class PaymentsService {
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
-    
+
     RemovePaymentAccountRequestType req = new RemovePaymentAccountRequestType();
     req.setPaymentAccountID(accountId);
     BaseResponseType resp = firmPort.get().removeGlobalPaymentAccount(req);
     return makeResponse(resp, () -> Response.ok().build());
   }
-  
+
   @GET
   @Path("/payment-accounts")
   public Response getPaymentAccountList(@Context HttpHeaders httpHeaders) {
@@ -177,27 +178,27 @@ public class PaymentsService {
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
-    
+
     PaymentAccountListResponseType list = firmPort.get().getPaymentAccountList();
     return makeResponse(list, () -> Response.ok(list.getPaymentAccount()).build());
   }
-  
+
   @GET
   @Path("/payment-accounts/{account_id}")
-  public Response getPaymentAccount(@Context HttpHeaders httpHeaders, 
+  public Response getPaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId) {
     Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
-    
+
     GetPaymentAccountRequestType req = new GetPaymentAccountRequestType();
     req.setPaymentAccountID(accountId);
     GetPaymentAccountResponseType resp = firmPort.get().getPaymentAccount(req);
 
     return makeResponse(resp, () -> Response.ok(resp.getPaymentAccount()).build());
   }
-  
+
   @DELETE
   @Path("/payment-accounts/{account_id}")
   public Response removePaymentAccount(@Context HttpHeaders httpHeaders,
@@ -206,13 +207,13 @@ public class PaymentsService {
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
-    
+
     RemovePaymentAccountRequestType req = new RemovePaymentAccountRequestType();
     req.setPaymentAccountID(accountId);
     BaseResponseType resp = firmPort.get().removePaymentAccount(req);
     return makeResponse(resp, () -> Response.ok().build());
   }
-  
+
   // TODO(#25): can't write this until we have TOGA integration
   /*
   @POST
@@ -225,7 +226,7 @@ public class PaymentsService {
     }
 
     ObjectMapper mapper = new ObjectMapper();
-    
+
 
     CreatePaymentAccountRequestType createAccount = new CreatePaymentAccountRequestType();
     createAccount.setPaymentAccount(newAccount);
@@ -233,12 +234,12 @@ public class PaymentsService {
     if (hasError(resp)) {
       return Response.status(400).entity(resp.getError()).build();
     }
-    
+
     URI newUri = uri.getBaseUriBuilder().path("/payment-account/" + resp.getPaymentAccountID()).build();
     return Response.created(newUri).build();
   }
   */
-  
+
   @PATCH
   @Path("/payment-accounts/{account_id}")
   public Response updatePaymentAccount(@Context HttpHeaders httpHeaders,
@@ -250,7 +251,7 @@ public class PaymentsService {
     }
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node = mapper.readTree(json);
-    
+
     GetPaymentAccountRequestType query = new GetPaymentAccountRequestType();
     query.setPaymentAccountID(accountId);
     GetPaymentAccountResponseType existingResp = firmPort.get().getPaymentAccount(query);
@@ -271,11 +272,11 @@ public class PaymentsService {
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
-    
+
     PaymentAccountTypeListResponseType types = firmPort.get().getPaymentAccountTypeList();
     return makeResponse(types, () -> Response.ok(types.getPaymentAccountType()).build());
   }
-  
+
   @XmlType(name="")
   @XmlRootElement(name="PaymentResponse")
   private static class TogaResponseXml {
@@ -300,14 +301,21 @@ public class PaymentsService {
     @XmlElement(name="PaymentTimestamp")
     String paymentTimestamp;
   }
-  
-  @GET
+
+  @POST
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Path("/new-toga-account")
   @Produces("text/html")
-  public Response redirectToToga(@Context HttpHeaders httpHeaders) {
-    // TODO(brycew): save some basic info about the transactionId
-    
+  public Response redirectToToga(@Context HttpHeaders httpHeaders,
+      @FormParam("account_name") String name, @FormParam("global") boolean global) {
     String transactionId = transactionIdGen.nextString();
+    TempAccount account = new TempAccount();
+    account.name = name;
+    account.global = global;
+    TylerLogin login = new TylerLogin();
+    account.loginInfo = httpHeaders.getHeaderString(login.getHeaderKey());
+    tempAccounts.put(transactionId, account);
+
     log.info("Redirecting with transactionId: " + transactionId);
     String fullHtml = """
 <html>
@@ -318,13 +326,13 @@ public class PaymentsService {
     </body>
     <script>
       data = '<PaymentRequest><ClientKey>%s</ClientKey><TransactionID>%s</TransactionID>' +
-          '<RedirectURL>%s</RedirectURL><Amount>-1</Amount><GetToken>1</GetToken></PaymentRequest>'; 
-      
+          '<RedirectURL>%s</RedirectURL><Amount>-1</Amount><GetToken>1</GetToken></PaymentRequest>';
+
       const form = document.createElement('form');
       form.method = 'post';
       //form.target = '_blank';
-      form.action = '%s'; 
-      
+      form.action = '%s';
+
       const hiddenField = document.createElement('input');
       hiddenField.type = 'hidden';
       hiddenField.name = 'RequestXML';
@@ -337,11 +345,11 @@ public class PaymentsService {
                 """.formatted(this.togaKey, transactionId, this.redirectUrl, this.togaUrl);
     return Response.ok(fullHtml).build();
   }
-  
+
   @POST
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Path("/toga-account")
-  public Response makeNewPaymentAccount(@Context HttpHeaders httpHeaders, 
+  public Response makeNewPaymentAccount(@Context HttpHeaders httpHeaders,
       @FormParam("ResponseXML") String body) {
     log.info("Making new payment account: " + body);
     try {
@@ -349,7 +357,7 @@ public class PaymentsService {
       Unmarshaller unmar = jaxContext.createUnmarshaller();
       InputStream stream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
       TogaResponseXml resp = (TogaResponseXml) unmar.unmarshal(stream);
-      
+
       CreatePaymentAccountRequestType createAccount = new CreatePaymentAccountRequestType();
       TempAccount tempInfo = tempAccounts.get(resp.transactionId);
       PaymentAccountType newAccount = new PaymentAccountType();
@@ -369,7 +377,7 @@ public class PaymentsService {
       if (firmPort.isEmpty()) {
         return Response.status(403).build();
       }
-      CreatePaymentAccountResponseType accountResp; 
+      CreatePaymentAccountResponseType accountResp;
       if (tempInfo.global) {
         accountResp = firmPort.get().createGlobalPaymentAccount(createAccount);
       } else {
@@ -385,7 +393,7 @@ public class PaymentsService {
       return Response.status(400).build();
     }
   }
-  
+
   /** Fluid interface, but modifies the input. */
   private PaymentAccountType updateAccountType(PaymentAccountType existingAccount,
       JsonNode updateInfo) {
@@ -393,13 +401,13 @@ public class PaymentsService {
     if (active != null && active.isBoolean()) {
       existingAccount.setActive(tylerCommonObjFac.createPaymentAccountTypeActive(active.asBoolean()));
     }
-    
+
     JsonNode name = updateInfo.get("account_name");
     if (name != null && name.isTextual()) {
       existingAccount.setAccountName(name.asText());
     }
-    
+
     return existingAccount;
   }
-  
+
 }

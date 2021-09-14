@@ -240,6 +240,7 @@ public class FilingReviewService {
       return maybeInfo.unwrapErrOrElseThrow();
     }
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
+    info.setCourtLocation(courtId);
     Result<List<UUID>, FilingError> result =
         filingInterfaces.get(courtId).sendFiling(info, activeToken.get());
     if (result.isErr()) {
