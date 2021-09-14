@@ -42,15 +42,15 @@ public class FilingInformationDocassembleJacksonDeserializer
 
   private LegalIssuesTaxonomyCodes codes;
   private InfoCollector classCollector;
-  
-  public FilingInformationDocassembleJacksonDeserializer(Class<FilingInformation> t, 
+
+  public FilingInformationDocassembleJacksonDeserializer(Class<FilingInformation> t,
       LegalIssuesTaxonomyCodes codes, InfoCollector collector) {
     super(t);
     this.codes = codes;
     this.classCollector = collector;
   }
 
-  private List<Person> collectPeople(JsonNode topObj, 
+  private List<Person> collectPeople(JsonNode topObj,
       String potentialMember, InfoCollector collector) throws FilingError {
     if (!topObj.has(potentialMember)) {
       return List.of();  // Just an empty list: we don't know if it's required
@@ -59,12 +59,12 @@ public class FilingInformationDocassembleJacksonDeserializer
           && topObj.get(potentialMember).has("elements")
           && topObj.get(potentialMember).get("elements").isArray())) {
       throw FilingError.malformedInterview(
-          potentialMember + " isn't an List with an elements array"); 
+          potentialMember + " isn't an List with an elements array");
     }
     List<Person> people = new ArrayList<Person>();
     JsonNode peopleElements = topObj.get(potentialMember).get("elements");
     for (int i = 0; i < peopleElements.size(); i++) {
-      Result<Person, FilingError> per = 
+      Result<Person, FilingError> per =
           PersonDocassembleJacksonDeserializer.fromNode(peopleElements.get(i), collector);
       if (per.isErr()) {
         FilingError ex = per.unwrapErrOrElseThrow();
@@ -78,7 +78,7 @@ public class FilingInformationDocassembleJacksonDeserializer
 
   public Result<FilingInformation, FilingError> fromNode(JsonNode node, InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
-      FilingError err = FilingError.malformedInterview("interview isn't a json object"); 
+      FilingError err = FilingError.malformedInterview("interview isn't a json object");
       collector.error(err);
       return Result.err(err);
     }
@@ -91,30 +91,30 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
     if (users.isEmpty()) {
       // TODO(brycew): does this need to be split up into every single thing that could be in users?
-      InterviewVariable varExpected = new InterviewVariable("users", 
+      InterviewVariable varExpected = new InterviewVariable("users",
           "the side of the matter that current person answering this interview is on",
           "ALPeopleList", List.of());
       collector.addRequired(varExpected);
       throw FilingError.missingRequired(varExpected);
     }
 
-    if (node.has("user_preferred_language") 
+    if (node.has("user_preferred_language")
         && node.get("user_preferred_language").isTextual()) {
       users.get(0).setLanguage(
           node.get("user_preferred_language").asText());
     }
     log.debug("Got users");
 
-    Optional<String> userEmail = users.get(0).getContactInfo().getEmail(); 
-    if (userEmail.isEmpty() || userEmail.get().isBlank()) { 
+    Optional<String> userEmail = users.get(0).getContactInfo().getEmail();
+    if (userEmail.isEmpty() || userEmail.get().isBlank()) {
       InterviewVariable var = new InterviewVariable(
           "users[0].email", "Email is required for at least one user", "text", List.of());
       collector.addRequired(var);
     }
-      
+
     final List<Person> otherParties = collectPeople(node, "other_parties", collector);
     if (otherParties.isEmpty()) {
-      InterviewVariable othersExpected = new InterviewVariable("other_parties", 
+      InterviewVariable othersExpected = new InterviewVariable("other_parties",
           "the side of the matter that current person answering this interview is on",
           "ALPeopleList", List.of());
       collector.addOptional(othersExpected);
@@ -125,9 +125,9 @@ public class FilingInformationDocassembleJacksonDeserializer
       perIdx++;
     }
     log.debug("Got other parties");
-      
-    Optional<Boolean> userStartedCase = Optional.empty(); 
-    if (node.has("user_started_case") 
+
+    Optional<Boolean> userStartedCase = Optional.empty();
+    if (node.has("user_started_case")
         && node.get("user_started_case").isBoolean()) {
       userStartedCase = Optional.of(node.get("user_started_case").asBoolean());
     }
@@ -135,26 +135,26 @@ public class FilingInformationDocassembleJacksonDeserializer
 
     FilingInformation entities = new FilingInformation();
     if (userStartedCase.isEmpty()) {
-      InterviewVariable var = collector.requestVar("user_started_case", 
+      InterviewVariable var = collector.requestVar("user_started_case",
           "Whether or not the user is the plaintiff or petitioner", "boolean", List.of("true", "false"));
       collector.addRequired(var);
     }
-    // TODO(brycew): plaintiff and petitioners are both defined. 
+    // TODO(brycew): plaintiff and petitioners are both defined.
     // Typical role might have the difference, take which is available
     // TODO(brycew): better way to get the parties types?
     // TODO(brycew): make the party types use the SALI standard
     JsonNode plaintiffPartyJson = node.get("plaintiff_party_type");
     if (plaintiffPartyJson == null || !plaintiffPartyJson.isTextual()) {
-      InterviewVariable var = collector.requestVar("plaintiff_party_type", 
-          "What legal role the plaintiff fulfills", "text"); 
+      InterviewVariable var = collector.requestVar("plaintiff_party_type",
+          "What legal role the plaintiff fulfills", "text");
       collector.addOptional(var);
-      plaintiffPartyJson = NullNode.getInstance(); 
+      plaintiffPartyJson = NullNode.getInstance();
     }
     entities.setPlaintiffPartyType(plaintiffPartyJson.asText("Plaintiff"));
     JsonNode defendantPartyJson = node.get("defendant_party_type");
     if (defendantPartyJson == null || !defendantPartyJson.isTextual()) {
-      InterviewVariable var = collector.requestVar("defendant_party_type", 
-          "What legal role the defendant fulfills", "text"); 
+      InterviewVariable var = collector.requestVar("defendant_party_type",
+          "What legal role the defendant fulfills", "text");
       collector.addOptional(var);
       defendantPartyJson = NullNode.getInstance();
     }
@@ -172,21 +172,21 @@ public class FilingInformationDocassembleJacksonDeserializer
       entities.setDefendants(otherParties);
     } else {
       users.forEach((user) -> {
-        user.setRole(entities.getDefendantPartyType()); 
+        user.setRole(entities.getDefendantPartyType());
       });
       entities.setDefendants(users);
       otherParties.forEach((other) -> {
-        other.setRole(entities.getPlaintiffPartyType()); 
+        other.setRole(entities.getPlaintiffPartyType());
       });
       entities.setPlaintiffs(otherParties);
     }
-    
+
     JsonNode attorneyIds = node.get("attorney_ids");
     if (attorneyIds != null && attorneyIds.isArray()) {
-      List<String> ids = new ArrayList<String>(); 
+      List<String> ids = new ArrayList<String>();
       attorneyIds.elements().forEachRemaining(jId -> ids.add(jId.asText()));
       entities.setAttorneyIds(ids);
-      
+
       JsonNode partyToAttorneyJson = node.get("party_to_attorneys");
       if (partyToAttorneyJson != null && partyToAttorneyJson.isObject()) {
         Map<String, List<String>> partyToAttorney = new HashMap<String, List<String>>();
@@ -201,12 +201,12 @@ public class FilingInformationDocassembleJacksonDeserializer
     } else {
       entities.setAttorneyIds(List.of());
     }
-    
+
     JsonNode serviceContactsJson = node.get("service_contacts");
     if (serviceContactsJson != null && serviceContactsJson.isArray()) {
       List<CaseServiceContact> contacts = new ArrayList<CaseServiceContact>();
       serviceContactsJson.elements().forEachRemaining(servObj -> {
-        Optional<String> partyPerId = Optional.empty(); 
+        Optional<String> partyPerId = Optional.empty();
         if (servObj.has("party_association")) {
           JsonNode partyAssocJson = servObj.get("party_association");
           partyPerId = Optional.of(varToId.get(partyAssocJson.asText()));
@@ -219,8 +219,8 @@ public class FilingInformationDocassembleJacksonDeserializer
     } else {
       entities.setServiceContacts(List.of());
     }
-    
-    
+
+
     // TODO(brycew): this approach is a complete mess, don't know
     // how to best map LIST onto case categories, ECF is too high level
     JsonNode metadata = JsonNodeFactory.instance.nullNode();
@@ -228,9 +228,9 @@ public class FilingInformationDocassembleJacksonDeserializer
       JsonNode metadataElems = node.get("interview_metadata").get("elements");
       String key = metadataElems.fieldNames().next();
       if (metadataElems.size() >= 1) {
-        log.warn("Only the first metadata element will be looked at: " + key); 
+        log.warn("Only the first metadata element will be looked at: " + key);
       }
-      metadata = metadataElems.get(key).get("elements"); 
+      metadata = metadataElems.get(key).get("elements");
     }
 
     String category_var_name = "tyler_case_category";
@@ -240,7 +240,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       CaseCategory caseCat = new CaseCategory(category.asText(), category.asText());
       entities.setCaseCategory(caseCat);
     } else if (metadata.has("categories") && metadata.get("categories").isArray()) {
-      List<String> categories = new ArrayList<String>(); 
+      List<String> categories = new ArrayList<String>();
       metadata.get("categories").forEach((cat) -> categories.add(cat.asText()));
       log.info("Categories: " + categories.toString());
       Set<String> ecfs = codes.allEcfCaseTypes(categories);
@@ -248,11 +248,11 @@ public class FilingInformationDocassembleJacksonDeserializer
       if (ecfs.size() == 1) {
         String caseType = ecfs.iterator().next();
         // TODO(brycew): better title
-        CaseCategory caseCat = new CaseCategory(categories.toString(), caseType); 
+        CaseCategory caseCat = new CaseCategory(categories.toString(), caseType);
         entities.setCaseCategory(caseCat);
       }
     } else {
-      InterviewVariable var = collector.requestVar(category_var_name, "", "text"); 
+      InterviewVariable var = collector.requestVar(category_var_name, "", "text");
       collector.addRequired(var);
     }
 
@@ -262,7 +262,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       entities.setCaseType(type.asText());
     } else if (metadata.has("title") && metadata.get("title").isTextual()) {
       entities.setCaseType(metadata.get("title").asText());
-    } else { 
+    } else {
       InterviewVariable var = collector.requestVar(typeVarName,  "", "text");
       collector.addRequired(var);
     }
@@ -282,21 +282,21 @@ public class FilingInformationDocassembleJacksonDeserializer
       entities.setPreviousCaseId(prevCaseId.asText());
     }
 
-    JsonNode docketNumber = node.get("docket_number"); 
+    JsonNode docketNumber = node.get("docket_number");
     if (docketNumber != null && docketNumber.isTextual()) {
       entities.setCaseDocketNumber(docketNumber.asText());
     }
-    
+
     // Get the interview metadablock TODO(brycew): just one for now
     /*
     log.info("Keyset: " + metadataElems.fieldNames());
     */
-      
+
     List<String> filingPartyIds = users.stream()
-        .map((per) -> per.getIdString())    
+        .map((per) -> per.getIdString())
         .collect(Collectors.toList());
     List<FilingDoc> filingDocs = new ArrayList<FilingDoc>();
-    final InterviewVariable bundleVar = collector.requestVar("al_court_bundle", 
+    final InterviewVariable bundleVar = collector.requestVar("al_court_bundle",
         "The full court bundle", "ALDocumentBundle");
     if (!node.has("al_court_bundle")) {
       collector.addRequired(bundleVar);
@@ -327,27 +327,27 @@ public class FilingInformationDocassembleJacksonDeserializer
       } else {
         FilingError err = fil.unwrapErrOrElseThrow();
         if (err.getType().equals(FilingError.Type.MissingRequired)) {
-          collector.addRequired(bundleVar); 
-        } 
+          collector.addRequired(bundleVar);
+        }
         return Result.err(err);
       }
     }
-    if (node.has("comments_to_clerk") 
+    if (node.has("comments_to_clerk")
         && node.get("comments_to_clerk").isTextual()) {
       String filingComments = node.get("comments_to_clerk").asText("");
       if (!filingDocs.isEmpty()) {
         filingDocs.get(0).setFilingComments(filingComments);
       }
     }
-    
+
     JsonNode paymentIdJson = node.get("tyler_payment_id");
     if (paymentIdJson != null && paymentIdJson.isTextual()) {
       entities.setPaymentId(paymentIdJson.asText());
     }
-    
+
     entities.setFilings(filingDocs);
     entities.setMiscInfo(node);
-      
+
     return Result.ok(entities);
   }
 
@@ -358,11 +358,11 @@ public class FilingInformationDocassembleJacksonDeserializer
     try {
       Result<FilingInformation, FilingError> info = fromNode(node, this.classCollector);
       if (info.isErr()) {
-        throw new JsonExtractException(p, info.unwrapErrOrElseThrow()); 
+        throw new JsonExtractException(p, info.unwrapErrOrElseThrow());
       }
       return info.unwrapOrElseThrow();
     } catch (FilingError err) {
-      throw new JsonExtractException(p, err); 
+      throw new JsonExtractException(p, err);
     }
   }
 

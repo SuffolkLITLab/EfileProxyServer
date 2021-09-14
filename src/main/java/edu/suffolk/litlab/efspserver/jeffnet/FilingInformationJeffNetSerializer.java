@@ -32,16 +32,16 @@ public class FilingInformationJeffNetSerializer extends StdSerializer<FilingInfo
     caseInfo.participants = new ArrayList<Person>();
     caseInfo.participants.addAll(info.getDefendants());
     caseInfo.participants.addAll(info.getPlaintiffs());
-    
+
     SendingMde mde = new SendingMde();
-    mde.ourUrl = ServiceHelpers.BASE_URL; 
-    
+    mde.ourUrl = ServiceHelpers.BASE_URL;
+
     Callback callbackObj = new Callback();
     // TODO(brycew): Setup callback/webhook handler
     // TODO(brycew): add this GUID to the database with the email to alert when we get the hook back
     String filingUid = UUID.randomUUID().toString();
     callbackObj.id = filingUid;
-    callbackObj.callbackUrl = ServiceHelpers.REST_CALLBACK_URL.formatted(info.getCourtLocation()); 
+    callbackObj.callbackUrl = ServiceHelpers.REST_CALLBACK_URL.formatted(info.getCourtLocation());
 
     gen.writeStartObject();
     gen.writeObjectField("SendingMDELocationID", mde);
@@ -57,28 +57,28 @@ public class FilingInformationJeffNetSerializer extends StdSerializer<FilingInfo
 
     @JsonProperty("CaseCategoryText")
     String caseCategory;
-    
+
     @JsonProperty("CaseTypeText")
     String caseType;
-    
+
     @JsonProperty("CaseSubTypeText")
     String caseSubtype;
-    
+
     @JsonProperty("CaseParticipants")
     List<Person> participants;
   }
-  
+
   private class SendingMde {
     @JsonProperty("IdentificationID")
     String ourUrl;
   }
-  
+
   private class Callback {
     @JsonProperty("Url")
     String callbackUrl;
-    
+
     @JsonProperty("Id")
     String id;
   }
-  
+
 }

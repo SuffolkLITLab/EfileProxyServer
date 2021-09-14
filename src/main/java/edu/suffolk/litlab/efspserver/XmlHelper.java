@@ -16,7 +16,7 @@ import javax.xml.namespace.QName;
 
 /**
  * Helper class that easily converts Java native types to Cumbersome XML Schema types,
- * particularly those from Oasis's ECF standard, and the National Information 
+ * particularly those from Oasis's ECF standard, and the National Information
  * Exchange Model (NIEM).
  *
  * <p>Some information about NIEM:
@@ -41,7 +41,7 @@ public class XmlHelper {
     niemCoreObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
     jxObjFac = new gov.niem.niem.domains.jxdm._4.ObjectFactory();
   }
-  
+
   /** Creates a date from a java date. Doesn't have time associated with it. */
   public static DateType convertDate(LocalDate date) {
     DateType dt = niemCoreObjFac.createDateType();
@@ -56,21 +56,21 @@ public class XmlHelper {
     }
     // TODO(brycew): THIS TIMEZONE IS WRONG: how should LocalDate +
     // GregorianCalendar operate?
-    d.setValue(datatypeFac.newXMLGregorianCalendarDate(date.getYear(), 
+    d.setValue(datatypeFac.newXMLGregorianCalendarDate(date.getYear(),
         date.getMonth().getValue(), date.getDayOfMonth(), 0));
 
     dt.setDateRepresentation(niemCoreObjFac.createDate(d));
     return dt;
   }
-  
+
   /** Niem's Boolean type: either true or false. */
   public static gov.niem.niem.proxy.xsd._2.Boolean convertBool(boolean bool) {
     gov.niem.niem.proxy.xsd._2.Boolean val = new gov.niem.niem.proxy.xsd._2.Boolean();
     val.setValue(bool);
     return val;
   }
-  
-  
+
+
   /** Converts a Java string to NIEM "Text", a wrapper around the NIEM String.
    *
    * <p>"A data type for a character string"</p>
@@ -80,7 +80,7 @@ public class XmlHelper {
     tt.setValue(str);
     return tt;
   }
-  
+
   /** Converts a Java string to NIEM's XML String. "A datatype for character strings in XML."
    * Practically, just a xsd:string with the extra SimpleObjectAttributeGroup attributes.
    */
@@ -89,7 +89,7 @@ public class XmlHelper {
     outStr.setValue(str);
     return outStr;
   }
-  
+
   public static gov.niem.niem.niem_core._2.IdentificationType convertId(String idStr) {
     gov.niem.niem.niem_core._2.IdentificationType id = niemCoreObjFac.createIdentificationType();
     id.setIdentificationID(convertString(idStr));
@@ -104,26 +104,26 @@ public class XmlHelper {
         niemCoreObjFac.createIdentificationCategoryText(convertText(category)));
     return id;
   }
-  
+
   /** Converts a Java string to a URI. */
   public static gov.niem.niem.proxy.xsd._2.AnyURI convertUri(String uri) {
     gov.niem.niem.proxy.xsd._2.AnyURI anyUri = niemProxyObjFac.createAnyURI();
     anyUri.setValue(uri);
     return anyUri;
   }
-  
+
   public static gov.niem.niem.proxy.xsd._2.Base64Binary convertBase64(final byte[] rawContent) {
     gov.niem.niem.proxy.xsd._2.Base64Binary binaryString = niemProxyObjFac.createBase64Binary();
-    // We don't need to encode Base64? For some strange reason, JAXB does it for us. 
+    // We don't need to encode Base64? For some strange reason, JAXB does it for us.
     // See https://stackoverflow.com/a/7224025
     //binaryString.setValue(Base64.getEncoder().encode(rawContent));
     binaryString.setValue(rawContent);
     return binaryString;
   }
-  
+
   public static CourtType convertCourtType(String courtId) {
     CourtType court = jxObjFac.createCourtType();
-    JAXBElement<gov.niem.niem.niem_core._2.IdentificationType> idType = 
+    JAXBElement<gov.niem.niem.niem_core._2.IdentificationType> idType =
         niemCoreObjFac.createOrganizationIdentification(XmlHelper.convertId(courtId));
     court.setOrganizationIdentification(idType);
     return court;
@@ -167,16 +167,16 @@ public class XmlHelper {
     mar.marshal(wrappedRoot, sw);
     return sw.toString();
   }
-  
+
   /**
    * Converts any XML annotated object (from CXF) to a file. Useful for
-   * testing larger XML objects that are unwieldly to print. 
+   * testing larger XML objects that are unwieldly to print.
    * Will throw an exception if there's a JAXB error.
    *
    * @param  <T>   the type of object being passed in
    * @param  toXml The object to do things with
    */
-  public static <T> void objectToXmlFile(T toXml, Class<T> toXmlClazz, 
+  public static <T> void objectToXmlFile(T toXml, Class<T> toXmlClazz,
       File outfile) throws JAXBException {
     JAXBContext jc = JAXBContext.newInstance(
         gov.niem.niem.niem_core._2.ObjectFactory.class,
@@ -187,7 +187,7 @@ public class XmlHelper {
     mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
     QName qname = new QName("suffolk.test.objectToXml", "objectToXml");
     JAXBElement<T> pp = new JAXBElement<T>(qname, toXmlClazz, toXml);
-    mar.marshal(pp, outfile); 
+    mar.marshal(pp, outfile);
   }
 
 }

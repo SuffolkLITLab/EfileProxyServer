@@ -12,7 +12,7 @@ import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 public class NameDocassembleDeserializer {
 
   private static Optional<String> getStringMember(JsonNode obj, String memberName) {
-    if (obj.has(memberName) 
+    if (obj.has(memberName)
         && obj.get(memberName).isTextual()) {
       return Optional.of(obj.get(memberName).asText());
     }
@@ -33,7 +33,7 @@ public class NameDocassembleDeserializer {
       throw err;
     }
     if (!node.has("first")) {
-      InterviewVariable var = collector.requestVar("name.first", 
+      InterviewVariable var = collector.requestVar("name.first",
           "The first name of a person / name of a business", "text");
       collector.addRequired(var);
     }
@@ -46,7 +46,7 @@ public class NameDocassembleDeserializer {
           getStringMember(node, "suffix").orElse(""),
           "" // TODO(brycew): where would Maiden name go, if asked for?
     );
-    
+
     return name;
   }
 }

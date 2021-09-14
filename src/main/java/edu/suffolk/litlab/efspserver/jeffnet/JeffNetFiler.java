@@ -39,17 +39,17 @@ public class JeffNetFiler implements EfmFilingInterface {
   private URI filingEndpoint;
   private SimpleModule module;
   private final String headerKey;
-  
+
   /** Constructor that takes the URL endpoint of JeffNet to call */
   public JeffNetFiler(String filingEndpoint) throws URISyntaxException {
     this(new URI(filingEndpoint));
   }
-  
+
   public JeffNetFiler(URI filingEndpoint) {
     this.filingEndpoint = filingEndpoint;
     JeffNetLogin login = new JeffNetLogin();
     this.headerKey = login.getHeaderKey();
-    
+
     this.module = new SimpleModule();
     module.addSerializer(new FilingInformationJeffNetSerializer(FilingInformation.class));
     module.addSerializer(
@@ -58,33 +58,33 @@ public class JeffNetFiler implements EfmFilingInterface {
     module.addSerializer(new FilingJeffNetJacksonSerializer(FilingDoc.class));
     module.addSerializer(new PersonJeffNetJacksonSerializer(Person.class));
   }
-  
+
   @Override
   public String getOrgName() {
     return "jeffnet";
   }
-  
+
   @Override
   public String getHeaderKey() {
     return headerKey;
   }
-  
+
   @Override
   public Result<List<UUID>, FilingError> sendFiling(FilingInformation info, String apiToken) {
     if (info.getFilings().isEmpty()) {
       return Result.err(FilingError.serverError("Error: cannot file with no filings"));
     }
-    
+
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(this.module);
     mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-    
+
     try {
       String finalStr = mapper.writeValueAsString(info);
       log.debug("Final Json object: " + finalStr);
-    
+
       log.info("Sending to " + this.filingEndpoint);
-      log.info("They'll send back to " + ServiceHelpers.REST_CALLBACK_URL.formatted(info.getCourtLocation())); 
+      log.info("They'll send back to " + ServiceHelpers.REST_CALLBACK_URL.formatted(info.getCourtLocation()));
       HttpClient client = HttpClient.newBuilder().build();
       HttpRequest request = HttpRequest.newBuilder()
           .POST(HttpRequest.BodyPublishers.ofString(finalStr))
@@ -101,7 +101,7 @@ public class JeffNetFiler implements EfmFilingInterface {
       ApiResult result = mapper.readValue(response.body(), ApiResult.class);
       UUID transactionId = UUID.fromString(result.transactionId);
       // TODO(brycew): Break this into multiple: https://trello.com/c/QZaUFT2c/38
-      return Result.ok(List.of(transactionId)); 
+      return Result.ok(List.of(transactionId));
     } catch (InterruptedException ex) {
       return Result.err(FilingError.serverError("Interrupted getting response from " + this.filingEndpoint + ", " + ex));
     } catch (JsonMappingException ex) {
@@ -119,7 +119,7 @@ public class JeffNetFiler implements EfmFilingInterface {
 
   @Override
   public void checkFiling(FilingInformation info, InfoCollector collector) {
-    // TODO(brycew): check the filing here too 
+    // TODO(brycew): check the filing here too
     return;
   }
 
@@ -139,7 +139,7 @@ public class JeffNetFiler implements EfmFilingInterface {
     // TODO Auto-generated method stub
     return Response.status(500).build();
   }
-  
+
   @Override
   public Response getFilingList(String courtId, String userId, Date startDate, Date endDate, String apiToken) {
     // TODO Auto-generated method stub
@@ -178,10 +178,10 @@ public class JeffNetFiler implements EfmFilingInterface {
   private static class ApiResult {
     @JsonProperty("ResultCode")
     int resultCode;
-    
+
     @JsonProperty("Message")
     String message;
-    
+
     @JsonProperty("TransactionID")
     String transactionId;
   }

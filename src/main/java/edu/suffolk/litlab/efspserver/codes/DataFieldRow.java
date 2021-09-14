@@ -16,11 +16,11 @@ public class DataFieldRow {
   public String defaultvalueexpression;
   public String isreadonly;
   public String location;
-  
+
   /** Constructor directly from Database. */
-  public DataFieldRow(String code, String name, String isvisible, String isrequired, 
-      String helptext, String ghosttext, String contextualhelpdata, 
-      String validationmessage, String regularexpression, String defaultvalueexpression, 
+  public DataFieldRow(String code, String name, String isvisible, String isrequired,
+      String helptext, String ghosttext, String contextualhelpdata,
+      String validationmessage, String regularexpression, String defaultvalueexpression,
       String isreadonly, String location) {
     this.code = code;
     this.name = name;
@@ -31,7 +31,7 @@ public class DataFieldRow {
     this.contextualhelpdata = contextualhelpdata;
     this.validationmessage = validationmessage;
     if (regularexpression == null || regularexpression.isEmpty()) {
-      this.regularexpression = null; 
+      this.regularexpression = null;
     } else {
       this.regularexpression = Pattern.compile(regularexpression);
     }
@@ -39,16 +39,16 @@ public class DataFieldRow {
     this.isreadonly = isreadonly;
     this.location = location;
   }
-  
+
   /**
-   * According to the Tyler docs, if some data field is not defined, it defaults to 
+   * According to the Tyler docs, if some data field is not defined, it defaults to
    * isVisible=False, and isRequired=False. Everything else will be empty
    * @return
    */
   public static DataFieldRow MissingDataField(String name) {
     return new DataFieldRow("", name, "false", "false", "", "", "", "", "", "", "", "");
   }
-  
+
   public boolean matchRegex(String value) {
     if (this.regularexpression == null) {
       return true;

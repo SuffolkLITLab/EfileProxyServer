@@ -72,23 +72,23 @@ import tyler.ecf.extensions.common.DocumentOptionalServiceType;
 import tyler.ecf.extensions.common.DocumentType;
 
 public class EcfCourtSpecificSerializer {
-  private static Logger log = LoggerFactory.getLogger(EcfCourtSpecificSerializer.class); 
-  
+  private static Logger log = LoggerFactory.getLogger(EcfCourtSpecificSerializer.class);
+
   private CodeDatabase cd;
   private CourtLocationInfo court;
   gov.niem.niem.niem_core._2.ObjectFactory niemObjFac =
       new gov.niem.niem.niem_core._2.ObjectFactory();
-  gov.niem.niem.niem_core._2.ObjectFactory coreObjFac = 
-      new gov.niem.niem.niem_core._2.ObjectFactory(); 
-  oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf = 
+  gov.niem.niem.niem_core._2.ObjectFactory coreObjFac =
+      new gov.niem.niem.niem_core._2.ObjectFactory();
+  oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf =
       new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
 
   public EcfCourtSpecificSerializer(CodeDatabase cd, CourtLocationInfo court) {
     this.cd = cd;
     this.court = court;
   }
-  
-  /** Needs to have participant role set. 
+
+  /** Needs to have participant role set.
    * @throws FilingError */
   public CaseParticipantType serializeEcfCaseParticipant(Person per, InfoCollector collector) throws FilingError {
     AugmentationType aug;
@@ -103,12 +103,12 @@ public class EcfCourtSpecificSerializer {
       OrganizationType ot = ecfOf.createOrganizationType();
       DataFieldRow orgNameRow = cd.getDataField(this.court.code, "PartyBusinessName");
       if (!orgNameRow.matchRegex(per.getName().getFullName())) {
-        InterviewVariable var = 
+        InterviewVariable var =
             collector.requestVar("name", "Name needs to match the regex: " + orgNameRow.regularexpression, "text");
         collector.addWrong(var);
       } else if (per.getName().getFullName().length() > 400) {
-        InterviewVariable var = 
-            collector.requestVar("name", "Name needs to be shorter that 400 characters", "text"); 
+        InterviewVariable var =
+            collector.requestVar("name", "Name needs to be shorter that 400 characters", "text");
         collector.addWrong(var);
       }
       ot.setOrganizationName(XmlHelper.convertText(per.getName().getFullName()));
@@ -123,8 +123,8 @@ public class EcfCourtSpecificSerializer {
     ((PersonAugmentationType) aug).getContactInformation().add(cit);
 
     PersonType pt = ecfOf.createPersonType();
-    pt.setId(per.getIdString()); 
-    pt.setPersonName(serializeNameType(per.getName(), collector)); 
+    pt.setId(per.getIdString());
+    pt.setPersonName(serializeNameType(per.getName(), collector));
     pt.setPersonAugmentation((PersonAugmentationType) aug);
 
     DataFieldRow genderRow = cd.getDataField(this.court.code, "PartyGender");
@@ -170,16 +170,16 @@ public class EcfCourtSpecificSerializer {
     cpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
     return cpt;
   }
-  
+
   public ContactInformationType serializeEcfContactInformation(
       ContactInformation contactInfo, InfoCollector collector) throws FilingError {
     ContactInformationType cit = niemObjFac.createContactInformationType();
     if (contactInfo.getAddress().isPresent()) {
       Address addr = contactInfo.getAddress().get();
       JAXBElement<AddressType> contactMeans = serializeNiemContactMeans(addr, collector);
-      cit.getContactMeans().add(contactMeans); 
+      cit.getContactMeans().add(contactMeans);
     }
-      
+
     DataFieldRow phoneRow = cd.getDataField(this.court.code, "PartyPhone");
     if (phoneRow.isvisible) {
       List<String> numbers = contactInfo.getPhoneNumbers();
@@ -200,36 +200,36 @@ public class EcfCourtSpecificSerializer {
       }
     }
     contactInfo.getEmail().ifPresent((em) -> {
-      cit.getContactMeans().add(niemObjFac.createContactEmailID(XmlHelper.convertString(em))); 
+      cit.getContactMeans().add(niemObjFac.createContactEmailID(XmlHelper.convertString(em)));
     });
     return cit;
   }
 
   public tyler.efm.services.schema.common.AddressType serializeTylerAddress(Address myAddr) throws FilingError {
-    tyler.efm.services.schema.common.ObjectFactory efmObjFac = 
+    tyler.efm.services.schema.common.ObjectFactory efmObjFac =
         new tyler.efm.services.schema.common.ObjectFactory();
     tyler.efm.services.schema.common.AddressType addr = efmObjFac.createAddressType();
     addr.setAddressLine1(myAddr.getStreet());
-    addr.setAddressLine2(myAddr.getApartment()); 
-    addr.setCity(myAddr.getCity()); 
+    addr.setAddressLine2(myAddr.getApartment());
+    addr.setCity(myAddr.getCity());
     FailFastCollector collector = new FailFastCollector();
     Optional<CountryCodeType> cct = strToCountryCode(myAddr.getCountry(), collector);
     if (cct.isEmpty()) {
       throw FilingError.serverError("Country Code is wrong");
     }
-    addr.setState(myAddr.getState()); 
-    addr.setZipCode(myAddr.getZip()); 
-    addr.setCountry(myAddr.getCountry()); 
+    addr.setState(myAddr.getState());
+    addr.setZipCode(myAddr.getZip());
+    addr.setCountry(myAddr.getCountry());
     return addr;
   }
-  
-  /** Returns the "ContactMeans" XML object from this address. Can be used in the 
+
+  /** Returns the "ContactMeans" XML object from this address. Can be used in the
    * ContactInformation element.
    */
   public JAXBElement<AddressType> serializeNiemContactMeans(Address address,
       InfoCollector collector) throws FilingError {
     StreetType st = niemObjFac.createStreetType();
-    st.setStreetFullText(XmlHelper.convertText(address.getStreet() + " " + address.getApartment())); 
+    st.setStreetFullText(XmlHelper.convertText(address.getStreet() + " " + address.getApartment()));
     StructuredAddressType sat = niemObjFac.createStructuredAddressType();
     sat.getAddressDeliveryPoint().add(niemObjFac.createLocationStreet(st));
     ProperNameTextType pntt = niemObjFac.createProperNameTextType();
@@ -237,17 +237,17 @@ public class EcfCourtSpecificSerializer {
     sat.setLocationCityName(pntt);
     Optional<CountryCodeType> cct = strToCountryCode(address.getCountry(), collector);
     if (cct.isEmpty()) {
-      List<String> countries = Arrays.stream(CountryCodeSimpleType.values()) 
+      List<String> countries = Arrays.stream(CountryCodeSimpleType.values())
           .map((t) -> t.toString())
           .collect(Collectors.toList());
-      InterviewVariable var = collector.requestVar("country", "County of the World, in an address", 
+      InterviewVariable var = collector.requestVar("country", "County of the World, in an address",
           "choices", countries);
       collector.addWrong(var);
     }
     sat.setLocationCountry(niemObjFac.createLocationCountryFIPS104Code(cct.get()));
     if (!fillStateCode(address.getState(), cct.get(), sat)) {
       String countryString = cct.get().getValue().value();
-      List<String> stateCodes = cd.getStateCodes(countryString); 
+      List<String> stateCodes = cd.getStateCodes(countryString);
       InterviewVariable var = collector.requestVar("state", "State in a country", "choices", stateCodes);
       if (stateCodes.isEmpty()) {
         FilingError err = FilingError.malformedInterview("There are no allowed states for " + countryString);
@@ -256,13 +256,13 @@ public class EcfCourtSpecificSerializer {
       }
       collector.addWrong(var);
     }
-    sat.setLocationPostalCode(XmlHelper.convertString(address.getZip())); 
+    sat.setLocationPostalCode(XmlHelper.convertString(address.getZip()));
     gov.niem.niem.niem_core._2.AddressType at = niemObjFac.createAddressType();
     at.setAddressRepresentation(niemObjFac.createStructuredAddress(sat));
     return niemObjFac.createContactMailingAddress(at);
   }
-  
-  /** Returns the PersonNameType XML object from the given Name. 
+
+  /** Returns the PersonNameType XML object from the given Name.
    * @throws FilingError */
   public gov.niem.niem.niem_core._2.PersonNameType serializeNameType(Name name, InfoCollector collector) throws FilingError {
     Function<String, PersonNameTextType> wrapName = (n) -> {
@@ -271,7 +271,7 @@ public class EcfCourtSpecificSerializer {
       return t;
     };
     PersonNameType personName = niemObjFac.createPersonNameType();
-    personName.setPersonGivenName(checkName(name.getFirstName(), 
+    personName.setPersonGivenName(checkName(name.getFirstName(),
         cd.getDataField(this.court.code, "PartyFirstName"), collector,
         collector.requestVar("name.first", "First name of a case party", "text")));
     personName.setPersonMaidenName(wrapName.apply(name.getMaidenName()));
@@ -285,11 +285,11 @@ public class EcfCourtSpecificSerializer {
     DataFieldRow suffixRow = cd.getDataField(this.court.code, "PartyNameSuffix");
     if (suffixRow.isvisible) {
       List<NameAndCode> suffixes = cd.getNameSuffixes(this.court.code);
-      InterviewVariable var = collector.requestVar("name.suffix", "Suffix of the name of the party", 
+      InterviewVariable var = collector.requestVar("name.suffix", "Suffix of the name of the party",
           "choices", suffixes.stream().map(s -> s.getName()).collect(Collectors.toList()));
       if (name.getSuffix().isBlank()) {
         if (suffixRow.isrequired) {
-          // TODO(brycew): 
+          // TODO(brycew):
           log.error("DEV WARNING: why the hell would you ever require a suffix? There aren't empty suffix codes at all.");
           collector.addRequired(var);
         } else {
@@ -306,12 +306,12 @@ public class EcfCourtSpecificSerializer {
     }
     return personName;
   }
-  
-  private PersonNameTextType checkName(String name, DataFieldRow row, 
+
+  private PersonNameTextType checkName(String name, DataFieldRow row,
       InfoCollector collector,
       InterviewVariable var) throws FilingError {
     if (!row.matchRegex(name)) {
-      var.appendDescription(": must match regex: " + row.regularexpression); 
+      var.appendDescription(": must match regex: " + row.regularexpression);
       collector.addWrong(var);
     }
     if (name.length() > 100) {
@@ -323,13 +323,13 @@ public class EcfCourtSpecificSerializer {
     return t;
   }
 
-  public JAXBElement<DocumentType> filingDocToXml(FilingDoc doc, 
-          int sequenceNum, CaseCategory caseCategory, CaseType motionType, FilingCode filing, 
+  public JAXBElement<DocumentType> filingDocToXml(FilingDoc doc,
+          int sequenceNum, CaseCategory caseCategory, CaseType motionType, FilingCode filing,
           List<FilingComponent> components,
           JsonNode miscInfo, InfoCollector collector) throws IOException, FilingError {
-    tyler.ecf.extensions.common.ObjectFactory tylerObjFac = 
+    tyler.ecf.extensions.common.ObjectFactory tylerObjFac =
         new tyler.ecf.extensions.common.ObjectFactory();
-    gov.niem.niem.niem_core._2.ObjectFactory niemObjFac = 
+    gov.niem.niem.niem_core._2.ObjectFactory niemObjFac =
         new gov.niem.niem.niem_core._2.ObjectFactory();
     DocumentType docType = tylerObjFac.createDocumentType();
     DataFieldRow row = cd.getDataField(this.court.code, "DocumentDescription");
@@ -345,17 +345,17 @@ public class EcfCourtSpecificSerializer {
       throw err;
     }
 
-    docType.setDocumentFileControlID(XmlHelper.convertString(doc.getDocumentFileControlId())); 
+    docType.setDocumentFileControlID(XmlHelper.convertString(doc.getDocumentFileControlId()));
     doc.getDueDate().ifPresent((date) -> {
-      DateType cutOffDate = XmlHelper.convertDate(date); 
+      DateType cutOffDate = XmlHelper.convertDate(date);
       docType.setDocumentInformationCutOffDate(cutOffDate);
     });
 
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory oasisObjFac = 
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory oasisObjFac =
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     docType.setDocumentSequenceID(XmlHelper.convertString(Integer.toString(sequenceNum)));
     DocumentMetadataType metadata = oasisObjFac.createDocumentMetadataType();
-    
+
     metadata.setRegisterActionDescriptionText(XmlHelper.convertText(filing.code));
 
     DataFieldRow attorneyRow = cd.getDataField(this.court.code, "FilingFilingAttorneyView");
@@ -364,9 +364,9 @@ public class EcfCourtSpecificSerializer {
         metadata.setFilingAttorneyID(XmlHelper.convertId(doc.getFilingAttorney().get(), "REFERENCE"));
       } else if (!attorneyRow.isrequired){
         // "This field should contain empty values for Individual filers"
-        metadata.setFilingAttorneyID(XmlHelper.convertId("", "")); 
+        metadata.setFilingAttorneyID(XmlHelper.convertId("", ""));
       } else {
-        FilingError err = FilingError.malformedInterview("Court " + this.court.code 
+        FilingError err = FilingError.malformedInterview("Court " + this.court.code
             + " requires that there be an associated Filing Attorney");
         collector.error(err);
         throw err;
@@ -389,18 +389,18 @@ public class EcfCourtSpecificSerializer {
         InterviewVariable var = collector.requestVar("comment", "", "text");
         collector.addWrong(var);
       }
-      // I absolutely refuse to require comments from the user on each individual document. 
+      // I absolutely refuse to require comments from the user on each individual document.
       if (commentRow.isrequired) {
         log.error("Dev Ops Error: Comments are required per filing document apparently. "
             + "Not being forced yet");
       }
       docType.setFilingCommentsText(XmlHelper.convertText(doc.getFilingComments()));
     }
-    
-    DataFieldRow motionRow = cd.getDataField(this.court.code, "FilingMotionType"); 
+
+    DataFieldRow motionRow = cd.getDataField(this.court.code, "FilingMotionType");
     if (motionRow.isvisible) {
       List<NameAndCode> motionTypes = cd.getMotionTypes(this.court.code, filing.code);
-      InterviewVariable var = collector.requestVar("motion_type", "the motion type (?)", "choices", 
+      InterviewVariable var = collector.requestVar("motion_type", "the motion type (?)", "choices",
           motionTypes.stream().map(m -> m.getName()).collect(Collectors.toList()));
       if (doc.getMotionType().isPresent()) {
         String mt = doc.getMotionType().get();
@@ -415,14 +415,14 @@ public class EcfCourtSpecificSerializer {
         // What does it actually mean? Motion types are empty for IL, so IDK what to do if there's nothing there
         collector.addRequired(var);
       }
-      
+
     }
     docType.setFilingAction(doc.getFilingAction());
 
     // TODO(brycew): what should this actually be? Very unclear
     DocumentAttachmentType attachment = oasisObjFac.createDocumentAttachmentType();
-    attachment.setBinaryDescriptionText(XmlHelper.convertText(doc.getFileName())); 
-    
+    attachment.setBinaryDescriptionText(XmlHelper.convertText(doc.getFileName()));
+
     // TODO(brycew): hacky: this should be easier to understand: we're modifying a param that's passed
     // to other objects
     InterviewVariable var = collector.requestVar("filing_component", "Filing component: Lead or attachment", "text");
@@ -430,20 +430,20 @@ public class EcfCourtSpecificSerializer {
       log.error("Filing Components List is empty! There are no other documents that can be added! Stopping at " + doc.getFileName());
       collector.addRequired(var);
     }
-    
+
     Optional<FilingComponent> filtered = components.stream().filter(c -> c.name.equalsIgnoreCase(doc.getFilingComponentName())).findFirst();
     if (filtered.isEmpty()) {
-      log.error("Filing Components (" + components + ") don't match " + doc.getFilingComponentName()); 
+      log.error("Filing Components (" + components + ") don't match " + doc.getFilingComponentName());
       collector.addRequired(var);
     }
-    
-    attachment.setBinaryCategoryText(XmlHelper.convertText(filtered.get().code)); 
+
+    attachment.setBinaryCategoryText(XmlHelper.convertText(filtered.get().code));
     if (!filtered.get().allowmultiple) {
       components.remove(filtered.get());
     }
-    
+
     List<OptionalServiceCode> codes = cd.getOptionalServices(this.court.code, filing.code);
-    Map<String, OptionalServiceCode> codeMap = codes.stream().reduce(new HashMap<String, OptionalServiceCode>(), 
+    Map<String, OptionalServiceCode> codeMap = codes.stream().reduce(new HashMap<String, OptionalServiceCode>(),
       (m, s) -> {
         m.put(s.code, s);
         return m;
@@ -452,7 +452,7 @@ public class EcfCourtSpecificSerializer {
         return m1;
     });
     InterviewVariable servVar = collector.requestVar("optional_services", "things the court can do", "DADict");
-    
+
     for (OptionalService serv : doc.getOptionalServices()) {
       DocumentOptionalServiceType xmlServ = tylerObjFac.createDocumentOptionalServiceType();
       if (!codeMap.containsKey(serv.code)) {
@@ -467,7 +467,7 @@ public class EcfCourtSpecificSerializer {
         } else {
           Decimal dec = new Decimal();
           dec.setValue(serv.feeAmount.get());
-          xmlServ.setFeeAmount(dec); 
+          xmlServ.setFeeAmount(dec);
         }
       }
       if (!codeSettings.hasfeeprompt && serv.feeAmount.isPresent()) {
@@ -486,60 +486,60 @@ public class EcfCourtSpecificSerializer {
       }
       docType.getDocumentOptionalService().add(xmlServ);
     }
-    
+
     // Literally should just be if it's confidential or not. (or "Hot fix" or public).
     // Search options in "documenttype" table with location
     DataFieldRow documentType = cd.getDataField(this.court.code, "DocumentType");
-    if (documentType.isvisible) { 
+    if (documentType.isvisible) {
       List<DocumentTypeTableRow> docTypes = cd.getDocumentTypes(court.code, filing.code);
-      InterviewVariable docTypeVar = collector.requestVar("document_type", 
+      InterviewVariable docTypeVar = collector.requestVar("document_type",
           documentType.helptext +  " " + documentType.validationmessage, "choices", docTypes.stream().map(dt -> dt.name).collect(Collectors.toList()));
       String docTypeStr = doc.getDocumentTypeFormatStandardName();
       if (documentType.isrequired) {
         if (docTypeStr.isBlank()) {
           collector.addRequired(docTypeVar);
         }
-        
+
         Optional<DocumentTypeTableRow> code = docTypes.stream()
                 .filter(d -> d.name.equals(docTypeStr))
                 .findFirst();
         if (code.isEmpty()) {
           collector.addWrong(docTypeVar);
         }
-        
+
         attachment.setBinaryFormatStandardName(XmlHelper.convertText(code.get().code));
       }
     }
-    
+
     log.info("Filing code: " + filing.code + " " + filing.name + ": " + docType + "///////" + attachment);
     if (doc.getInBase64()) {
       attachment.setBinaryLocationURI(XmlHelper.convertUri(doc.getFileName()));
-      JAXBElement<Base64Binary> n = 
+      JAXBElement<Base64Binary> n =
           niemObjFac.createBinaryBase64Object(XmlHelper.convertBase64(doc.getFileContents()));
       //System.err.println(XmlHelper.objectToXmlStrOrError(n.getValue(), Base64Binary.class));
-      attachment.setBinaryObject(n); 
+      attachment.setBinaryObject(n);
     } else {
       // TODO(brycew): DO this: make the file downloadable from the Proxy server
     }
     // The document itself
-    DocumentRenditionMetadataType renditionMetadata = 
+    DocumentRenditionMetadataType renditionMetadata =
         oasisObjFac.createDocumentRenditionMetadataType();
     renditionMetadata.getDocumentAttachment().add(attachment);
-    
+
     DocumentRenditionType rendition = oasisObjFac.createDocumentRenditionType();
     rendition.setDocumentRenditionMetadata(renditionMetadata);
     docType.getDocumentRendition().add(rendition);
-    
+
     if (doc.isLead()) {
       return tylerObjFac.createFilingLeadDocument(docType);
     } else {
       return tylerObjFac.createFilingConnectedDocument(docType);
     }
-    
+
   }
-  
+
   private String findDocumentDescription(Optional<String> userProvidedDescription,
-      DataFieldRow descriptionRow, FilingDoc doc, FilingCode filing, 
+      DataFieldRow descriptionRow, FilingDoc doc, FilingCode filing,
       InfoCollector collector) throws FilingError {
       if (userProvidedDescription.isPresent()) {
         return userProvidedDescription.get();
@@ -561,29 +561,29 @@ public class EcfCourtSpecificSerializer {
         }
       }
   }
-  
-  
+
+
   private Optional<CountryCodeType> strToCountryCode(String country, InfoCollector collector) {
     CountryCodeType cct = new CountryCodeType();
     try {
-      cct.setValue(CountryCodeSimpleType.fromValue(country)); 
+      cct.setValue(CountryCodeSimpleType.fromValue(country));
       return Optional.of(cct);
     } catch (IllegalArgumentException ex) {
-      log.error("DevOps ERROR:" + ex); 
+      log.error("DevOps ERROR:" + ex);
       return Optional.empty();
     }
   }
-  
+
   /** True if it worked. */
-  private boolean fillStateCode(String state, CountryCodeType country, 
+  private boolean fillStateCode(String state, CountryCodeType country,
       StructuredAddressType sat) {
     String countryString = country.getValue().toString();
     List<String> stateCodes = cd.getStateCodes(countryString);
-    
+
     if (!stateCodes.contains(state)) {
       return false;
     }
-    
+
     if (country.getValue().equals(CountryCodeSimpleType.US)) {
       try {
         USStateCodeSimpleType stateSimple = USStateCodeSimpleType.fromValue(state);
@@ -592,7 +592,7 @@ public class EcfCourtSpecificSerializer {
         stateCode.setValue(stateSimple);
         // NOTE(brycew): we used to be able to set the USPostalServiceCode element, but
         // Tyler responds with "Incomplete address ... LocationStateName ... required.
-        // Letting this fall through to the bottom 
+        // Letting this fall through to the bottom
 
         //sat.setLocationState(coreObjFac.createLocationStateUSPostalServiceCode(stateCode));
         //return true;
@@ -600,12 +600,12 @@ public class EcfCourtSpecificSerializer {
         log.error("DevOps ERROR: " + ex);
         return false;
       }
-    } 
-    
+    }
+
     ProperNameTextType pntt = niemObjFac.createProperNameTextType();
-    pntt.setValue(state); 
+    pntt.setValue(state);
     sat.setLocationState(coreObjFac.createLocationStateName(pntt));
     return true;
   }
-  
+
 }

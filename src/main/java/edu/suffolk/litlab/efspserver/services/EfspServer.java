@@ -32,9 +32,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EfspServer {
-  private static Logger log = 
-      LoggerFactory.getLogger(EfspServer.class); 
-  
+  private static Logger log =
+      LoggerFactory.getLogger(EfspServer.class);
+
   private JAXRSServerFactoryBean sf;
   private Server server;
 
@@ -89,7 +89,7 @@ public class EfspServer {
         maybeCallback.ifPresent(call -> callbackMap.put(court, call));
       }
     }
-    
+
 
     String baseLocalUrl = System.getenv("BASE_LOCAL_URL"); //"https://0.0.0.0:9000";
     cd.setAutocommit(true);
@@ -119,7 +119,7 @@ public class EfspServer {
     sf.setResourceProvider(CasesService.class,
         new SingletonResourceProvider(new CasesService(security, cd)));
     sf.setResourceProvider(CodesService.class,
-        new SingletonResourceProvider(new CodesService(cd)));        
+        new SingletonResourceProvider(new CodesService(cd)));
     sf.setResourceProvider(MessageSettingsService.class,
         new SingletonResourceProvider(new MessageSettingsService(security, md)));
 
@@ -128,31 +128,31 @@ public class EfspServer {
     extensionMappings.put("json", MediaType.APPLICATION_JSON);
     sf.setExtensionMappings(extensionMappings);
     List<Object> providers = List.of(
-        new JAXBElementProvider<Object>(), 
+        new JAXBElementProvider<Object>(),
         new JacksonJsonProvider());
     sf.setProviders(providers);
     sf.setAddress(baseLocalUrl);
     server = sf.create();
   }
-  
+
   protected void stopServer() {
     if (server != null) {
       server.stop();
       server.destroy();
     }
   }
-  
+
   /** Quick wrapper to get an env var as an optional. */
   public static Optional<String> GetEnv(String envVarName) {
     String val = System.getenv(envVarName);
     if (val == null || val.isBlank()) {
-      return Optional.empty(); 
+      return Optional.empty();
     }
     return Optional.of(val);
   }
-  
-  //public static 
-  
+
+  //public static
+
 
   public static void main(String[] args) throws Exception {
     String dbUrl = GetEnv("POSTGRES_URL").orElse("localhost");
@@ -160,20 +160,20 @@ public class EfspServer {
     int dbPortInt = Integer.parseInt(dbPort);
     String codeDatabaseName = GetEnv("POSTGRES_CODES_DB").orElse("tyler_efm_codes");
     String userDatabaseName = GetEnv("POSTGRES_USER_DB").orElse("user_transactions");
-    String dbUser = GetEnv("POSTGRES_USER").orElse("postgres"); 
-    Optional<String> maybeDbPassword = GetEnv("POSTGRES_PASSWORD"); 
+    String dbUser = GetEnv("POSTGRES_USER").orElse("postgres");
+    Optional<String> maybeDbPassword = GetEnv("POSTGRES_PASSWORD");
     if (maybeDbPassword.isEmpty()) {
       throw new RuntimeException("You need to pass a POSTGRES password in");
     }
     String dbPassword = maybeDbPassword.get();
-    
-    InterviewToFilingEntityConverter daJsonConverter = 
+
+    InterviewToFilingEntityConverter daJsonConverter =
         new DocassembleToFilingEntityConverter(
             EfspServer.class.getResourceAsStream("/taxonomy.csv"));
-    Map<String, InterviewToFilingEntityConverter> converterMap = 
+    Map<String, InterviewToFilingEntityConverter> converterMap =
         Map.of("application/json", daJsonConverter,
                "text/json", daJsonConverter);
-    
+
     CodeDatabase cd = new CodeDatabase(dbUrl, dbPortInt, codeDatabaseName);
     UserDatabase ud = new UserDatabase(dbUrl, dbPortInt, userDatabaseName);
     LoginDatabase ld = new LoginDatabase(dbUrl, dbPortInt, userDatabaseName);
@@ -193,7 +193,7 @@ public class EfspServer {
       throw new RuntimeException("No filer modules available");
     }
     log.info("Starting Server with the following Filers: " + modules);
-    
+
     EfspServer server = new EfspServer(
         dbUser, dbPassword, ud, md, ld, sender, userDatabaseName, modules, cd,
         converterMap);
@@ -208,7 +208,7 @@ public class EfspServer {
       }
     });
     log.info("Server ready...");
-    
+
     while (true) {
       Thread.sleep(5 * 60 * 1000);
     }

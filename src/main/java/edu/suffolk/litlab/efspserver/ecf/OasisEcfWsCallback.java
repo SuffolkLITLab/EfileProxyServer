@@ -20,7 +20,7 @@ import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.TextType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.messagereceiptmessage_4.MessageReceiptMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.messagereceiptmessage_4.ObjectFactory; 
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.messagereceiptmessage_4.ObjectFactory;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.PaymentMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.reviewfilingcallbackmessage_4.ReviewFilingCallbackMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.NotifyFilingReviewCompleteRequestMessageType;
@@ -29,14 +29,14 @@ import tyler.ecf.extensions.eventcallbackmessage.EventCallbackMessageType;
 import tyler.ecf.extensions.servicecallbackmessage.ServiceCallbackMessageType;
 
 public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
-  private static Logger log = 
-      LoggerFactory.getLogger(OasisEcfFiler.class); 
-  
+  private static Logger log =
+      LoggerFactory.getLogger(OasisEcfFiler.class);
+
   private ObjectFactory recepitFac;
   private UserDatabase ud;
   private CodeDatabase cd;
   private OrgMessageSender msgSender;
-  
+
   public OasisEcfWsCallback(UserDatabase ud, CodeDatabase cd, OrgMessageSender msgSender) {
     recepitFac = new ObjectFactory();
     this.ud = ud;
@@ -44,18 +44,18 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     this.msgSender = msgSender;
   }
 
-  
+
   public MessageReceiptMessageType notifyFilingReviewComplete(
       NotifyFilingReviewCompleteRequestMessageType msg) {
     // TODO(brycew): implement this here, hook it up
     // The bare minimum: get the Document ID, see if we have it in the db, send email response
     PaymentMessageType payment = msg.getPaymentReceiptMessage();
     ReviewFilingCallbackMessageType revFiling = msg.getReviewFilingCallbackMessage();
-    MessageReceiptMessageType reply = recepitFac.createMessageReceiptMessageType(); 
+    MessageReceiptMessageType reply = recepitFac.createMessageReceiptMessageType();
     ServiceHelpers.setupReplys(reply);
     // This shouldn't happen, but I don't trust this XML BS
     if (payment == null || revFiling == null) {
-      log.error("Why did Tyler send us a notifyFilingReviewComplete without either a filing" 
+      log.error("Why did Tyler send us a notifyFilingReviewComplete without either a filing"
           + " review or a payment receipt?");
       log.error(msg.toString());
       ErrorType err = new ErrorType();
@@ -68,7 +68,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     // Handle payment stuff first
     // TODO(brycew): there is a Payment ID that we should save when handling payments
     // Skip for now: shouldn't be getting those
-    
+
     // Now for the review filing
     revFiling.getCase().getValue();
     revFiling.getFilingStatus();
@@ -98,13 +98,13 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       List<NameAndCode> names = cd.getFilingStatuses(trans.get().courtId);
       String replyCode = revFiling.getFilingStatus().getStatusText().getValue();
       Optional<String> statusText = names.stream()
-          .filter(nac -> nac.getCode().equalsIgnoreCase(replyCode)) 
+          .filter(nac -> nac.getCode().equalsIgnoreCase(replyCode))
           .map(nac -> nac.getName()).findFirst();
       Map<String, String> statuses = Map.of(
           "status", statusText.orElse(replyCode),
           "message_text", revFiling.getFilingStatus().getStatusDescriptionText().stream().reduce("", (des, tt) -> des + tt.getValue(), (des1, des2) -> des1 + des2)
           );
-      boolean success = msgSender.sendMessage(trans.get(), statuses); 
+      boolean success = msgSender.sendMessage(trans.get(), statuses);
       if (!success) {
         log.error("Couldn't properly send message to " + trans.get().name + "!");
       }

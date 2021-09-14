@@ -9,7 +9,7 @@ public class CaseServiceContact {
   /** If present, it's the name of the Person Obj Id that this contact is associated with. */
   public final Optional<String> partyAssociated;
   public final String refId;
-  
+
   public CaseServiceContact(String guid, String serviceType, Optional<String> partyAssociated) {
     this.guid = guid;
     this.serviceType = serviceType;

@@ -8,13 +8,13 @@ import java.io.IOException;
 
 /** Gets as a json object, used to communicate mainly with Jefferson Parish. */
 public class ContactInfoJeffNetJacksonSerializer extends StdSerializer<ContactInformation> {
-  
+
   private static final long serialVersionUID = 1L;
 
   public ContactInfoJeffNetJacksonSerializer(Class<ContactInformation> t) {
     super(t);
   }
-  
+
   @Override
   public void serialize(ContactInformation info, JsonGenerator jsonGenerator,
       SerializerProvider serializerProvider) throws IOException {
@@ -26,11 +26,11 @@ public class ContactInfoJeffNetJacksonSerializer extends StdSerializer<ContactIn
       jsonGenerator.writeStringField("ContactEmailID", info.getEmail().get());
     }
     int i = 0;
-    for (String phoneNumber : info.getPhoneNumbers()) { 
+    for (String phoneNumber : info.getPhoneNumbers()) {
       if (i == 0) {
-        jsonGenerator.writeStringField("PhoneNumber", phoneNumber); 
+        jsonGenerator.writeStringField("PhoneNumber", phoneNumber);
       } else {
-        jsonGenerator.writeStringField("PhoneNumber" + i, phoneNumber); 
+        jsonGenerator.writeStringField("PhoneNumber" + i, phoneNumber);
       }
       i += 1;
     }

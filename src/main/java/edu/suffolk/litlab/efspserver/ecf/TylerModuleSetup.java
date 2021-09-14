@@ -24,14 +24,14 @@ import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingAssemblyMDEPort;
 
 public class TylerModuleSetup implements EfmModuleSetup {
-  private static Logger log = 
-      LoggerFactory.getLogger(TylerModuleSetup.class); 
+  private static Logger log =
+      LoggerFactory.getLogger(TylerModuleSetup.class);
   private CodeDatabase cd;
   private final String dbUser;
   private final String dbPassword;
   private final String tylerEndpoint;
   private final String x509Password;
-  
+
   // Payments Stuff
   // TODO(brycew): these params create the Payments service, but haven't hooked up ModulesSetup with
   // Providers yet
@@ -39,8 +39,8 @@ public class TylerModuleSetup implements EfmModuleSetup {
   private final String togaUrl;
   private UserDatabase ud;
   private OrgMessageSender sender;
-  private JaxWsServerFactoryBean svrFactory; 
-  
+  private JaxWsServerFactoryBean svrFactory;
+
   public static class CreationArgs {
     public String dbUser;
     public String dbPassword;
@@ -57,14 +57,14 @@ public class TylerModuleSetup implements EfmModuleSetup {
     if (args.isEmpty()) {
       return Optional.empty();
     }
-    
+
     return Optional.of(new TylerModuleSetup(args.get(), cd, ud, sender));
   }
-  
+
   private TylerModuleSetup(
       CreationArgs args,
       CodeDatabase cd, UserDatabase ud, OrgMessageSender sender) {
-    this.cd = cd; 
+    this.cd = cd;
     this.dbUser = args.dbUser;
     this.dbPassword = args.dbPassword;
     this.tylerEndpoint = args.tylerEndpoint;
@@ -74,7 +74,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     this.ud = ud;
     this.sender = sender;
   }
-  
+
   private static Optional<CreationArgs> createFromEnvVars() {
     Optional<String> maybeX509Password = EfmModuleSetup.GetEnv("X509_PASSWORD");
     if (maybeX509Password.isEmpty()) {
@@ -91,8 +91,8 @@ public class TylerModuleSetup implements EfmModuleSetup {
     }
     args.tylerEndpoint = maybeTylerEndpoint.get();
 
-    args.dbUser = EfmModuleSetup.GetEnv("POSTGRES_USER").orElse("postgres"); 
-    Optional<String> maybeDbPassword = EfmModuleSetup.GetEnv("POSTGRES_PASSWORD"); 
+    args.dbUser = EfmModuleSetup.GetEnv("POSTGRES_USER").orElse("postgres");
+    Optional<String> maybeDbPassword = EfmModuleSetup.GetEnv("POSTGRES_PASSWORD");
     if (maybeDbPassword.isEmpty()) {
       log.warn("You need to define a POSTGRES_PASSWORD");
       return Optional.empty();
@@ -120,7 +120,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     // HACK(brycew): cheap DI. Should have something better, but
     // I don't quite understand Spring yet
     SoapX509CallbackHandler.setX509Password(x509Password);
-    
+
     try {
       cd.createDbConnection(this.dbUser, this.dbPassword);
       if (cd.getAllLocations().size() == 0) {
@@ -149,8 +149,8 @@ public class TylerModuleSetup implements EfmModuleSetup {
   @Override
   public Set<String> getCourts() {
     // TODO(brycew): we have the setup cd now, should be easy to get all locations.
-    Set<String> hardcodedTylerIds = Set.of("adams", "alexander", "bond", "boone", "brown", 
-        "bureau", "calhoun", "carroll", "cass", "clay", "cook", 
+    Set<String> hardcodedTylerIds = Set.of("adams", "alexander", "bond", "boone", "brown",
+        "bureau", "calhoun", "carroll", "cass", "clay", "cook",
         "peoria", "perry", "scott", "washington");
     return hardcodedTylerIds;
   }
@@ -168,8 +168,8 @@ public class TylerModuleSetup implements EfmModuleSetup {
   @Override
   public void setupGlobals() {
     OasisEcfWsCallback implementor = new OasisEcfWsCallback(ud, cd, sender);
-    String baseLocalUrl = System.getenv("BASE_LOCAL_URL"); 
-    String address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT; 
+    String baseLocalUrl = System.getenv("BASE_LOCAL_URL");
+    String address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT;
     svrFactory = new JaxWsServerFactoryBean();
     svrFactory.setServiceClass(FilingAssemblyMDEPort.class);
     svrFactory.setAddress(address);

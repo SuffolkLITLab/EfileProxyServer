@@ -89,20 +89,20 @@ import tyler.ecf.extensions.servicetypesresponsemessage.ServiceTypesResponseMess
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 
 public class OasisEcfFiler extends EfmCheckableFilingInterface {
-  private static Logger log = 
-      LoggerFactory.getLogger(OasisEcfFiler.class); 
-  
+  private static Logger log =
+      LoggerFactory.getLogger(OasisEcfFiler.class);
+
   private FilingReviewMDEService filingServiceFactory;
   private CodeDatabase cd;
   private final String headerKey;
   private FilingReviewMDEService filingFactory;
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory 
+  private oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory
       statusObjFac;
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory 
+  private oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory
       listObjFac;
   private tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory detailObjFac;
   private tyler.ecf.extensions.cancelfilingmessage.ObjectFactory cancelObjFac;
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory 
+  private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory
       commonObjFac;
   private gov.niem.niem.niem_core._2.ObjectFactory niemObjFac;
   private gov.niem.niem.proxy.xsd._2.ObjectFactory proxyObjFac;
@@ -115,7 +115,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   }
 
   public OasisEcfFiler(CodeDatabase cd) {
-    this.filingServiceFactory = new FilingReviewMDEService(FilingReviewMDEService.WSDL_LOCATION, 
+    this.filingServiceFactory = new FilingReviewMDEService(FilingReviewMDEService.WSDL_LOCATION,
         FilingReviewMDEService.SERVICE);
     this.cd = cd;
     statusObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory();
@@ -127,13 +127,13 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     this.headerKey = login.getHeaderKey();
     init();
   }
-  
+
   @Override
   public String getHeaderKey() {
     return this.headerKey;
   }
-  
-  private Optional<FilingReviewMDEPort> makeFilingService(String tylerToken) { 
+
+  private Optional<FilingReviewMDEPort> makeFilingService(String tylerToken) {
     Optional<TylerUserNamePassword> tylerCreds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (tylerCreds.isEmpty()) {
       return Optional.empty();
@@ -169,34 +169,34 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       if (locationInfo.isEmpty()) {
         throw FilingError.serverError("Court setup wrong: can't find full location info for " + info.getCourtLocation());
       }
-      
-      if (!locationInfo.get().allowfilingintononindexedcase && info.getCaseDocketNumber().isPresent() 
+
+      if (!locationInfo.get().allowfilingintononindexedcase && info.getCaseDocketNumber().isPresent()
           && info.getPreviousCaseId().isEmpty()) {
-        FilingError err = FilingError.malformedInterview("Court " + info.getCourtLocation() 
+        FilingError err = FilingError.malformedInterview("Court " + info.getCourtLocation()
             + " doesn't allow subsequent filing into non-indexed cases. If this case is in the court system, provide the Case tracking ID. If it's not,"
             + " don't provide the docket number.");
         collector.error(err);
         throw err;
       }
-      
+
       // TODO(brycew): mapping from string case categories to Tyler code case categories, etc.
-      EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo.get()); 
-      
+      EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo.get());
+
       Optional<CaseCategory> maybeCaseCat = cd.getCaseCategoryFor(info.getCourtLocation(), info.getCaseCategory());
       if (maybeCaseCat.isEmpty()) {
         List<CaseCategory> categories = cd.getCaseCategoriesFor(info.getCourtLocation());
         // TODO(brycew): handle that these variables could be different from different deserializers
-        InterviewVariable var = collector.requestVar("tyler_case_category", "", "choice", 
+        InterviewVariable var = collector.requestVar("tyler_case_category", "", "choice",
             categories.stream().map(cat -> cat.name).collect(Collectors.toList()));
         collector.addWrong(var);
         // Foundational error: Category is sorely needed
         throw FilingError.wrongValue(var);
       }
       CaseCategory caseCategory = maybeCaseCat.get();
-      
+
       List<CaseType> caseTypes = cd.getCaseTypesFor(info.getCourtLocation(), caseCategory.code.get(), Optional.empty());
       if (caseTypes.isEmpty()) {
-        FilingError err = FilingError.serverError("There are no caseTypes for " 
+        FilingError err = FilingError.serverError("There are no caseTypes for "
             + info.getCourtLocation() + " and " + caseCategory.code.get());
         collector.error(err);
         throw err;
@@ -204,18 +204,18 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       Optional<CaseType> maybeType = caseTypes.stream()
           .filter(type -> type.name.equals(info.getCaseType()))
           .findFirst();
-     
+
       if (maybeType.isEmpty()) {
         InterviewVariable var = collector.requestVar("tyler_case_type",  "",  "choice",
             caseTypes.stream().map(type -> type.name).collect(Collectors.toList()));
         collector.addWrong(var);
         throw FilingError.wrongValue(var);
-      } 
-      
+      }
+
       // Check if the court doesn't handle this type (initial vs subsequent) of filing
-      if ((maybeType.get().initial && !locationInfo.get().initial) 
+      if ((maybeType.get().initial && !locationInfo.get().initial)
           || (!maybeType.get().initial && !locationInfo.get().subsequent)) {
-        FilingError err = FilingError.malformedInterview("Filing type (" + ((maybeType.get().initial) ? "Initial" : "Subsequent") 
+        FilingError err = FilingError.malformedInterview("Filing type (" + ((maybeType.get().initial) ? "Initial" : "Subsequent")
             + ") can't be filed at " + locationInfo.get().name);
         collector.error(err);
         throw err;
@@ -226,8 +226,8 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         collector.error(err);
         throw err;
       }
-      
-      List<FilingCode> filings = cd.getFilingType(info.getCourtLocation(), 
+
+      List<FilingCode> filings = cd.getFilingType(info.getCourtLocation(),
           caseCategory.code.get(), maybeType.get().code, maybeType.get().initial);
       if (filings.isEmpty()) {
         log.error("Need a filing type! FilingTypes are empty, so " + caseCategory + " and " + maybeType.get() + " are restricted");
@@ -236,7 +236,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         // Is foundational, so returning now
         throw FilingError.wrongValue(var);
       }
-    
+
       InterviewVariable filingVar = collector.requestVar("tyler_filing_type", "TODO(brycew): description", "text", filings.stream().map(f -> f.name).collect(Collectors.toList()));
       JsonNode filingJson = info.getMiscInfo().get("tyler_filing_type");
       if (filingJson == null || filingJson.isNull() || !filingJson.isTextual()) {
@@ -244,7 +244,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         collector.addRequired(filingVar);
         throw FilingError.missingRequired(filingVar);
       }
-    
+
       Optional<FilingCode> maybeFiling = filings.stream()
           .filter(fil -> fil.name.equals(filingJson.asText()))
           .findFirst();
@@ -253,17 +253,17 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         collector.addWrong(filingVar);
         throw FilingError.missingRequired(filingVar);
       }
-    
-      Result<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>, FilingError> assembledCase = 
+
+      Result<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>, FilingError> assembledCase =
           ecfCaseFactory.makeCaseTypeFromTylerCategory(
               locationInfo.get(), caseCategory, maybeType.get(),
-              info, 
+              info,
               maybeFiling.get(),
               info.getFilings()
                   .stream()
                   .map(f -> f.getIdString())
-                  .collect(Collectors.toList()), 
-              "review", info.getMiscInfo(), serializer, collector); 
+                  .collect(Collectors.toList()),
+              "review", info.getMiscInfo(), serializer, collector);
       if (assembledCase.isErr()) {
         collector.error(assembledCase.unwrapErrOrElseThrow());
         throw assembledCase.unwrapErrOrElseThrow();
@@ -277,7 +277,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
           throw FilingError.missingRequired(filingComponentVar);
         }
       }
-      
+
       oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory coreObjFac =
           new oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory();
       CoreFilingMessageType cfm = coreObjFac.createCoreFilingMessageType();
@@ -286,10 +286,10 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       for (CrossReference ref : refs) {
         refMap.put(ref.name, ref);
       }
-      InterviewVariable refsVar = collector.requestVar("cross_references", 
+      InterviewVariable refsVar = collector.requestVar("cross_references",
           "References to other cases in different systems", "DAList");
       Set<String> usedCodes = new HashSet<String>();
-      if (info.getMiscInfo().has("cross_references") 
+      if (info.getMiscInfo().has("cross_references")
           && info.getMiscInfo().get("cross_references").isObject()) {
         JsonNode jsonRefs = info.getMiscInfo().get("cross_references");
         Iterator<String> refNames = jsonRefs.fieldNames();
@@ -302,10 +302,10 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
               refsVar.appendDescription(": for " + refValue + ": " + ref.customvalidationfailuremessage);
             }
             IdentificationType id = niemObjFac.createIdentificationType();
-            id.setIdentificationID(XmlHelper.convertString(jsonRefs.get(refName).asText())); 
+            id.setIdentificationID(XmlHelper.convertString(jsonRefs.get(refName).asText()));
             id.setIdentificationCategory(niemObjFac.createIdentificationCategoryText(
                 XmlHelper.convertText(ref.code)));
-            cfm.getDocumentIdentification().add(id); 
+            cfm.getDocumentIdentification().add(id);
             usedCodes.add(ref.code);
           } else {
             refsVar.appendDescription(": ref " + refName + " isn't available");
@@ -323,7 +323,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       if (serviceOnInitial.isEmpty()) {
         serviceOnInitial = Optional.of(cd.getDataField(locationInfo.get().code, "FilingServiceCheckBoxInitial").isvisible);
       }
-      if (maybeType.get().initial && !serviceOnInitial.get() 
+      if (maybeType.get().initial && !serviceOnInitial.get()
           && info.getServiceContacts().size() > 0) {
         FilingError err = FilingError.malformedInterview("Court " + locationInfo.get().name + " doesn't allow service on initial filings");
         collector.error(err);
@@ -336,12 +336,12 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         throw err;
       }
 
-      int i = 0; 
+      int i = 0;
       for (CaseServiceContact servContact : info.getServiceContacts()) {
         ElectronicServiceInformationType servInfo = commonObjFac.createElectronicServiceInformationType();
         List<ServiceCodeType> types =  cd.getServiceTypes(info.getCourtLocation());
         Optional<ServiceCodeType> code = types.stream().filter(t -> t.name.equalsIgnoreCase(servContact.serviceType)).findFirst();
-        InterviewVariable var = collector.requestVar("service_contact[" + i + "].service_type", "service type should be", "choices", 
+        InterviewVariable var = collector.requestVar("service_contact[" + i + "].service_type", "service type should be", "choices",
             types.stream().map(t -> t.name).collect(Collectors.toList()));
         if (code.isEmpty()) {
           collector.addWrong(var);
@@ -353,22 +353,22 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         id.setIdentificationSourceText(XmlHelper.convertText(code.get().code));
         servInfo.setServiceRecipientID(id);
         servInfo.setId(servContact.refId);
-        cfm.getElectronicServiceInformation().add(servInfo); 
+        cfm.getElectronicServiceInformation().add(servInfo);
       }
 
-      cfm.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
+      cfm.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
       cfm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
       cfm.setCase(assembledCase.unwrapOrElseThrow());
       int seqNum = 0;
       for (FilingDoc filingDoc : info.getFilings()) {
-        JAXBElement<DocumentType> result = 
-                serializer.filingDocToXml(filingDoc, seqNum, caseCategory, maybeType.get(), 
+        JAXBElement<DocumentType> result =
+                serializer.filingDocToXml(filingDoc, seqNum, caseCategory, maybeType.get(),
                     maybeFiling.get(), components,
                         info.getMiscInfo(), collector);
         if (filingDoc.isLead()) {
           cfm.getFilingLeadDocument().add(result);
         } else {
-          cfm.getFilingConnectedDocument().add(result); 
+          cfm.getFilingConnectedDocument().add(result);
         }
         seqNum += 1;
       }
@@ -383,26 +383,26 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
       ex.printStackTrace(pw);
-      log.error("SQL Error when making filing! " + ex.toString() + " " + sw.toString());    
+      log.error("SQL Error when making filing! " + ex.toString() + " " + sw.toString());
       throw FilingError.serverError("Got SQLException assembling the filing: " + ex);
     }
   }
-      
+
   public Result<List<UUID>, FilingError> submitFilingIfReady(FilingInformation info,
     InfoCollector collector, String apiToken) {
     CoreFilingMessageType cfm;
     try {
       cfm = prepareFiling(info, collector, apiToken);
     } catch (FilingError err) {
-      return Result.err(err); 
+      return Result.err(err);
     }
 
-    oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory wsOf = 
+    oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory wsOf =
         new oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory();
     PaymentFactory pf = new PaymentFactory();
     PaymentMessageType pmt = pf.makePaymentMessage(info.getPaymentId());
     ReviewFilingRequestMessageType rfrm = wsOf.createReviewFilingRequestMessageType();
-    rfrm.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
+    rfrm.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
     rfrm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     rfrm.setCoreFilingMessage(cfm);
     rfrm.setPaymentMessage(pmt);
@@ -449,7 +449,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     try {
       cfm = prepareFiling(info, collector, apiToken);
     } catch (FilingError err) {
-      return Result.err(err); 
+      return Result.err(err);
     }
     Optional<FilingReviewMDEPort> filingPort = makeFilingService(apiToken);
     if (filingPort.isEmpty()) {
@@ -457,23 +457,23 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
           .serverError("Couldn't create SOAP port object with token: " + apiToken);
       return Result.err(err);
     }
-    
+
     FeesCalculationQueryMessageType query = prep(new FeesCalculationQueryMessageType(), info.getCourtLocation());
     query.setCoreFilingMessage(cfm);
     FeesCalculationResponseMessageType resp = filingPort.get().getFeesCalculation(query);
-    
+
     Response httpResponse = ServiceHelpers.makeResponse(resp, () -> Response.ok(resp).build());
     return Result.ok(httpResponse);
   }
-  
+
   @Override
   public Result<Response, FilingError> getServiceTypes(FilingInformation info, String apiToken) {
     Optional<CourtLocationInfo> court = cd.getFullLocationInfo(info.getCourtLocation());
     if (court.isEmpty()) {
       return Result.ok(Response.status(404).entity("No court " + info.getCourtLocation()).build());
-    } 
+    }
     if (!court.get().hasconditionalservicetypes) {
-      return Result.ok(Response.status(400).entity("Court " + info.getCourtLocation() 
+      return Result.ok(Response.status(400).entity("Court " + info.getCourtLocation()
           + " doesn't have conditional service types. Check the code list instead").build());
     }
     FailFastCollector collector = new FailFastCollector();
@@ -481,7 +481,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     try {
       cfm = prepareFiling(info, collector, apiToken);
     } catch (FilingError err) {
-      return Result.err(err); 
+      return Result.err(err);
     }
 
     Optional<FilingReviewMDEPort> filingPort = makeFilingService(apiToken);
@@ -493,13 +493,13 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     ServiceTypesRequestMessageType query = prep(new ServiceTypesRequestMessageType(), info.getCourtLocation());
     query.setCoreFilingMessage(cfm);
     ServiceTypesResponseMessageType resp = filingPort.get().getServiceTypes(query);
-    return Result.ok(ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
+    return Result.ok(ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
         () -> Response.ok(resp.getServiceType()).build()));
   }
 
-  
+
   @Override
-  public Response getFilingList(String courtId, String userId, java.util.Date startDate, 
+  public Response getFilingList(String courtId, String userId, java.util.Date startDate,
       java.util.Date endDate, String apiToken) {
     try {
       List<String> courtIds = cd.getAllLocations();
@@ -508,7 +508,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       }
 
       Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
-      if (port.isEmpty()) { 
+      if (port.isEmpty()) {
         return Response.status(403).build();
       }
       FilingListQueryMessageType m = prep(listObjFac.createFilingListQueryMessageType(), courtId);
@@ -520,10 +520,10 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         IdentificationType id = niemObjFac.createIdentificationType();
         id.setIdentificationID(XmlHelper.convertString(userId));
         gov.niem.niem.niem_core._2.PersonType per = niemObjFac.createPersonType();
-        per.getPersonOtherIdentification().add(id); 
-        EntityType entity = niemObjFac.createEntityType(); 
+        per.getPersonOtherIdentification().add(id);
+        EntityType entity = niemObjFac.createEntityType();
         entity.setEntityRepresentation(niemObjFac.createPerson(per));
-        m.setDocumentSubmitter(entity); 
+        m.setDocumentSubmitter(entity);
       } else {
         m.setDocumentSubmitter(null);
       }
@@ -535,7 +535,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         actualStart.setValue(fac.newXMLGregorianCalendar(startCal));
         DateType niemStart = niemObjFac.createDateType();
         niemStart.setDateRepresentation(niemObjFac.createDate(actualStart));
-        
+
         GregorianCalendar endCal = new GregorianCalendar();
         endCal.setTime(endDate);
         Date actualEnd = proxyObjFac.createDate();
@@ -577,23 +577,23 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       }
 
       Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
-      if (port.isEmpty()) { 
+      if (port.isEmpty()) {
         return Response.status(403).build();
       }
       FilingStatusQueryMessageType status = prep(statusObjFac.createFilingStatusQueryMessageType(), courtId);
       status.setDocumentIdentification(XmlHelper.convertId(filingId));
       FilingStatusResponseMessageType statusResp = port.get().getFilingStatus(status);
-      return ServiceHelpers.mapTylerCodesToHttp(statusResp.getError(), 
+      return ServiceHelpers.mapTylerCodesToHttp(statusResp.getError(),
           () -> Response.ok().entity(status).build());
     } catch (SQLException ex) {
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
     }
   }
-  
+
   @Override
   public Response getFilingService(String courtId, String filingId, String contactId, String apiToken) {
     Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
-    if (port.isEmpty()) { 
+    if (port.isEmpty()) {
       return Response.status(403).build();
     }
     FilingServiceQueryMessageType req = new FilingServiceQueryMessageType();
@@ -605,8 +605,8 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     FilingServiceResponseMessageType resp = port.get().getFilingService(req);
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), () -> Response.ok(resp).build());
   }
-  
-  
+
+
   @Override
   public Response getFilingDetails(String courtId, String filingId, String apiToken) {
     try {
@@ -616,7 +616,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       }
 
       Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
-      if (port.isEmpty()) { 
+      if (port.isEmpty()) {
         return Response.status(403).build();
       }
       FilingDetailQueryMessageType m = prep(detailObjFac.createFilingDetailQueryMessageType(), courtId);
@@ -635,21 +635,21 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       List<String> courtIds = cd.getAllLocations();
       if (!courtIds.contains(courtId)) {
         return Response.status(422).entity("Court " + courtId + " not in jurisdiction").build();
-      }       
+      }
     } catch (SQLException ex) {
       return Response.status(500).entity("Couldn't access database: " + ex).build();
     }
     Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
-    if (port.isEmpty()) { 
+    if (port.isEmpty()) {
       return Response.status(403).build();
     }
-    
+
     CourtPolicyQueryMessageType query = prep(new CourtPolicyQueryMessageType(), courtId);
     CourtPolicyResponseMessageType resp = port.get().getPolicy(query);
-    
+
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), () -> Response.ok(resp).build());
   }
-  
+
   @Override
   public Response cancelFiling(String courtId, String filingId, String apiToken) {
     try {
@@ -659,7 +659,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       }
 
       Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
-      if (port.isEmpty()) { 
+      if (port.isEmpty()) {
         return Response.status(403).build();
       }
       CancelFilingMessageType cancel = prep(cancelObjFac.createCancelFilingMessageType(), courtId);
@@ -701,12 +701,12 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   }
 
   private Optional<FilingReviewMDEPort> setupFilingPort(String apiToken) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken); 
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
     if (creds.isEmpty()) {
       return Optional.empty();
     }
 
-    FilingReviewMDEPort port = makeFilingPort(filingFactory); 
+    FilingReviewMDEPort port = makeFilingPort(filingFactory);
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
     try {
       List<Header> headersList = List.of(creds.get().toHeader());
@@ -718,11 +718,11 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
 
     return Optional.of(port);
   }
-  
+
   private static FilingReviewMDEPort makeFilingPort(FilingReviewMDEService filingFactory) {
     FilingReviewMDEPort port = filingFactory.getFilingReviewMDEPort();
     ServiceHelpers.setupServicePort((BindingProvider) port);
     return port;
   }
-  
+
 }

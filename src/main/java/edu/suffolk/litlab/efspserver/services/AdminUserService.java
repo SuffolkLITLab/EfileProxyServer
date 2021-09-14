@@ -97,13 +97,13 @@ import tyler.efm.services.schema.userlistresponse.UserListResponseType;
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 public class AdminUserService {
 
-  private static Logger log = 
-      LoggerFactory.getLogger(AdminUserService.class); 
+  private static Logger log =
+      LoggerFactory.getLogger(AdminUserService.class);
 
   private EfmUserService userFactory;
   private SecurityHub security;
   private CodeDatabase cd;
-  
+
   public AdminUserService(SecurityHub security, CodeDatabase cd) {
     this.security = security;
     this.cd = cd;
@@ -129,25 +129,25 @@ public class AdminUserService {
       }
       apiKey = node.get("api_key").asText();
     } catch (JsonProcessingException e) {
-      log.error(e.toString()); 
+      log.error(e.toString());
       return Response.status(401).build();
     }
     if (apiKey == null || apiKey.isBlank()) {
       log.error("Call passed in a null / blank api_key");
       return Response.status(401).build();
     }
-    log.info("Invoking User Auth for an apiKey"); 
+    log.info("Invoking User Auth for an apiKey");
     Optional<Map<String, String>> activeToken = security.login(apiKey, loginInfo);
     return activeToken
         .map((tok) -> Response.ok(tok).build())
         .orElse(Response.status(403).build());
   }
-  
+
   @GET
   @Path("/user")
   public Response getSelfUser(@Context HttpHeaders httpHeaders) {
-    Optional<IEfmUserService> port = setupUserPort(httpHeaders); 
-    if (port.isEmpty()) { 
+    Optional<IEfmUserService> port = setupUserPort(httpHeaders);
+    if (port.isEmpty()) {
       return Response.status(401).build();
     }
     String tylerId = httpHeaders.getHeaderString("TYLER-ID");
@@ -155,62 +155,62 @@ public class AdminUserService {
       return Response.status(500).entity(
           "Server dose not have a Tyler UUID for the current account. Can you give it to me?").build();
     }
-    
+
     GetUserRequestType req = new GetUserRequestType();
-    req.setUserID(tylerId); 
+    req.setUserID(tylerId);
     GetUserResponseType resp = port.get().getUser(req);
     return makeResponse(resp, () -> Response.ok(resp.getUser()).build());
   }
-  
+
   @GET
   @Path("/user/notification-preferences")
   public Response getNotificationPrefs(@Context HttpHeaders httpHeaders) {
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
-    if (port.isEmpty()) { 
+    if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     NotificationPreferencesResponseType notifResp = port.get().getNotificationPreferences();
 
-    return ServiceHelpers.mapTylerCodesToHttp(notifResp.getError(), 
+    return ServiceHelpers.mapTylerCodesToHttp(notifResp.getError(),
         () -> Response.ok(notifResp.getNotification()).build());
   }
-  
+
   @GET
   @Path("/user/password-question")
   public Response getPasswordQuestion(@Context HttpHeaders httpHeaders, String email) {
-    // TODO(brycew): should be able to work without creds in httpHeaders 
+    // TODO(brycew): should be able to work without creds in httpHeaders
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
-    if (port.isEmpty()) { 
+    if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     GetPasswordQuestionRequestType req = new GetPasswordQuestionRequestType();
     req.setEmail(email);
     PasswordQuestionResponseType resp = port.get().getPasswordQuestion(req);
     return ServiceHelpers.makeResponse(resp, () -> Response.ok("\"" + resp.getPasswordQuestion() + "\"").build());
   }
-  
+
   @PATCH
   @Path("/user/notification-preferences")
   public Response updateNotificationPrefs(@Context HttpHeaders httpHeaders,
       List<NotificationType> notifications) {
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
-    if (port.isEmpty()) { 
+    if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    
-    UpdateNotificationPreferencesRequestType updateNotif = 
+
+    UpdateNotificationPreferencesRequestType updateNotif =
         new UpdateNotificationPreferencesRequestType();
     for (NotificationType nt : notifications) {
       updateNotif.getNotification().add(nt);
     }
 
     BaseResponseType notifResp = port.get().updateNotificationPreferences(updateNotif);
-    return ServiceHelpers.mapTylerCodesToHttp(notifResp.getError(), 
-        () -> Response.ok().build()); 
+    return ServiceHelpers.mapTylerCodesToHttp(notifResp.getError(),
+        () -> Response.ok().build());
   }
-  
+
   @POST
   @Path("/user/resend-activation-email")
   public Response selfResendActivationEmail(@Context HttpHeaders httpHeaders,
@@ -220,34 +220,34 @@ public class AdminUserService {
       return Response.status(401).build();
     }
 
-    SelfResendActivationEmailRequestType req = 
+    SelfResendActivationEmailRequestType req =
         new SelfResendActivationEmailRequestType();
     req.setEmail(emailToSendTo);
     BaseResponseType resp = port.get().selfResendActivationEmail(req);
-    return makeResponse(resp, () -> Response.noContent().build()); 
+    return makeResponse(resp, () -> Response.noContent().build());
   }
-  
+
   @POST
   @Path("/users/{id}/resend-activation-email")
-  public Response resendActivationEmail(@Context HttpHeaders httpHeaders, 
+  public Response resendActivationEmail(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
     Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    
-    ResendActivationEmailRequestType req = 
+
+    ResendActivationEmailRequestType req =
         new ResendActivationEmailRequestType();
     req.setUserID(id);
     BaseResponseType resp = port.get().resendActivationEmail(req);
-    return makeResponse(resp, () -> Response.noContent().build()); 
+    return makeResponse(resp, () -> Response.noContent().build());
   }
 
   public static class ResetPasswordParams {
     public String email;
     public String newPassword;
   }
-  
+
   @POST
   @Path("/users/{id}/password")
   public Response resetPassword(@Context HttpHeaders httpHeaders,
@@ -256,7 +256,7 @@ public class AdminUserService {
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     // The "1" is the default for all courts. There's no way to enforce court specific passwords
     DataFieldRow globalPasswordRow = cd.getDataField("1", "GlobalPassword");
     if (!passwordOk(globalPasswordRow, params.newPassword)) {
@@ -267,17 +267,17 @@ public class AdminUserService {
     resetReq.setEmail(params.email);
     resetReq.setPassword(params.newPassword);
     ResetPasswordResponseType resp = port.get().resetUserPassword(resetReq);
-    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
+    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
         () -> {
-          return Response.ok("\"" + resp.getPasswordHash() + "\"").build(); 
+          return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
         });
   }
-  
+
   public static class SetPasswordParams {
     public String currentPassword;
     public String newPassword;
   }
-  
+
   @POST
   @Path("/user/password")
   public Response setPassword(@Context HttpHeaders httpHeaders,
@@ -297,12 +297,12 @@ public class AdminUserService {
     change.setPasswordQuestion("");
     change.setPasswordAnswer("");
     ChangePasswordResponseType resp = port.get().changePassword(change);
-    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
-        () -> { 
-          return Response.ok("\"" + resp.getPasswordHash() + "\"").build(); 
+    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
+        () -> {
+          return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
         });
   }
-  
+
   @POST
   @Path("/user/password/reset")
   public Response selfResetPassword(@Context HttpHeaders httpHeaders,
@@ -311,12 +311,12 @@ public class AdminUserService {
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     ResetPasswordRequestType reset = new ResetPasswordRequestType();
     reset.setEmail(emailToSend);
     ResetPasswordResponseType resp = port.get().resetPassword(reset);
     // TODO(brycew): why would we reply with the password hash? They still shouldn't be able to log in?
-    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
+    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
         () -> {
           return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
         });
@@ -333,28 +333,28 @@ public class AdminUserService {
   public Response getUser(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
     Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
-    if (port.isEmpty()) { 
+    if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     GetUserRequestType getUserReq = new GetUserRequestType();
     getUserReq.setUserID(id);
     GetUserResponseType userRes = port.get().getUser(getUserReq);
 
-    return ServiceHelpers.mapTylerCodesToHttp(userRes.getError(), 
-        () -> Response.ok(userRes.getUser()).build()); 
+    return ServiceHelpers.mapTylerCodesToHttp(userRes.getError(),
+        () -> Response.ok(userRes.getUser()).build());
   }
 
   @GET
   @Path("/users")
   public Response getUserList(@Context HttpHeaders httpHeaders) {
     Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
-    if (port.isEmpty()) { 
+    if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     UserListResponseType resp = port.get().getUserList();
-    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
+    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
         () -> Response.ok(resp.getUser()).build());
   }
 
@@ -367,7 +367,7 @@ public class AdminUserService {
   // TODO(brycew): retry these same things on the user port if it doesn't have firm permissions
   @PATCH
   @Path("/users/{id}")
-  public Response updateUser(@Context HttpHeaders httpHeaders, 
+  public Response updateUser(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, UserType updatedUser) {
     Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (port.isEmpty()) {
@@ -380,7 +380,7 @@ public class AdminUserService {
     if (ServiceHelpers.checkErrors(userRes.getError())) {
       return Response.status(401, userRes.getError().getErrorText()).build();
     }
-    
+
     UserType existingUser = userRes.getUser();
     if (updatedUser.getEmail() != null) {
       existingUser.setEmail(updatedUser.getEmail());
@@ -400,7 +400,7 @@ public class AdminUserService {
     if (ServiceHelpers.checkErrors(updateResp.getError())) {
       return Response.status(401).entity(updateResp.getError().getErrorText()).build();
     }
-    
+
     return Response.noContent().build();
   }
 
@@ -415,14 +415,14 @@ public class AdminUserService {
   public Response getRoles(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
     Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
-    if (port.isEmpty()) { 
+    if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     GetUserRequestType getUserReq = new GetUserRequestType();
     getUserReq.setUserID(id);
     GetUserResponseType userRes = port.get().getUser(getUserReq);
-    return ServiceHelpers.mapTylerCodesToHttp(userRes.getError(), 
+    return ServiceHelpers.mapTylerCodesToHttp(userRes.getError(),
         () -> Response.ok(userRes.getUser().getRole()).build());
   }
 
@@ -438,10 +438,10 @@ public class AdminUserService {
   public Response addRoles(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, List<RoleLocationType> toAdd) {
     Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
-    if (port.isEmpty()) { 
+    if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     for (RoleLocationType role : toAdd) {
       AddUserRoleRequestType addRole = new AddUserRoleRequestType();
       addRole.setLocation(role.getLocation());
@@ -453,7 +453,7 @@ public class AdminUserService {
         return Response.status(401).entity(resp.getError().getErrorText()).build();
       }
     }
-    
+
     return Response.noContent().build();
   }
 
@@ -469,13 +469,13 @@ public class AdminUserService {
   public Response removeRoles(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, List<RoleLocationType> toRm) {
     Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
-    if (port.isEmpty()) { 
+    if (port.isEmpty()) {
       return Response.status(401).build();
     }
     if (toRm == null) {
       return Response.ok().build();
     }
-    
+
     for (RoleLocationType role : toRm) {
       RemoveUserRoleRequestType rmRole = new RemoveUserRoleRequestType();
       rmRole.setLocation(role.getLocation());
@@ -487,10 +487,10 @@ public class AdminUserService {
         return Response.status(401).entity(resp.getError().getErrorText()).build();
       }
     }
-    
+
     return Response.ok().build();
   }
-  
+
   /**
    * For RegisterUser.
    *
@@ -503,10 +503,10 @@ public class AdminUserService {
       RegistrationRequestType req) {
     boolean needsAuth = !req.getRegistrationType().equals(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
     Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security, needsAuth);
-    if (port.isEmpty()) { 
+    if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     Optional<CourtLocationInfo> system = cd.getFullLocationInfo("0");
     if (system.isPresent()) {
       if (req.getRegistrationType().equals(RegistrationType.INDIVIDUAL)
@@ -514,7 +514,7 @@ public class AdminUserService {
         return Response.status(400).entity("System does not allow individual registration").build();
       }
     }
-    
+
     // The "1" is the default for all courts. There's no way to enforce court specific passwords
     DataFieldRow globalPasswordRow = cd.getDataField("1", "GlobalPassword");
     if (!passwordOk(globalPasswordRow, req.getPassword())) {
@@ -523,7 +523,7 @@ public class AdminUserService {
     RegistrationResponseType regResp = port.get().registerUser(req);
     return makeResponse(regResp, () -> Response.ok(regResp).build());
   }
-  
+
   /**
    * For RemoveUser.
    *
@@ -538,14 +538,14 @@ public class AdminUserService {
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     RemoveUserRequestType rmUser = new RemoveUserRequestType();
     rmUser.setUserID(id);
     BaseResponseType resp = port.get().removeUser(rmUser);
-    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
+    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
         () -> Response.ok().build());
   }
-  
+
   @GET
   @Path("/notification-options")
   public Response getNotificationPreferenceList(@Context HttpHeaders httpHeaders) {
@@ -553,14 +553,14 @@ public class AdminUserService {
     if (port.isEmpty()) {
       return Response.status(407).build();
     }
-    
+
     NotificationPreferencesListResponseType resp = port.get().getNotificationPreferencesList();
-    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), 
+    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
         () -> Response.ok(resp.getNotificationListItem()).build());
   }
-  
+
   private boolean passwordOk(DataFieldRow row, String password) {
-    if (row.isvisible && row.isrequired 
+    if (row.isvisible && row.isrequired
         && password != null && !password.isEmpty()) {
       return row.matchRegex(password);
     }
@@ -571,11 +571,11 @@ public class AdminUserService {
   private Optional<IEfmUserService> setupUserPort(HttpHeaders httpHeaders) {
     return setupUserPort(httpHeaders, true);
   }
-  
+
   /** Creates a connection to Tyler's SOAP API that is has the right Auth Headers.
    *
    * @param httpHeaders The context tag from the server method
-   * @param needsSoapHeader True if the operation needs Authenticated Tyler creds to work 
+   * @param needsSoapHeader True if the operation needs Authenticated Tyler creds to work
    * @return false if setup didn't work, and subsequent service calls will likely fail
    */
   private Optional<IEfmUserService> setupUserPort(HttpHeaders httpHeaders, boolean needsSoapHeader) {
@@ -584,11 +584,11 @@ public class AdminUserService {
     if (atRest.isEmpty()) {
       return Optional.empty();
     }
-    IEfmUserService port = makeUserPort(userFactory); 
+    IEfmUserService port = makeUserPort(userFactory);
     if (needsSoapHeader) {
       TylerLogin login = new TylerLogin();
       Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(
-          httpHeaders.getHeaderString(login.getHeaderKey())); 
+          httpHeaders.getHeaderString(login.getHeaderKey()));
       if (creds.isEmpty()) {
         return Optional.empty();
       }
@@ -603,21 +603,21 @@ public class AdminUserService {
     }
     return Optional.of(port);
   }
-  
+
   /** Creates a connection to Tyler's SOAP API WITHOUT any Auth headers.
    * Can be used to make an Auth request, or can have the header inserted later.
    *
-   * @param EfmUserService the definition of the SOAP WSDL service 
-   * @return A port connection to the SOAP server 
+   * @param EfmUserService the definition of the SOAP WSDL service
+   * @return A port connection to the SOAP server
    */
   private static IEfmUserService makeUserPort(EfmUserService userService) {
     IEfmUserService port = userService.getBasicHttpBindingIEfmUserService();
     ServiceHelpers.setupServicePort((BindingProvider) port);
     return port;
   }
-  
+
   public static EfmUserService makeUserServiceFactory(URL userWsdlUrl) {
     return new EfmUserService(userWsdlUrl, EfmUserService.SERVICE);
   }
-  
+
 }

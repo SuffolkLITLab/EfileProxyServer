@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+
 public class Person {
 
   // NOTE: from DA, we will take the mailing address if present, not the standard
@@ -18,13 +19,13 @@ public class Person {
   private UUID id;
   // TODO(brycew): role doesn't normally go here. Can be constructed anyway. IDK
   private String role;
-  
+
   /** Minimal constructor, empty lists and empty optionals. */
   public Person(Name name, String email, boolean isOrg) {
-    this(name, new ContactInformation(email), 
+    this(name, new ContactInformation(email),
         Optional.empty(), Optional.empty(), Optional.empty(), isOrg);
   }
-  
+
   /** Default constructor. */
   public Person(Name name,
       ContactInformation contactInfo,
@@ -38,7 +39,7 @@ public class Person {
     this.language = language;
     this.birthdate = birthdate;
     this.isOrg = isOrg;
-    
+
     this.id = UUID.randomUUID();
   }
 
@@ -49,41 +50,41 @@ public class Person {
   public boolean isOrg() {
     return isOrg;
   }
-  
+
   public UUID getId() {
     return id;
   }
-  
+
   public Optional<LocalDate> getBirthdate() {
     return birthdate;
   }
-  
+
   public Optional<String> getGender() {
     return gender;
   }
-  
+
   public String getRole() {
     return role;
   }
-  
+
   public ContactInformation getContactInfo() {
     return contactInfo;
   }
-  
+
   public Optional<String> getLanguage() {
     return language;
   }
-  
+
   public void setLanguage(String language) {
     this.language = Optional.of(language);
   }
-  
+
   public void setRole(String role) {
     this.role = role;
   }
-  
+
   public String getIdString() {
     return "id-" + id.toString();
   }
-  
+
 }

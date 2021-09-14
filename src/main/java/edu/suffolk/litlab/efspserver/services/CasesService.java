@@ -66,20 +66,20 @@ public class CasesService {
   private SecurityHub security;
   private CodeDatabase cd;
   private static CourtRecordMDEService recordFactory = new CourtRecordMDEService(
-      CourtRecordMDEService.WSDL_LOCATION, 
+      CourtRecordMDEService.WSDL_LOCATION,
       CourtRecordMDEService.SERVICE);
   private oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseParticipantType cpt
         = new oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseParticipantType();
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf = 
+  private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf =
           new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType commonCpt = 
+  private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType commonCpt =
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType();
 
   public CasesService(SecurityHub security, CodeDatabase cd) {
     this.security = security;
     this.cd = cd;
   }
-  
+
   @GET
   @Path("/courts/{court_id}/cases")
   public Response getCaseList(@Context HttpHeaders httpHeaders,
@@ -98,14 +98,14 @@ public class CasesService {
     if (!legacyRow.isvisible && info.get().initial) {
       return Response.status(400).entity(courtId + " doesn't allow for case searches").build();
     }
-    
+
     if (courtId.equals("1")) {
       DataFieldRow row = cd.getDataField("1", "AdvancedSearchLocationAllLocations");
       if (!row.isvisible) {
         return Response.status(400).entity("Can't search all locations").build();
       }
     }
-    
+
     CaseListQueryMessageType query = new CaseListQueryMessageType();
     EntityType typ = new EntityType();
     JAXBElement<PersonType> elem2 = ecfOf.createEntityPerson(new PersonType());
@@ -132,7 +132,7 @@ public class CasesService {
       }
       PersonType pt = ecfOf.createPersonType();
       pt.setPersonName(maybeName.getNameType());
-      
+
       commonCpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
       commonCpt.setCaseParticipantRoleCode(XmlHelper.convertText(""));
 
@@ -145,7 +145,7 @@ public class CasesService {
     }
     return Response.ok(resp.getCase()).build();
   }
-  
+
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}")
   public Response getCase(@Context HttpHeaders httpHeaders,
@@ -154,13 +154,13 @@ public class CasesService {
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId);
     if (locationInfo.isEmpty()) {
       log.warn("Can't find court location for " + courtId + " when getting case");
       return Response.status(404).entity("No court " + courtId).build();
     }
-    
+
     CaseQueryMessageType query = new CaseQueryMessageType();
     EntityType typ = new EntityType();
     JAXBElement<PersonType> elem2 = ecfOf.createEntityPerson(new PersonType());
@@ -182,7 +182,7 @@ public class CasesService {
     if (hasError(resp)) {
       return Response.status(400).entity(resp.getError()).build();
     }
-    
+
     if (locationInfo.get().hasprotectedcasetypes) {
       CaseType caseType = resp.getCase().getValue();
       Optional<CaseAugmentationType> caseAug = getCaseTypeCode(caseType);
@@ -196,7 +196,7 @@ public class CasesService {
     }
     return Response.ok(resp.getCase()).build();
   }
-  
+
   /**
    * Tyler says that Getting document isn't supported. This is here to make that clear to
    * users.
@@ -211,17 +211,17 @@ public class CasesService {
       @PathParam("court_id") String courtId, @PathParam("case_tracking_id") String caseId) {
     return Response.status(405).build();
   }
-  
+
   @GET
   @Path("/courts/{court_id}/service-contacts/{service_contact_id}/cases")
   public Response getServiceAttachCaseList(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, 
+      @PathParam("court_id") String courtId,
       @PathParam("service_contact_id") String serviceId) {
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     ServiceAttachCaseListQueryMessageType query = new ServiceAttachCaseListQueryMessageType();
     EntityType typ = new EntityType();
     JAXBElement<PersonType> elem2 = ecfOf.createEntityPerson(new PersonType());
@@ -237,16 +237,16 @@ public class CasesService {
     }
     return Response.ok(resp.getCase()).build();
   }
-  
+
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}/service-information")
-  public Response getServiceInformation(@Context HttpHeaders httpHeaders, 
+  public Response getServiceInformation(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, @PathParam("case_tracking_id") String caseId) {
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     ServiceInformationQueryMessageType query = new ServiceInformationQueryMessageType();
     EntityType typ = new EntityType();
     JAXBElement<PersonType> elem2 = ecfOf.createEntityPerson(new PersonType());
@@ -262,7 +262,7 @@ public class CasesService {
     }
     return Response.ok(resp.getServiceRecipient()).build();
   }
-  
+
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}/service-information-history")
   public Response getServiceInformationHistory(@Context HttpHeaders httpHeaders,
@@ -286,12 +286,12 @@ public class CasesService {
     }
     return Response.ok(resp.getServiceRecipient()).build();
   }
-  
+
   private boolean hasError(QueryResponseMessageType resp) {
-    return resp.getError().size() > 1 || 
+    return resp.getError().size() > 1 ||
         (resp.getError().size() == 1 && !resp.getError().get(0).getErrorCode().getValue().equals("0"));
   }
-  
+
   private Optional<CaseAugmentationType> getCaseTypeCode(CaseType filedCase) {
     List<JAXBElement<?>> restList = List.of();
     if (filedCase instanceof CivilCaseType) {
@@ -308,7 +308,7 @@ public class CasesService {
     for (JAXBElement<?> elem : restList) {
       if (elem.getValue() instanceof CaseAugmentationType) {
         CaseAugmentationType aug = (CaseAugmentationType) elem.getValue();
-        return Optional.of(aug); 
+        return Optional.of(aug);
       }
     }
 
@@ -317,14 +317,14 @@ public class CasesService {
 
   private Optional<CourtRecordMDEPort> setupRecordPort(HttpHeaders httpHeaders) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<AtRest> atRest = security.getAtRestInfo(apiKey); 
+    Optional<AtRest> atRest = security.getAtRestInfo(apiKey);
     if (atRest.isEmpty()) {
       log.warn("Couldn't checkLogin");
       return Optional.empty();
     }
     TylerLogin login = new TylerLogin();
     String tylerToken = httpHeaders.getHeaderString(login.getHeaderKey());
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken); 
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds?");
       return Optional.empty();

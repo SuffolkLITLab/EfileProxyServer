@@ -15,21 +15,21 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
   private URI jeffnetEndpoint;
   private UserDatabase ud;
   private OrgMessageSender sender;
-  
+
   private JeffNetModuleSetup(URI jeffnetUri,
       UserDatabase ud, OrgMessageSender sender) {
     this.jeffnetEndpoint = jeffnetUri;
     this.ud = ud;
     this.sender = sender;
   }
-  
+
   public static Optional<JeffNetModuleSetup> create(UserDatabase ud, OrgMessageSender sender) throws URISyntaxException {
     Optional<String> maybeJeffersonEndpoint = EfmModuleSetup.GetEnv("JEFFERSON_ENDPOINT");
     if (maybeJeffersonEndpoint.isEmpty()) {
       throw new RuntimeException("JEFFERSON_ENDPOINT needs to be the "
             + "defined. Did you forget to source .env?");
     }
-    
+
     URI jeffnetUri = new URI(maybeJeffersonEndpoint.get());
     return Optional.of(new JeffNetModuleSetup(jeffnetUri, ud, sender));
   }

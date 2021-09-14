@@ -66,10 +66,10 @@ public class FirmAttorneyAndServiceService {
 
   private SecurityHub security;
   private CodeDatabase cd;
-  
-  private tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac = 
+
+  private tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac =
       new tyler.efm.services.schema.common.ObjectFactory();
-   
+
   public FirmAttorneyAndServiceService(SecurityHub security, CodeDatabase cd) {
     this.security = security;
     this.cd = cd;
@@ -86,7 +86,7 @@ public class FirmAttorneyAndServiceService {
     GetFirmResponseType firm = firmPort.get().getFirm();
     return makeResponse(firm, () -> Response.ok(firm.getFirm()).build());
   }
-  
+
   @PATCH
   @Path("/firm")
   public Response updateFirm(@Context HttpHeaders httpHeaders, String json) {
@@ -105,15 +105,15 @@ public class FirmAttorneyAndServiceService {
       AddressType addr = firm.getAddress();
       JsonNode addrNode = node.get("address");
       if (addrNode != null && addrNode.isObject()) {
-        getJsonString(addrNode, "addressLine1").ifPresent(line1-> addr.setAddressLine1(line1)); 
-        getJsonString(addrNode, "addressLine2").ifPresent(line2-> addr.setAddressLine2(line2)); 
+        getJsonString(addrNode, "addressLine1").ifPresent(line1-> addr.setAddressLine1(line1));
+        getJsonString(addrNode, "addressLine2").ifPresent(line2-> addr.setAddressLine2(line2));
         getJsonString(addrNode, "city").ifPresent(city -> addr.setCity(city));
         getJsonString(addrNode, "state").ifPresent(state -> addr.setState(state));
         getJsonString(addrNode, "zipCode").ifPresent(zip -> addr.setZipCode(zip));
         getJsonString(addrNode, "country").ifPresent(country -> addr.setCountry(country));
       }
       firm.setAddress(addr);
-      
+
       UpdateFirmRequestType updateReq = new UpdateFirmRequestType();
       updateReq.setFirm(firm);
       BaseResponseType resp = firmPort.get().updateFirm(updateReq);
@@ -122,7 +122,7 @@ public class FirmAttorneyAndServiceService {
       return Response.status(400).entity("The Body passed should be proper JSON: " + e).build();
     }
   }
-  
+
   @GET
   @Path("/attorneys")
   public Response getAttorneyList(@Context HttpHeaders httpHeaders) {
@@ -130,26 +130,26 @@ public class FirmAttorneyAndServiceService {
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
-    
+
     AttorneyListResponseType resp = firmPort.get().getAttorneyList();
     return makeResponse(resp, () -> Response.ok(resp.getAttorney()).build());
   }
-  
+
   @GET
   @Path("/attorneys/{attorney_id}")
-  public Response getAttorney(@Context HttpHeaders httpHeaders, 
+  public Response getAttorney(@Context HttpHeaders httpHeaders,
       @PathParam("attorney_id") String attorneyId) {
     Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
-    
+
     GetAttorneyRequestType req = new GetAttorneyRequestType();
     req.setAttorneyID(attorneyId);
     GetAttorneyResponseType resp = firmPort.get().getAttorney(req);
     return makeResponse(resp, () -> Response.ok(resp.getAttorney()).build());
   }
-  
+
   @POST
   @Path("/attorneys")
   public Response createAttorney(@Context HttpHeaders httpHeaders,
@@ -168,14 +168,14 @@ public class FirmAttorneyAndServiceService {
     if (!row.matchRegex(attorney.getBarNumber())) {
       return Response.status(400).entity("Bar number doesn't match regex: " + row.regularexpression).build();
     }
-    
+
     CreateAttorneyResponseType resp = firmPort.get().createAttorney(req);
     return makeResponse(resp, () -> Response.ok("\"" + resp.getAttorneyID() + "\"").build());
   }
-  
+
   @PATCH
   @Path("/attorneys/{attorney_id}")
-  public Response updateAttorney(@Context HttpHeaders httpHeaders, 
+  public Response updateAttorney(@Context HttpHeaders httpHeaders,
       @PathParam("attorney_id") String attorneyId, String json) {
     Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (firmPort.isEmpty()) {
@@ -186,7 +186,7 @@ public class FirmAttorneyAndServiceService {
     req.setAttorneyID(attorneyId);
     GetAttorneyResponseType existingResp = firmPort.get().getAttorney(req);
     AttorneyType att = existingResp.getAttorney();
-    
+
     ObjectMapper mapper = new ObjectMapper();
     try {
       JsonNode node = mapper.readTree(json);
@@ -194,7 +194,7 @@ public class FirmAttorneyAndServiceService {
       getJsonString(node, "middleName").ifPresent(middle -> att.setMiddleName(middle));
       getJsonString(node, "lastName").ifPresent(last-> att.setLastName(last));
       getJsonString(node, "barNumber").ifPresent(bar -> att.setBarNumber(bar));
-      
+
       UpdateAttorneyRequestType updateReq = new UpdateAttorneyRequestType();
       updateReq.setAttorney(att);
       UpdateAttorneyResponseType resp = firmPort.get().updateAttorney(updateReq);
@@ -203,7 +203,7 @@ public class FirmAttorneyAndServiceService {
       return Response.status(400).entity("The Body passed should be proper JSON: " + e).build();
     }
   }
-  
+
   @DELETE
   @Path("/attorneys/{attorney_id}")
   public Response removeAttorney(@Context HttpHeaders httpHeaders,
@@ -212,13 +212,13 @@ public class FirmAttorneyAndServiceService {
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
-    
+
     RemoveAttorneyRequestType req = new RemoveAttorneyRequestType();
     req.setAttorneyID(attorneyId);
     BaseResponseType resp = firmPort.get().removeAttorney(req);
     return makeResponse(resp, () -> Response.ok().build());
   }
-  
+
   @GET
   @Path("/service-contacts")
   public Response getServiceContactList(@Context HttpHeaders httpHeaders) {
@@ -229,37 +229,37 @@ public class FirmAttorneyAndServiceService {
     ServiceContactListResponseType resp = firmPort.get().getServiceContactList();
     return makeResponse(resp, () -> Response.ok(resp.getServiceContact()).build());
   }
-  
+
   @GET
   @Path("/service-contacts/{contact_id}")
-  public Response getServiceContact(@Context HttpHeaders httpHeaders, 
+  public Response getServiceContact(@Context HttpHeaders httpHeaders,
       @PathParam("contact_id") String contactId) {
     Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     GetServiceContactRequestType req = new GetServiceContactRequestType();
     req.setServiceContactID(contactId);
     GetServiceContactResponseType resp = firmPort.get().getServiceContact(req);
     return makeResponse(resp, () -> Response.ok(resp.getServiceContact()).build());
   }
-  
+
   @DELETE
   @Path("/service-contacts/{contact_id}")
-  public Response removeServiceContact(@Context HttpHeaders httpHeaders, 
+  public Response removeServiceContact(@Context HttpHeaders httpHeaders,
       @PathParam("contact_id") String contactId) {
     Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     RemoveServiceContactRequestType req = new RemoveServiceContactRequestType();
     req.setServiceContactID(contactId);
     BaseResponseType resp = firmPort.get().removeServiceContact(req);
     return makeResponse(resp, ()-> Response.ok().build());
   }
-  
+
   @POST
   @Path("/service-contacts")
   public Response createServiceContact(@Context HttpHeaders httpHeaders,
@@ -268,7 +268,7 @@ public class FirmAttorneyAndServiceService {
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     CreateServiceContactRequestType req = new CreateServiceContactRequestType();
     ServiceContactType contact = new ServiceContactType();
     contact.setAddress(input.address);
@@ -284,7 +284,7 @@ public class FirmAttorneyAndServiceService {
     CreateServiceContactResponseType resp = firmPort.get().createServiceContact(req);
     return makeResponse(resp, ()->Response.ok("\"" + resp.getServiceContactID() + "\"").build());
   }
-  
+
   @PUT
   @Path("/service-contacts/{contact_id}/cases")
   public Response attachServiceContact(@Context HttpHeaders httpHeaders,
@@ -299,11 +299,11 @@ public class FirmAttorneyAndServiceService {
       node = mapper.readTree(json);
     } catch (JsonProcessingException e) {
       return Response.status(400).entity(e.toString()).build();
-    } 
+    }
     if (!node.has("caseId") || !node.get("caseId").isTextual()) {
       return Response.status(400).entity("Need to pass in caseId as text").build();
     }
-    
+
     AttachServiceContactRequestType req = new AttachServiceContactRequestType();
     req.setServiceContactID(contactId);
     req.setCaseID(node.get("caseId").asText());
@@ -313,7 +313,7 @@ public class FirmAttorneyAndServiceService {
     BaseResponseType resp = firmPort.get().attachServiceContact(req);
     return makeResponse(resp, () -> Response.ok().build());
   }
-  
+
   @DELETE
   @Path("/service-contacts/{contact_id}/cases/{case_id}")
   public Response detachServiceContact(@Context HttpHeaders httpHeaders,
@@ -326,14 +326,14 @@ public class FirmAttorneyAndServiceService {
 
     DetachServiceContactRequestType req = new DetachServiceContactRequestType();
     req.setServiceContactID(contactId);
-    req.setCaseID(caseId); 
+    req.setCaseID(caseId);
     if (casePartyId != null && !casePartyId.isBlank()) {
       req.setCasePartyID(casePartyId);
     }
     BaseResponseType resp = firmPort.get().detachServiceContact(req);
     return makeResponse(resp, () -> Response.ok().build());
   }
-  
+
   @PATCH
   @Path("/service-contacts/{contact_id}")
   public Response updateServiceContact(@Context HttpHeaders httpHeaders,
@@ -342,7 +342,7 @@ public class FirmAttorneyAndServiceService {
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     GetServiceContactRequestType getReq = new GetServiceContactRequestType();
     getReq.setServiceContactID(contactId);
     GetServiceContactResponseType getResp = firmPort.get().getServiceContact(getReq);
@@ -371,10 +371,10 @@ public class FirmAttorneyAndServiceService {
     UpdateServiceContactResponseType resp = firmPort.get().updateServiceContact(req);
     return makeResponse(resp, () -> Response.ok("\"" + resp.getServiceContactID() + "\"").build());
   }
-  
+
   @GET
   @Path("/service-contacts/public")
-  public Response getPublicList(@Context HttpHeaders httpHeaders, 
+  public Response getPublicList(@Context HttpHeaders httpHeaders,
       String json) {
     Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
     if (firmPort.isEmpty()) {
@@ -389,10 +389,10 @@ public class FirmAttorneyAndServiceService {
       getJsonString(node, "firmName").ifPresent(firmName-> msg.setFirstName(firmName));
       getJsonString(node, "email").ifPresent(email-> msg.setFirstName(email));
       ServiceContactListResponseType resp = firmPort.get().getPublicList(msg);
-      // TODO(brycew): PublicServiceContactShowEmail data config says emails 
+      // TODO(brycew): PublicServiceContactShowEmail data config says emails
       //  "must not be displayed in a menner that allows programmatic harvesting of the email address."
       // How do you do that over a REST API?
-      return makeResponse(resp, 
+      return makeResponse(resp,
           () -> {
             DataFieldRow row = cd.getDataField("1", "PublicServiceContactShowFreeFormFirmName");
             List<ServiceContactType> contacts = resp.getServiceContact();
@@ -401,16 +401,16 @@ public class FirmAttorneyAndServiceService {
                 // Hide the FirmName, but leave the AddByFirmName alone
                 con.setFirmName(null);
               }
-            }); 
+            });
             return Response.ok(contacts).build();
           });
     } catch (JsonProcessingException e) {
       return Response.status(400).entity(e.toString()).build();
     }
   }
-  
+
   private Optional<String> getJsonString(JsonNode node, String attr) {
-      JsonNode maybeAttr = node.get(attr); 
+      JsonNode maybeAttr = node.get(attr);
       if (maybeAttr != null && maybeAttr.isTextual()) {
         return Optional.of(maybeAttr.asText());
       }
@@ -418,7 +418,7 @@ public class FirmAttorneyAndServiceService {
   }
 
   private Optional<Boolean> getJsonBoolean(JsonNode node, String attr) {
-      JsonNode maybeAttr = node.get(attr); 
+      JsonNode maybeAttr = node.get(attr);
       if (maybeAttr != null && maybeAttr.isBoolean()) {
         return Optional.of(maybeAttr.asBoolean());
       }

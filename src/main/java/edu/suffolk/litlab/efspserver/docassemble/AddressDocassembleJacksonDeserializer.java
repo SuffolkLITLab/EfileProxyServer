@@ -18,11 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AddressDocassembleJacksonDeserializer {
-  private static Logger log = LoggerFactory.getLogger(AddressDocassembleJacksonDeserializer.class); 
+  private static Logger log = LoggerFactory.getLogger(AddressDocassembleJacksonDeserializer.class);
 
-  protected AddressDocassembleJacksonDeserializer() {} 
+  protected AddressDocassembleJacksonDeserializer() {}
 
-  /** Parses an address from the DA Json Object. Used by Deserializers that include addresses. 
+  /** Parses an address from the DA Json Object. Used by Deserializers that include addresses.
    * @throws FilingError */
   public Optional<Address> fromNode(JsonNode node, InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
@@ -42,7 +42,7 @@ public class AddressDocassembleJacksonDeserializer {
       onePresent = true;
       if (node.has(member) && !node.get(member).isTextual()) {
         FilingError err = FilingError.malformedInterview(
-            "Refusing to parse an address where the " + member + " isn't text: " 
+            "Refusing to parse an address where the " + member + " isn't text: "
             + node.toPrettyString());
         collector.error(err);
         throw err;
@@ -62,22 +62,22 @@ public class AddressDocassembleJacksonDeserializer {
     String city = (node.has("city")) ? node.get("city").asText("") : "";
     String state = (node.has("state")) ? node.get("state").asText("") : "";
     String zip = (node.has("zip")) ? node.get("zip").asText("") : "";
-    String country = (node.has("country")) ? node.get("country").asText("US") : "US"; 
-    CountryCodeSimpleType countryCode; 
+    String country = (node.has("country")) ? node.get("country").asText("US") : "US";
+    CountryCodeSimpleType countryCode;
     try {
       countryCode = CountryCodeSimpleType.fromValue(country);
     } catch (IllegalArgumentException ex) {
       log.error("Country " + country + " isn't a valid country: " + ex);
-      List<String> countries = Arrays.stream(CountryCodeSimpleType.values()) 
+      List<String> countries = Arrays.stream(CountryCodeSimpleType.values())
           .map((t) -> t.toString())
           .collect(Collectors.toList());
-      InterviewVariable countryOptions = collector.requestVar("country", 
+      InterviewVariable countryOptions = collector.requestVar("country",
           "The 2 letter country code", "choices", countries);
-      FilingError err = FilingError.wrongValue(countryOptions); 
+      FilingError err = FilingError.wrongValue(countryOptions);
       collector.error(err);
       throw err;
     }
     Address addr = new Address(address, unit, city, state, zip, countryCode);
-    return Optional.of(addr); 
+    return Optional.of(addr);
   }
 }

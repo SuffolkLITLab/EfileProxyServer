@@ -19,8 +19,8 @@ import tyler.efm.services.schema.authenticaterequest.AuthenticateRequestType;
 import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
 
 public class TylerLogin implements LoginInterface {
-  private static Logger log = 
-      LoggerFactory.getLogger(LoginInterface.class); 
+  private static Logger log =
+      LoggerFactory.getLogger(LoginInterface.class);
 
   private EfmUserService userServiceFactory;
 
@@ -38,7 +38,7 @@ public class TylerLogin implements LoginInterface {
       return Optional.empty();
     }
     String username = loginInfo.get("username").asText();
-    log.info("Invoking User Auth for " + username); 
+    log.info("Invoking User Auth for " + username);
     if (!loginInfo.has("password")
         || !loginInfo.get("password").isTextual()) {
       log.warn("Tried to login without passing in a password");
@@ -46,29 +46,29 @@ public class TylerLogin implements LoginInterface {
     }
     String password = loginInfo.get("password").asText();
     AuthenticateRequestType authReq = new AuthenticateRequestType();
-    authReq.setEmail(username); 
-    authReq.setPassword(password); 
+    authReq.setEmail(username);
+    authReq.setPassword(password);
     if (authReq.getPassword() == null || authReq.getPassword().isBlank()) {
-      return Optional.empty(); 
+      return Optional.empty();
     }
     IEfmUserService userPort = makeUserPort(userServiceFactory);
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
     if (!authRes.getError().getErrorCode().equals("0")) {
       log.warn("Got Tyler error when authing: " + authRes.getError().getErrorCode() + ", "
           + authRes.getError().getErrorText());
-      return Optional.empty(); 
+      return Optional.empty();
     } else {
       return Optional.of(Map.of(
           getHeaderKey(), authRes.getEmail() + ":" + authRes.getPasswordHash(),
-          "tyler_id", authRes.getUserID())); 
+          "tyler_id", authRes.getUserID()));
     }
   }
 
   /** Creates a connection to Tyler's SOAP API WITHOUT any Auth headers.
    * Can be used to make an Auth request, or can have the header inserted later.
    *
-   * @param EfmUserService the definition of the SOAP WSDL service 
-   * @return A port connection to the SOAP server 
+   * @param EfmUserService the definition of the SOAP WSDL service
+   * @return A port connection to the SOAP server
    */
   private static IEfmUserService makeUserPort(EfmUserService userService) {
     IEfmUserService port = userService.getBasicHttpBindingIEfmUserService();

@@ -109,7 +109,7 @@ public class CodeUpdater {
     ncToTableName.put("tyler:QuestionCode", "question");
     ncToTableName.put("tyler:AnswerCode", "answer");
   }
-  
+
   private final String pathToKeystore;
   private final String x509Password;
 
@@ -117,7 +117,7 @@ public class CodeUpdater {
     this.pathToKeystore = pathToKeystore;
     this.x509Password = x509Password;
   }
-  
+
   /**
    * https://stackoverflow.com/a/1485730/11416267
    *
@@ -143,14 +143,14 @@ public class CodeUpdater {
       downloads = downloads.plus(Duration.between(startTable, Instant.now(Clock.systemUTC())));
 
       // TODO(brycew): test and time this version
-      ZipInputStream zip = new ZipInputStream(urlStream); 
-      zip.getNextEntry(); 
+      ZipInputStream zip = new ZipInputStream(urlStream);
+      zip.getNextEntry();
 
       Instant updateTableLoc = Instant.now(Clock.systemUTC());
       boolean success = process.apply(zip);
       updates = updates.plus(Duration.between(updateTableLoc, Instant.now(Clock.systemUTC())));
       zip.close();
-      return success; 
+      return success;
     } catch (IOException ex) {
       // Some system codes (everything but "country", "state", "filingstatus", "datafieldconfig",
       // and "servicetype") are expected to 500. Not really sure why they give us bad URLs.
@@ -161,7 +161,7 @@ public class CodeUpdater {
 
   private boolean downloadSystemTables(String baseUrl, CodeDatabase cd, HeaderSigner signer)
       throws SQLException, IOException, JAXBException, XMLStreamException {
-    Map<String, String> codeUrls = Map.of("version", "/CodeService/codes/version/", 
+    Map<String, String> codeUrls = Map.of("version", "/CodeService/codes/version/",
         "location", "/CodeService/codes/location/",
         // NOTE: the Tyler docs say this is available from `GetPolicy'. That is wrong.
         "error", "/CodeService/codes/error");
@@ -192,7 +192,7 @@ public class CodeUpdater {
           log.error(e1.toString());
           return false;
         }
-      }; 
+      };
       updateSuccess = downloadAndProcessZip(baseUrl + urlSuffix.getValue(), signedTime.get(),
           urlSuffix.getKey(), "", process);
       if (!updateSuccess) {
@@ -205,7 +205,7 @@ public class CodeUpdater {
   }
 
   /**
-   * 
+   *
    * @param location
    * @param codes If empty, all versions will be downloaded
    * @param cd
@@ -225,7 +225,7 @@ public class CodeUpdater {
     court.setOrganizationIdentification(elem);
     m.setCaseCourt(court);
     // TODO(brycew): change this stuff
-    m.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL)); 
+    m.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
     m.setSendingMDEProfileCode(
         "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0");
     JAXBElement<PersonType> elem2 = of.createEntityPerson(new PersonType());
@@ -233,7 +233,7 @@ public class CodeUpdater {
     typ.setEntityRepresentation(elem2);
     m.setQuerySubmitter(typ);
     CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
-    XmlHelper.objectToXmlFile(p, CourtPolicyResponseMessageType.class, 
+    XmlHelper.objectToXmlFile(p, CourtPolicyResponseMessageType.class,
         new File("full_court_obj_" + location + ".xml"));
 
     // TODO(brycew): use the version codes to check the checksums of each table,
@@ -255,7 +255,7 @@ public class CodeUpdater {
             log.error("Couldn't get signed time to download codeds, skipping all");
             return false;
           }
-          
+
           Function<InputStream, Boolean> process = (is) -> {
             try {
               cd.updateTable(tableName, location, is);
@@ -264,7 +264,7 @@ public class CodeUpdater {
               log.error(e1.toString());
               return false;
             }
-          }; 
+          };
           updateSuccess = downloadAndProcessZip(url, signedTime.get(), tableName, location, process);
           if (!updateSuccess) {
             return false;
@@ -301,7 +301,7 @@ public class CodeUpdater {
           return;
         }
       }
-      log.info("Removed entries for court " + courtLocation + " for tables: " + tables); 
+      log.info("Removed entries for court " + courtLocation + " for tables: " + tables);
       if (!downloadCourtTables(courtLocation, Optional.of(tables), cd, signer, filingPort)) {
         log.warn("Failed updating court " + courtLocation + "'s tables " + tables);
         cd.rollback(sp);
@@ -332,13 +332,13 @@ public class CodeUpdater {
     log.info("Downloads took: " + downloads + ", and updates took: " + updates);
     cd.commit();
   }
-  
-  public static void executeCommand(String command, String codesSite, CodeDatabase cd, 
-      String x509Password) throws JAXBException, 
+
+  public static void executeCommand(String command, String codesSite, CodeDatabase cd,
+      String x509Password) throws JAXBException,
       SQLException, IOException, XMLStreamException {
     SoapX509CallbackHandler.setX509Password(x509Password);
     AuthenticateRequestType authReq = new AuthenticateRequestType();
-    authReq.setEmail(System.getenv("TYLER_USER_EMAIL")); 
+    authReq.setEmail(System.getenv("TYLER_USER_EMAIL"));
     authReq.setPassword(System.getenv("TYLER_USER_PASSWORD"));
     URL userWsdlUrl = EfmUserService.WSDL_LOCATION;
     IEfmUserService userPort = EfmClient.makeUserService(userWsdlUrl);
@@ -348,40 +348,40 @@ public class CodeUpdater {
     FilingReviewMDEPort filingPort = EfmClient
         .makeFilingService(FilingReviewMDEService.WSDL_LOCATION, headersList);
     if (cd == null) {
-      cd = new CodeDatabase(System.getenv("POSTGRES_URL"), 
-          Integer.parseInt(System.getenv("POSTGRES_PORT")), 
+      cd = new CodeDatabase(System.getenv("POSTGRES_URL"),
+          Integer.parseInt(System.getenv("POSTGRES_PORT")),
           System.getenv("POSTGRES_CODES_DB"));
       cd.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
     }
     cd.setAutocommit(false);
-    
+
     CodeUpdater cu = new CodeUpdater(System.getenv("PATH_TO_KEYSTORE"), x509Password);
     if (command.equalsIgnoreCase("downloadall")) {
       cu.downloadAll(codesSite, filingPort, cd);
     } else if (command.equalsIgnoreCase("refresh")) {
       cu.updateAll(codesSite, filingPort, cd);
     } else {
-      log.error("Command " + command + " isn't a real command"); 
+      log.error("Command " + command + " isn't a real command");
     }
   }
-  
+
   public static void downloadIndiv(String[] args) throws Exception {
     if (args.length < 3) {
       log.error("Need to pass in args: downloadIndiv <table> <location>");
       System.exit(1);
     }
-    CodeDatabase cd = new CodeDatabase(System.getenv("POSTGRES_URL"), 
-        Integer.parseInt(System.getenv("POSTGRES_PORT")), 
+    CodeDatabase cd = new CodeDatabase(System.getenv("POSTGRES_URL"),
+        Integer.parseInt(System.getenv("POSTGRES_PORT")),
         System.getenv("POSTGRES_CODES_DB"));
     cd.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
-    
+
     String path = System.getenv("PATH_TO_KEYSTORE");
     String pass = System.getenv("X509_PASSWORD");
     CodeUpdater cu = new CodeUpdater(path, pass);
     HeaderSigner hs = new HeaderSigner(path, pass);
     String location = args[2];
     String table = args[1];
-    cu.downloadAndProcessZip(System.getenv("TYLER_ENDPOINT") + "CodeService/codes/" + table + "/" + location, hs.signedCurrentTime().get(), 
+    cu.downloadAndProcessZip(System.getenv("TYLER_ENDPOINT") + "CodeService/codes/" + table + "/" + location, hs.signedCurrentTime().get(),
           table, location, (in) -> {
             String newFile = location.replace(':', '_') + "_" + table + "_test.xml";
             try {
@@ -404,7 +404,7 @@ public class CodeUpdater {
     }
     if (args[0].equalsIgnoreCase("downloadIndiv")) {
       downloadIndiv(args);
-    } else { 
+    } else {
       executeCommand(args[0], System.getenv("TYLER_ENDPOINT"), null, System.getenv("X509_PASSWORD"));
     }
   }

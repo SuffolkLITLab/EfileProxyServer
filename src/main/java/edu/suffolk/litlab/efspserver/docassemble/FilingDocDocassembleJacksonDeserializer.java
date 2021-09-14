@@ -35,15 +35,15 @@ public class FilingDocDocassembleJacksonDeserializer {
       collector.error(err);
       return Result.err(err);
     }
-    
+
     // Get: filename
     String fileName = node.get("filename").asText("") + ".pdf";
-    
+
     if (!node.has("proxy_enabled") || !node.get("proxy_enabled").asBoolean(false)) {
       log.info(fileName + " isn't proxy enabled");
       return Result.ok(Optional.empty());
     }
-      
+
     try {
       if (!node.has("data_url") || !node.get("data_url").isTextual()) {
         FilingError err = FilingError.malformedInterview(
@@ -74,7 +74,7 @@ public class FilingDocDocassembleJacksonDeserializer {
         documentTypeFormatName = node.get("document_type").asText();
         // Doesn't have to be a document type
       }
-      
+
       List<OptionalService> optServices = new ArrayList<OptionalService>();
       JsonNode optServs = node.get("optional_services");
       if (optServs != null && optServs.isArray()) {
@@ -87,7 +87,7 @@ public class FilingDocDocassembleJacksonDeserializer {
           optServices.add(new OptionalService(code, mult, fee));
         });
       }
-      
+
       String filingComponentCode = "";
       JsonNode filingComponentJson = node.get("filing_component");
       if (filingComponentJson != null && filingComponentJson.isTextual()) {
@@ -101,12 +101,12 @@ public class FilingDocDocassembleJacksonDeserializer {
         return Result.err(err);
       }
       return Result.ok(Optional.of(
-          new FilingDoc(fileName, 
+          new FilingDoc(fileName,
               inStream.readAllBytes(),
               Optional.empty(),
-              "", 
+              "",
               Optional.empty(),
-              List.of(), 
+              List.of(),
               Optional.empty(),
               documentTypeFormatName, filingComponentCode,
               "",
@@ -114,7 +114,7 @@ public class FilingDocDocassembleJacksonDeserializer {
               optServices,
               List.of(),
               List.of(),
-              FilingTypeType.E_FILE, 
+              FilingTypeType.E_FILE,
               sequenceNum == 0)));
     } catch (IOException ex)  {
       FilingError err = FilingError.serverError("IOException trying to parse data_url: " + ex);

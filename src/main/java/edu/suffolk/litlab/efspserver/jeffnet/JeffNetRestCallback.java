@@ -31,12 +31,12 @@ import edu.suffolk.litlab.efspserver.services.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
 
 public class JeffNetRestCallback implements EfmRestCallbackInterface {
-  private static Logger log = 
-      LoggerFactory.getLogger(JeffNetRestCallback.class); 
-  
+  private static Logger log =
+      LoggerFactory.getLogger(JeffNetRestCallback.class);
+
   private UserDatabase ud;
   private OrgMessageSender msgSender;
-  
+
   public JeffNetRestCallback(UserDatabase ud, OrgMessageSender msgSender) {
     this.ud = ud;
     this.msgSender = msgSender;
@@ -81,10 +81,10 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
       }
       // Done all the checks: now sending the message to the user
       Map<String, String> statuses = Map.of(
-          "status", resp.status, 
-          "message_text", resp.messageText, 
-          "message_url", resp.messageUrl); 
-      boolean success = msgSender.sendMessage(transaction, statuses); 
+          "status", resp.status,
+          "message_text", resp.messageText,
+          "message_url", resp.messageUrl);
+      boolean success = msgSender.sendMessage(transaction, statuses);
       if (success) {
         return Response.status(204).build();
       } else {
@@ -97,7 +97,7 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
       return Response.status(500).build();
     }
 
-    } 
+    }
 
   @XmlType(name="")
   @XmlRootElement(name= "FileResponse")
@@ -109,11 +109,11 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
     @XmlElement(name = "Status")
     @JsonProperty("Status")
     String status;
-    
+
     @XmlElement(name = "MessageText")
     @JsonProperty("MessageText")
     String messageText;
-    
+
     @XmlElement(name = "MessageURL")
     @JsonProperty("MessageURL")
     String messageUrl;

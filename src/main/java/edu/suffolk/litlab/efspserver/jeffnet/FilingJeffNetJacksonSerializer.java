@@ -21,49 +21,49 @@ public class FilingJeffNetJacksonSerializer extends StdSerializer<FilingDoc> {
   @Override
   public void serialize(FilingDoc filingDoc, JsonGenerator gen, SerializerProvider provider)
       throws IOException {
-    List<FilingParty> filingPartyList = new ArrayList<FilingParty>(); 
+    List<FilingParty> filingPartyList = new ArrayList<FilingParty>();
 
     gen.writeStartObject();
-    for (String filingPartyId : filingDoc.getFilingPartyIds()) { 
+    for (String filingPartyId : filingDoc.getFilingPartyIds()) {
       FilingParty p = new FilingParty();
-      p.id = filingPartyId; 
+      p.id = filingPartyId;
       p.idCategoryText = "REFERENCE";
       filingPartyList.add(p);
     }
-    Metadata metadata = new Metadata(); 
+    Metadata metadata = new Metadata();
     metadata.filingParties = filingPartyList;
     // TODO(brycew): CONTINUE
     // Does reg Action need to be here?
-    //metadata.regAction = filingDoc.getFilingCodeName(); 
+    //metadata.regAction = filingDoc.getFilingCodeName();
     gen.writeObjectField("DocumentMetadata", metadata);
-    
-    DocAttachment docAttachment = new DocAttachment(); 
-    byte[] data = filingDoc.getFileContents(); 
+
+    DocAttachment docAttachment = new DocAttachment();
+    byte[] data = filingDoc.getFileContents();
     String encodedDoc = new String(Base64.getEncoder().encode(data));
     docAttachment.encodedDoc = encodedDoc;
-    docAttachment.documentName = filingDoc.getFileName(); 
-    
+    docAttachment.documentName = filingDoc.getFileName();
+
     gen.writeObjectField("DocumentAttachment", docAttachment);
     gen.writeStringField("FilingCommentsText", filingDoc.getFilingComments());
     gen.writeEndObject();
   }
-  
+
   private class DocAttachment {
     @JsonProperty("BinaryBase64Object")
     String encodedDoc;
-    
+
     @JsonProperty("DocumentName")
     String documentName;
   }
-  
+
   private class Metadata {
     @JsonProperty("FilingParties")
     List<FilingParty> filingParties;
-    
+
     @JsonProperty("RegisterActionDescriptionText")
     String regAction;
   }
-  
+
   private class FilingParty {
     @JsonProperty("IdentificationID")
     String id;

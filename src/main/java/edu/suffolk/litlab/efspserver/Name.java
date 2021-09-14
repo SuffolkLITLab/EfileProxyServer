@@ -12,9 +12,9 @@ public class Name {
   private String suffix;
   private String maidenName;
   private String prefix;
-  
+
   /** Default constructor with all members. */
-  public Name(String prefix, String firstName, String middleName, String lastName, 
+  public Name(String prefix, String firstName, String middleName, String lastName,
       String suffix, String maidenName) {
     this.prefix = prefix;
     this.firstName = firstName;
@@ -23,11 +23,11 @@ public class Name {
     this.suffix = suffix;
     this.maidenName = maidenName;
   }
-  
+
   public Name(String companyName) {
     this("", companyName, "", "", "", "");
   }
-  
+
   public Name(String firstName, String lastName) {
     this("", firstName, "", lastName, "", "");
   }

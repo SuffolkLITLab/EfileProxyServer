@@ -8,13 +8,13 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 public class PersonJeffNetJacksonSerializer extends StdSerializer<Person> {
-  
+
   private static final long serialVersionUID = 1L;
-  
+
   public PersonJeffNetJacksonSerializer(Class<Person> t) {
     super(t);
   }
-  
+
   @Override
   public void serialize(Person per, JsonGenerator jsonGenerator,
       SerializerProvider serializerProvider) throws IOException {
@@ -22,7 +22,7 @@ public class PersonJeffNetJacksonSerializer extends StdSerializer<Person> {
     jsonGenerator.writeObjectField("ContactInformation", per.getContactInfo());
     jsonGenerator.writeStringField("PersonName", per.getName().getFullName());
     if (per.getBirthdate().isPresent()) {
-      jsonGenerator.writeStringField("PersonBirthDate", 
+      jsonGenerator.writeStringField("PersonBirthDate",
           per.getBirthdate().get().format(DateTimeFormatter.ISO_LOCAL_DATE));
     }
     if (per.getGender().isPresent()) {

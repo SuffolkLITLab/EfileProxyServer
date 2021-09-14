@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class FilingReviewService {
 
-  private static Logger log = 
-      LoggerFactory.getLogger(FilingReviewService.class); 
+  private static Logger log =
+      LoggerFactory.getLogger(FilingReviewService.class);
 
   private UserDatabase ud;
   private Map<String, InterviewToFilingEntityConverter> converterMap;
@@ -60,17 +60,17 @@ public class FilingReviewService {
     this.security = security;
     this.msgSender = msgSender;
   }
-  
+
   @GET
   @Path("/courts")
   public Response getCourts(@Context HttpHeaders httpHeaders) {
     return Response.ok(filingInterfaces.keySet().stream().collect(Collectors.toList())).build();
   }
-  
+
   @GET
   @Path("/courts/{court_id}/filings/{filing_id}/status")
   public Response getFilingStatus(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, 
+      @PathParam("court_id") String courtId,
       @PathParam("filing_id") String filingId) {
     if (!filingInterfaces.containsKey(courtId)) {
       return Response.status(404).entity("Cannot send filing to " + courtId).build();
@@ -82,7 +82,7 @@ public class FilingReviewService {
     }
     return filingInterfaces.get(courtId).getFilingStatus(courtId, filingId, activeToken.get());
  }
-  
+
   /** If 0 is passed for court, search all courts. */
   @GET
   @Path("/courts/{court_id}/filings")
@@ -101,20 +101,20 @@ public class FilingReviewService {
     try {
       Date startDate = dateFormat.parse(startStr);
       Date endDate = dateFormat.parse(endStr);
-      return filingInterfaces.get(courtId).getFilingList(courtId, userId, startDate, endDate, 
+      return filingInterfaces.get(courtId).getFilingList(courtId, userId, startDate, endDate,
           activeToken.get());
     } catch (ParseException ex) {
       return Response.status(400).entity(
           "Dates given were incorrect, should be of the form: yyyy-MM-dd: " + ex).build();
     }
   }
-  
+
   @GET
   @Path("/courts/{court_id}/filing/check")
   public Response checkFilingForReview(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, String allVars) {
     MediaType mediaType = httpHeaders.getMediaType();
-    log.trace("Checking a filing: Media type: " + mediaType);  
+    log.trace("Checking a filing: Media type: " + mediaType);
     log.trace("Court id: " + courtId);
     Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
     if (activeToken.isEmpty()) {
@@ -136,13 +136,13 @@ public class FilingReviewService {
     filingInterfaces.get(courtId).checkFiling(info, collector);
     return Response.ok(collector.jsonSummary()).build();
   }
-  
+
   @GET
   @Path("/courts/{court_id}/filing/fees")
   public Response getFilingFees(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, String allVars) {
     MediaType mediaType = httpHeaders.getMediaType();
-    log.trace("Checking a filing: Media type: " + mediaType);  
+    log.trace("Checking a filing: Media type: " + mediaType);
     log.trace("Court id: " + courtId);
     Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
     if (activeToken.isEmpty()) {
@@ -166,13 +166,13 @@ public class FilingReviewService {
         err -> Response.status(400).entity(err.toJson()).build(),
         respon -> respon);
   }
-  
+
   @GET
   @Path("/courts/{court_id}/filing/servicetypes")
   public Response getServiceTypes(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, String allVars) {
     MediaType mediaType = httpHeaders.getMediaType();
-    log.trace("Checking a filing: Media type: " + mediaType);  
+    log.trace("Checking a filing: Media type: " + mediaType);
     log.trace("Court id: " + courtId);
     Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
     if (activeToken.isEmpty()) {
@@ -196,8 +196,8 @@ public class FilingReviewService {
         err -> Response.status(400).entity(err.toJson()).build(),
         respon -> respon);
   }
-  
-  
+
+
   @GET
   @Path("/courts/{court_id}/policy")
   public Response getPolicy(@Context HttpHeaders httpHeaders,
@@ -209,10 +209,10 @@ public class FilingReviewService {
     if (!filingInterfaces.containsKey(courtId)) {
       return Response.status(404).entity("Court " + courtId + " doesn't exist").build();
     }
-    
+
     return filingInterfaces.get(courtId).getPolicy(courtId, activeToken.get());
   }
-  
+
   @POST
   @Path("/courts/{court_id}/filing/status")
   public Response filingUpdateWebhook(@Context HttpHeaders httpHeaders,
@@ -220,17 +220,17 @@ public class FilingReviewService {
     MediaType mediaType = httpHeaders.getMediaType();
     log.trace("Got callback for filing! media type: " + mediaType + ", court id: " + courtId);
     log.trace("Everything they sent: " + statusReport);
-    
+
     if (!callbackInterfaces.containsKey(courtId)) {
       return Response.status(404).entity("Court " + courtId + " doesn't exist").build();
     }
 
     return callbackInterfaces.get(courtId).statusCallback(httpHeaders, statusReport);
   }
-  
+
   @POST
   @Path("/courts/{court_id}/filings")
-  public Response submitFilingForReview(@Context HttpHeaders httpHeaders, 
+  public Response submitFilingForReview(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, String allVars) {
     MediaType mediaType = httpHeaders.getMediaType();
     Optional<AtRest> atRest = security.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
@@ -240,7 +240,7 @@ public class FilingReviewService {
       return maybeInfo.unwrapErrOrElseThrow();
     }
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
-    Result<List<UUID>, FilingError> result = 
+    Result<List<UUID>, FilingError> result =
         filingInterfaces.get(courtId).sendFiling(info, activeToken.get());
     if (result.isErr()) {
       return Response.status(500).entity(result.unwrapErrOrElseThrow().toJson()).build();
@@ -259,17 +259,17 @@ public class FilingReviewService {
     }
     Timestamp ts = new Timestamp(System.currentTimeMillis());
     try {
-      ud.addToTable(user.getName().getFullName(), user.getId(), 
-          phoneNumber, user.getContactInfo().getEmail().orElse(""), 
-          result.unwrapOrElseThrow(), atRest.get().serverId, activeToken.get(), 
+      ud.addToTable(user.getName().getFullName(), user.getId(),
+          phoneNumber, user.getContactInfo().getEmail().orElse(""),
+          result.unwrapOrElseThrow(), atRest.get().serverId, activeToken.get(),
           info.getCaseType(), courtId, ts);
-      
-      msgSender.sendConfirmation(user.getContactInfo().getEmail().orElse(""), 
-          atRest.get().serverId, user.getName().getFullName(), result.unwrapOrElseThrow(), 
+
+      msgSender.sendConfirmation(user.getContactInfo().getEmail().orElse(""),
+          atRest.get().serverId, user.getName().getFullName(), result.unwrapOrElseThrow(),
           courtId, info.getCaseType());
     } catch (SQLException ex) {
-      log.error("Couldn't add info to the database! Logging here for posterity: " 
-                + "%s %s %s %s %s".formatted(user.getName().getFullName(), user.getId(), 
+      log.error("Couldn't add info to the database! Logging here for posterity: "
+                + "%s %s %s %s %s".formatted(user.getName().getFullName(), user.getId(),
                         phoneNumber, user.getContactInfo().getEmail(),
                         result, info.getCaseType(), ts));
       log.error("Error: " + ex);
@@ -280,7 +280,7 @@ public class FilingReviewService {
         n -> Response.ok().build()
     );
   }
-  
+
   @POST
   @Path("/courts/{court_id}/filings/serve")
   public Response serveFiling(@Context HttpHeaders httpHeaders,
@@ -293,15 +293,15 @@ public class FilingReviewService {
       return maybeInfo.unwrapErrOrElseThrow();
     }
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
-    
+
     ServiceMDEService ss = new ServiceMDEService(ServiceMDEService.WSDL_LOCATION);
     ServiceMDEPort port = ss.getServiceMDEPort();
     // TODO(brycew): CONTINUE
-    
+
     return Response.status(501).build();
   }
-  
-  private Result<FilingInformation, Response> parseFiling(HttpHeaders httpHeaders, String allVars, 
+
+  private Result<FilingInformation, Response> parseFiling(HttpHeaders httpHeaders, String allVars,
       String courtId, MediaType mediaType) {
     log.trace("Media type: " + mediaType);
     log.trace("Court id: " + courtId);
@@ -316,8 +316,8 @@ public class FilingReviewService {
     }
     if (!converterMap.containsKey(mediaType.toString())) {
       return Result.err(Response.status(415).entity("We only support " + converterMap.keySet()).build());
-    } 
-    Result<FilingInformation, FilingError> maybeInfo = 
+    }
+    Result<FilingInformation, FilingError> maybeInfo =
         converterMap.get(mediaType.toString()).extractEntities(allVars);
     if (maybeInfo.isErr()) {
       return Result.err(Response.status(400).entity(maybeInfo.unwrapErrOrElseThrow().toJson()).build());
@@ -340,11 +340,11 @@ public class FilingReviewService {
     }
     return filingInterfaces.get(courtId).getFilingDetails(courtId, filingId, activeToken.get());
   }
-  
+
   @GET
   @Path("/courts/{court_id}/filings/{filing_id}/service/{contact_id}")
   public Response getFilingService(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, 
+      @PathParam("court_id") String courtId,
       @PathParam("filing_id") String filingId,
       @PathParam("contact_id") String contactId) {
     if (!filingInterfaces.containsKey(courtId)) {
@@ -370,19 +370,19 @@ public class FilingReviewService {
     }
     return filingInterfaces.get(courtId).cancelFiling(courtId, filingId, activeToken.get());
   }
-  
+
   private Optional<String> getActiveToken(HttpHeaders httpHeaders, String orgHeaderKey) {
     String serverKey = httpHeaders.getHeaderString("X-API-KEY");
     Optional<AtRest> atRest = security.getAtRestInfo(serverKey);
     if (atRest.isEmpty()) {
       return Optional.empty();
     }
-    
+
     String orgToken = httpHeaders.getHeaderString(orgHeaderKey);
     if (orgToken == null || orgToken.isBlank()) {
       return Optional.empty();
     }
     return Optional.of(orgToken);
   }
-  
+
 }
