@@ -40,7 +40,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.RandomString;
 import edu.suffolk.litlab.efspserver.SecurityHub;
-import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.schema.baseresponse.BaseResponseType;
 import tyler.efm.services.schema.common.PaymentAccountType;
@@ -307,13 +306,17 @@ public class PaymentsService {
   @Path("/new-toga-account")
   @Produces("text/html")
   public Response redirectToToga(@Context HttpHeaders httpHeaders,
-      @FormParam("account_name") String name, @FormParam("global") boolean global) {
+      @FormParam("account_name") String name, @FormParam("global") boolean global,
+      @FormParam("type_code") String typeCode, @FormParam("tyler_info") String tylerInfo,
+      @FormParam("original_url") String originalUrl) {
     String transactionId = transactionIdGen.nextString();
     TempAccount account = new TempAccount();
     account.name = name;
     account.global = global;
-    TylerLogin login = new TylerLogin();
-    account.loginInfo = httpHeaders.getHeaderString(login.getHeaderKey());
+    account.typeCode = typeCode;
+    account.loginInfo = tylerInfo;
+    account.originalUrl = originalUrl;
+    log.info("Going back to original url: " + originalUrl);
     tempAccounts.put(transactionId, account);
 
     log.info("Redirecting with transactionId: " + transactionId);
