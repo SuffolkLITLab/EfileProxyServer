@@ -430,7 +430,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     List<IdentificationType> ids = mrmt.getDocumentIdentification();
     Optional<String> caseId = ids.stream().filter((id) -> {
       TextType text = (TextType) id.getIdentificationCategory().getValue();
-      return text.getValue().toUpperCase().equals("FILINGID");
+      return text.getValue().equalsIgnoreCase("FILINGID");
     }).map((id) -> id.getIdentificationID().getValue()).findFirst();
     if (caseId.isEmpty()) {
       log.error("Couldn't get back the filing id from Tyler!");

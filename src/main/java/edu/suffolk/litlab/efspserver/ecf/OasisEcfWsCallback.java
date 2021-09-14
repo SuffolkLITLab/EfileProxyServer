@@ -76,7 +76,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     String filingId = "";
     for (IdentificationType id : ids) {
       TextType category = (TextType) (id.getIdentificationCategory().getValue());
-      if (category.getValue().toUpperCase().equals("FILINGID")) {
+      if (category.getValue().equalsIgnoreCase("FILINGID")) {
         filingId = id.getIdentificationID().getValue();
       }
       // TODO(brycew): do we need to do anything with the parent envelope or filing ID?

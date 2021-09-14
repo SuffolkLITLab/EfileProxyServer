@@ -1,6 +1,8 @@
 package edu.suffolk.litlab.efspserver.codes;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -42,6 +44,23 @@ public class CaseType {
         "Bad date", "Bade code", "Bad loc");
   }
   
+  public static PreparedStatement prepQueryBroad(Connection conn, String courtLocationId,
+      String caseCategoryCode) throws SQLException {
+    PreparedStatement st = conn.prepareStatement(getCaseTypesForCategory());
+    st.setString(1, courtLocationId);
+    st.setString(2, caseCategoryCode);
+    return st;
+  }
+  
+  public static PreparedStatement prepQueryTiming(Connection conn, String courtLocationId,
+      String caseCategoryCode, String isInitial) throws SQLException {
+    PreparedStatement st = conn.prepareStatement(getCaseTypesForTiming());
+    st.setString(1, courtLocationId);
+    st.setString(2, caseCategoryCode);
+    st.setString(3, isInitial);
+    return st;
+  }
+  
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -63,15 +82,15 @@ public class CaseType {
     return sb.toString();
   }
 
-  public static String getCaseTypesFor() {
+  private static String getCaseTypesForCategory() {
     return """
         SELECT code, name, casecategory, initial,
         fee, willfileddate, efspcode, location
         FROM casetype WHERE location=? AND casecategory=?""";
   }
   
-  public static String getCaseTypesForInitial() {
-    return getCaseTypesFor() + " AND initial ILIKE ?";
+  private static String getCaseTypesForTiming() {
+    return getCaseTypesForCategory() + " AND initial ILIKE ?";
   }
 
 }

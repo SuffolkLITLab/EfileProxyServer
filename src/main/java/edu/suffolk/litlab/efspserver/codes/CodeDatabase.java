@@ -209,12 +209,11 @@ public class CodeDatabase extends DatabaseInterface {
       throw new SQLException();
     }
 
-    String query = (initial.isPresent()) ? CaseType.getCaseTypesForInitial() : CaseType.getCaseTypesFor();
-    PreparedStatement st = conn.prepareStatement(query);
-    st.setString(1, courtLocationId);
-    st.setString(2, caseCategoryCode);
+    PreparedStatement st;
     if (initial.isPresent()) {
-      st.setString(3, initial.get().toString());
+      st = CaseType.prepQueryTiming(conn, courtLocationId, caseCategoryCode, initial.get().toString());
+    } else {
+      st = CaseType.prepQueryBroad(conn, courtLocationId, caseCategoryCode);
     }
     ResultSet rs = st.executeQuery();
     List<CaseType> types = new ArrayList<CaseType>();

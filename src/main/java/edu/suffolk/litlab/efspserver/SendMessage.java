@@ -159,9 +159,9 @@ public class SendMessage {
   public int sendEmail(String from, String subject, String to, String messageTemplate,
       Map<String, Object> context) throws IOException {
 
-    if (sendingMethod.equals("sendgrid")) {
+    if (sendingMethod.equalsIgnoreCase("sendgrid")) {
       return sendSendgridEmail(from, subject, to, messageTemplate, context);
-    } else if (sendingMethod.equals("smtp")) {
+    } else if (sendingMethod.equalsIgnoreCase("smtp")) {
       boolean success = sendSmtpEmail(from, subject, to, messageTemplate, context);
       return (success) ? 200 : 400; // Should remove the status code and make this a void method
     } else {
