@@ -493,7 +493,7 @@ public class EcfCaseTypeFactory {
     JAXBElement<TextType> causeOfAction = ecfCommonObjFac.createCauseOfActionCode(new TextType());
     c.getRest().add(causeOfAction);
 
-    if (filing.amountincontroversy.equals("Required")) {
+    if (filing.amountincontroversy.equalsIgnoreCase("Required")) {
       AmountType amount = new AmountType();
       amount.setValue(amountInControversy);
       amount.setCurrencyCode(CurrencyCodeSimpleType.USD);

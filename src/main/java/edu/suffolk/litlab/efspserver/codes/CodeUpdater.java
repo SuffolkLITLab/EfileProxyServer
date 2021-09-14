@@ -358,7 +358,7 @@ public class CodeUpdater {
     CodeUpdater cu = new CodeUpdater(System.getenv("PATH_TO_KEYSTORE"), x509Password);
     if (command.equalsIgnoreCase("downloadall")) {
       cu.downloadAll(codesSite, filingPort, cd);
-    } else if (command.equals("refresh")) {
+    } else if (command.equalsIgnoreCase("refresh")) {
       cu.updateAll(codesSite, filingPort, cd);
     } else {
       log.error("Command " + command + " isn't a real command"); 
@@ -402,7 +402,7 @@ public class CodeUpdater {
       log.error("Need to pass in a subprogram: downloadIndiv, or refresh");
       System.exit(1);
     }
-    if (args[0].equals("downloadIndiv")) {
+    if (args[0].equalsIgnoreCase("downloadIndiv")) {
       downloadIndiv(args);
     } else { 
       executeCommand(args[0], System.getenv("TYLER_ENDPOINT"), null, System.getenv("X509_PASSWORD"));
