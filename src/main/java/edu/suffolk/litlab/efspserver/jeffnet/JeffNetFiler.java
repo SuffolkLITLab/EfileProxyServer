@@ -112,12 +112,6 @@ public class JeffNetFiler implements EfmFilingInterface {
   }
 
   @Override
-  public List<String> getCourts() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
   public void checkFiling(FilingInformation info, InfoCollector collector) {
     // TODO(brycew): check the filing here too
     return;

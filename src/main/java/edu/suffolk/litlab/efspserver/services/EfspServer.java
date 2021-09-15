@@ -73,7 +73,6 @@ public class EfspServer {
     } catch (SQLException ex) {
       log.error("SQLException: " + ex.toString());
       System.exit(2);
-      //downloadAll = true;
     }
 
     Map<String, EfmFilingInterface> filingMap = new HashMap<String, EfmFilingInterface>();
@@ -150,8 +149,6 @@ public class EfspServer {
     }
     return Optional.of(val);
   }
-
-  //public static
 
 
   public static void main(String[] args) throws Exception {

@@ -11,8 +11,6 @@ import javax.ws.rs.core.Response;
 
 public interface EfmFilingInterface {
   
-  public List<String> getCourts();
-  
   /**
    * Actually sends the filing information to the EFM if it can.
    * @param info All of the information, parsed from an InterviewToFilingEntityConverter

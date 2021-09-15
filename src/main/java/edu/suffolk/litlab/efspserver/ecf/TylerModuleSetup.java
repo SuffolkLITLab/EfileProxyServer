@@ -2,6 +2,8 @@ package edu.suffolk.litlab.efspserver.ecf;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -148,11 +150,17 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public Set<String> getCourts() {
-    // TODO(brycew): we have the setup cd now, should be easy to get all locations.
-    Set<String> hardcodedTylerIds = Set.of("adams", "alexander", "bond", "boone", "brown",
-        "bureau", "calhoun", "carroll", "cass", "clay", "cook",
-        "peoria", "perry", "scott", "washington");
-    return hardcodedTylerIds;
+    try {
+      Set<String> allCourts = new HashSet<String>(cd.getAllLocations());
+      // 0 and 1 are special "system" courts that have defaults for all courts.
+      // They aren't available for filing
+      allCourts.remove("0");
+      allCourts.remove("1");
+      return allCourts;
+    } catch (SQLException ex) {
+      log.error("SQL error when getting courts to route to Tyler: " + ex);
+      return Set.of();
+    }
   }
 
   @Override

@@ -150,17 +150,6 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     return Optional.of(port);
   }
 
-  @Override
-  public List<String> getCourts() {
-    // TODO(brycew): login when we don't need tyler stuff?
-    try {
-      return cd.getAllLocations();
-    } catch (SQLException ex) {
-      log.warn("DevOps Error: could not connect to database: " + ex.toString());
-      return List.of();
-    }
-  }
-
   private CoreFilingMessageType prepareFiling(FilingInformation info,
       InfoCollector collector, String apiToken) throws FilingError {
     EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);

@@ -64,7 +64,7 @@ public class FilingReviewService {
   @GET
   @Path("/courts")
   public Response getCourts(@Context HttpHeaders httpHeaders) {
-    return Response.ok(filingInterfaces.keySet().stream().collect(Collectors.toList())).build();
+    return Response.ok(filingInterfaces.keySet().stream().sorted().collect(Collectors.toList())).build();
   }
 
   @GET
