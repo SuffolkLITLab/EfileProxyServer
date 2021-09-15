@@ -33,7 +33,6 @@ public class FilingInformation {
    */
   private Map<String, List<String>> partyToAttorneyIds = Map.of();
   
-  
   /** List of service contacts to add to the case. Contacts are mostly an ID of the contact already
    * registered within the EFM system.
    */

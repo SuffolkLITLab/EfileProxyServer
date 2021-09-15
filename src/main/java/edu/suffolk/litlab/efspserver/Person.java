@@ -17,7 +17,6 @@ public class Person {
   private boolean isOrg;
 
   private UUID id;
-  // TODO(brycew): role doesn't normally go here. Can be constructed anyway. IDK
   private String role;
 
   /** Minimal constructor, empty lists and empty optionals. */
