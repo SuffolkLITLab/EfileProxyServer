@@ -501,7 +501,7 @@ public class AdminUserService {
   @Path("/users")
   public Response registerUser(@Context HttpHeaders httpHeaders,
       RegistrationRequestType req) {
-    boolean needsAuth = !req.getRegistrationType().equals(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
+    boolean needsAuth = req.getRegistrationType().equals(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
     Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security, needsAuth);
     if (port.isEmpty()) {
       return Response.status(401).build();

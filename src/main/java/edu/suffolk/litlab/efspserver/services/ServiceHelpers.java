@@ -213,7 +213,7 @@ public class ServiceHelpers {
   public static Optional<IEfmFirmService> setupFirmPort(String tylerToken) {
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
-      log.warn("No creds?");
+      log.warn("No creds from " + tylerToken + "?");
       return Optional.empty();
     }
 
