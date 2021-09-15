@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.Instant;
+import java.time.LocalDate;
 
 public class FilingDocDocassembleJacksonDeserializer {
   private static Logger log = LoggerFactory.getLogger(
@@ -87,6 +89,17 @@ public class FilingDocDocassembleJacksonDeserializer {
           optServices.add(new OptionalService(code, mult, fee));
         });
       }
+      JsonNode jsonDueDate = node.get("due_date");
+      Optional<LocalDate> maybeDueDate = Optional.empty();
+      if (jsonDueDate != null && jsonDueDate.isTextual()) {
+        maybeDueDate = Optional.of(LocalDate.from(Instant.parse(jsonDueDate.asText())));
+      }
+
+      JsonNode jsonReturnDate = node.get("return_date");
+      Optional<LocalDate> maybeReturnDate = Optional.empty();
+      if (jsonReturnDate != null && jsonReturnDate.isTextual()) {
+        maybeReturnDate = Optional.of(LocalDate.from(Instant.parse(jsonReturnDate.asText())));
+      }
 
       String filingComponentCode = "";
       JsonNode filingComponentJson = node.get("filing_component");
@@ -100,12 +113,14 @@ public class FilingDocDocassembleJacksonDeserializer {
         FilingError err = FilingError.serverError("Couldn't connect to " + inUrl.toString());
         return Result.err(err);
       }
+      // TODO(brycew): add all of these things
       return Result.ok(Optional.of(
           new FilingDoc(fileName,
               inStream.readAllBytes(),
               Optional.empty(),
               "",
-              Optional.empty(),
+              maybeDueDate,
+              maybeReturnDate,
               List.of(),
               Optional.empty(),
               documentTypeFormatName, filingComponentCode,
