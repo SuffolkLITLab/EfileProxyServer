@@ -1,5 +1,5 @@
 
-package ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.datecallback;
+package ecfv5.gov.niem.release.niem.domains.humanservices._4;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,30 +8,31 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
-import ecfv5.gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
+import ecfv5.gov.niem.release.niem.niem_core._4.AssociationType;
 import ecfv5.gov.niem.release.niem.niem_core._4.CaseType;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
-import ecfv5.ietf.params.xml.ns.icalendar_2.IcalendarType;
+import ecfv5.gov.niem.release.niem.niem_core._4.PersonType;
+import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.FiduciaryCaseAssociationType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * The message returned when the a court date is scheduled, generally in response to a ReserveCourtDateRequest.
+ * A data type for a relationship between a person and a case.
  * 
- * <p>Java class for NotifyCourtDateMessageType complex type.
+ * <p>Java class for PersonCaseAssociationType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="NotifyCourtDateMessageType"&gt;
+ * &lt;complexType name="PersonCaseAssociationType"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseFilingType"&gt;
+ *     &lt;extension base="{http://release.niem.gov/niem/niem-core/4.0/}AssociationType"&gt;
  *       &lt;sequence&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Person" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Case" minOccurs="0"/&gt;
- *         &lt;element ref="{urn:ietf:params:xml:ns:icalendar-2.0}icalendar" minOccurs="0"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/datecallback}NotifyCourtDateMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.0/}PersonCaseAssociationAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -42,21 +43,53 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "NotifyCourtDateMessageType", propOrder = {
+@XmlType(name = "PersonCaseAssociationType", propOrder = {
+    "person",
     "_case",
-    "icalendar",
-    "notifyCourtDateMessageAugmentationPoint"
+    "personCaseAssociationAugmentationPoint"
 })
-public class NotifyCourtDateMessageType
-    extends CaseFilingType
+@XmlSeeAlso({
+    FiduciaryCaseAssociationType.class
+})
+public class PersonCaseAssociationType
+    extends AssociationType
 {
 
+    @XmlElement(name = "Person", namespace = "http://release.niem.gov/niem/niem-core/4.0/", nillable = true)
+    protected List<PersonType> person;
     @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
     protected JAXBElement<? extends CaseType> _case;
-    @XmlElement(namespace = "urn:ietf:params:xml:ns:icalendar-2.0")
-    protected IcalendarType icalendar;
-    @XmlElement(name = "NotifyCourtDateMessageAugmentationPoint")
-    protected List<Object> notifyCourtDateMessageAugmentationPoint;
+    @XmlElement(name = "PersonCaseAssociationAugmentationPoint")
+    protected List<Object> personCaseAssociationAugmentationPoint;
+
+    /**
+     * Gets the value of the person property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the person property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getPerson().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link PersonType }
+     * 
+     * 
+     */
+    public List<PersonType> getPerson() {
+        if (person == null) {
+            person = new ArrayList<PersonType>();
+        }
+        return this.person;
+    }
 
     /**
      * Gets the value of the case property.
@@ -85,42 +118,18 @@ public class NotifyCourtDateMessageType
     }
 
     /**
-     * Gets the value of the icalendar property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link IcalendarType }
-     *     
-     */
-    public IcalendarType getIcalendar() {
-        return icalendar;
-    }
-
-    /**
-     * Sets the value of the icalendar property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link IcalendarType }
-     *     
-     */
-    public void setIcalendar(IcalendarType value) {
-        this.icalendar = value;
-    }
-
-    /**
-     * Gets the value of the notifyCourtDateMessageAugmentationPoint property.
+     * Gets the value of the personCaseAssociationAugmentationPoint property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the notifyCourtDateMessageAugmentationPoint property.
+     * This is why there is not a <CODE>set</CODE> method for the personCaseAssociationAugmentationPoint property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getNotifyCourtDateMessageAugmentationPoint().add(newItem);
+     *    getPersonCaseAssociationAugmentationPoint().add(newItem);
      * </pre>
      * 
      * 
@@ -130,11 +139,11 @@ public class NotifyCourtDateMessageType
      * 
      * 
      */
-    public List<Object> getNotifyCourtDateMessageAugmentationPoint() {
-        if (notifyCourtDateMessageAugmentationPoint == null) {
-            notifyCourtDateMessageAugmentationPoint = new ArrayList<Object>();
+    public List<Object> getPersonCaseAssociationAugmentationPoint() {
+        if (personCaseAssociationAugmentationPoint == null) {
+            personCaseAssociationAugmentationPoint = new ArrayList<Object>();
         }
-        return this.notifyCourtDateMessageAugmentationPoint;
+        return this.personCaseAssociationAugmentationPoint;
     }
 
     /**

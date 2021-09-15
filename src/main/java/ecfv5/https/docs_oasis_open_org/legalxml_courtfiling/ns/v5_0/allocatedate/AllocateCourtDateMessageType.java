@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
+import ecfv5.gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
 import ecfv5.gov.niem.release.niem.niem_core._4.CaseType;
 import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
 import ecfv5.ietf.params.xml.ns.icalendar_2.IcalendarType;
@@ -51,8 +52,8 @@ public class AllocateCourtDateMessageType
     extends CaseFilingType
 {
 
-    @XmlElement(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", nillable = true)
-    protected CaseType _case;
+    @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
+    protected JAXBElement<? extends CaseType> _case;
     @XmlElement(namespace = "urn:ietf:params:xml:ns:icalendar-2.0")
     protected IcalendarType icalendar;
     @XmlElementRef(name = "AllocateCourtDateMessageAugmentationPoint", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/allocatedate", type = JAXBElement.class, required = false)
@@ -63,10 +64,11 @@ public class AllocateCourtDateMessageType
      * 
      * @return
      *     possible object is
-     *     {@link CaseType }
+     *     {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
      *     
      */
-    public CaseType getCase() {
+    public JAXBElement<? extends CaseType> getCase() {
         return _case;
     }
 
@@ -75,10 +77,11 @@ public class AllocateCourtDateMessageType
      * 
      * @param value
      *     allowed object is
-     *     {@link CaseType }
+     *     {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
      *     
      */
-    public void setCase(CaseType value) {
+    public void setCase(JAXBElement<? extends CaseType> value) {
         this._case = value;
     }
 

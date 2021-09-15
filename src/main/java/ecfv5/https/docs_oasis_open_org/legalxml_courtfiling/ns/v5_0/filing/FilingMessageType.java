@@ -3,10 +3,13 @@ package ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
+import ecfv5.gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
 import ecfv5.gov.niem.release.niem.niem_core._4.CaseType;
 import ecfv5.gov.niem.release.niem.niem_core._4.DocumentType;
 import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
@@ -59,8 +62,8 @@ public class FilingMessageType
     protected List<DocumentType> filingConnectedDocument;
     @XmlElement(name = "FilingLeadDocument", required = true, nillable = true)
     protected List<DocumentType> filingLeadDocument;
-    @XmlElement(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", required = true, nillable = true)
-    protected CaseType _case;
+    @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class)
+    protected JAXBElement<? extends CaseType> _case;
     @XmlElement(name = "FilingMessageAugmentationPoint")
     protected List<Object> filingMessageAugmentationPoint;
 
@@ -156,10 +159,11 @@ public class FilingMessageType
      * 
      * @return
      *     possible object is
-     *     {@link CaseType }
+     *     {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
      *     
      */
-    public CaseType getCase() {
+    public JAXBElement<? extends CaseType> getCase() {
         return _case;
     }
 
@@ -168,10 +172,11 @@ public class FilingMessageType
      * 
      * @param value
      *     allowed object is
-     *     {@link CaseType }
+     *     {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
      *     
      */
-    public void setCase(CaseType value) {
+    public void setCase(JAXBElement<? extends CaseType> value) {
         this._case = value;
     }
 
