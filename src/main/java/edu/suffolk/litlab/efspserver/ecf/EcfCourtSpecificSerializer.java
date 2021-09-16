@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.xml.bind.JAXBElement;
@@ -19,6 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efspserver.Address;
 import edu.suffolk.litlab.efspserver.ContactInformation;
 import edu.suffolk.litlab.efspserver.FilingDoc;
+import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.OptionalService;
 import edu.suffolk.litlab.efspserver.Person;
@@ -27,6 +31,7 @@ import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import edu.suffolk.litlab.efspserver.codes.CaseType;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
+import edu.suffolk.litlab.efspserver.codes.CrossReference;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.codes.DocumentTypeTableRow;
 import edu.suffolk.litlab.efspserver.codes.FileType;
@@ -34,6 +39,7 @@ import edu.suffolk.litlab.efspserver.codes.FilingCode;
 import edu.suffolk.litlab.efspserver.codes.FilingComponent;
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.codes.OptionalServiceCode;
+import edu.suffolk.litlab.efspserver.codes.PartyType;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
@@ -54,6 +60,7 @@ import gov.niem.niem.niem_core._2.ProperNameTextType;
 import gov.niem.niem.niem_core._2.StreetType;
 import gov.niem.niem.niem_core._2.StructuredAddressType;
 import gov.niem.niem.niem_core._2.TelephoneNumberType;
+import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.proxy.xsd._2.Base64Binary;
 import gov.niem.niem.proxy.xsd._2.Decimal;
 import gov.niem.niem.structures._2.AugmentationType;
@@ -87,16 +94,94 @@ public class EcfCourtSpecificSerializer {
     this.cd = cd;
     this.court = court;
   }
+  
+  public ComboCaseCodes serializeCaseCodes(FilingInformation info, InfoCollector collector) throws FilingError {
+    Optional<CaseCategory> maybeCaseCat = cd.getCaseCategoryFor(info.getCourtLocation(), info.getCaseCategory());
+    if (maybeCaseCat.isEmpty()) {
+      List<CaseCategory> categories = cd.getCaseCategoriesFor(info.getCourtLocation());
+      // TODO(brycew): handle that these variables could be different from different deserializers
+      InterviewVariable var = collector.requestVar("tyler_case_category", "", "choice",
+          categories.stream().map(cat -> cat.name).collect(Collectors.toList()));
+      collector.addWrong(var);
+      // Foundational error: Category is sorely needed
+      throw FilingError.wrongValue(var);
+    }
+    CaseCategory caseCategory = maybeCaseCat.get();
+
+    List<CaseType> caseTypes = cd.getCaseTypesFor(info.getCourtLocation(), caseCategory.code.get(), Optional.empty());
+    if (caseTypes.isEmpty()) {
+      FilingError err = FilingError.serverError("There are no caseTypes for "
+          + info.getCourtLocation() + " and " + caseCategory.code.get());
+      collector.error(err);
+      throw err;
+    }
+    Optional<CaseType> maybeType = caseTypes.stream()
+        .filter(type -> type.name.equals(info.getCaseType()))
+        .findFirst();
+
+    if (maybeType.isEmpty()) {
+      InterviewVariable var = collector.requestVar("tyler_case_type",  "",  "choice",
+          caseTypes.stream().map(type -> type.name).collect(Collectors.toList()));
+      collector.addWrong(var);
+      throw FilingError.wrongValue(var);
+    }
+    CaseType type = maybeType.get();
+
+    // Check if the court doesn't handle this type (initial vs subsequent) of filing
+    if ((type.initial && !court.initial) || (!type.initial && !court.subsequent)) {
+      FilingError err = FilingError.malformedInterview("Filing type (" + ((type.initial) ? "Initial" : "Subsequent")
+          + ") can't be filed at " + court.name);
+      collector.error(err);
+      throw err;
+    }
+
+    if (type.initial && info.getCaseDocketNumber().isPresent()) {
+      FilingError err = FilingError.malformedInterview("Initial filing case type can't have docket number");
+      collector.error(err);
+      throw err;
+    }
+
+    List<FilingCode> filings = cd.getFilingType(info.getCourtLocation(),
+        caseCategory.code.get(), type.code, type.initial);
+    if (filings.isEmpty()) {
+      log.error("Need a filing type! FilingTypes are empty, so " + caseCategory + " and " + type + " are restricted");
+      InterviewVariable var = collector.requestVar("filing", "TODO(brycew): description", "text");
+      collector.addWrong(var);
+      // Is foundational, so returning now
+      throw FilingError.wrongValue(var);
+    }
+
+    InterviewVariable filingVar = collector.requestVar("tyler_filing_type", "TODO(brycew): description", "text", filings.stream().map(f -> f.name).collect(Collectors.toList()));
+    JsonNode filingJson = info.getMiscInfo().get("tyler_filing_type");
+    if (filingJson == null || filingJson.isNull() || !filingJson.isTextual()) {
+      log.error("filing not present in the info!: " + info.getMiscInfo());
+      collector.addRequired(filingVar);
+      throw FilingError.missingRequired(filingVar);
+    }
+
+    Optional<FilingCode> maybeFiling = filings.stream()
+        .filter(fil -> fil.name.equals(filingJson.asText()))
+        .findFirst();
+    if (maybeFiling.isEmpty()) {
+      log.error("Nothing matches filing in the info: " + filingJson.asText());
+      collector.addWrong(filingVar);
+      throw FilingError.missingRequired(filingVar);
+    }
+      
+    return new ComboCaseCodes(caseCategory, type, maybeFiling.get()); 
+  }
 
   /** Needs to have participant role set.
    * @throws FilingError */
-  public CaseParticipantType serializeEcfCaseParticipant(Person per, InfoCollector collector) throws FilingError {
+  public CaseParticipantType serializeEcfCaseParticipant(Person per, InfoCollector collector, 
+      List<PartyType> partyTypes, List<String> partyTypeNames) throws FilingError {
     AugmentationType aug;
     if (per.isOrg()) {
       aug = ecfOf.createOrganizationAugmentationType();
     } else {
       aug = ecfOf.createPersonAugmentationType();
     }
+    final CaseParticipantType cpt = ecfOf.createCaseParticipantType();
     ContactInformationType cit = serializeEcfContactInformation(per.getContactInfo(), collector);
     if (per.isOrg()) {
       ((OrganizationAugmentationType) aug).getContactInformation().add(cit);
@@ -114,60 +199,70 @@ public class EcfCourtSpecificSerializer {
       ot.setOrganizationName(XmlHelper.convertText(per.getName().getFullName()));
       ot.setId(per.getIdString());
       ot.getRest().add(ecfOf.createOrganizationAugmentation((OrganizationAugmentationType) aug));
-      CaseParticipantType cpt = ecfOf.createCaseParticipantType();
       cpt.setEntityRepresentation(ecfOf.createEntityOrganization(ot));
-      return cpt;
-    }
+    } else {
+      // Else, it's a person: add other optional person stuff
+      ((PersonAugmentationType) aug).getContactInformation().add(cit);
 
-    // Else, it's a person: add other optional person stuff
-    ((PersonAugmentationType) aug).getContactInformation().add(cit);
+      PersonType pt = ecfOf.createPersonType();
+      pt.setId(per.getIdString());
+      pt.setPersonName(serializeNameType(per.getName(), collector));
+      pt.setPersonAugmentation((PersonAugmentationType) aug);
 
-    PersonType pt = ecfOf.createPersonType();
-    pt.setId(per.getIdString());
-    pt.setPersonName(serializeNameType(per.getName(), collector));
-    pt.setPersonAugmentation((PersonAugmentationType) aug);
-
-    DataFieldRow genderRow = cd.getDataField(this.court.code, "PartyGender");
-    if (genderRow.isvisible) {
-      if (per.getGender().isPresent()) {
-        String gen = per.getGender().get();
-        SEXCodeType sct = new SEXCodeType();
-        if (gen.equalsIgnoreCase("male") || gen.equalsIgnoreCase("m")) {
-          sct.setValue(SEXCodeSimpleType.M);
-        } else if (gen.equalsIgnoreCase("female") || gen.equals("f")) {
-          sct.setValue(SEXCodeSimpleType.F);
-        } else {
-          sct.setValue(SEXCodeSimpleType.U);
+      DataFieldRow genderRow = cd.getDataField(this.court.code, "PartyGender");
+      if (genderRow.isvisible) {
+        if (per.getGender().isPresent()) {
+          String gen = per.getGender().get();
+          SEXCodeType sct = new SEXCodeType();
+          if (gen.equalsIgnoreCase("male") || gen.equalsIgnoreCase("m")) {
+            sct.setValue(SEXCodeSimpleType.M);
+          } else if (gen.equalsIgnoreCase("female") || gen.equals("f")) {
+            sct.setValue(SEXCodeSimpleType.F);
+          } else {
+            sct.setValue(SEXCodeSimpleType.U);
+          }
+          pt.setPersonSex(niemObjFac.createPersonSexCode(sct));
+        } else if (genderRow.isrequired) {
+          InterviewVariable var = collector.requestVar("gender", "Gender of this filer", "text");
+          collector.addRequired(var);
         }
-        pt.setPersonSex(niemObjFac.createPersonSexCode(sct));
-      } else if (genderRow.isrequired) {
-        InterviewVariable var = collector.requestVar("gender", "Gender of this filer", "text");
-        collector.addRequired(var);
       }
+
+      if (per.getLanguage().isPresent()) {
+        String lang = per.getLanguage().get();
+        List<String> langs = cd.getLanguages(this.court.code);
+        if (!langs.isEmpty() && !langs.contains(lang)) {
+          log.info("Can't have language: " + lang);
+          collector.addWrong(collector.requestVar("language", "The primary language of this person", "choice", langs));
+        }
+        final gov.niem.niem.iso_639_3._2.ObjectFactory lctOf =
+            new gov.niem.niem.iso_639_3._2.ObjectFactory();
+        LanguageCodeType lct = lctOf.createLanguageCodeType();
+        lct.setValue(lang);
+        PersonLanguageType plt = niemObjFac.createPersonLanguageType();
+        plt.getLanguage().add(niemObjFac.createLanguageCode(lct));
+        pt.setPersonPrimaryLanguage(plt);
+      };
+
+      per.getBirthdate().ifPresent((bd) -> {
+        pt.setPersonBirthDate(XmlHelper.convertDate(bd));
+      });
+
+      cpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
     }
 
-    if (per.getLanguage().isPresent()) {
-      String lang = per.getLanguage().get();
-      List<String> langs = cd.getLanguages(this.court.code);
-      if (!langs.isEmpty() && !langs.contains(lang)) {
-        log.info("Can't have language: " + lang);
-        collector.addWrong(collector.requestVar("language", "The primary language of this person", "choice", langs));
-      }
-      final gov.niem.niem.iso_639_3._2.ObjectFactory lctOf =
-          new gov.niem.niem.iso_639_3._2.ObjectFactory();
-      LanguageCodeType lct = lctOf.createLanguageCodeType();
-      lct.setValue(lang);
-      PersonLanguageType plt = niemObjFac.createPersonLanguageType();
-      plt.getLanguage().add(niemObjFac.createLanguageCode(lct));
-      pt.setPersonPrimaryLanguage(plt);
-    };
-
-    per.getBirthdate().ifPresent((bd) -> {
-      pt.setPersonBirthDate(XmlHelper.convertDate(bd));
-    });
-
-    CaseParticipantType cpt = ecfOf.createCaseParticipantType();
-    cpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
+    Optional<PartyType> matchingType = partyTypes.stream()
+        .filter(pt -> pt.name.equalsIgnoreCase(per.getRole()))
+        .findFirst();
+    TextType tt = niemObjFac.createTextType();
+    if (matchingType.isEmpty()) {
+      InterviewVariable ptVar = collector.requestVar("party_type", "Legal role of the party", "choices", partyTypeNames);
+      collector.addWrong(ptVar);
+      tt.setValue("");
+    } else {
+      tt.setValue(matchingType.get().code);
+    }
+    cpt.setCaseParticipantRoleCode(tt);
     return cpt;
   }
 
@@ -322,7 +417,7 @@ public class EcfCourtSpecificSerializer {
     t.setValue(name);
     return t;
   }
-
+  
   public JAXBElement<DocumentType> filingDocToXml(FilingDoc doc,
           int sequenceNum, CaseCategory caseCategory, CaseType motionType, FilingCode filing,
           List<FilingComponent> components,
@@ -537,6 +632,49 @@ public class EcfCourtSpecificSerializer {
     }
 
   }
+
+  public Map<String, String> getCrossRefIds(FilingInformation info, InfoCollector collector, String locationCode, String caseTypeCode) throws FilingError {
+      List<CrossReference> refs = cd.getCrossReference(locationCode, caseTypeCode);
+      Map<String, CrossReference> refMap = new HashMap<String, CrossReference>();
+      for (CrossReference ref : refs) {
+        refMap.put(ref.name, ref);
+      }
+      InterviewVariable refsVar = collector.requestVar("cross_references",
+          "References to other cases in different systems", "DAList");
+      Set<String> usedCodes = new HashSet<String>();
+      Map<String, String> ids = new HashMap<String, String>();
+      if (info.getMiscInfo().has("cross_references")
+          && info.getMiscInfo().get("cross_references").isObject()) {
+        JsonNode jsonRefs = info.getMiscInfo().get("cross_references");
+        Iterator<String> refNames = jsonRefs.fieldNames();
+        while (refNames.hasNext()) {
+          String refName = refNames.next();
+          if (refMap.containsKey(refName)) {
+            CrossReference ref = refMap.get(refName);
+            String refValue = jsonRefs.get(refName).asText();
+            if (!ref.matchesRegex(refValue)) {
+              refsVar.appendDescription(": for " + refValue + ": " + ref.customvalidationfailuremessage);
+              collector.addWrong(refsVar);
+            }
+            ids.put(ref.code, refValue);
+            usedCodes.add(ref.code);
+          } else {
+            refsVar.appendDescription(": ref " + refName + " isn't available");
+            collector.addWrong(refsVar);
+          }
+        }
+      }
+
+      Set<String> reqRefs = refs.stream().filter(ref -> ref.isrequired).map(ref -> ref.code).collect(Collectors.toSet());
+      reqRefs.removeAll(usedCodes);
+      if (!reqRefs.isEmpty()) {
+        refsVar.appendDescription(": the following refs are required: " + reqRefs);
+        collector.addRequired(refsVar);
+      }
+      return ids;
+  }
+  
+  
 
   private String findDocumentDescription(Optional<String> userProvidedDescription,
       DataFieldRow descriptionRow, FilingDoc doc, FilingCode filing,

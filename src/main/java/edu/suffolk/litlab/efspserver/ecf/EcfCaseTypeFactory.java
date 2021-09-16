@@ -29,10 +29,13 @@ import gov.niem.niem.structures._2.ReferenceType;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.Optional;
+import java.util.Set;
+
 import javax.xml.bind.JAXBElement;
 
 import org.slf4j.Logger;
@@ -97,11 +100,17 @@ public class EcfCaseTypeFactory {
                   filingIds, queryType, miscInfo, serializer, collector);
     // TODO(brycew): handle ensuring the passed in values work with the court codes
     if (caseCategory.ecfcasetype.equals("CivilCase")) {
+      Optional<BigDecimal> amountInControversy = Optional.empty();
+      if (filing.amountincontroversy.equalsIgnoreCase("Required")) {
+        JsonNode jsonAmt = info.getMiscInfo().get("amount_in_controversy");
+        if (jsonAmt != null && jsonAmt.isBigDecimal()) {
+          amountInControversy = Optional.of(jsonAmt.decimalValue());
+        } else {
+          collector.addRequired(collector.requestVar("amount_in_controversy", "ad danum amount", "currency"));
+        }
+      }
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase =
-          makeCivilCaseType(
-              caseAug, tylerAug, filing,
-              // TODO(brycew) from the gson
-              new BigDecimal(500.0));
+          makeCivilCaseType(caseAug, tylerAug, filing, amountInControversy);
       myCase.getValue().setCaseCategoryText(XmlHelper.convertText(caseCategoryCode));
       return Result.ok(myCase);
     } else if (caseCategory.ecfcasetype.equals("DomesticCase")) {
@@ -180,50 +189,27 @@ public class EcfCaseTypeFactory {
     }
 
     List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocation.code, caseType.code);
-    List<PartyType> requiredTypes = partyTypes.stream().filter(t -> t.isrequired).collect(Collectors.toList());
-    if (requiredTypes.size() > 2) {
-      FilingError err = FilingError.serverError("DEV ERROR: there are more than 2 required parties ("
-          + requiredTypes + "), but only 2 are supported");
-      collector.error(err);
-      throw err;
-    }
-    if (requiredTypes.stream().filter(t -> !t.name.equals(info.getPlaintiffPartyType()) && !t.name.equals(info.getDefendantPartyType())).findAny().isPresent()) {
-      FilingError err = FilingError.serverError("DEV ERROR: All required parties (" + requiredTypes + ") not covered by plaintiff and defendant party types. ("
-          + info.getPlaintiffPartyType() + " " + info.getDefendantPartyType());
-      collector.error(err);
-      throw err;
-    }
     List<String> partyTypeNames = partyTypes.stream().map(p -> p.name).collect(Collectors.toList());
-    if (!partyTypeNames.contains(info.getPlaintiffPartyType())) {
-      InterviewVariable plaintiffVar = collector.requestVar("plaintiff_party_type", "Legal role of the plaintiff", "choices", partyTypeNames);
-      collector.addWrong(plaintiffVar);
-    }
-
-    if (!partyTypeNames.contains(info.getDefendantPartyType())) {
-      InterviewVariable defendantVar = collector.requestVar("defendant_party_type", "Legal role of the defendant", "choices", partyTypeNames);
-      collector.addWrong(defendantVar);
-    }
-
+    Set<String> requiredTypes = partyTypes.stream().filter(t -> t.isrequired).map(t -> t.name).collect(Collectors.toSet());
+    Set<String> existingTypes = new HashSet<String>();
     for (Person plaintiff : info.getPlaintiffs()) {
-      CaseParticipantType cp = serializer.serializeEcfCaseParticipant(plaintiff, collector);
-      TextType tt = of.createTextType();
-      partyTypes.stream()
-          .filter(pt -> pt.name.equalsIgnoreCase(info.getPlaintiffPartyType()))
-          .findFirst()
-          .ifPresent(pt -> tt.setValue(pt.code));
-      cp.setCaseParticipantRoleCode(tt);
+      CaseParticipantType cp = serializer.serializeEcfCaseParticipant(plaintiff, collector, partyTypes, partyTypeNames);
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
+      existingTypes.add(plaintiff.getRole());
     }
 
     for (Person defendant : info.getDefendants()) {
-      CaseParticipantType cp = serializer.serializeEcfCaseParticipant(defendant, collector);
-      TextType tt = of.createTextType();
-      partyTypes.stream()
-          .filter((pt) -> pt.name.equalsIgnoreCase(info.getDefendantPartyType()))
-          .findFirst()
-          .ifPresent((pt) -> tt.setValue(pt.code));
-      cp.setCaseParticipantRoleCode(tt);
+      CaseParticipantType cp = serializer.serializeEcfCaseParticipant(defendant, collector, partyTypes, partyTypeNames);
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
+      existingTypes.add(defendant.getRole());
+    }
+    
+    requiredTypes.removeAll(existingTypes);
+    if (!requiredTypes.isEmpty()) {
+      FilingError err = FilingError.serverError("DEV ERROR: All required parties not covered by existing party types. ("
+          + info.getPlaintiffPartyType() + " " + info.getDefendantPartyType() + ". Missing " + requiredTypes);
+      collector.error(err);
+      throw err;
     }
 
     int attorneyCount = 1;
@@ -481,7 +467,7 @@ public class EcfCaseTypeFactory {
       JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
       JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
       FilingCode filing,
-      BigDecimal amountInControversy) {
+      Optional<BigDecimal> amountInControversy) {
     oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory ecfCivilObjFac =
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory();
     oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfCommonObjFac =
@@ -493,9 +479,9 @@ public class EcfCaseTypeFactory {
     JAXBElement<TextType> causeOfAction = ecfCommonObjFac.createCauseOfActionCode(new TextType());
     c.getRest().add(causeOfAction);
 
-    if (filing.amountincontroversy.equalsIgnoreCase("Required")) {
+    if (amountInControversy.isPresent()) {
       AmountType amount = new AmountType();
-      amount.setValue(amountInControversy);
+      amount.setValue(amountInControversy.get());
       amount.setCurrencyCode(CurrencyCodeSimpleType.USD);
       c.getRest().add(ecfCivilObjFac.createAmountInControversy(amount));
     }

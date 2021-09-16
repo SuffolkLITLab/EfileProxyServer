@@ -1,0 +1,717 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://docs.oasis-open.org/codelist/ns/genericode/1.0/">
+  <Identification xmlns="">
+    <ShortName>Location</ShortName>
+    <LongName>Location</LongName>
+    <Version>4DAF5FF936D935B529EF8085C4686A8D8A75966465A5CC80D55FF83D131D9B0ABAD2D5C010931F16231E92BD3D0779E6C455A8ACC15657E890B27A254EA210C8</Version>
+    <CanonicalUri>urn:oasis:names:tc:legalxml-courtfiling:codelist:gc:LocationCode</CanonicalUri>
+    <CanonicalVersionUri>urn:oasis:names:tc:legalxml-courtfiling:codelist:gc:LocationCode-1.0</CanonicalVersionUri>
+    <Agency>
+      <LongName>OASIS LegalXML Electronic Court Filing Technical Committee</LongName>
+    </Agency>
+  </Identification>
+  <ColumnSet xmlns="">
+    <Column Id="code" Use="required">
+      <ShortName>Code</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="name" Use="optional">
+      <ShortName>Name</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="initial" Use="optional">
+      <ShortName>AllowInitial</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="subsequent" Use="optional">
+      <ShortName>AllowSubsequent</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="disallowcopyingenvelopemultipletimes" Use="optional">
+      <ShortName>DisallowCopyingEnvelopeMultipleTimes</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="allowfilingintononindexedcase" Use="optional">
+      <ShortName>AllowFilingIntoNonIndexedCase</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="allowablecardtypes" Use="optional">
+      <ShortName>AllowableCardTypes</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="odysseynodeid" Use="optional">
+      <ShortName>OdysseyNodeId</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="cmsid" Use="optional">
+      <ShortName>CMSId</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="sendservicebeforereview" Use="optional">
+      <ShortName>SendServiceBeforeReview</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="parentnodeid" Use="optional">
+      <ShortName>ParentNodeID</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="iscounty" Use="optional">
+      <ShortName>IsCounty</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="restrictbankaccountpayment" Use="optional">
+      <ShortName>RestrictBankAccountPayment</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="allowmultipleattorneys" Use="optional">
+      <ShortName>AllowMultipleAttorneys</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="sendservicecontactremovednotifications" Use="optional">
+      <ShortName>SendServiceContactRemovedNotfications</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="allowmaxfeeamount" Use="optional">
+      <ShortName>AllowMaxFeeAmount</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="transferwaivedfeestocms" Use="optional">
+      <ShortName>Transfer Waived Fees To CMS</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="skippreauth" Use="optional">
+      <ShortName>SkipPreAuth</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="allowhearing" Use="optional">
+      <ShortName>AllowHearing</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="allowreturndate" Use="optional">
+      <ShortName>AllowReturnDate</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="showdamageamount" Use="optional">
+      <ShortName>Show Damage Amount</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="hasconditionalservicetypes" Use="optional">
+      <ShortName>Has Conditional Service Types</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="hasprotectedcasetypes" Use="optional">
+      <ShortName>Has Protected Case Types</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="protectedcasetypes" Use="optional">
+      <ShortName>Protected Case Types</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="allowzerofeeswithoutfilingparty" Use="optional">
+      <ShortName>Allow Zero Fees Without Filing Party</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="allowserviceoninitial" Use="optional">
+      <ShortName>Allow Service On Initial</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="allowaddservicecontactsoninitial" Use="optional">
+      <ShortName>Allow Add Service Contacts On Initial</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="allowredaction" Use="optional">
+      <ShortName>Supports Redaction</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="redactionurl" Use="optional">
+      <ShortName>Redaction URL</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="redactionviewerurl" Use="optional">
+      <ShortName>Redaction Viewer URL</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="enforceredaction" Use="optional">
+      <ShortName>Enforce Redaction</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="redactiondocumenttype" Use="optional">
+      <ShortName>Redaction Document Type</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="defaultdocumentdescription" Use="optional">
+      <ShortName>DefaultDocumentDescription</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="allowwaiveronmail" Use="optional">
+      <ShortName>AllowWaiverOnMail</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="showreturnonreject" Use="optional">
+      <ShortName>ShowReturnOnReject</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="protectedcasereplacementstring" Use="optional">
+      <ShortName>Protected Case ReplacementString</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="allowchargeupdate" Use="optional">
+      <ShortName>Allow Charge Update</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="allowpartyid" Use="optional">
+      <ShortName>Allow Party ID</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="redactionfee" Use="optional">
+      <ShortName>Redaction Fee</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="allowwaiveronredaction" Use="optional">
+      <ShortName>Allow Waiver On Redaction</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="disallowelectronicserviceonnewcontacts" Use="optional">
+      <ShortName>Allow Only Mail Service On Initial</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="allowindividualregistration" Use="optional">
+      <ShortName>Allow Individual Registrations</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="redactiontargetconfiguration" Use="optional">
+      <ShortName>Redaction Target Configuration</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Key Id="codeKey">
+      <ShortName>CodeKey</ShortName>
+      <ColumnRef Ref="code" />
+    </Key>
+  </ColumnSet>
+  <SimpleCodeList xmlns="">
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>System</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="subsequent">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="disallowcopyingenvelopemultipletimes">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowfilingintononindexedcase">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowablecardtypes">
+        <SimpleValue>MASTERCARD,VISA,AMEX,DISCOVER,CHECKING</SimpleValue>
+      </Value>
+      <Value ColumnRef="odysseynodeid">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="cmsid">
+        <SimpleValue>1</SimpleValue>
+      </Value>
+      <Value ColumnRef="sendservicebeforereview">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="parentnodeid">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="iscounty">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="restrictbankaccountpayment">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowmultipleattorneys">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="sendservicecontactremovednotifications">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowmaxfeeamount">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="transferwaivedfeestocms">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="skippreauth">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowhearing">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowreturndate">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="showdamageamount">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="hasconditionalservicetypes">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="hasprotectedcasetypes">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="protectedcasetypes">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="allowzerofeeswithoutfilingparty">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowserviceoninitial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowaddservicecontactsoninitial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowredaction">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactionurl">
+        <SimpleValue>https://redaction-stage-tcm.tylertech.cloud/tisstage/OCRWeb/v3/</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactionviewerurl">
+        <SimpleValue>https://redaction-stage-tcm.tylertech.cloud/tisstage/viewer/index.html</SimpleValue>
+      </Value>
+      <Value ColumnRef="enforceredaction">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactiondocumenttype">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="defaultdocumentdescription">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="allowwaiveronmail">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="showreturnonreject">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="protectedcasereplacementstring">
+        <SimpleValue>CONFIDENTIAL</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowchargeupdate">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowpartyid">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactionfee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowwaiveronredaction">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="disallowelectronicserviceonnewcontacts">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="allowindividualregistration">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactiontargetconfiguration">
+        <SimpleValue>AccountNumber,CreditCard,DriversLicense,GovernmentId,Passport,SocialSecurityNumber,TaxDocument,MinorName,MinorDOB</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>1</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>File &amp; Serve</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="subsequent">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="disallowcopyingenvelopemultipletimes">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowfilingintononindexedcase">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowablecardtypes">
+        <SimpleValue>MASTERCARD,VISA,AMEX,DISCOVER,CHECKING</SimpleValue>
+      </Value>
+      <Value ColumnRef="odysseynodeid">
+        <SimpleValue>1</SimpleValue>
+      </Value>
+      <Value ColumnRef="cmsid">
+        <SimpleValue>1</SimpleValue>
+      </Value>
+      <Value ColumnRef="sendservicebeforereview">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="parentnodeid">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="iscounty">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="restrictbankaccountpayment">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowmultipleattorneys">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="sendservicecontactremovednotifications">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowmaxfeeamount">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="transferwaivedfeestocms">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="skippreauth">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowhearing">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowreturndate">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="showdamageamount">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="hasconditionalservicetypes">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="hasprotectedcasetypes">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="protectedcasetypes">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="allowzerofeeswithoutfilingparty">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowserviceoninitial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowaddservicecontactsoninitial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowredaction">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactionurl">
+        <SimpleValue>https://redaction-stage-tcm.tylertech.cloud/tisstage/OCRWeb/v3/</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactionviewerurl">
+        <SimpleValue>https://redaction-stage-tcm.tylertech.cloud/tisstage/viewer/index.html</SimpleValue>
+      </Value>
+      <Value ColumnRef="enforceredaction">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactiondocumenttype">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="defaultdocumentdescription">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="allowwaiveronmail">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="showreturnonreject">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="protectedcasereplacementstring">
+        <SimpleValue>CONFIDENTIAL</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowchargeupdate">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowpartyid">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactionfee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowwaiveronredaction">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="disallowelectronicserviceonnewcontacts">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="allowindividualregistration">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactiontargetconfiguration">
+        <SimpleValue>AccountNumber,CreditCard,DriversLicense,GovernmentId,Passport,SocialSecurityNumber,TaxDocument,MinorName,MinorDOB</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>alexander</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Alexander County</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="subsequent">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="disallowcopyingenvelopemultipletimes">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowfilingintononindexedcase">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowablecardtypes">
+        <SimpleValue>MASTERCARD,VISA,AMEX,DISCOVER,CHECKING</SimpleValue>
+      </Value>
+      <Value ColumnRef="odysseynodeid">
+        <SimpleValue>100</SimpleValue>
+      </Value>
+      <Value ColumnRef="cmsid">
+        <SimpleValue>108</SimpleValue>
+      </Value>
+      <Value ColumnRef="sendservicebeforereview">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="parentnodeid">
+        <SimpleValue>1</SimpleValue>
+      </Value>
+      <Value ColumnRef="iscounty">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="restrictbankaccountpayment">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowmultipleattorneys">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="sendservicecontactremovednotifications">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowmaxfeeamount">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="transferwaivedfeestocms">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="skippreauth">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowhearing">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowreturndate">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="showdamageamount">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="hasconditionalservicetypes">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="hasprotectedcasetypes">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="protectedcasetypes">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="allowzerofeeswithoutfilingparty">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowserviceoninitial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowaddservicecontactsoninitial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowredaction">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactionurl">
+        <SimpleValue>https://redaction-stage-tcm.tylertech.cloud/tisstage/OCRWeb/v3/</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactionviewerurl">
+        <SimpleValue>https://redaction-stage-tcm.tylertech.cloud/tisstage/viewer/index.html</SimpleValue>
+      </Value>
+      <Value ColumnRef="enforceredaction">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactiondocumenttype">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="defaultdocumentdescription">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="allowwaiveronmail">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="showreturnonreject">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="protectedcasereplacementstring">
+        <SimpleValue>CONFIDENTIAL</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowchargeupdate">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowpartyid">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactionfee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowwaiveronredaction">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="disallowelectronicserviceonnewcontacts">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="allowindividualregistration">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactiontargetconfiguration">
+        <SimpleValue>AccountNumber,CreditCard,DriversLicense,GovernmentId,Passport,SocialSecurityNumber,TaxDocument,MinorName,MinorDOB</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>adams</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Adams County</SimpleValue>
+      </Value>
+      <Value ColumnRef="initial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="subsequent">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="disallowcopyingenvelopemultipletimes">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowfilingintononindexedcase">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowablecardtypes">
+        <SimpleValue>MASTERCARD,VISA,AMEX,DISCOVER,CHECKING</SimpleValue>
+      </Value>
+      <Value ColumnRef="odysseynodeid">
+        <SimpleValue>500</SimpleValue>
+      </Value>
+      <Value ColumnRef="cmsid">
+        <SimpleValue>109</SimpleValue>
+      </Value>
+      <Value ColumnRef="sendservicebeforereview">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="parentnodeid">
+        <SimpleValue>1</SimpleValue>
+      </Value>
+      <Value ColumnRef="iscounty">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="restrictbankaccountpayment">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowmultipleattorneys">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="sendservicecontactremovednotifications">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowmaxfeeamount">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="transferwaivedfeestocms">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="skippreauth">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowhearing">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowreturndate">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="showdamageamount">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="hasconditionalservicetypes">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="hasprotectedcasetypes">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="protectedcasetypes">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="allowzerofeeswithoutfilingparty">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowserviceoninitial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowaddservicecontactsoninitial">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowredaction">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactionurl">
+        <SimpleValue>https://redaction-stage-tcm.tylertech.cloud/tisstage/OCRWeb/v3/</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactionviewerurl">
+        <SimpleValue>https://redaction-stage-tcm.tylertech.cloud/tisstage/viewer/index.html</SimpleValue>
+      </Value>
+      <Value ColumnRef="enforceredaction">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactiondocumenttype">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="defaultdocumentdescription">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="allowwaiveronmail">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="showreturnonreject">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="protectedcasereplacementstring">
+        <SimpleValue>CONFIDENTIAL</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowchargeupdate">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowpartyid">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactionfee">
+        <SimpleValue>0</SimpleValue>
+      </Value>
+      <Value ColumnRef="allowwaiveronredaction">
+        <SimpleValue>False</SimpleValue>
+      </Value>
+      <Value ColumnRef="disallowelectronicserviceonnewcontacts">
+        <SimpleValue />
+      </Value>
+      <Value ColumnRef="allowindividualregistration">
+        <SimpleValue>True</SimpleValue>
+      </Value>
+      <Value ColumnRef="redactiontargetconfiguration">
+        <SimpleValue>AccountNumber,CreditCard,DriversLicense,GovernmentId,Passport,SocialSecurityNumber,TaxDocument,MinorName,MinorDOB</SimpleValue>
+      </Value>
+    </Row>
+  </SimpleCodeList>
+</CodeList>

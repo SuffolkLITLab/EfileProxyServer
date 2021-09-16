@@ -108,6 +108,17 @@ public class FilingInformation {
     return partyToAttorneyIds;
   }
   
+  /** We only store the mapping from Party to attorneys (since parties can have multiple attorneys,
+   * but not vice-versa. */
+  public Optional<String> getPartyRepByAttorney(String attorneyId) {
+    for (Map.Entry<String, List<String>> partyToAttorneys : partyToAttorneyIds.entrySet()) {
+      if (partyToAttorneys.getValue().contains(attorneyId)) {
+        return Optional.of(partyToAttorneys.getKey());
+      }
+    }
+    return Optional.empty();
+  }
+  
   public CaseCategory getCaseCategory() {
     return caseCategory;
   }

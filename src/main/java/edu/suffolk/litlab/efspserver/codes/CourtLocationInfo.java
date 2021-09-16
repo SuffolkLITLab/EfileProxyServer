@@ -58,6 +58,8 @@ public class CourtLocationInfo {
    * different with this setting?
    */
   public boolean skippreauth;
+  public final boolean allowreturndate;
+  public final boolean showdamageamount;
   public boolean hasconditionalservicetypes;
   /** True if the court requires the EFSP to mask the case category and type for some types. */
   public boolean hasprotectedcasetypes;
@@ -88,6 +90,8 @@ public class CourtLocationInfo {
   public boolean allowwaiveronmail;
   /** TODO(#38) for follow up to this code. */
   public boolean showreturnonreject;
+  public final boolean allowchargeupdate;
+  public final boolean allowpartyid;
   /** The redaction fee for this location. See TODO(#39). */
   public String redactionfee;
   /** True if redaction fees will be waived. See TODO(#39). */
@@ -101,8 +105,15 @@ public class CourtLocationInfo {
    * CreditCard, DriversLicense, GovernmentID, Passport, SocialSecurityNumber, TaxDocument. 
    * See TODO(#39) */
   public List<String> redactiontargetconfig;
+  public final boolean allowhearing;
   
-  public CourtLocationInfo() {}
+  public CourtLocationInfo() {
+    this.allowhearing = false;
+    this.allowreturndate = false;
+    this.showdamageamount = false;
+    this.allowchargeupdate = false;
+    this.allowpartyid = false;
+  }
   
   public CourtLocationInfo(ResultSet rs) throws SQLException {
     this.code = rs.getString(1);
@@ -128,42 +139,47 @@ public class CourtLocationInfo {
     this.allowmaxfeeamount = Boolean.parseBoolean(rs.getString(16));
     this.transferwaivedfeestocms = Boolean.parseBoolean(rs.getString(17));
     this.skippreauth = Boolean.parseBoolean(rs.getString(18));
-    this.hasconditionalservicetypes = Boolean.parseBoolean(rs.getString(19));
-    this.hasprotectedcasetypes = Boolean.parseBoolean(rs.getString(20));
+    this.allowreturndate = Boolean.parseBoolean(rs.getString(19));
+    this.showdamageamount = Boolean.parseBoolean(rs.getString(20));
+    this.hasconditionalservicetypes = Boolean.parseBoolean(rs.getString(21));
+    this.hasprotectedcasetypes = Boolean.parseBoolean(rs.getString(22));
     if (this.hasprotectedcasetypes) {
-      this.protectedcasetypes = List.of(rs.getString(21).split(","));
+      this.protectedcasetypes = List.of(rs.getString(23).split(","));
     } else {
       this.protectedcasetypes = List.of();
     }
-    this.allowzerofeeswithoutfilingparty = Boolean.parseBoolean(rs.getString(22));
-    String serviceoninitial = rs.getString(23);
+    this.allowzerofeeswithoutfilingparty = Boolean.parseBoolean(rs.getString(24));
+    String serviceoninitial = rs.getString(25);
     if (serviceoninitial == null || serviceoninitial.isBlank()) {
       this.allowserviceoninitial = Optional.empty(); 
     } else {
       this.allowserviceoninitial = Optional.of(Boolean.parseBoolean(serviceoninitial)); 
     }
-    this.allowaddservicecontactsoninitial = Boolean.parseBoolean(rs.getString(24));
-    this.allowredaction = Boolean.parseBoolean(rs.getString(25));
-    this.redactionurl = rs.getString(26);
-    this.redactionviewerurl = rs.getString(27);
-    this.enforceredaction = Boolean.parseBoolean(rs.getString(28));
-    this.redactiondocumenttype = rs.getString(29);
-    this.defaultdocumentdescription = rs.getString(30);
-    this.allowwaiveronmail = Boolean.parseBoolean(rs.getString(31));
+    this.allowaddservicecontactsoninitial = Boolean.parseBoolean(rs.getString(26));
+    this.allowredaction = Boolean.parseBoolean(rs.getString(27));
+    this.redactionurl = rs.getString(28);
+    this.redactionviewerurl = rs.getString(29);
+    this.enforceredaction = Boolean.parseBoolean(rs.getString(30));
+    this.redactiondocumenttype = rs.getString(31);
+    this.defaultdocumentdescription = rs.getString(32);
+    this.allowwaiveronmail = Boolean.parseBoolean(rs.getString(33));
     /** TODO(#38): need to check for all instances of "reject", and possibly change to "return". */
-    this.showreturnonreject = Boolean.parseBoolean(rs.getString(32));
+    this.showreturnonreject = Boolean.parseBoolean(rs.getString(34));
     
-    this.protectedcasereplacementstring = rs.getString(33);
-    this.redactionfee = rs.getString(34);
-    this.allowwaiveronredaction = Boolean.parseBoolean(rs.getString(35));
-    this.disallowelectronicserviceonnewcontacts = Boolean.parseBoolean(rs.getString(36));
-    this.allowindividualregistration = Boolean.parseBoolean(rs.getString(37));
-    String targetConfig = rs.getString(38);
+    this.protectedcasereplacementstring = rs.getString(35);
+    this.allowchargeupdate = Boolean.parseBoolean(rs.getString(36));
+    this.allowpartyid = Boolean.parseBoolean(rs.getString(37));
+    this.redactionfee = rs.getString(38);
+    this.allowwaiveronredaction = Boolean.parseBoolean(rs.getString(39));
+    this.disallowelectronicserviceonnewcontacts = Boolean.parseBoolean(rs.getString(40));
+    this.allowindividualregistration = Boolean.parseBoolean(rs.getString(41));
+    String targetConfig = rs.getString(42);
     if (targetConfig == null || targetConfig.isBlank()) {
       this.redactiontargetconfig = List.of();
     } else {
       this.redactiontargetconfig = List.of(targetConfig.split(","));
     }
+    this.allowhearing = Boolean.parseBoolean(rs.getString(43));
   }
   
   public static String fullSingleQuery() {
@@ -172,13 +188,14 @@ public class CourtLocationInfo {
             allowfilingintononindexedcase,
             allowablecardtypes, odysseynodeid, cmsid, sendservicebeforereview, parentnodeid,
             iscounty, restrictbankaccountpayment, allowmultipleattorneys, sendservicecontactremovednotifications,
-            allowmaxfeeamount, transferwaivedfeestocms, skippreauth, hasconditionalservicetypes, 
+            allowmaxfeeamount, transferwaivedfeestocms, skippreauth, allowhearing, allowreturndate, 
+            hasconditionalservicetypes, 
             hasprotectedcasetypes, protectedcasetypes, allowzerofeeswithoutfilingparty,
             allowserviceoninitial, allowaddservicecontactsoninitial,
             allowredaction, redactionurl, redactionviewerurl, enforceredaction,
             redactiondocumenttype, defaultdocumentdescription, allowwaiveronmail, showreturnonreject,
-            protectedcasereplacementstring, redactionfee, allowwaiveronredaction, disallowelectronicserviceonnewcontacts,
-            allowindividualregistration, redactiontargetconfig
+            protectedcasereplacementstring, allowchargeupdate, allowpartyid, redactionfee, allowwaiveronredaction, disallowelectronicserviceonnewcontacts,
+            allowindividualregistration, redactiontargetconfig, allowhearing
         FROM location
         WHERE code=?
         """;
