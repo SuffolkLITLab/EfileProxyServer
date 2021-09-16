@@ -48,8 +48,8 @@ public class CodeTableConstants {
     locationColumns.add(new ImmutablePair<String, String>("allowmaxfeeamount", "text"));
     locationColumns.add(new ImmutablePair<String, String>("transferwaivedfeestocms", "text"));
     locationColumns.add(new ImmutablePair<String, String>("skippreauth", "text"));
-    locationColumns.add(new ImmutablePair<String, String>("allowhearing", "text")); // Isn't in documentation anymore?
-    locationColumns.add(new ImmutablePair<String, String>("allowreturndate", "text")); // Isn't in documentation anymore?
+    locationColumns.add(new ImmutablePair<String, String>("allowhearing", "text")); 
+    locationColumns.add(new ImmutablePair<String, String>("allowreturndate", "text")); 
     locationColumns.add(new ImmutablePair<String, String>("showdamageamount", "text")); // Isn't in document anymore?
     locationColumns.add(new ImmutablePair<String, String>("hasconditionalservicetypes", "text"));
     locationColumns.add(new ImmutablePair<String, String>("hasprotectedcasetypes", "text"));

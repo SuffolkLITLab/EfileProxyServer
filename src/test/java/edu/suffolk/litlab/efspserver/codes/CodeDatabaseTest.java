@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efspserver.codes;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.List;
@@ -46,6 +47,7 @@ public class CodeDatabaseTest {
   @Test
   public void testFromNothing() throws Exception {
     Map<String, List<String>> tableToCourts = Map.of(
+        "location", List.of("0"),
         "optionalservices", List.of("adams"),
         "casecategory", List.of("adams"),
         "casetype", List.of("adams"),
@@ -66,11 +68,14 @@ public class CodeDatabaseTest {
     assertFalse(cats.isEmpty());
     List<CaseType> types = cd.getCaseTypesFor("adams", "183527", Optional.empty()); 
     assertFalse(types.isEmpty());
-    List<NameAndCode> subtypes = cd.getCaseSubtypesFor("adams", types.get(0).code);
+    cd.getCaseSubtypesFor("adams", types.get(0).code);
     List<OptionalServiceCode> optServs = cd.getOptionalServices("adams", "183612");
     assertFalse(optServs.isEmpty());
     List<ServiceCodeType> services = cd.getServiceTypes("adams");
     assertFalse(services.isEmpty());
+    
+    Optional<CourtLocationInfo> info = cd.getFullLocationInfo("adams");
+    assertTrue(info.isPresent());
   }
   // TODO(brycew): test that all database column names are <= 63 characters (NAMEDATALEN - 1)
 

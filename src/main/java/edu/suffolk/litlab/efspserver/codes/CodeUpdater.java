@@ -366,8 +366,8 @@ public class CodeUpdater {
   }
 
   public static void downloadIndiv(String[] args) throws Exception {
-    if (args.length < 3) {
-      log.error("Need to pass in args: downloadIndiv <table> <location>");
+    if (args.length < 2) {
+      log.error("Need to pass in args: downloadIndiv <table> <location or blank for system>");
       System.exit(1);
     }
     CodeDatabase cd = new CodeDatabase(System.getenv("POSTGRES_URL"),
@@ -379,7 +379,7 @@ public class CodeUpdater {
     String pass = System.getenv("X509_PASSWORD");
     CodeUpdater cu = new CodeUpdater(path, pass);
     HeaderSigner hs = new HeaderSigner(path, pass);
-    String location = args[2];
+    String location = (args.length == 3) ? args[2] : "";
     String table = args[1];
     cu.downloadAndProcessZip(System.getenv("TYLER_ENDPOINT") + "CodeService/codes/" + table + "/" + location, hs.signedCurrentTime().get(),
           table, location, (in) -> {

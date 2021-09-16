@@ -149,7 +149,7 @@ public class CodeDatabase extends DatabaseInterface {
     }
   }
 
-  public List<CaseCategory> getCaseCategoriesFor(String courtLocationId) throws SQLException {
+  public List<CaseCategory> getCaseCategoriesFor(String courtLocationId) {
     if (conn == null) {
       log.error("SQL Connection not created in CaseCategories yet");
       return List.of();
@@ -202,25 +202,29 @@ public class CodeDatabase extends DatabaseInterface {
     }
   }
 
-  public List<CaseType> getCaseTypesFor(String courtLocationId, String caseCategoryCode, Optional<Boolean> initial)
-      throws SQLException {
+  public List<CaseType> getCaseTypesFor(String courtLocationId, String caseCategoryCode, Optional<Boolean> initial) {
     if (conn == null) {
       log.error("SQL connection not created in CaseTypes yet");
-      throw new SQLException();
+      return List.of();
     }
 
-    PreparedStatement st;
-    if (initial.isPresent()) {
-      st = CaseType.prepQueryTiming(conn, courtLocationId, caseCategoryCode, initial.get().toString());
-    } else {
-      st = CaseType.prepQueryBroad(conn, courtLocationId, caseCategoryCode);
+    try {
+      PreparedStatement st;
+      if (initial.isPresent()) {
+        st = CaseType.prepQueryTiming(conn, courtLocationId, caseCategoryCode, initial.get().toString());
+      } else {
+        st = CaseType.prepQueryBroad(conn, courtLocationId, caseCategoryCode);
+      }
+      ResultSet rs = st.executeQuery();
+      List<CaseType> types = new ArrayList<CaseType>();
+      while (rs.next()) {
+        types.add(new CaseType(rs));
+      }
+      return types;
+    } catch (SQLException ex) {
+      log.error("SQLException: " + ex);
+      return List.of();
     }
-    ResultSet rs = st.executeQuery();
-    List<CaseType> types = new ArrayList<CaseType>();
-    while (rs.next()) {
-      types.add(new CaseType(rs));
-    }
-    return types;
   }
 
   public List<NameAndCode> getCaseSubtypesFor(String courtLocationId, String caseType)
