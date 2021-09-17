@@ -75,6 +75,10 @@ public class CodeDatabaseTest {
     assertFalse(services.isEmpty());
     
     Optional<CourtLocationInfo> info = cd.getFullLocationInfo("adams");
+    List<String> allCourts = cd.getAllLocations();
+    assertFalse(allCourts.isEmpty());
+    List<String> filable = cd.getFiliableCourts();
+    assertFalse(filable.isEmpty());
     assertTrue(info.isPresent());
   }
   // TODO(brycew): test that all database column names are <= 63 characters (NAMEDATALEN - 1)

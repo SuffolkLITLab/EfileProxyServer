@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -150,42 +151,44 @@ public class CodeDatabase extends DatabaseInterface {
   }
 
   public List<CaseCategory> getCaseCategoriesFor(String courtLocationId) {
-    if (conn == null) {
-      log.error("SQL Connection not created in CaseCategories yet");
-      return List.of();
-    }
-    try {
+    return safetyWrap(() -> {
       String query = CaseCategory.getCaseCategoriesForLoc();
       PreparedStatement st = conn.prepareStatement(query);
       st.setString(1, courtLocationId);
       ResultSet rs = st.executeQuery();
       List<CaseCategory> cats = new ArrayList<CaseCategory>();
       while (rs.next()) {
-        cats.add(new CaseCategory(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
-            rs.getString(5), rs.getString(6), rs.getString(7)));
+        cats.add(new CaseCategory(rs)); 
       }
       return cats;
-    } catch (SQLException ex) {
-      log.error("SQLException: " + ex);
-      return List.of();
-    }
+    });
+  }
+  
+  public List<CaseCategory> getFilableCaseCategories(String courtLocationId) {
+    return safetyWrap(() -> {
+      String query = CaseCategory.getFilableCaseCategoryForLoc();
+      PreparedStatement st = conn.prepareStatement(query);
+      st.setString(1, courtLocationId);
+      ResultSet rs = st.executeQuery();
+      List<CaseCategory> cats = new ArrayList<CaseCategory>();
+      while (rs.next()) {
+        cats.add(new CaseCategory(rs)); 
+      }
+      return cats;
+      
+    });
   }
 
   /* Put in a partially filled case category, get out a full on from the tables. */
   public Optional<CaseCategory> getCaseCategoryFor(String courtLocationId, CaseCategory caseCat) {
-    if (conn == null) {
-      log.error("SQL Connection not created in CaseCategory yet");
-      return Optional.empty();
-    }
-    try {
+    return safetyWrapOpt(() -> {
       String query = CaseCategory.getCaseCategoryForLoc();
       PreparedStatement st = conn.prepareStatement(query);
       st.setString(1, courtLocationId);
       st.setString(2, caseCat.name);
       ResultSet rs = st.executeQuery();
       if (rs.next()) {
-        CaseCategory newCat = new CaseCategory(rs.getString(1), rs.getString(2), rs.getString(3),
-            rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7));
+        CaseCategory newCat = new CaseCategory(rs); 
         if (rs.next()) {
           log.error("There are multiple case categories for " + caseCat.name + " and "
               + courtLocationId);
@@ -196,19 +199,11 @@ public class CodeDatabase extends DatabaseInterface {
         log.error("No categories for " + caseCat.name + " and " + courtLocationId);
         return Optional.empty();
       }
-    } catch (SQLException ex) {
-      log.error(ex.toString());
-      return Optional.empty();
-    }
+    });
   }
 
   public List<CaseType> getCaseTypesFor(String courtLocationId, String caseCategoryCode, Optional<Boolean> initial) {
-    if (conn == null) {
-      log.error("SQL connection not created in CaseTypes yet");
-      return List.of();
-    }
-
-    try {
+    return safetyWrap(() -> {
       PreparedStatement st;
       if (initial.isPresent()) {
         st = CaseType.prepQueryTiming(conn, courtLocationId, caseCategoryCode, initial.get().toString());
@@ -221,10 +216,7 @@ public class CodeDatabase extends DatabaseInterface {
         types.add(new CaseType(rs));
       }
       return types;
-    } catch (SQLException ex) {
-      log.error("SQLException: " + ex);
-      return List.of();
-    }
+    });
   }
 
   public List<NameAndCode> getCaseSubtypesFor(String courtLocationId, String caseType)
@@ -329,12 +321,7 @@ public class CodeDatabase extends DatabaseInterface {
   }
 
   public List<NameAndCode> getDamageAmount(String courtLocationId, String caseCategory) {
-    if (conn == null) {
-      log.error("SQL connection not created in DamageAmount yet");
-      return List.of();
-    }
-
-    try {
+    return safetyWrap(() -> {
       String query = CodeTableConstants.getDamageAmount();
       PreparedStatement st = conn.prepareStatement(query);
       st.setString(1, courtLocationId);
@@ -345,10 +332,7 @@ public class CodeDatabase extends DatabaseInterface {
         amounts.add(new NameAndCode(rs.getString(2), rs.getString(1)));
       }
       return amounts;
-    } catch (SQLException ex) {
-      log.error("SQLExecption: " + ex);
-      return List.of();
-    }
+    });
   }
 
   public List<PartyType> getPartyTypeFor(String courtLocationId, String typeCode)
@@ -381,12 +365,7 @@ public class CodeDatabase extends DatabaseInterface {
   }
 
   public List<CrossReference> getCrossReference(String courtLocationId, String caseTypeId) {
-    if (conn == null) {
-      log.error("SQL connection not created in CrossReference");
-      return List.of();
-    }
-
-    try {
+    return safetyWrap(() -> {
       PreparedStatement st = conn.prepareStatement(CrossReference.query());
       st.setString(1, courtLocationId);
       st.setString(2, caseTypeId);
@@ -396,17 +375,11 @@ public class CodeDatabase extends DatabaseInterface {
         types.add(new CrossReference(rs));
       }
       return types;
-    } catch (SQLException ex) {
-      return List.of();
-    }
+    });
   }
 
   public List<ServiceCodeType> getServiceTypes(String courtLocationId) {
-    if (conn == null) {
-      log.error("SQL connection not created in ServiceType");
-      return List.of();
-    }
-    try {
+    return safetyWrap(() -> {
       String query  = ServiceCodeType.query();
       PreparedStatement st = conn.prepareStatement(query);
       st.setString(1, courtLocationId);
@@ -416,9 +389,32 @@ public class CodeDatabase extends DatabaseInterface {
         types.add(new ServiceCodeType(rs));
       }
       return types;
+    });
+  }
+  
+  private <T> List<T> safetyWrap(SQLFunction<List<T>> sup) {
+    if (conn == null) {
+      log.error("SQL connection not created yet!");
+      return List.of();
+    }
+    try {
+      return sup.get();
     } catch (SQLException ex) {
       log.error("SQL excption: " + ex);
       return List.of();
+    }
+  }
+
+  private <T> Optional<T> safetyWrapOpt(SQLFunction<Optional<T>> sup) {
+    if (conn == null) {
+      log.error("SQL connection not created yet!");
+      return Optional.empty();
+    }
+    try {
+      return sup.get();
+    } catch (SQLException ex) {
+      log.error("SQL excption: " + ex);
+      return Optional.empty();
     }
   }
 
@@ -548,13 +544,8 @@ public class CodeDatabase extends DatabaseInterface {
   }
 
   public List<FileType> getAllowedFileTypes(String courtId) {
-    if (conn == null) {
-      log.error("connection not started in AllowedFileTypes");
-      return List.of();
-    }
-
-    String query = FileType.fileTypeQueries();
-    try {
+    return safetyWrap(() -> {
+      String query = FileType.fileTypeQueries();
       PreparedStatement st = conn.prepareStatement(query);
       st.setString(1, courtId);
       ResultSet rs = st.executeQuery();
@@ -563,20 +554,12 @@ public class CodeDatabase extends DatabaseInterface {
         types.add(new FileType(rs));
       }
       return types;
-    } catch (SQLException ex) {
-      log.error("SQL exception!: " + ex);
-      return List.of();
-    }
+    });
   }
 
   public List<FilerType> getFilerTypes(String courtId) {
-    if (conn == null) {
-      log.error("connection not started in FilerTypes");
-      return List.of();
-    }
-
-    String query = FilerType.query();
-    try {
+    return safetyWrap(() -> {
+      String query = FilerType.query();
       PreparedStatement st = conn.prepareStatement(query);
       st.setString(1, courtId);
       ResultSet rs = st.executeQuery();
@@ -585,10 +568,7 @@ public class CodeDatabase extends DatabaseInterface {
         types.add(new FilerType(rs));
       }
       return types;
-    } catch (SQLException ex) {
-      log.error("SQL exception: " + ex);
-      return List.of();
-    }
+    });
   }
 
   public List<NameAndCode> getFilingStatuses(String courtId) {
@@ -614,12 +594,7 @@ public class CodeDatabase extends DatabaseInterface {
   }
 
   public List<OptionalServiceCode> getOptionalServices(String courtId, String filingCode) {
-    if (conn == null) {
-      log.error("connection not started in OptionalServices");
-      return List.of();
-    }
-
-    try  {
+    return safetyWrap(() -> {
       PreparedStatement st = OptionalServiceCode.prepQuery(conn, courtId, filingCode);
       ResultSet rs = st.executeQuery();
       List<OptionalServiceCode> services = new ArrayList<OptionalServiceCode>();
@@ -627,20 +602,12 @@ public class CodeDatabase extends DatabaseInterface {
         services.add(new OptionalServiceCode(rs));
       }
       return services;
-    } catch (SQLException ex) {
-      log.error("SQL exception: " + ex);
-      return List.of();
-    }
+    });
   }
 
   public List<String> getLanguages(String courtLocationId) {
-    if (conn == null) {
-      log.error("Can't get language codes?");
-      return List.of();
-    }
-
-    String query = CodeTableConstants.getLanguages();
-    try {
+    return safetyWrap(() -> {
+      String query = CodeTableConstants.getLanguages();
       PreparedStatement st = conn.prepareStatement(query);
       st.setString(1, courtLocationId);
       ResultSet rs = st.executeQuery();
@@ -649,10 +616,7 @@ public class CodeDatabase extends DatabaseInterface {
         languages.add(rs.getString(2));
       }
       return languages;
-    } catch (SQLException ex) {
-      log.error("Got a SQL exception is Languages: " + ex);
-      return List.of();
-    }
+    });
   }
 
   /** Returns map of court locations to the list of tables they need to update. */
@@ -760,32 +724,31 @@ public class CodeDatabase extends DatabaseInterface {
   }
 
   public List<NameAndCode> getLocationNames() {
-    if (conn == null) {
-      log.error("SQL connection in null during getFullLocationInfo");
-      return List.of();
-    }
-
-    try {
+    return safetyWrap(() -> {
       Statement st = conn.createStatement();
-      String query = CourtLocationInfo.allNames();
-      ResultSet rs = st.executeQuery(query);
+      ResultSet rs = st.executeQuery(CourtLocationInfo.allNames());
       List<NameAndCode> names = new ArrayList<NameAndCode>();
       while (rs.next()) {
         names.add(new NameAndCode(rs.getString(1), rs.getString(2)));
       }
       return names;
-    } catch (SQLException ex) {
-      log.error("SQLException: " + ex);
-      return List.of();
-    }
+    });
+  }
+
+  public List<String> getFiliableCourts() {
+    return safetyWrap(() -> {
+      Statement st = conn.createStatement();
+      ResultSet rs = st.executeQuery(CourtLocationInfo.filableQuery());
+      List<String> codes = new ArrayList<String>();
+      while (rs.next()) {
+        codes.add(rs.getString(1));
+      }
+      return codes;
+    });
   }
 
   public Optional<CourtLocationInfo> getFullLocationInfo(String courtId) {
-    if (conn == null) {
-      log.error("SQL connection in null during getFullLocationInfo");
-      return Optional.empty();
-    }
-    try {
+    return safetyWrapOpt(() -> {
       PreparedStatement st = conn.prepareStatement(CourtLocationInfo.fullSingleQuery());
       st.setString(1, courtId);
       ResultSet rs = st.executeQuery();
@@ -796,27 +759,22 @@ public class CodeDatabase extends DatabaseInterface {
         log.error("CourtLocation " + courtId + " not found!");
         return Optional.empty();
       }
-    } catch (SQLException ex) {
-      log.error("SQLException: " + ex);
-      return Optional.empty();
-    }
+    });
   }
+  
 
-  public List<Disclaimer> getDisclaimerRequirements(String courtLocation) throws SQLException {
-    if (conn == null) {
-      log.error("SQL connection is null during Disclaimer Requirements");
-      throw new SQLException();
-    }
-
-    String query = Disclaimer.getDisclaimerRequirements();
-    PreparedStatement st = conn.prepareStatement(query);
-    st.setString(1, courtLocation);
-    ResultSet rs = st.executeQuery();
-    List<Disclaimer> disclaimers = new ArrayList<Disclaimer>();
-    while (rs.next()) {
-      disclaimers.add(new Disclaimer(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4)));
-    }
-    return disclaimers;
+  public List<Disclaimer> getDisclaimerRequirements(String courtLocation) {
+    return safetyWrap(() -> {
+      String query = Disclaimer.getDisclaimerRequirements();
+      PreparedStatement st = conn.prepareStatement(query);
+      st.setString(1, courtLocation);
+      ResultSet rs = st.executeQuery();
+      List<Disclaimer> disclaimers = new ArrayList<Disclaimer>();
+      while (rs.next()) {
+        disclaimers.add(new Disclaimer(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4)));
+      }
+      return disclaimers;
+    });
   }
 
 }

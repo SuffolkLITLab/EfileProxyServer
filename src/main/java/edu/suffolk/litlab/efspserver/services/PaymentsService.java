@@ -387,7 +387,7 @@ public class PaymentsService {
         accountResp = firmPort.get().createPaymentAccount(createAccount);
       }
       if (ServiceHelpers.hasError(accountResp)) {
-        return Response.status(400).entity(accountResp.getError()).build();
+        return Response.status(400).entity(accountResp.getError().getErrorCode() + " " + accountResp.getError().getErrorText()).build();
       }
       return Response.status(302).header("Location", tempInfo.originalUrl).build();
     } catch (JAXBException jaxbEx) {

@@ -320,15 +320,13 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
 
     for (int i = 0; i < elems.size(); i++) {
-      Result<Optional<FilingDoc>, FilingError> fil = FilingDocDocassembleJacksonDeserializer.fromNode(elems.get(i), i, collector);
-      if (fil.isOk()) {
-        Optional<FilingDoc> maybeDoc = fil.unwrapOrElseThrow();
+      try {
+        Optional<FilingDoc> maybeDoc = FilingDocDocassembleJacksonDeserializer.fromNode(elems.get(i), i, collector); 
         maybeDoc.ifPresent(doc -> {
           doc.setFilingPartyIds(filingPartyIds);
           filingDocs.add(doc);
         });
-      } else {
-        FilingError err = fil.unwrapErrOrElseThrow();
+      } catch (FilingError err) {
         if (err.getType().equals(FilingError.Type.MissingRequired)) {
           collector.addRequired(bundleVar);
         }

@@ -1,7 +1,6 @@
 package edu.suffolk.litlab.efspserver.docassemble;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.hubspot.algebra.Result;
 
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.OptionalService;
@@ -24,18 +23,18 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 
 public class FilingDocDocassembleJacksonDeserializer {
   private static Logger log = LoggerFactory.getLogger(
       FilingInformationDocassembleJacksonDeserializer.class);
 
   /** Parses a filing from the DA Json Object. Used by Deserializers that include filings. */
-  public static Result<Optional<FilingDoc>, FilingError> fromNode(JsonNode node, int sequenceNum, InfoCollector collector) {
+  public static Optional<FilingDoc> fromNode(JsonNode node, int sequenceNum, InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
       FilingError err = FilingError.malformedInterview(
               "Refusing to parse filing doc that isn't a Json Object: " + node.toPrettyString());
       collector.error(err);
-      return Result.err(err);
     }
 
     // Get: filename
@@ -43,7 +42,7 @@ public class FilingDocDocassembleJacksonDeserializer {
 
     if (!node.has("proxy_enabled") || !node.get("proxy_enabled").asBoolean(false)) {
       log.info(fileName + " isn't proxy enabled");
-      return Result.ok(Optional.empty());
+      return Optional.empty();
     }
 
     try {
@@ -51,13 +50,11 @@ public class FilingDocDocassembleJacksonDeserializer {
         FilingError err = FilingError.malformedInterview(
             "Refusing to parse filing without data_url");
         collector.error(err);
-        return Result.err(err);
       }
       if (!node.has("filename") || !node.get("filename").isTextual()) {
         FilingError err = FilingError.malformedInterview(
             "Refusing to parse filing without filename");
         collector.error(err);
-        return Result.err(err);
       }
 
       // TODO(brycew): we need to put URLs of all of the other filings and read in those files
@@ -92,7 +89,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       JsonNode jsonDueDate = node.get("due_date");
       Optional<LocalDate> maybeDueDate = Optional.empty();
       if (jsonDueDate != null && jsonDueDate.isTextual()) {
-        maybeDueDate = Optional.of(LocalDate.from(Instant.parse(jsonDueDate.asText())));
+        maybeDueDate = Optional.of(LocalDate.ofInstant(Instant.parse(jsonDueDate.asText()), ZoneId.of("America/Chicago")));
       }
 
       String filingComponentCode = "";
@@ -105,10 +102,10 @@ public class FilingDocDocassembleJacksonDeserializer {
       InputStream inStream = conn.getInputStream();
       if (inStream == null) {
         FilingError err = FilingError.serverError("Couldn't connect to " + inUrl.toString());
-        return Result.err(err);
+        collector.error(err);
       }
       // TODO(brycew): add all of these things
-      return Result.ok(Optional.of(
+      return Optional.of(
           new FilingDoc(fileName,
               inStream.readAllBytes(),
               Optional.empty(),
@@ -123,10 +120,11 @@ public class FilingDocDocassembleJacksonDeserializer {
               List.of(),
               List.of(),
               FilingTypeType.E_FILE,
-              sequenceNum == 0)));
+              sequenceNum == 0));
     } catch (IOException ex)  {
       FilingError err = FilingError.serverError("IOException trying to parse data_url: " + ex);
-      return Result.err(err);
+      collector.error(err);
+      throw err;
     }
   }
 }

@@ -113,7 +113,6 @@ public class EcfCourtSpecificSerializer {
       FilingError err = FilingError.serverError("There are no caseTypes for "
           + info.getCourtLocation() + " and " + caseCategory.code.get());
       collector.error(err);
-      throw err;
     }
     Optional<CaseType> maybeType = caseTypes.stream()
         .filter(type -> type.name.equals(info.getCaseType()))
@@ -132,13 +131,11 @@ public class EcfCourtSpecificSerializer {
       FilingError err = FilingError.malformedInterview("Filing type (" + ((type.initial) ? "Initial" : "Subsequent")
           + ") can't be filed at " + court.name);
       collector.error(err);
-      throw err;
     }
 
     if (type.initial && info.getCaseDocketNumber().isPresent()) {
       FilingError err = FilingError.malformedInterview("Initial filing case type can't have docket number");
       collector.error(err);
-      throw err;
     }
 
     List<FilingCode> filings = cd.getFilingType(info.getCourtLocation(),
@@ -347,7 +344,6 @@ public class EcfCourtSpecificSerializer {
       if (stateCodes.isEmpty()) {
         FilingError err = FilingError.malformedInterview("There are no allowed states for " + countryString);
         collector.error(err);
-        throw err;
       }
       collector.addWrong(var);
     }
@@ -406,12 +402,10 @@ public class EcfCourtSpecificSerializer {
       InfoCollector collector,
       InterviewVariable var) throws FilingError {
     if (!row.matchRegex(name)) {
-      var.appendDescription(": must match regex: " + row.regularexpression);
-      collector.addWrong(var);
+      collector.addWrong(var.appendDesc(": must match regex: " + row.regularexpression));
     }
     if (name.length() > 100) {
-      var.appendDescription(": can't exceed 100 characters");
-      collector.addWrong(var);
+      collector.addWrong(var.appendDesc(": can't exceed 100 characters"));
     }
     PersonNameTextType t = niemObjFac.createPersonNameTextType();
     t.setValue(name);
@@ -437,7 +431,6 @@ public class EcfCourtSpecificSerializer {
     if (correctExtension.isEmpty()) {
       FilingError err = FilingError.malformedInterview("Extension of " + doc.getFileName() + " not allowed! Try these instead: " + allowedFileTypes);
       collector.error(err);
-      throw err;
     }
 
     docType.setDocumentFileControlID(XmlHelper.convertString(doc.getDocumentFileControlId()));
@@ -464,7 +457,6 @@ public class EcfCourtSpecificSerializer {
         FilingError err = FilingError.malformedInterview("Court " + this.court.code
             + " requires that there be an associated Filing Attorney");
         collector.error(err);
-        throw err;
       }
     }
 
@@ -557,8 +549,7 @@ public class EcfCourtSpecificSerializer {
       OptionalServiceCode codeSettings = codeMap.get(serv.code);
       if (codeSettings.hasfeeprompt) {
         if (serv.feeAmount.isEmpty()) {
-          servVar.appendDescription(": needs fee prompt");
-          collector.addWrong(servVar);
+          collector.addWrong(servVar.appendDesc(": needs fee prompt"));
         } else {
           Decimal dec = new Decimal();
           dec.setValue(serv.feeAmount.get());
@@ -566,13 +557,11 @@ public class EcfCourtSpecificSerializer {
         }
       }
       if (!codeSettings.hasfeeprompt && serv.feeAmount.isPresent()) {
-        servVar.appendDescription(": doesn't need fee prompt");
-        collector.addWrong(servVar);
+        collector.addWrong(servVar.appendDesc(": doesn't need fee prompt"));
       }
       if (codeSettings.multiplier.equalsIgnoreCase("true")) {
         if (serv.multiplier.isEmpty()) {
-          servVar.appendDescription(": needs multiplier");
-          collector.addWrong(servVar);
+          collector.addWrong(servVar.appendDesc(": needs multiplier"));
         } else {
           Decimal dec = new Decimal();
           dec.setValue(new BigDecimal(serv.multiplier.get()));
@@ -646,30 +635,32 @@ public class EcfCourtSpecificSerializer {
       if (info.getMiscInfo().has("cross_references")
           && info.getMiscInfo().get("cross_references").isObject()) {
         JsonNode jsonRefs = info.getMiscInfo().get("cross_references");
+        if (jsonRefs.has("_class") && jsonRefs.has("elements")) {
+          jsonRefs= jsonRefs.get("elements");
+        }
         Iterator<String> refNames = jsonRefs.fieldNames();
         while (refNames.hasNext()) {
-          String refName = refNames.next();
-          if (refMap.containsKey(refName)) {
-            CrossReference ref = refMap.get(refName);
-            String refValue = jsonRefs.get(refName).asText();
-            if (!ref.matchesRegex(refValue)) {
-              refsVar.appendDescription(": for " + refValue + ": " + ref.customvalidationfailuremessage);
-              collector.addWrong(refsVar);
+          String refKey = refNames.next();
+          if (refMap.containsKey(refKey)) {
+            CrossReference myRef = refMap.get(refKey);
+            String refValue = jsonRefs.get(refKey).asText();
+            if (!myRef.matchesRegex(refValue)) {
+              collector.addWrong(refsVar.appendDesc(": for " + refValue + ": " + myRef.customvalidationfailuremessage));
             }
-            ids.put(ref.code, refValue);
-            usedCodes.add(ref.code);
+            ids.put(myRef.code, refValue);
+            usedCodes.add(myRef.code);
           } else {
-            refsVar.appendDescription(": ref " + refName + " isn't available");
-            collector.addWrong(refsVar);
+            collector.addWrong(refsVar.appendDesc(": ref " + refKey + " isn't available"));
           }
         }
       }
 
-      Set<String> reqRefs = refs.stream().filter(ref -> ref.isrequired).map(ref -> ref.code).collect(Collectors.toSet());
-      reqRefs.removeAll(usedCodes);
-      if (!reqRefs.isEmpty()) {
-        refsVar.appendDescription(": the following refs are required: " + reqRefs);
-        collector.addRequired(refsVar);
+      Set<String> missingRefs = refs.stream()
+          .filter(ref -> ref.isrequired && !usedCodes.contains(ref.code))
+          .map(ref -> ref.name)
+          .collect(Collectors.toSet());
+      if (!missingRefs.isEmpty()) {
+        collector.addRequired(refsVar.appendDesc(": the following refs are required: " + missingRefs));
       }
       return ids;
   }

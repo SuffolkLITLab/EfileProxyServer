@@ -48,21 +48,21 @@ public class PartyType {
 
   public static String getPartyTypeFromCaseType() {
     return """
-        SELECT p.code, p.name, p.isavailablefornewparties, p.casetypeid, p.isrequired, p.amount, 
-               p.numberofpartiestoignore, p.sendforredaction, p.dateofdeath, p.displayorder, 
-               p.efspcode, p.location 
-        FROM partytype AS p 
-        WHERE p.location=? AND p.casetypeid=?
+        SELECT code, name, isavailablefornewparties, casetypeid, isrequired, amount, 
+               numberofpartiestoignore, sendforredaction, dateofdeath, displayorder, 
+               efspcode, location 
+        FROM partytype
+        WHERE location=? AND casetypeid=?
         ORDER BY isrequired DESC, displayorder, casetypeid DESC""";
   }
   
   public static String getPartyTypeNoCaseType() {
     return """
-        SELECT p.code, p.name, p.isavailablefornewparties, p.casetypeid, p.isrequired, p.amount, 
-               p.numberofpartiestoignore, p.sendforredaction, p.dateofdeath, p.displayorder, 
-               p.efspcode, p.location 
-        FROM partytype AS p 
-        WHERE p.location=? AND p.casetypeid=''
+        SELECT code, name, isavailablefornewparties, casetypeid, isrequired, amount, 
+               numberofpartiestoignore, sendforredaction, dateofdeath, displayorder, 
+               efspcode, location 
+        FROM partytype
+        WHERE location=? AND casetypeid=''
         ORDER BY isrequired DESC, displayorder, casetypeid DESC""";
   }
   

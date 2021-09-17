@@ -5,10 +5,10 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class InterviewVariable {
   /** An enum for how other variables rely on this one. */
-  private String name;
-  private String description;
-  private String datatype;
-  private List<String> choices;
+  private final String name;
+  private final String description;
+  private final String datatype;
+  private final List<String> choices;
   
   /** Default constructor, directly assing all variables from params. */
   public InterviewVariable(String name, String description, String datatype, 
@@ -27,12 +27,8 @@ public class InterviewVariable {
     return description;
   }
   
-  public void setDescription(String description) {
-    this.description = description;
-  }
-  
-  public void appendDescription(String newDescription) {
-    this.description += newDescription;
+  public InterviewVariable appendDesc(String newDescription) {
+    return new InterviewVariable(name, description + newDescription, datatype, choices);
   }
   
   public String getDatatype() {

@@ -49,6 +49,7 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
+import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.PartyType;
@@ -196,6 +197,7 @@ public class CourtSchedulingService {
       cot.setRoleOfPerson(per);
       CaseOfficialAugmentationType caseOffAug = oasisObjFac.createCaseOfficialAugmentationType();
       EntityType ent = niemObjFac.createEntityType();
+      log.info("Party rep: " + partyRepresented.get());
       ent.setRef(partyRepresented.get());
       caseOffAug.getCaseRepresentedParty().add(ent);
       cot.getCaseOfficialAugmentationPoint().add(oasisObjFac.createCaseOfficialAugmentation(caseOffAug));
@@ -237,6 +239,7 @@ public class CourtSchedulingService {
       }
       JAXBElement<PersonType> entPer = niemObjFac.createEntityPerson(perType);
       ent.setEntityRepresentation(entPer);
+      ent.setId(per.getIdString());
       ecfAug.getRest().add(oasisObjFac.createCaseParty(ent));
     }
     ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.CaseAugmentationType oasisAug =
@@ -254,6 +257,7 @@ public class CourtSchedulingService {
     ecfv5.tyler.ecf.v5_0.extensions.common.CaseAugmentationType tylerAug = tylerObjFac.createCaseAugmentationType();
     FilingPartyEntityType fpet = tylerObjFac.createFilingPartyEntityType();
     FilingReferenceType frt = tylerObjFac.createFilingReferenceType();
+    log.info("Filing party: " + filingPartyId); 
     frt.setRef(filingPartyId);
     fpet.setPartyReference(frt);
     tylerAug.setFilingParty(fpet);
@@ -276,6 +280,7 @@ public class CourtSchedulingService {
     m.setReturnDate(Ecfv5XmlHelper.convertDate(returnDate.get()));
     m.setOutOfStateIndicator(Ecfv5XmlHelper.convertBool(outOfState));
     r.setReturnDateMessage(m);
+    log.info("Full msg: " + XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
     ReturnDateResponseMessageType resp = maybeServ.get().getReturnDate(r).getReturnDateResponseMessage();
     log.info("Full resp: " + resp);
     if (hasError(resp)) {

@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efspserver.services;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -48,9 +49,18 @@ public class CodesService {
 
   @GET
   @Path("/courts")
-  public Response getCourts(@Context HttpHeaders httpHeaders) throws SQLException {
-    List<String> courts = cd.getAllLocations();
-    return Response.ok(courts).build();
+  public Response getCourts(@Context HttpHeaders httpHeaders, 
+      @QueryParam("filable_only") String filableOnly) throws SQLException {
+    if (filableOnly != null && filableOnly.equalsIgnoreCase("true")) {
+      // 0 and 1 are special "system" courts that have defaults for all courts.
+      // They aren't available for filing
+      return Response.ok(cd.getFiliableCourts().stream()
+          .filter(c -> !c.equals("0") && !c.equals("1"))
+          .sorted().collect(Collectors.toList())).build();
+    } else {
+      List<String> courts = cd.getAllLocations();
+      return Response.ok(courts).build();
+    }
   }
 
   @GET
@@ -68,13 +78,18 @@ public class CodesService {
   @GET
   @Path("/courts/{court_id}/categories")
   public Response getCategories(@Context HttpHeaders httpHeaders,
-    @PathParam("court_id") String courtId) throws SQLException {
+    @PathParam("court_id") String courtId,
+    @QueryParam("filable_only") String filableOnly) throws SQLException {
     if (!cd.getAllLocations().contains(courtId)) {
       return Response.status(404).entity("Court does not exist " + courtId).build();
     }
-    List<CaseCategory> categories = cd.getCaseCategoriesFor(courtId);
-
-    return Response.ok(categories).build();
+    if (filableOnly != null && filableOnly.equalsIgnoreCase("true")) {
+      List<CaseCategory> categories = cd.getFilableCaseCategories(courtId);
+      return Response.ok(categories).build();
+    } else {
+      List<CaseCategory> categories = cd.getCaseCategoriesFor(courtId);
+      return Response.ok(categories).build();
+    }
   }
 
   @GET

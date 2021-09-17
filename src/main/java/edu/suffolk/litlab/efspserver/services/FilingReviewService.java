@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Person;
@@ -129,11 +130,16 @@ public class FilingReviewService {
     InfoCollector collector = new NeverSubmitCollector();
     Result<FilingInformation, FilingError> res = converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
     if (res.isErr()) {
+      log.warn(res.toString());
       return Response.status(400).entity(collector.jsonSummary()).build();
     }
     FilingInformation info = res.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
-    filingInterfaces.get(courtId).checkFiling(info, collector);
+    Result<NullValue, FilingError> resEfm = filingInterfaces.get(courtId).checkFiling(info, collector);
+    if (resEfm.isErr()) {
+      log.warn(resEfm.toString());
+      return Response.status(422).entity(collector.jsonSummary()).build();
+    }
     return Response.ok(collector.jsonSummary()).build();
   }
 
