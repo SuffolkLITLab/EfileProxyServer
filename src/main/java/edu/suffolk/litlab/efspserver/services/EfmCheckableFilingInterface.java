@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efspserver.services;
 import java.util.List;
 import java.util.UUID;
 
+import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 
 import edu.suffolk.litlab.efspserver.FilingInformation;
@@ -16,9 +17,8 @@ public abstract class EfmCheckableFilingInterface implements EfmFilingInterface 
   }
 
   @Override
-  public void checkFiling(FilingInformation info, InfoCollector collector) {
-    submitFilingIfReady(info, collector, "");
-    return;
+  public Result<NullValue, FilingError> checkFiling(FilingInformation info, InfoCollector collector) {
+    return submitFilingIfReady(info, collector, "").mapOk(n -> null);
   }
   
   /**

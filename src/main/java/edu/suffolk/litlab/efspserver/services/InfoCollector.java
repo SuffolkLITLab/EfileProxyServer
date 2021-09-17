@@ -36,8 +36,13 @@ public abstract class InfoCollector {
     this.wrongVars = new ArrayList<InterviewVariable>();
   }
   
-  public void error(FilingError err) {
+  public void error(FilingError err) throws FilingError {
     this.err = Optional.of(err);
+    throw err;
+  }
+  
+  public boolean hasError() {
+    return this.err.isPresent();
   }
   
   /** Says if the Info collector is finished with the current unit of 

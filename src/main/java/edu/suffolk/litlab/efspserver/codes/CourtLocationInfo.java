@@ -208,5 +208,13 @@ public class CourtLocationInfo {
   public static String allNames() {
     return "SELECT name, code FROM location ORDER BY code";
   }
+  
+  public static String filableQuery() {
+    return """
+        SELECT code
+        FROM location
+        WHERE initial ILIKE 'true' OR subsequent ILIKE 'true'
+        """;
+  }
 
 }

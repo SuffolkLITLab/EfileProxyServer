@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 
@@ -23,7 +24,7 @@ public interface EfmFilingInterface {
    */
   public Result<List<UUID>, FilingError> sendFiling(FilingInformation info, String apiToken);
   
-  public void checkFiling(FilingInformation info, InfoCollector collector);
+  public Result<NullValue, FilingError> checkFiling(FilingInformation info, InfoCollector collector);
   
   public Result<Response, FilingError> getFilingFees(FilingInformation info, String apiToken);
 

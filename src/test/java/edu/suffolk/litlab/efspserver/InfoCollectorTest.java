@@ -42,7 +42,12 @@ public class InfoCollectorTest {
   public void testFailFastShouldStopOnErr() {
     FailFastCollector collector = new FailFastCollector();
     FilingError err = FilingError.serverError("fake error");
-    collector.error(err);
+    try {
+      collector.error(err);
+      fail("Should have thrown Error");
+    } catch (FilingError newErr) {
+      // All good
+    }
     assertTrue(collector.finished());
     assertFalse(collector.okToSubmit());
   }
@@ -85,7 +90,11 @@ public class InfoCollectorTest {
     // If it throws, it's not valid JSON
     mapper.readTree(json);
     
-    collector.error(FilingError.serverError(""));
+    try {
+      collector.error(FilingError.serverError(""));
+    } catch (FilingError err) {
+      // Expected an error to be thrown!
+    }
     assertTrue(collector.finished());
   }
 }

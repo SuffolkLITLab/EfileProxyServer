@@ -1,7 +1,6 @@
 package edu.suffolk.litlab.efspserver.ecf;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.hubspot.algebra.Result;
 
 import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.FilingInformation;
@@ -76,7 +75,7 @@ public class EcfCaseTypeFactory {
    * @return
    * @throws FilingError
    */
-  public Result<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>, FilingError>
+  public JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>
       makeCaseTypeFromTylerCategory(
       CourtLocationInfo courtLocation,
       CaseCategory initialCaseCategory,
@@ -112,15 +111,17 @@ public class EcfCaseTypeFactory {
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase =
           makeCivilCaseType(caseAug, tylerAug, filing, amountInControversy);
       myCase.getValue().setCaseCategoryText(XmlHelper.convertText(caseCategoryCode));
-      return Result.ok(myCase);
+      return myCase;
     } else if (caseCategory.ecfcasetype.equals("DomesticCase")) {
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase =
           makeDomesticCaseType(caseAug, tylerAug, miscInfo);
       myCase.getValue().setCaseCategoryText(XmlHelper.convertText(caseCategoryCode));
-      return Result.ok(myCase);
+      return myCase;
     } else {
       // TODO(brycew): start passing back why we couldn't make a case from this info
-      return Result.err(FilingError.serverError("TODO(brycew): why couldn't we make this case?"));
+      FilingError err = FilingError.serverError("TODO(brycew): why couldn't we make this case?");
+      collector.error(err);
+      throw err;
     }
   }
 
@@ -209,7 +210,6 @@ public class EcfCaseTypeFactory {
       FilingError err = FilingError.serverError("DEV ERROR: All required parties not covered by existing party types. ("
           + info.getPlaintiffPartyType() + " " + info.getDefendantPartyType() + ". Missing " + requiredTypes);
       collector.error(err);
-      throw err;
     }
 
     int attorneyCount = 1;
@@ -256,7 +256,6 @@ public class EcfCaseTypeFactory {
         if (!courtLocation.allowmultipleattorneys && partyAtts.getValue().size() > 1) {
           FilingError err = FilingError.malformedInterview("Court " + info.getCourtLocation() + " doesn't allow multiple lawyers per case party.");
           collector.error(err);
-          throw err;
         }
         for (String attId : partyAtts.getValue()) {
           CaseOfficialType t = ecfCommonObjFac.createCaseOfficialType();
@@ -326,6 +325,7 @@ public class EcfCaseTypeFactory {
     if (courtLocation.allowreturndate && info.getReturnDate().isPresent()) {
       ecfAug.setReturnDate(XmlHelper.convertDate(info.getReturnDate().get()));
     }
+
     // TODO(brycew): FilingComponent
     // TODO(brycew): optional service
 
@@ -358,7 +358,8 @@ public class EcfCaseTypeFactory {
         amountType.setValue(amnt);
         ecfAug.setMaxFeeAmount(amountType);
       } else {
-        throw FilingError.malformedInterview("max_fee_amount needs to be a decimal (float) value");
+        FilingError err = FilingError.malformedInterview("max_fee_amount needs to be a decimal (float) value");
+        collector.error(err);
       }
     }
 

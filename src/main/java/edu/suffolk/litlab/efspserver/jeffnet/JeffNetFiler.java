@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.ContactInformation;
 import edu.suffolk.litlab.efspserver.FilingDoc;
@@ -112,9 +113,8 @@ public class JeffNetFiler implements EfmFilingInterface {
   }
 
   @Override
-  public void checkFiling(FilingInformation info, InfoCollector collector) {
-    // TODO(brycew): check the filing here too
-    return;
+  public Result<NullValue, FilingError> checkFiling(FilingInformation info, InfoCollector collector) {
+    return null;
   }
 
   @Override

@@ -1,10 +1,10 @@
 package edu.suffolk.litlab.efspserver.codes;
 
-import edu.suffolk.litlab.efspserver.EfmClient;
 import edu.suffolk.litlab.efspserver.HeaderSigner;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
+import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import gov.niem.niem.domains.jxdm._4.CourtType;
 import gov.niem.niem.niem_core._2.EntityType;
@@ -34,6 +34,8 @@ import java.util.zip.ZipInputStream;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.ws.BindingProvider;
+
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtCodelistType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtPolicyResponseMessageType;
@@ -341,12 +343,17 @@ public class CodeUpdater {
     authReq.setEmail(System.getenv("TYLER_USER_EMAIL"));
     authReq.setPassword(System.getenv("TYLER_USER_PASSWORD"));
     URL userWsdlUrl = EfmUserService.WSDL_LOCATION;
-    IEfmUserService userPort = EfmClient.makeUserService(userWsdlUrl);
+    EfmUserService userService = TylerLogin.makeUserServiceFactory(userWsdlUrl);
+    IEfmUserService userPort = userService.getBasicHttpBindingIEfmUserService();
+    ServiceHelpers.setupServicePort((BindingProvider) userPort);
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
     log.info("Auth'd?: " + authRes.getError().getErrorText());
     List<Header> headersList = TylerUserNamePassword.makeHeaderList(authRes);
-    FilingReviewMDEPort filingPort = EfmClient
-        .makeFilingService(FilingReviewMDEService.WSDL_LOCATION, headersList);
+    FilingReviewMDEService filingFactory = new FilingReviewMDEService();
+    FilingReviewMDEPort filingPort = filingFactory.getFilingReviewMDEPort(); 
+    ServiceHelpers.setupServicePort((BindingProvider) filingPort);
+    Map<String, Object> ctx = ((BindingProvider)filingPort).getRequestContext();
+    ctx.put(Header.HEADER_LIST, headersList);
     if (cd == null) {
       cd = new CodeDatabase(System.getenv("POSTGRES_URL"),
           Integer.parseInt(System.getenv("POSTGRES_PORT")),

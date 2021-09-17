@@ -41,7 +41,8 @@ public class CrossReference {
   
   public static String query() {
     return """
-        SELECT code, name, casetypeid, isdefault, isrequired, validationregex, customvalidationfailuremessage
+        SELECT code, name, casetypeid, isdefault, isrequired, validationregex, 
+          customvalidationfailuremessage, efspcode, location
         FROM crossreference WHERE location=? AND casetypeid=?
         """;
   }

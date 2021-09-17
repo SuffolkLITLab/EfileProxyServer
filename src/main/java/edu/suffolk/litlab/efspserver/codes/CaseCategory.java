@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver.codes;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Optional;
 
 public class CaseCategory {
@@ -29,8 +31,6 @@ public class CaseCategory {
     this("", name, ecfCaseType, "Not Available", "Not Available", "Not Available", "Not Available");
   }
   
-  // TODO(brycew): the tyler docs list a "damageamountsubsequent", but that's not in the 
-  // Table. Is that my fault, or something to investigate?
   public CaseCategory(String code, String name, String ecfCaseType, String procedureremedyinitial,
       String procedureSub, String damageinitial, String damagesubsequent) {
     try {
@@ -44,6 +44,11 @@ public class CaseCategory {
     this.procedureremedysubsequent = procedureSub;
     this.damageamountinitial = damageinitial;
     this.damageamountsubsequent = damagesubsequent;
+  }
+  
+  public CaseCategory(ResultSet rs) throws SQLException {
+    this(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), 
+        rs.getString(5), rs.getString(6), rs.getString(7));
   }
   
   public String getCode() {
@@ -62,6 +67,17 @@ public class CaseCategory {
         SELECT code, name, ecfcasetype, procedureremedyinitial,
         procedureremedysubsequent, damageamountinitial, damageamountsubsequent
         FROM casecategory WHERE location=? AND name=?""";
- }
+  }
+  
+  public static String getFilableCaseCategoryForLoc() {
+    return """
+        SELECT cat.code, cat.name, cat.ecfcasetype, cat.procedureremedyinitial, 
+        cat.procedureremedysubsequent, cat.damageamountinitial, cat.damageamountsubsequent
+        FROM casecategory AS cat
+          INNER JOIN casetype AS type
+          ON cat.code = type.casecategory AND cat.location = type.location
+        WHERE cat.location=?
+        """;
+  }
   
 }
