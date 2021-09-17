@@ -20,6 +20,9 @@ import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import edu.suffolk.litlab.efspserver.services.JsonExtractException;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -344,6 +347,15 @@ public class FilingInformationDocassembleJacksonDeserializer
     if (paymentIdJson != null && paymentIdJson.isTextual()) {
       entities.setPaymentId(paymentIdJson.asText());
     }
+
+    JsonNode jsonReturnDate = node.get("return_date");
+    Optional<LocalDate> maybeReturnDate = Optional.empty();
+    if (jsonReturnDate != null && jsonReturnDate.isTextual()) {
+      // TODO(brycew): Time zone user is using?
+      maybeReturnDate = Optional.of(LocalDate.ofInstant(Instant.parse(jsonReturnDate.asText()), ZoneId.of("America/Chicago")));
+    }
+    entities.setReturnDate(maybeReturnDate);
+
 
     entities.setFilings(filingDocs);
     entities.setMiscInfo(node);

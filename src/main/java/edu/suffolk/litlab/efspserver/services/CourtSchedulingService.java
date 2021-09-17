@@ -141,7 +141,11 @@ public class CourtSchedulingService {
     String motionTypeCode = info.getFilings().get(0).getMotionType().get();
     String filingPartyId = info.getFilings().get(0).getFilingPartyIds().get(0);
     String filingAttorneyId = info.getFilings().get(0).getFilingAttorney().get();
-    LocalDate returnDate = info.getFilings().get(0).getReturnDate().get();
+    Optional<LocalDate> returnDate = info.getReturnDate();
+    if (returnDate.isEmpty()) {
+      return Response.status(400).entity("Need return_date").build();
+    }
+    
     boolean outOfState = info.getMiscInfo().get("out_of_state").asBoolean();
     Optional<BigDecimal> maybeAmt = Optional.empty();
     if (allCodes.filing.amountincontroversy.equalsIgnoreCase("Required")) {
@@ -259,7 +263,7 @@ public class CourtSchedulingService {
 
     ct.getCaseAugmentationPoint().add(tylerObjFac.createCaseAugmentation(tylerAug));
     m.setCase(ct);
-    m.setReturnDate(Ecfv5XmlHelper.convertDate(returnDate));
+    m.setReturnDate(Ecfv5XmlHelper.convertDate(returnDate.get()));
     m.setOutOfStateIndicator(Ecfv5XmlHelper.convertBool(outOfState));
     r.setReturnDateMessage(m);
     ReturnDateResponseMessageType resp = maybeServ.get().getReturnDate(r).getReturnDateResponseMessage();
