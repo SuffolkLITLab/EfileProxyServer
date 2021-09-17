@@ -61,8 +61,11 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusresponsemessage_4.FilingStatusResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.messagereceiptmessage_4.MessageReceiptMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.PaymentMessageType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.servicereceiptmessage_4.ServiceReceiptMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ReviewFilingRequestMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingReviewMDEPort;
+import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.ServiceMDEPort;
+
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +81,7 @@ import tyler.ecf.extensions.filingserviceresponsemessage.FilingServiceResponseMe
 import tyler.ecf.extensions.servicetypesrequestmessage.ServiceTypesRequestMessageType;
 import tyler.ecf.extensions.servicetypesresponsemessage.ServiceTypesResponseMessageType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
+import tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
 
 public class OasisEcfFiler extends EfmCheckableFilingInterface {
   private static Logger log =
@@ -267,14 +271,30 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       throw FilingError.serverError("Got JABXException assembling the filing: " + e);
     }
   }
+  
+  private Result<List<UUID>, FilingError> serveFilingIfReady(CoreFilingMessageType cfm, 
+      FilingInformation info, InfoCollector collector, String apiToken) {
 
+    ServiceMDEService ss = new ServiceMDEService(ServiceMDEService.WSDL_LOCATION);
+    ServiceMDEPort port = ss.getServiceMDEPort();
+    ServiceReceiptMessageType receipt = port.serveFiling(cfm);
+    // TODO(brycew): CONTINUE
+    receipt.getServiceRecipientStatus();
+    
+    return Result.err(FilingError.serverError("Not implemented"));
+  }
+
+  @Override
   public Result<List<UUID>, FilingError> submitFilingIfReady(FilingInformation info,
-    InfoCollector collector, String apiToken) {
+    InfoCollector collector, String apiToken, ApiChoice choice) {
     CoreFilingMessageType cfm;
     try {
       cfm = prepareFiling(info, collector, apiToken);
     } catch (FilingError err) {
       return Result.err(err);
+    }
+    if (choice.equals(ApiChoice.ServiceApi)) {
+      return serveFilingIfReady(cfm, info, collector, apiToken);
     }
 
     oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory wsOf =

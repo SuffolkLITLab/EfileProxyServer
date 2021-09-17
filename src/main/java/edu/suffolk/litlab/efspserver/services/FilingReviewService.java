@@ -7,8 +7,6 @@ import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
-import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.ServiceMDEPort;
-import tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -100,8 +98,8 @@ public class FilingReviewService {
     }
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     try {
-      Date startDate = dateFormat.parse(startStr);
-      Date endDate = dateFormat.parse(endStr);
+      Date startDate = (startStr != null) ? dateFormat.parse(startStr) : null;
+      Date endDate = (endStr != null) ? dateFormat.parse(endStr) : null;
       return filingInterfaces.get(courtId).getFilingList(courtId, userId, startDate, endDate,
           activeToken.get());
     } catch (ParseException ex) {
@@ -248,7 +246,7 @@ public class FilingReviewService {
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
     Result<List<UUID>, FilingError> result =
-        filingInterfaces.get(courtId).sendFiling(info, activeToken.get());
+        filingInterfaces.get(courtId).sendFiling(info, activeToken.get(), EfmFilingInterface.ApiChoice.FileApi);
     if (result.isErr()) {
       return Response.status(500).entity(result.unwrapErrOrElseThrow().toJson()).build();
     }
@@ -300,11 +298,12 @@ public class FilingReviewService {
       return maybeInfo.unwrapErrOrElseThrow();
     }
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
-
-    ServiceMDEService ss = new ServiceMDEService(ServiceMDEService.WSDL_LOCATION);
-    ServiceMDEPort port = ss.getServiceMDEPort();
-    // TODO(brycew): CONTINUE
-
+    info.setCourtLocation(courtId);
+    Result<List<UUID>, FilingError> result =
+        filingInterfaces.get(courtId).sendFiling(info, activeToken.get(), EfmFilingInterface.ApiChoice.ServiceApi);
+    if (result.isErr()) {
+      return Response.status(500).entity(result.unwrapErrOrElseThrow().toJson()).build();
+    }
     return Response.status(501).build();
   }
 

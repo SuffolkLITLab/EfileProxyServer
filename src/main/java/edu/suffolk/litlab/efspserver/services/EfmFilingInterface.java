@@ -11,6 +11,10 @@ import java.util.UUID;
 import javax.ws.rs.core.Response;
 
 public interface EfmFilingInterface {
+  public enum ApiChoice {
+    FileApi,
+    ServiceApi;
+  };
   
   /**
    * Actually sends the filing information to the EFM if it can.
@@ -22,7 +26,7 @@ public interface EfmFilingInterface {
    *   about how that split happens, we just need to know the UUIDs for each of the filings
    *   for the callbacks. If it's > 1, should be the same number as the FilingDocs in info
    */
-  public Result<List<UUID>, FilingError> sendFiling(FilingInformation info, String apiToken);
+  public Result<List<UUID>, FilingError> sendFiling(FilingInformation info, String apiToken, ApiChoice choice);
   
   public Result<NullValue, FilingError> checkFiling(FilingInformation info, InfoCollector collector);
   
