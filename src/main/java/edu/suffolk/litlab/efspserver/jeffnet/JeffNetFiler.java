@@ -71,7 +71,10 @@ public class JeffNetFiler implements EfmFilingInterface {
   }
 
   @Override
-  public Result<List<UUID>, FilingError> sendFiling(FilingInformation info, String apiToken) {
+  public Result<List<UUID>, FilingError> sendFiling(FilingInformation info, String apiToken, ApiChoice choice) {
+    if (choice.equals(ApiChoice.ServiceApi)) {
+      return Result.err(FilingError.malformedInterview("Error: JeffNet cannot do service"));
+    }
     if (info.getFilings().isEmpty()) {
       return Result.err(FilingError.serverError("Error: cannot file with no filings"));
     }

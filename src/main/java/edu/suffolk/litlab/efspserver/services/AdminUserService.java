@@ -153,7 +153,7 @@ public class AdminUserService {
     String tylerId = httpHeaders.getHeaderString("TYLER-ID");
     if (tylerId == null || tylerId.isBlank()) {
       return Response.status(500).entity(
-          "Server dose not have a Tyler UUID for the current account. Can you give it to me?").build();
+          "Server does not have a Tyler UUID for the current account. Can you give it to me?").build();
     }
 
     GetUserRequestType req = new GetUserRequestType();

@@ -11,14 +11,14 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 public abstract class EfmCheckableFilingInterface implements EfmFilingInterface {
 
   @Override
-  public Result<List<UUID>, FilingError> sendFiling(FilingInformation info, String apiToken) {
+  public Result<List<UUID>, FilingError> sendFiling(FilingInformation info, String apiToken, ApiChoice choice) {
     FailFastCollector collector = new FailFastCollector();
-    return submitFilingIfReady(info, collector, apiToken);
+    return submitFilingIfReady(info, collector, apiToken, choice);
   }
 
   @Override
   public Result<NullValue, FilingError> checkFiling(FilingInformation info, InfoCollector collector) {
-    return submitFilingIfReady(info, collector, "").mapOk(n -> null);
+    return submitFilingIfReady(info, collector, "", ApiChoice.FileApi).mapOk(n -> null);
   }
   
   /**
@@ -28,6 +28,6 @@ public abstract class EfmCheckableFilingInterface implements EfmFilingInterface 
    * @return Same return type as {@link sendFiling}
    */
   public abstract Result<List<UUID>, FilingError> submitFilingIfReady(
-      FilingInformation info, InfoCollector collector, String apiToken);
+      FilingInformation info, InfoCollector collector, String apiToken, ApiChoice chocie);
 
 }
