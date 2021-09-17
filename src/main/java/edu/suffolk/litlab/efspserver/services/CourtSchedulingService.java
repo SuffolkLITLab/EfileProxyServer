@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -86,16 +87,17 @@ public class CourtSchedulingService {
   private ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ObjectFactory oasisObjFac;
   private ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.ObjectFactory oasisCivilObjFac;
   private ecfv5.tyler.ecf.v5_0.extensions.common.ObjectFactory tylerObjFac;
-  private ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory niemObjFac;
-  private ecfv5.gov.niem.release.niem.proxy.xsd._4.ObjectFactory proxyObjFac;
-  private ecfv5.gov.niem.release.niem.domains.jxdm._6.ObjectFactory jxObjFac;
-  private Map<String, InterviewToFilingEntityConverter> converterMap;
-  private SecurityHub security;
-  private CodeDatabase cd;
+  private final ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory niemObjFac;
+  private final ecfv5.gov.niem.release.niem.proxy.xsd._4.ObjectFactory proxyObjFac;
+  private final ecfv5.gov.niem.release.niem.domains.jxdm._6.ObjectFactory jxObjFac;
+  private final Map<String, InterviewToFilingEntityConverter> converterMap;
+  private final SecurityHub security;
+  private final CodeDatabase cd;
 
   
-  public CourtSchedulingService(Map<String, InterviewToFilingEntityConverter> converterMap, CodeDatabase cd) {
+  public CourtSchedulingService(Map<String, InterviewToFilingEntityConverter> converterMap, SecurityHub security, CodeDatabase cd) {
     this.cd = cd;
+    this.security = security;
     this.converterMap = converterMap;
     this.oasisWrapObjFac = new ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ObjectFactory();
     this.oasisObjFac = new ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ObjectFactory();
@@ -110,7 +112,7 @@ public class CourtSchedulingService {
   @POST
   @Path("/courts/{court_id}/return_date")
   public Response getReturnDate(@Context HttpHeaders httpHeaders, 
-      @PathParam("court_id") String courtId, String allVars) throws FilingError, SQLException {
+      @PathParam("court_id") String courtId, String allVars) throws SQLException {
     Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort(httpHeaders);
     if (maybeServ.isEmpty()) {
       return Response.status(401).build();
@@ -130,23 +132,26 @@ public class CourtSchedulingService {
       return Response.status(400).entity(collector.jsonSummary()).build();
     }
     FilingInformation info = res.unwrapOrElseThrow();
+    info.setCourtLocation(courtId);
     if (info.getFilings().isEmpty()) {
       return Response.status(400).entity("Need to have a filing to calculate a request date").build();
     }
-    // TODO(brycew): figure out how to convert these vars from names to the codes
-    String caseCategoryCode = info.getCaseCategory().code.get();
+    try {
     EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo.get());
     ComboCaseCodes allCodes = serializer.serializeCaseCodes(info, collector);
     Optional<String> caseTrackingId = info.getPreviousCaseId(); 
-    String motionTypeCode = info.getFilings().get(0).getMotionType().get();
+    Optional<String> motionTypeCode = info.getFilings().get(0).getMotionType();
     String filingPartyId = info.getFilings().get(0).getFilingPartyIds().get(0);
-    String filingAttorneyId = info.getFilings().get(0).getFilingAttorney().get();
+    Optional<String> filingAttorneyId = info.getFilings().get(0).getFilingAttorney();
     Optional<LocalDate> returnDate = info.getReturnDate();
     if (returnDate.isEmpty()) {
       return Response.status(400).entity("Need return_date").build();
     }
     
-    boolean outOfState = info.getMiscInfo().get("out_of_state").asBoolean();
+    boolean outOfState = false; 
+    if (info.getMiscInfo().has("out_of_state")) {
+      outOfState = info.getMiscInfo().get("out_of_state").asBoolean(false);
+    }
     Optional<BigDecimal> maybeAmt = Optional.empty();
     if (allCodes.filing.amountincontroversy.equalsIgnoreCase("Required")) {
       JsonNode jsonAmt = info.getMiscInfo().get("amount_in_controversy");
@@ -163,10 +168,12 @@ public class CourtSchedulingService {
     caseTrackingId.ifPresent(id -> ct.setCaseTrackingID(Ecfv5XmlHelper.convertString(id)));
 
     CourtEventAugmentationType e = oasisObjFac.createCourtEventAugmentationType();
-    DateType currentDate = Ecfv5XmlHelper.convertDate(LocalDate.from(Instant.now()));
+    DateType currentDate = Ecfv5XmlHelper.convertDate(LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault()));
     e.setCourtEventEnteredOnDocketDate(currentDate);
     e.setCourtEventTypeCode(Ecfv5XmlHelper.convertText(allCodes.filing.code));
-    e.setCourtLocationCode(tylerObjFac.createMotionTypeCode(Ecfv5XmlHelper.convertText(motionTypeCode)));
+    motionTypeCode.ifPresent(mot -> {
+      e.setCourtLocationCode(tylerObjFac.createMotionTypeCode(Ecfv5XmlHelper.convertText(mot)));
+    });
     CourtEventType event = jxObjFac.createCourtEventType();
     event.getCourtEventAugmentationPoint().add(oasisObjFac.createCourtEventAugmentation(e));
     CaseAugmentationType jAug = jxObjFac.createCaseAugmentationType();
@@ -199,7 +206,7 @@ public class CourtSchedulingService {
     ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseAugmentationType ecfAug = 
         oasisObjFac.createCaseAugmentationType();
     TextType catText = niemObjFac.createTextType();
-    catText.setValue(caseCategoryCode);
+    catText.setValue(allCodes.cat.code.get());
     ecfAug.getRest().add(oasisObjFac.createCaseCategoryCode(catText));
     // TODO(brycew): write ecfv5 versions of this. Right now, don't have time to reimplement everything, so checking with old ecfv4 code and building here List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, caseTypeCode);
     List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, allCodes.type.code); 
@@ -220,7 +227,8 @@ public class CourtSchedulingService {
       PersonType perType = niemObjFac.createPersonType();
       roleText.setValue(per.getIdString());
       perType.getPersonAugmentationPoint().add(oasisObjFac.createCaseParticipantRoleCode(roleText));
-      if (info.getPartyAttorneyMap().get(per.getIdString()).isEmpty()) {
+      if (!info.getPartyAttorneyMap().containsKey(per.getIdString()) 
+          || info.getPartyAttorneyMap().get(per.getIdString()).isEmpty()) {
         IdentificationType idType = niemObjFac.createIdentificationType();
         idType.setIdentificationID(Ecfv5XmlHelper.convertString("SRL"));
         perType.getPersonAugmentationPoint().add(oasisObjFac.createParticipantID(idType));
@@ -249,9 +257,11 @@ public class CourtSchedulingService {
     frt.setRef(filingPartyId);
     fpet.setPartyReference(frt);
     tylerAug.setFilingParty(fpet);
-    FilingAttorneyEntityType faet = tylerObjFac.createFilingAttorneyEntityType();
-    faet.setAttorneyIdentification(Ecfv5XmlHelper.convertId(filingAttorneyId));
-    tylerAug.setFilingAttorney(faet);
+    if (filingAttorneyId.isPresent()) {
+      FilingAttorneyEntityType faet = tylerObjFac.createFilingAttorneyEntityType();
+      faet.setAttorneyIdentification(Ecfv5XmlHelper.convertId(filingAttorneyId.get()));
+      tylerAug.setFilingAttorney(faet);
+    }
 
     Map<String, String> crossReferences = serializer.getCrossRefIds(info, collector, courtId, allCodes.type.code);
     for (Map.Entry<String, String> refs : crossReferences.entrySet()) {
@@ -272,6 +282,9 @@ public class CourtSchedulingService {
       return Response.status(400).entity(resp.getMessageStatus()).build();
     }
     return Response.ok(resp.getReturnDate()).build();
+    } catch (FilingError err) {
+      return Response.status(422).entity(collector.jsonSummary()).build();
+    }
   }
   
   @POST
@@ -298,9 +311,9 @@ public class CourtSchedulingService {
       msg.setEstimatedDuration(dur);
       DateRangeType drt = niemObjFac.createDateRangeType();
       String startDate = params.get("start_date").asText();
-      drt.setStartDate(Ecfv5XmlHelper.convertDate(LocalDate.from(Instant.parse(startDate))));
+      drt.setStartDate(Ecfv5XmlHelper.convertDate(LocalDate.ofInstant(Instant.parse(startDate), ZoneId.systemDefault())));
       String endDate = params.get("start_date").asText();
-      drt.setEndDate(Ecfv5XmlHelper.convertDate(LocalDate.from(Instant.parse(endDate))));
+      drt.setEndDate(Ecfv5XmlHelper.convertDate(LocalDate.ofInstant(Instant.parse(endDate), ZoneId.systemDefault())));
       msg.getPotentialStartTimeRange().add(drt);
     }
 
@@ -353,7 +366,7 @@ public class CourtSchedulingService {
   }
   
   private void setupReq(CaseFilingType cft, String courtId) {
-    DateType currentDate = Ecfv5XmlHelper.convertDate(LocalDate.from(Instant.now()));
+    DateType currentDate = Ecfv5XmlHelper.convertDate(LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault()));
     cft.setDocumentPostDate(currentDate);
     cft.setCaseCourt(Ecfv5XmlHelper.convertCourtType(courtId));
     cft.setServiceInteractionProfileCode(Ecfv5XmlHelper.convertNormalized(ServiceHelpers.MDE_PROFILE_CODE));

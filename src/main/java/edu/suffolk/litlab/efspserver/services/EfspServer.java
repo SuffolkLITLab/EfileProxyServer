@@ -104,6 +104,7 @@ public class EfspServer {
         PaymentsService.class,
         MessageSettingsService.class,
         CasesService.class,
+        CourtSchedulingService.class,
         CodesService.class);
     sf.setResourceProvider(AdminUserService.class,
         new SingletonResourceProvider(new AdminUserService(security, cd)));
@@ -119,6 +120,8 @@ public class EfspServer {
         new SingletonResourceProvider(new CasesService(security, cd)));
     sf.setResourceProvider(CodesService.class,
         new SingletonResourceProvider(new CodesService(cd)));
+    sf.setResourceProvider(CourtSchedulingService.class,
+        new SingletonResourceProvider(new CourtSchedulingService(converterMap, security, cd)));
     sf.setResourceProvider(MessageSettingsService.class,
         new SingletonResourceProvider(new MessageSettingsService(security, md)));
 
