@@ -95,12 +95,6 @@ public class FilingDocDocassembleJacksonDeserializer {
         maybeDueDate = Optional.of(LocalDate.from(Instant.parse(jsonDueDate.asText())));
       }
 
-      JsonNode jsonReturnDate = node.get("return_date");
-      Optional<LocalDate> maybeReturnDate = Optional.empty();
-      if (jsonReturnDate != null && jsonReturnDate.isTextual()) {
-        maybeReturnDate = Optional.of(LocalDate.from(Instant.parse(jsonReturnDate.asText())));
-      }
-
       String filingComponentCode = "";
       JsonNode filingComponentJson = node.get("filing_component");
       if (filingComponentJson != null && filingComponentJson.isTextual()) {
@@ -120,7 +114,6 @@ public class FilingDocDocassembleJacksonDeserializer {
               Optional.empty(),
               "",
               maybeDueDate,
-              maybeReturnDate,
               List.of(),
               Optional.empty(),
               documentTypeFormatName, filingComponentCode,

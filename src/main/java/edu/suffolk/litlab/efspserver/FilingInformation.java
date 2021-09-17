@@ -1,6 +1,8 @@
 package edu.suffolk.litlab.efspserver;
 
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,7 @@ public class FilingInformation {
   private String caseSubtype;
   private String paymentId;
   private List<FilingDoc> filingDocs = List.of();
+  private Optional<LocalDate> returnDate = Optional.empty();
   
   private JsonNode miscInfo;
   
@@ -151,6 +154,10 @@ public class FilingInformation {
     return caseDocketNumber;
   }
   
+  public Optional<LocalDate> getReturnDate() {
+    return returnDate;
+  }
+  
   public JsonNode getMiscInfo() {
     return miscInfo;
   }
@@ -213,6 +220,10 @@ public class FilingInformation {
   
   public void setPaymentId(String paymentId) {
     this.paymentId = paymentId;
+  }
+  
+  public void setReturnDate(Optional<LocalDate> returnDate) {
+    this.returnDate = returnDate;
   }
   
   public void setMiscInfo(JsonNode node) {
