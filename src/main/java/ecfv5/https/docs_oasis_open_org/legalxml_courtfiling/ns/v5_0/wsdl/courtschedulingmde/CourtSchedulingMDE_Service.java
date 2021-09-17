@@ -1,6 +1,5 @@
 package ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebEndpoint;
@@ -24,13 +23,10 @@ public class CourtSchedulingMDE_Service extends Service {
     public final static QName SERVICE = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE", "CourtSchedulingMDE");
     public final static QName CourtSchedulingMDEPort = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE", "CourtSchedulingMDEPort");
     static {
-        URL url = null;
-        try {
-            url = new URL("file:EfileProxyServer/src/main/resources/wsdl/v5/CourtSchedulingMDE.wsdl");
-        } catch (MalformedURLException e) {
-            java.util.logging.Logger.getLogger(CourtSchedulingMDE_Service.class.getName())
-                .log(java.util.logging.Level.INFO,
-                     "Can not initialize the default wsdl from {0}", "file:EfileProxyServer/src/main/resources/wsdl/v5/CourtSchedulingMDE.wsdl");
+        URL url = CourtSchedulingMDE_Service.class.getClassLoader().getResource("wsdl/v5/CourtSchedulingMDE.wsdl");;
+        if (url == null) {
+          org.slf4j.LoggerFactory.getLogger(CourtSchedulingMDE_Service.class.getName()).info(
+               "Can not initialize the default wsdl from {0}", "classpath:wsdl/v5/CourtSchedulingMDE.wsdl");
         }
         WSDL_LOCATION = url;
     }

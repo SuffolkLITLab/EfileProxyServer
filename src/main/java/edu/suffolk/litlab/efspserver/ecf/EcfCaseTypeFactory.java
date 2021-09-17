@@ -322,6 +322,10 @@ public class EcfCaseTypeFactory {
         }
       }
     }
+    
+    if (courtLocation.allowreturndate && info.getReturnDate().isPresent()) {
+      ecfAug.setReturnDate(XmlHelper.convertDate(info.getReturnDate().get()));
+    }
     // TODO(brycew): FilingComponent
     // TODO(brycew): optional service
 
