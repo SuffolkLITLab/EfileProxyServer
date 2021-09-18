@@ -108,7 +108,8 @@
 	</binding>
 	<service name="CourtSchedulingMDE">
 		<port binding="tns:CourtSchedulingMDESoap" name="CourtSchedulingMDEPort">
-			<soap:address location="https://localhost/..."/>
+		    <!-- NOTE(brycew): manually added location here, the given URL was bad. -->
+			<soap:address location="https://Illinois-stage.tylerhost.net/efm/CourtSchedulingMDE.svc"/>
 		</port>
 	</service>
 	<wsp:UsingPolicy wsdl:required="true"/>

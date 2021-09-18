@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 import ecfv5.gov.niem.release.niem.structures._4.ObjectType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import ecfv5.org.w3._2000._09.xmldsig_.KeyInfoType;
+import org.w3._2000._09.xmldsig_.KeyInfoType;
 
 
 /**
