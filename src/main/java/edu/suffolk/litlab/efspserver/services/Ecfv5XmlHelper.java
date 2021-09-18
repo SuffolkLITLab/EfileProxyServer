@@ -1,6 +1,8 @@
 package edu.suffolk.litlab.efspserver.services;
 
 import java.time.LocalDate;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -16,29 +18,40 @@ public class Ecfv5XmlHelper {
   static final ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory niemCoreObjFac;
   static final ecfv5.gov.niem.release.niem.proxy.xsd._4.ObjectFactory niemProxyObjFac;
   static final ecfv5.gov.niem.release.niem.domains.jxdm._6.ObjectFactory jxObjFac;
+  static final DatatypeFactory datatypeFac;
 
   static {
     niemProxyObjFac = new ecfv5.gov.niem.release.niem.proxy.xsd._4.ObjectFactory();
     niemCoreObjFac = new ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory();
     jxObjFac = new ecfv5.gov.niem.release.niem.domains.jxdm._6.ObjectFactory();
-  }
-  
-  public static DateType convertDate(LocalDate date) {
-    DateType dt = niemCoreObjFac.createDateType(); 
-    ecfv5.gov.niem.release.niem.proxy.xsd._4.Date d = niemProxyObjFac.createDate();
-    DatatypeFactory datatypeFac;
     try {
       datatypeFac = DatatypeFactory.newInstance();
     } catch (DatatypeConfigurationException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
       throw new RuntimeException(e);
     }
-    // TODO(brycew): THIS TIMEZONE IS WRONG: how should LocalDate +
-    // GregorianCalendar operate?
-    d.setValue(datatypeFac.newXMLGregorianCalendarDate(date.getYear(), 
-        date.getMonth().getValue(), date.getDayOfMonth(), 0));
+  }
 
+  public static DateType convertDate(LocalDate date) {
+    GregorianCalendar cal = new GregorianCalendar();
+    cal.set(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), 0, 0, 0);
+
+    ecfv5.gov.niem.release.niem.proxy.xsd._4.Date d = niemProxyObjFac.createDate();
+    d.setValue(datatypeFac.newXMLGregorianCalendar(cal));
+
+    DateType dt = niemCoreObjFac.createDateType(); 
+    dt.setDateRepresentation(niemCoreObjFac.createDate(d));
+    return dt;
+  }
+  
+  public static DateType convertDate(Date date) {
+    GregorianCalendar cal = new GregorianCalendar();
+    cal.setTime(date);
+
+    ecfv5.gov.niem.release.niem.proxy.xsd._4.Date d = niemProxyObjFac.createDate();
+    d.setValue(datatypeFac.newXMLGregorianCalendar(cal));
+
+    DateType dt = niemCoreObjFac.createDateType(); 
     dt.setDateRepresentation(niemCoreObjFac.createDate(d));
     return dt;
   }
