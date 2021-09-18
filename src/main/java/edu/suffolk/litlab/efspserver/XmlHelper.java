@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efspserver;
 
 import gov.niem.niem.domains.jxdm._4.CourtType;
 import gov.niem.niem.niem_core._2.DateType;
+import gov.niem.niem.niem_core._2.MeasureType;
 import gov.niem.niem.niem_core._2.TextType;
 import java.io.File;
 import java.io.StringWriter;
@@ -88,6 +89,24 @@ public class XmlHelper {
     gov.niem.niem.proxy.xsd._2.String outStr = niemProxyObjFac.createString();
     outStr.setValue(str);
     return outStr;
+  }
+  
+  /** TODO(brycew): figure out what measureUnits would actually be used. */
+  public static long sizeMeasureAsBytes(MeasureType type) {
+    String measureText = ((TextType) type.getMeasureValue().getValue()).getValue();
+    long measureNum = Long.parseLong(measureText);
+    String measureUnit = type.getMeasureUnitText().getValue();
+    if (measureUnit.equalsIgnoreCase("byte")) {
+      return measureNum;
+    } else if (measureUnit.equalsIgnoreCase("kilobyte") || measureUnit.equals("kB")) {
+      return measureNum * 1000;
+    } else if (measureUnit.equals("KB") || measureUnit.equals("KiB")) {
+      return measureNum * 1024;
+    } else if (measureUnit.equals("MB")) {
+      return measureNum * 1000 * 1000;
+    } else {
+      return measureNum;
+    }
   }
 
   public static gov.niem.niem.niem_core._2.IdentificationType convertId(String idStr) {

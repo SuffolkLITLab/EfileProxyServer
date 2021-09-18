@@ -28,7 +28,7 @@ public interface EfmFilingInterface {
    */
   public Result<List<UUID>, FilingError> sendFiling(FilingInformation info, String apiToken, ApiChoice choice);
   
-  public Result<NullValue, FilingError> checkFiling(FilingInformation info, InfoCollector collector);
+  public Result<NullValue, FilingError> checkFiling(FilingInformation info, String apiToken, InfoCollector collector);
   
   public Result<Response, FilingError> getFilingFees(FilingInformation info, String apiToken);
 

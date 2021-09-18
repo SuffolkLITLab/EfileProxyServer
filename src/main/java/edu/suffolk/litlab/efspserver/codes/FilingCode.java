@@ -15,8 +15,8 @@ public class FilingCode {
   public String civilclaimamount;
   public String probateestateamount;
   public String amountincontroversy;
-  public String useduedate;
-  public String isproposedorder;
+  public boolean useduedate;
+  public boolean isproposedorder;
   public String efspcode;
   public String location;
   
@@ -34,8 +34,8 @@ public class FilingCode {
     this.civilclaimamount = civilclaimamount;
     this.probateestateamount = probabeestateamount;
     this.amountincontroversy = amountincontroversy;
-    this.useduedate = useduedate;
-    this.isproposedorder = isproposedorder;
+    this.useduedate = Boolean.parseBoolean(useduedate);
+    this.isproposedorder = Boolean.parseBoolean(isproposedorder);
     this.efspcode = efspcode;
     this.location = location;
   }

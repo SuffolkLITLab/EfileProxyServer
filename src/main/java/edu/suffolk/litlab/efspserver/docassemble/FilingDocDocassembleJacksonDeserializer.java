@@ -109,7 +109,7 @@ public class FilingDocDocassembleJacksonDeserializer {
           new FilingDoc(fileName,
               inStream.readAllBytes(),
               Optional.empty(),
-              "",
+              Optional.empty(),
               maybeDueDate,
               List.of(),
               Optional.empty(),

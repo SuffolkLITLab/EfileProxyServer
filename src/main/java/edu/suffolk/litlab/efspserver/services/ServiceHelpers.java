@@ -83,6 +83,7 @@ public class ServiceHelpers {
     tylerToHttp.put("97", 400); // Invalid PaymentID
     tylerToHttp.put("169", 422); // Invalid birthdate
     tylerToHttp.put("170", 422); // Invalid password (when making an account? TODO(brycew))
+    tylerToHttp.put("344", 422); // Doesn't handle cross references
   }
   
   private static EfmFirmService firmFactory = new EfmFirmService(
