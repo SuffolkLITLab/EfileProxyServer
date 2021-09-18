@@ -17,8 +17,8 @@ public abstract class EfmCheckableFilingInterface implements EfmFilingInterface 
   }
 
   @Override
-  public Result<NullValue, FilingError> checkFiling(FilingInformation info, InfoCollector collector) {
-    return submitFilingIfReady(info, collector, "", ApiChoice.FileApi).mapOk(n -> null);
+  public Result<NullValue, FilingError> checkFiling(FilingInformation info, String apiToken, InfoCollector collector) {
+    return submitFilingIfReady(info, collector, apiToken, ApiChoice.FileApi).mapOk(n -> null);
   }
   
   /**

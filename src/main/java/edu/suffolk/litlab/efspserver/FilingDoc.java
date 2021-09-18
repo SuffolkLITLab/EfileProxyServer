@@ -17,7 +17,7 @@ public class FilingDoc {
   private Optional<String> userProvidedDescription;
   // TODO(brycew): what is this? Might be able to be a dup of the GUID,
   // it's returned with Get FilingList
-  private String documentFileControlId;
+  private Optional<String> filingReferenceNum;
   // See DueDateAvailableForFilers datafield and DocumentInformationCutOffDate
   private Optional<LocalDate> dueDate;
   // A valid filing code (complaint, motion, Appearance, Motion, etc.)
@@ -59,7 +59,7 @@ public class FilingDoc {
   public FilingDoc(String fileName, InputStream fileStream,
       List<String> filingPartyIds,
       String filingComments) throws IOException  {
-    this(fileName, fileStream.readAllBytes(), Optional.empty(), "", Optional.empty(),
+    this(fileName, fileStream.readAllBytes(), Optional.empty(), Optional.empty(), Optional.empty(),
         filingPartyIds, Optional.empty(), "", "", "", Optional.empty(),
         List.of(), List.of(), List.of(), FilingTypeType.E_FILE, true);
     this.documentTypeFormatStandardName = ""; // Default to blank: we can't get the confidential code
@@ -69,7 +69,7 @@ public class FilingDoc {
       List<String> filingPartyIds,
       String documentTypeFormatStandardName,
       String filingComponentName, FilingTypeType filingAction, boolean isLeadDoc) throws IOException {
-    this(fileName, fileStream.readAllBytes(), Optional.empty(), "", Optional.empty(),
+    this(fileName, fileStream.readAllBytes(), Optional.empty(), Optional.empty(), Optional.empty(),
         filingPartyIds, Optional.empty(), documentTypeFormatStandardName,
         filingComponentName, "", Optional.empty(), List.of(), List.of(), List.of(),
         filingAction, isLeadDoc);
@@ -77,7 +77,7 @@ public class FilingDoc {
 
   /** Full constructor, in all it's mess. */
   public FilingDoc(String fileName, byte[] fileContents, Optional<String> userProvidedDescription,
-      String documentFileControlId, Optional<LocalDate> dueDate, 
+      Optional<String> filingReferenceNum, Optional<LocalDate> dueDate, 
       List<String> filingPartyIds, Optional<String> filingAttorney,
       String documentTypeFormatStandardName, String filingComponentName,
       String filingComments, Optional<String> motionType, List<OptionalService> optionalServices,
@@ -86,7 +86,7 @@ public class FilingDoc {
     this.fileName = fileName;
     this.fileContents = fileContents;
     this.userProvidedDescription = userProvidedDescription;
-    this.documentFileControlId = documentFileControlId;
+    this.filingReferenceNum= filingReferenceNum;
     this.dueDate = dueDate;
     this.id = UUID.randomUUID();
     this.filingPartyIds = filingPartyIds;
@@ -143,8 +143,8 @@ public class FilingDoc {
     return fileName;
   }
 
-  public String getDocumentFileControlId() {
-    return documentFileControlId;
+  public Optional<String> getFilingReferenceNum() {
+    return filingReferenceNum;
   }
 
   public Optional<String> getFilingAttorney() {

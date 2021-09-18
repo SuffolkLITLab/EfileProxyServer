@@ -433,11 +433,25 @@ public class EcfCourtSpecificSerializer {
       collector.error(err);
     }
 
-    docType.setDocumentFileControlID(XmlHelper.convertString(doc.getDocumentFileControlId()));
-    doc.getDueDate().ifPresent((date) -> {
-      DateType cutOffDate = XmlHelper.convertDate(date);
-      docType.setDocumentInformationCutOffDate(cutOffDate);
-    });
+    DataFieldRow fileRefRow = cd.getDataField(this.court.code, "FilingReferenceNumber");
+    if (fileRefRow.isvisible) {
+      if (doc.getFilingReferenceNum().isPresent()) {
+        docType.setDocumentFileControlID(XmlHelper.convertString(doc.getFilingReferenceNum().get()));
+      } else if (fileRefRow.isrequired) {
+        InterviewVariable var = collector.requestVar("reference_number", "Reference Number for a document, given by the user? TODO(brycew)", "text");
+        collector.addRequired(var);
+      }
+    }
+    DataFieldRow dueDateRow = cd.getDataField(this.court.code, "DueDateAvailableForFilers");
+    if (filing.useduedate && dueDateRow.isvisible) {
+      if (doc.getDueDate().isPresent()) {
+        DateType cutOffDate = XmlHelper.convertDate(doc.getDueDate().get());
+        docType.setDocumentInformationCutOffDate(cutOffDate);
+      } else if (dueDateRow.isrequired) {
+        InterviewVariable var = collector.requestVar("due_date", "The due date of the filing, some number of days after the filing.", "date");
+        collector.addRequired(var);
+      }
+    }
 
     oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory oasisObjFac =
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();

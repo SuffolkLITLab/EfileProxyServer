@@ -133,7 +133,7 @@ public class FilingReviewService {
     }
     FilingInformation info = res.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
-    Result<NullValue, FilingError> resEfm = filingInterfaces.get(courtId).checkFiling(info, collector);
+    Result<NullValue, FilingError> resEfm = filingInterfaces.get(courtId).checkFiling(info, activeToken.get(), collector);
     if (resEfm.isErr()) {
       log.warn(resEfm.toString());
       return Response.status(422).entity(collector.jsonSummary()).build();

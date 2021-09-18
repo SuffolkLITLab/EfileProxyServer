@@ -41,7 +41,7 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
 
   @Override
   public Set<String> getCourts() {
-    return Set.of("jefferson");
+    return Set.of("Jefferson");
   }
 
   @Override

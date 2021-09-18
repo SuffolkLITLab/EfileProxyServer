@@ -73,10 +73,18 @@ public class CaseCategory {
     return """
         SELECT cat.code, cat.name, cat.ecfcasetype, cat.procedureremedyinitial, 
         cat.procedureremedysubsequent, cat.damageamountinitial, cat.damageamountsubsequent
-        FROM casecategory AS cat
-          INNER JOIN casetype AS type
-          ON cat.code = type.casecategory AND cat.location = type.location
-        WHERE cat.location=?
+        FROM (
+                SELECT cate.code, cate.name, cate.ecfcasetype, cate.procedureremedyinitial, 
+                  cate.procedureremedysubsequent, cate.damageamountinitial, 
+                  cate.damageamountsubsequent,
+                  type.code AS type_code,
+                  ROW_NUMBER() OVER(PARTITION BY cate.code ORDER BY type.code) AS RN
+                FROM casecategory as cate
+                  INNER JOIN casetype AS type
+                  ON cate.code = type.casecategory AND cate.location = type.location
+                WHERE cate.location=?
+            ) cat
+        WHERE cat.RN = 1
         """;
   }
   

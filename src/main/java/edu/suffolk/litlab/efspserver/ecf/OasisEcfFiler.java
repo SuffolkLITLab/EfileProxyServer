@@ -24,6 +24,7 @@ import gov.niem.niem.niem_core._2.DateRangeType;
 import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.IdentificationType;
+import gov.niem.niem.niem_core._2.MeasureType;
 import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.proxy.xsd._2.Date;
 
@@ -146,7 +147,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   }
 
   private CoreFilingMessageType prepareFiling(FilingInformation info,
-      InfoCollector collector, String apiToken) throws FilingError {
+      InfoCollector collector, String apiToken, CourtPolicyResponseMessageType policy) throws FilingError {
     EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
     try {
       Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(info.getCourtLocation());
@@ -239,7 +240,19 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       cfm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
       cfm.setCase(assembledCase);
       int seqNum = 0;
+      
+      MeasureType maxIndivDocSize = policy.getDevelopmentPolicyParameters().getValue().getMaximumAllowedAttachmentSize();
+      long maxSize = XmlHelper.sizeMeasureAsBytes(maxIndivDocSize);
+      long cumulativeBytes = 0;
       for (FilingDoc filingDoc : info.getFilings()) {
+        long bytes = filingDoc.getFileContents().length;
+        if (bytes > maxSize) {
+          FilingError err = FilingError.malformedInterview("Document " + filingDoc.getFileName() 
+              + " is too big! Must be max " + maxSize + ", is " + bytes);
+          collector.error(err);
+        }
+        cumulativeBytes += bytes;
+
         JAXBElement<DocumentType> result =
                 serializer.filingDocToXml(filingDoc, seqNum, allCodes.cat, allCodes.type,
                     allCodes.filing, components, info.getMiscInfo(), collector);
@@ -249,6 +262,13 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
           cfm.getFilingConnectedDocument().add(result);
         }
         seqNum += 1;
+      }
+      MeasureType maxTotalDocSize = policy.getDevelopmentPolicyParameters().getValue().getMaximumAllowedMessageSize();
+      long maxTotal = XmlHelper.sizeMeasureAsBytes(maxTotalDocSize);
+      if (cumulativeBytes > maxTotal) {
+        FilingError err = FilingError.malformedInterview("All Documents combined are too big! Must be max" 
+            + maxSize + ", are " + cumulativeBytes);
+        collector.error(err);
       }
       log.info("Full ecfAug: " + XmlHelper.objectToXmlStr(cfm, CoreFilingMessageType.class));
       return cfm;
@@ -287,9 +307,19 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   @Override
   public Result<List<UUID>, FilingError> submitFilingIfReady(FilingInformation info,
     InfoCollector collector, String apiToken, ApiChoice choice) {
+    FilingReviewMDEPort filingPort;
     CoreFilingMessageType cfm;
     try {
-      cfm = prepareFiling(info, collector, apiToken);
+      Optional<FilingReviewMDEPort> maybePort = makeFilingService(apiToken);
+      if (maybePort.isEmpty()) {
+        FilingError err = FilingError
+            .serverError("Couldn't create SOAP port object with token: " + apiToken);
+        collector.error(err);
+      }
+      filingPort = maybePort.get();
+      CourtPolicyQueryMessageType query = prep(new CourtPolicyQueryMessageType(), info.getCourtLocation());
+      CourtPolicyResponseMessageType policy= filingPort.getPolicy(query);
+      cfm = prepareFiling(info, collector, apiToken, policy);
     } catch (FilingError err) {
       return Result.err(err);
     }
@@ -311,18 +341,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     if (!collector.okToSubmit()) {
       return Result.ok(List.of()); 
     }
-    Optional<FilingReviewMDEPort> filingPort = Optional.empty();
-    try {
-      filingPort = makeFilingService(apiToken);
-      if (filingPort.isEmpty()) {
-        FilingError err = FilingError
-            .serverError("Couldn't create SOAP port object with token: " + apiToken);
-        collector.error(err);
-      }
-    } catch (FilingError err) {
-      return Result.err(err);
-    }
-    MessageReceiptMessageType mrmt = filingPort.get().reviewFiling(rfrm);
+    MessageReceiptMessageType mrmt = filingPort.reviewFiling(rfrm);
     if (mrmt.getError().size() > 0) {
       for (oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType err : mrmt
           .getError()) {
@@ -349,15 +368,17 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   public Result<Response, FilingError> getFilingFees(FilingInformation info, String apiToken) {
     FailFastCollector collector = new FailFastCollector();
     CoreFilingMessageType cfm;
-    try {
-      cfm = prepareFiling(info, collector, apiToken);
-    } catch (FilingError err) {
-      return Result.err(err);
-    }
     Optional<FilingReviewMDEPort> filingPort = makeFilingService(apiToken);
     if (filingPort.isEmpty()) {
       FilingError err = FilingError
           .serverError("Couldn't create SOAP port object with token: " + apiToken);
+      return Result.err(err);
+    }
+    try {
+      CourtPolicyQueryMessageType query = prep(new CourtPolicyQueryMessageType(), info.getCourtLocation());
+      CourtPolicyResponseMessageType policy= filingPort.get().getPolicy(query);
+      cfm = prepareFiling(info, collector, apiToken, policy);
+    } catch (FilingError err) {
       return Result.err(err);
     }
 
@@ -380,19 +401,21 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
           + " doesn't have conditional service types. Check the code list instead").build());
     }
     FailFastCollector collector = new FailFastCollector();
-    CoreFilingMessageType cfm;
-    try {
-      cfm = prepareFiling(info, collector, apiToken);
-    } catch (FilingError err) {
-      return Result.err(err);
-    }
-
     Optional<FilingReviewMDEPort> filingPort = makeFilingService(apiToken);
     if (filingPort.isEmpty()) {
       FilingError err = FilingError
           .serverError("Couldn't create SOAP port object with token: " + apiToken);
       return Result.err(err);
     }
+    CoreFilingMessageType cfm;
+    try {
+      CourtPolicyQueryMessageType query = prep(new CourtPolicyQueryMessageType(), info.getCourtLocation());
+      CourtPolicyResponseMessageType policy= filingPort.get().getPolicy(query);
+      cfm = prepareFiling(info, collector, apiToken, policy);
+    } catch (FilingError err) {
+      return Result.err(err);
+    }
+
     ServiceTypesRequestMessageType query = prep(new ServiceTypesRequestMessageType(), info.getCourtLocation());
     query.setCoreFilingMessage(cfm);
     ServiceTypesResponseMessageType resp = filingPort.get().getServiceTypes(query);

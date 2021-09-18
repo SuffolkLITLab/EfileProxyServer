@@ -116,7 +116,7 @@ public class JeffNetFiler implements EfmFilingInterface {
   }
 
   @Override
-  public Result<NullValue, FilingError> checkFiling(FilingInformation info, InfoCollector collector) {
+  public Result<NullValue, FilingError> checkFiling(FilingInformation info, String apiToken, InfoCollector collector) {
     return null;
   }
 
