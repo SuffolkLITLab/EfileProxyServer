@@ -4,7 +4,6 @@ import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -342,7 +341,8 @@ public class PaymentsService {
       newAccount.setCardType(tylerCommonObjFac.createPaymentAccountTypeCardType(cardType));
       newAccount.setCardMonth(tylerCommonObjFac.createPaymentAccountTypeCardMonth(resp.expirationMonth));
       newAccount.setCardYear(tylerCommonObjFac.createPaymentAccountTypeCardYear(resp.expirationYear));
-      String last4 = tenderDesc[1].substring(tenderDesc[1].length() - 4);
+      int last = tenderDesc.length - 1;
+      String last4 = tenderDesc[last].substring(tenderDesc[last].length() - 4);
       newAccount.setCardLast4(last4);
       createAccount.setPaymentAccount(newAccount);
       Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(tempInfo.loginInfo);
