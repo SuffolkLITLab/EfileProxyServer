@@ -23,7 +23,7 @@ public class FilingInformation {
    * For Tyler at least, the Attorneys are registered in the system beforehand. In that case, these
    * are the GUIDs of the Attorneys in that system.
    * 
-   * TODO(brycew): this isn't super general, and relies on registering Attorneys elsewhere. 
+   * TODO(brycew-later): this isn't super general, and relies on registering Attorneys elsewhere. 
    * Make it more generic if possible.
    */
   private List<String> attorneyIds = List.of();
@@ -45,7 +45,7 @@ public class FilingInformation {
   /** Existing docket number, NOT from EFM system. For subsequent filing into non-indexed cases. */
   private Optional<String> caseDocketNumber = Optional.empty();
 
-  // TODO(brycew): refactor so this is selected only in Tyler stuff
+  // TODO(brycew-later): refactor so this is selected only in Tyler stuff
   private CaseCategory caseCategory;
   private String caseType;
   private String caseSubtype;

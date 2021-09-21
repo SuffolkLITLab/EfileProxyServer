@@ -2,8 +2,6 @@
 
 2021-04-23
 
-TODO(brycew): document this decision as it was made.
-
 Mostly in conversations with Quinten, a little bit of research as it was chosen.
 
 Tyler Technologies (specifically Tyler Technologies, not the ECF v4.0 standard) has a system of 

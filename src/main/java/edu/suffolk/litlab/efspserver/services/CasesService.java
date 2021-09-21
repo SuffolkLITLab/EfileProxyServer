@@ -171,7 +171,7 @@ public class CasesService {
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     query.setCaseTrackingID(XmlHelper.convertString(caseId));
     CaseQueryCriteriaType crit = new CaseQueryCriteriaType();
-    // TODO(brycew): should this be configurable?
+    // TODO(brycew-later): should this be configurable?
     crit.setIncludeParticipantsIndicator(XmlHelper.convertBool(true));
     crit.setIncludeDocketEntryIndicator(XmlHelper.convertBool(false));
     crit.setIncludeCalendarEventIndicator(XmlHelper.convertBool(false));

@@ -214,7 +214,7 @@ public class CourtSchedulingService {
     catText.setValue(allCodes.cat.code.get());
     ecfAug.getRest().add(oasisObjFac.createCaseCategoryCode(catText));
     ecfAug.getRest().add(oasisObjFac.createCaseTypeCode(Ecfv5XmlHelper.convertNormalized(allCodes.type.code)));
-    // TODO(brycew): write ecfv5 versions of this. Right now, don't have time to reimplement everything, so checking with old ecfv4 code and building here 
+    // TODO(brycew-later): write ecfv5 versions of this. Right now, don't have time to reimplement everything, so checking with old ecfv4 code and building here 
     List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, allCodes.type.code); 
     List<String> partyTypeNames = partyTypes.stream().map(p -> p.name).collect(Collectors.toList());
     Map<String, EntityType> idToCaseParty = new HashMap<String, EntityType>();

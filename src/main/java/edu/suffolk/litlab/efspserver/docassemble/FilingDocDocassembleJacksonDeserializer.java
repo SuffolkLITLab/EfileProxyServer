@@ -57,7 +57,6 @@ public class FilingDocDocassembleJacksonDeserializer {
         collector.error(err);
       }
 
-      // TODO(brycew): we need to put URLs of all of the other filings and read in those files
       URL inUrl = new URL(node.get("data_url").asText().replace("localhost", "docassemble"));
       Optional<String> motionName = Optional.empty();
       if (node.has("motion_type") && node.get("motion_type").isTextual()) {
@@ -67,7 +66,6 @@ public class FilingDocDocassembleJacksonDeserializer {
             "The Type of Motion that this interview is", "text");
         collector.addOptional(var);
       }
-      // TODO(brycew): CONTINUE
       String documentTypeFormatName = "";
       if (node.has("document_type") && node.get("document_type").isTextual()) {
         documentTypeFormatName = node.get("document_type").asText();
@@ -104,7 +102,7 @@ public class FilingDocDocassembleJacksonDeserializer {
         FilingError err = FilingError.serverError("Couldn't connect to " + inUrl.toString());
         collector.error(err);
       }
-      // TODO(brycew): add all of these things
+      // TODO(#56): add all of these things
       return Optional.of(
           new FilingDoc(fileName,
               inStream.readAllBytes(),

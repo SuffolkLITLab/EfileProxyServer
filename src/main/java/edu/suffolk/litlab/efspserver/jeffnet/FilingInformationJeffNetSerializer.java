@@ -37,8 +37,6 @@ public class FilingInformationJeffNetSerializer extends StdSerializer<FilingInfo
     mde.ourUrl = ServiceHelpers.BASE_URL;
 
     Callback callbackObj = new Callback();
-    // TODO(brycew): Setup callback/webhook handler
-    // TODO(brycew): add this GUID to the database with the email to alert when we get the hook back
     String filingUid = UUID.randomUUID().toString();
     callbackObj.id = filingUid;
     callbackObj.callbackUrl = ServiceHelpers.REST_CALLBACK_URL.formatted(info.getCourtLocation());

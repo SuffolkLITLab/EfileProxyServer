@@ -85,7 +85,7 @@ public class EcfCaseTypeFactory {
       List<String> filingIds,
       // HACK(brycew): hacky: needed because fee querys put the payment stuff in the tyler Aug
       String queryType,
-      JsonNode miscInfo, // TODO(brycew): if we get XML Answer files, this isn't generic
+      JsonNode miscInfo, // TODO(brycew-later): if we get XML Answer files, this isn't generic
       EcfCourtSpecificSerializer serializer,
       InfoCollector collector
   ) throws SQLException, FilingError {
@@ -97,7 +97,6 @@ public class EcfCaseTypeFactory {
               makeTylerCaseAug(courtLocation, caseCategory,
                   caseType, info,
                   filingIds, queryType, miscInfo, serializer, collector);
-    // TODO(brycew): handle ensuring the passed in values work with the court codes
     if (caseCategory.ecfcasetype.equals("CivilCase")) {
       Optional<BigDecimal> amountInControversy = Optional.empty();
       if (filing.amountincontroversy.equalsIgnoreCase("Required")) {
@@ -352,7 +351,6 @@ public class EcfCaseTypeFactory {
     if (miscInfo.has("max_fee_amount") && courtLocation.allowmaxfeeamount) {
       AmountType amountType = new AmountType();
       amountType.setCurrencyCode(CurrencyCodeSimpleType.USD);
-      // TODO(brycew): should I parse from String instead? Unclear
       if (miscInfo.get("max_fee_amount").isBigDecimal()) {
         BigDecimal amnt = miscInfo.get("max_fee_amount").decimalValue();
         amountType.setValue(amnt);
@@ -525,11 +523,11 @@ public class EcfCaseTypeFactory {
   private JAXBElement<CriminalCaseType> makeCriminalCaseType(
       JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
       JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug) {
-    // BIG OLD TODO(brycew): make all of the TODO's separate issues/tickets to implement criminal
+    // BIG OLD TODO(brycew-later): make all of the TODO's separate issues/tickets to implement criminal
     // stuff. There's alot here.
-    // TODO(brycew): support criminal case filings
+    // TODO(brycew-later): support criminal case filings
 
-    // TODO(brycew): there are just too many tables for separate TODOs.
+    // TODO(brycew-later): there are just too many tables for separate TODOs.
     // Most of these are empty in IL, so we aren't supporting for now.
     // Listing them individually:
     // * vehicletype, i.e. Four Door, 34 PU, Moped, etc.
@@ -551,8 +549,6 @@ public class EcfCaseTypeFactory {
     // * ethnicity
     // * physicalfeature: personphysicalfeature, and physicalfeature
     // * degree: statutelevelchange
-
-
     return null;
   }
 }

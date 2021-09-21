@@ -37,7 +37,6 @@ public class LoginDatabaseTest {
   public void testFromNothing() throws SQLException {
     ld.createTablesIfAbsent();
     String cantDoAnything = ld.addNewUser("cantDoAnything", false, false);
-    // TODO(brycew): how does JUnit handle excepts? Try add new with null
     String tylerOnly = ld.addNewUser("tylerOnly", true, false);
     String everything = ld.addNewUser("everything", true, true);
     Map<String, Function<JsonNode, Optional<Map<String, String>>>> okFunctions = Map.of(
@@ -57,7 +56,6 @@ public class LoginDatabaseTest {
     
     Optional<Map<String, String>> activeEverything = ld.login(everything, "{\"tyler\": {}, \"jeffnet\": {}}", okFunctions);
     assertTrue(activeEverything.isPresent());
-    // TODO(brycew): revoke user?
   }
   
 }

@@ -4,7 +4,7 @@ import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,9 +34,9 @@ public interface EfmFilingInterface {
 
   public Result<Response, FilingError> getServiceTypes(FilingInformation info, String apiToken);
   
-  // TODO(brycew): make this a little more independent of HTTP
-  public Response getFilingList(String courtId, String submitterId, Date startDate, 
-      Date endDate, String apiToken); 
+  // TODO(brycew-later): make this a little more independent of HTTP
+  public Response getFilingList(String courtId, String submitterId, LocalDate startDate, 
+      LocalDate endDate, String apiToken); 
   
   public Response getFilingStatus(String courtId, String filingId, String apiToken);
   

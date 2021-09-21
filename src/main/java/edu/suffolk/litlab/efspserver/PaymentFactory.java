@@ -14,7 +14,6 @@ import tyler.ecf.extensions.common.ProviderChargeType;
 
 public class PaymentFactory {
 
-
   public PaymentMessageType makePaymentMessage(String paymentId) {
     oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.ObjectFactory ecfObjFac = 
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.ObjectFactory();
@@ -23,7 +22,7 @@ public class PaymentFactory {
     pmt.setFeeExceptionSupportingText("");
     pmt.setPayerName("");
     pmt.getAllowanceCharge().add(makeAllowanceChargeType(paymentId, true));
-    // TODO(brycew): Do these need to be filled? With what?
+    // TODO(brycew-later): Do these need to be filled? With what?
     oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory cacObjFac = 
         new oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory();
     pmt.setAddress(cacObjFac.createAddressType());
@@ -48,7 +47,7 @@ public class PaymentFactory {
     oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType at = 
         cbcObjFac.createAmountType();
     at.setCurrencyID("USD");
-    // TODO(brycew): this is the amount that we take as a cut
+    // TODO(brycew-later): this is the amount that we take as a cut
     BigDecimal ourCut = new BigDecimal(0.00);
     at.setValue(ourCut); 
     act.setAmount(at);

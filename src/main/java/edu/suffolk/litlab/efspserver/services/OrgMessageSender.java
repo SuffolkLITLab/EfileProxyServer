@@ -20,7 +20,6 @@ import edu.suffolk.litlab.efspserver.db.Transaction;
  * A wrapper around the lower level SendMesage that reads in and
  * handles the actual message sent from configurations.
  * 
- * TODO(brycew): this would be a good candidate for Spring I think
  * @author brycew 
  *
  */
@@ -119,7 +118,7 @@ public class OrgMessageSender {
       }
     }
       
-    // TODO(brycew): handle sending SMS as well
+    // TODO(brycew-later): handle sending SMS as well
     return false;
   }
   

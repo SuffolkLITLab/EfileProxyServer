@@ -39,12 +39,12 @@ public class NameDocassembleDeserializer {
     }
 
     Name name = new Name(
-          "", // TODO(brycew): where should we handle prefixes? Are they always empty?
+          "", // TODO(#55): where should we handle prefixes? Are they always empty?
           getStringMember(node, "first").orElse(""),
           getStringMember(node, "middle").orElse(""),
           getStringMember(node, "last").orElse(""),
           getStringMember(node, "suffix").orElse(""),
-          "" // TODO(brycew): where would Maiden name go, if asked for?
+          "" // TODO(#55): where would Maiden name go, if asked for?
     );
 
     return name;

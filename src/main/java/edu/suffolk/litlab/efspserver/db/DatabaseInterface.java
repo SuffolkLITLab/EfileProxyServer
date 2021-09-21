@@ -64,13 +64,11 @@ public abstract class DatabaseInterface {
   /** Creates the database if it doesn't already exist. */
   protected boolean createGivenDatabase(String pgUser, String pgPassword, 
       String newDb) throws SQLException {
-    // TODO(brycew): maybe check this earlier
-    if (!this.pgDb.matches("[a-zA-Z_]+")) {
+    if (!newDb.matches("[a-zA-Z_]+")) {
       throw new SQLException(
-          "Won't make a database named " + this.pgDb + ": only alpha and _ allowed");
+          "Won't make a database named " + newDb + ": only alpha and _ allowed");
     }
 
-    // TODO(brycew): Make the retry wrapper general, and maybe better formed?
     long startTime = System.currentTimeMillis();
     long RETRY_TIME_MILLIS = 5000;
     long SLEEP_TIME_MILLIS = 1000;

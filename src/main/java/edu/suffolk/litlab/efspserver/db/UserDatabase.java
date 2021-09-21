@@ -22,8 +22,6 @@ public class UserDatabase extends DatabaseInterface {
   private static Logger log = 
       LoggerFactory.getLogger(UserDatabase.class); 
 
-  private static final String tableName = "submitted_filings";
-  
   public UserDatabase(String pgUrl, int pgPort, String pgDb) {
     super(pgUrl, pgPort, pgDb);
   }
@@ -38,11 +36,10 @@ public class UserDatabase extends DatabaseInterface {
       log.error("Connection in createTablesIfAbsert wasn't open yet");
       throw new SQLException();
     }
-    // TODO(brycew): maybe refactor: constants is useful, but no longer just for code tables
     String tableExistsQuery = CodeTableConstants.getTableExists();
     PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery);
 
-    existsSt.setString(1, tableName);
+    existsSt.setString(1, "submitted_filings");
     ResultSet rs = existsSt.executeQuery();
     if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
       String createQuery = """ 
@@ -50,12 +47,12 @@ public class UserDatabase extends DatabaseInterface {
            "user_id" uuid, "name" text, "phone_number" text,
            "email" text, "transaction_id" uuid PRIMARY KEY, "server_id" uuid, "api_key_used" text, 
            "court_id" text, "casetype" text, 
-           "submitted" date)""".formatted(tableName);
+           "submitted" date)""".formatted("submitted_filings");
       PreparedStatement createSt = conn.prepareStatement(createQuery);
       log.info("Full statement: " + createSt.toString());
       int retVal = createSt.executeUpdate();
       if (retVal < 0) {
-        log.warn("Issue when creating " + tableName + ": retVal == " + retVal);
+        log.warn("Issue when creating submitted_filings: retVal == " + retVal);
       }
     }
   }
@@ -68,7 +65,7 @@ public class UserDatabase extends DatabaseInterface {
     }
   }
   
-  // TODO(bryceW): add the title of the case ("John vs Jones")
+  // TODO(#54): add the title of the case ("John vs Jones")
   // Can generate it from the Plaintiff vs Defendant (in the matter of Respondant)
   /** Adds the given values as a row in the submitted table. */
   public void addToTable(String name,
@@ -79,14 +76,14 @@ public class UserDatabase extends DatabaseInterface {
       throw new SQLException();
     }
     String insertIntoTable = """
-                    INSERT INTO %s (
+                    INSERT INTO submitted_filings (
                         "user_id", "name", 
                         "phone_number", "email", "transaction_id", "server_id",
                         "api_key_used", "casetype", "court_id", "submitted" 
                     ) VALUES (
                         ?, ?, 
                         ?, ?, ?, ?,
-                        ?, ?, ?, ?)""".formatted(tableName);
+                        ?, ?, ?, ?)"""; 
     PreparedStatement insertSt = conn.prepareStatement(insertIntoTable);
     insertSt.setObject(1, filingPartyId);
     insertSt.setString(2, name);
@@ -103,7 +100,7 @@ public class UserDatabase extends DatabaseInterface {
     insertSt.executeUpdate();
   }
   
-  // TODO(brycew): consider having to lookup "callbacked" users: either in DB or just in Logs
+  // TODO(brycew-later): consider having to lookup "callbacked" users: either in DB or just in Logs
   /** Gets the info from the table by using the (Primary key'd) transaction id.
    */
   public Optional<Transaction> findTransaction(UUID transactionToFind) throws SQLException {
@@ -113,7 +110,7 @@ public class UserDatabase extends DatabaseInterface {
     }
     String query = "SELECT name, user_id, phone_number, email, transaction_id, server_id,"
         + " api_key_used, casetype, court_id, submitted"
-        + " FROM " + tableName
+        + " FROM submitted_filings "
         + " WHERE transaction_id = ?";
     
     PreparedStatement st = conn.prepareStatement(query);
@@ -146,7 +143,7 @@ public class UserDatabase extends DatabaseInterface {
       throw new SQLException();
     }
     
-    String rmUpdate = "DELETE FROM " + tableName + " WHERE transaction_id = ?";
+    String rmUpdate = "DELETE FROM submitted_filings WHERE transaction_id = ?";
     PreparedStatement st = conn.prepareStatement(rmUpdate);
     st.setObject(1, transactionToRm);
     int result = st.executeUpdate();

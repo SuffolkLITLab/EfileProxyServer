@@ -10,7 +10,9 @@ import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
+
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -90,10 +92,17 @@ public class PersonDocassembleJacksonDeserializer {
 
     Optional<String> language = getStringMember(node, "prefered_language");
     Optional<String> gender = getStringMember(node, "gender");
-    Optional<LocalDate> birthdate = Optional.empty(); // TODO(brycew): read in birthdate
+    Optional<String> birthdateString = getStringMember(node, "date_of_birth");
+    Optional<LocalDate> birthdate = birthdateString.map(bdStr -> {
+      try {
+        return Optional.<LocalDate>of(LocalDate.parse(bdStr)); 
+      } catch (DateTimeParseException ex) {
+        return Optional.<LocalDate>empty();
+      }
+    }).orElse(Optional.<LocalDate>empty());
     Name name = NameDocassembleDeserializer.fromNode(node.get("name"), collector);
     boolean isPer = !name.getMiddleName().isBlank() || !name.getLastName().isBlank();
-    Person per = new Person(name, info, gender, language, birthdate, !isPer);
+    Person per = new Person(name, info, gender, language, birthdate, !isPer, "");
     log.debug("Read in a new person: " + per.getName().getFullName());
     return Result.ok(per);
   }

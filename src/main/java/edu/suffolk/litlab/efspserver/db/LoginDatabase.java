@@ -59,7 +59,6 @@ public class LoginDatabase extends DatabaseInterface {
       existsSt.setString(1, tableNames.get(i));
       ResultSet rs = existsSt.executeQuery();
       if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
-        // TODO(brycew): should the token be a string, or UUID?
         String createQuery = creates.get(i); 
         PreparedStatement createSt = conn.prepareStatement(createQuery);
         log.info("Full statement: " + createSt.toString());
@@ -146,7 +145,7 @@ public class LoginDatabase extends DatabaseInterface {
       return Optional.empty();
     }
 
-    // TODO(brycew): the only hacky part, how can this be modulized?
+    // TODO(brycew-later): the only hacky part, how can this be modulized?
     Map<String, String> newTokens = new HashMap<String, String>();
     if (!loginInfo.isObject()) {
       log.error("Can't login with a json that's not an object: " + loginInfo.toPrettyString());

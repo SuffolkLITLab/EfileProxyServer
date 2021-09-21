@@ -11,13 +11,13 @@ The first of two steps to using HTTPS is actually getting a signed TLS certifica
 
 ### From a Certificate Authority
 
-(TODO(brycew): document this for the future).
+(TODO(brycew-later): document this for the future).
 
 ### Using Let's Encrypt and ACME
 
 You can also do this with Let's Encrypt, but unfortunately since we're running on a custom server
 software (not nginx or Apache), then it would take a bit more effort to integrate it.
-TODO(brycew): eventually we should. Look into the below for resources 
+TODO(brycew-later): eventually we should. Look into the below for resources 
 
 * [Lets Encrypt Java Clients](https://letsencrypt.org/docs/client-options/#clients-java)
 * [Porunov Java ACME Client](https://github.com/porunov/acme_client) (ACME is the protocol that Let's Encrypt uses)

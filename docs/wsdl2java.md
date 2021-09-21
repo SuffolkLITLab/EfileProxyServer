@@ -27,7 +27,7 @@ working in. For us it's mostly `illinois-stage`.
    [INFO]           wsdl-artifact-resolution/pom.xml ................. FAILED (1.4 s)
    ```
    you should go into that directory (cxf/maven-plugins/wadl2java-plugin) and just run `mvn`.
-   TODO(brycew): this is still black magic to me, IDK what maven does.
+   TODO(brycew-later): this is still black magic to me, IDK what maven does.
  
    Eventually, `mvn -Pfastinstall,everything` should succeed. You can confirm it worked
    because you should be able to run `cxf/distribution/src/main/release/bin/wsdl2java -help`
