@@ -48,7 +48,6 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.ws.BindingProvider;
 
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ElectronicServiceInformationType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.CoreFilingMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
@@ -163,9 +162,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         collector.error(err);
       }
 
-      // TODO(brycew): mapping from string case categories to Tyler code case categories, etc.
       EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo.get());
-      
       ComboCaseCodes allCodes = serializer.serializeCaseCodes(info, collector);
 
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> assembledCase =
@@ -425,8 +422,8 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
 
 
   @Override
-  public Response getFilingList(String courtId, String userId, java.util.Date startDate,
-      java.util.Date endDate, String apiToken) {
+  public Response getFilingList(String courtId, String userId, java.time.LocalDate startDate,
+      java.time.LocalDate endDate, String apiToken) {
     try {
       List<String> courtIds = cd.getAllLocations();
       if (!courtIds.contains(courtId)) {
@@ -455,7 +452,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       }
       if (startDate != null && endDate != null) {
         GregorianCalendar startCal = new GregorianCalendar();
-        startCal.setTime(startDate);
+        startCal.set(startDate.getYear(), startDate.getMonthValue(), startDate.getDayOfMonth());
         DatatypeFactory fac = DatatypeFactory.newInstance();
         Date actualStart = proxyObjFac.createDate();
         actualStart.setValue(fac.newXMLGregorianCalendar(startCal));
@@ -463,7 +460,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         niemStart.setDateRepresentation(niemObjFac.createDate(actualStart));
 
         GregorianCalendar endCal = new GregorianCalendar();
-        endCal.setTime(endDate);
+        endCal.set(endDate.getYear(), endDate.getMonthValue(), endDate.getDayOfMonth());
         Date actualEnd = proxyObjFac.createDate();
         actualEnd.setValue(fac.newXMLGregorianCalendar(endCal));
         DateType niemEnd = niemObjFac.createDateType();
@@ -611,14 +608,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   }
 
   private <T extends QueryMessageType> T prep(T newMsg, String courtId) {
-    EntityType typ = new EntityType();
-    JAXBElement<PersonType> elem2 = commonObjFac.createEntityPerson(new PersonType());
-    typ.setEntityRepresentation(elem2);
-    newMsg.setQuerySubmitter(typ);
-    newMsg.setCaseCourt(XmlHelper.convertCourtType(courtId));
-    newMsg.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
-    newMsg.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
-    return newMsg;
+    return ServiceHelpers.prep(newMsg, courtId);
   }
 
   private Optional<FilingReviewMDEPort> setupFilingPort(String apiToken) {

@@ -93,7 +93,6 @@ public class FilingInformationDocassembleJacksonDeserializer
       perIdx++;
     }
     if (users.isEmpty()) {
-      // TODO(brycew): does this need to be split up into every single thing that could be in users?
       InterviewVariable varExpected = new InterviewVariable("users",
           "the side of the matter that current person answering this interview is on",
           "ALPeopleList", List.of());
@@ -145,7 +144,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     // TODO(brycew): plaintiff and petitioners are both defined.
     // Typical role might have the difference, take which is available
     // TODO(brycew): better way to get the parties types?
-    // TODO(brycew): make the party types use the SALI standard
+    // TODO(brycew-later): make the party types use the SALI standard
     JsonNode plaintiffPartyJson = node.get("plaintiff_party_type");
     if (plaintiffPartyJson == null || !plaintiffPartyJson.isTextual()) {
       InterviewVariable var = collector.requestVar("plaintiff_party_type",
@@ -224,7 +223,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
 
 
-    // TODO(brycew): this approach is a complete mess, don't know
+    // TODO(brycew-later): this approach is a complete mess, don't know
     // how to best map LIST onto case categories, ECF is too high level
     JsonNode metadata = JsonNodeFactory.instance.nullNode();
     if (node.has("interview_metadata") && node.get("interview_metadata").has("elements")) {
@@ -239,7 +238,6 @@ public class FilingInformationDocassembleJacksonDeserializer
     String category_var_name = "tyler_case_category";
     JsonNode category = node.get(category_var_name);
     if (category != null && !category.isNull() && category.isTextual()) {
-      // TODO(brycew): stop passing in this case category stuff right now
       CaseCategory caseCat = new CaseCategory(category.asText(), category.asText());
       entities.setCaseCategory(caseCat);
     } else if (metadata.has("categories") && metadata.get("categories").isArray()) {
@@ -250,7 +248,6 @@ public class FilingInformationDocassembleJacksonDeserializer
       log.info("ECFs:" + ecfs.size());
       if (ecfs.size() == 1) {
         String caseType = ecfs.iterator().next();
-        // TODO(brycew): better title
         CaseCategory caseCat = new CaseCategory(categories.toString(), caseType);
         entities.setCaseCategory(caseCat);
       }
@@ -290,7 +287,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       entities.setCaseDocketNumber(docketNumber.asText());
     }
 
-    // Get the interview metadablock TODO(brycew): just one for now
+    // Get the interview metadablock TODO(brycew-later): just one for now
     /*
     log.info("Keyset: " + metadataElems.fieldNames());
     */

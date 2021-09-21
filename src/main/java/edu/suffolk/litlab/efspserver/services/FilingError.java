@@ -80,7 +80,12 @@ public class FilingError extends Exception {
       InterviewVariable var = missingVariable.get();
       return var.toJson();
     }
-    return "TODO(brycew): don't need this check?";
+    return """
+        {
+          "type": "Unknown",
+          "description": "%s"
+        }
+        """.formatted(this.type + " :: " + this.description); 
   }
   
   public Type getType() {

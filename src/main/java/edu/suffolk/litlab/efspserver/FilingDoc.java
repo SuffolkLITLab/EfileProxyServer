@@ -8,14 +8,14 @@ import java.util.Optional;
 import java.util.UUID;
 import tyler.ecf.extensions.common.FilingTypeType;
 
-// TODO(brycew): this class is a mess. Redo please. Consider the same pattern that's in
+// TODO(brycew-later): this class is a mess. Refactor, considering the same pattern that's in
 // FilingInformation: add a JsonNode / generic container for EFM specific settings
 public class FilingDoc {
   // Provides Document Type code / BinaryFormatStandardName
   private String fileName;
   private byte[] fileContents;
   private Optional<String> userProvidedDescription;
-  // TODO(brycew): what is this? Might be able to be a dup of the GUID,
+  // TODO(#57): what is this? Might be able to be a dup of the GUID,
   // it's returned with Get FilingList
   private Optional<String> filingReferenceNum;
   // See DueDateAvailableForFilers datafield and DocumentInformationCutOffDate

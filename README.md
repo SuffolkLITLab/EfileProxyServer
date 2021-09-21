@@ -2,8 +2,6 @@
 
 A separate server that sits between ECF 4.0 EFMs and docassemble, and can create court filings.
 
-TODO(brycew): more details to come!
-
 ## Setup
 
 This server is setup using docker. To run, follow the following steps:

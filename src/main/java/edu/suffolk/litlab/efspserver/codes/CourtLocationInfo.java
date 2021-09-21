@@ -33,7 +33,7 @@ public class CourtLocationInfo {
   
   public String sendservicebeforereview;
   /** The "parent court location" of the current court, e.g. cook is parent of cook:chd. 
-   * TODO(brycew): figure out if this needs to be fallen back on if certain codes don't exist. */
+   * TODO(#53): figure out if this needs to be fallen back on if certain codes don't exist. */
   public String parentnodeid;
   /** True if this location is actually a county, as opposed to a specific office / division.
    * Not used yet.
@@ -54,7 +54,7 @@ public class CourtLocationInfo {
   public boolean transferwaivedfeestocms;
   /** If false and paying by credit card, courts will "Authorize" the card to determine if 
    * sufficient credit exists on the credit card.
-   * TODO(brycew): should be something we notify users of, but IDK if we need to do anything 
+   * TODO(brycew-later): should be something we notify users of, but IDK if we need to do anything 
    * different with this setting?
    */
   public boolean skippreauth;

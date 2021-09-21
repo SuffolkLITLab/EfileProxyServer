@@ -85,7 +85,7 @@ public class LegalIssuesTaxonomyCodes {
     if (node.caseCategory.isPresent()) {
       log.info("Adding " + node.caseCategory.get() + " to running");
       runningCases.add(node.caseCategory.get());
-      // TODO(brycew): should we exit early and not add the ECF case types from parent?
+      // TODO(brycew-later): should we exit early and not add the ECF case types from parent?
       // Example: Money is usually Civil, but the Bankruptcy sub cat is just Bankruptcy
       return;
     }

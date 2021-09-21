@@ -6,11 +6,6 @@ import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
-import gov.niem.niem.domains.jxdm._4.CourtType;
-import gov.niem.niem.niem_core._2.EntityType;
-import gov.niem.niem.niem_core._2.IdentificationType;
-import gov.niem.niem.niem_core._2.ObjectFactory;
-import gov.niem.niem.niem_core._2.PersonType;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,7 +26,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.BindingProvider;
@@ -57,7 +51,7 @@ public class CodeUpdater {
   public static final Map<String, String> ncToTableName = new HashMap<String, String>();
 
   static {
-    // TODO(brycew): there's little more info on these mappings and how they combine besides:
+    // TODO(brycew-later): there's little more info on these mappings and how they combine besides:
     // The name of an ECF element to be substituted by a court-specific codelist or extension
     // Is this actually an XPath? Should figure it out
     ncToTableName.put("nc:CaseCategoryText", "casecategory");
@@ -144,7 +138,6 @@ public class CodeUpdater {
       // Write out the zip file
       downloads = downloads.plus(Duration.between(startTable, Instant.now(Clock.systemUTC())));
 
-      // TODO(brycew): test and time this version
       ZipInputStream zip = new ZipInputStream(urlStream);
       zip.getNextEntry();
 
@@ -167,8 +160,6 @@ public class CodeUpdater {
         "location", "/CodeService/codes/location/",
         // NOTE: the Tyler docs say this is available from `GetPolicy'. That is wrong.
         "error", "/CodeService/codes/error");
-    // TODO(brycew): can tell if court codes will differ if they have a Row in Version codes
-    // where the simple value differs from the "0" Row. Need to check both
 
     Savepoint sp = cd.setSavePoint("systemTables");
     cd.dropTables(codeUrls.entrySet().stream().map((e) -> e.getKey()).collect(Collectors.toList()));
@@ -218,35 +209,18 @@ public class CodeUpdater {
       HeaderSigner signer, FilingReviewMDEPort filingPort)
       throws JAXBException, IOException, SQLException {
     log.debug("Location: " + location);
-    // final Instant startLoc = Instant.now(Clock.systemUTC());
-    CourtPolicyQueryMessageType m = new CourtPolicyQueryMessageType();
-    IdentificationType courtId = XmlHelper.convertId(location);
-    ObjectFactory of = new ObjectFactory();
-    JAXBElement<IdentificationType> elem = of.createOrganizationIdentification(courtId);
-    CourtType court = new CourtType();
-    court.setOrganizationIdentification(elem);
-    m.setCaseCourt(court);
-    // TODO(brycew): change this stuff
-    m.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
-    m.setSendingMDEProfileCode(
-        "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0");
-    JAXBElement<PersonType> elem2 = of.createEntityPerson(new PersonType());
-    EntityType typ = new EntityType();
-    typ.setEntityRepresentation(elem2);
-    m.setQuerySubmitter(typ);
+    CourtPolicyQueryMessageType m = ServiceHelpers.prep(new CourtPolicyQueryMessageType(), location);
     CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
     XmlHelper.objectToXmlFile(p, CourtPolicyResponseMessageType.class,
         new File("full_court_obj_" + location + ".xml"));
 
-    // TODO(brycew): use the version codes to check the checksums of each table,
-    // then see if we need to update
     for (CourtCodelistType ccl : p.getRuntimePolicyParameters().getCourtCodelist()) {
       String ecfElem = ccl.getECFElementName().getValue();
       if (ncToTableName.containsKey(ecfElem)) {
         String tableName = ncToTableName.get(ecfElem);
         if (codes.isEmpty() || codes.get().contains(tableName)) {
           boolean updateSuccess = false;
-          // TODO(brycew): check that the effective date is later than today
+          // TODO(brycew-later): check that the effective date is later than today
           // JAXBElement<?> obj = ccl.getEffectiveDate().getDateRepresentation();
 
           // Tyler gives us URLs w/ spaces, which aren't valid. This makes them valid

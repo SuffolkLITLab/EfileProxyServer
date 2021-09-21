@@ -22,7 +22,7 @@ public class Person {
   /** Minimal constructor, empty lists and empty optionals. */
   public Person(Name name, String email, boolean isOrg) {
     this(name, new ContactInformation(email),
-        Optional.empty(), Optional.empty(), Optional.empty(), isOrg);
+        Optional.empty(), Optional.empty(), Optional.empty(), isOrg, "");
   }
 
   /** Default constructor. */
@@ -31,7 +31,8 @@ public class Person {
       Optional<String> gender,
       Optional<String> language,
       Optional<LocalDate> birthdate,
-      boolean isOrg) {
+      boolean isOrg,
+      String role) {
     this.name = name;
     this.contactInfo = contactInfo;
     this.gender = gender;
@@ -40,6 +41,7 @@ public class Person {
     this.isOrg = isOrg;
 
     this.id = UUID.randomUUID();
+    this.role = role;
   }
 
   public Name getName() {

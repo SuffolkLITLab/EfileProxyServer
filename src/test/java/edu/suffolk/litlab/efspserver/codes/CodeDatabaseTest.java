@@ -81,6 +81,6 @@ public class CodeDatabaseTest {
     assertFalse(filable.isEmpty());
     assertTrue(info.isPresent());
   }
-  // TODO(brycew): test that all database column names are <= 63 characters (NAMEDATALEN - 1)
+  // TODO(brycew-later): test that all database column names are <= 63 characters (NAMEDATALEN - 1)
 
 }

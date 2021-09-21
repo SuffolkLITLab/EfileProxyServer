@@ -269,12 +269,12 @@ public class SendMessage {
   }
 
   public static boolean isValidEmail(String email) {
-    // TODO(brycew): See RFC 6854 for full validation
+    // TODO(brycew-later): See RFC 6854 for full validation
     return email.contains("@");
   }
 
   public static boolean isValidPhoneNumber(String phoneNumber) {
-    // TODO(brycew): what format does Twilio need numbers in?
+    // TODO(brycew-later): what format does Twilio need numbers in?
     return true;
   }
 }

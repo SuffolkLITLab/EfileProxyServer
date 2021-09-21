@@ -13,7 +13,7 @@ public class CaseCategory {
   /// The ECF Case Type Schema Name. These are things like "AppellateCase", "BankruptcyCase", etc.
   /// The full list is at https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Toc425241622
   public String ecfcasetype;
-  // TODO(brycew): turn these into enums
+  // TODO(brycew-later): turn these into enums
   /// > Indicates the behavior of the Procedure/Remedy code field for initial filings 
   /// E.g.: (Not Available, Available, Required)
   public String procedureremedyinitial;

@@ -25,7 +25,7 @@ public class CodeTableConstants {
   private static final Map<String, List<String>> tablePrimaryKeys =
       new HashMap<String, List<String>>();
 
-  // TODO(brycew): the types are confusing here: some are only ever ints, but
+  // TODO(brycew-later): the types are confusing here: some are only ever ints, but
   // are coded as normalizedStrings in the XML. Unclear what to make ints in the
   // DB.
   static {
@@ -371,6 +371,14 @@ public class CodeTableConstants {
     courtTableColumns.put("vehicletype", List.of(new ImmutablePair<String, String>("code", "text"),
         new ImmutablePair<String, String>("name", "text"), 
         new ImmutablePair<String, String>("efspcode", "text")));
+  }
+  
+  public static String getZipNameFromTable(String tableName) {
+    if (tableName.equalsIgnoreCase("location")) {
+      return "locations.zip";
+    } else {
+      return tableName + "codes.zip";
+    }
   }
 
   private static class TableColumns {

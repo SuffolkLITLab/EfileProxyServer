@@ -99,7 +99,7 @@ public class EcfCourtSpecificSerializer {
     Optional<CaseCategory> maybeCaseCat = cd.getCaseCategoryFor(info.getCourtLocation(), info.getCaseCategory());
     if (maybeCaseCat.isEmpty()) {
       List<CaseCategory> categories = cd.getCaseCategoriesFor(info.getCourtLocation());
-      // TODO(brycew): handle that these variables could be different from different deserializers
+      // TODO(brycew-later): handle that these variables could be different from different deserializers
       InterviewVariable var = collector.requestVar("tyler_case_category", "", "choice",
           categories.stream().map(cat -> cat.name).collect(Collectors.toList()));
       collector.addWrong(var);
@@ -380,7 +380,7 @@ public class EcfCourtSpecificSerializer {
           "choices", suffixes.stream().map(s -> s.getName()).collect(Collectors.toList()));
       if (name.getSuffix().isBlank()) {
         if (suffixRow.isrequired) {
-          // TODO(brycew):
+          // TODO(brycew-later):
           log.error("DEV WARNING: why the hell would you ever require a suffix? There aren't empty suffix codes at all.");
           collector.addRequired(var);
         } else {
@@ -512,7 +512,7 @@ public class EcfCourtSpecificSerializer {
           collector.addWrong(var);
         }
       } else if (motionRow.isrequired) {
-        // TODO(brycew): "A motion type may be required for a filing type, and may or may not allow multiple occurances"
+        // TODO(brycew-later): "A motion type may be required for a filing type, and may or may not allow multiple occurances"
         // What does it actually mean? Motion types are empty for IL, so IDK what to do if there's nothing there
         collector.addRequired(var);
       }
@@ -520,12 +520,10 @@ public class EcfCourtSpecificSerializer {
     }
     docType.setFilingAction(doc.getFilingAction());
 
-    // TODO(brycew): what should this actually be? Very unclear
+    // TODO(brycew-later): what should this actually be? Very unclear
     DocumentAttachmentType attachment = oasisObjFac.createDocumentAttachmentType();
     attachment.setBinaryDescriptionText(XmlHelper.convertText(doc.getFileName()));
 
-    // TODO(brycew): hacky: this should be easier to understand: we're modifying a param that's passed
-    // to other objects
     InterviewVariable var = collector.requestVar("filing_component", "Filing component: Lead or attachment", "text");
     if (components.isEmpty()) {
       log.error("Filing Components List is empty! There are no other documents that can be added! Stopping at " + doc.getFileName());
@@ -696,7 +694,7 @@ public class EcfCourtSpecificSerializer {
         } else if (descriptionRow.defaultvalueexpression.equals("{{FileName}}")) {
           return doc.getFileName();
         } else if (descriptionRow.isrequired) {
-          InterviewVariable var = collector.requestVar("description", "TODO(brycew): fill in", "text");
+          InterviewVariable var = collector.requestVar("description", "A human understandable description of this filing document", "text");
           collector.addRequired(var);
           throw FilingError.missingRequired(var);
         } else {

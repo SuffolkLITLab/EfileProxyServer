@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.ws.BindingProvider;
 
@@ -21,7 +22,10 @@ import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
+import gov.niem.niem.niem_core._2.EntityType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
 import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.IEfmFirmService;
@@ -48,7 +52,6 @@ public class ServiceHelpers {
     if (env_url == null || env_url.isBlank()) {
       env_url = "filingassemblymde.com:9001";
     }
-    // TODO(brycew): fix this to be 
     BASE_URL = env_url;
     SERVICE_URL = BASE_URL + ASSEMBLY_PORT;
     REST_CALLBACK_URL = BASE_URL + "/filingreview/courts/%s/filing/status"; 
@@ -186,6 +189,19 @@ public class ServiceHelpers {
   public static void setupReplys(CaseFilingType reply) {
     reply.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
     reply.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+  }
+
+  public static <T extends QueryMessageType> T prep(T newMsg, String courtId) {
+    EntityType typ = new EntityType();
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory commonObjFac 
+      = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+    JAXBElement<PersonType> elem2 = commonObjFac.createEntityPerson(new PersonType());
+    typ.setEntityRepresentation(elem2);
+    newMsg.setQuerySubmitter(typ);
+    newMsg.setCaseCourt(XmlHelper.convertCourtType(courtId));
+    newMsg.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
+    newMsg.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+    return newMsg;
   }
 
   public static Optional<IEfmFirmService> setupFirmPort(HttpHeaders httpHeaders, SecurityHub security) {

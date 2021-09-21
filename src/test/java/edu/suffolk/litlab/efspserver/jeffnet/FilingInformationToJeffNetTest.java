@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+
 import edu.suffolk.litlab.efspserver.ContactInformation;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
@@ -44,11 +45,8 @@ public class FilingInformationToJeffNetTest {
     Person defendant = new Person(new Name("Company LLC"), "", true);
     info.setDefendants(List.of(defendant));
     
-    // TODO(brycew): CONTINUE
-    // Give the Filing this code
-    //NameAndCode regActionDesc = new NameAndCode("Complaint", "27967");
-    // SELECT * from filingcomponent where location = 'adams' and
-    // filingcodeid='27967';
+    // TODO(#52): Make and test multiple filings 
+
     String componentCode = "332";
     String fileName = "quality_check_overlay.pdf";
     InputStream x = this.getClass().getResourceAsStream("/" + fileName); 
@@ -57,6 +55,9 @@ public class FilingInformationToJeffNetTest {
             Collectors.toList()), "5766",
         componentCode, FilingTypeType.E_FILE, true);
     info.setFilings(List.of(filingDoc));
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode node = mapper.readTree("{\"tyler_filing_type\": \"27967\"}"); 
+    info.setMiscInfo(node);
   }
   
   @Test

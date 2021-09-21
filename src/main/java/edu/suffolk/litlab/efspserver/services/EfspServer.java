@@ -113,7 +113,7 @@ public class EfspServer {
             ud, converterMap, filingMap, callbackMap, security, sender)));
     sf.setResourceProvider(FirmAttorneyAndServiceService.class,
         new SingletonResourceProvider(new FirmAttorneyAndServiceService(security, cd)));
-    // TODO(brycew): refactor to reduce the number of services, or make just "Tyler services" and "JeffNet services" Providers
+    // TODO(brycew-later): refactor to reduce the number of services, or make just "Tyler services" and "JeffNet services" Providers
     sf.setResourceProvider(PaymentsService.class,
         new SingletonResourceProvider(new PaymentsService(security, GetEnv("TOGA_CLIENT_KEY").get(), GetEnv("TOGA_URL").get())));
     sf.setResourceProvider(CasesService.class,
@@ -198,9 +198,9 @@ public class EfspServer {
         dbUser, dbPassword, ud, md, ld, sender, userDatabaseName, modules, cd,
         converterMap);
 
-    // TODO(brycew): use https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ScheduledExecutorService.html
+    // TODO(#58): use https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ScheduledExecutorService.html
     // to routinely update codes if necessary
-    // TODO(brycew): consider http://www.quartz-scheduler.org/ too?
+    // TODO(#58): consider http://www.quartz-scheduler.org/ too?
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
       public void run() {

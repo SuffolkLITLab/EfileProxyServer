@@ -325,7 +325,7 @@ public class CodesService {
 
   @GET
   @Path("/courts/{court_id}/datafields/{field_name}")
-  // TODO(brycew): consider a bulk way of getting multiple codes, will be used heavily in the DA UI
+  // TODO(brycew-later): consider a bulk way of getting multiple codes, will be used heavily in the DA UI
   public Response getDataField(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
       @PathParam("field_name") String fieldName) throws SQLException {

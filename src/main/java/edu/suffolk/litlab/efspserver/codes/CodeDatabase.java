@@ -59,9 +59,8 @@ public class CodeDatabase extends DatabaseInterface {
       return;
     }
 
-    // TODO(brycew): eventually make the create tables have foreign keys and
-    // required
-    // from the Id / columnRefs
+    // TODO(brycew-later): eventually make the create tables have foreign keys and
+    // required from the Id / columnRefs
     String tableExistsQuery = CodeTableConstants.getTableExists();
     PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery);
     existsSt.setString(1, tableName);
@@ -103,7 +102,7 @@ public class CodeDatabase extends DatabaseInterface {
     String updateQuery = CodeTableConstants.updateVersion();
     try (PreparedStatement stmt = conn.prepareStatement(insertQuery);
         PreparedStatement update = conn.prepareStatement(updateQuery)) {
-      // TODO(brycew): dive deeper in the Column set, and see if any Data type isn't a normalizedString.
+      // TODO(brycew-later): dive deeper in the Column set, and see if any Data type isn't a normalizedString.
       //ColumnSet cs = doc.getColumnSet();
       for (Row r : doc.getSimpleCodeList().getRow()) {
         // HACK(brycew): jeez, this is horrible. Figure a better option
@@ -128,21 +127,13 @@ public class CodeDatabase extends DatabaseInterface {
       if (!courtName.isEmpty()) {
         // The version table that we directly download references things by "___codes.zip", not the
         // table name. We can translate those here.
-        String zipName = tableName;
-        if (zipName.equals("location")) {
-          zipName = "locations.zip";
-        } else {
-          zipName = zipName + "codes.zip";
-        }
-        // TODO(brycew): an archeic place to put this conversion from table name to zip file name.
-        // Move to a better place
+        String zipName = CodeTableConstants.getZipNameFromTable(tableName);
         update.setString(1, courtName);
         update.setString(2, zipName);
         update.setString(3, doc.getIdentification().getVersion());
         update.setString(4, doc.getIdentification().getVersion());
         update.executeUpdate();
       }
-      // TODO(brycew): handle error here too
     } catch (SQLException ex) {
       log.error("Tried to execute an insert, but failed! Exception: " + ex.toString());
       log.error("Going to rollback updates to this table");
@@ -335,33 +326,28 @@ public class CodeDatabase extends DatabaseInterface {
     });
   }
 
-  public List<PartyType> getPartyTypeFor(String courtLocationId, String typeCode)
-      throws SQLException {
-    if (conn == null) {
-      log.error("SQL connection not created in Party Type yet");
-      throw new SQLException();
-    }
-
-    String query = PartyType.getPartyTypeFromCaseType();
-    PreparedStatement caseSt = conn.prepareStatement(query);
-    caseSt.setString(1, courtLocationId);
-    caseSt.setString(2, typeCode);
-    ResultSet rs = caseSt.executeQuery();
-    List<PartyType> partyTypes = new ArrayList<PartyType>();
-    // TODO(brycew): this could benefit from a refactor, but can't do new T(); Find a workaround
-    while (rs.next()) {
-      partyTypes.add(new PartyType(rs));
-    }
-    if (partyTypes.isEmpty()) {
-      String broadQuery = PartyType.getPartyTypeNoCaseType();
-      PreparedStatement broadSt = conn.prepareStatement(broadQuery);
-      broadSt.setString(1, courtLocationId);
-      ResultSet broadRs = broadSt.executeQuery();
-      while (broadRs.next()) {
-        partyTypes.add(new PartyType(broadRs));
+  public List<PartyType> getPartyTypeFor(String courtLocationId, String typeCode) {
+    return safetyWrap(() -> {
+      String query = PartyType.getPartyTypeFromCaseType();
+      PreparedStatement caseSt = conn.prepareStatement(query);
+      caseSt.setString(1, courtLocationId);
+      caseSt.setString(2, typeCode);
+      ResultSet rs = caseSt.executeQuery();
+      List<PartyType> partyTypes = new ArrayList<PartyType>();
+      while (rs.next()) {
+        partyTypes.add(new PartyType(rs));
       }
-    }
-    return partyTypes;
+      if (partyTypes.isEmpty()) {
+        String broadQuery = PartyType.getPartyTypeNoCaseType();
+        PreparedStatement broadSt = conn.prepareStatement(broadQuery);
+        broadSt.setString(1, courtLocationId);
+        ResultSet broadRs = broadSt.executeQuery();
+        while (broadRs.next()) {
+          partyTypes.add(new PartyType(broadRs));
+        }
+      }
+      return partyTypes;
+    });
   }
 
   public List<CrossReference> getCrossReference(String courtLocationId, String caseTypeId) {
@@ -527,7 +513,7 @@ public class CodeDatabase extends DatabaseInterface {
     String query = CodeTableConstants.getSpecificStatesForCountryForLoc();
     try {
       PreparedStatement st = conn.prepareStatement(query);
-      // TODO(brycew): Tyler docs say state is a system table, but there's one per court?
+      // TODO(brycew-later): Tyler docs say state is a system table, but there's one per court?
       // Hardcoding the system "0" for now
       st.setString(1, "0");
       st.setString(2, country);

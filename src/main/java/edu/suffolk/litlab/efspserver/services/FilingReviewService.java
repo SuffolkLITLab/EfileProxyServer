@@ -10,10 +10,9 @@ import edu.suffolk.litlab.efspserver.db.UserDatabase;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.stream.Collectors;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -96,15 +95,14 @@ public class FilingReviewService {
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     try {
-      Date startDate = (startStr != null) ? dateFormat.parse(startStr) : null;
-      Date endDate = (endStr != null) ? dateFormat.parse(endStr) : null;
+      LocalDate startDate = (startStr != null) ? LocalDate.parse(startStr) : null;
+      LocalDate endDate = (endStr != null) ? LocalDate.parse(endStr) : null;
       return filingInterfaces.get(courtId).getFilingList(courtId, userId, startDate, endDate,
           activeToken.get());
-    } catch (ParseException ex) {
+    } catch (DateTimeParseException ex) {
       return Response.status(400).entity(
-          "Dates given were incorrect, should be of the form: yyyy-MM-dd: " + ex).build();
+          "Dates given were incorrect, should be of the form: yyyy-MM-dd (ISO_LOCAL_DATE): " + ex).build();
     }
   }
 
@@ -259,7 +257,7 @@ public class FilingReviewService {
     Person user = filers.get(0);
     Optional<String> phoneNumber = Optional.empty();
     if (user.getContactInfo().getPhoneNumbers().size() > 0) {
-      // TODO(brycew): should we store multiple phone numbers as backup?
+      // TODO(brycew-later): should we store multiple phone numbers as backup?
       phoneNumber = Optional.of(user.getContactInfo().getPhoneNumbers().get(0));
     }
     Timestamp ts = new Timestamp(System.currentTimeMillis());

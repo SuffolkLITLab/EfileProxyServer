@@ -179,8 +179,7 @@ public class AdminUserService {
   @GET
   @Path("/user/password-question")
   public Response getPasswordQuestion(@Context HttpHeaders httpHeaders, String email) {
-    // TODO(brycew): should be able to work without creds in httpHeaders
-    Optional<IEfmUserService> port = setupUserPort(httpHeaders);
+    Optional<IEfmUserService> port = setupUserPort(httpHeaders, false);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -315,7 +314,7 @@ public class AdminUserService {
     ResetPasswordRequestType reset = new ResetPasswordRequestType();
     reset.setEmail(emailToSend);
     ResetPasswordResponseType resp = port.get().resetPassword(reset);
-    // TODO(brycew): why would we reply with the password hash? They still shouldn't be able to log in?
+    // TODO(brycew-later): why would we reply with the password hash? They still shouldn't be able to log in?
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
         () -> {
           return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
@@ -447,7 +446,7 @@ public class AdminUserService {
       addRole.setLocation(role.getLocation());
       addRole.setRole(role.getRoleName());
       addRole.setUserID(id);
-      // TODO(brycew): this won't be consistent if it fails part way through?
+      // TODO(brycew-later): this won't be consistent if it fails part way through?
       BaseResponseType resp = port.get().addUserRole(addRole);
       if (ServiceHelpers.checkErrors(resp.getError())) {
         return Response.status(401).entity(resp.getError().getErrorText()).build();
@@ -481,7 +480,7 @@ public class AdminUserService {
       rmRole.setLocation(role.getLocation());
       rmRole.setRole(role.getRoleName());
       rmRole.setUserID(id);
-      // TODO(brycew): this won't be consistent if it fails part way through?
+      // TODO(brycew-later): this won't be consistent if it fails part way through?
       BaseResponseType resp = port.get().removeUserRole(rmRole);
       if (ServiceHelpers.checkErrors(resp.getError())) {
         return Response.status(401).entity(resp.getError().getErrorText()).build();

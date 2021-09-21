@@ -24,7 +24,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -104,7 +104,7 @@ public class JeffNetFiler implements EfmFilingInterface {
       }
       ApiResult result = mapper.readValue(response.body(), ApiResult.class);
       UUID transactionId = UUID.fromString(result.transactionId);
-      // TODO(brycew): Break this into multiple: https://trello.com/c/QZaUFT2c/38
+      // TODO(brycew-later): Break this into multiple: https://trello.com/c/QZaUFT2c/38
       return Result.ok(List.of(transactionId));
     } catch (InterruptedException ex) {
       return Result.err(FilingError.serverError("Interrupted getting response from " + this.filingEndpoint + ", " + ex));
@@ -138,7 +138,7 @@ public class JeffNetFiler implements EfmFilingInterface {
   }
 
   @Override
-  public Response getFilingList(String courtId, String userId, Date startDate, Date endDate, String apiToken) {
+  public Response getFilingList(String courtId, String userId, LocalDate startDate, LocalDate endDate, String apiToken) {
     // TODO Auto-generated method stub
     return Response.status(500).build();
   }
