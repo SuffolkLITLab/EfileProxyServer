@@ -141,9 +141,9 @@ public class FilingInformationDocassembleJacksonDeserializer
           "Whether or not the user is the plaintiff or petitioner", "boolean", List.of("true", "false"));
       collector.addRequired(var);
     }
-    // TODO(brycew): plaintiff and petitioners are both defined.
+    // TODO(brycew-later): plaintiff and petitioners are both defined.
     // Typical role might have the difference, take which is available
-    // TODO(brycew): better way to get the parties types?
+    // TODO(#60): better way to get the parties types?
     // TODO(brycew-later): make the party types use the SALI standard
     JsonNode plaintiffPartyJson = node.get("plaintiff_party_type");
     if (plaintiffPartyJson == null || !plaintiffPartyJson.isTextual()) {
@@ -346,7 +346,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     JsonNode jsonReturnDate = node.get("return_date");
     Optional<LocalDate> maybeReturnDate = Optional.empty();
     if (jsonReturnDate != null && jsonReturnDate.isTextual()) {
-      // TODO(brycew): Time zone user is using?
+      // TODO(#47): Time zone user is using?
       maybeReturnDate = Optional.of(LocalDate.ofInstant(Instant.parse(jsonReturnDate.asText()), ZoneId.of("America/Chicago")));
     }
     entities.setReturnDate(maybeReturnDate);

@@ -27,7 +27,6 @@ public class FilingDoc {
 
   // Required to at least have one
   private List<String> filingPartyIds;
-  // TODO(brycew): see FilingFilingAttorneyView data field config
   private Optional<String> filingAttorney;
 
   // This is, "determined via configuration within the EFM for each EFSP"?

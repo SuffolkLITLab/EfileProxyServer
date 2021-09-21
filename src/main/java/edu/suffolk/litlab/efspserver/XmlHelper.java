@@ -55,7 +55,7 @@ public class XmlHelper {
       e.printStackTrace();
       throw new RuntimeException(e);
     }
-    // TODO(brycew): THIS TIMEZONE IS WRONG: how should LocalDate +
+    // TODO(#47): THIS TIMEZONE IS WRONG: how should LocalDate +
     // GregorianCalendar operate?
     d.setValue(datatypeFac.newXMLGregorianCalendarDate(date.getYear(),
         date.getMonth().getValue(), date.getDayOfMonth(), 0));
@@ -91,7 +91,7 @@ public class XmlHelper {
     return outStr;
   }
   
-  /** TODO(brycew): figure out what measureUnits would actually be used. */
+  /** @param type will always be in bytes, but this is for backup. */
   public static long sizeMeasureAsBytes(MeasureType type) {
     String measureText = ((TextType) type.getMeasureValue().getValue()).getValue();
     long measureNum = Long.parseLong(measureText);

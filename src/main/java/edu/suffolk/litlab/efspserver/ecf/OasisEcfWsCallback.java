@@ -47,7 +47,6 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
 
   public MessageReceiptMessageType notifyFilingReviewComplete(
       NotifyFilingReviewCompleteRequestMessageType msg) {
-    // TODO(brycew): implement this here, hook it up
     // The bare minimum: get the Document ID, see if we have it in the db, send email response
     PaymentMessageType payment = msg.getPaymentReceiptMessage();
     ReviewFilingCallbackMessageType revFiling = msg.getReviewFilingCallbackMessage();
@@ -66,8 +65,9 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     }
 
     // Handle payment stuff first
-    // TODO(brycew): there is a Payment ID that we should save when handling payments
+    // TODO(#64): there is a Payment ID that we should save when handling payments
     // Skip for now: shouldn't be getting those
+
 
     // Now for the review filing
     revFiling.getCase().getValue();
@@ -79,7 +79,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       if (category.getValue().equalsIgnoreCase("FILINGID")) {
         filingId = id.getIdentificationID().getValue();
       }
-      // TODO(brycew): do we need to do anything with the parent envelope or filing ID?
+      // TODO(brycew-later): do we need to do anything with the parent envelope?
       // Maybe check them as well? But the filingId should be the same overall, and we'll save
       // most of them.
     }

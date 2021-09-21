@@ -142,13 +142,13 @@ public class EcfCourtSpecificSerializer {
         caseCategory.code.get(), type.code, type.initial);
     if (filings.isEmpty()) {
       log.error("Need a filing type! FilingTypes are empty, so " + caseCategory + " and " + type + " are restricted");
-      InterviewVariable var = collector.requestVar("filing", "TODO(brycew): description", "text");
+      InterviewVariable var = collector.requestVar("tyler_filing_type", "What type of filing is this?", "text");
       collector.addWrong(var);
       // Is foundational, so returning now
       throw FilingError.wrongValue(var);
     }
 
-    InterviewVariable filingVar = collector.requestVar("tyler_filing_type", "TODO(brycew): description", "text", filings.stream().map(f -> f.name).collect(Collectors.toList()));
+    InterviewVariable filingVar = collector.requestVar("tyler_filing_type", "What filing type is this?", "text", filings.stream().map(f -> f.name).collect(Collectors.toList()));
     JsonNode filingJson = info.getMiscInfo().get("tyler_filing_type");
     if (filingJson == null || filingJson.isNull() || !filingJson.isTextual()) {
       log.error("filing not present in the info!: " + info.getMiscInfo());
@@ -615,7 +615,7 @@ public class EcfCourtSpecificSerializer {
       //System.err.println(XmlHelper.objectToXmlStrOrError(n.getValue(), Base64Binary.class));
       attachment.setBinaryObject(n);
     } else {
-      // TODO(brycew): DO this: make the file downloadable from the Proxy server
+      // TODO(#62): DO this: make the file downloadable from the Proxy server
     }
     // The document itself
     DocumentRenditionMetadataType renditionMetadata =

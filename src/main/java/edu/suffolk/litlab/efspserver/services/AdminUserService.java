@@ -363,7 +363,7 @@ public class AdminUserService {
    * @param updatedUser, null fields are ignored
    * @return
    */
-  // TODO(brycew): retry these same things on the user port if it doesn't have firm permissions
+  // TODO(brycew-later): retry these same things on the user port if it doesn't have firm permissions
   @PATCH
   @Path("/users/{id}")
   public Response updateUser(@Context HttpHeaders httpHeaders,

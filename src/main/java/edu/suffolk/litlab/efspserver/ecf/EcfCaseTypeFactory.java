@@ -117,9 +117,10 @@ public class EcfCaseTypeFactory {
       myCase.getValue().setCaseCategoryText(XmlHelper.convertText(caseCategoryCode));
       return myCase;
     } else {
-      // TODO(brycew): start passing back why we couldn't make a case from this info
-      FilingError err = FilingError.serverError("TODO(brycew): why couldn't we make this case?");
-      collector.error(err);
+      InterviewVariable var = collector.requestVar("tyler_case_category", "The " + caseCategory.name 
+          + " Case category requires an ECF case type that we don't support", "text");
+      collector.addWrong(var);
+      FilingError err = FilingError.wrongValue(var); 
       throw err;
     }
   }
@@ -325,8 +326,8 @@ public class EcfCaseTypeFactory {
       ecfAug.setReturnDate(XmlHelper.convertDate(info.getReturnDate().get()));
     }
 
-    // TODO(brycew): FilingComponent
-    // TODO(brycew): optional service
+    // TODO(#61): FilingComponent
+    // TODO(#61): optional service
 
 
     DataFieldRow filingcaseparties =
@@ -416,8 +417,7 @@ public class EcfCaseTypeFactory {
       boolean initial, CaseCategory cat,
       String courtLocationId, JsonNode miscInfo, InfoCollector collector) throws SQLException, FilingError {
     List<NameAndCode> damageAmounts = cd.getDamageAmount(courtLocationId, cat.getCode());
-    // TODO(brycew): what the heck to do with the DataFieldConfig code = "DamageAmount"? No examples
-    DataFieldRow damageConfig = DataFieldRow.MissingDataField(cat.name);
+    DataFieldRow damageConfig = cd.getDataField(courtLocationId, "DamageAmount"); 
     String damgBehavior = (initial) ? cat.damageamountinitial : cat.damageamountsubsequent;
     if (!damgBehavior.isEmpty() && !damgBehavior.equals("Not Available")) {
       damageConfig = cd.getDataField(courtLocationId,

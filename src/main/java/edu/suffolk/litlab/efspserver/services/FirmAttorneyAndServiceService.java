@@ -160,7 +160,8 @@ public class FirmAttorneyAndServiceService {
     }
     CreateAttorneyRequestType req = new CreateAttorneyRequestType();
     req.setAttorney(attorney);
-    // TODO(brycew): what happens if a court has an additional requirement on the attorney number?
+    // TODO(brycew-later): what happens if a court has an additional requirement on the attorney number?
+    // Won't in IL at least. If it does, this whole system is poorly defined
     DataFieldRow row = cd.getDataField("1", "GlobalAttorneyNumber");
     if (row.isrequired && attorney.getBarNumber().isBlank()) {
       return Response.status(400).entity("Bar number required").build();
@@ -389,9 +390,8 @@ public class FirmAttorneyAndServiceService {
       getJsonString(node, "firmName").ifPresent(firmName-> msg.setFirstName(firmName));
       getJsonString(node, "email").ifPresent(email-> msg.setFirstName(email));
       ServiceContactListResponseType resp = firmPort.get().getPublicList(msg);
-      // TODO(brycew): PublicServiceContactShowEmail data config says emails
-      //  "must not be displayed in a menner that allows programmatic harvesting of the email address."
-      // How do you do that over a REST API?
+      // For "PublicServiceContactShowEmail" Datafield, we force API keys: the restriction of 
+      // "programmatic harvesting of emails" will have to be done on the DA side
       return makeResponse(resp,
           () -> {
             DataFieldRow row = cd.getDataField("1", "PublicServiceContactShowFreeFormFirmName");

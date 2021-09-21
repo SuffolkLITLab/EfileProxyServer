@@ -39,7 +39,7 @@ public class FilingInformationToJeffNetTest {
     Person plaintiff = new Person(new Name("Bob", "Zombie"), "test@example.com", false);
     Person plaintiff2 = new Person(new Name("Jill", "Vampire"), 
         new ContactInformation(List.of(), Optional.empty(), Optional.empty()), Optional.empty(), 
-        Optional.empty(), Optional.empty(), false);
+        Optional.empty(), Optional.empty(), false, "");
     info.setPlaintiffs(List.of(plaintiff, plaintiff2));
     
     Person defendant = new Person(new Name("Company LLC"), "", true);

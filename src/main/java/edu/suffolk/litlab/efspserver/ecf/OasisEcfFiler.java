@@ -62,6 +62,7 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusresponsemessag
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.messagereceiptmessage_4.MessageReceiptMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.PaymentMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.servicereceiptmessage_4.ServiceReceiptMessageType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.servicereceiptmessage_4.ServiceRecipientStatusType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ReviewFilingRequestMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingReviewMDEPort;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.ServiceMDEPort;
@@ -295,8 +296,10 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     ServiceMDEService ss = new ServiceMDEService(ServiceMDEService.WSDL_LOCATION);
     ServiceMDEPort port = ss.getServiceMDEPort();
     ServiceReceiptMessageType receipt = port.serveFiling(cfm);
-    // TODO(brycew): CONTINUE
-    receipt.getServiceRecipientStatus();
+    // TODO(#63): CONTINUE
+    for (ServiceRecipientStatusType status : receipt.getServiceRecipientStatus()) {
+
+    }
     
     return Result.err(FilingError.serverError("Not implemented"));
   }
