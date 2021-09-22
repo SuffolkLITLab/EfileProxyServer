@@ -37,6 +37,15 @@ public class FilingDocDocassembleJacksonDeserializer {
       collector.error(err);
     }
 
+    InterviewVariable filingVar = collector.requestVar("tyler_filing_type", "What filing type is this?", "text"); 
+    JsonNode filingJson = node.get("tyler_filing_type");
+    if (filingJson == null || filingJson.isNull() || !filingJson.isTextual()) {
+      log.error("filing not present in the info!: " + node);
+      collector.addRequired(filingVar.appendDesc(node.toPrettyString()));
+      throw FilingError.missingRequired(filingVar);
+    }
+    String filingType = filingJson.asText();
+
     // Get: filename
     String fileName = node.get("filename").asText("") + ".pdf";
 
@@ -104,7 +113,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       }
       // TODO(#56): add all of these things
       return Optional.of(
-          new FilingDoc(fileName,
+          new FilingDoc(filingType, fileName,
               inStream.readAllBytes(),
               Optional.empty(),
               Optional.empty(),

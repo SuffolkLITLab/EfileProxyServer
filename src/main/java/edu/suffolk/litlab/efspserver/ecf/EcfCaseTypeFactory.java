@@ -13,7 +13,6 @@ import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.codes.FilerType;
-import edu.suffolk.litlab.efspserver.codes.FilingCode;
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.codes.PartyType;
 import edu.suffolk.litlab.efspserver.services.FilingError;
@@ -81,7 +80,9 @@ public class EcfCaseTypeFactory {
       CaseCategory initialCaseCategory,
       CaseType caseType,
       FilingInformation info,
-      FilingCode filing,
+      boolean anyAmountInControversy,
+      boolean isInitialFiling,
+      boolean isFirstIndexedFiling,
       List<String> filingIds,
       // HACK(brycew): hacky: needed because fee querys put the payment stuff in the tyler Aug
       String queryType,
@@ -95,11 +96,11 @@ public class EcfCaseTypeFactory {
         makeNiemCaseAug(courtLocation.code);
     JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug =
               makeTylerCaseAug(courtLocation, caseCategory,
-                  caseType, info,
+                  caseType, info, isInitialFiling, isFirstIndexedFiling,
                   filingIds, queryType, miscInfo, serializer, collector);
     if (caseCategory.ecfcasetype.equals("CivilCase")) {
       Optional<BigDecimal> amountInControversy = Optional.empty();
-      if (filing.amountincontroversy.equalsIgnoreCase("Required")) {
+      if (anyAmountInControversy) {
         JsonNode jsonAmt = info.getMiscInfo().get("amount_in_controversy");
         if (jsonAmt != null && jsonAmt.isBigDecimal()) {
           amountInControversy = Optional.of(jsonAmt.decimalValue());
@@ -108,7 +109,7 @@ public class EcfCaseTypeFactory {
         }
       }
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase =
-          makeCivilCaseType(caseAug, tylerAug, filing, amountInControversy);
+          makeCivilCaseType(caseAug, tylerAug, amountInControversy);
       myCase.getValue().setCaseCategoryText(XmlHelper.convertText(caseCategoryCode));
       return myCase;
     } else if (caseCategory.ecfcasetype.equals("DomesticCase")) {
@@ -140,6 +141,8 @@ public class EcfCaseTypeFactory {
           CaseCategory caseCategory,
           CaseType caseType,
           FilingInformation info,
+          boolean isInitialFiling,
+          boolean isFirstIndexedFiling,
           List<String> filingIds,
           String queryType,
           JsonNode miscInfo,
@@ -205,11 +208,13 @@ public class EcfCaseTypeFactory {
       existingTypes.add(defendant.getRole());
     }
     
-    requiredTypes.removeAll(existingTypes);
-    if (!requiredTypes.isEmpty()) {
-      FilingError err = FilingError.serverError("DEV ERROR: All required parties not covered by existing party types. ("
-          + info.getPlaintiffPartyType() + " " + info.getDefendantPartyType() + ". Missing " + requiredTypes);
-      collector.error(err);
+    if (isFirstIndexedFiling) {  // We can assume that the initial filing handled all of the required parties
+      requiredTypes.removeAll(existingTypes);
+      if (!requiredTypes.isEmpty()) {
+        FilingError err = FilingError.serverError("DEV ERROR: All required parties not covered by existing party types. ("
+            + existingTypes + ". Missing " + requiredTypes);
+        collector.error(err);
+      }
     }
 
     int attorneyCount = 1;
@@ -285,12 +290,11 @@ public class EcfCaseTypeFactory {
     }
 
 
-    boolean initial = caseType.initial;
-    Optional<ProcedureRemedyType> res = makeProcedureRemedyType(initial,
+    Optional<ProcedureRemedyType> res = makeProcedureRemedyType(isInitialFiling,
         caseCategory, courtLocation.code, miscInfo, collector);
 
     Optional<ProcedureRemedyType> resPlus = addDamageAmountType(
-        res, initial, caseCategory, courtLocation.code, miscInfo, collector);
+        res, isInitialFiling, caseCategory, courtLocation.code, miscInfo, collector);
     if (resPlus.isPresent()) {
       ecfAug.setProcedureRemedy(resPlus.get());
     }
@@ -301,7 +305,7 @@ public class EcfCaseTypeFactory {
       List<FilerType> allTypes = cd.getFilerTypes(courtLocation.code);
       String filerTypeName = "filer_type";
       JsonNode filerTypeNode = miscInfo.get(filerTypeName);
-      InterviewVariable var = collector.requestVar("filer_type",
+      InterviewVariable var = collector.requestVar(filerTypeName,
          "Metadata about the filer of this case", "choices",
          allTypes.stream().map(t -> t.name).collect(Collectors.toList()));
       if (filerTypeNode != null && filerTypeNode.isTextual()) {
@@ -469,7 +473,6 @@ public class EcfCaseTypeFactory {
   private JAXBElement<CivilCaseType> makeCivilCaseType(
       JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
       JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
-      FilingCode filing,
       Optional<BigDecimal> amountInControversy) {
     oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory ecfCivilObjFac =
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory();
