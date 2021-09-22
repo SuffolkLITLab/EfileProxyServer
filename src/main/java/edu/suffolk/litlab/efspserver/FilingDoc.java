@@ -76,13 +76,16 @@ public class FilingDoc {
   }
 
   /** Full constructor, in all it's mess. */
-  public FilingDoc(String filingCodeName, String fileName, byte[] fileContents, Optional<String> userProvidedDescription,
+  public FilingDoc(String filingCodeName, String fileName, 
+      byte[] fileContents, 
+      Optional<String> userProvidedDescription,
       Optional<String> filingReferenceNum, Optional<LocalDate> dueDate, 
       List<String> filingPartyIds, Optional<String> filingAttorney,
       String documentTypeFormatStandardName, String filingComponentName,
       String filingComments, Optional<String> motionType, List<OptionalService> optionalServices,
       List<String> courtesyCopies, List<String> preliminaryCopies, FilingTypeType filingAction,
       boolean isLeadDoc) {
+    this.filingCodeName = filingCodeName;
     this.fileName = fileName;
     this.fileContents = fileContents;
     this.userProvidedDescription = userProvidedDescription;
@@ -93,7 +96,6 @@ public class FilingDoc {
     this.filingAttorney = filingAttorney;
     this.documentTypeFormatStandardName = documentTypeFormatStandardName;
     this.filingComponentName = filingComponentName;
-    this.filingCodeName = filingCodeName;
 
     this.filingComments = filingComments;
     this.optServices = optionalServices;

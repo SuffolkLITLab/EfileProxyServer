@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efspserver.docassemble;
 
-import java.util.Optional;
+import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getStringMember;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -10,15 +10,6 @@ import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 
 public class NameDocassembleDeserializer {
-
-  private static Optional<String> getStringMember(JsonNode obj, String memberName) {
-    if (obj.has(memberName)
-        && obj.get(memberName).isTextual()) {
-      return Optional.of(obj.get(memberName).asText());
-    }
-    return Optional.empty();
-  }
-
 
   public static Name fromNode(JsonNode node, InfoCollector collector) throws FilingError {
     if (node == null) {

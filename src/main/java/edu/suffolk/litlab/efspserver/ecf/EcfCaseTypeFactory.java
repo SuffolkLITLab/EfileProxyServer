@@ -330,10 +330,6 @@ public class EcfCaseTypeFactory {
       ecfAug.setReturnDate(XmlHelper.convertDate(info.getReturnDate().get()));
     }
 
-    // TODO(#61): FilingComponent
-    // TODO(#61): optional service
-
-
     DataFieldRow filingcaseparties =
         cd.getDataField(courtLocation.code, "FilingEventCaseParties");
     gov.niem.niem.structures._2.ObjectFactory structOf =
