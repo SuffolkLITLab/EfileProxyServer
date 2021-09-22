@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efspserver.docassemble;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.hubspot.algebra.Result;
 
 import edu.suffolk.litlab.efspserver.Address;
@@ -89,6 +90,14 @@ public class PersonDocassembleJacksonDeserializer {
     Optional<String> email = getStringMember(node, "email");
     final ContactInformation info = new ContactInformation(phones, addr, email);
 
+    JsonNode partyJson = node.get("party_type");
+    if (partyJson == null || !partyJson.isTextual()) {
+      InterviewVariable var = collector.requestVar("party_type",
+          "What legal role the party fulfills", "text");
+      collector.addOptional(var);
+      partyJson = NullNode.getInstance();
+    }
+    String partyType = partyJson.asText("");
 
     Optional<String> language = getStringMember(node, "prefered_language");
     Optional<String> gender = getStringMember(node, "gender");
@@ -102,7 +111,7 @@ public class PersonDocassembleJacksonDeserializer {
     }).orElse(Optional.<LocalDate>empty());
     Name name = NameDocassembleDeserializer.fromNode(node.get("name"), collector);
     boolean isPer = !name.getMiddleName().isBlank() || !name.getLastName().isBlank();
-    Person per = new Person(name, info, gender, language, birthdate, !isPer, "");
+    Person per = new Person(name, info, gender, language, birthdate, !isPer, partyType);
     log.debug("Read in a new person: " + per.getName().getFullName());
     return Result.ok(per);
   }

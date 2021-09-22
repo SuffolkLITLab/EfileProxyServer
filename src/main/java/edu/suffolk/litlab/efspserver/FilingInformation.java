@@ -14,9 +14,7 @@ public class FilingInformation {
 
   private String courtLocationId;
   private List<Person> plaintiffs = List.of();
-  private String plaintiffPartyType;
   private List<Person> defendants = List.of();
-  private String defendantPartyType;
   
   /** A list of attorney UIDs. 
    * 
@@ -91,16 +89,8 @@ public class FilingInformation {
     return plaintiffs;
   }
   
-  public String getPlaintiffPartyType() {
-    return plaintiffPartyType;
-  }
-  
   public List<Person> getDefendants() {
     return defendants;
-  }
-  
-  public String getDefendantPartyType() {
-    return defendantPartyType;
   }
   
   public List<String> getAttorneyIds() {
@@ -170,18 +160,10 @@ public class FilingInformation {
     this.plaintiffs = plaintiffs;
   }
   
-  public void setPlaintiffPartyType(String plaintiffPartyType) {
-    this.plaintiffPartyType = plaintiffPartyType;
-  }
-  
   public void setDefendants(List<Person> defendants) {
     this.defendants = defendants;
   }
   
-  public void setDefendantPartyType(String defendantPartyType) {
-    this.defendantPartyType = defendantPartyType;
-  }
-
   public void setAttorneyIds(List<String> attorneyIds) {
     this.attorneyIds = attorneyIds;
   }

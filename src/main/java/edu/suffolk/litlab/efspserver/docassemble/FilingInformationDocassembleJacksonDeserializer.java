@@ -92,7 +92,22 @@ public class FilingInformationDocassembleJacksonDeserializer
       varToId.put("users[" + perIdx + "]", user.getIdString());
       perIdx++;
     }
-    if (users.isEmpty()) {
+
+    FilingInformation entities = new FilingInformation();
+    JsonNode prevCaseId = node.get("previous_case_id");
+    boolean hasPrevCaseId = prevCaseId != null && prevCaseId.isTextual();
+    if (hasPrevCaseId) {
+      entities.setPreviousCaseId(prevCaseId.asText());
+    }
+
+    JsonNode docketNumber = node.get("docket_number");
+    boolean hasDocketNumber = docketNumber != null && docketNumber.isTextual();
+    if (hasDocketNumber) {
+      entities.setCaseDocketNumber(docketNumber.asText());
+    }
+
+    boolean isFirstIndexedFiling = !hasPrevCaseId;
+    if (isFirstIndexedFiling && users.isEmpty()) {
       InterviewVariable varExpected = new InterviewVariable("users",
           "the side of the matter that current person answering this interview is on",
           "ALPeopleList", List.of());
@@ -107,15 +122,18 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
     log.debug("Got users");
 
-    Optional<String> userEmail = users.get(0).getContactInfo().getEmail();
-    if (userEmail.isEmpty() || userEmail.get().isBlank()) {
+    Optional<String> userEmail = Optional.empty();
+    if (users.size() > 0) {
+      userEmail = users.get(0).getContactInfo().getEmail();
+    }
+    if (isFirstIndexedFiling && (userEmail.isEmpty() || userEmail.orElse("").isBlank())) {
       InterviewVariable var = new InterviewVariable(
           "users[0].email", "Email is required for at least one user", "text", List.of());
       collector.addRequired(var);
     }
 
     final List<Person> otherParties = collectPeople(node, "other_parties", collector);
-    if (otherParties.isEmpty()) {
+    if (isFirstIndexedFiling && otherParties.isEmpty()) {
       InterviewVariable othersExpected = new InterviewVariable("other_parties",
           "the side of the matter that current person answering this interview is on",
           "ALPeopleList", List.of());
@@ -133,53 +151,23 @@ public class FilingInformationDocassembleJacksonDeserializer
         && node.get("user_started_case").isBoolean()) {
       userStartedCase = Optional.of(node.get("user_started_case").asBoolean());
     }
-    log.debug("user_started_case: " + userStartedCase.orElse(null));
-
-    FilingInformation entities = new FilingInformation();
     if (userStartedCase.isEmpty()) {
       InterviewVariable var = collector.requestVar("user_started_case",
           "Whether or not the user is the plaintiff or petitioner", "boolean", List.of("true", "false"));
       collector.addRequired(var);
     }
+    log.debug("user_started_case: " + userStartedCase.orElse(null));
+
     // TODO(brycew-later): plaintiff and petitioners are both defined.
     // Typical role might have the difference, take which is available
     // TODO(#60): better way to get the parties types?
     // TODO(brycew-later): make the party types use the SALI standard
-    JsonNode plaintiffPartyJson = node.get("plaintiff_party_type");
-    if (plaintiffPartyJson == null || !plaintiffPartyJson.isTextual()) {
-      InterviewVariable var = collector.requestVar("plaintiff_party_type",
-          "What legal role the plaintiff fulfills", "text");
-      collector.addOptional(var);
-      plaintiffPartyJson = NullNode.getInstance();
-    }
-    entities.setPlaintiffPartyType(plaintiffPartyJson.asText("Plaintiff"));
-    JsonNode defendantPartyJson = node.get("defendant_party_type");
-    if (defendantPartyJson == null || !defendantPartyJson.isTextual()) {
-      InterviewVariable var = collector.requestVar("defendant_party_type",
-          "What legal role the defendant fulfills", "text");
-      collector.addOptional(var);
-      defendantPartyJson = NullNode.getInstance();
-    }
-    entities.setDefendantPartyType(defendantPartyJson.asText("Defendant"));
-
     boolean started = userStartedCase.get();
     if (started) {
-      users.forEach((user) -> {
-        user.setRole(entities.getPlaintiffPartyType());
-      });
       entities.setPlaintiffs(users);
-      otherParties.forEach((other) -> {
-        other.setRole(entities.getDefendantPartyType());
-      });
       entities.setDefendants(otherParties);
     } else {
-      users.forEach((user) -> {
-        user.setRole(entities.getDefendantPartyType());
-      });
       entities.setDefendants(users);
-      otherParties.forEach((other) -> {
-        other.setRole(entities.getPlaintiffPartyType());
-      });
       entities.setPlaintiffs(otherParties);
     }
 
