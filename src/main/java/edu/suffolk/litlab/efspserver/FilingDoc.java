@@ -22,8 +22,9 @@ public class FilingDoc {
   private Optional<LocalDate> dueDate;
   // A valid filing code (complaint, motion, Appearance, Motion, etc.)
   // Sets the RegActionDesc attribute
-  //private String filingCodeName;
+  private String filingCodeName;
   private UUID id;
+
 
   // Required to at least have one
   private List<String> filingPartyIds;
@@ -47,35 +48,35 @@ public class FilingDoc {
 
   private boolean isLeadDoc;
 
-  public FilingDoc(String fileName, InputStream fileStream) throws IOException {
-    this(fileName, fileStream, List.of(), "");
+  public FilingDoc(String filingCodeName, String fileName, InputStream fileStream) throws IOException {
+    this(filingCodeName, fileName, fileStream, List.of(), "");
   }
 
   /** FilingDoc constructor for Jefferson Parish data.
    *
    * @throws IOException If the input stream can't be opened or read from
    */
-  public FilingDoc(String fileName, InputStream fileStream,
+  public FilingDoc(String filingCodeName, String fileName, InputStream fileStream,
       List<String> filingPartyIds,
       String filingComments) throws IOException  {
-    this(fileName, fileStream.readAllBytes(), Optional.empty(), Optional.empty(), Optional.empty(),
+    this(filingCodeName, fileName, fileStream.readAllBytes(), Optional.empty(), Optional.empty(), Optional.empty(),
         filingPartyIds, Optional.empty(), "", "", "", Optional.empty(),
         List.of(), List.of(), List.of(), FilingTypeType.E_FILE, true);
     this.documentTypeFormatStandardName = ""; // Default to blank: we can't get the confidential code
   }
 
-  public FilingDoc(String fileName, InputStream fileStream,
+  public FilingDoc(String filingCodeName, String fileName, InputStream fileStream,
       List<String> filingPartyIds,
       String documentTypeFormatStandardName,
       String filingComponentName, FilingTypeType filingAction, boolean isLeadDoc) throws IOException {
-    this(fileName, fileStream.readAllBytes(), Optional.empty(), Optional.empty(), Optional.empty(),
+    this(filingCodeName, fileName, fileStream.readAllBytes(), Optional.empty(), Optional.empty(), Optional.empty(),
         filingPartyIds, Optional.empty(), documentTypeFormatStandardName,
         filingComponentName, "", Optional.empty(), List.of(), List.of(), List.of(),
         filingAction, isLeadDoc);
   }
 
   /** Full constructor, in all it's mess. */
-  public FilingDoc(String fileName, byte[] fileContents, Optional<String> userProvidedDescription,
+  public FilingDoc(String filingCodeName, String fileName, byte[] fileContents, Optional<String> userProvidedDescription,
       Optional<String> filingReferenceNum, Optional<LocalDate> dueDate, 
       List<String> filingPartyIds, Optional<String> filingAttorney,
       String documentTypeFormatStandardName, String filingComponentName,
@@ -92,6 +93,7 @@ public class FilingDoc {
     this.filingAttorney = filingAttorney;
     this.documentTypeFormatStandardName = documentTypeFormatStandardName;
     this.filingComponentName = filingComponentName;
+    this.filingCodeName = filingCodeName;
 
     this.filingComments = filingComments;
     this.optServices = optionalServices;
@@ -184,5 +186,9 @@ public class FilingDoc {
 
   public FilingTypeType getFilingAction() {
     return filingAction;
+  }
+
+  public String getFilingCodeName() {
+    return filingCodeName;
   }
 }

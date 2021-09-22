@@ -46,6 +46,7 @@ import ecfv5.tyler.ecf.v5_0.extensions.common.FilingReferenceType;
 import ecfv5.tyler.ecf.v5_0.extensions.reservedateresponse.ReserveDateResponseMessageType;
 import ecfv5.tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
 import ecfv5.tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateResponseMessageType;
+import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.SecurityHub;
@@ -145,7 +146,6 @@ public class CourtSchedulingService {
     EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo.get());
     ComboCaseCodes allCodes = serializer.serializeCaseCodes(info, collector);
     Optional<String> caseTrackingId = info.getPreviousCaseId(); 
-    Optional<String> motionTypeCode = info.getFilings().get(0).getMotionType();
     String filingPartyId = info.getFilings().get(0).getFilingPartyIds().get(0);
     Optional<String> filingAttorneyId = info.getFilings().get(0).getFilingAttorney();
     Optional<LocalDate> returnDate = info.getReturnDate();
@@ -158,7 +158,7 @@ public class CourtSchedulingService {
       outOfState = info.getMiscInfo().get("out_of_state").asBoolean(false);
     }
     Optional<BigDecimal> maybeAmt = Optional.empty();
-    if (allCodes.filing.amountincontroversy.equalsIgnoreCase("Required")) {
+    if (allCodes.filings.stream().anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"))) {
       JsonNode jsonAmt = info.getMiscInfo().get("amount_in_controversy");
       if (jsonAmt == null || !jsonAmt.isBigDecimal()) {
         return Response.status(400).entity("Amount in controversy required").build();
@@ -172,18 +172,23 @@ public class CourtSchedulingService {
     CaseType ct = niemObjFac.createCaseType();
     caseTrackingId.ifPresent(id -> ct.setCaseTrackingID(Ecfv5XmlHelper.convertString(id)));
 
-    CourtEventAugmentationType e = oasisObjFac.createCourtEventAugmentationType();
     DateType currentDate = Ecfv5XmlHelper.convertDate(LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault()));
-    e.setCourtEventEnteredOnDocketDate(currentDate);
-    e.setCourtEventTypeCode(Ecfv5XmlHelper.convertText(allCodes.filing.code));
-    motionTypeCode.ifPresent(mot -> {
-      e.setCourtLocationCode(tylerObjFac.createMotionTypeCode(Ecfv5XmlHelper.convertText(mot)));
-    });
     CourtEventType event = jxObjFac.createCourtEventType();
-    event.getCourtEventAugmentationPoint().add(oasisObjFac.createCourtEventAugmentation(e));
+    int i = 0;
+    for (FilingDoc doc : info.getFilings()) {
+      Optional<String> motionTypeCode = doc.getMotionType();
+      CourtEventAugmentationType e = oasisObjFac.createCourtEventAugmentationType();
+      e.setCourtEventEnteredOnDocketDate(currentDate);
+      e.setCourtEventTypeCode(Ecfv5XmlHelper.convertText(allCodes.filings.get(i).code));
+      motionTypeCode.ifPresent(mot -> {
+        e.setCourtLocationCode(tylerObjFac.createMotionTypeCode(Ecfv5XmlHelper.convertText(mot)));
+      });
+      event.getCourtEventAugmentationPoint().add(oasisObjFac.createCourtEventAugmentation(e));
+      i++;
+    }
     CaseAugmentationType jAug = jxObjFac.createCaseAugmentationType();
     jAug.getCaseCourtEvent().add(event);
-    int i = 1;
+    i = 1;
     for (String attorneyId : info.getAttorneyIds()) {
       Optional<String> partyRepresented = info.getPartyRepByAttorney(attorneyId);
       if (partyRepresented.isEmpty()) {

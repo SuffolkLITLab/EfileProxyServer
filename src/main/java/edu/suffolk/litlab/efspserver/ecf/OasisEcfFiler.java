@@ -251,9 +251,19 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         }
         cumulativeBytes += bytes;
 
+        FilingCode fc = allCodes.filings.get(seqNum);
+        List<FilingComponent> components = cd.getFilingComponents(info.getCourtLocation(), fc.code);
+        if (components.isEmpty()) {
+          InterviewVariable filingComponentVar = collector.requestVar("filing_component", "The filing component: Lead or Attachment", "text");
+          collector.addRequired(filingComponentVar);
+          if (collector.finished()) {
+            throw FilingError.missingRequired(filingComponentVar);
+          }
+        }
+
         JAXBElement<DocumentType> result =
                 serializer.filingDocToXml(filingDoc, seqNum, allCodes.cat, allCodes.type,
-                    allCodes.filing, components, info.getMiscInfo(), collector);
+                    fc, components, info.getMiscInfo(), collector);
         if (filingDoc.isLead()) {
           cfm.getFilingLeadDocument().add(result);
         } else {
