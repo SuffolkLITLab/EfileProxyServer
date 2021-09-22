@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efspserver.services;
 
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
+import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getStringMember;
 
 import java.util.List;
 import java.util.Optional;
@@ -100,17 +101,17 @@ public class FirmAttorneyAndServiceService {
     ObjectMapper mapper = new ObjectMapper();
     try {
       JsonNode node = mapper.readTree(json);
-      getJsonString(node, "firmName").ifPresent(name -> firm.setFirmName(name));
-      getJsonString(node, "phoneNumber").ifPresent(phone -> firm.setPhoneNumber(phone));
+      getStringMember(node, "firmName").ifPresent(name -> firm.setFirmName(name));
+      getStringMember(node, "phoneNumber").ifPresent(phone -> firm.setPhoneNumber(phone));
       AddressType addr = firm.getAddress();
       JsonNode addrNode = node.get("address");
       if (addrNode != null && addrNode.isObject()) {
-        getJsonString(addrNode, "addressLine1").ifPresent(line1-> addr.setAddressLine1(line1));
-        getJsonString(addrNode, "addressLine2").ifPresent(line2-> addr.setAddressLine2(line2));
-        getJsonString(addrNode, "city").ifPresent(city -> addr.setCity(city));
-        getJsonString(addrNode, "state").ifPresent(state -> addr.setState(state));
-        getJsonString(addrNode, "zipCode").ifPresent(zip -> addr.setZipCode(zip));
-        getJsonString(addrNode, "country").ifPresent(country -> addr.setCountry(country));
+        getStringMember(addrNode, "addressLine1").ifPresent(line1-> addr.setAddressLine1(line1));
+        getStringMember(addrNode, "addressLine2").ifPresent(line2-> addr.setAddressLine2(line2));
+        getStringMember(addrNode, "city").ifPresent(city -> addr.setCity(city));
+        getStringMember(addrNode, "state").ifPresent(state -> addr.setState(state));
+        getStringMember(addrNode, "zipCode").ifPresent(zip -> addr.setZipCode(zip));
+        getStringMember(addrNode, "country").ifPresent(country -> addr.setCountry(country));
       }
       firm.setAddress(addr);
 
@@ -191,10 +192,10 @@ public class FirmAttorneyAndServiceService {
     ObjectMapper mapper = new ObjectMapper();
     try {
       JsonNode node = mapper.readTree(json);
-      getJsonString(node, "firstName").ifPresent(first -> att.setFirstName(first));
-      getJsonString(node, "middleName").ifPresent(middle -> att.setMiddleName(middle));
-      getJsonString(node, "lastName").ifPresent(last-> att.setLastName(last));
-      getJsonString(node, "barNumber").ifPresent(bar -> att.setBarNumber(bar));
+      getStringMember(node, "firstName").ifPresent(first -> att.setFirstName(first));
+      getStringMember(node, "middleName").ifPresent(middle -> att.setMiddleName(middle));
+      getStringMember(node, "lastName").ifPresent(last-> att.setLastName(last));
+      getStringMember(node, "barNumber").ifPresent(bar -> att.setBarNumber(bar));
 
       UpdateAttorneyRequestType updateReq = new UpdateAttorneyRequestType();
       updateReq.setAttorney(att);
@@ -354,12 +355,12 @@ public class FirmAttorneyAndServiceService {
     ObjectMapper mapper = new ObjectMapper();
     try {
       JsonNode node = mapper.readTree(json);
-      getJsonString(node, "firstName").ifPresent(first -> contact.setFirstName(first));
-      getJsonString(node, "middleName").ifPresent(middle -> contact.setMiddleName(middle));
-      getJsonString(node, "lastName").ifPresent(last-> contact.setLastName(last));
-      getJsonString(node, "email").ifPresent(email -> contact.setEmail(email));
-      getJsonString(node, "administrativeCopy").ifPresent(email -> contact.setAdministrativeCopy(email));
-      getJsonString(node, "phoneNumber").ifPresent(phone -> contact.setPhoneNumber(phone));
+      getStringMember(node, "firstName").ifPresent(first -> contact.setFirstName(first));
+      getStringMember(node, "middleName").ifPresent(middle -> contact.setMiddleName(middle));
+      getStringMember(node, "lastName").ifPresent(last-> contact.setLastName(last));
+      getStringMember(node, "email").ifPresent(email -> contact.setEmail(email));
+      getStringMember(node, "administrativeCopy").ifPresent(email -> contact.setAdministrativeCopy(email));
+      getStringMember(node, "phoneNumber").ifPresent(phone -> contact.setPhoneNumber(phone));
       getJsonBoolean(node, "isPublic").ifPresent(
           pub -> contact.setIsPublic(tylerCommonObjFac.createServiceContactTypeIsPublic(pub)));
       getJsonBoolean(node, "isInFirmMasterList").ifPresent(
@@ -385,10 +386,10 @@ public class FirmAttorneyAndServiceService {
     GetPublicListRequestType msg = new GetPublicListRequestType();
     try {
       JsonNode node = mapper.readTree(json);
-      getJsonString(node, "firstName").ifPresent(first-> msg.setFirstName(first));
-      getJsonString(node, "lastName").ifPresent(last-> msg.setFirstName(last));
-      getJsonString(node, "firmName").ifPresent(firmName-> msg.setFirstName(firmName));
-      getJsonString(node, "email").ifPresent(email-> msg.setFirstName(email));
+      getStringMember(node, "firstName").ifPresent(first-> msg.setFirstName(first));
+      getStringMember(node, "lastName").ifPresent(last-> msg.setFirstName(last));
+      getStringMember(node, "firmName").ifPresent(firmName-> msg.setFirstName(firmName));
+      getStringMember(node, "email").ifPresent(email-> msg.setFirstName(email));
       ServiceContactListResponseType resp = firmPort.get().getPublicList(msg);
       // For "PublicServiceContactShowEmail" Datafield, we force API keys: the restriction of 
       // "programmatic harvesting of emails" will have to be done on the DA side
@@ -407,14 +408,6 @@ public class FirmAttorneyAndServiceService {
     } catch (JsonProcessingException e) {
       return Response.status(400).entity(e.toString()).build();
     }
-  }
-
-  private Optional<String> getJsonString(JsonNode node, String attr) {
-      JsonNode maybeAttr = node.get(attr);
-      if (maybeAttr != null && maybeAttr.isTextual()) {
-        return Optional.of(maybeAttr.asText());
-      }
-      return Optional.empty();
   }
 
   private Optional<Boolean> getJsonBoolean(JsonNode node, String attr) {
