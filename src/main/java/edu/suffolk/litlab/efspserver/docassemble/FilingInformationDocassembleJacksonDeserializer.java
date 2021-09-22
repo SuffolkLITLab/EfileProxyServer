@@ -239,7 +239,7 @@ public class FilingInformationDocassembleJacksonDeserializer
         CaseCategory caseCat = new CaseCategory(categories.toString(), caseType);
         entities.setCaseCategory(caseCat);
       }
-    } else {
+    } else if (isFirstIndexedFiling) {
       InterviewVariable var = collector.requestVar(category_var_name, "", "text");
       collector.addRequired(var);
     }
@@ -250,7 +250,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       entities.setCaseType(type.asText());
     } else if (metadata.has("title") && metadata.get("title").isTextual()) {
       entities.setCaseType(metadata.get("title").asText());
-    } else {
+    } else if (isFirstIndexedFiling) {
       InterviewVariable var = collector.requestVar(typeVarName,  "", "text");
       collector.addRequired(var);
     }
@@ -259,20 +259,10 @@ public class FilingInformationDocassembleJacksonDeserializer
     JsonNode subtype = node.get(subtypeVarName);
     if (subtype != null && subtype.isTextual()) {
       entities.setCaseType(subtype.asText());
-    } else {
-      InterviewVariable var = collector.requestVar(subtypeVarName, "TODO(brycew)", "text");
+    } else if (isFirstIndexedFiling) {
+      InterviewVariable var = collector.requestVar(subtypeVarName, "subtype (not always present)", "text");
       collector.addOptional(var);
       entities.setCaseSubtype("");
-    }
-
-    JsonNode prevCaseId = node.get("previous_case_id");
-    if (prevCaseId != null && prevCaseId.isTextual()) {
-      entities.setPreviousCaseId(prevCaseId.asText());
-    }
-
-    JsonNode docketNumber = node.get("docket_number");
-    if (docketNumber != null && docketNumber.isTextual()) {
-      entities.setCaseDocketNumber(docketNumber.asText());
     }
 
     // Get the interview metadablock TODO(brycew-later): just one for now
@@ -286,21 +276,17 @@ public class FilingInformationDocassembleJacksonDeserializer
     List<FilingDoc> filingDocs = new ArrayList<FilingDoc>();
     final InterviewVariable bundleVar = collector.requestVar("al_court_bundle",
         "The full court bundle", "ALDocumentBundle");
-    if (!node.has("al_court_bundle")) {
-      collector.addRequired(bundleVar);
-    }
-    if (!node.get("al_court_bundle").isObject() || !node.get("al_court_bundle").has("elements")
-        || !node.get("al_court_bundle").get("elements").isArray()) {
-      return Result.err(FilingError.malformedInterview(
-          "al_court_bundle should be a JSON object with a elements array (i.e. a python DAList)"));
-    }
     JsonNode bundle = node.get("al_court_bundle");
     if (bundle == null) {
       collector.addRequired(bundleVar);
     }
-
+    if (!bundle.isObject() || !bundle.has("elements") || !bundle.get("elements").isArray()) {
+      return Result.err(FilingError.malformedInterview(
+          "al_court_bundle should be a JSON object with a elements array (i.e. a python DAList)"));
+    }
     JsonNode elems = bundle.get("elements");
     if (elems == null || elems.isEmpty()) {
+      elems = NullNode.getInstance();
       collector.addRequired(bundleVar);
     }
 
@@ -313,7 +299,7 @@ public class FilingInformationDocassembleJacksonDeserializer
         });
       } catch (FilingError err) {
         if (err.getType().equals(FilingError.Type.MissingRequired)) {
-          collector.addRequired(bundleVar);
+          collector.addRequired(err.getMissingVariable().get());
         }
         return Result.err(err);
       }

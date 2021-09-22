@@ -170,14 +170,7 @@ public class CasesService {
     query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     query.setCaseTrackingID(XmlHelper.convertString(caseId));
-    CaseQueryCriteriaType crit = new CaseQueryCriteriaType();
-    // TODO(brycew-later): should this be configurable?
-    crit.setIncludeParticipantsIndicator(XmlHelper.convertBool(true));
-    crit.setIncludeDocketEntryIndicator(XmlHelper.convertBool(false));
-    crit.setIncludeCalendarEventIndicator(XmlHelper.convertBool(false));
-    crit.setDocketEntryTypeCodeFilterText(XmlHelper.convertText("false"));
-    crit.setCalendarEventTypeCodeFilterText(XmlHelper.convertText("false"));
-    query.setCaseQueryCriteria(crit);
+    query.setCaseQueryCriteria(getCriteria());
     CaseResponseMessageType resp = maybePort.get().getCase(query);
     if (hasError(resp)) {
       return Response.status(400).entity(resp.getError()).build();
@@ -195,6 +188,17 @@ public class CasesService {
       });
     }
     return Response.ok(resp.getCase()).build();
+  }
+  
+  public static CaseQueryCriteriaType getCriteria() {
+    CaseQueryCriteriaType crit = new CaseQueryCriteriaType();
+    // TODO(brycew-later): should this be configurable?
+    crit.setIncludeParticipantsIndicator(XmlHelper.convertBool(true));
+    crit.setIncludeDocketEntryIndicator(XmlHelper.convertBool(false));
+    crit.setIncludeCalendarEventIndicator(XmlHelper.convertBool(false));
+    crit.setDocketEntryTypeCodeFilterText(XmlHelper.convertText("false"));
+    crit.setCalendarEventTypeCodeFilterText(XmlHelper.convertText("false"));
+    return crit;
   }
 
   /**
@@ -292,11 +296,10 @@ public class CasesService {
         (resp.getError().size() == 1 && !resp.getError().get(0).getErrorCode().getValue().equals("0"));
   }
 
-  private Optional<CaseAugmentationType> getCaseTypeCode(CaseType filedCase) {
+  public static Optional<CaseAugmentationType> getCaseTypeCode(CaseType filedCase) {
     List<JAXBElement<?>> restList = List.of();
     if (filedCase instanceof CivilCaseType) {
       CivilCaseType civilCase = (CivilCaseType) filedCase;
-      civilCase.getRest();
       restList = civilCase.getRest();
     } else if (filedCase instanceof DomesticCaseType) {
       DomesticCaseType domesCase = (DomesticCaseType) filedCase;

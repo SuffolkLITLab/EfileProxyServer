@@ -58,21 +58,21 @@ public class CaseCategory {
   public static String getCaseCategoriesForLoc() {
     return """  
         SELECT code, name, ecfcasetype, procedureremedyinitial,
-        procedureremedysubsequent, damageamountinitial, damageamountsubsequent
+          procedureremedysubsequent, damageamountinitial, damageamountsubsequent
         FROM casecategory WHERE location=?""";
   }
 
   public static String getCaseCategoryForLoc() {
     return """  
         SELECT code, name, ecfcasetype, procedureremedyinitial,
-        procedureremedysubsequent, damageamountinitial, damageamountsubsequent
+          procedureremedysubsequent, damageamountinitial, damageamountsubsequent
         FROM casecategory WHERE location=? AND name=?""";
   }
   
   public static String getFilableCaseCategoryForLoc() {
     return """
         SELECT cat.code, cat.name, cat.ecfcasetype, cat.procedureremedyinitial, 
-        cat.procedureremedysubsequent, cat.damageamountinitial, cat.damageamountsubsequent
+          cat.procedureremedysubsequent, cat.damageamountinitial, cat.damageamountsubsequent
         FROM (
                 SELECT cate.code, cate.name, cate.ecfcasetype, cate.procedureremedyinitial, 
                   cate.procedureremedysubsequent, cate.damageamountinitial, 
@@ -85,6 +85,14 @@ public class CaseCategory {
                 WHERE cate.location=?
             ) cat
         WHERE cat.RN = 1
+        """;
+  }
+
+  public static String getCaseCategoryWithKey() {
+    return """
+        SELECT code, name, ecfcasetype, procedureremedyinitial,
+          procedureremedysubsequent, damageamountinitial, damageamountsubsequent
+        FROM casecategory WHERE location=? AND code=?
         """;
   }
   

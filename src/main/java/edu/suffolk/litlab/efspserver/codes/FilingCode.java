@@ -67,7 +67,7 @@ public class FilingCode {
           FROM filing 
           WHERE location=? AND iscourtuseonly='False' AND (casecategory=? OR casetypeid=?) """;
     if (initial) {
-      return mainQuery + "AND (filingtype='Initial' OR filingtype='Both')";
+      return mainQuery; // Implied initial and subsequnt are okay 
     } else {
       return mainQuery + "AND (filingtype='Subsequent' OR filingtype='Both')";
     }
@@ -86,6 +86,16 @@ public class FilingCode {
     } else {
       return mainQuery + "AND (filingtype='Subsequent' OR filingtype='Both')";
     }
+  }
+  
+  public static String getFilingWithKey() {
+    return """
+        SELECT code, name, fee, casecategory, casetypeid, filingtype, iscourtuseonly,
+               civilclaimamount, probateestateamount, amountincontroversy, useduedate,
+               isproposedorder, efspcode, location
+        FROM filing
+        WHERE location=? AND code=?
+        """;
   }
   
 }

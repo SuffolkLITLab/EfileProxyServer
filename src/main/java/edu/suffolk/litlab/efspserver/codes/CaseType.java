@@ -60,7 +60,15 @@ public class CaseType {
     st.setString(3, isInitial);
     return st;
   }
-  
+
+  public static PreparedStatement prepQueryWithCode(Connection conn, String courtLocationId,
+      String caseTypeCode) throws SQLException {
+    PreparedStatement st = conn.prepareStatement(getCaseTypesWithCode());
+    st.setString(1, courtLocationId);
+    st.setString(2, caseTypeCode);
+    return st;
+  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -93,4 +101,11 @@ public class CaseType {
     return getCaseTypesForCategory() + " AND initial ILIKE ?";
   }
 
+  private static String getCaseTypesWithCode() {
+    return """
+        SELECT code, name, casecategory, initial,
+          fee, willfileddate, efspcode, location
+        FROM casetype WHERE location=? AND code=?
+        """;
+  }
 }

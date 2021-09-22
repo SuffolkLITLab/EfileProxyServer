@@ -171,26 +171,44 @@ public class CodeDatabase extends DatabaseInterface {
   }
 
   /* Put in a partially filled case category, get out a full on from the tables. */
-  public Optional<CaseCategory> getCaseCategoryFor(String courtLocationId, CaseCategory caseCat) {
+  public Optional<CaseCategory> getCaseCategoryFor(String courtLocationId, String caseCatName) {
     return safetyWrapOpt(() -> {
       String query = CaseCategory.getCaseCategoryForLoc();
       PreparedStatement st = conn.prepareStatement(query);
       st.setString(1, courtLocationId);
-      st.setString(2, caseCat.name);
+      st.setString(2, caseCatName);
       ResultSet rs = st.executeQuery();
       if (rs.next()) {
         CaseCategory newCat = new CaseCategory(rs); 
         if (rs.next()) {
-          log.error("There are multiple case categories for " + caseCat.name + " and "
+          log.error("There are multiple case categories for " + caseCatName + " and "
               + courtLocationId);
           return Optional.empty();
         }
         return Optional.of(newCat);
       } else {
-        log.error("No categories for " + caseCat.name + " and " + courtLocationId);
+        log.error("No categories for " + caseCatName + " and " + courtLocationId);
         return Optional.empty();
       }
     });
+  }
+  
+  public Optional<CaseCategory> getCaseCategoryWithKey(String courtLocationId, String caseCatCode) {
+    return safetyWrapOpt(() -> {
+      String query = CaseCategory.getCaseCategoryWithKey();
+      PreparedStatement st = conn.prepareStatement(query);
+      st.setString(1, courtLocationId);
+      st.setString(2, caseCatCode);
+      ResultSet rs = st.executeQuery();
+      if (rs.next()) {
+        CaseCategory newCat = new CaseCategory(rs); 
+        return Optional.of(newCat);
+      } else {
+        log.error("No categories for " + caseCatCode + " and " + courtLocationId);
+        return Optional.empty();
+      }
+    });
+    
   }
 
   public List<CaseType> getCaseTypesFor(String courtLocationId, String caseCategoryCode, Optional<Boolean> initial) {
@@ -209,7 +227,19 @@ public class CodeDatabase extends DatabaseInterface {
       return types;
     });
   }
-
+  
+  public Optional<CaseType> getCaseTypeWith(String courtLocationId, String caseTypeCode) {
+    return safetyWrapOpt(() -> {
+      PreparedStatement st = CaseType.prepQueryWithCode(conn, courtLocationId, caseTypeCode);
+      ResultSet rs = st.executeQuery();
+      if (rs.next()) {
+        return Optional.of(new CaseType(rs));
+      } else {
+        return Optional.empty();
+      }
+    });
+  }
+  
   public List<NameAndCode> getCaseSubtypesFor(String courtLocationId, String caseType)
       throws SQLException {
     if (conn == null) {
@@ -278,13 +308,8 @@ public class CodeDatabase extends DatabaseInterface {
   }
 
   public List<FilingCode> getFilingType(String courtLocationId, String categoryCode, String typeCode, boolean initial) {
-    if (conn == null) {
-      log.error("SQL connection not created in FilingType yet");
-      return List.of();
-    }
-
+    return safetyWrap(() -> {
     String specificQuery = FilingCode.getFilingWithCaseInfo(initial);
-    try {
       PreparedStatement specificSt = conn.prepareStatement(specificQuery);
       specificSt.setString(1, courtLocationId);
       specificSt.setString(2, categoryCode);
@@ -305,11 +330,25 @@ public class CodeDatabase extends DatabaseInterface {
         }
       }
       return filingTypes;
-    } catch (SQLException ex) {
-      log.error("SQLException: " + ex);
-      return List.of();
-    }
+    });
   }
+
+  public Optional<FilingCode> getFilingTypeWith(String courtLocationId, String filingCode) {
+    return safetyWrapOpt(() -> {
+      String query = FilingCode.getFilingWithKey();
+      PreparedStatement st = conn.prepareStatement(query);
+      st.setString(1, courtLocationId);
+      st.setString(2, filingCode);
+      ResultSet rs = st.executeQuery();
+      if (rs.next()) {
+        return Optional.of(new FilingCode(rs));
+      } else {
+        return Optional.empty();
+      }
+    });
+    
+  }
+
 
   public List<NameAndCode> getDamageAmount(String courtLocationId, String caseCategory) {
     return safetyWrap(() -> {
