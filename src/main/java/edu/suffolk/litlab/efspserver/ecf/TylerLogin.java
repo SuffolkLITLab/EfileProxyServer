@@ -60,7 +60,7 @@ public class TylerLogin implements LoginInterface {
     } else {
       return Optional.of(Map.of(
           getHeaderKey(), authRes.getEmail() + ":" + authRes.getPasswordHash(),
-          "TYLER-ID", authRes.getUserID()));
+          getHeaderId(), authRes.getUserID()));
     }
   }
 
@@ -83,6 +83,10 @@ public class TylerLogin implements LoginInterface {
   @Override
   public String getHeaderKey() {
     return "TYLER-TOKEN";
+  }
+  
+  public String getHeaderId() {
+    return "TYLER-ID";
   }
 
 }
