@@ -67,28 +67,28 @@ import tyler.efm.services.schema.updateuserresponse.UpdateUserResponseType;
 import tyler.efm.services.schema.userlistresponse.UserListResponseType;
 
 /**
- * Covers all of the FirmUserManagement and UserService operations. Progress so far:
+ * Covers all of the FirmUserManagement and UserService operations. 
  * * User Service
- *   * [x] AuthenticateUser
- *   * [x] ChangePassword
- *   * [ ] ~GetPasswordQuestion~ (is deprecated by Tyler)
- *   * [x] ResetPassword
- *   * [ ] ~GetUser (User Service)~ (use the firm version)
- *   * [ ] ~UpdateUser (User Service)~ (use the firm version, not sure the difference)
- *   * [x] GetNotificationPreferences
- *   * [x] UpdateNotificationPreferences
- *   * [x] SelfResendActivationEmail
+ *   * AuthenticateUser
+ *   * ChangePassword
+ *   * ~GetPasswordQuestion~ (is deprecated by Tyler)
+ *   * ResetPassword
+ *   * GetUser (User Service)
+ *   * UpdateUser (User Service)
+ *   * GetNotificationPreferences
+ *   * UpdateNotificationPreferences
+ *   * SelfResendActivationEmail
  * * Firm User Management
- *   * [x] RegisterUser: PUT on /users
- *   * [x] AddUserRole: POST on /users/{id}/role
- *   * [x] GetUser: GET on /users/{id}
- *   * [ ] GetUserList: GET on /users
- *   * [x] RemoveUser: DELETE on /users/{id}
- *   * [x] RemoveUserRole: DELETE on /users/{id}/role
- *   * [x] ResendActivationEmail
- *   * [x] ResetUserPassword
- *   * [x] UpdateUser: POST on /users/{id}
- *   * [x] GetNotificationPreferencesList
+ *   * RegisterUser: PUT on /users
+ *   * AddUserRole: POST on /users/{id}/role
+ *   * GetUser: GET on /users/{id}
+ *   * GetUserList: GET on /users
+ *   * RemoveUser: DELETE on /users/{id}
+ *   * RemoveUserRole: DELETE on /users/{id}/role
+ *   * ResendActivationEmail
+ *   * ResetUserPassword
+ *   * UpdateUser: POST on /users/{id}
+ *   * GetNotificationPreferencesList
  *
  * @author brycew
  *
@@ -150,7 +150,8 @@ public class AdminUserService {
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    String tylerId = httpHeaders.getHeaderString("TYLER-ID");
+    TylerLogin login = new TylerLogin();
+    String tylerId = httpHeaders.getHeaderString(login.getHeaderKey()); 
     if (tylerId == null || tylerId.isBlank()) {
       return Response.status(500).entity(
           "Server does not have a Tyler UUID for the current account. Can you give it to me?").build();
@@ -356,6 +357,31 @@ public class AdminUserService {
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
         () -> Response.ok(resp.getUser()).build());
   }
+  
+  @PATCH
+  @Path("/user")
+  public Response updateUser(@Context HttpHeaders httpHeaders, UserType updatedUser) {
+    Optional<IEfmUserService> port = setupUserPort(httpHeaders, true);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
+    }
+    TylerLogin login = new TylerLogin();
+    // Ensure the user exists already.
+    GetUserRequestType getUserReq = new GetUserRequestType();
+    getUserReq.setUserID(httpHeaders.getHeaderString(login.getHeaderId()));
+    GetUserResponseType userRes = port.get().getUser(getUserReq);
+    if (ServiceHelpers.checkErrors(userRes.getError())) {
+      return Response.status(401, userRes.getError().getErrorText()).build();
+    }
+
+    UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser); 
+    UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
+    if (ServiceHelpers.checkErrors(updateResp.getError())) {
+      return Response.status(401).entity(updateResp.getError().getErrorText()).build();
+    }
+
+    return Response.noContent().build();
+  }
 
   /**
    * For UpdateUser (AdminUserService).
@@ -363,7 +389,6 @@ public class AdminUserService {
    * @param updatedUser, null fields are ignored
    * @return
    */
-  // TODO(brycew-later): retry these same things on the user port if it doesn't have firm permissions
   @PATCH
   @Path("/users/{id}")
   public Response updateUser(@Context HttpHeaders httpHeaders,
@@ -380,7 +405,16 @@ public class AdminUserService {
       return Response.status(401, userRes.getError().getErrorText()).build();
     }
 
-    UserType existingUser = userRes.getUser();
+    UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser); 
+    UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
+    if (ServiceHelpers.checkErrors(updateResp.getError())) {
+      return Response.status(401).entity(updateResp.getError().getErrorText()).build();
+    }
+
+    return Response.noContent().build();
+  }
+  
+  private UpdateUserRequestType updateUser(UserType existingUser, UserType updatedUser) {
     if (updatedUser.getEmail() != null) {
       existingUser.setEmail(updatedUser.getEmail());
     }
@@ -395,12 +429,7 @@ public class AdminUserService {
     }
     UpdateUserRequestType updateReq = new UpdateUserRequestType();
     updateReq.setUser(existingUser);
-    UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
-    if (ServiceHelpers.checkErrors(updateResp.getError())) {
-      return Response.status(401).entity(updateResp.getError().getErrorText()).build();
-    }
-
-    return Response.noContent().build();
+    return updateReq;
   }
 
   /**
