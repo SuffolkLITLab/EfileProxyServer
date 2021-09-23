@@ -477,11 +477,9 @@ public class EcfCourtSpecificSerializer {
       }
     }
 
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory oasisObjFac =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     docType.setDocumentSequenceID(XmlHelper.convertString(Integer.toString(sequenceNum)));
-    DocumentMetadataType metadata = oasisObjFac.createDocumentMetadataType();
 
+    DocumentMetadataType metadata = ecfOf.createDocumentMetadataType();
     metadata.setRegisterActionDescriptionText(XmlHelper.convertText(filing.code));
 
     if (doc.getFilingAttorney().isEmpty() && doc.getFilingPartyIds().isEmpty()) {
@@ -551,7 +549,7 @@ public class EcfCourtSpecificSerializer {
     docType.setFilingAction(doc.getFilingAction());
 
     // TODO(brycew-later): what should this actually be? Very unclear
-    DocumentAttachmentType attachment = oasisObjFac.createDocumentAttachmentType();
+    DocumentAttachmentType attachment = ecfOf.createDocumentAttachmentType();
     attachment.setBinaryDescriptionText(XmlHelper.convertText(doc.getFileName()));
 
     InterviewVariable var = collector.requestVar("filing_component", "Filing component: Lead or attachment", "text");
@@ -648,11 +646,10 @@ public class EcfCourtSpecificSerializer {
       // TODO(#62): DO this: make the file downloadable from the Proxy server
     }
     // The document itself
-    DocumentRenditionMetadataType renditionMetadata =
-        oasisObjFac.createDocumentRenditionMetadataType();
+    DocumentRenditionMetadataType renditionMetadata = ecfOf.createDocumentRenditionMetadataType();
     renditionMetadata.getDocumentAttachment().add(attachment);
 
-    DocumentRenditionType rendition = oasisObjFac.createDocumentRenditionType();
+    DocumentRenditionType rendition = ecfOf.createDocumentRenditionType();
     rendition.setDocumentRenditionMetadata(renditionMetadata);
     docType.getDocumentRendition().add(rendition);
 

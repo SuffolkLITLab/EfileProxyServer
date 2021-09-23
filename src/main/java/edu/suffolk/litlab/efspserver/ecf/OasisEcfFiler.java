@@ -376,7 +376,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     if (caseId.isEmpty()) {
       log.error("Couldn't get back the filing id from Tyler!");
       return Result.err(
-          FilingError.serverError("Couldn't get back filing id from tyler: " + mrmt.toString()));
+          FilingError.serverError("Couldn't get back filing id from tyler: " + mrmt.getError()));
     }
 
     log.info(XmlHelper.objectToXmlStrOrError(mrmt, MessageReceiptMessageType.class));

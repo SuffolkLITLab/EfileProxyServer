@@ -39,11 +39,13 @@ import gov.niem.niem.niem_core._2.CaseType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.TextType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseListQueryMessageType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseParticipantType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistresponsemessage_4.CaseListResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryCriteriaType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.CivilCaseType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.CriminalCaseType;
@@ -68,23 +70,31 @@ public class CasesService {
   private static CourtRecordMDEService recordFactory = new CourtRecordMDEService(
       CourtRecordMDEService.WSDL_LOCATION,
       CourtRecordMDEService.SERVICE);
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseParticipantType cpt
-        = new oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseParticipantType();
+  private oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.ObjectFactory listObjFac
+        = new oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.ObjectFactory();
   private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf =
           new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType commonCpt =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType();
 
   public CasesService(SecurityHub security, CodeDatabase cd) {
     this.security = security;
     this.cd = cd;
   }
 
+  /**
+   * 
+   * @param httpHeaders
+   * @param courtId
+   * @param queryInfo
+   * @return
+   * @throws JsonMappingException
+   * @throws JsonProcessingException
+   * @throws JAXBException
+   */
   @GET
   @Path("/courts/{court_id}/cases")
   public Response getCaseList(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
-      String queryInfo) throws JsonMappingException, JsonProcessingException, JAXBException {
+      String queryInfo) throws JsonProcessingException {
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
@@ -115,29 +125,48 @@ public class CasesService {
     query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     ObjectMapper mapper = new ObjectMapper();
-    JsonNode node = mapper.readTree(queryInfo);
+    JsonNode node;
+    try {
+      node = mapper.readTree(queryInfo);
+    } catch (JsonProcessingException ex) {
+      return Response.status(400).entity("The query is not valid JSON").build();
+    }
     if (node.has("docket_id") && node.get("docket_id").isTextual()) {
       String docketId = node.get("docket_id").asText();
       CaseType ct = new CaseType();
       ct.setCaseDocketID(XmlHelper.convertString(docketId));
       query.getCaseListQueryCase().add(ct);
     }
-    if (node.has("person_name") && node.get("person_name").isObject()) {
+    JsonNode personNode = node.get("person_name");
+    if (personNode != null && personNode.isObject()) {
       FailFastCollector collector = new FailFastCollector();
       Name maybeName;
       try {
-        maybeName = NameDocassembleDeserializer.fromNode(node.get("person_name"), collector);
+        maybeName = NameDocassembleDeserializer.fromNode(personNode, collector);
       } catch (FilingError err) {
-        return Response.status(400).entity("Name needs to be a JSON object with first, middle, last, etc.").build();
+        return Response.status(422).entity("Name needs to be a JSON object with first, middle, last, etc.").build();
       }
       PersonType pt = ecfOf.createPersonType();
       pt.setPersonName(maybeName.getNameType());
 
+      oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType commonCpt =
+        ecfOf.createCaseParticipantType();
       commonCpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
       commonCpt.setCaseParticipantRoleCode(XmlHelper.convertText(""));
-
+      
+      CaseParticipantType cpt = listObjFac.createCaseParticipantType();
       cpt.setCaseParticipant(ecfOf.createCaseParticipant(commonCpt));
       query.getCaseListQueryCaseParticipant().add(cpt);
+    }
+    JsonNode businessNode = node.get("business_name");
+    if (businessNode != null && businessNode.isTextual()) {
+      OrganizationType ot = ecfOf.createOrganizationType();
+      ot.setOrganizationName(XmlHelper.convertText(businessNode.asText("")));
+      oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType commonCpt =
+        ecfOf.createCaseParticipantType();
+      commonCpt.setEntityRepresentation(ecfOf.createEntityOrganization(ot));
+      CaseParticipantType cpt = listObjFac.createCaseParticipantType();
+      cpt.setCaseParticipant(ecfOf.createCaseParticipant(commonCpt));
     }
     CaseListResponseMessageType resp = maybePort.get().getCaseList(query);
     if (hasError(resp)) {
