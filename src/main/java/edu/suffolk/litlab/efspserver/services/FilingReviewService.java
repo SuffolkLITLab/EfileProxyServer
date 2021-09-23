@@ -291,6 +291,9 @@ public class FilingReviewService {
     MediaType mediaType = httpHeaders.getMediaType();
     Optional<AtRest> atRest = security.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
     Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
+    if (activeToken.isEmpty() || atRest.isEmpty()) {
+      return Response.status(401).entity("Not logged in to file with " + courtId).build();
+    }
     Result<FilingInformation, Response> maybeInfo = parseFiling(httpHeaders, allVars, courtId, mediaType);
     if (maybeInfo.isErr()) {
       return maybeInfo.unwrapErrOrElseThrow();

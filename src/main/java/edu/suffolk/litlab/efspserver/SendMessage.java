@@ -24,6 +24,7 @@ import java.util.Properties;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
@@ -203,7 +204,7 @@ public class SendMessage {
     try {
       MimeMessage msg = new MimeMessage(session);
       msg.setFrom(new InternetAddress(from));
-      msg.setRecipients(MimeMessage.RecipientType.TO, to);
+      msg.setRecipients(RecipientType.TO, to);
       msg.setSubject(subject);
       msg.setSentDate(new Date());
       msg.setText(renderedTemplate);

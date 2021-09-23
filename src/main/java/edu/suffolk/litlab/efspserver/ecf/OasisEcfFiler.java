@@ -92,18 +92,17 @@ import tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
 public class OasisEcfFiler extends EfmCheckableFilingInterface {
   private static Logger log =
       LoggerFactory.getLogger(OasisEcfFiler.class);
-
-  private CodeDatabase cd;
-  private final String headerKey;
   private static FilingReviewMDEService filingFactory
      = new FilingReviewMDEService(FilingReviewMDEService.WSDL_LOCATION,
         FilingReviewMDEService.SERVICE);
+
+  private CodeDatabase cd;
+  private final String headerKey;
   private oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory
       statusObjFac;
   private oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory
       listObjFac;
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf =
-          new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+  private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf;
   private tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory detailObjFac;
   private tyler.ecf.extensions.cancelfilingmessage.ObjectFactory cancelObjFac;
   private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory
@@ -114,13 +113,16 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
 
   public OasisEcfFiler(CodeDatabase cd) {
     this.cd = cd;
+    TylerLogin login = new TylerLogin();
+    this.headerKey = login.getHeaderKey();
     statusObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory();
     listObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory();
+    ecfOf = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+    detailObjFac = new tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory();
+    cancelObjFac = new tyler.ecf.extensions.cancelfilingmessage.ObjectFactory();
     commonObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     niemObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
     proxyObjFac = new gov.niem.niem.proxy.xsd._2.ObjectFactory();
-    TylerLogin login = new TylerLogin();
-    this.headerKey = login.getHeaderKey();
   }
 
   @Override
@@ -524,8 +526,9 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       FilingStatusQueryMessageType status = prep(statusObjFac.createFilingStatusQueryMessageType(), courtId);
       status.setDocumentIdentification(XmlHelper.convertId(filingId));
       FilingStatusResponseMessageType statusResp = port.get().getFilingStatus(status);
+      
       return ServiceHelpers.mapTylerCodesToHttp(statusResp.getError(),
-          () -> Response.ok().entity(status).build());
+          () -> Response.ok().entity(statusResp).build());
     } catch (SQLException ex) {
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
     }
