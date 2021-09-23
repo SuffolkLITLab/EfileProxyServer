@@ -1,15 +1,20 @@
 package edu.suffolk.litlab.efspserver.ecf;
 
-import java.io.IOException;
+import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.CronScheduleBuilder;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
+import org.quartz.JobBuilder;
+import org.quartz.SimpleScheduleBuilder;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +27,7 @@ import edu.suffolk.litlab.efspserver.services.EfmModuleSetup;
 import edu.suffolk.litlab.efspserver.services.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
+import edu.suffolk.litlab.efspserver.services.UpdateCodeVersions;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingAssemblyMDEPort;
 
 public class TylerModuleSetup implements EfmModuleSetup {
@@ -41,6 +47,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
   private UserDatabase ud;
   private OrgMessageSender sender;
   private JaxWsServerFactoryBean svrFactory;
+  private Scheduler scheduler;
 
   public static class CreationArgs {
     public String dbUser;
@@ -132,16 +139,29 @@ public class TylerModuleSetup implements EfmModuleSetup {
         log.info("Downloading all codes: please wait a bit");
         CodeUpdater.executeCommand("downloadAll", this.tylerEndpoint, cd, this.x509Password);
       }
+      Scheduler scheduler;
+      scheduler = StdSchedulerFactory.getDefaultScheduler();
+      scheduler.start();
+      
+      JobDetail job = JobBuilder.newJob(UpdateCodeVersions.class)
+          .withIdentity("job1", "group1")
+          .usingJobData("TYLER_ENDPOINT", tylerEndpoint)
+          .usingJobData("X509_PASSWORD", x509Password)
+          .build();
+      
+      Trigger trigger = TriggerBuilder.newTrigger()
+          .withIdentity("trigger1", "group1")
+          .startNow()
+          .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(2, 15))
+          // Testable version! Updates the codes 20 seconds after launch
+          //.withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(20)) 
+          .build();
+      
+      scheduler.scheduleJob(job, trigger);
+    } catch (SchedulerException se) {
+      log.error("Scheduler Exception: " + se.toString());
+      throw new RuntimeException(se);
     } catch (SQLException e) {
-      log.error(e.toString());
-      throw new RuntimeException(e);
-    } catch (JAXBException e) {
-      log.error(e.toString());
-      throw new RuntimeException(e);
-    } catch (IOException e) {
-      log.error(e.toString());
-      throw new RuntimeException(e);
-    } catch (XMLStreamException e) {
       log.error(e.toString());
       throw new RuntimeException(e);
     }
@@ -182,6 +202,17 @@ public class TylerModuleSetup implements EfmModuleSetup {
     svrFactory.setAddress(address);
     svrFactory.setServiceBean(implementor);
     svrFactory.create();
+  }
+
+  @Override
+  public void shutdown() {
+    if (scheduler != null) {
+      try {
+        scheduler.shutdown();
+      } catch (SchedulerException e) {
+        log.error("SchedulerException on shutdown: " + e.toString());
+      }
+    }
   }
 
 }

@@ -125,6 +125,10 @@ public abstract class DatabaseInterface {
     return conn.setSavepoint(savepoint);
   }
 
+  public void releaseSavePoint(Savepoint savepoint) throws SQLException {
+    conn.releaseSavepoint(savepoint);
+  }
+
   public void rollback(Savepoint savepoint) throws SQLException {
     conn.rollback(savepoint);
   }

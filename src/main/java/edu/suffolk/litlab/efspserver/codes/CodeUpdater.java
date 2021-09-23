@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.SQLException;
@@ -271,11 +273,13 @@ public class CodeUpdater {
       Savepoint sp = cd.setSavePoint("court" + courtLocation + "savepoint");
       List<String> tables = courtAndTables.getValue();
       for (String table : tables) {
+       Instant deleteFromTable = Instant.now(Clock.systemUTC());
         if (!cd.deleteFromTable(table, courtLocation)) {
           log.warn("Couldn't delete from " + table + " at " + courtLocation + ", aborting");
           cd.rollback(sp);
           return;
         }
+        updates = updates.plus(Duration.between(deleteFromTable, Instant.now(Clock.systemUTC())));
       }
       log.info("Removed entries for court " + courtLocation + " for tables: " + tables);
       if (!downloadCourtTables(courtLocation, Optional.of(tables), cd, signer, filingPort)) {
@@ -308,41 +312,52 @@ public class CodeUpdater {
     log.info("Downloads took: " + downloads + ", and updates took: " + updates);
     cd.commit();
   }
-
-  public static void executeCommand(String command, String codesSite, CodeDatabase cd,
-      String x509Password) throws JAXBException,
-      SQLException, IOException, XMLStreamException {
-    SoapX509CallbackHandler.setX509Password(x509Password);
-    AuthenticateRequestType authReq = new AuthenticateRequestType();
-    authReq.setEmail(System.getenv("TYLER_USER_EMAIL"));
-    authReq.setPassword(System.getenv("TYLER_USER_PASSWORD"));
-    URL userWsdlUrl = EfmUserService.WSDL_LOCATION;
-    EfmUserService userService = TylerLogin.makeUserServiceFactory(userWsdlUrl);
+  
+  public static FilingReviewMDEPort loginWithTyler(String userEmail, String userPassword) throws JAXBException {
+    EfmUserService userService = TylerLogin.makeUserServiceFactory(EfmUserService.WSDL_LOCATION);
     IEfmUserService userPort = userService.getBasicHttpBindingIEfmUserService();
     ServiceHelpers.setupServicePort((BindingProvider) userPort);
+    AuthenticateRequestType authReq = new AuthenticateRequestType();
+    authReq.setEmail(userEmail); 
+    authReq.setPassword(userPassword); 
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
-    log.info("Auth'd?: " + authRes.getError().getErrorText());
     List<Header> headersList = TylerUserNamePassword.makeHeaderList(authRes);
     FilingReviewMDEService filingFactory = new FilingReviewMDEService();
     FilingReviewMDEPort filingPort = filingFactory.getFilingReviewMDEPort(); 
     ServiceHelpers.setupServicePort((BindingProvider) filingPort);
     Map<String, Object> ctx = ((BindingProvider)filingPort).getRequestContext();
     ctx.put(Header.HEADER_LIST, headersList);
-    if (cd == null) {
-      cd = new CodeDatabase(System.getenv("POSTGRES_URL"),
-          Integer.parseInt(System.getenv("POSTGRES_PORT")),
-          System.getenv("POSTGRES_CODES_DB"));
-      cd.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
-    }
-    cd.setAutocommit(false);
-
-    CodeUpdater cu = new CodeUpdater(System.getenv("PATH_TO_KEYSTORE"), x509Password);
-    if (command.equalsIgnoreCase("downloadall")) {
-      cu.downloadAll(codesSite, filingPort, cd);
-    } else if (command.equalsIgnoreCase("refresh")) {
-      cu.updateAll(codesSite, filingPort, cd);
-    } else {
-      log.error("Command " + command + " isn't a real command");
+    return filingPort;
+  }
+  
+  public static void executeCommand(String command, String codesSite, CodeDatabase cd,
+      String x509Password) {
+    SoapX509CallbackHandler.setX509Password(x509Password);
+    try {
+      FilingReviewMDEPort filingPort = loginWithTyler(System.getenv("TYLER_USER_EMAIL"),
+          System.getenv("TYLER_USER_PASSWORD")); 
+      if (cd == null) {
+        cd = new CodeDatabase(System.getenv("POSTGRES_URL"),
+            Integer.parseInt(System.getenv("POSTGRES_PORT")),
+            System.getenv("POSTGRES_CODES_DB"));
+        cd.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
+      }
+      cd.setAutocommit(false);
+      CodeUpdater cu = new CodeUpdater(System.getenv("PATH_TO_KEYSTORE"), x509Password);
+      if (command.equalsIgnoreCase("downloadall")) {
+        cu.downloadAll(codesSite, filingPort, cd);
+      } else if (command.equalsIgnoreCase("refresh")) {
+        cu.updateAll(codesSite, filingPort, cd);
+      } else {
+        log.error("Command " + command + " isn't a real command");
+        return;
+      }
+    } catch (SQLException | IOException | JAXBException | XMLStreamException e) {
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      e.printStackTrace(pw);
+      log.error("Exception when making doing code updating! " + e.toString() + " " + sw.toString());
+      return;
     }
   }
 

@@ -59,4 +59,9 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
     // N/A
   }
 
+  @Override
+  public void shutdown() {
+    // N/A
+  }
+
 }

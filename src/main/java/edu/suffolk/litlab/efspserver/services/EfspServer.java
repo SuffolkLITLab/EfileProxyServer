@@ -197,14 +197,14 @@ public class EfspServer {
     EfspServer server = new EfspServer(
         dbUser, dbPassword, ud, md, ld, sender, userDatabaseName, modules, cd,
         converterMap);
-
-    // TODO(#58): use https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ScheduledExecutorService.html
-    // to routinely update codes if necessary
-    // TODO(#58): consider http://www.quartz-scheduler.org/ too?
+    
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
       public void run() {
         server.stopServer();
+        for (EfmModuleSetup mod : modules) {
+          mod.shutdown();
+        }
       }
     });
     log.info("Server ready...");
