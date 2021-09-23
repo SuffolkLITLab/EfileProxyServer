@@ -14,6 +14,7 @@ public interface EfmModuleSetup {
   static Logger log = LoggerFactory.getLogger(EfmModuleSetup.class);
 
   void preSetup();
+  void shutdown();
   
   Set<String> getCourts();
   EfmFilingInterface getInterface();

@@ -99,9 +99,9 @@ public class CodeDatabase extends DatabaseInterface {
     final CodeListDocument doc = u.unmarshal(sr, CodeListDocument.class).getValue();
 
     String insertQuery = CodeTableConstants.getInsertInto(tableName, courtName);
-    String updateQuery = CodeTableConstants.updateVersion();
+    String versionUpdate = CodeTableConstants.updateVersion();
     try (PreparedStatement stmt = conn.prepareStatement(insertQuery);
-        PreparedStatement update = conn.prepareStatement(updateQuery)) {
+        PreparedStatement update = conn.prepareStatement(versionUpdate)) {
       // TODO(brycew-later): dive deeper in the Column set, and see if any Data type isn't a normalizedString.
       //ColumnSet cs = doc.getColumnSet();
       for (Row r : doc.getSimpleCodeList().getRow()) {
@@ -124,16 +124,14 @@ public class CodeDatabase extends DatabaseInterface {
         stmt.addBatch();
       }
       stmt.executeBatch();
-      if (!courtName.isEmpty()) {
-        // The version table that we directly download references things by "___codes.zip", not the
-        // table name. We can translate those here.
-        String zipName = CodeTableConstants.getZipNameFromTable(tableName);
-        update.setString(1, courtName);
-        update.setString(2, zipName);
-        update.setString(3, doc.getIdentification().getVersion());
-        update.setString(4, doc.getIdentification().getVersion());
-        update.executeUpdate();
-      }
+      // The version table that we directly download references things by "___codes.zip", not the
+      // table name. We can translate those here.
+      String zipName = CodeTableConstants.getZipNameFromTable(tableName);
+      update.setString(1, courtName);
+      update.setString(2, zipName);
+      update.setString(3, doc.getIdentification().getVersion());
+      update.setString(4, doc.getIdentification().getVersion());
+      update.executeUpdate();
     } catch (SQLException ex) {
       log.error("Tried to execute an insert, but failed! Exception: " + ex.toString());
       log.error("Going to rollback updates to this table");

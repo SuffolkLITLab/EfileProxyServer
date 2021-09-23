@@ -281,23 +281,12 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       }
       log.info("Full ecfAug: " + XmlHelper.objectToXmlStr(cfm, CoreFilingMessageType.class));
       return cfm;
-    } catch (IOException ex) {
+    } catch (IOException | SQLException | JAXBException ex) {
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
       ex.printStackTrace(pw);
       log.error("IO Error when making filing! " + ex.toString() + " " + sw.toString());
-      throw FilingError.serverError("Got IOException assembling the filing: " + ex);
-    } catch (SQLException ex) {
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter(sw);
-      ex.printStackTrace(pw);
-      log.error("SQL Error when making filing! " + ex.toString() + " " + sw.toString());
-      throw FilingError.serverError("Got SQLException assembling the filing: " + ex);
-    } catch (JAXBException e) {
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter(sw);
-      e.printStackTrace(pw);
-      throw FilingError.serverError("Got JABXException assembling the filing: " + e);
+      throw FilingError.serverError("Got Exception assembling the filing: " + ex);
     }
   }
   
