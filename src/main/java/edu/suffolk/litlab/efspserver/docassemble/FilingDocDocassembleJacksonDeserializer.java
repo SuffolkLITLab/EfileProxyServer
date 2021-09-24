@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.regex.Matcher;
@@ -39,7 +40,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       FilingInformationDocassembleJacksonDeserializer.class);
 
   /** Parses a filing from the DA Json Object. Used by Deserializers that include filings. */
-  public static Optional<FilingDoc> fromNode(JsonNode node, List<Person> users, List<Person> otherParties, 
+  public static Optional<FilingDoc> fromNode(JsonNode node, Map<String, String> varToId,
       int sequenceNum, InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
       FilingError err = FilingError.malformedInterview(
@@ -115,19 +116,18 @@ public class FilingDocDocassembleJacksonDeserializer {
       List<String> preliminaryCopies = getMemberList(node, "preliminary_copies");
       List<String> filingParties = getMemberList(node, "filing_parties");
       
-      Pattern usersPattern = Pattern.compile("users\\[([1-9][0-9]*)\\]");
-      Pattern otherPattern = Pattern.compile("other_parties\\[([1-9][0-9]*)\\]");
+      Pattern usersPattern = Pattern.compile("users\\[[0-9]+\\]");
+      Pattern otherPattern = Pattern.compile("other_parties\\[[0-9]+\\]");
       List<FilingDoc.PartyId> fullParties = filingParties.stream().map(fp -> {
         Matcher matcher = usersPattern.matcher(fp);
         if (matcher.find()) {
-          int userIdx = Integer.parseInt(matcher.group(0));
-          return FilingDoc.PartyId.CurrentFiling(users.get(userIdx).getIdString()); 
+          return FilingDoc.PartyId.CurrentFiling(varToId.get(fp)); 
         } else {
           Matcher otherMatcher = otherPattern.matcher(fp);
           if (otherMatcher.find()) {
-            int otherIdx = Integer.parseInt(otherMatcher.group(0));
-            return FilingDoc.PartyId.CurrentFiling(otherParties.get(otherIdx).getIdString()); 
+            return FilingDoc.PartyId.CurrentFiling(varToId.get(fp)); 
           } else {
+            log.info("Existing filing party id: " + fp);
             return FilingDoc.PartyId.Already(fp); 
           }
         }

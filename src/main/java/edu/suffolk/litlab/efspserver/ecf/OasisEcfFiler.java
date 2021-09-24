@@ -633,11 +633,11 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     return "tyler";
   }
 
-  private <T extends QueryMessageType> T prep(T newMsg, String courtId) {
+  private static <T extends QueryMessageType> T prep(T newMsg, String courtId) {
     return ServiceHelpers.prep(newMsg, courtId);
   }
 
-  private Optional<FilingReviewMDEPort> setupFilingPort(String apiToken) {
+  private static Optional<FilingReviewMDEPort> setupFilingPort(String apiToken) {
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
     if (creds.isEmpty()) {
       return Optional.empty();
