@@ -289,7 +289,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     for (int i = 0; i < elems.size(); i++) {
       try {
         Optional<FilingDoc> maybeDoc = FilingDocDocassembleJacksonDeserializer.fromNode(
-            elems.get(i), users, otherParties, i, collector); 
+            elems.get(i), varToId, i, collector); 
         maybeDoc.ifPresent(doc -> {
           filingDocs.add(doc);
         });
@@ -313,15 +313,25 @@ public class FilingInformationDocassembleJacksonDeserializer
       entities.setPaymentId(paymentIdJson.asText());
     }
     
-    
-    Result<Person, FilingError> per =
-        PersonDocassembleJacksonDeserializer.fromNode(node.get("lead_contact"), collector);
-    if (per.isErr()) {
-      FilingError ex = per.unwrapErrOrElseThrow();
-      log.warn("Person exception: " + ex);
-      collector.error(ex);
+    JsonNode leadJson = node.get("lead_contact");
+    if (leadJson == null) {
+      InterviewVariable var = collector.requestVar("lead_contact", "Someone to contact about this case", "ALIndividual");
+      collector.addRequired(var);
+    } else {
+      Result<Person, FilingError> per =
+          PersonDocassembleJacksonDeserializer.fromNode(node.get("lead_contact"), collector);
+      if (per.isErr() || per.unwrapOrElseThrow().getContactInfo().getEmail().isEmpty()) {
+        FilingError ex = per.unwrapErrOrElseThrow();
+        log.warn("Person exception: " + ex);
+        collector.error(ex);
+      }
+      if (per.unwrapOrElseThrow().getContactInfo().getEmail().isEmpty()) {
+        InterviewVariable var = collector.requestVar("lead_contact.email", "We need an email to contact someone about this case.", "text");
+        collector.addRequired(var);
+      }
+      entities.setLeadContact(per.unwrapOrElseThrow());
     }
-
+    
     JsonNode jsonReturnDate = node.get("return_date");
     Optional<LocalDate> maybeReturnDate = Optional.empty();
     if (jsonReturnDate != null && jsonReturnDate.isTextual()) {

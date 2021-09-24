@@ -482,12 +482,6 @@ public class EcfCourtSpecificSerializer {
     DocumentMetadataType metadata = ecfOf.createDocumentMetadataType();
     metadata.setRegisterActionDescriptionText(XmlHelper.convertText(filing.code));
 
-    if (doc.getFilingAttorney().isEmpty() && doc.getFilingPartyIds().isEmpty()) {
-      InterviewVariable attVar = collector.requestVar("filing_attorney", "The Attorney that is filing this document", "text");
-      InterviewVariable partyVar = collector.requestVar("filing_parties", "The Parties that are filing this document", "text");
-      collector.addRequired(attVar);
-      collector.addRequired(partyVar);
-    }
     DataFieldRow attorneyRow = cd.getDataField(this.court.code, "FilingFilingAttorneyView");
     if (attorneyRow.isvisible) {
       if (doc.getFilingAttorney().isPresent()) {
@@ -496,9 +490,8 @@ public class EcfCourtSpecificSerializer {
         // "This field should contain empty values for Individual filers"
         metadata.setFilingAttorneyID(XmlHelper.convertId("", ""));
       } else {
-        FilingError err = FilingError.malformedInterview("Court " + this.court.code
-            + " requires that there be an associated Filing Attorney");
-        collector.error(err);
+        InterviewVariable attVar = collector.requestVar("filing_attorney", "The Attorney that is filing this document", "text");
+        collector.addRequired(attVar);
       }
     }
 
@@ -508,6 +501,11 @@ public class EcfCourtSpecificSerializer {
       } else {
         metadata.getFilingPartyID().add(XmlHelper.convertId(filingPartyId.id, "IDENTIFICATION"));
       }
+    }
+    // TODO(brycew): needs to handle when we can avoid using filing party ids
+    if (doc.getFilingPartyIds().isEmpty()) {
+      InterviewVariable partyVar = collector.requestVar("filing_parties", "The Parties that are filing this document", "text");
+      collector.addRequired(partyVar);
     }
     docType.setDocumentMetadata(metadata);
 

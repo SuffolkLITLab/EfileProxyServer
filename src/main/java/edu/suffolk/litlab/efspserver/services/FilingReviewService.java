@@ -251,9 +251,12 @@ public class FilingReviewService {
     }
     // Add this information to the transaction database
     Person user = result.unwrapOrElseThrow().leadContact; 
+    if (user == null) {
+      return Response.status(500).entity("Got Tyler submission, but no lead contact?").build(); 
+    }
     List<UUID> filingIds = result.unwrapOrElseThrow().filingIds;
     Optional<String> phoneNumber = Optional.empty();
-    if (user.getContactInfo().getPhoneNumbers().size() > 0) {
+    if (user != null && user.getContactInfo().getPhoneNumbers().size() > 0) {
       // TODO(brycew-later): should we store multiple phone numbers as backup?
       phoneNumber = Optional.of(user.getContactInfo().getPhoneNumbers().get(0));
     }
