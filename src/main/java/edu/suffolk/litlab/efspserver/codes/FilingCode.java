@@ -67,7 +67,7 @@ public class FilingCode {
           FROM filing 
           WHERE location=? AND iscourtuseonly='False' AND (casecategory=? OR casetypeid=?) """;
     if (initial) {
-      return mainQuery; // Implied initial and subsequnt are okay 
+      return mainQuery + "AND (filingtype='Initial' OR filingtype='Both')";
     } else {
       return mainQuery + "AND (filingtype='Subsequent' OR filingtype='Both')";
     }
