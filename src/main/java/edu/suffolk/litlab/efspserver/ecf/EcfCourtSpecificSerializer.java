@@ -502,8 +502,12 @@ public class EcfCourtSpecificSerializer {
       }
     }
 
-    for (String filingPartyId : doc.getFilingPartyIds()) {
-      metadata.getFilingPartyID().add(XmlHelper.convertId(filingPartyId, "REFERENCE"));
+    for (FilingDoc.PartyId filingPartyId : doc.getFilingPartyIds()) {
+      if (filingPartyId.isInCurrentFiling()) {
+        metadata.getFilingPartyID().add(XmlHelper.convertId(filingPartyId.id, "REFERENCE"));
+      } else {
+        metadata.getFilingPartyID().add(XmlHelper.convertId(filingPartyId.id, "IDENTIFICATION"));
+      }
     }
     docType.setDocumentMetadata(metadata);
 

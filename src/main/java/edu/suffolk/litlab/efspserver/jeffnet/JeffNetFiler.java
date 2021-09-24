@@ -15,6 +15,7 @@ import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.services.EfmFilingInterface;
 import edu.suffolk.litlab.efspserver.services.FilingError;
+import edu.suffolk.litlab.efspserver.services.FilingResult;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.UUID;
 
 import javax.ws.rs.core.Response;
@@ -71,12 +73,16 @@ public class JeffNetFiler implements EfmFilingInterface {
   }
 
   @Override
-  public Result<List<UUID>, FilingError> sendFiling(FilingInformation info, String apiToken, ApiChoice choice) {
+  public Result<FilingResult, FilingError> sendFiling(FilingInformation info, String apiToken, ApiChoice choice) {
     if (choice.equals(ApiChoice.ServiceApi)) {
       return Result.err(FilingError.malformedInterview("Error: JeffNet cannot do service"));
     }
     if (info.getFilings().isEmpty()) {
       return Result.err(FilingError.serverError("Error: cannot file with no filings"));
+    }
+    List<FilingDoc.PartyId> newFilers = info.getFilers().stream().filter(f -> f.isInCurrentFiling()).collect(Collectors.toList());
+    if (newFilers.size() != info.getFilers().size()) {
+      return Result.err(FilingError.malformedInterview("Error: JeffNet cannot reference alredy existing filing parties"));
     }
 
     ObjectMapper mapper = new ObjectMapper();
@@ -105,7 +111,9 @@ public class JeffNetFiler implements EfmFilingInterface {
       ApiResult result = mapper.readValue(response.body(), ApiResult.class);
       UUID transactionId = UUID.fromString(result.transactionId);
       // TODO(brycew-later): Break this into multiple: https://trello.com/c/QZaUFT2c/38
-      return Result.ok(List.of(transactionId));
+      Person leadFiler = info.getLeadContact(); 
+      FilingResult fr = new FilingResult(List.of(transactionId), leadFiler);
+      return Result.ok(fr);
     } catch (InterruptedException ex) {
       return Result.err(FilingError.serverError("Interrupted getting response from " + this.filingEndpoint + ", " + ex));
     } catch (JsonMappingException ex) {

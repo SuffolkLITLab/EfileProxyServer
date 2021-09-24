@@ -51,6 +51,8 @@ public class FilingInformation {
   private List<FilingDoc> filingDocs = List.of();
   private Optional<LocalDate> returnDate = Optional.empty();
   
+  private Person leadContact;
+  
   private JsonNode miscInfo;
   
   /** Gets all of the peole who are listed by filer ids in the filing docs.
@@ -58,33 +60,40 @@ public class FilingInformation {
    *
    * @return The People who are filers in the filing documents
    */
-  public List<Person> getFilers() {
-    // Add this information to the transaction database
-    if (filingDocs.isEmpty()) {
-      return List.of();
-    }
-    List<String> allIds = new ArrayList<String>();
-    for (FilingDoc doc : filingDocs) {
-      allIds.addAll(doc.getFilingPartyIds());
-    }
-    List<Person> allFilers = new ArrayList<Person>();
-    for (Person per : defendants) {
-      if (allIds.contains(per.getIdString())) {
-        allFilers.add(per);
-      }
-    }
+  public List<FilingDoc.PartyId> getFilers() {
+    List<FilingDoc.PartyId> filers = new ArrayList<FilingDoc.PartyId>();
+    filingDocs.forEach(d -> filers.addAll(d.getFilingPartyIds()));
+    return filers;
+  }
+  
+  /** TODO(brycew): continue: 
+   *  always get some DA specific contact info for the filing, they need to enter it there   
+   * 
+   * @return
+   */
+  public Person getLeadContact() {
+    return leadContact;
+  }
+  
+  public Optional<Person> getFilerById(String id) {
     for (Person per : plaintiffs) {
-      if (allIds.contains(per.getIdString())) {
-        allFilers.add(per);
+      if (per.getIdString().equals(id)) {
+        return Optional.of(per);
       }
     }
-    return allFilers;
+    for (Person per : defendants) {
+      if (per.getIdString().equals(id)) {
+        return Optional.of(per);
+      }
+    }
+    
+    return Optional.empty();
   }
   
   public String getCourtLocation() {
     return courtLocationId;
   }
-
+  
   public List<Person> getPlaintiffs() {
     return plaintiffs;
   }
@@ -194,6 +203,10 @@ public class FilingInformation {
   
   public void setCaseSubtype(String caseSubtype) {
     this.caseSubtype = caseSubtype;
+  }
+  
+  public void setLeadContact(Person leadContact) {
+    this.leadContact = leadContact;
   }
   
   public void setFilings(List<FilingDoc> filingDocs) {

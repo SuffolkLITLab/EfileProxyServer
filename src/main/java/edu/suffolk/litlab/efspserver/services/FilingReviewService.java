@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efspserver.services;
 
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
+
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.SecurityHub;
@@ -243,18 +244,14 @@ public class FilingReviewService {
     }
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
-    Result<List<UUID>, FilingError> result =
+    Result<FilingResult, FilingError> result =
         filingInterfaces.get(courtId).sendFiling(info, activeToken.get(), EfmFilingInterface.ApiChoice.FileApi);
     if (result.isErr()) {
       return Response.status(500).entity(result.unwrapErrOrElseThrow().toJson()).build();
     }
     // Add this information to the transaction database
-    List<Person> filers = info.getFilers();
-    if (filers.isEmpty()) {
-      log.error("No people to add as filers? %s".formatted(info));
-      return Response.ok().entity("Couldn't log the user who submitted!").build();
-    }
-    Person user = filers.get(0);
+    Person user = result.unwrapOrElseThrow().leadContact; 
+    List<UUID> filingIds = result.unwrapOrElseThrow().filingIds;
     Optional<String> phoneNumber = Optional.empty();
     if (user.getContactInfo().getPhoneNumbers().size() > 0) {
       // TODO(brycew-later): should we store multiple phone numbers as backup?
@@ -264,11 +261,11 @@ public class FilingReviewService {
     try {
       ud.addToTable(user.getName().getFullName(), user.getId(),
           phoneNumber, user.getContactInfo().getEmail().orElse(""),
-          result.unwrapOrElseThrow(), atRest.get().serverId, activeToken.get(),
+          filingIds, atRest.get().serverId, activeToken.get(),
           info.getCaseType(), courtId, ts);
 
       msgSender.sendConfirmation(user.getContactInfo().getEmail().orElse(""),
-          atRest.get().serverId, user.getName().getFullName(), result.unwrapOrElseThrow(),
+          atRest.get().serverId, user.getName().getFullName(), filingIds, 
           courtId, info.getCaseType());
     } catch (SQLException ex) {
       log.error("Couldn't add info to the database! Logging here for posterity: "
@@ -300,12 +297,12 @@ public class FilingReviewService {
     }
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
-    Result<List<UUID>, FilingError> result =
+    Result<FilingResult, FilingError> result =
         filingInterfaces.get(courtId).sendFiling(info, activeToken.get(), EfmFilingInterface.ApiChoice.ServiceApi);
     if (result.isErr()) {
       return Response.status(500).entity(result.unwrapErrOrElseThrow().toJson()).build();
     }
-    return Response.status(501).build();
+    return Response.ok(result.unwrapOrElseThrow()).build();
   }
 
   private Result<FilingInformation, Response> parseFiling(HttpHeaders httpHeaders, String allVars,

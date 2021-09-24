@@ -24,10 +24,14 @@ public class FilingJeffNetJacksonSerializer extends StdSerializer<FilingDoc> {
     List<FilingParty> filingPartyList = new ArrayList<FilingParty>();
 
     gen.writeStartObject();
-    for (String filingPartyId : filingDoc.getFilingPartyIds()) {
+    for (FilingDoc.PartyId filingPartyId : filingDoc.getFilingPartyIds()) {
       FilingParty p = new FilingParty();
-      p.id = filingPartyId;
-      p.idCategoryText = "REFERENCE";
+      p.id = filingPartyId.id;
+      if (filingPartyId.isInCurrentFiling()) {
+        p.idCategoryText = "REFERENCE";
+      } else {
+        p.idCategoryText = "IDENTIFICATION";
+      }
       filingPartyList.add(p);
     }
     Metadata metadata = new Metadata();

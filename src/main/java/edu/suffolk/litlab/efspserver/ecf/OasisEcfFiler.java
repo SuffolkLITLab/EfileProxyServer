@@ -19,6 +19,7 @@ import edu.suffolk.litlab.efspserver.services.CasesService;
 import edu.suffolk.litlab.efspserver.services.EfmCheckableFilingInterface;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
+import edu.suffolk.litlab.efspserver.services.FilingResult;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
@@ -292,7 +293,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     }
   }
   
-  private Result<List<UUID>, FilingError> serveFilingIfReady(CoreFilingMessageType cfm, 
+  private Result<FilingResult, FilingError> serveFilingIfReady(CoreFilingMessageType cfm, 
       FilingInformation info, InfoCollector collector, String apiToken) {
 
     ServiceMDEService ss = new ServiceMDEService(ServiceMDEService.WSDL_LOCATION);
@@ -321,11 +322,11 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
           return UUID.fromString(id);
         })
         .collect(Collectors.toList());
-    return Result.ok(ids); 
+    return Result.ok(new FilingResult(ids, info.getLeadContact())); 
   }
 
   @Override
-  public Result<List<UUID>, FilingError> submitFilingIfReady(FilingInformation info,
+  public Result<FilingResult, FilingError> submitFilingIfReady(FilingInformation info,
     InfoCollector collector, String apiToken, ApiChoice choice) {
     FilingReviewMDEPort filingPort;
     CoreFilingMessageType cfm;
@@ -358,7 +359,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
 
     log.debug(XmlHelper.objectToXmlStrOrError(rfrm, ReviewFilingRequestMessageType.class));
     if (!collector.okToSubmit()) {
-      return Result.ok(List.of()); 
+      return Result.ok(new FilingResult(List.of(), null)); 
     }
     MessageReceiptMessageType mrmt = filingPort.reviewFiling(rfrm);
     if (mrmt.getError().size() > 0) {
@@ -369,18 +370,22 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       }
     }
     List<IdentificationType> ids = mrmt.getDocumentIdentification();
-    Optional<String> caseId = ids.stream().filter((id) -> {
+    List<String> filingIdStrs = ids.stream().filter((id) -> {
       TextType text = (TextType) id.getIdentificationCategory().getValue();
       return text.getValue().equalsIgnoreCase("FILINGID");
-    }).map((id) -> id.getIdentificationID().getValue()).findFirst();
-    if (caseId.isEmpty()) {
+    }).map((id) -> id.getIdentificationID().getValue()).collect(Collectors.toList());   
+    if (filingIdStrs.isEmpty()) {
       log.error("Couldn't get back the filing id from Tyler!");
       return Result.err(
-          FilingError.serverError("Couldn't get back filing id from tyler: " + mrmt.getError()));
+          FilingError.serverError("Couldn't get back filing id from tyler: " 
+            + mrmt.getError().stream().reduce("", (str, err) -> {
+              return str + ", " + err.getErrorText();
+            }, (str, str2) -> str + str2))); 
     }
-
     log.info(XmlHelper.objectToXmlStrOrError(mrmt, MessageReceiptMessageType.class));
-    return Result.ok(List.of(UUID.fromString(caseId.get())));
+    return Result.ok(new FilingResult(
+        filingIdStrs.stream().map(str -> UUID.fromString(str)).collect(Collectors.toList()), 
+        info.getLeadContact()));
   }
 
   @Override

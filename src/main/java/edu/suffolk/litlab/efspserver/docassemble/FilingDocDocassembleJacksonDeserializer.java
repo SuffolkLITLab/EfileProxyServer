@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.OptionalService;
+import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
@@ -20,6 +21,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +39,8 @@ public class FilingDocDocassembleJacksonDeserializer {
       FilingInformationDocassembleJacksonDeserializer.class);
 
   /** Parses a filing from the DA Json Object. Used by Deserializers that include filings. */
-  public static Optional<FilingDoc> fromNode(JsonNode node, int sequenceNum, InfoCollector collector) throws FilingError {
+  public static Optional<FilingDoc> fromNode(JsonNode node, List<Person> users, List<Person> otherParties, 
+      int sequenceNum, InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
       FilingError err = FilingError.malformedInterview(
               "Refusing to parse filing doc that isn't a Json Object: " + node.toPrettyString());
@@ -106,9 +111,27 @@ public class FilingDocDocassembleJacksonDeserializer {
       Optional<String> filingAttorney = getStringMember(node, "filing_attorney");
       String filingComment = getStringDefault(node, "filing_comment", "");
       
-      List<String> filingParties = getMemberList(node, "filing_parties");
       List<String> courtesyCopies = getMemberList(node, "courtesy_copies");
       List<String> preliminaryCopies = getMemberList(node, "preliminary_copies");
+      List<String> filingParties = getMemberList(node, "filing_parties");
+      
+      Pattern usersPattern = Pattern.compile("users\\[([1-9][0-9]*)\\]");
+      Pattern otherPattern = Pattern.compile("other_parties\\[([1-9][0-9]*)\\]");
+      List<FilingDoc.PartyId> fullParties = filingParties.stream().map(fp -> {
+        Matcher matcher = usersPattern.matcher(fp);
+        if (matcher.find()) {
+          int userIdx = Integer.parseInt(matcher.group(0));
+          return FilingDoc.PartyId.CurrentFiling(users.get(userIdx).getIdString()); 
+        } else {
+          Matcher otherMatcher = otherPattern.matcher(fp);
+          if (otherMatcher.find()) {
+            int otherIdx = Integer.parseInt(otherMatcher.group(0));
+            return FilingDoc.PartyId.CurrentFiling(otherParties.get(otherIdx).getIdString()); 
+          } else {
+            return FilingDoc.PartyId.Already(fp); 
+          }
+        }
+      }).collect(Collectors.toList());
       
       
       HttpURLConnection conn = (HttpURLConnection) inUrl.openConnection();
@@ -125,7 +148,7 @@ public class FilingDocDocassembleJacksonDeserializer {
               userDescription,
               filingRefNum,
               maybeDueDate,
-              filingParties,
+              fullParties,
               filingAttorney,
               documentTypeFormatName, filingComponentCode,
               filingComment,
