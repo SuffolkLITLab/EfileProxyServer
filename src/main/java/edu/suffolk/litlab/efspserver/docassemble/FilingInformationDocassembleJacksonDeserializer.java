@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +71,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       if (per.isErr()) {
         FilingError ex = per.unwrapErrOrElseThrow();
         log.warn("Person exception: " + ex);
-        throw ex;
+        collector.error(ex);
       }
       people.add(per.unwrapOrElseThrow());
     }
@@ -270,9 +269,6 @@ public class FilingInformationDocassembleJacksonDeserializer
     log.info("Keyset: " + metadataElems.fieldNames());
     */
 
-    List<String> filingPartyIds = users.stream()
-        .map((per) -> per.getIdString())
-        .collect(Collectors.toList());
     List<FilingDoc> filingDocs = new ArrayList<FilingDoc>();
     final InterviewVariable bundleVar = collector.requestVar("al_court_bundle",
         "The full court bundle", "ALDocumentBundle");
@@ -292,9 +288,9 @@ public class FilingInformationDocassembleJacksonDeserializer
 
     for (int i = 0; i < elems.size(); i++) {
       try {
-        Optional<FilingDoc> maybeDoc = FilingDocDocassembleJacksonDeserializer.fromNode(elems.get(i), i, collector); 
+        Optional<FilingDoc> maybeDoc = FilingDocDocassembleJacksonDeserializer.fromNode(
+            elems.get(i), users, otherParties, i, collector); 
         maybeDoc.ifPresent(doc -> {
-          doc.setFilingPartyIds(filingPartyIds);
           filingDocs.add(doc);
         });
       } catch (FilingError err) {
@@ -315,6 +311,15 @@ public class FilingInformationDocassembleJacksonDeserializer
     JsonNode paymentIdJson = node.get("tyler_payment_id");
     if (paymentIdJson != null && paymentIdJson.isTextual()) {
       entities.setPaymentId(paymentIdJson.asText());
+    }
+    
+    
+    Result<Person, FilingError> per =
+        PersonDocassembleJacksonDeserializer.fromNode(node.get("lead_contact"), collector);
+    if (per.isErr()) {
+      FilingError ex = per.unwrapErrOrElseThrow();
+      log.warn("Person exception: " + ex);
+      collector.error(ex);
     }
 
     JsonNode jsonReturnDate = node.get("return_date");

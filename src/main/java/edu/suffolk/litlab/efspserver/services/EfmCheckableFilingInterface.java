@@ -1,8 +1,5 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import java.util.List;
-import java.util.UUID;
-
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 
@@ -11,7 +8,7 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 public abstract class EfmCheckableFilingInterface implements EfmFilingInterface {
 
   @Override
-  public Result<List<UUID>, FilingError> sendFiling(FilingInformation info, String apiToken, ApiChoice choice) {
+  public Result<FilingResult, FilingError> sendFiling(FilingInformation info, String apiToken, ApiChoice choice) {
     FailFastCollector collector = new FailFastCollector();
     return submitFilingIfReady(info, collector, apiToken, choice);
   }
@@ -27,7 +24,7 @@ public abstract class EfmCheckableFilingInterface implements EfmFilingInterface 
    * @param collector The class that holds errors or missingVars
    * @return Same return type as {@link sendFiling}
    */
-  public abstract Result<List<UUID>, FilingError> submitFilingIfReady(
+  public abstract Result<FilingResult, FilingError> submitFilingIfReady(
       FilingInformation info, InfoCollector collector, String apiToken, ApiChoice chocie);
 
 }

@@ -5,8 +5,6 @@ import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
 
 import javax.ws.rs.core.Response;
 
@@ -26,7 +24,7 @@ public interface EfmFilingInterface {
    *   about how that split happens, we just need to know the UUIDs for each of the filings
    *   for the callbacks. If it's > 1, should be the same number as the FilingDocs in info
    */
-  public Result<List<UUID>, FilingError> sendFiling(FilingInformation info, String apiToken, ApiChoice choice);
+  public Result<FilingResult, FilingError> sendFiling(FilingInformation info, String apiToken, ApiChoice choice);
   
   public Result<NullValue, FilingError> checkFiling(FilingInformation info, String apiToken, InfoCollector collector);
   

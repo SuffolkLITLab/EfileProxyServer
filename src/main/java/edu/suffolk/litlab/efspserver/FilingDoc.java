@@ -25,9 +25,35 @@ public class FilingDoc {
   private String filingCodeName;
   private UUID id;
 
+  
+  public static class PartyId {
+    public static PartyId CurrentFiling(String id) {
+      return new PartyId(id, Kind.CURRENT_FILING);
+    }
+    
+    public static PartyId Already(String id) {
+      return new PartyId(id, Kind.ALREADY_IN);
+    }
+    
+    private PartyId(String id, Kind kind) {
+      this.id = id;
+      this.kind = kind;
+    }
+    
+    public boolean isInCurrentFiling() {
+      return kind.equals(Kind.CURRENT_FILING);
+    }
+
+    public final String id;
+    private enum Kind {
+      CURRENT_FILING,
+      ALREADY_IN
+    }
+    private final Kind kind;
+  }
 
   // Required to at least have one
-  private List<String> filingPartyIds;
+  private List<PartyId> filingPartyIds;
   private Optional<String> filingAttorney;
 
   // This is, "determined via configuration within the EFM for each EFSP"?
@@ -57,7 +83,7 @@ public class FilingDoc {
    * @throws IOException If the input stream can't be opened or read from
    */
   public FilingDoc(String filingCodeName, String fileName, InputStream fileStream,
-      List<String> filingPartyIds,
+      List<PartyId> filingPartyIds,
       String filingComments) throws IOException  {
     this(filingCodeName, fileName, fileStream.readAllBytes(), Optional.empty(), Optional.empty(), Optional.empty(),
         filingPartyIds, Optional.empty(), "", "", "", Optional.empty(),
@@ -66,7 +92,7 @@ public class FilingDoc {
   }
 
   public FilingDoc(String filingCodeName, String fileName, InputStream fileStream,
-      List<String> filingPartyIds,
+      List<PartyId> filingPartyIds,
       String documentTypeFormatStandardName,
       String filingComponentName, FilingTypeType filingAction, boolean isLeadDoc) throws IOException {
     this(filingCodeName, fileName, fileStream.readAllBytes(), Optional.empty(), Optional.empty(), Optional.empty(),
@@ -80,7 +106,7 @@ public class FilingDoc {
       byte[] fileContents, 
       Optional<String> userProvidedDescription,
       Optional<String> filingReferenceNum, Optional<LocalDate> dueDate, 
-      List<String> filingPartyIds, Optional<String> filingAttorney,
+      List<PartyId> filingPartyIds, Optional<String> filingAttorney,
       String documentTypeFormatStandardName, String filingComponentName,
       String filingComments, Optional<String> motionType, List<OptionalService> optionalServices,
       List<String> courtesyCopies, List<String> preliminaryCopies, FilingTypeType filingAction,
@@ -118,12 +144,8 @@ public class FilingDoc {
     return isLeadDoc;
   }
 
-  public List<String> getFilingPartyIds() {
+  public List<PartyId> getFilingPartyIds() {
     return filingPartyIds;
-  }
-
-  public void setFilingPartyIds(List<String> filingPartyIds) {
-    this.filingPartyIds = filingPartyIds;
   }
 
   public Optional<String> getDescription() {

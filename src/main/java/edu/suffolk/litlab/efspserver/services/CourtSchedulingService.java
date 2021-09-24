@@ -146,7 +146,9 @@ public class CourtSchedulingService {
     EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo.get());
     ComboCaseCodes allCodes = serializer.serializeCaseCodes(info, collector);
     Optional<String> caseTrackingId = info.getPreviousCaseId(); 
-    String filingPartyId = info.getFilings().get(0).getFilingPartyIds().get(0);
+    List<FilingDoc.PartyId> partyIds = info.getFilers();
+    // HACK(brycew): ECF allows multiple filers for an envelope, but this stupid Tyler call only takes a single Party Id. 
+    Optional<FilingDoc.PartyId> firstFiler = (partyIds.isEmpty()) ? Optional.empty() : Optional.of(partyIds.get(0));
     Optional<String> filingAttorneyId = info.getFilings().get(0).getFilingAttorney();
     Optional<LocalDate> returnDate = info.getReturnDate();
     if (returnDate.isEmpty()) {
@@ -287,12 +289,20 @@ public class CourtSchedulingService {
     ct.getCaseAugmentationPoint().add(oasisCivilObjFac.createCaseAugmentation(oasisAug));
 
     ecfv5.tyler.ecf.v5_0.extensions.common.CaseAugmentationType tylerAug = tylerObjFac.createCaseAugmentationType();
-    FilingPartyEntityType fpet = tylerObjFac.createFilingPartyEntityType();
-    FilingReferenceType frt = tylerObjFac.createFilingReferenceType();
-    log.info("Filing party: " + filingPartyId); 
-    frt.setRef(idToCaseParty.get(filingPartyId));
-    fpet.setPartyReference(frt);
-    tylerAug.setFilingParty(fpet);
+    firstFiler.ifPresent(fil -> {
+      FilingPartyEntityType fpet = tylerObjFac.createFilingPartyEntityType();
+      log.info("Filing party: " + fil); 
+      if (fil.isInCurrentFiling()) {
+        FilingReferenceType frt = tylerObjFac.createFilingReferenceType();
+        frt.setRef(idToCaseParty.get(fil.id));
+        fpet.setPartyReference(frt);
+      } else {
+        IdentificationType idType = niemObjFac.createIdentificationType();
+        idType.setIdentificationID(Ecfv5XmlHelper.convertString(fil.id));
+        fpet.setPartyIdentification(idType); 
+      }
+      tylerAug.setFilingParty(fpet);
+    });
     if (filingAttorneyId.isPresent()) {
       FilingAttorneyEntityType faet = tylerObjFac.createFilingAttorneyEntityType();
       faet.setAttorneyIdentification(Ecfv5XmlHelper.convertId(filingAttorneyId.get()));
