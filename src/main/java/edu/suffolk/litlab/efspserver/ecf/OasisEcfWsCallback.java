@@ -47,6 +47,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
 
   public MessageReceiptMessageType notifyFilingReviewComplete(
       NotifyFilingReviewCompleteRequestMessageType msg) {
+    log.info("Full NotifyFilingReviewComplete msg" + msg);
     // The bare minimum: get the Document ID, see if we have it in the db, send email response
     PaymentMessageType payment = msg.getPaymentReceiptMessage();
     ReviewFilingCallbackMessageType revFiling = msg.getReviewFilingCallbackMessage();
@@ -117,6 +118,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
 
   @Override
   public MessageReceiptMessageType notifyEvent(EventCallbackMessageType eventCallbackMessage) {
+    log.info("Full NotifyEvent msg" + eventCallbackMessage);
     // TODO Auto-generated method stub
     return null;
   }
@@ -124,6 +126,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   @Override
   public MessageReceiptMessageType notifyServiceComplete(
       ServiceCallbackMessageType serviceCallbackMessage) {
+    log.info("Full NotifyServiceComplete msg" + serviceCallbackMessage);
     // TODO Auto-generated method stub
     return null;
   }
