@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
@@ -319,7 +320,7 @@ public class CourtSchedulingService {
 
     ct.getCaseAugmentationPoint().add(tylerObjFac.createCaseAugmentation(tylerAug));
     m.setCase(ct);
-    m.setReturnDate(Ecfv5XmlHelper.convertDate(returnDate.get()));
+    //m.setReturnDate(Ecfv5XmlHelper.convertDate(returnDate.get()));
     m.setOutOfStateIndicator(Ecfv5XmlHelper.convertBool(outOfState));
     r.setReturnDateMessage(m);
     log.info("Full msg: " + XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
@@ -349,7 +350,7 @@ public class CourtSchedulingService {
     if (hasError(resp)) {
       return Response.status(400).entity(resp.getMessageStatus()).build();
     }
-    return Response.ok(resp.getReturnDate()).build();
+    return Response.ok(resp).build();
     } catch (FilingError err) {
       return Response.status(422).entity(collector.jsonSummary()).build();
     }
@@ -433,16 +434,17 @@ public class CourtSchedulingService {
     return Optional.of(serv);
   }
   
-  private void setupReq(CaseFilingType cft, String courtId) {
-    DateType currentDate = Ecfv5XmlHelper.convertDate(LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault()));
+  private static void setupReq(CaseFilingType cft, String courtId) {
+    DateType currentDate = Ecfv5XmlHelper.convertDate(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
     cft.setDocumentPostDate(currentDate);
     cft.setCaseCourt(Ecfv5XmlHelper.convertCourtType(courtId));
     cft.setServiceInteractionProfileCode(Ecfv5XmlHelper.convertNormalized(ServiceHelpers.MDE_PROFILE_CODE));
     cft.setSendingMDELocationID(Ecfv5XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
   }
   
-  private boolean hasError(ResponseMessageType rt) {
+  private static boolean hasError(ResponseMessageType rt) {
     MessageStatusType ms = rt.getMessageStatus();
-    return ms.getMessageContentError().isEmpty() || !ms.getMessageHandlingError().getErrorCodeText().getValue().isBlank();
+    String errorCodeText = ms.getMessageHandlingError().getErrorCodeText().getValue();
+    return !ms.getMessageContentError().isEmpty() && !(errorCodeText.isBlank() || errorCodeText.equals("0"));
   }
 }
