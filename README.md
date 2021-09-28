@@ -2,6 +2,8 @@
 
 A separate server that sits between ECF 4.0 EFMs and docassemble, and can create court filings.
 
+[Docassemble-EFSPIntegration](https://github.com/SuffolkLITLab/docassemble-EFSPIntegration/) is an implementation of a client in Python with a reference interface in Docassemble.
+
 ## Setup
 
 This server is setup using docker. To run, follow the following steps:
