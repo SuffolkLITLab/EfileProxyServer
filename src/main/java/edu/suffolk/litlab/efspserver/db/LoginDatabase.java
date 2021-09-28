@@ -174,6 +174,7 @@ public class LoginDatabase extends DatabaseInterface {
     return Optional.of(newTokens);
   }
   
+  /** Example on how to trigger: mvn exec:java@LoginAddUser -Dexec.args="localhostServer true true" */
   public static void main(final String args[]) throws SQLException {
     if (args.length != 3) {
       System.out.println("Only 3 params: server name, tyler enabled, jeffnet enabled");
