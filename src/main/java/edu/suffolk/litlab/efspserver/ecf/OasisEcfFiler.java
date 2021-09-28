@@ -159,13 +159,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       ComboCaseCodes allCodes;
       if (!isFirstIndexedFiling) {
         CaseQueryMessageType query = new CaseQueryMessageType();
-        EntityType typ = new EntityType();
-        JAXBElement<PersonType> elem2 = ecfOf.createEntityPerson(new PersonType());
-        typ.setEntityRepresentation(elem2);
-        query.setQuerySubmitter(typ);
-        query.setCaseCourt(XmlHelper.convertCourtType(info.getCourtLocation()));
-        query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
-        query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+        ServiceHelpers.prep(query, info.getCourtLocation());
         query.setCaseTrackingID(XmlHelper.convertString(info.getPreviousCaseId().get()));
         query.setCaseQueryCriteria(CasesService.getCriteria());
         CaseResponseMessageType resp = recordPort.getCase(query);
