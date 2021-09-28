@@ -140,9 +140,9 @@ public class FilingReviewService {
     return Response.ok(collector.jsonSummary()).build();
   }
 
-  @GET
+  @POST
   @Path("/courts/{court_id}/filing/fees")
-  public Response getFilingFees(@Context HttpHeaders httpHeaders,
+  public Response calculateFilingFees(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, String allVars) {
     MediaType mediaType = httpHeaders.getMediaType();
     log.trace("Checking a filing: Media type: " + mediaType);
