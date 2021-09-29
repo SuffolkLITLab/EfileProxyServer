@@ -327,6 +327,15 @@
                                 <mainClass>edu.suffolk.litlab.efspserver.codes.CodeUpdater</mainClass>
                             </configuration>
                         </execution>
+                        <execution>
+                            <id>filingassemblyclient</id>
+                            <goals>
+                                <goal>java</goal>
+                            </goals>
+                            <configuration>
+                                <mainClass>oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingAssemblyMDEPort_FilingAssemblyMDEPort_Client</mainClass>
+                            </configuration>
+                        </execution>
                     </executions>
                 </plugin>
                 <plugin>

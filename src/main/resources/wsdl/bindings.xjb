@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <jaxb:bindings version="1.0" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-<jaxb:bindings schemaLocation="v5/ecf-v5-11.xsd"> 
+<jaxb:bindings schemaLocation="filingreview/ecf-11.xsd"> 
             <jaxb:globalBindings typesafeEnumMaxMembers="1024"/>
         </jaxb:bindings>
 </jaxb:bindings>

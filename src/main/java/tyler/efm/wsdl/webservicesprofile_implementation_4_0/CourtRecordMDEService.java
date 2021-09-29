@@ -27,7 +27,7 @@ public class CourtRecordMDEService extends Service {
         URL url = CourtRecordMDEService.class.getClassLoader().getResource("wsdl/filingreview/ECF-4.0-CourtRecordMDEService.wsdl");
         if (url == null) {
           org.slf4j.LoggerFactory.getLogger(CourtRecordMDEService.class.getName()).info(
-                     "Can not initialize the default wsdl from {0}", "file:/home/litlab/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/filingreview/ECF-4.0-CourtRecordMDEService.wsdl");
+                     "Can not initialize the default wsdl from {0}", "classpath:wsdl/filingreview/ECF-4.0-CourtRecordMDEService.wsdl");
         }
         WSDL_LOCATION = url;
     }
