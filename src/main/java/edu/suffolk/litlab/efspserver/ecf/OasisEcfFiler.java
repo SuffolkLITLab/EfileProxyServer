@@ -132,7 +132,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   }
 
   private CoreFilingMessageType prepareFiling(FilingInformation info,
-      InfoCollector collector, String apiToken, FilingReviewMDEPort filingPort, CourtRecordMDEPort recordPort) throws FilingError {
+      InfoCollector collector, String apiToken, FilingReviewMDEPort filingPort, CourtRecordMDEPort recordPort, String queryType) throws FilingError {
     EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
     try {
       Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(info.getCourtLocation());
@@ -187,7 +187,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
                   .stream()
                   .map(f -> f.getIdString())
                   .collect(Collectors.toList()),
-              "review", info.getMiscInfo(), serializer, collector);
+              queryType, info.getMiscInfo(), serializer, collector);
 
       oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory coreObjFac =
           new oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory();
@@ -339,7 +339,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         collector.error(err);
       }
       filingPort = maybeFilingPort.get();
-      cfm = prepareFiling(info, collector, apiToken, filingPort, recordPort.get());
+      cfm = prepareFiling(info, collector, apiToken, filingPort, recordPort.get(), "review");
     } catch (FilingError err) {
       return Result.err(err);
     }
@@ -400,7 +400,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       return Result.err(err);
     }
     try {
-      cfm = prepareFiling(info, collector, apiToken, filingPort.get(), recordPort.get());
+      cfm = prepareFiling(info, collector, apiToken, filingPort.get(), recordPort.get(), "fees");
     } catch (FilingError err) {
       return Result.err(err);
     }
@@ -433,7 +433,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     }
     CoreFilingMessageType cfm;
     try {
-      cfm = prepareFiling(info, collector, apiToken, filingPort.get(), recordPort.get());
+      cfm = prepareFiling(info, collector, apiToken, filingPort.get(), recordPort.get(), "review");
     } catch (FilingError err) {
       return Result.err(err);
     }
