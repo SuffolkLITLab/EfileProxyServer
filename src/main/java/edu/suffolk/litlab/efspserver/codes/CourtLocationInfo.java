@@ -188,13 +188,14 @@ public class CourtLocationInfo {
             allowfilingintononindexedcase,
             allowablecardtypes, odysseynodeid, cmsid, sendservicebeforereview, parentnodeid,
             iscounty, restrictbankaccountpayment, allowmultipleattorneys, sendservicecontactremovednotifications,
-            allowmaxfeeamount, transferwaivedfeestocms, skippreauth, allowhearing, allowreturndate, 
+            allowmaxfeeamount, transferwaivedfeestocms, skippreauth, allowreturndate, showdamageamount,
             hasconditionalservicetypes, 
             hasprotectedcasetypes, protectedcasetypes, allowzerofeeswithoutfilingparty,
             allowserviceoninitial, allowaddservicecontactsoninitial,
             allowredaction, redactionurl, redactionviewerurl, enforceredaction,
             redactiondocumenttype, defaultdocumentdescription, allowwaiveronmail, showreturnonreject,
-            protectedcasereplacementstring, allowchargeupdate, allowpartyid, redactionfee, allowwaiveronredaction, disallowelectronicserviceonnewcontacts,
+            protectedcasereplacementstring, allowchargeupdate, allowpartyid, redactionfee, 
+            allowwaiveronredaction, disallowelectronicserviceonnewcontacts,
             allowindividualregistration, redactiontargetconfig, allowhearing
         FROM location
         WHERE code=?
