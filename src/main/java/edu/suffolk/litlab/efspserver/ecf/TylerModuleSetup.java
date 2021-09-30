@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
+import org.apache.cxf.ws.policy.WSPolicyFeature;
 import org.quartz.JobBuilder;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.JobDetail;
@@ -201,6 +202,10 @@ public class TylerModuleSetup implements EfmModuleSetup {
     svrFactory.setServiceClass(FilingAssemblyMDEPort.class);
     svrFactory.setAddress(address);
     svrFactory.setServiceBean(implementor);
+    svrFactory.setProperties(null);
+    WSPolicyFeature policyFeature = new WSPolicyFeature();
+    policyFeature.setPolicyElements(null);
+    svrFactory.setFeatures(null);
     svrFactory.create();
   }
 
