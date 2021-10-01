@@ -207,13 +207,13 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       if (serviceOnInitial.isEmpty()) {
         serviceOnInitial = Optional.of(cd.getDataField(locationInfo.get().code, "FilingServiceCheckBoxInitial").isvisible);
       }
-      if (allCodes.type.initial && !serviceOnInitial.get()
+      if (isInitialFiling && !serviceOnInitial.get()
           && info.getServiceContacts().size() > 0) {
         FilingError err = FilingError.malformedInterview("Court " + locationInfo.get().name + " doesn't allow service on initial filings");
         collector.error(err);
       }
       DataFieldRow checkBoxSub = cd.getDataField(locationInfo.get().code, "FilingServiceCheckBoxSubsequent");
-      if (!allCodes.type.initial && !checkBoxSub.isvisible && info.getServiceContacts().size() > 0) {
+      if (!isInitialFiling && !checkBoxSub.isvisible && info.getServiceContacts().size() > 0) {
         FilingError err = FilingError.malformedInterview("Court " + locationInfo.get().name + " doesn't allow service on subsequent filings");
         collector.error(err);
       }
@@ -228,7 +228,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         if (code.isEmpty()) {
           collector.addWrong(var);
         }
-        if (code.get().code.equals("-580") && allCodes.type.initial && locationInfo.get().disallowelectronicserviceonnewcontacts) { // Eservice
+        if (code.get().code.equals("-580") && isInitialFiling && locationInfo.get().disallowelectronicserviceonnewcontacts) { // Eservice
 
         }
         IdentificationType id = niemObjFac.createIdentificationType();

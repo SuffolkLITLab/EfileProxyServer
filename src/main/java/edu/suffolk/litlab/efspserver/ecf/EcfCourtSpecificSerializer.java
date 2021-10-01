@@ -100,8 +100,8 @@ public class EcfCourtSpecificSerializer {
     CaseCategory caseCategory = vetCaseCat(cd.getCaseCategoryWithKey(this.court.code, caseCategoryCode), collector);
     List<CaseType> caseTypes = cd.getCaseTypesFor(court.code, caseCategory.code.get(), Optional.empty());
     Optional<CaseType> maybeType = cd.getCaseTypeWith(court.code, caseTypeCode);
-    CaseType type = vetCaseType(maybeType, caseTypes, caseCategory, collector);
-    List<FilingCode> filingRealCodes = vetFilingTypes(filingNames, caseCategory, type, collector);
+    CaseType type = vetCaseType(maybeType, caseTypes, caseCategory, collector, false);
+    List<FilingCode> filingRealCodes = vetFilingTypes(filingNames, caseCategory, type, collector, false);
     return new ComboCaseCodes(caseCategory, type, filingRealCodes);
   }
   
@@ -113,7 +113,7 @@ public class EcfCourtSpecificSerializer {
     Optional<CaseType> maybeType = caseTypes.stream()
         .filter(type -> type.name.equals(info.getCaseType()))
         .findFirst();
-    CaseType type = vetCaseType(maybeType, caseTypes, caseCategory, collector); 
+    CaseType type = vetCaseType(maybeType, caseTypes, caseCategory, collector, true);
 
     if (type.initial && info.getCaseDocketNumber().isPresent()) {
       FilingError err = FilingError.malformedInterview("Initial filing case type can't have docket number");
@@ -121,7 +121,7 @@ public class EcfCourtSpecificSerializer {
     }
     
     List<String> filingNames = info.getFilings().stream().map(f -> f.getFilingCodeName()).collect(Collectors.toList());
-    List<FilingCode> filingCodes = vetFilingTypes(filingNames, caseCategory, type, collector); 
+    List<FilingCode> filingCodes = vetFilingTypes(filingNames, caseCategory, type, collector, true);
     return new ComboCaseCodes(caseCategory, type, filingCodes); 
   }
 
@@ -139,7 +139,7 @@ public class EcfCourtSpecificSerializer {
   }
   
   private CaseType vetCaseType(Optional<CaseType> maybeType, List<CaseType> caseTypes, 
-      CaseCategory caseCategory, InfoCollector collector) throws FilingError {
+      CaseCategory caseCategory, InfoCollector collector, boolean isInitialFiling) throws FilingError {
     if (caseTypes.isEmpty()) {
       FilingError err = FilingError.serverError("There are no caseTypes for "
           + court.code + " and " + caseCategory.code.get());
@@ -153,9 +153,9 @@ public class EcfCourtSpecificSerializer {
     }
     CaseType type = maybeType.get();
     // Check if the court doesn't handle this type (initial vs subsequent) of filing
-    if ((type.initial && !court.initial) || (!type.initial && !court.subsequent)) {
-      FilingError err = FilingError.malformedInterview("Filing type (" + ((type.initial) ? "Initial" : "Subsequent")
-          + ") can't be filed at " + court.name);
+    if ((isInitialFiling && (!type.initial || !court.initial)) || (!isInitialFiling && (!type.initial || !court.subsequent))) {
+      FilingError err = FilingError.malformedInterview("An " + ((isInitialFiling) ? "Initial" : "Subsequent")
+          + " filing can't be filed at " + court.name + " or of filing type " + type.name);
       collector.error(err);
     }
 
@@ -163,9 +163,9 @@ public class EcfCourtSpecificSerializer {
   }
  
   private List<FilingCode> vetFilingTypes(List<String> maybeNames, 
-      CaseCategory caseCategory, CaseType type, InfoCollector collector) throws FilingError {
+      CaseCategory caseCategory, CaseType type, InfoCollector collector, boolean isInitialFiling) throws FilingError {
     List<FilingCode> filingOptions = cd.getFilingType(court.code,
-        caseCategory.code.get(), type.code, type.initial);
+        caseCategory.code.get(), type.code, isInitialFiling);
     List<Optional<FilingCode>> maybeCodes = maybeNames.stream().map(name -> {
       return filingOptions.stream()
           .filter(fil -> fil.name.equals(name)) 
@@ -543,7 +543,7 @@ public class EcfCourtSpecificSerializer {
         }
       } else if (motionRow.isrequired) {
         // TODO(brycew-later): "A motion type may be required for a filing type, and may or may not allow multiple occurances"
-        // What does it actually mean? Motion types are empty for IL, so IDK what to do if there's nothing there
+        // What does it actually mean? Motion types are empty for most IL courts (not Cook), so IDK what to do if there's nothing there
         collector.addRequired(var);
       }
 
