@@ -183,8 +183,10 @@ public class CourtSchedulingService {
       CourtEventAugmentationType e = oasisObjFac.createCourtEventAugmentationType();
       e.setCourtEventEnteredOnDocketDate(currentDate);
       e.setCourtEventTypeCode(Ecfv5XmlHelper.convertText(allCodes.filings.get(i).code));
-      motionTypeCode.ifPresent(mot -> {
+      motionTypeCode.ifPresentOrElse(mot -> {
         e.setCourtLocationCode(tylerObjFac.createMotionTypeCode(Ecfv5XmlHelper.convertText(mot)));
+      }, () -> {
+        e.setCourtLocationCode(tylerObjFac.createMotionTypeCode(Ecfv5XmlHelper.convertText("")));
       });
       event.getCourtEventAugmentationPoint().add(oasisObjFac.createCourtEventAugmentation(e));
       i++;
@@ -320,7 +322,7 @@ public class CourtSchedulingService {
 
     ct.getCaseAugmentationPoint().add(tylerObjFac.createCaseAugmentation(tylerAug));
     m.setCase(ct);
-    //m.setReturnDate(Ecfv5XmlHelper.convertDate(returnDate.get()));
+    m.setReturnDate(Ecfv5XmlHelper.convertDate(returnDate.get()));
     m.setOutOfStateIndicator(Ecfv5XmlHelper.convertBool(outOfState));
     r.setReturnDateMessage(m);
     log.info("Full msg: " + XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));

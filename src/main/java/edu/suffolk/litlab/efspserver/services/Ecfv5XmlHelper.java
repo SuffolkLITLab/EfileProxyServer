@@ -37,7 +37,7 @@ public class Ecfv5XmlHelper {
 
   public static DateType convertDate(LocalDate date) {
     GregorianCalendar cal = new GregorianCalendar();
-    cal.set(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), 0, 0, 0);
+    cal.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), 0, 0, 0);
 
     ecfv5.gov.niem.release.niem.proxy.xsd._4.Date d = niemProxyObjFac.createDate();
     d.setValue(datatypeFac.newXMLGregorianCalendar(cal));
@@ -61,7 +61,7 @@ public class Ecfv5XmlHelper {
   
   public static DateType convertDate(LocalDateTime date) {
     GregorianCalendar cal = new GregorianCalendar();
-    cal.set(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), date.getHour(), date.getMinute(), date.getSecond());
+    cal.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), date.getHour(), date.getMinute(), date.getSecond());
 
     ecfv5.gov.niem.release.niem.proxy.xsd._4.DateTime t = niemProxyObjFac.createDateTime();
     t.setValue(datatypeFac.newXMLGregorianCalendar(cal));
