@@ -213,8 +213,6 @@ public class CodeUpdater {
     log.debug("Location: " + location);
     CourtPolicyQueryMessageType m = ServiceHelpers.prep(new CourtPolicyQueryMessageType(), location);
     CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
-    XmlHelper.objectToXmlFile(p, CourtPolicyResponseMessageType.class,
-        new File("full_court_obj_" + location + ".xml"));
 
     for (CourtCodelistType ccl : p.getRuntimePolicyParameters().getCourtCodelist()) {
       String ecfElem = ccl.getECFElementName().getValue();
@@ -336,18 +334,21 @@ public class CodeUpdater {
     try {
       FilingReviewMDEPort filingPort = loginWithTyler(System.getenv("TYLER_USER_EMAIL"),
           System.getenv("TYLER_USER_PASSWORD")); 
+      CodeDatabase usingCd;
       if (cd == null) {
-        cd = new CodeDatabase(System.getenv("POSTGRES_URL"),
+        usingCd = new CodeDatabase(System.getenv("POSTGRES_URL"),
             Integer.parseInt(System.getenv("POSTGRES_PORT")),
             System.getenv("POSTGRES_CODES_DB"));
-        cd.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
+        usingCd.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
+      } else {
+        usingCd = cd;
       }
-      cd.setAutocommit(false);
+      usingCd.setAutocommit(false);
       CodeUpdater cu = new CodeUpdater(System.getenv("PATH_TO_KEYSTORE"), x509Password);
       if (command.equalsIgnoreCase("downloadall")) {
-        cu.downloadAll(codesSite, filingPort, cd);
+        cu.downloadAll(codesSite, filingPort, usingCd);
       } else if (command.equalsIgnoreCase("refresh")) {
-        cu.updateAll(codesSite, filingPort, cd);
+        cu.updateAll(codesSite, filingPort, usingCd);
       } else {
         log.error("Command " + command + " isn't a real command");
         return;

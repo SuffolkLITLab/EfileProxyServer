@@ -2,7 +2,6 @@ package edu.suffolk.litlab.efspserver.services;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -13,7 +12,6 @@ import ecfv5.gov.niem.release.niem.domains.jxdm._6.CourtType;
 import ecfv5.gov.niem.release.niem.niem_core._4.DateType;
 import ecfv5.gov.niem.release.niem.niem_core._4.IdentificationType;
 import ecfv5.gov.niem.release.niem.niem_core._4.TextType;
-import ecfv5.gov.niem.release.niem.proxy.xsd._4.DateTime;
 import ecfv5.gov.niem.release.niem.proxy.xsd._4.NormalizedString;
 
 public class Ecfv5XmlHelper {

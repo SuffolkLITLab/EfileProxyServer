@@ -293,7 +293,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     }
   }
   
-  private Result<FilingResult, FilingError> serveFilingIfReady(CoreFilingMessageType cfm, 
+  private static Result<FilingResult, FilingError> serveFilingIfReady(CoreFilingMessageType cfm, 
       FilingInformation info, InfoCollector collector, String apiToken) {
 
     ServiceMDEService ss = new ServiceMDEService(ServiceMDEService.WSDL_LOCATION);
