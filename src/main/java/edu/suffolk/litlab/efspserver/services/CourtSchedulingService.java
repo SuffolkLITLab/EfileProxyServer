@@ -6,12 +6,14 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -21,6 +23,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -41,6 +44,7 @@ import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrapp
 import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ReserveCourtDateMessageType;
 import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE;
 import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE_Service;
+import ecfv5.tyler.ecf.v5_0.extensions.common.CourtScheduleType;
 import ecfv5.tyler.ecf.v5_0.extensions.common.FilingAttorneyEntityType;
 import ecfv5.tyler.ecf.v5_0.extensions.common.FilingPartyEntityType;
 import ecfv5.tyler.ecf.v5_0.extensions.common.FilingReferenceType;
@@ -362,36 +366,10 @@ public class CourtSchedulingService {
   @Path("/courts/{court_id}/reserve_date")
   public Response reserveCourtDateSync(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, String paramStr) throws JsonMappingException, JsonProcessingException, DatatypeConfigurationException {
+    log.info("AllParams: " + paramStr);
     JsonMapper mapper = new JsonMapper();
     JsonNode params = mapper.readTree(paramStr); 
     
-    ReserveCourtDateMessageType msg = reserveDateObjFac.createReserveCourtDateMessageType();
-    setupReq(msg, courtId);
-    if (!params.has("doc_id") || !params.get("doc_id").isTextual()) {
-      return Response.status(400).entity("Need to pass doc_id").build();
-    }
-    IdentificationType idType = niemObjFac.createIdentificationType();
-    idType.setId(params.get("doc_id").asText());
-    msg.getDocumentIdentification().add(idType);
-    
-    if (params.has("estimated_duration") || params.has("start_date") || params.has("end_date")) {
-      String estDur = params.get("estimated_duration").asText();
-      Duration dur = proxyObjFac.createDuration();
-      DatatypeFactory df = DatatypeFactory.newInstance();
-      dur.setValue(df.newDuration(estDur));
-      msg.setEstimatedDuration(dur);
-      DateRangeType drt = niemObjFac.createDateRangeType();
-      String startDate = params.get("start_date").asText();
-      drt.setStartDate(Ecfv5XmlHelper.convertDate(LocalDate.ofInstant(Instant.parse(startDate), ZoneId.systemDefault())));
-      String endDate = params.get("start_date").asText();
-      drt.setEndDate(Ecfv5XmlHelper.convertDate(LocalDate.ofInstant(Instant.parse(endDate), ZoneId.systemDefault())));
-      msg.getPotentialStartTimeRange().add(drt);
-    }
-
-    Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort(httpHeaders);
-    if (maybeServ.isEmpty()) {
-      return Response.status(401).build();
-    }
     Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId); 
     if (locationInfo.isEmpty()) {
       return Response.status(404).entity("No court: " + courtId).build(); 
@@ -399,14 +377,67 @@ public class CourtSchedulingService {
     if (!locationInfo.get().allowhearing) {
       return Response.status(400).entity("Court " + courtId + " doesn't allow handling return dates").build();
     }
+
+    ReserveCourtDateMessageType msg = reserveDateObjFac.createReserveCourtDateMessageType();
+    setupReq(msg, courtId);
+    JsonNode docJson = params.get("doc_id");
+    if (isNull(docJson) || !docJson.isTextual()) {
+      return Response.status(400).entity("Need to pass doc_id").build();
+    }
+    IdentificationType idType = niemObjFac.createIdentificationType();
+    idType.setIdentificationID(Ecfv5XmlHelper.convertString(docJson.asText()));
+    msg.getDocumentIdentification().add(idType);
+    
+    JsonNode estDurJson = params.get("estimated_duration");
+    JsonNode afterJson = params.get("range_after");
+    JsonNode beforeJson = params.get("range_before");
+    if (isNull(afterJson) && isNull(estDurJson) && isNull(beforeJson)) {
+      // Ok! Continue without a duration / date
+    } else if (isNull(afterJson) || isNull(estDurJson) || isNull(beforeJson)) {
+      return Response.status(400).entity("Need to pass estimated_duration, range_start, and range_end").build();
+    } else {
+      DateRangeType drt = niemObjFac.createDateRangeType();
+      String startDateTime = afterJson.asText();
+      drt.setStartDate(Ecfv5XmlHelper.convertDate(LocalDateTime.ofInstant(Instant.parse(startDateTime), ZoneId.systemDefault())));
+      String endDateTime = beforeJson.asText();
+      drt.setEndDate(Ecfv5XmlHelper.convertDate(LocalDateTime.ofInstant(Instant.parse(endDateTime), ZoneId.systemDefault())));
+      msg.getPotentialStartTimeRange().add(drt);
+
+      int estDurInSeconds = estDurJson.asInt();
+      Duration dur = proxyObjFac.createDuration();
+      DatatypeFactory df = DatatypeFactory.newInstance();
+      dur.setValue(df.newDuration(estDurInSeconds * 1000)); // argument is in milliseconds
+      msg.setEstimatedDuration(dur);
+    }
+
+    Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort(httpHeaders);
+    if (maybeServ.isEmpty()) {
+      return Response.status(401).build();
+    }
     ReserveCourtDateRequestType req = oasisWrapObjFac.createReserveCourtDateRequestType();
     req.setReserveCourtDateMessage(msg);
+    log.info("full REQ: " + XmlHelper.objectToXmlStrOrError(req, ReserveCourtDateRequestType.class));
     ReserveDateResponseMessageType resp = maybeServ.get().reserveCourtDateSync(req).getReserveDateResponseMessage();
-    log.info("Full resp: " + resp);
+    log.info("Full resp: " + XmlHelper.objectToXmlStrOrError(resp, ReserveDateResponseMessageType.class));
     if (hasError(resp)) {
       return Response.status(400).entity(resp.getMessageStatus()).build();
     }
-    return Response.ok(resp).build();
+    // get all the jxdm augs and get the courtEvents (just the first one?)
+    Stream<List<CourtEventType>> augEvent = resp.getCase().getCaseAugmentationPoint().stream().filter(aug -> {
+      return aug.getValue() instanceof ecfv5.gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType;
+    }).map(aug -> ((ecfv5.gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType) aug.getValue()).getCaseCourtEvent());
+    List<CourtScheduleType> ret = new ArrayList<CourtScheduleType>();
+    augEvent.forEach(events -> {
+      for (CourtEventType event : events) {
+        Stream<List<CourtScheduleType>> bb = event.getCourtEventAugmentationPoint().stream().filter(p -> {
+          // get the tylerCourtEventAugmentation
+          return p.getValue() instanceof ecfv5.tyler.ecf.v5_0.extensions.common.CourtEventAugmentationType;
+          // make a list of each CourtSchedule
+        }).map(p -> ((ecfv5.tyler.ecf.v5_0.extensions.common.CourtEventAugmentationType) p.getValue()).getCourtSchedule());
+        bb.forEach(schedList -> ret.addAll(schedList));
+      }
+    });
+    return Response.ok(ret).build();
   }
     
   private Optional<CourtSchedulingMDE> setupSchedulingPort(HttpHeaders httpHeaders) {
@@ -440,7 +471,7 @@ public class CourtSchedulingService {
     DateType currentDate = Ecfv5XmlHelper.convertDate(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
     cft.setDocumentPostDate(currentDate);
     cft.setCaseCourt(Ecfv5XmlHelper.convertCourtType(courtId));
-    cft.setServiceInteractionProfileCode(Ecfv5XmlHelper.convertNormalized(ServiceHelpers.MDE_PROFILE_CODE));
+    cft.setServiceInteractionProfileCode(Ecfv5XmlHelper.convertNormalized(ServiceHelpers.MDE_PROFILE_CODE_5));
     cft.setSendingMDELocationID(Ecfv5XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
   }
   
