@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -50,16 +51,26 @@ public class CodesService {
   @GET
   @Path("/courts")
   public Response getCourts(@Context HttpHeaders httpHeaders, 
-      @QueryParam("filable_only") String filableOnly) throws SQLException {
-    if (filableOnly != null && filableOnly.equalsIgnoreCase("true")) {
+      @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly,
+      @DefaultValue("false") @QueryParam("with_names") boolean withNames) throws SQLException {
+    if (fileableOnly) {
       // 0 and 1 are special "system" courts that have defaults for all courts.
-      // They aren't available for filing
-      return Response.ok(cd.getFiliableCourts().stream()
-          .filter(c -> !c.equals("0") && !c.equals("1"))
-          .sorted().collect(Collectors.toList())).build();
+      // They aren't available for filing, so filter out of either query here
+      if (withNames) {
+        return Response.ok(cd.getFileableLocationNames().stream()
+            .filter(c -> !c.getCode().equals("0") && !c.getCode().equals("1"))
+            .sorted().collect(Collectors.toList())).build();
+      } else {
+        return Response.ok(cd.getFileableLocations().stream()
+            .filter(c -> !c.equals("0") && !c.equals("1"))
+            .sorted().collect(Collectors.toList())).build();
+      }
     } else {
-      List<String> courts = cd.getAllLocations();
-      return Response.ok(courts).build();
+      if (withNames) {
+        return Response.ok(cd.getLocationNames()).build();
+      } else {
+        return Response.ok(cd.getAllLocations()).build();
+      }
     }
   }
 
@@ -79,11 +90,11 @@ public class CodesService {
   @Path("/courts/{court_id}/categories")
   public Response getCategories(@Context HttpHeaders httpHeaders,
     @PathParam("court_id") String courtId,
-    @QueryParam("filable_only") String filableOnly) throws SQLException {
+    @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly) throws SQLException {
     if (!cd.getAllLocations().contains(courtId)) {
       return Response.status(404).entity("Court does not exist " + courtId).build();
     }
-    if (filableOnly != null && filableOnly.equalsIgnoreCase("true")) {
+    if (fileableOnly) {
       List<CaseCategory> categories = cd.getFilableCaseCategories(courtId);
       return Response.ok(categories).build();
     } else {

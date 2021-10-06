@@ -307,7 +307,7 @@ public class CodeDatabase extends DatabaseInterface {
 
   public List<FilingCode> getFilingType(String courtLocationId, String categoryCode, String typeCode, boolean initial) {
     return safetyWrap(() -> {
-    String specificQuery = FilingCode.getFilingWithCaseInfo(initial);
+      String specificQuery = FilingCode.getFilingWithCaseInfo(initial);
       PreparedStatement specificSt = conn.prepareStatement(specificQuery);
       specificSt.setString(1, courtLocationId);
       specificSt.setString(2, categoryCode);
@@ -758,10 +758,10 @@ public class CodeDatabase extends DatabaseInterface {
     });
   }
 
-  public List<String> getFiliableCourts() {
+  public List<String> getFileableLocations() {
     return safetyWrap(() -> {
       Statement st = conn.createStatement();
-      ResultSet rs = st.executeQuery(CourtLocationInfo.filableQuery());
+      ResultSet rs = st.executeQuery(CourtLocationInfo.fileableQuery());
       List<String> codes = new ArrayList<String>();
       while (rs.next()) {
         codes.add(rs.getString(1));
@@ -769,6 +769,19 @@ public class CodeDatabase extends DatabaseInterface {
       return codes;
     });
   }
+  
+  public List<NameAndCode> getFileableLocationNames() {
+    return safetyWrap(() -> {
+      Statement st = conn.createStatement();
+      ResultSet rs = st.executeQuery(CourtLocationInfo.fileableQuery());
+      List<NameAndCode> codes = new ArrayList<NameAndCode>();
+      while (rs.next()) {
+        codes.add(new NameAndCode(rs.getString(1), rs.getString(2)));
+      }
+      return codes;
+    });
+  }
+
 
   public Optional<CourtLocationInfo> getFullLocationInfo(String courtId) {
     return safetyWrapOpt(() -> {
