@@ -254,7 +254,8 @@ public class FilingReviewService {
     if (user == null) {
       return Response.status(500).entity("Got Tyler submission, but no lead contact?").build(); 
     }
-    List<UUID> filingIds = result.unwrapOrElseThrow().filingIds;
+    FilingResult filingResult = result.unwrapOrElseThrow();
+    List<UUID> filingIds = filingResult.filingIds;
     Optional<String> phoneNumber = Optional.empty();
     if (user != null && user.getContactInfo().getPhoneNumbers().size() > 0) {
       // TODO(brycew-later): should we store multiple phone numbers as backup?
@@ -280,7 +281,7 @@ public class FilingReviewService {
     }
     return result.match(
         err -> Response.serverError().entity(err).build(),
-        n -> Response.ok().build()
+        n -> Response.ok(filingResult).build()
     );
   }
 
