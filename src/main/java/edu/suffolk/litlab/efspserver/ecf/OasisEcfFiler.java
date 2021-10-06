@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.Response;
@@ -369,11 +370,17 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
             + err.getErrorText().getValue());
       }
     }
-    List<IdentificationType> ids = mrmt.getDocumentIdentification();
-    List<String> filingIdStrs = ids.stream().filter((id) -> {
+    BiFunction<IdentificationType, String, Boolean> filterId = (id, idType) -> {
       TextType text = (TextType) id.getIdentificationCategory().getValue();
-      return text.getValue().equalsIgnoreCase("FILINGID");
-    }).map((id) -> id.getIdentificationID().getValue()).collect(Collectors.toList());   
+      return text.getValue().equalsIgnoreCase(idType);
+    };
+    List<IdentificationType> ids = mrmt.getDocumentIdentification();
+    List<String> filingIdStrs = ids.stream().filter(id -> filterId.apply(id, "FILINGID"))
+        .map((id) -> id.getIdentificationID().getValue()).collect(Collectors.toList());   
+    Optional<String> caseId = ids.stream().filter(id -> filterId.apply(id, "CASEID"))
+        .map(id -> id.getIdentificationID().getValue()).findFirst();
+    Optional<String> envelopeId = ids.stream().filter(id -> filterId.apply(id, "ENVELOPEID"))
+        .map(id -> id.getIdentificationID().getValue()).findFirst();
     if (filingIdStrs.isEmpty()) {
       log.error("Couldn't get back the filing id from Tyler!");
       return Result.err(
@@ -384,7 +391,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     }
     log.info(XmlHelper.objectToXmlStrOrError(mrmt, MessageReceiptMessageType.class));
     return Result.ok(new FilingResult(
-        filingIdStrs.stream().map(str -> UUID.fromString(str)).collect(Collectors.toList()), 
+        caseId.get(), envelopeId.get(), filingIdStrs.stream().map(str -> UUID.fromString(str)).collect(Collectors.toList()), 
         info.getLeadContact()));
   }
 
