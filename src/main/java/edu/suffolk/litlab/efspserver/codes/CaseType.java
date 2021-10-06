@@ -10,6 +10,7 @@ public class CaseType {
   public String code;
   public String name;
   public String casecategory;
+  /** Whether the court accepts new cases of this type. */
   public boolean initial;
   public BigDecimal fee;
   public String willfileddate;

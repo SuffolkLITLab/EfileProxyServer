@@ -163,7 +163,7 @@ public class CourtSchedulingService {
     Optional<BigDecimal> maybeAmt = Optional.empty();
     if (allCodes.filings.stream().anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"))) {
       JsonNode jsonAmt = info.getMiscInfo().get("amount_in_controversy");
-      if (jsonAmt == null || !jsonAmt.isBigDecimal()) {
+      if (isNull(jsonAmt) || !jsonAmt.isBigDecimal()) {
         return Response.status(400).entity("Amount in controversy required").build();
       }
       maybeAmt = Optional.of(jsonAmt.decimalValue());
@@ -448,5 +448,9 @@ public class CourtSchedulingService {
     MessageStatusType ms = rt.getMessageStatus();
     String errorCodeText = ms.getMessageHandlingError().getErrorCodeText().getValue();
     return !ms.getMessageContentError().isEmpty() && !(errorCodeText.isBlank() || errorCodeText.equals("0"));
+  }
+  
+  private static boolean isNull(JsonNode j) {
+    return j == null || j.isNull();
   }
 }

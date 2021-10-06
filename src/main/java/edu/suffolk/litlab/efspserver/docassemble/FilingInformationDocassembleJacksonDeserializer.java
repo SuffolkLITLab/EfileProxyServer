@@ -52,7 +52,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     this.classCollector = collector;
   }
 
-  private List<Person> collectPeople(JsonNode topObj,
+  private static List<Person> collectPeople(JsonNode topObj,
       String potentialMember, InfoCollector collector) throws FilingError {
     if (!topObj.has(potentialMember)) {
       return List.of();  // Just an empty list: we don't know if it's required

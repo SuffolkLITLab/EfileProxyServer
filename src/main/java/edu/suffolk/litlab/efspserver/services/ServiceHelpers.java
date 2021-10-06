@@ -41,6 +41,9 @@ public class ServiceHelpers {
    */
   public static final String MDE_PROFILE_CODE = 
       "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0";
+  public static final String MDE_PROFILE_CODE_5 =
+      "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-5.0";
+      
 
   public static String ASSEMBLY_PORT = "/filingassembly/callbacks/FilingAssemblyMDEPort";
   public static String BASE_URL;
