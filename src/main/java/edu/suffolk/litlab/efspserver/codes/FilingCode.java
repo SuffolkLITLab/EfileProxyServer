@@ -65,7 +65,7 @@ public class FilingCode {
                  civilclaimamount, probateestateamount, amountincontroversy, useduedate, 
                  isproposedorder, efspcode, location
           FROM filing 
-          WHERE location=? AND iscourtuseonly='False' AND (casecategory=? OR casetypeid=?) """;
+          WHERE location=? AND iscourtuseonly='False' AND ((casecategory=? AND casetypeid='') OR casetypeid=?) """;
     if (initial) {
       return mainQuery + "AND (filingtype='Initial' OR filingtype='Both')";
     } else {
