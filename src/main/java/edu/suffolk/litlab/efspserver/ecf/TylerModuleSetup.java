@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.xml.ws.Endpoint;
+
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
 import org.apache.cxf.ws.policy.WSPolicyFeature;
 import org.quartz.JobBuilder;
@@ -198,15 +200,15 @@ public class TylerModuleSetup implements EfmModuleSetup {
     OasisEcfWsCallback implementor = new OasisEcfWsCallback(ud, cd, sender);
     String baseLocalUrl = System.getenv("BASE_LOCAL_URL");
     String address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT;
+    /*
     svrFactory = new JaxWsServerFactoryBean();
     svrFactory.setServiceClass(FilingAssemblyMDEPort.class);
     svrFactory.setAddress(address);
     svrFactory.setServiceBean(implementor);
-    svrFactory.setProperties(null);
-    WSPolicyFeature policyFeature = new WSPolicyFeature();
-    policyFeature.setPolicyElements(null);
-    svrFactory.setFeatures(null);
     svrFactory.create();
+    */
+    log.info("Starting NFRC callback server at " + address);
+    Endpoint.publish(address,  implementor);
   }
 
   @Override

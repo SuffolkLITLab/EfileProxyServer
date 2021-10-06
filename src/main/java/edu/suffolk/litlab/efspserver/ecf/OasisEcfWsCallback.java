@@ -29,7 +29,7 @@ import tyler.ecf.extensions.eventcallbackmessage.EventCallbackMessageType;
 import tyler.ecf.extensions.servicecallbackmessage.ServiceCallbackMessageType;
 
 @javax.jws.WebService(
-    serviceName=  "FilingAssemblyMEDService",
+    serviceName=  "FilingAssemblyMDEService",
     portName="FilingAssemblyMDEPort",
     targetNamespace="urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0",
     wsdlLocation="file:src/main/resources/wsdl/filingreview/ECF-4.0-FilingAssemblyMDEService.wsdl",
