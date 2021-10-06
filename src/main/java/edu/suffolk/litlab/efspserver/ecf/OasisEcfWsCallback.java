@@ -28,6 +28,12 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
 import tyler.ecf.extensions.eventcallbackmessage.EventCallbackMessageType;
 import tyler.ecf.extensions.servicecallbackmessage.ServiceCallbackMessageType;
 
+@javax.jws.WebService(
+    serviceName=  "FilingAssemblyMEDService",
+    portName="FilingAssemblyMDEPort",
+    targetNamespace="urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0",
+    wsdlLocation="file:src/main/resources/wsdl/filingreview/ECF-4.0-FilingAssemblyMDEService.wsdl",
+    endpointInterface="oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingAssemblyMDEPort")
 public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   private static Logger log =
       LoggerFactory.getLogger(OasisEcfFiler.class);
@@ -43,7 +49,6 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     this.cd = cd;
     this.msgSender = msgSender;
   }
-
 
   public MessageReceiptMessageType notifyFilingReviewComplete(
       NotifyFilingReviewCompleteRequestMessageType msg) {
