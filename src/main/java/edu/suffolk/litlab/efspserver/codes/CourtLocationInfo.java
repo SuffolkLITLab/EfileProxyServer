@@ -210,9 +210,9 @@ public class CourtLocationInfo {
     return "SELECT name, code FROM location ORDER BY code";
   }
   
-  public static String filableQuery() {
+  public static String fileableQuery() {
     return """
-        SELECT code
+        SELECT name, code
         FROM location
         WHERE initial ILIKE 'true' OR subsequent ILIKE 'true'
         """;
