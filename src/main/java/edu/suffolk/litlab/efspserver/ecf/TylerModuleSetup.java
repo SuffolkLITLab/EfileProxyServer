@@ -3,14 +3,19 @@ package edu.suffolk.litlab.efspserver.ecf;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.CronScheduleBuilder;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.xml.ws.Endpoint;
-
+import org.apache.cxf.endpoint.Endpoint;
+import org.apache.cxf.jaxws.EndpointImpl;
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
 import org.apache.cxf.ws.policy.WSPolicyFeature;
+import org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor;
+import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor;
+import org.apache.wss4j.dom.handler.WSHandlerConstants;
 import org.quartz.JobBuilder;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.JobDetail;
@@ -208,7 +213,17 @@ public class TylerModuleSetup implements EfmModuleSetup {
     svrFactory.create();
     */
     log.info("Starting NFRC callback server at " + address);
-    Endpoint.publish(address,  implementor);
+    EndpointImpl jaxWsEndpoint = (EndpointImpl) javax.xml.ws.Endpoint.publish(address,  implementor);
+    Endpoint cxfEndpoint = jaxWsEndpoint.getServer().getEndpoint();
+    
+    Map<String, Object> inProps = new HashMap<String, Object>();
+    inProps.put(WSHandlerConstants.ACTION, "Signature");
+    inProps.put(WSHandlerConstants.SIG_PROP_FILE, "client_sign.properties");
+    WSS4JInInterceptor wssIn = new WSS4JInInterceptor(inProps);
+    cxfEndpoint.getInInterceptors().add(wssIn);
+    Map<String, Object> outProps = new HashMap<String, Object>();
+    WSS4JOutInterceptor wssOut = new WSS4JOutInterceptor(outProps);
+    cxfEndpoint.getOutInterceptors().add(wssOut);
   }
 
   @Override
