@@ -35,7 +35,7 @@ target/
 hs_err_pid*
 
 # Contains key info
-*.properties
+client_sign.properties
 *.pfx
 .env
 .devenv
