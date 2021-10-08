@@ -1,7 +1,7 @@
 ARG EFM_SUPPORT=tyler
 
 FROM maven:3.8.1-openjdk-15 AS build_tyler
-ONBUILD COPY pom.xml client_sign.properties Suffolk.pfx /usr/src/app/
+ONBUILD COPY pom.xml client_sign.properties quartz.properties Suffolk.pfx /usr/src/app/
 
 FROM maven:3.8.1-openjdk-15 AS build_no_tyler
 ONBUILD COPY pom.xml /usr/src/app/

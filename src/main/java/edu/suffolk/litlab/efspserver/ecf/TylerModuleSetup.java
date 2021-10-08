@@ -217,7 +217,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     Endpoint cxfEndpoint = jaxWsEndpoint.getServer().getEndpoint();
     
     Map<String, Object> inProps = new HashMap<String, Object>();
-    inProps.put(WSHandlerConstants.ACTION, "Signature");
+    //inProps.put(WSHandlerConstants.ACTION, "Signature");
     inProps.put(WSHandlerConstants.SIG_PROP_FILE, "client_sign.properties");
     WSS4JInInterceptor wssIn = new WSS4JInInterceptor(inProps);
     cxfEndpoint.getInInterceptors().add(wssIn);
