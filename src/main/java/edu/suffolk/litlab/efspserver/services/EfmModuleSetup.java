@@ -10,6 +10,9 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Each module has a jurisdiction it's associated too, and a set of courts that it can handle.
+ */
 public interface EfmModuleSetup {
   static Logger log = LoggerFactory.getLogger(EfmModuleSetup.class);
 
@@ -19,6 +22,7 @@ public interface EfmModuleSetup {
   Set<String> getCourts();
   EfmFilingInterface getInterface();
   Optional<EfmRestCallbackInterface> getCallback();
+  String getJurisdiction();
   
   void setupGlobals();
 
