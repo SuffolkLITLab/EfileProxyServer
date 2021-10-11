@@ -103,7 +103,6 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       statusObjFac;
   private oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory
       listObjFac;
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf;
   private tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory detailObjFac;
   private tyler.ecf.extensions.cancelfilingmessage.ObjectFactory cancelObjFac;
   private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory
@@ -118,7 +117,6 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     this.headerKey = login.getHeaderKey();
     statusObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory();
     listObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory();
-    ecfOf = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     detailObjFac = new tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory();
     cancelObjFac = new tyler.ecf.extensions.cancelfilingmessage.ObjectFactory();
     commonObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
@@ -165,9 +163,14 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         resp.getCase().getValue().getCaseTrackingID();
         String catCode = resp.getCase().getValue().getCaseCategoryText().getValue();
         String typeCode = CasesService.getCaseTypeCode(resp.getCase().getValue()).get().getCaseTypeText().getValue(); 
-        List<String> filingCodes = info.getFilings().stream().map(f -> f.getFilingCodeName()).collect(Collectors.toList()); 
-        log.info("Existing cat, type, and filings: " + catCode +","+typeCode+","+filingCodes);
-        allCodes = serializer.serializeCaseCodes(catCode, typeCode, filingCodes, collector);
+        List<Optional<String>> maybeFilingNames = info.getFilings().stream().map(f -> f.getFilingCodeName()).collect(Collectors.toList()); 
+        if (maybeFilingNames.stream().anyMatch(fc -> fc.isEmpty())) {
+          InterviewVariable filingVar = collector.requestVar("court_bundle[i].tyler_filing_type", "What filing type is this?", "text"); 
+          collector.addRequired(filingVar);
+        }
+        List<String> filingNames = maybeFilingNames.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
+        log.info("Existing cat, type, and filings: " + catCode +","+typeCode+","+filingNames);
+        allCodes = serializer.serializeCaseCodes(catCode, typeCode, filingNames, collector);
       } else {
         allCodes = serializer.serializeCaseCodes(info, collector);
       }

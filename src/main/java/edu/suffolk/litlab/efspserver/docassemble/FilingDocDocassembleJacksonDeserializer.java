@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.OptionalService;
-import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
@@ -50,12 +49,14 @@ public class FilingDocDocassembleJacksonDeserializer {
 
     InterviewVariable filingVar = collector.requestVar("tyler_filing_type", "What filing type is this?", "text"); 
     JsonNode filingJson = node.get("tyler_filing_type");
-    if (filingJson == null || filingJson.isNull() || !filingJson.isTextual()) {
-      log.error("filing not present in the info!: " + node);
-      collector.addRequired(filingVar.appendDesc(node.toPrettyString()));
-      throw FilingError.missingRequired(filingVar);
+    Optional<String> filingType = Optional.empty(); 
+    if (filingJson != null && filingJson.isTextual()) {
+      filingType = Optional.of(filingJson.asText());
+    } else {
+      log.warn("filing not present in the info!: " + node);
+      // Optional for non-tyler ones. Will be enforced at the tyler level
+      collector.addOptional(filingVar.appendDesc(node.toPrettyString()));
     }
-    String filingType = filingJson.asText();
 
     // Get: filename
     String fileName = node.get("filename").asText("") + ".pdf";

@@ -36,9 +36,9 @@ public class FilingJeffNetJacksonSerializer extends StdSerializer<FilingDoc> {
     }
     Metadata metadata = new Metadata();
     metadata.filingParties = filingPartyList;
-    // TODO(#52): CONTINUE
-    // Does reg Action need to be here?
-    //metadata.regAction = filingDoc.getFilingCodeName();
+    filingDoc.getFilingCodeName().ifPresent(fc -> {
+      metadata.regAction = fc;
+    });
     gen.writeObjectField("DocumentMetadata", metadata);
 
     DocAttachment docAttachment = new DocAttachment();

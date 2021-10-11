@@ -22,7 +22,7 @@ public class FilingDoc {
   private Optional<LocalDate> dueDate;
   // A valid filing code (complaint, motion, Appearance, Motion, etc.)
   // Sets the RegActionDesc attribute
-  private String filingCodeName;
+  private Optional<String> filingCodeName;
   private UUID id;
 
   
@@ -74,7 +74,7 @@ public class FilingDoc {
 
   private boolean isLeadDoc;
 
-  public FilingDoc(String filingCodeName, String fileName, InputStream fileStream) throws IOException {
+  public FilingDoc(Optional<String> filingCodeName, String fileName, InputStream fileStream) throws IOException {
     this(filingCodeName, fileName, fileStream, List.of(), "");
   }
 
@@ -82,7 +82,7 @@ public class FilingDoc {
    *
    * @throws IOException If the input stream can't be opened or read from
    */
-  public FilingDoc(String filingCodeName, String fileName, InputStream fileStream,
+  public FilingDoc(Optional<String> filingCodeName, String fileName, InputStream fileStream,
       List<PartyId> filingPartyIds,
       String filingComments) throws IOException  {
     this(filingCodeName, fileName, fileStream.readAllBytes(), Optional.empty(), Optional.empty(), Optional.empty(),
@@ -91,7 +91,7 @@ public class FilingDoc {
     this.documentTypeFormatStandardName = ""; // Default to blank: we can't get the confidential code
   }
 
-  public FilingDoc(String filingCodeName, String fileName, InputStream fileStream,
+  public FilingDoc(Optional<String> filingCodeName, String fileName, InputStream fileStream,
       List<PartyId> filingPartyIds,
       String documentTypeFormatStandardName,
       String filingComponentName, FilingTypeType filingAction, boolean isLeadDoc) throws IOException {
@@ -102,7 +102,7 @@ public class FilingDoc {
   }
 
   /** Full constructor, in all it's mess. */
-  public FilingDoc(String filingCodeName, String fileName, 
+  public FilingDoc(Optional<String> filingCodeName, String fileName, 
       byte[] fileContents, 
       Optional<String> userProvidedDescription,
       Optional<String> filingReferenceNum, Optional<LocalDate> dueDate, 
@@ -212,7 +212,7 @@ public class FilingDoc {
     return filingAction;
   }
 
-  public String getFilingCodeName() {
+  public Optional<String> getFilingCodeName() {
     return filingCodeName;
   }
 }
