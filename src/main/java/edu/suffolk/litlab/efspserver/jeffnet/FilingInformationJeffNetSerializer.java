@@ -39,7 +39,7 @@ public class FilingInformationJeffNetSerializer extends StdSerializer<FilingInfo
     Callback callbackObj = new Callback();
     String filingUid = UUID.randomUUID().toString();
     callbackObj.id = filingUid;
-    callbackObj.callbackUrl = ServiceHelpers.REST_CALLBACK_URL.formatted(info.getCourtLocation());
+    callbackObj.callbackUrl = ServiceHelpers.REST_CALLBACK_URL.formatted("louisiana", info.getCourtLocation());
 
     gen.writeStartObject();
     gen.writeObjectField("SendingMDELocationID", mde);
