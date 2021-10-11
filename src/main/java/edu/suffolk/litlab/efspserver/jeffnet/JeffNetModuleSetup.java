@@ -40,6 +40,11 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
   }
 
   @Override
+  public String getJurisdiction() {
+    return "louisiana";
+  }
+
+  @Override
   public Set<String> getCourts() {
     return Set.of("Jefferson");
   }

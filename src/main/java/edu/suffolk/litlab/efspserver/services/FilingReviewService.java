@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -41,15 +42,15 @@ public class FilingReviewService {
 
   private UserDatabase ud;
   private Map<String, InterviewToFilingEntityConverter> converterMap;
-  private Map<String, EfmFilingInterface> filingInterfaces;
-  private Map<String, EfmRestCallbackInterface> callbackInterfaces;
+  private Map<String, Map<String, EfmFilingInterface>> filingInterfaces;
+  private Map<String, Map<String, EfmRestCallbackInterface>> callbackInterfaces;
   private SecurityHub security;
   private OrgMessageSender msgSender;
   public FilingReviewService(
       UserDatabase ud,
       Map<String, InterviewToFilingEntityConverter> converterMap,
-      Map<String, EfmFilingInterface> filingInterfaces,
-      Map<String, EfmRestCallbackInterface> callbackInterfaces,
+      Map<String, Map<String, EfmFilingInterface>> filingInterfaces,
+      Map<String, Map<String, EfmRestCallbackInterface>> callbackInterfaces,
       SecurityHub security,
       OrgMessageSender msgSender) {
     this.converterMap = converterMap;
@@ -61,45 +62,59 @@ public class FilingReviewService {
   }
 
   @GET
-  @Path("/courts")
-  public Response getCourts(@Context HttpHeaders httpHeaders) {
+  @Path("/jurisdictions")
+  public Response getJurisdictions(@Context HttpHeaders httpHeaders) {
     return Response.ok(filingInterfaces.keySet().stream().sorted().collect(Collectors.toList())).build();
   }
 
   @GET
-  @Path("/courts/{court_id}/filings/{filing_id}/status")
+  @Path("/jurisdictions/{jurisdiction}/courts")
+  public Response getCourts(@Context HttpHeaders httpHeaders, 
+      @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly,
+      @DefaultValue("false") @QueryParam("with_names") boolean withNames) throws SQLException {
+    return Response.ok(filingInterfaces.keySet().stream().sorted().collect(Collectors.toList())).build();
+  }
+  
+  @GET
+  @Path("/jurisdictions/{jurisdiction}/courts/{court_id}/filings/{filing_id}/status")
   public Response getFilingStatus(@Context HttpHeaders httpHeaders,
+      @PathParam("jurisdiction") String jurisdiction,
       @PathParam("court_id") String courtId,
       @PathParam("filing_id") String filingId) {
-    if (!filingInterfaces.containsKey(courtId)) {
-      return Response.status(404).entity("Cannot send filing to " + courtId).build();
+    Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
+    if (checked.isErr()) {
+      return checked.unwrapErrOrElseThrow();
     }
+    EfmFilingInterface filer = checked.unwrapOrElseThrow();
 
-    Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
+    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    return filingInterfaces.get(courtId).getFilingStatus(courtId, filingId, activeToken.get());
+    return filer.getFilingStatus(courtId, filingId, activeToken.get());
  }
 
   /** If 0 is passed for court, search all courts. */
   @GET
-  @Path("/courts/{court_id}/filings")
+  @Path("/jurisdictions/{jurisdiction}/courts/{court_id}/filings")
   public Response getFilingList(@Context HttpHeaders httpHeaders,
+      @PathParam("jurisdiction") String jurisdiction,
       @PathParam("court_id") String courtId,
       @QueryParam("user_id") String userId, @QueryParam("start_date") String startStr,
       @QueryParam("end_date") String endStr) {
-    if (!filingInterfaces.containsKey(courtId)) {
-      return Response.status(404).entity("Cannot check for filings in " + courtId).build();
+    Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
+    if (checked.isErr()) {
+      return checked.unwrapErrOrElseThrow();
     }
-    Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
+    EfmFilingInterface filer = checked.unwrapOrElseThrow();
+    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
     try {
       LocalDate startDate = (startStr != null) ? LocalDate.parse(startStr) : null;
       LocalDate endDate = (endStr != null) ? LocalDate.parse(endStr) : null;
-      return filingInterfaces.get(courtId).getFilingList(courtId, userId, startDate, endDate,
+      return filer.getFilingList(courtId, userId, startDate, endDate,
           activeToken.get());
     } catch (DateTimeParseException ex) {
       return Response.status(400).entity(
@@ -108,16 +123,20 @@ public class FilingReviewService {
   }
 
   @GET
-  @Path("/courts/{court_id}/filing/check")
+  @Path("/jurisdictions/{jurisdiction}/courts/{court_id}/filing/check")
   public Response checkFilingForReview(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, String allVars) {
+      @PathParam("jurisdiction") String jurisdiction,
+      @PathParam("court_id") String courtId, 
+      String allVars) {
     MediaType mediaType = httpHeaders.getMediaType();
     log.trace("Checking a filing: Media type: " + mediaType);
     log.trace("Court id: " + courtId);
-    if (!filingInterfaces.containsKey(courtId)) {
-      return Response.status(404).entity("Cannot send filing to " + courtId).build();
+    Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
+    if (checked.isErr()) {
+      return checked.unwrapErrOrElseThrow();
     }
-    Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
+    EfmFilingInterface filer = checked.unwrapOrElseThrow();
+    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
@@ -132,7 +151,7 @@ public class FilingReviewService {
     }
     FilingInformation info = res.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
-    Result<NullValue, FilingError> resEfm = filingInterfaces.get(courtId).checkFiling(info, activeToken.get(), collector);
+    Result<NullValue, FilingError> resEfm = filer.checkFiling(info, activeToken.get(), collector);
     if (resEfm.isErr()) {
       log.warn(resEfm.toString());
       return Response.status(422).entity(collector.jsonSummary()).build();
@@ -141,16 +160,20 @@ public class FilingReviewService {
   }
 
   @POST
-  @Path("/courts/{court_id}/filing/fees")
+  @Path("/jurisdictions/{jurisdiction}/courts/{court_id}/filing/fees")
   public Response calculateFilingFees(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, String allVars) {
+      @PathParam("jurisdiction") String jurisdiction,
+      @PathParam("court_id") String courtId, 
+      String allVars) {
     MediaType mediaType = httpHeaders.getMediaType();
     log.trace("Checking a filing: Media type: " + mediaType);
     log.trace("Court id: " + courtId);
-    if (!filingInterfaces.containsKey(courtId)) {
-      return Response.status(404).entity("Cannot send filing to " + courtId).build();
+    Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
+    if (checked.isErr()) {
+      return checked.unwrapErrOrElseThrow();
     }
-    Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
+    EfmFilingInterface filer = checked.unwrapOrElseThrow();
+    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
@@ -164,23 +187,27 @@ public class FilingReviewService {
     }
     FilingInformation info = res.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
-    Result<Response, FilingError> fees = filingInterfaces.get(courtId).getFilingFees(info, activeToken.get());
+    Result<Response, FilingError> fees = filer.getFilingFees(info, activeToken.get());
     return fees.match(
         err -> Response.status(400).entity(err.toJson()).build(),
         respon -> respon);
   }
 
   @GET
-  @Path("/courts/{court_id}/filing/servicetypes")
+  @Path("/jurisdictions/{jurisdiction}/courts/{court_id}/filing/servicetypes")
   public Response getServiceTypes(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, String allVars) {
+      @PathParam("jurisdiction") String jurisdiction,
+      @PathParam("court_id") String courtId, 
+      String allVars) {
     MediaType mediaType = httpHeaders.getMediaType();
     log.trace("Checking a filing: Media type: " + mediaType);
     log.trace("Court id: " + courtId);
-    if (!filingInterfaces.containsKey(courtId)) {
-      return Response.status(404).entity("Cannot send filing to " + courtId).build();
+    Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
+    if (checked.isErr()) {
+      return checked.unwrapErrOrElseThrow();
     }
-    Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
+    EfmFilingInterface filer = checked.unwrapOrElseThrow();
+    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
@@ -194,7 +221,7 @@ public class FilingReviewService {
     }
     FilingInformation info = res.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
-    Result<Response, FilingError> fees = filingInterfaces.get(courtId).getServiceTypes(info, activeToken.get());
+    Result<Response, FilingError> fees = filer.getServiceTypes(info, activeToken.get());
     return fees.match(
         err -> Response.status(400).entity(err.toJson()).build(),
         respon -> respon);
@@ -202,50 +229,66 @@ public class FilingReviewService {
 
 
   @GET
-  @Path("/courts/{court_id}/policy")
+  @Path("/jurisdictions/{jurisdiction}/courts/{court_id}/policy")
   public Response getPolicy(@Context HttpHeaders httpHeaders,
+      @PathParam("jurisdiction") String jurisdiction,
       @PathParam("court_id") String courtId) {
-    Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
+    Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
+    if (checked.isErr()) {
+      return checked.unwrapErrOrElseThrow();
+    }
+    EfmFilingInterface filer = checked.unwrapOrElseThrow();
+    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    if (!filingInterfaces.containsKey(courtId)) {
-      return Response.status(404).entity("Court " + courtId + " doesn't exist").build();
-    }
 
-    return filingInterfaces.get(courtId).getPolicy(courtId, activeToken.get());
+    return filer.getPolicy(courtId, activeToken.get());
   }
 
   @POST
-  @Path("/courts/{court_id}/filing/status")
+  @Path("/jurisdictions/{jurisdiction}/courts/{court_id}/filing/status")
   public Response filingUpdateWebhook(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, String statusReport) {
+      @PathParam("jurisdiction") String jurisdiction, 
+      @PathParam("court_id") String courtId, 
+      String statusReport) {
     MediaType mediaType = httpHeaders.getMediaType();
     log.trace("Got callback for filing! media type: " + mediaType + ", court id: " + courtId);
     log.trace("Everything they sent: " + statusReport);
-
-    if (!callbackInterfaces.containsKey(courtId)) {
-      return Response.status(404).entity("Court " + courtId + " doesn't exist").build();
+    
+    if (!callbackInterfaces.containsKey(jurisdiction)) {
+      return Response.status(404).entity("Jurisdiction " + jurisdiction + " doesn't exist").build();
     }
 
-    return callbackInterfaces.get(courtId).statusCallback(httpHeaders, statusReport);
+    if (!callbackInterfaces.get(jurisdiction).containsKey(courtId)) {
+      return Response.status(404).entity("Court " + courtId + " in " + jurisdiction + " doesn't exist").build();
+    }
+
+    return callbackInterfaces.get(jurisdiction).get(courtId).statusCallback(httpHeaders, statusReport);
   }
 
   @POST
-  @Path("/courts/{court_id}/filings")
+  @Path("/jurisdictions/{jurisdiction}/courts/{court_id}/filings")
   public Response submitFilingForReview(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, String allVars) {
+      @PathParam("jurisdiction") String jurisdiction, 
+      @PathParam("court_id") String courtId, 
+      String allVars) {
     MediaType mediaType = httpHeaders.getMediaType();
+    Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
+    if (checked.isErr()) {
+      return checked.unwrapErrOrElseThrow();
+    }
+    EfmFilingInterface filer = checked.unwrapOrElseThrow();
     Optional<AtRest> atRest = security.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
-    Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
-    Result<FilingInformation, Response> maybeInfo = parseFiling(httpHeaders, allVars, courtId, mediaType);
+    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
+    Result<FilingInformation, Response> maybeInfo = parseFiling(httpHeaders, allVars, filer, courtId, mediaType);
     if (maybeInfo.isErr()) {
       return maybeInfo.unwrapErrOrElseThrow();
     }
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
     Result<FilingResult, FilingError> result =
-        filingInterfaces.get(courtId).sendFiling(info, activeToken.get(), EfmFilingInterface.ApiChoice.FileApi);
+        filer.sendFiling(info, activeToken.get(), EfmFilingInterface.ApiChoice.FileApi);
     if (result.isErr()) {
       return Response.status(500).entity(result.unwrapErrOrElseThrow().toJson()).build();
     }
@@ -286,23 +329,30 @@ public class FilingReviewService {
   }
 
   @POST
-  @Path("/courts/{court_id}/filings/serve")
+  @Path("/jurisdictions/{jurisdictions}/courts/{court_id}/filings/serve")
   public Response serveFiling(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, String allVars) {
+      @PathParam("jurisdiction") String jurisdiction,
+      @PathParam("court_id") String courtId, 
+      String allVars) {
     MediaType mediaType = httpHeaders.getMediaType();
+    Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
+    if (checked.isErr()) {
+      return checked.unwrapErrOrElseThrow();
+    }
+    EfmFilingInterface filer = checked.unwrapOrElseThrow();
     Optional<AtRest> atRest = security.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
-    Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
+    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty() || atRest.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    Result<FilingInformation, Response> maybeInfo = parseFiling(httpHeaders, allVars, courtId, mediaType);
+    Result<FilingInformation, Response> maybeInfo = parseFiling(httpHeaders, allVars, filer, courtId, mediaType);
     if (maybeInfo.isErr()) {
       return maybeInfo.unwrapErrOrElseThrow();
     }
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
     Result<FilingResult, FilingError> result =
-        filingInterfaces.get(courtId).sendFiling(info, activeToken.get(), EfmFilingInterface.ApiChoice.ServiceApi);
+        filer.sendFiling(info, activeToken.get(), EfmFilingInterface.ApiChoice.ServiceApi);
     if (result.isErr()) {
       return Response.status(500).entity(result.unwrapErrOrElseThrow().toJson()).build();
     }
@@ -310,18 +360,10 @@ public class FilingReviewService {
   }
 
   private Result<FilingInformation, Response> parseFiling(HttpHeaders httpHeaders, String allVars,
-      String courtId, MediaType mediaType) {
+      EfmFilingInterface filer, String courtId, MediaType mediaType) {
     log.trace("Media type: " + mediaType);
     log.trace("Court id: " + courtId);
     log.trace("All vars: " + allVars.substring(0, Integer.min(100, allVars.length() - 1)));
-    Optional<AtRest> atRest = security.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
-    Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
-    if (activeToken.isEmpty() || atRest.isEmpty()) {
-      return Result.err(Response.status(401).entity("Not logged in to file with " + courtId).build());
-    }
-    if (!filingInterfaces.containsKey(courtId)) {
-      return Result.err(Response.status(404).entity("Cannot send filing to " + courtId).build());
-    }
     if (!converterMap.containsKey(mediaType.toString())) {
       return Result.err(Response.status(415).entity("We only support " + converterMap.keySet()).build());
     }
@@ -336,47 +378,58 @@ public class FilingReviewService {
   }
 
   @GET
-  @Path("/courts/{court_id}/filings/{filing_id}")
+  @Path("/jurisdictions/{jurisdiction}/courts/{court_id}/filings/{filing_id}")
   public Response getFilingDetails(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, @PathParam("filing_id") String filingId) {
-    if (!filingInterfaces.containsKey(courtId)) {
-      return Response.status(404).entity("Cannot send filing to " + courtId).build();
+      @PathParam("jurisdiction") String jurisdiction, 
+      @PathParam("court_id") String courtId, 
+      @PathParam("filing_id") String filingId) {
+    Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
+    if (checked.isErr()) {
+      return checked.unwrapErrOrElseThrow();
     }
-    Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
+    EfmFilingInterface filer = checked.unwrapOrElseThrow();
+    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    return filingInterfaces.get(courtId).getFilingDetails(courtId, filingId, activeToken.get());
+    return filer.getFilingDetails(courtId, filingId, activeToken.get());
   }
 
   @GET
-  @Path("/courts/{court_id}/filings/{filing_id}/service/{contact_id}")
+  @Path("/jurisdicitons/{jurisdicition}/courts/{court_id}/filings/{filing_id}/service/{contact_id}")
   public Response getFilingService(@Context HttpHeaders httpHeaders,
+      @PathParam("jurisdiction") String jurisdiction,
       @PathParam("court_id") String courtId,
       @PathParam("filing_id") String filingId,
       @PathParam("contact_id") String contactId) {
-    if (!filingInterfaces.containsKey(courtId)) {
-      return Response.status(404).entity("Cannot send filing to " + courtId).build();
+    Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
+    if (checked.isErr()) {
+      return checked.unwrapErrOrElseThrow();
     }
-    Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
+    EfmFilingInterface filer = checked.unwrapOrElseThrow();
+    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    return filingInterfaces.get(courtId).getFilingService(courtId, filingId, contactId, activeToken.get());
+    return filer.getFilingService(courtId, filingId, contactId, activeToken.get());
   }
 
   @DELETE
-  @Path("/courts/{court_id}/filings/{filing_id}")
+  @Path("/jurisdictions/{jurisdiction}/courts/{court_id}/filings/{filing_id}")
   public Response cancelFiling(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, @PathParam("filing_id") String filingId) {
-    if (!filingInterfaces.containsKey(courtId)) {
-      return Response.status(404).entity("Cannot send filing to " + courtId).build();
+      @PathParam("jurisdiction") String jurisdiction,
+      @PathParam("court_id") String courtId, 
+      @PathParam("filing_id") String filingId) {
+    Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
+    if (checked.isErr()) {
+      return checked.unwrapErrOrElseThrow();
     }
-    Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
+    EfmFilingInterface filer = checked.unwrapOrElseThrow();
+    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    return filingInterfaces.get(courtId).cancelFiling(courtId, filingId, activeToken.get());
+    return filer.cancelFiling(courtId, filingId, activeToken.get());
   }
 
   private Optional<String> getActiveToken(HttpHeaders httpHeaders, String orgHeaderKey) {
@@ -391,6 +444,17 @@ public class FilingReviewService {
       return Optional.empty();
     }
     return Optional.of(orgToken);
+  }
+  
+  private Result<EfmFilingInterface, Response> checkFilingInterfaces(String jurisdictionId, String courtId) {
+    if (!filingInterfaces.containsKey(jurisdictionId)) {
+      return Result.err(Response.status(404).entity("Jurisdiction " + jurisdictionId + " doesn't exist").build());
+    }
+
+    if (!filingInterfaces.get(jurisdictionId).containsKey(courtId)) {
+      return Result.err(Response.status(404).entity("Cannot send filing to " + courtId).build());
+    }
+    return Result.ok(filingInterfaces.get(jurisdictionId).get(courtId));
   }
 
 }

@@ -75,18 +75,22 @@ public class EfspServer {
       System.exit(2);
     }
 
-    Map<String, EfmFilingInterface> filingMap = new HashMap<String, EfmFilingInterface>();
-    Map<String, EfmRestCallbackInterface> callbackMap = new HashMap<String, EfmRestCallbackInterface>();
+    Map<String, Map<String, EfmFilingInterface>> filingMap = new HashMap<String, Map<String, EfmFilingInterface>>();
+    Map<String, Map<String, EfmRestCallbackInterface>> callbackMap = new HashMap<String, Map<String, EfmRestCallbackInterface>>();
     for (EfmModuleSetup mod : modules) {
       mod.preSetup();
       mod.setupGlobals();
       Set<String> courts = mod.getCourts();
       EfmFilingInterface filer = mod.getInterface();
       Optional<EfmRestCallbackInterface> maybeCallback = mod.getCallback();
+      Map<String, EfmFilingInterface> courtToFiler = new HashMap<String, EfmFilingInterface>();
+      Map<String, EfmRestCallbackInterface> courtToCallback = new HashMap<String, EfmRestCallbackInterface>();
       for (String court : courts) {
-        filingMap.put(court, filer);
-        maybeCallback.ifPresent(call -> callbackMap.put(court, call));
+        courtToFiler.put(court, filer);
+        maybeCallback.ifPresent(call -> courtToCallback.put(court, call));
       }
+      callbackMap.put(mod.getJurisdiction(), courtToCallback);
+      filingMap.put(mod.getJurisdiction(), courtToFiler);
     }
 
 

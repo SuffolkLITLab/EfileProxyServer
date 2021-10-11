@@ -12,12 +12,10 @@ import java.util.Set;
 import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
-import org.apache.cxf.ws.policy.WSPolicyFeature;
 import org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor;
 import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor;
 import org.apache.wss4j.dom.handler.WSHandlerConstants;
 import org.quartz.JobBuilder;
-import org.quartz.SimpleScheduleBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -36,7 +34,6 @@ import edu.suffolk.litlab.efspserver.services.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.services.UpdateCodeVersions;
-import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingAssemblyMDEPort;
 
 public class TylerModuleSetup implements EfmModuleSetup {
   private static Logger log =
@@ -54,7 +51,6 @@ public class TylerModuleSetup implements EfmModuleSetup {
   private final String togaUrl;
   private UserDatabase ud;
   private OrgMessageSender sender;
-  private JaxWsServerFactoryBean svrFactory;
   private Scheduler scheduler;
 
   public static class CreationArgs {
@@ -106,6 +102,12 @@ public class TylerModuleSetup implements EfmModuleSetup {
       return Optional.empty();
     }
     args.tylerEndpoint = maybeTylerEndpoint.get();
+    
+    Optional<String> maybeTylerJurisdiction = EfmModuleSetup.GetEnv("TYLER_JURISDICTION");
+    if (maybeTylerJurisdiction.isEmpty()) {
+      log.warn("If using Tyler, TYLER_JURISDICTION needs to be the defined. Did you forget to source .env?");
+      return Optional.empty();
+    }
 
     args.dbUser = EfmModuleSetup.GetEnv("POSTGRES_USER").orElse("postgres");
     Optional<String> maybeDbPassword = EfmModuleSetup.GetEnv("POSTGRES_PASSWORD");
@@ -176,6 +178,11 @@ public class TylerModuleSetup implements EfmModuleSetup {
   }
 
   @Override
+  public String getJurisdiction() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+  @Override
   public Set<String> getCourts() {
     try {
       Set<String> allCourts = new HashSet<String>(cd.getAllLocations());
@@ -236,5 +243,4 @@ public class TylerModuleSetup implements EfmModuleSetup {
       }
     }
   }
-
 }
