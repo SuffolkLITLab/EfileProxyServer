@@ -57,7 +57,7 @@ public class ServiceHelpers {
     }
     BASE_URL = env_url;
     SERVICE_URL = BASE_URL + ASSEMBLY_PORT;
-    REST_CALLBACK_URL = BASE_URL + "/filingreview/courts/%s/filing/status"; 
+    REST_CALLBACK_URL = BASE_URL + "/filingreview/jurisdictions/%s/courts/%s/filing/status"; 
 
     tylerToHttp = new HashMap<String, Integer>();
     // First three are ones that the proxy should handle well. If we don't then it's our fault.
