@@ -94,7 +94,7 @@ public class JeffNetFiler implements EfmFilingInterface {
       log.debug("Final Json object: " + finalStr);
 
       log.info("Sending to " + this.filingEndpoint);
-      log.info("They'll send back to " + ServiceHelpers.REST_CALLBACK_URL.formatted(info.getCourtLocation()));
+      log.info("They'll send back to " + ServiceHelpers.REST_CALLBACK_URL.formatted("louisiana", info.getCourtLocation()));
       HttpClient client = HttpClient.newBuilder().build();
       HttpRequest request = HttpRequest.newBuilder()
           .POST(HttpRequest.BodyPublishers.ofString(finalStr))
