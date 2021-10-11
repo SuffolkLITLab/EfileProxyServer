@@ -125,7 +125,8 @@ public class JeffNetFiler implements EfmFilingInterface {
 
   @Override
   public Result<NullValue, FilingError> checkFiling(FilingInformation info, String apiToken, InfoCollector collector) {
-    return null;
+    // No extra checking beyond the original interview parsing
+    return Result.nullOk();
   }
 
   @Override
