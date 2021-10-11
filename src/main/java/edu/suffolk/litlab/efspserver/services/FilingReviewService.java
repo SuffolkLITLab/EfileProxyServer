@@ -70,9 +70,8 @@ public class FilingReviewService {
   @GET
   @Path("/jurisdictions/{jurisdiction}/courts")
   public Response getCourts(@Context HttpHeaders httpHeaders, 
-      @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly,
-      @DefaultValue("false") @QueryParam("with_names") boolean withNames) throws SQLException {
-    return Response.ok(filingInterfaces.keySet().stream().sorted().collect(Collectors.toList())).build();
+      @PathParam("jurisdiction") String jurisdiction) throws SQLException {
+    return Response.ok(filingInterfaces.get(jurisdiction).keySet().stream().sorted().collect(Collectors.toList())).build();
   }
   
   @GET
