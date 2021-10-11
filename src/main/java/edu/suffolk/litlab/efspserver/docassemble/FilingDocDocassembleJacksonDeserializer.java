@@ -55,7 +55,7 @@ public class FilingDocDocassembleJacksonDeserializer {
     } else {
       log.warn("filing not present in the info!: " + node);
       // Optional for non-tyler ones. Will be enforced at the tyler level
-      collector.addOptional(filingVar.appendDesc(node.toPrettyString()));
+      collector.addOptional(filingVar.appendDesc((node.has("instanceName")) ? node.get("instanceName").asText("?") : "?"));
     }
 
     // Get: filename

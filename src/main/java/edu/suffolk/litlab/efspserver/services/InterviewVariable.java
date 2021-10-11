@@ -62,7 +62,7 @@ public class InterviewVariable {
                "datatype": "%s",
                "choices": %s
              }
-             """.formatted(name, description, datatype, choicesStr);
+             """.formatted(name, description.replace("\"", "\\\""), datatype, choicesStr);
   }
   
   @Override
