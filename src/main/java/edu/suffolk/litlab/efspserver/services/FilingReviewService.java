@@ -114,12 +114,12 @@ public class FilingReviewService {
     MediaType mediaType = httpHeaders.getMediaType();
     log.trace("Checking a filing: Media type: " + mediaType);
     log.trace("Court id: " + courtId);
+    if (!filingInterfaces.containsKey(courtId)) {
+      return Response.status(404).entity("Cannot send filing to " + courtId).build();
+    }
     Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
-    }
-    if (!filingInterfaces.containsKey(courtId)) {
-      return Response.status(404).entity("Cannot send filing to " + courtId).build();
     }
     if (!converterMap.containsKey(mediaType.toString())) {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
@@ -147,12 +147,12 @@ public class FilingReviewService {
     MediaType mediaType = httpHeaders.getMediaType();
     log.trace("Checking a filing: Media type: " + mediaType);
     log.trace("Court id: " + courtId);
+    if (!filingInterfaces.containsKey(courtId)) {
+      return Response.status(404).entity("Cannot send filing to " + courtId).build();
+    }
     Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
-    }
-    if (!filingInterfaces.containsKey(courtId)) {
-      return Response.status(404).entity("Cannot send filing to " + courtId).build();
     }
     if (!converterMap.containsKey(mediaType.toString())) {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
@@ -177,12 +177,12 @@ public class FilingReviewService {
     MediaType mediaType = httpHeaders.getMediaType();
     log.trace("Checking a filing: Media type: " + mediaType);
     log.trace("Court id: " + courtId);
+    if (!filingInterfaces.containsKey(courtId)) {
+      return Response.status(404).entity("Cannot send filing to " + courtId).build();
+    }
     Optional<String> activeToken = getActiveToken(httpHeaders, filingInterfaces.get(courtId).getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
-    }
-    if (!filingInterfaces.containsKey(courtId)) {
-      return Response.status(404).entity("Cannot send filing to " + courtId).build();
     }
     if (!converterMap.containsKey(mediaType.toString())) {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
