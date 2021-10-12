@@ -11,7 +11,6 @@ import java.util.Set;
 
 import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.jaxws.EndpointImpl;
-import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
 import org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor;
 import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor;
 import org.apache.wss4j.dom.handler.WSHandlerConstants;
@@ -42,6 +41,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
   private final String dbUser;
   private final String dbPassword;
   private final String tylerEndpoint;
+  private final String tylerJurisdiction;
   private final String x509Password;
 
   // Payments Stuff
@@ -57,6 +57,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     public String dbUser;
     public String dbPassword;
     public String tylerEndpoint;
+    public String tylerJurisdiction;
     public String x509Password;
     public String togaKey;
     public String togaUrl;
@@ -80,6 +81,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     this.dbUser = args.dbUser;
     this.dbPassword = args.dbPassword;
     this.tylerEndpoint = args.tylerEndpoint;
+    this.tylerJurisdiction = args.tylerJurisdiction;
     this.x509Password = args.x509Password;
     this.togaKey = args.togaKey;
     this.togaUrl = args.togaUrl;
@@ -108,6 +110,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
       log.warn("If using Tyler, TYLER_JURISDICTION needs to be the defined. Did you forget to source .env?");
       return Optional.empty();
     }
+    args.tylerJurisdiction = maybeTylerJurisdiction.get();
 
     args.dbUser = EfmModuleSetup.GetEnv("POSTGRES_USER").orElse("postgres");
     Optional<String> maybeDbPassword = EfmModuleSetup.GetEnv("POSTGRES_PASSWORD");
@@ -180,7 +183,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
   @Override
   public String getJurisdiction() {
     // TODO Auto-generated method stub
-    return null;
+    return tylerJurisdiction;
   }
   @Override
   public Set<String> getCourts() {
