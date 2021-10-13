@@ -92,8 +92,7 @@ public class EfspServer {
       callbackMap.put(mod.getJurisdiction(), courtToCallback);
       filingMap.put(mod.getJurisdiction(), courtToFiler);
     }
-
-
+    
     String baseLocalUrl = System.getenv("BASE_LOCAL_URL"); //"https://0.0.0.0:9000";
     cd.setAutocommit(true);
     ud.setAutocommit(true);
@@ -101,34 +100,32 @@ public class EfspServer {
     md.setAutocommit(true);
     SecurityHub security = new SecurityHub(ld);
 
-    sf = new JAXRSServerFactoryBean();
-    sf.setResourceClasses(AdminUserService.class,
-        FilingReviewService.class,
-        FirmAttorneyAndServiceService.class,
-        PaymentsService.class,
-        MessageSettingsService.class,
-        CasesService.class,
-        CourtSchedulingService.class,
-        CodesService.class);
-    sf.setResourceProvider(AdminUserService.class,
-        new SingletonResourceProvider(new AdminUserService(security, cd)));
-    sf.setResourceProvider(FilingReviewService.class,
+    Map<Class<?>, SingletonResourceProvider> services = new HashMap<Class<?>, SingletonResourceProvider>();
+    services.put(AdminUserService.class, new SingletonResourceProvider(new AdminUserService(security, cd)));
+    services.put(FilingReviewService.class,
         new SingletonResourceProvider(new FilingReviewService(
             ud, converterMap, filingMap, callbackMap, security, sender)));
-    sf.setResourceProvider(FirmAttorneyAndServiceService.class,
+    services.put(FirmAttorneyAndServiceService.class,
         new SingletonResourceProvider(new FirmAttorneyAndServiceService(security, cd)));
     // TODO(brycew-later): refactor to reduce the number of services, or make just "Tyler services" and "JeffNet services" Providers
-    sf.setResourceProvider(PaymentsService.class,
-        new SingletonResourceProvider(new PaymentsService(security, GetEnv("TOGA_CLIENT_KEY").get(), GetEnv("TOGA_URL").get())));
-    sf.setResourceProvider(CasesService.class,
+    if (GetEnv("TOGA_CLIENT_KEY").isPresent() && GetEnv("TOGA_URL").isPresent()) {
+      services.put(PaymentsService.class,
+          new SingletonResourceProvider(new PaymentsService(security, GetEnv("TOGA_CLIENT_KEY").get(), GetEnv("TOGA_URL").get())));
+    }
+    services.put(CasesService.class,
         new SingletonResourceProvider(new CasesService(security, cd)));
-    sf.setResourceProvider(CodesService.class,
+    services.put(CodesService.class,
         new SingletonResourceProvider(new CodesService(cd)));
-    sf.setResourceProvider(CourtSchedulingService.class,
+    services.put(CourtSchedulingService.class,
         new SingletonResourceProvider(new CourtSchedulingService(converterMap, security, cd)));
-    sf.setResourceProvider(MessageSettingsService.class,
+    services.put(MessageSettingsService.class,
         new SingletonResourceProvider(new MessageSettingsService(security, md)));
 
+    sf = new JAXRSServerFactoryBean();
+    sf.setResourceClasses(new ArrayList<Class<?>>(services.keySet()));
+    for (Map.Entry<Class<?>, SingletonResourceProvider> prov : services.entrySet()) {
+      sf.setResourceProvider(prov.getKey(), prov.getValue());
+    }
     Map<Object, Object> extensionMappings = new HashMap<Object, Object>();
     extensionMappings.put("xml", MediaType.APPLICATION_XML);
     extensionMappings.put("json", MediaType.APPLICATION_JSON);
