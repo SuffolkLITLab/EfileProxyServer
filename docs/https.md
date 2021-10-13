@@ -32,6 +32,7 @@ First, turning the certificate into something that Java can consume, namely, a J
 * https://community.datarobot.com/t5/data-prep/how-to-convert-crt-and-key-to-jks-file/td-p/6342
 
 The commands below are how we did it
+
 ```bash
 # You already have a
 # * efile_suffolklitlab_org.ca-bundle

@@ -1,9 +1,10 @@
 ARG EFM_SUPPORT=tyler
 
-FROM maven:3.8.1-openjdk-15 AS build_tyler
+# TODO(brycew): consider http://whichjdk.com/#adoptium-eclipse-temurin
+FROM maven:3.8-openjdk-17 AS build_tyler
 ONBUILD COPY pom.xml client_sign.properties quartz.properties Suffolk.pfx /usr/src/app/
 
-FROM maven:3.8.1-openjdk-15 AS build_no_tyler
+FROM maven:3.8-openjdk-17 AS build_no_tyler
 ONBUILD COPY pom.xml /usr/src/app/
 
 FROM build_${EFM_SUPPORT}

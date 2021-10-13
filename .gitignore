@@ -38,6 +38,7 @@ hs_err_pid*
 client_sign.properties
 *.pfx
 .env
+.da_env
 .devenv
 .bash_env
 .checkstyle

@@ -1,5 +1,14 @@
 # WSDL2Java: Generating the SOAP code
 
+The proxy server uses SOAP to communicate with Tyler's Efiling Manager servers (EFM). 
+SOAP describes the procedure calls that can be made to the server using XML. The SOAP library
+that we use, CXF, converts these procedure calls, their arguments, and connections to the EFM,
+into generated Java classes that the proxy can use and call.
+
+It's possible (abiet unlikely) for Tyler to update some of these procedure calls or the arguments
+that they take, meaning our generated java classes will be out of date, and we'll need to update
+them. This document tries to capture the steps needed to update those generated classes.
+
 Tbh, this is a mess. The rough steps are below.
 
 NOTE: the exact links to the SOAP services in this doc aren't really exact: they're examples.

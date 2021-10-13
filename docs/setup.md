@@ -4,7 +4,8 @@ There are two different ways of running and developing on the proxy server:
 
 1. Through Docker / Docker-Compose. This is how the server will run in production,
    so you do need to have this setup.
-2. Locally on your own machine. These instructions are setup for Ubuntu / Windows Subsystem for Linux,
+2. Locally on your own machine. This is not recommended or supported.
+   These instructions are setup for Ubuntu / Windows Subsystem for Linux,
    but should be amenable for Macs.
 
 ## Docker
@@ -14,7 +15,7 @@ There are two different ways of running and developing on the proxy server:
 The official instructions are [on the docker site itself](https://docs.docker.com/engine/install/ubuntu/).
 If those disagree with what's here, then go with those!
 
-```
+```bash
 sudo apt-get install \
     apt-transport-https \
     ca-certificates \
@@ -38,23 +39,34 @@ newgrp docker
 
 Checkout the main [docker compose](https://docs.docker.com/compose/install/) 
 
-```
+```bash
 sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 ```
+
+### Docassemble
+
+We've also included a docker-compose file that spins up a docassemble server as well. You can 
+use it by:
+
+```bash
+docker-compose -f docker-docassemble.yml
+```
+
+You will need to add some config values in docassemble's config to allow the docassemble server to communicate with the proxy, you can see [config.example](config.example) for documentation on those values. 
 
 ## Local Development 
 
 Start with installing everything.
 
-```
+```bash
 sudo add-apt-repository ppa:openjdk-r/ppa
 sudo apt update
 sudo apt install openjdk-15-jdk
 ```
 
 We are using CXF as the SOAP client which supports up to JDK 15. Maybe could go back to version 11
-```
+```bash
 sudo apt install maven
 git clone git@github.com:SuffolkLITLab/EfileProxyServer.git
 git clone git@github.com:SuffolkLITLab/docassemble-EFSPIntegration.git # (this might get merged into Assembly Line eventually)
@@ -65,25 +77,14 @@ not a full IDE.
 
 To run all of the unit tests in the project, use the following:
 
-```
+```bash
 cd EfileProxyServer
 mvn test 
 ```
-
  
 ## Contents of .env file
-```
-PATH_TO_KEYSTORE= the actual cert from tyler
-X509_PASSWORD= to unlock PFX
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD= 
-POSTGRES_URL=db
-POSTGRES_PORT=5432
-POSTGRES_CODES_DB=tyler_efm_codes
-POSTGRES_USER_DB=user_sumbissions
-JEFFERSON_ENDPOINT=https://ssl.jpclerkofcourt.us/JeffNetAPI/api/LAForms/CoreFiling
-JEFFERSON_KEY=
-```
+
+See env.example for the most up to date documentation for this.
 
 Copy in `Suffolk.pfx` and `client_sign.properties` (also has the password that is in the .env file)
 docker-compose up (this runs both servers and docassemble) (if you want to run in the background, you can add -d flag)
@@ -112,7 +113,7 @@ There is a Jinja2 library for Java--it's maintained by HubSpot.
 
 To install new libraries, we edit pom.xml in the root
 Here is the installer for sendgrid:
-```
+```xml
         <dependency>
             <groupId>com.sendgrid</groupId>
             <artifactId>sendgrid-java</artifactId>
@@ -120,7 +121,7 @@ Here is the installer for sendgrid:
         </dependency>
 ```
 And for [twilio](https://www.twilio.com/docs/libraries/java):
-```
+```xml
 <dependency>
   <groupId>com.twilio.sdk</groupId>
   <artifactId>twilio</artifactId>
@@ -130,7 +131,7 @@ And for [twilio](https://www.twilio.com/docs/libraries/java):
         
 ## Creating an endpoint
 [This REST/JAX book is extremely helpful](https://dennis-xlc.gitbooks.io/restful-java-with-jax-rs-2-0-2rd-edition/content/en/part1/chapter3/developing_a_jax_rs_restful_service.html).
-        
+
 Note: 
 * Docassemble will run on port 80
 * Maven/proxy efsp will run on port 9000

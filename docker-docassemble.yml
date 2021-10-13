@@ -3,7 +3,8 @@ services:
   efspjava:
     build:
       context: .
-      args: EFM_SUPPORT: tyler
+      args:
+        EFM_SUPPORT: no_tyler
     ports:
       - "9000:9000"
     env_file: .env
@@ -14,6 +15,14 @@ services:
     env_file: .env
     volumes:
       - data-volume:/var/lib/postgresql/data
-
+  docassemble:
+    image: "jhpyle/docassemble:latest"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - dabackup:/usr/share/docassemble/backup
+    env_file: .da_env
 volumes:
   data-volume:
+  dabackup:
