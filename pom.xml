@@ -10,15 +10,15 @@
     <description>an EFSP client for the Assembly Line Project</description>
 
     <properties>
-        <cxf.version>3.4.4</cxf.version>
+        <cxf.version>3.4.5</cxf.version>
         <junit.version>5.7.1</junit.version>
-        <slf4j.version>1.7.30</slf4j.version>
-        <bouncycastle.version>1.64</bouncycastle.version>
-        <testcontainers.version>1.15.3</testcontainers.version>
+        <slf4j.version>1.7.32</slf4j.version>
+        <bouncycastle.version>1.69</bouncycastle.version>
+        <testcontainers.version>1.16.0</testcontainers.version>
         <maven-surefire.version>3.0.0-M5</maven-surefire.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>15</maven.compiler.source>
-        <maven.compiler.target>15</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <jacoco.skip>false</jacoco.skip>
     </properties>
 

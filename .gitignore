@@ -53,3 +53,9 @@ client_sign.properties
 .history
 .vscode
 /bin/
+
+# The update script will download and build docker images for docassemble-os and docassemble
+# To prevent unexpected changes outside this repo, we'll download the git repos here, but 
+# they should be ignored and not commited (or submoduled either really).
+docassemble/
+docassemble-os/

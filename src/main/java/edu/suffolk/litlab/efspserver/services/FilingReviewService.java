@@ -137,7 +137,7 @@ public class FilingReviewService {
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
     Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
-      return Response.status(401).entity("Not logged in to file with " + courtId).build();
+      return Response.status(401).entity("Not logged in to file with " + courtId + " in " + jurisdiction).build();
     }
     if (!converterMap.containsKey(mediaType.toString())) {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
