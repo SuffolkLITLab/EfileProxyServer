@@ -224,8 +224,14 @@ public class TylerModuleSetup implements EfmModuleSetup {
     */
     log.info("Starting NFRC callback server at " + address);
     EndpointImpl jaxWsEndpoint = (EndpointImpl) javax.xml.ws.Endpoint.publish(address,  implementor);
+    log.info("Wsdl location: " + jaxWsEndpoint.getWsdlLocation());
+    log.info("Address : " + jaxWsEndpoint.getAddress());
+    log.info("Bean name: " + jaxWsEndpoint.getBeanName());
     Endpoint cxfEndpoint = jaxWsEndpoint.getServer().getEndpoint();
+    cxfEndpoint.getBinding().getBindingInfo().setProperty("security.callback-handler", SoapX509CallbackHandler.class.getName());
+    cxfEndpoint.getBinding().getBindingInfo().setProperty("security.signature.properties", "client_sign.properties");
     
+    /*
     Map<String, Object> inProps = new HashMap<String, Object>();
     //inProps.put(WSHandlerConstants.ACTION, "Signature");
     inProps.put(WSHandlerConstants.SIG_PROP_FILE, "client_sign.properties");
@@ -234,6 +240,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     Map<String, Object> outProps = new HashMap<String, Object>();
     WSS4JOutInterceptor wssOut = new WSS4JOutInterceptor(outProps);
     cxfEndpoint.getOutInterceptors().add(wssOut);
+    */
   }
 
   @Override
