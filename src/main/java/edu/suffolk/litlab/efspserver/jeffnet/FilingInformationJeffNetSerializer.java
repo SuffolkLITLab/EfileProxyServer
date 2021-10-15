@@ -5,20 +5,26 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import edu.suffolk.litlab.efspserver.FilingInformation;
+import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class FilingInformationJeffNetSerializer extends StdSerializer<FilingInformation> {
 
   private static final long serialVersionUID = 1L;
+  private LegalIssuesTaxonomyCodes taxonomyCodes;
 
-  protected FilingInformationJeffNetSerializer(Class<FilingInformation> t) {
+  protected FilingInformationJeffNetSerializer(Class<FilingInformation> t, 
+      LegalIssuesTaxonomyCodes taxonomyCodes) {
     super(t);
+    this.taxonomyCodes = taxonomyCodes;
   }
 
   @Override
@@ -26,9 +32,14 @@ public class FilingInformationJeffNetSerializer extends StdSerializer<FilingInfo
       throws IOException {
     CaseInfo caseInfo = new CaseInfo();
     caseInfo.caseCourt = info.getCourtLocation();
-    caseInfo.caseCategory = info.getCaseCategory().ecfcasetype;
-    caseInfo.caseType = info.getCaseType();
-    caseInfo.caseSubtype = info.getCaseSubtype();
+    Set<String> ecfs = taxonomyCodes.allEcfCaseTypes(Arrays.asList(info.getCaseCategoryCode().split(", ")));
+    if (ecfs.size() == 1) {
+      caseInfo.caseCategory = ecfs.iterator().next();
+    } else {
+      caseInfo.caseCategory = info.getCaseCategoryCode();
+    }
+    caseInfo.caseType = info.getCaseTypeCode();
+    caseInfo.caseSubtype = info.getCaseSubtypeCode();
     caseInfo.participants = new ArrayList<Person>();
     caseInfo.participants.addAll(info.getDefendants());
     caseInfo.participants.addAll(info.getPlaintiffs());

@@ -12,13 +12,12 @@ import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
-import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
 import edu.suffolk.litlab.efspserver.Person;
-import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import edu.suffolk.litlab.efspserver.services.JsonExtractException;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -30,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,14 +39,10 @@ public class FilingInformationDocassembleJacksonDeserializer
       FilingInformationDocassembleJacksonDeserializer.class);
 
   private static final long serialVersionUID = 1L;
-
-  private LegalIssuesTaxonomyCodes codes;
   private InfoCollector classCollector;
 
-  public FilingInformationDocassembleJacksonDeserializer(Class<FilingInformation> t,
-      LegalIssuesTaxonomyCodes codes, InfoCollector collector) {
+  public FilingInformationDocassembleJacksonDeserializer(Class<FilingInformation> t, InfoCollector collector) {
     super(t);
-    this.codes = codes;
     this.classCollector = collector;
   }
 
@@ -222,46 +216,36 @@ public class FilingInformationDocassembleJacksonDeserializer
       metadata = metadataElems.get(key).get("elements");
     }
 
-    String category_var_name = "tyler_case_category";
-    JsonNode category = node.get(category_var_name);
+    JsonNode category = node.get("tyler_case_category"); 
     if (category != null && !category.isNull() && category.isTextual()) {
-      CaseCategory caseCat = new CaseCategory(category.asText(), category.asText());
-      entities.setCaseCategory(caseCat);
+      entities.setCaseCategoryCode(category.asText());
     } else if (metadata.has("categories") && metadata.get("categories").isArray()) {
       List<String> categories = new ArrayList<String>();
       metadata.get("categories").forEach((cat) -> categories.add(cat.asText()));
+      entities.setCaseCategoryCode(String.join(", ", categories)); 
       log.info("Categories: " + categories.toString());
-      Set<String> ecfs = codes.allEcfCaseTypes(categories);
-      log.info("ECFs:" + ecfs.size());
-      if (ecfs.size() == 1) {
-        String caseType = ecfs.iterator().next();
-        CaseCategory caseCat = new CaseCategory(categories.toString(), caseType);
-        entities.setCaseCategory(caseCat);
-      }
     } else if (isFirstIndexedFiling) {
-      InterviewVariable var = collector.requestVar(category_var_name, "", "text");
+      InterviewVariable var = collector.requestVar("tyler_case_category", "", "text");
       collector.addRequired(var);
     }
 
-    String typeVarName = "tyler_case_type";
-    JsonNode type = node.get(typeVarName);
+    JsonNode type = node.get("tyler_case_type");
     if (type != null && type.isTextual()) {
-      entities.setCaseType(type.asText());
+      entities.setCaseTypeCode(type.asText());
     } else if (metadata.has("title") && metadata.get("title").isTextual()) {
-      entities.setCaseType(metadata.get("title").asText());
+      entities.setCaseTypeCode(metadata.get("title").asText());
     } else if (isFirstIndexedFiling) {
-      InterviewVariable var = collector.requestVar(typeVarName,  "", "text");
+      InterviewVariable var = collector.requestVar("tyler_case_type",  "", "text");
       collector.addRequired(var);
     }
 
-    String subtypeVarName = "tyler_case_subtype";
-    JsonNode subtype = node.get(subtypeVarName);
+    JsonNode subtype = node.get("tyler_case_subtype");
     if (subtype != null && subtype.isTextual()) {
-      entities.setCaseType(subtype.asText());
+      entities.setCaseSubtypeCode(subtype.asText());
     } else if (isFirstIndexedFiling) {
-      InterviewVariable var = collector.requestVar(subtypeVarName, "subtype (not always present)", "text");
+      InterviewVariable var = collector.requestVar("tyler_case_subtype", "subtype (not always present)", "text");
       collector.addOptional(var);
-      entities.setCaseSubtype("");
+      entities.setCaseSubtypeCode("");
     }
 
     // Get the interview metadablock TODO(brycew-later): just one for now

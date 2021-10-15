@@ -60,7 +60,7 @@ public class EfspServer {
       List<EfmModuleSetup> modules,
       CodeDatabase cd, // Tyler specific (?)
       Map<String, InterviewToFilingEntityConverter> converterMap
-      ) throws Exception {
+      ) throws SQLException {
     try {
       cd.createDbConnection(dbUser, dbPassword);
       ud.createDbConnection(dbUser, dbPassword);

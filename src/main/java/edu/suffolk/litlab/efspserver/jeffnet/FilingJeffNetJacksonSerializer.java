@@ -36,7 +36,7 @@ public class FilingJeffNetJacksonSerializer extends StdSerializer<FilingDoc> {
     }
     Metadata metadata = new Metadata();
     metadata.filingParties = filingPartyList;
-    filingDoc.getFilingCodeName().ifPresent(fc -> {
+    filingDoc.getFilingCode().ifPresent(fc -> {
       metadata.regAction = fc;
     });
     gen.writeObjectField("DocumentMetadata", metadata);

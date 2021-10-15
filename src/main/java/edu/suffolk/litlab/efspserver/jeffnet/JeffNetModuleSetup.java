@@ -1,26 +1,40 @@
 package edu.suffolk.litlab.efspserver.jeffnet;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.opencsv.exceptions.CsvValidationException;
+
+import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.services.EfmFilingInterface;
 import edu.suffolk.litlab.efspserver.services.EfmModuleSetup;
 import edu.suffolk.litlab.efspserver.services.EfmRestCallbackInterface;
+import edu.suffolk.litlab.efspserver.services.EfspServer;
 import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
 
 public class JeffNetModuleSetup implements EfmModuleSetup {
-  private URI jeffnetEndpoint;
-  private UserDatabase ud;
-  private OrgMessageSender sender;
+  private static Logger log =
+      LoggerFactory.getLogger(JeffNetModuleSetup.class);
+
+  private final URI jeffnetEndpoint;
+  private final UserDatabase ud;
+  private final OrgMessageSender sender;
+  private final LegalIssuesTaxonomyCodes taxonomyCodes;
 
   private JeffNetModuleSetup(URI jeffnetUri,
-      UserDatabase ud, OrgMessageSender sender) {
+      UserDatabase ud, OrgMessageSender sender, LegalIssuesTaxonomyCodes taxonomyCodes) {
     this.jeffnetEndpoint = jeffnetUri;
     this.ud = ud;
     this.sender = sender;
+    this.taxonomyCodes = taxonomyCodes;
   }
 
   public static Optional<JeffNetModuleSetup> create(UserDatabase ud, OrgMessageSender sender) throws URISyntaxException {
@@ -29,9 +43,18 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
       throw new RuntimeException("JEFFERSON_ENDPOINT needs to be the "
             + "defined. Did you forget to source .env?");
     }
+    
 
     URI jeffnetUri = new URI(maybeJeffersonEndpoint.get());
-    return Optional.of(new JeffNetModuleSetup(jeffnetUri, ud, sender));
+    InputStream taxonomyCsv = EfspServer.class.getResourceAsStream("/taxonomy.csv");
+    LegalIssuesTaxonomyCodes taxonomyCodes;
+    try {
+      taxonomyCodes = new LegalIssuesTaxonomyCodes(taxonomyCsv);
+      return Optional.of(new JeffNetModuleSetup(jeffnetUri, ud, sender, taxonomyCodes));
+    } catch (CsvValidationException | IOException e) {
+      log.warn(e.toString());
+      return Optional.empty();
+    }
   }
 
   @Override
@@ -51,7 +74,7 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
 
   @Override
   public EfmFilingInterface getInterface() {
-    return new JeffNetFiler(jeffnetEndpoint);
+    return new JeffNetFiler(jeffnetEndpoint, taxonomyCodes);
   }
 
   @Override

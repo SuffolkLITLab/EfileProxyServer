@@ -163,14 +163,14 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         resp.getCase().getValue().getCaseTrackingID();
         String catCode = resp.getCase().getValue().getCaseCategoryText().getValue();
         String typeCode = CasesService.getCaseTypeCode(resp.getCase().getValue()).get().getCaseTypeText().getValue(); 
-        List<Optional<String>> maybeFilingNames = info.getFilings().stream().map(f -> f.getFilingCodeName()).collect(Collectors.toList()); 
-        if (maybeFilingNames.stream().anyMatch(fc -> fc.isEmpty())) {
+        List<Optional<String>> maybeFilingCodes = info.getFilings().stream().map(f -> f.getFilingCode()).collect(Collectors.toList()); 
+        if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
           InterviewVariable filingVar = collector.requestVar("court_bundle[i].tyler_filing_type", "What filing type is this?", "text"); 
           collector.addRequired(filingVar);
         }
-        List<String> filingNames = maybeFilingNames.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
-        log.info("Existing cat, type, and filings: " + catCode +","+typeCode+","+filingNames);
-        allCodes = serializer.serializeCaseCodes(catCode, typeCode, filingNames, collector);
+        List<String> filingCodeStrs = maybeFilingCodes.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
+        log.info("Existing cat, type, and filings: " + catCode + "," + typeCode + "," + filingCodeStrs);
+        allCodes = serializer.serializeCaseCodes(catCode, typeCode, filingCodeStrs, collector);
       } else {
         allCodes = serializer.serializeCaseCodes(info, collector);
       }

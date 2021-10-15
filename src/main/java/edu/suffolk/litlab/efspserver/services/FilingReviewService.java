@@ -303,21 +303,23 @@ public class FilingReviewService {
     }
     Timestamp ts = new Timestamp(System.currentTimeMillis());
     try {
+      // TODO(brycew): this is going to send case type code (i.e. random numbers to the user. 
+      // Should avoid if possible, but would have to return the full info from the Filer object 
       // TODO(brycew): this also sends "the carroll has received", instead of "the Carrol County Court",
       // the filer Object should return the full name of the court if possible, not the id
       ud.addToTable(user.getName().getFullName(), user.getId(),
           phoneNumber, user.getContactInfo().getEmail().orElse(""),
           filingIds, atRest.get().serverId, activeToken.get(),
-          info.getCaseType(), courtId, ts);
+          info.getCaseTypeCode(), courtId, ts);
 
       msgSender.sendConfirmation(user.getContactInfo().getEmail().orElse(""),
           atRest.get().serverId, user.getName().getFullName(), filingIds, 
-          courtId, info.getCaseType());
+          courtId, info.getCaseTypeCode());
     } catch (SQLException ex) {
       log.error("Couldn't add info to the database! Logging here for posterity: "
                 + "%s %s %s %s %s".formatted(user.getName().getFullName(), user.getId(),
                         phoneNumber, user.getContactInfo().getEmail(),
-                        result, info.getCaseType(), ts));
+                        result, info.getCaseTypeCode(), ts));
       log.error("Error: " + ex);
       return Response.ok().entity("Submitted, but error saving info to database").build();
     }
