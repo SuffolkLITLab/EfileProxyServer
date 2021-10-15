@@ -24,7 +24,7 @@ public class AddressDocassembleJacksonDeserializer {
 
   /** Parses an address from the DA Json Object. Used by Deserializers that include addresses.
    * @throws FilingError */
-  public Optional<Address> fromNode(JsonNode node, InfoCollector collector) throws FilingError {
+  public static Optional<Address> fromNode(JsonNode node, InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
       FilingError err = FilingError.malformedInterview(
           "Refusing to parse address that isn't a Json Object: " + node.toPrettyString());

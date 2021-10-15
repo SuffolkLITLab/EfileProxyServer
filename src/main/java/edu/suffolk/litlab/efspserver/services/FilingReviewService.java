@@ -5,7 +5,6 @@ import com.hubspot.algebra.Result;
 
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Person;
-import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
 
@@ -19,7 +18,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -305,6 +303,8 @@ public class FilingReviewService {
     }
     Timestamp ts = new Timestamp(System.currentTimeMillis());
     try {
+      // TODO(brycew): this also sends "the carroll has received", instead of "the Carrol County Court",
+      // the filer Object should return the full name of the court if possible, not the id
       ud.addToTable(user.getName().getFullName(), user.getId(),
           phoneNumber, user.getContactInfo().getEmail().orElse(""),
           filingIds, atRest.get().serverId, activeToken.get(),

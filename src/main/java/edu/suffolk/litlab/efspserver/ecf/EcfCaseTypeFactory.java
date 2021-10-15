@@ -126,7 +126,7 @@ public class EcfCaseTypeFactory {
     }
   }
 
-  private JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType>
+  private static JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType>
       makeNiemCaseAug(String courtLocationId) {
     gov.niem.niem.domains.jxdm._4.ObjectFactory jof =
         new gov.niem.niem.domains.jxdm._4.ObjectFactory();
@@ -345,8 +345,7 @@ public class EcfCaseTypeFactory {
     }
 
     if (queryType.equalsIgnoreCase("fees")) {
-      PaymentFactory pf = new PaymentFactory();
-      ProviderChargeType pct = pf.makeProviderChargeType(info.getPaymentId());
+      ProviderChargeType pct = PaymentFactory.makeProviderChargeType(info.getPaymentId());
       ecfAug.setProviderCharge(pct);
     }
     if (miscInfo.has("max_fee_amount") && courtLocation.allowmaxfeeamount) {
@@ -466,7 +465,7 @@ public class EcfCaseTypeFactory {
    *     calculations for fees and return date."
    * @return A complete Civil Case type
    */
-  private JAXBElement<CivilCaseType> makeCivilCaseType(
+  private static JAXBElement<CivilCaseType> makeCivilCaseType(
       JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
       JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
       Optional<BigDecimal> amountInControversy) {
@@ -495,7 +494,7 @@ public class EcfCaseTypeFactory {
     return ecfCivilObjFac.createCivilCase(c);
   }
 
-  private JAXBElement<DomesticCaseType> makeDomesticCaseType(
+  private static JAXBElement<DomesticCaseType> makeDomesticCaseType(
       JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
       JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
       JsonNode node) {
@@ -519,6 +518,7 @@ public class EcfCaseTypeFactory {
     return ecfDomesticObjFac.createDomesticCase(d);
   }
 
+  /*
   private JAXBElement<CriminalCaseType> makeCriminalCaseType(
       JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
       JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug) {
@@ -550,4 +550,5 @@ public class EcfCaseTypeFactory {
     // * degree: statutelevelchange
     return null;
   }
+  */
 }

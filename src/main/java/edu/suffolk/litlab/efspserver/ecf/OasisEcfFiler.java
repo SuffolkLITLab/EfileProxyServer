@@ -346,8 +346,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
 
     oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory wsOf =
         new oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory();
-    PaymentFactory pf = new PaymentFactory();
-    PaymentMessageType pmt = pf.makePaymentMessage(info.getPaymentId());
+    PaymentMessageType pmt = PaymentFactory.makePaymentMessage(info.getPaymentId());
     ReviewFilingRequestMessageType rfrm = wsOf.createReviewFilingRequestMessageType();
     rfrm.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
     rfrm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
@@ -362,8 +361,10 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     if (mrmt.getError().size() > 0) {
       for (oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType err : mrmt
           .getError()) {
-        log.warn("Error from Tyler: " + err.getErrorCode().getValue() + ", "
-            + err.getErrorText().getValue());
+        if (!err.getErrorCode().getValue().equals("0")) {
+          log.warn("Error from Tyler: " + err.getErrorCode().getValue() + ", "
+              + err.getErrorText().getValue());
+        }
       }
     }
     BiFunction<IdentificationType, String, Boolean> filterId = (id, idType) -> {

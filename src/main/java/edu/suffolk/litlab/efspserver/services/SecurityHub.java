@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efspserver;
+package edu.suffolk.litlab.efspserver.services;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -14,7 +14,6 @@ import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetLogin;
-import edu.suffolk.litlab.efspserver.services.LoginInterface;
 
 /**
  * Language might be loose, but we try to use "Key" as a permanent

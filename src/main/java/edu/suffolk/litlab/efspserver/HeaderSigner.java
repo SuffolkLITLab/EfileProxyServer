@@ -55,7 +55,7 @@ public class HeaderSigner {
     this.x509Password = x509Password;
   }
 
-  private byte[] signPkcs7(final byte[] content, final CMSSignedDataGenerator generator)
+  private static byte[] signPkcs7(final byte[] content, final CMSSignedDataGenerator generator)
       throws CMSException, IOException {
     CMSTypedData cmsdata = new CMSProcessableByteArray(content);
     CMSSignedData signeddata = generator.generate(cmsdata, true);
@@ -72,9 +72,9 @@ public class HeaderSigner {
   private CMSSignedDataGenerator setUpProvider(final KeyStore keystore)
       throws GeneralSecurityException, OperatorCreationException, CMSException {
     Security.addProvider(new BouncyCastleProvider());
-    String alias = (String) keystore.aliases().nextElement();
+    String alias = keystore.aliases().nextElement();
 
-    Certificate[] certchain = (Certificate[]) keystore.getCertificateChain(alias);
+    Certificate[] certchain = keystore.getCertificateChain(alias);
     final List<Certificate> certlist = new ArrayList<Certificate>();
 
     for (int i = 0, length = certchain == null ? 0 : certchain.length; i < length; i++) {

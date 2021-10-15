@@ -202,7 +202,7 @@ public class CodeDatabase extends DatabaseInterface {
         CaseCategory newCat = new CaseCategory(rs); 
         return Optional.of(newCat);
       } else {
-        log.error("No categories for " + caseCatCode + " and " + courtLocationId);
+        log.error("No categories for code " + caseCatCode + " at " + courtLocationId);
         return Optional.empty();
       }
     });

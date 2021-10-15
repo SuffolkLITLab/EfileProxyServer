@@ -76,5 +76,7 @@ public class FilingInformationToJeffNetTest {
     JsonParser parser = mapper.createParser(finalStr);
     JsonNode node = parser.readValueAsTree(); 
     assertNotNull(node.get("CaseInfo").get("CaseParticipants"));
+    assertEquals("CivilCase", node.get("CaseInfo").get("CaseCategoryText").asText());
+    assertEquals("JeffersonParish", node.get("CaseInfo").get("CaseCourt").asText());
   }
 }

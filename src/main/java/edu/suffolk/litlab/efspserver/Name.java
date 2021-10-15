@@ -70,7 +70,7 @@ public class Name {
     return maidenName;
   }
 
-  private gov.niem.niem.niem_core._2.PersonNameTextType wrapName(String name) {
+  private static gov.niem.niem.niem_core._2.PersonNameTextType wrapName(String name) {
     ObjectFactory of = new ObjectFactory();
     PersonNameTextType t = of.createPersonNameTextType();
     t.setValue(name);

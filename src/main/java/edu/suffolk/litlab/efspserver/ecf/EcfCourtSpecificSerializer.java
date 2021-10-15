@@ -738,7 +738,7 @@ public class EcfCourtSpecificSerializer {
   }
 
 
-  private Optional<CountryCodeType> strToCountryCode(String country, InfoCollector collector) {
+  private static Optional<CountryCodeType> strToCountryCode(String country, InfoCollector collector) {
     CountryCodeType cct = new CountryCodeType();
     try {
       cct.setValue(CountryCodeSimpleType.fromValue(country));

@@ -14,7 +14,7 @@ import tyler.ecf.extensions.common.ProviderChargeType;
 
 public class PaymentFactory {
 
-  public PaymentMessageType makePaymentMessage(String paymentId) {
+  public static PaymentMessageType makePaymentMessage(String paymentId) {
     oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.ObjectFactory ecfObjFac = 
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.ObjectFactory();
     PaymentMessageType pmt = ecfObjFac.createPaymentMessageType();
@@ -30,7 +30,7 @@ public class PaymentFactory {
     return pmt;
   }
   
-  public ProviderChargeType makeProviderChargeType(String paymentId) {
+  public static ProviderChargeType makeProviderChargeType(String paymentId) {
     tyler.ecf.extensions.common.ObjectFactory tylerObjFac = 
         new tyler.ecf.extensions.common.ObjectFactory();
     ProviderChargeType pct = tylerObjFac.createProviderChargeType();
@@ -38,7 +38,7 @@ public class PaymentFactory {
     return pct;
   }
   
-  private AllowanceChargeType makeAllowanceChargeType(String paymentId, boolean makeEfmCollectFeeAndTax) {
+  private static AllowanceChargeType makeAllowanceChargeType(String paymentId, boolean makeEfmCollectFeeAndTax) {
     oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory cacObjFac = 
         new oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory();
     oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ObjectFactory cbcObjFac = 
