@@ -43,7 +43,6 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.CivilCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseOfficialType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.CriminalCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.DomesticCaseType;
 import tyler.ecf.extensions.common.FilingAssociationType;
 import tyler.ecf.extensions.common.ProcedureRemedyType;
@@ -91,7 +90,7 @@ public class EcfCaseTypeFactory {
       InfoCollector collector
   ) throws SQLException, FilingError {
     CaseCategory caseCategory = initialCaseCategory;
-    String caseCategoryCode = caseCategory.code.get();
+    String caseCategoryCode = caseCategory.code;
     JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug =
         makeNiemCaseAug(courtLocation.code);
     JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug =
@@ -126,7 +125,7 @@ public class EcfCaseTypeFactory {
     }
   }
 
-  private JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType>
+  private static JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType>
       makeNiemCaseAug(String courtLocationId) {
     gov.niem.niem.domains.jxdm._4.ObjectFactory jof =
         new gov.niem.niem.domains.jxdm._4.ObjectFactory();
@@ -180,7 +179,7 @@ public class EcfCaseTypeFactory {
     if (subTypeConfig.isvisible) {
       List<NameAndCode> subTypes = cd.getCaseSubtypesFor(courtLocation.code, caseType.code);
       Optional<NameAndCode> maybeSubtype = subTypes.stream()
-          .filter(type -> type.getName().equals(info.getCaseSubtype()))
+          .filter(type -> type.getCode().equals(info.getCaseSubtypeCode()))
           .findFirst();
 
       if (maybeSubtype.isPresent()) {
@@ -194,7 +193,7 @@ public class EcfCaseTypeFactory {
 
     List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocation.code, caseType.code);
     List<String> partyTypeNames = partyTypes.stream().map(p -> p.name).collect(Collectors.toList());
-    Set<String> requiredTypes = partyTypes.stream().filter(t -> t.isrequired).map(t -> t.name).collect(Collectors.toSet());
+    Set<String> requiredTypes = partyTypes.stream().filter(t -> t.isrequired).map(t -> t.code).collect(Collectors.toSet());
     Set<String> existingTypes = new HashSet<String>();
     for (Person plaintiff : info.getPlaintiffs()) {
       CaseParticipantType cp = serializer.serializeEcfCaseParticipant(plaintiff, collector, partyTypes, partyTypeNames);
@@ -345,8 +344,7 @@ public class EcfCaseTypeFactory {
     }
 
     if (queryType.equalsIgnoreCase("fees")) {
-      PaymentFactory pf = new PaymentFactory();
-      ProviderChargeType pct = pf.makeProviderChargeType(info.getPaymentId());
+      ProviderChargeType pct = PaymentFactory.makeProviderChargeType(info.getPaymentId());
       ecfAug.setProviderCharge(pct);
     }
     if (miscInfo.has("max_fee_amount") && courtLocation.allowmaxfeeamount) {
@@ -372,11 +370,11 @@ public class EcfCaseTypeFactory {
       CaseCategory cat,
       String courtLocationId, JsonNode miscInfo, InfoCollector collector) throws SQLException, FilingError {
     List<NameAndCode> procedureRemedies = cd.getProcedureOrRemedy(courtLocationId, cat.getCode());
-    DataFieldRow procedureView = DataFieldRow.MissingDataField(cat.name);
+    String procedureViewName = "CivilCaseProcedureView" + ((initial) ? "Initial" : "Subsequent");
+    DataFieldRow procedureView = DataFieldRow.MissingDataField(procedureViewName);
     String procBehavior = (initial) ? cat.procedureremedyinitial : cat.procedureremedysubsequent;
     if (!procBehavior.isEmpty() && !procBehavior.equals("Not Available")) {
-      procedureView = cd.getDataField(courtLocationId,
-          "CivilCaseProcedureView" + ((initial) ? "Initial" : "Subsequent"));
+      procedureView = cd.getDataField(courtLocationId, procedureViewName);
     }
     InterviewVariable var;
     if (procedureRemedies.isEmpty()) {
@@ -466,7 +464,7 @@ public class EcfCaseTypeFactory {
    *     calculations for fees and return date."
    * @return A complete Civil Case type
    */
-  private JAXBElement<CivilCaseType> makeCivilCaseType(
+  private static JAXBElement<CivilCaseType> makeCivilCaseType(
       JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
       JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
       Optional<BigDecimal> amountInControversy) {
@@ -495,7 +493,7 @@ public class EcfCaseTypeFactory {
     return ecfCivilObjFac.createCivilCase(c);
   }
 
-  private JAXBElement<DomesticCaseType> makeDomesticCaseType(
+  private static JAXBElement<DomesticCaseType> makeDomesticCaseType(
       JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
       JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
       JsonNode node) {
@@ -519,6 +517,7 @@ public class EcfCaseTypeFactory {
     return ecfDomesticObjFac.createDomesticCase(d);
   }
 
+  /*
   private JAXBElement<CriminalCaseType> makeCriminalCaseType(
       JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
       JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug) {
@@ -550,4 +549,5 @@ public class EcfCaseTypeFactory {
     // * degree: statutelevelchange
     return null;
   }
+  */
 }

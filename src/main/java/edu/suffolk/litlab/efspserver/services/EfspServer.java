@@ -2,7 +2,6 @@ package edu.suffolk.litlab.efspserver.services;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import edu.suffolk.litlab.efspserver.HttpsCallbackHandler;
-import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.SendMessage;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
@@ -23,6 +22,7 @@ import java.util.Set;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.cxf.Bus;
+import org.apache.cxf.BusFactory;
 import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
@@ -44,7 +44,7 @@ public class EfspServer {
       HttpsCallbackHandler.setCertPassword(certPassword.get());
       SpringBusFactory factory = new SpringBusFactory();
       Bus bus = factory.createBus("src/main/config/ServerConfig.xml");
-      SpringBusFactory.setDefaultBus(bus);
+      BusFactory.setDefaultBus(bus);
     } else {
       log.warn("Didn't enter a CERT_PASSWORD. Falling back to HTTP. Did you pass an .env file?");
     }
@@ -60,7 +60,7 @@ public class EfspServer {
       List<EfmModuleSetup> modules,
       CodeDatabase cd, // Tyler specific (?)
       Map<String, InterviewToFilingEntityConverter> converterMap
-      ) throws Exception {
+      ) throws SQLException {
     try {
       cd.createDbConnection(dbUser, dbPassword);
       ud.createDbConnection(dbUser, dbPassword);

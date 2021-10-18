@@ -1,18 +1,20 @@
 package edu.suffolk.litlab.efspserver.jeffnet;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.opencsv.exceptions.CsvValidationException;
 
 import edu.suffolk.litlab.efspserver.ContactInformation;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
+import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.Person;
-import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -30,10 +32,10 @@ public class FilingInformationToJeffNetTest {
   @BeforeEach
   public void setUp() throws IOException {
     info = new FilingInformation();
-    info.setCaseType("Housing temporary restraining order");
-    info.setCaseSubtype("");
+    info.setCaseTypeCode("Housing temporary restraining order");
+    info.setCaseSubtypeCode("");
     info.setCourtLocation("JeffersonParish");
-    info.setCaseCategory(new CaseCategory("C", "CivilCase"));
+    info.setCaseCategoryCode("CivilCase"); 
     info.setFilings(null);
     
     Person plaintiff = new Person(new Name("Bob", "Zombie"), "test@example.com", false);
@@ -61,9 +63,10 @@ public class FilingInformationToJeffNetTest {
   }
   
   @Test
-  public void testGetCaseParticipants() throws IOException {
+  public void testGetCaseParticipants() throws IOException, CsvValidationException {
     SimpleModule module = new SimpleModule();
-    module.addSerializer(new FilingInformationJeffNetSerializer(FilingInformation.class));
+    module.addSerializer(new FilingInformationJeffNetSerializer(FilingInformation.class, 
+        new LegalIssuesTaxonomyCodes(FilingInformationToJeffNetTest.class.getResourceAsStream("/taxonomy.csv"))));
     module.addSerializer(
         new ContactInfoJeffNetJacksonSerializer(ContactInformation.class));
     module.addSerializer(new NameJeffNetJacksonSerializer(Name.class));
@@ -76,5 +79,7 @@ public class FilingInformationToJeffNetTest {
     JsonParser parser = mapper.createParser(finalStr);
     JsonNode node = parser.readValueAsTree(); 
     assertNotNull(node.get("CaseInfo").get("CaseParticipants"));
+    assertEquals("CivilCase", node.get("CaseInfo").get("CaseCategoryText").asText());
+    assertEquals("JeffersonParish", node.get("CaseInfo").get("CaseCourt").asText());
   }
 }

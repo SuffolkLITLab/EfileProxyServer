@@ -3,17 +3,12 @@ package edu.suffolk.litlab.efspserver.ecf;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.CronScheduleBuilder;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.jaxws.EndpointImpl;
-import org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor;
-import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor;
-import org.apache.wss4j.dom.handler.WSHandlerConstants;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;

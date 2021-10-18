@@ -7,13 +7,14 @@ import java.util.UUID;
 
 public class Person {
 
-  // NOTE: from DA, we will take the mailing address if present, not the standard
-  // address.
   private Name name;
+  // NOTE: from docassemble, we will take the mailing address if present, not the standard
+  // address.
   private ContactInformation contactInfo;
   private Optional<String> gender;
   private Optional<String> language;
   private Optional<LocalDate> birthdate;
+  // If true, this is actually a business or organization, i.e. a legal person, not an individual.
   private boolean isOrg;
 
   private UUID id;

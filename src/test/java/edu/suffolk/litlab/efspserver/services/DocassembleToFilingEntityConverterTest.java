@@ -119,10 +119,10 @@ public class DocassembleToFilingEntityConverterTest {
     Result<FilingInformation, FilingError> maybeEntities = converter.extractEntities(contents);
     assertThat(maybeEntities).isOk();
     FilingInformation entities = maybeEntities.unwrapOrElseThrow();
-    assertNotNull(entities.getCaseCategory());
-    assertEquals("CivilCase", entities.getCaseCategory().ecfcasetype);
-    assertEquals("Motion", entities.getCaseType());
-    assertEquals("", entities.getCaseSubtype());
+    assertNotNull(entities.getCaseCategoryCode());
+    assertEquals("CivilCase", entities.getCaseCategoryCode());
+    assertEquals("Motion", entities.getCaseTypeCode());
+    assertEquals("", entities.getCaseSubtypeCode());
     
     List<FilingDoc> filingDocs = entities.getFilings();
     assertEquals(1, filingDocs.size());

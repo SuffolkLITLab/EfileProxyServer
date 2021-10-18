@@ -4,14 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.hubspot.algebra.Result;
-import com.opencsv.exceptions.CsvValidationException;
 import edu.suffolk.litlab.efspserver.FilingInformation;
-import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewToFilingEntityConverter;
 import edu.suffolk.litlab.efspserver.services.JsonExtractException;
-import java.io.IOException;
 import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,19 +16,15 @@ import org.slf4j.LoggerFactory;
 public class DocassembleToFilingEntityConverter extends InterviewToFilingEntityConverter {
 
   private static Logger log = LoggerFactory.getLogger(DocassembleToFilingEntityConverter.class); 
-  private LegalIssuesTaxonomyCodes codes;
   
-  public DocassembleToFilingEntityConverter(InputStream taxonomyCsv) 
-      throws CsvValidationException, IOException {
-    codes = new LegalIssuesTaxonomyCodes(taxonomyCsv);
-  }
+  public DocassembleToFilingEntityConverter(InputStream taxonomyCsv) {}
 
   @Override
   public Result<FilingInformation, FilingError> traverseInterview(String interviewContents,
       InfoCollector collector) {
     SimpleModule module = new SimpleModule();
     module.addDeserializer(FilingInformation.class, 
-        new FilingInformationDocassembleJacksonDeserializer(FilingInformation.class, codes, collector));
+        new FilingInformationDocassembleJacksonDeserializer(FilingInformation.class, collector));
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(module);
     try {

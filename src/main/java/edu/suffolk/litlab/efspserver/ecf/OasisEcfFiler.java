@@ -163,14 +163,14 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         resp.getCase().getValue().getCaseTrackingID();
         String catCode = resp.getCase().getValue().getCaseCategoryText().getValue();
         String typeCode = CasesService.getCaseTypeCode(resp.getCase().getValue()).get().getCaseTypeText().getValue(); 
-        List<Optional<String>> maybeFilingNames = info.getFilings().stream().map(f -> f.getFilingCodeName()).collect(Collectors.toList()); 
-        if (maybeFilingNames.stream().anyMatch(fc -> fc.isEmpty())) {
+        List<Optional<String>> maybeFilingCodes = info.getFilings().stream().map(f -> f.getFilingCode()).collect(Collectors.toList()); 
+        if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
           InterviewVariable filingVar = collector.requestVar("court_bundle[i].tyler_filing_type", "What filing type is this?", "text"); 
           collector.addRequired(filingVar);
         }
-        List<String> filingNames = maybeFilingNames.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
-        log.info("Existing cat, type, and filings: " + catCode +","+typeCode+","+filingNames);
-        allCodes = serializer.serializeCaseCodes(catCode, typeCode, filingNames, collector);
+        List<String> filingCodeStrs = maybeFilingCodes.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
+        log.info("Existing cat, type, and filings: " + catCode + "," + typeCode + "," + filingCodeStrs);
+        allCodes = serializer.serializeCaseCodes(catCode, typeCode, filingCodeStrs, collector);
       } else {
         allCodes = serializer.serializeCaseCodes(info, collector);
       }
@@ -346,8 +346,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
 
     oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory wsOf =
         new oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory();
-    PaymentFactory pf = new PaymentFactory();
-    PaymentMessageType pmt = pf.makePaymentMessage(info.getPaymentId());
+    PaymentMessageType pmt = PaymentFactory.makePaymentMessage(info.getPaymentId());
     ReviewFilingRequestMessageType rfrm = wsOf.createReviewFilingRequestMessageType();
     rfrm.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
     rfrm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
@@ -362,8 +361,10 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     if (mrmt.getError().size() > 0) {
       for (oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType err : mrmt
           .getError()) {
-        log.warn("Error from Tyler: " + err.getErrorCode().getValue() + ", "
-            + err.getErrorText().getValue());
+        if (!err.getErrorCode().getValue().equals("0")) {
+          log.warn("Error from Tyler: " + err.getErrorCode().getValue() + ", "
+              + err.getErrorText().getValue());
+        }
       }
     }
     BiFunction<IdentificationType, String, Boolean> filterId = (id, idType) -> {

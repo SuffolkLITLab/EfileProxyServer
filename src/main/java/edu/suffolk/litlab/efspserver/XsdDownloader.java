@@ -6,16 +6,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -40,61 +37,14 @@ import org.xml.sax.SAXException;
  * @author https://github.com/pablod
  */
 public class XsdDownloader {
-
-  public static class XsdNameSpaceContext implements NamespaceContext {
-
-    private final Map<String, String> nameSpaceUrisByPrefixes;
-
-    public XsdNameSpaceContext() {
-      nameSpaceUrisByPrefixes = new HashMap<String, String>();
-      nameSpaceUrisByPrefixes.put("xsd", "http://www.w3.org/2001/XMLSchema");
-    }
-
-    public String getNamespaceURI(final String prefix) {
-      return nameSpaceUrisByPrefixes.get(prefix);
-    }
-
-    public String getPrefix(final String namespaceUri) {
-      return null;
-    }
-
-    public Iterator<String> getPrefixes(final String namespaceUri) {
-      return null;
-    }
-
+  
+  public XsdDownloader(String downloadPrefix) {
+    this.downloadPrefix = downloadPrefix;
   }
 
-  /** Main method, pass in the URL to find the WSDL, and the xsd prefix 
-   * that everything is changed to. */
-  public static void main(final String[] args) {
-    if (args.length != 2) {
-      System.out.println("Only two parameters: 1--wsdl-url 2--xsds-prefix");
-      return;
-    }
-    String xsdUrl = args[0];
-    String filePrefix = args[1];
-    System.out.println("XsdUrl: " + xsdUrl); 
-    System.out.println("filePrefix: " + filePrefix); 
-    XsdDownloader xsdDownloader = new XsdDownloader();
-    xsdDownloader.setDownloadPrefix(filePrefix);
-    try {
-      xsdDownloader.downloadXsdRecurse(xsdUrl, "");
-    } catch (TransformerConfigurationException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (ParserConfigurationException e) {
-      e.printStackTrace();
-    } catch (SAXException e) {
-      e.printStackTrace();
-    } catch (TransformerException e) {
-      e.printStackTrace();
-    }
-  }
+  private Map<String, String> fileNamesByprocessedUrls = new HashMap<String, String>();
 
-  Map<String, String> fileNamesByprocessedUrls = new HashMap<String, String>();
-
-  private String downloadPrefix;
+  private final String downloadPrefix;
 
   private String downloadXsdRecurse(final String xsdUrl, final String pastUrl)
       throws IOException, ParserConfigurationException, SAXException, TransformerException {
@@ -117,7 +67,6 @@ public class XsdDownloader {
       try {
         workedUrl = normalizeUrl(xsdUrl, pastUrl);
       } catch (URISyntaxException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
         return null;
       } 
@@ -148,7 +97,7 @@ public class XsdDownloader {
     return workedUrl;
   }
   
-  private String normalizeUrl(String xsdUrl, final String pastUrl) throws URISyntaxException {
+  private static String normalizeUrl(String xsdUrl, final String pastUrl) throws URISyntaxException {
     String baseUrl = pastUrl.substring(0, pastUrl.lastIndexOf('/') + 1);
     return new URI(baseUrl + xsdUrl).normalize().toString();
   }
@@ -187,8 +136,23 @@ public class XsdDownloader {
     }
   }
 
-  public void setDownloadPrefix(final String downloadPrefix) {
-    this.downloadPrefix = downloadPrefix;
+  /** Main method, pass in the URL to find the WSDL, and the xsd prefix 
+   * that everything is changed to. */
+  public static void main(final String[] args) {
+    if (args.length != 2) {
+      System.out.println("Only two parameters: 1--wsdl-url 2--xsds-prefix");
+      return;
+    }
+    String xsdUrl = args[0];
+    String filePrefix = args[1];
+    System.out.println("XsdUrl: " + xsdUrl); 
+    System.out.println("filePrefix: " + filePrefix); 
+    XsdDownloader xsdDownloader = new XsdDownloader(filePrefix);
+    try {
+      xsdDownloader.downloadXsdRecurse(xsdUrl, "");
+    } catch (IOException | ParserConfigurationException | SAXException | TransformerException e) {
+      e.printStackTrace();
+    }
   }
 
 }

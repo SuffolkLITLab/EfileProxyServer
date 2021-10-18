@@ -23,7 +23,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -54,7 +53,6 @@ import ecfv5.tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateResponseMess
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Person;
-import edu.suffolk.litlab.efspserver.SecurityHub;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
@@ -225,7 +223,7 @@ public class CourtSchedulingService {
     ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseAugmentationType ecfAug = 
         oasisObjFac.createCaseAugmentationType();
     TextType catText = niemObjFac.createTextType();
-    catText.setValue(allCodes.cat.code.get());
+    catText.setValue(allCodes.cat.code);
     ecfAug.getRest().add(oasisObjFac.createCaseCategoryCode(catText));
     ecfAug.getRest().add(oasisObjFac.createCaseTypeCode(Ecfv5XmlHelper.convertNormalized(allCodes.type.code)));
     // TODO(brycew-later): write ecfv5 versions of this. Right now, don't have time to reimplement everything, so checking with old ecfv4 code and building here 
@@ -235,7 +233,7 @@ public class CourtSchedulingService {
     
     Function<Person, Result<EntityType, Response>> genEnt = (per) -> {
       Optional<PartyType> matchingType = partyTypes.stream()
-          .filter(pt -> pt.name.equalsIgnoreCase(per.getRole()))
+          .filter(pt -> pt.code.equalsIgnoreCase(per.getRole()))
           .findFirst();
       TextType roleText = niemObjFac.createTextType();
       if (matchingType.isEmpty()) {

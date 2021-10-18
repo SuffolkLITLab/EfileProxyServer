@@ -96,22 +96,22 @@ public class EcfCourtSpecificSerializer {
   }
   
   public ComboCaseCodes serializeCaseCodes(String caseCategoryCode, 
-      String caseTypeCode, List<String> filingNames, InfoCollector collector) throws FilingError {
+      String caseTypeCode, List<String> filingCodeStrs, InfoCollector collector) throws FilingError {
     CaseCategory caseCategory = vetCaseCat(cd.getCaseCategoryWithKey(this.court.code, caseCategoryCode), collector);
-    List<CaseType> caseTypes = cd.getCaseTypesFor(court.code, caseCategory.code.get(), Optional.empty());
+    List<CaseType> caseTypes = cd.getCaseTypesFor(court.code, caseCategory.code, Optional.empty());
     Optional<CaseType> maybeType = cd.getCaseTypeWith(court.code, caseTypeCode);
     CaseType type = vetCaseType(maybeType, caseTypes, caseCategory, collector, false);
-    List<FilingCode> filingRealCodes = vetFilingTypes(filingNames, caseCategory, type, collector, false);
+    List<FilingCode> filingRealCodes = vetFilingTypes(filingCodeStrs, caseCategory, type, collector, false);
     return new ComboCaseCodes(caseCategory, type, filingRealCodes);
   }
   
   public ComboCaseCodes serializeCaseCodes(FilingInformation info, InfoCollector collector) throws FilingError {
-    Optional<CaseCategory> maybeCaseCat = cd.getCaseCategoryFor(court.code, info.getCaseCategory().name);
+    Optional<CaseCategory> maybeCaseCat = cd.getCaseCategoryWithKey(court.code, info.getCaseCategoryCode());
     CaseCategory caseCategory = vetCaseCat(maybeCaseCat, collector); 
 
-    List<CaseType> caseTypes = cd.getCaseTypesFor(court.code, caseCategory.code.get(), Optional.empty());
+    List<CaseType> caseTypes = cd.getCaseTypesFor(court.code, caseCategory.code, Optional.empty());
     Optional<CaseType> maybeType = caseTypes.stream()
-        .filter(type -> type.name.equals(info.getCaseType()))
+        .filter(type -> type.code.equals(info.getCaseTypeCode()))
         .findFirst();
     CaseType type = vetCaseType(maybeType, caseTypes, caseCategory, collector, true);
 
@@ -120,13 +120,13 @@ public class EcfCourtSpecificSerializer {
       collector.error(err);
     }
     
-    List<Optional<String>> maybeFilingNames = info.getFilings().stream().map(f -> f.getFilingCodeName()).collect(Collectors.toList());
-    if (maybeFilingNames.stream().anyMatch(fc -> fc.isEmpty())) {
+    List<Optional<String>> maybeFilingCodes = info.getFilings().stream().map(f -> f.getFilingCode()).collect(Collectors.toList());
+    if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
       InterviewVariable filingVar = collector.requestVar("court_bundle[i].tyler_filing_type", "What filing type is this?", "text"); 
       collector.addRequired(filingVar);
     }
-    List<String> filingNames = maybeFilingNames.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
-    List<FilingCode> filingCodes = vetFilingTypes(filingNames, caseCategory, type, collector, true);
+    List<String> filingCodeStrs = maybeFilingCodes.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
+    List<FilingCode> filingCodes = vetFilingTypes(filingCodeStrs, caseCategory, type, collector, true);
     return new ComboCaseCodes(caseCategory, type, filingCodes); 
   }
 
@@ -135,7 +135,7 @@ public class EcfCourtSpecificSerializer {
       List<CaseCategory> categories = cd.getCaseCategoriesFor(court.code); 
       // TODO(brycew-later): handle that these variables could be different from different deserializers
       InterviewVariable var = collector.requestVar("tyler_case_category", "", "choice",
-          categories.stream().map(cat -> cat.name).collect(Collectors.toList()));
+          categories.stream().map(cat -> cat.code).collect(Collectors.toList()));
       collector.addWrong(var);
       // Foundational error: Category is sorely needed
       throw FilingError.wrongValue(var);
@@ -147,7 +147,7 @@ public class EcfCourtSpecificSerializer {
       CaseCategory caseCategory, InfoCollector collector, boolean isInitialFiling) throws FilingError {
     if (caseTypes.isEmpty()) {
       FilingError err = FilingError.serverError("There are no caseTypes for "
-          + court.code + " and " + caseCategory.code.get());
+          + court.code + " and " + caseCategory.code);
       collector.error(err);
     }
     if (maybeType.isEmpty()) {
@@ -158,22 +158,26 @@ public class EcfCourtSpecificSerializer {
     }
     CaseType type = maybeType.get();
     // Check if the court doesn't handle this type (initial vs subsequent) of filing
-    if ((isInitialFiling && (!type.initial || !court.initial)) || (!isInitialFiling && (!type.initial || !court.subsequent))) {
-      FilingError err = FilingError.malformedInterview("An " + ((isInitialFiling) ? "Initial" : "Subsequent")
-          + " filing can't be filed at " + court.name + " or of filing type " + type.name);
+    if (isInitialFiling && (!type.initial || !court.initial)) {
+      FilingError err = FilingError.malformedInterview("An Initial"
+          + " filing can't be filed at " + court.name + " or be of filing type " + type.name);
+      collector.error(err);
+    } else if (!isInitialFiling && (!court.subsequent)) {
+      FilingError err = FilingError.malformedInterview("An Subsequent"
+          + " filing can't be filed at " + court.name);
       collector.error(err);
     }
 
     return maybeType.get();
   }
  
-  private List<FilingCode> vetFilingTypes(List<String> maybeNames, 
+  private List<FilingCode> vetFilingTypes(List<String> maybeCodeStrs, 
       CaseCategory caseCategory, CaseType type, InfoCollector collector, boolean isInitialFiling) throws FilingError {
     List<FilingCode> filingOptions = cd.getFilingType(court.code,
-        caseCategory.code.get(), type.code, isInitialFiling);
-    List<Optional<FilingCode>> maybeCodes = maybeNames.stream().map(name -> {
+        caseCategory.code, type.code, isInitialFiling);
+    List<Optional<FilingCode>> maybeCodes = maybeCodeStrs.stream().map(code-> {
       return filingOptions.stream()
-          .filter(fil -> fil.name.equals(name)) 
+          .filter(fil -> fil.code.equals(code)) 
           .findFirst();
     }).collect(Collectors.toList()); 
     
@@ -277,7 +281,7 @@ public class EcfCourtSpecificSerializer {
     }
 
     Optional<PartyType> matchingType = partyTypes.stream()
-        .filter(pt -> pt.name.equalsIgnoreCase(per.getRole()))
+        .filter(pt -> pt.code.equalsIgnoreCase(per.getRole()))
         .findFirst();
     TextType tt = niemObjFac.createTextType();
     if (matchingType.isEmpty()) {
@@ -326,7 +330,7 @@ public class EcfCourtSpecificSerializer {
     return cit;
   }
 
-  public tyler.efm.services.schema.common.AddressType serializeTylerAddress(Address myAddr) throws FilingError {
+  public static tyler.efm.services.schema.common.AddressType serializeTylerAddress(Address myAddr) throws FilingError {
     tyler.efm.services.schema.common.ObjectFactory efmObjFac =
         new tyler.efm.services.schema.common.ObjectFactory();
     tyler.efm.services.schema.common.AddressType addr = efmObjFac.createAddressType();
@@ -537,10 +541,10 @@ public class EcfCourtSpecificSerializer {
     if (motionRow.isvisible) {
       List<NameAndCode> motionTypes = cd.getMotionTypes(this.court.code, filing.code);
       InterviewVariable var = collector.requestVar("motion_type", "the motion type (?)", "choices",
-          motionTypes.stream().map(m -> m.getName()).collect(Collectors.toList()));
+          motionTypes.stream().map(m -> m.getCode()).collect(Collectors.toList()));
       if (doc.getMotionType().isPresent()) {
         String mt = doc.getMotionType().get();
-        Optional<NameAndCode> matchedMotion = motionTypes.stream().filter(m -> m.getName().equalsIgnoreCase(mt)).findFirst();
+        Optional<NameAndCode> matchedMotion = motionTypes.stream().filter(m -> m.getCode().equalsIgnoreCase(mt)).findFirst();
         if (matchedMotion.isPresent()) {
           docType.setMotionTypeCode(XmlHelper.convertText(matchedMotion.get().getCode()));
         } else {
@@ -565,7 +569,7 @@ public class EcfCourtSpecificSerializer {
       collector.addRequired(var);
     }
 
-    Optional<FilingComponent> filtered = components.stream().filter(c -> c.name.equalsIgnoreCase(doc.getFilingComponentName())).findFirst();
+    Optional<FilingComponent> filtered = components.stream().filter(c -> c.code.equalsIgnoreCase(doc.getFilingComponentName())).findFirst();
     if (filtered.isEmpty()) {
       log.error("Filing Components (" + components + ") don't match " + doc.getFilingComponentName());
       collector.addRequired(var);
@@ -624,7 +628,7 @@ public class EcfCourtSpecificSerializer {
     if (documentType.isvisible) {
       List<DocumentTypeTableRow> docTypes = cd.getDocumentTypes(court.code, filing.code);
       InterviewVariable docTypeVar = collector.requestVar("document_type",
-          documentType.helptext +  " " + documentType.validationmessage, "choices", docTypes.stream().map(dt -> dt.name).collect(Collectors.toList()));
+          documentType.helptext +  " " + documentType.validationmessage, "choices", docTypes.stream().map(dt -> dt.code).collect(Collectors.toList()));
       String docTypeStr = doc.getDocumentTypeFormatStandardName();
       if (documentType.isrequired) {
         if (docTypeStr.isBlank()) {
@@ -632,7 +636,7 @@ public class EcfCourtSpecificSerializer {
         }
 
         Optional<DocumentTypeTableRow> code = docTypes.stream()
-                .filter(d -> d.name.equals(docTypeStr))
+                .filter(d -> d.code.equals(docTypeStr))
                 .findFirst();
         if (code.isEmpty()) {
           collector.addWrong(docTypeVar);
@@ -672,7 +676,7 @@ public class EcfCourtSpecificSerializer {
       List<CrossReference> refs = cd.getCrossReference(locationCode, caseTypeCode);
       Map<String, CrossReference> refMap = new HashMap<String, CrossReference>();
       for (CrossReference ref : refs) {
-        refMap.put(ref.name, ref);
+        refMap.put(ref.code, ref);
       }
       InterviewVariable refsVar = collector.requestVar("cross_references",
           "References to other cases in different systems", "DAList");
@@ -738,7 +742,7 @@ public class EcfCourtSpecificSerializer {
   }
 
 
-  private Optional<CountryCodeType> strToCountryCode(String country, InfoCollector collector) {
+  private static Optional<CountryCodeType> strToCountryCode(String country, InfoCollector collector) {
     CountryCodeType cct = new CountryCodeType();
     try {
       cct.setValue(CountryCodeSimpleType.fromValue(country));

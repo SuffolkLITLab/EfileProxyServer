@@ -1,7 +1,5 @@
 package edu.suffolk.litlab.efspserver;
 
-import edu.suffolk.litlab.efspserver.codes.CaseCategory;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +42,9 @@ public class FilingInformation {
   private Optional<String> caseDocketNumber = Optional.empty();
 
   // TODO(brycew-later): refactor so this is selected only in Tyler stuff
-  private CaseCategory caseCategory;
-  private String caseType;
-  private String caseSubtype;
+  private String caseCategoryCode;
+  private String caseTypeCode;
+  private String caseSubtypeCode;
   private String paymentId;
   private List<FilingDoc> filingDocs = List.of();
   private Optional<LocalDate> returnDate = Optional.empty();
@@ -121,20 +119,20 @@ public class FilingInformation {
     return Optional.empty();
   }
   
-  public CaseCategory getCaseCategory() {
-    return caseCategory;
+  public String getCaseCategoryCode() {
+    return caseCategoryCode;
   }
   
-  public String getCaseType() {
-    return caseType;
+  public String getCaseTypeCode() {
+    return caseTypeCode;
   }
   
   public List<CaseServiceContact> getServiceContacts() {
     return serviceContacts;
   }
   
-  public String getCaseSubtype() {
-    return caseSubtype;
+  public String getCaseSubtypeCode() {
+    return caseSubtypeCode;
   }
   
   public List<FilingDoc> getFilings() {
@@ -184,9 +182,9 @@ public class FilingInformation {
   public void setServiceContacts(List<CaseServiceContact> serviceContacts) {
     this.serviceContacts = serviceContacts;
   }
-
-  public void setCaseCategory(CaseCategory caseCategory) {
-    this.caseCategory = caseCategory;
+  
+  public void setCaseCategoryCode(String caseCategoryCode) {
+    this.caseCategoryCode = caseCategoryCode;
   }
   
   public void setPreviousCaseId(String id) {
@@ -197,12 +195,12 @@ public class FilingInformation {
     this.caseDocketNumber = Optional.of(num);
   }
   
-  public void setCaseType(String caseType) {
-    this.caseType = caseType;
+  public void setCaseTypeCode(String caseTypeCode) {
+    this.caseTypeCode = caseTypeCode;
   }
   
-  public void setCaseSubtype(String caseSubtype) {
-    this.caseSubtype = caseSubtype;
+  public void setCaseSubtypeCode(String caseSubtypeId) {
+    this.caseSubtypeCode = caseSubtypeId;
   }
   
   public void setLeadContact(Person leadContact) {

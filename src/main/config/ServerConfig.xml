@@ -30,7 +30,7 @@
         <httpj:engine port="9000">
             <httpj:tlsServerParameters>
                 <sec:keyManagers keyPasswordCallbackHandler="edu.suffolk.litlab.efspserver.HttpsCallbackHandler">
-			<sec:keyStore file="src/main/config/efile.suffolklitlab.org.combined.jks" type="JKS"/>
+                    <sec:keyStore file="src/main/config/efile.suffolklitlab.org.combined.jks" type="JKS"/>
                 </sec:keyManagers>
 	        <sec:certAlias>1</sec:certAlias>
             </httpj:tlsServerParameters>

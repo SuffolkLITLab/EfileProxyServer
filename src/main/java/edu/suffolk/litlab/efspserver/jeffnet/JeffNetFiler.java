@@ -10,6 +10,7 @@ import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.ContactInformation;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
+import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
@@ -44,17 +45,17 @@ public class JeffNetFiler implements EfmFilingInterface {
   private final String headerKey;
 
   /** Constructor that takes the URL endpoint of JeffNet to call */
-  public JeffNetFiler(String filingEndpoint) throws URISyntaxException {
-    this(new URI(filingEndpoint));
+  public JeffNetFiler(String filingEndpoint, LegalIssuesTaxonomyCodes taxonomyCodes) throws URISyntaxException {
+    this(new URI(filingEndpoint), taxonomyCodes);
   }
 
-  public JeffNetFiler(URI filingEndpoint) {
+  public JeffNetFiler(URI filingEndpoint, LegalIssuesTaxonomyCodes taxonomyCodes) {
     this.filingEndpoint = filingEndpoint;
     JeffNetLogin login = new JeffNetLogin();
     this.headerKey = login.getHeaderKey();
 
     this.module = new SimpleModule();
-    module.addSerializer(new FilingInformationJeffNetSerializer(FilingInformation.class));
+    module.addSerializer(new FilingInformationJeffNetSerializer(FilingInformation.class, taxonomyCodes));
     module.addSerializer(
         new ContactInfoJeffNetJacksonSerializer(ContactInformation.class));
     module.addSerializer(new NameJeffNetJacksonSerializer(Name.class));
