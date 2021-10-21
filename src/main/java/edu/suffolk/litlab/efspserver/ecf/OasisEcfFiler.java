@@ -170,9 +170,9 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         }
         List<String> filingCodeStrs = maybeFilingCodes.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
         log.info("Existing cat, type, and filings: " + catCode + "," + typeCode + "," + filingCodeStrs);
-        allCodes = serializer.serializeCaseCodes(catCode, typeCode, filingCodeStrs, collector);
+        allCodes = serializer.serializeCaseCodesIndexed(catCode, typeCode, filingCodeStrs, collector);
       } else {
-        allCodes = serializer.serializeCaseCodes(info, collector);
+        allCodes = serializer.serializeCaseCodes(info, collector, isInitialFiling);
       }
 
       boolean anyAmtInControversy = allCodes.filings.stream().anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"));

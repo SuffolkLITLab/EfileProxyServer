@@ -90,12 +90,21 @@ public class CodesService {
   @Path("/courts/{court_id}/categories")
   public Response getCategories(@Context HttpHeaders httpHeaders,
     @PathParam("court_id") String courtId,
-    @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly) throws SQLException {
+    @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly,
+    @QueryParam("timing") String timing) throws SQLException {
     if (!cd.getAllLocations().contains(courtId)) {
       return Response.status(404).entity("Court does not exist " + courtId).build();
     }
+    Optional<Boolean> isInitial = Optional.empty();
+    if (timing == null || timing.isBlank()) {
+      isInitial = Optional.empty();
+    } else if (timing.equalsIgnoreCase("Intial")) {
+      isInitial = Optional.of(true);
+    } else if (timing.equalsIgnoreCase("Subsequent")) {
+      isInitial = Optional.of(false);
+    }
     if (fileableOnly) {
-      List<CaseCategory> categories = cd.getFilableCaseCategories(courtId);
+      List<CaseCategory> categories = cd.getFilableCaseCategories(courtId, isInitial);
       return Response.ok(categories).build();
     } else {
       List<CaseCategory> categories = cd.getCaseCategoriesFor(courtId);
