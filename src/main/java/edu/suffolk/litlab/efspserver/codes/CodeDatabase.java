@@ -153,11 +153,14 @@ public class CodeDatabase extends DatabaseInterface {
     });
   }
   
-  public List<CaseCategory> getFilableCaseCategories(String courtLocationId) {
+  public List<CaseCategory> getFilableCaseCategories(String courtLocationId, Optional<Boolean> initial) {
     return safetyWrap(() -> {
-      String query = CaseCategory.getFilableCaseCategoryForLoc();
-      PreparedStatement st = conn.prepareStatement(query);
-      st.setString(1, courtLocationId);
+      PreparedStatement st;
+      if (initial.isPresent()) {
+        st = CaseCategory.prepFilableQueryTiming(conn, courtLocationId, initial.get().toString());
+      } else {
+        st = CaseCategory.prepFilableQuery(conn, courtLocationId); 
+      }
       ResultSet rs = st.executeQuery();
       List<CaseCategory> cats = new ArrayList<CaseCategory>();
       while (rs.next()) {

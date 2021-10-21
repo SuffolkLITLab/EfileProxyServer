@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver.codes;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -49,6 +51,20 @@ public class CaseCategory {
   public String getCode() {
     return code;
   }
+  
+  public static PreparedStatement prepFilableQueryTiming(Connection conn, String courtLocationId, 
+      String isInitial) throws SQLException {
+    PreparedStatement st = conn.prepareStatement(getFileableCaseCategoryForTiming());
+    st.setString(1, courtLocationId);
+    st.setString(2, isInitial);
+    return st;
+  }
+
+  public static PreparedStatement prepFilableQuery(Connection conn, String courtLocationId) throws SQLException {
+    PreparedStatement st = conn.prepareStatement(getFileableCaseCategoryForLoc());
+    st.setString(1, courtLocationId);
+    return st;
+  }
 
   public static String getCaseCategoriesForLoc() {
     return """
@@ -64,7 +80,7 @@ public class CaseCategory {
         FROM casecategory WHERE location=? AND name=?""";
   }
 
-  public static String getFilableCaseCategoryForLoc() {
+  public static String getFileableCaseCategoryForLoc() {
     return """
         SELECT cat.code, cat.name, cat.ecfcasetype, cat.procedureremedyinitial,
           cat.procedureremedysubsequent, cat.damageamountinitial, cat.damageamountsubsequent
@@ -78,6 +94,25 @@ public class CaseCategory {
                   INNER JOIN casetype AS type
                   ON cate.code = type.casecategory AND cate.location = type.location
                 WHERE cate.location=?
+            ) cat
+        WHERE cat.RN = 1
+        """;
+  }
+
+  public static String getFileableCaseCategoryForTiming() {
+    return """
+        SELECT cat.code, cat.name, cat.ecfcasetype, cat.procedureremedyinitial,
+          cat.procedureremedysubsequent, cat.damageamountinitial, cat.damageamountsubsequent
+        FROM (
+                SELECT cate.code, cate.name, cate.ecfcasetype, cate.procedureremedyinitial,
+                  cate.procedureremedysubsequent, cate.damageamountinitial,
+                  cate.damageamountsubsequent,
+                  type.code AS type_code,
+                  ROW_NUMBER() OVER(PARTITION BY cate.code ORDER BY type.code) AS RN
+                FROM casecategory as cate
+                  INNER JOIN casetype AS type
+                  ON cate.code = type.casecategory AND cate.location = type.location
+                WHERE cate.location=? and type.initial ILIKE ?
             ) cat
         WHERE cat.RN = 1
         """;

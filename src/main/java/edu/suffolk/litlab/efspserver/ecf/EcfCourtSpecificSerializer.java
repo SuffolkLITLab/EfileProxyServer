@@ -95,7 +95,8 @@ public class EcfCourtSpecificSerializer {
     this.court = court;
   }
   
-  public ComboCaseCodes serializeCaseCodes(String caseCategoryCode, 
+  /** Given the case info from a case that's already in the court's system on a subsequent filing. */
+  public ComboCaseCodes serializeCaseCodesIndexed(String caseCategoryCode, 
       String caseTypeCode, List<String> filingCodeStrs, InfoCollector collector) throws FilingError {
     CaseCategory caseCategory = vetCaseCat(cd.getCaseCategoryWithKey(this.court.code, caseCategoryCode), collector);
     List<CaseType> caseTypes = cd.getCaseTypesFor(court.code, caseCategory.code, Optional.empty());
@@ -105,7 +106,8 @@ public class EcfCourtSpecificSerializer {
     return new ComboCaseCodes(caseCategory, type, filingRealCodes);
   }
   
-  public ComboCaseCodes serializeCaseCodes(FilingInformation info, InfoCollector collector) throws FilingError {
+  /** Either an initial filing, or a non-indexed case. */
+  public ComboCaseCodes serializeCaseCodes(FilingInformation info, InfoCollector collector, boolean isInitialFiling) throws FilingError {
     Optional<CaseCategory> maybeCaseCat = cd.getCaseCategoryWithKey(court.code, info.getCaseCategoryCode());
     CaseCategory caseCategory = vetCaseCat(maybeCaseCat, collector); 
 
@@ -113,7 +115,7 @@ public class EcfCourtSpecificSerializer {
     Optional<CaseType> maybeType = caseTypes.stream()
         .filter(type -> type.code.equals(info.getCaseTypeCode()))
         .findFirst();
-    CaseType type = vetCaseType(maybeType, caseTypes, caseCategory, collector, true);
+    CaseType type = vetCaseType(maybeType, caseTypes, caseCategory, collector, isInitialFiling);
 
     if (type.initial && info.getCaseDocketNumber().isPresent()) {
       FilingError err = FilingError.malformedInterview("Initial filing case type can't have docket number");
