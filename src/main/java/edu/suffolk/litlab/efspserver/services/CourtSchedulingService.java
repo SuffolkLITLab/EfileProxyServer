@@ -62,6 +62,10 @@ import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.ecf.ComboCaseCodes;
 import edu.suffolk.litlab.efspserver.ecf.EcfCourtSpecificSerializer;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
+import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.CourtRecordMDEPort;
+import tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 import ecfv5.gov.niem.release.niem.domains.cbrn._4.MessageContentErrorType;
 import ecfv5.gov.niem.release.niem.domains.cbrn._4.MessageErrorType;
 import ecfv5.gov.niem.release.niem.domains.cbrn._4.MessageStatusType;
@@ -102,6 +106,9 @@ public class CourtSchedulingService {
   private final Map<String, InterviewToFilingEntityConverter> converterMap;
   private final SecurityHub security;
   private final CodeDatabase cd;
+  private final CourtRecordMDEService recordFactory = new CourtRecordMDEService(
+      CourtRecordMDEService.WSDL_LOCATION,
+      CourtRecordMDEService.SERVICE);
 
   
   public CourtSchedulingService(Map<String, InterviewToFilingEntityConverter> converterMap, SecurityHub security, CodeDatabase cd) {
@@ -122,6 +129,7 @@ public class CourtSchedulingService {
   @Path("/courts/{court_id}/return_date")
   public Response getReturnDate(@Context HttpHeaders httpHeaders, 
       @PathParam("court_id") String courtId, String allVars) throws SQLException, JAXBException {
+    String apiKey = httpHeaders.getHeaderString("X-API-KEY");
     Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort(httpHeaders);
     if (maybeServ.isEmpty()) {
       return Response.status(401).build();
@@ -147,7 +155,33 @@ public class CourtSchedulingService {
     }
     try {
     EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo.get());
-    ComboCaseCodes allCodes = serializer.serializeCaseCodes(info, collector);
+    boolean isInitialFiling = info.getPreviousCaseId().isEmpty() && info.getCaseDocketNumber().isEmpty();
+    boolean isFirstIndexedFiling = info.getPreviousCaseId().isEmpty(); 
+    ComboCaseCodes allCodes;
+    if (!isFirstIndexedFiling) {
+      Optional<CourtRecordMDEPort> recordPort = setupRecordPort(apiKey);
+      if (recordPort.isEmpty()) {
+        return Response.status(500).entity("Can't make connection to retrieve court records for subsequent case").build();
+      }
+      CaseQueryMessageType query = new CaseQueryMessageType();
+      ServiceHelpers.prep(query, info.getCourtLocation());
+      query.setCaseTrackingID(XmlHelper.convertString(info.getPreviousCaseId().get()));
+      query.setCaseQueryCriteria(CasesService.getCriteria());
+      CaseResponseMessageType resp = recordPort.get().getCase(query);
+      resp.getCase().getValue().getCaseTrackingID();
+      String catCode = resp.getCase().getValue().getCaseCategoryText().getValue();
+      String typeCode = CasesService.getCaseTypeCode(resp.getCase().getValue()).get().getCaseTypeText().getValue(); 
+      List<Optional<String>> maybeFilingCodes = info.getFilings().stream().map(f -> f.getFilingCode()).collect(Collectors.toList()); 
+      if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
+        InterviewVariable filingVar = collector.requestVar("court_bundle[i].tyler_filing_type", "What filing type is this?", "text"); 
+        collector.addRequired(filingVar);
+      }
+      List<String> filingCodeStrs = maybeFilingCodes.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
+      log.info("Existing cat, type, and filings: " + catCode + "," + typeCode + "," + filingCodeStrs);
+      allCodes = serializer.serializeCaseCodesIndexed(catCode, typeCode, filingCodeStrs, collector);
+    } else {
+      allCodes = serializer.serializeCaseCodes(info, collector, isInitialFiling);
+    }
     Optional<String> caseTrackingId = info.getPreviousCaseId(); 
     List<FilingDoc.PartyId> partyIds = info.getFilers();
     // HACK(brycew): ECF allows multiple filers for an envelope, but this stupid Tyler call only takes a single Party Id. 
@@ -463,6 +497,26 @@ public class CourtSchedulingService {
       return Optional.empty();
     }
     return Optional.of(serv);
+  }
+
+  private Optional<CourtRecordMDEPort> setupRecordPort(String apiToken) {
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
+    if (creds.isEmpty()) {
+      return Optional.empty();
+    }
+
+    CourtRecordMDEPort port = recordFactory.getCourtRecordMDEPort();
+    ServiceHelpers.setupServicePort((BindingProvider) port);
+    Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
+    try {
+      List<Header> headersList = List.of(creds.get().toHeader());
+      ctx.put(Header.HEADER_LIST, headersList);
+    } catch (JAXBException ex) {
+      log.warn(ex.toString());
+      return Optional.empty();
+    }
+
+    return Optional.of(port);
   }
   
   private static void setupReq(CaseFilingType cft, String courtId) {
