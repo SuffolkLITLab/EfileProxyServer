@@ -124,11 +124,11 @@ public class EcfCourtSpecificSerializer {
     
     List<Optional<String>> maybeFilingCodes = info.getFilings().stream().map(f -> f.getFilingCode()).collect(Collectors.toList());
     if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
-      InterviewVariable filingVar = collector.requestVar("court_bundle[i].tyler_filing_type", "What filing type is this?", "text"); 
+      InterviewVariable filingVar = collector.requestVar("al_court_bundle[i].tyler_filing_type", "What filing type is this?", "text"); 
       collector.addRequired(filingVar);
     }
     List<String> filingCodeStrs = maybeFilingCodes.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
-    List<FilingCode> filingCodes = vetFilingTypes(filingCodeStrs, caseCategory, type, collector, true);
+    List<FilingCode> filingCodes = vetFilingTypes(filingCodeStrs, caseCategory, type, collector, isInitialFiling);
     return new ComboCaseCodes(caseCategory, type, filingCodes); 
   }
 
