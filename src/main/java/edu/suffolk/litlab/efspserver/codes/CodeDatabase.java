@@ -216,7 +216,7 @@ public class CodeDatabase extends DatabaseInterface {
     return safetyWrap(() -> {
       PreparedStatement st;
       if (initial.isPresent()) {
-        st = CaseType.prepQueryTiming(conn, courtLocationId, caseCategoryCode, initial.get().toString());
+        st = CaseType.prepQueryTiming(conn, courtLocationId, caseCategoryCode, initial);  
       } else {
         st = CaseType.prepQueryBroad(conn, courtLocationId, caseCategoryCode);
       }
