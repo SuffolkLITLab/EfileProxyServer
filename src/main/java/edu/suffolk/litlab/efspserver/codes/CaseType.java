@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class CaseType {
   public String code;
@@ -54,11 +55,19 @@ public class CaseType {
   }
   
   public static PreparedStatement prepQueryTiming(Connection conn, String courtLocationId,
-      String caseCategoryCode, String isInitial) throws SQLException {
-    PreparedStatement st = conn.prepareStatement(getCaseTypesForTiming());
+      String caseCategoryCode, Optional<Boolean> isInitial) throws SQLException {
+    boolean specifiedInitial = isInitial.orElse(false);
+    if (specifiedInitial) {
+      PreparedStatement st = conn.prepareStatement(getCaseTypesForTiming());
+      st.setString(1, courtLocationId);
+      st.setString(2, caseCategoryCode);
+      st.setString(3, Boolean.toString(specifiedInitial));
+      return st;
+    }
+    
+    PreparedStatement st = conn.prepareStatement(getCaseTypesForCategory());
     st.setString(1, courtLocationId);
     st.setString(2, caseCategoryCode);
-    st.setString(3, isInitial);
     return st;
   }
 
