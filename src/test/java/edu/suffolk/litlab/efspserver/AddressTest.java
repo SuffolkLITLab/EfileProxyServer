@@ -58,7 +58,8 @@ public class AddressTest {
     JAXBElement<?> state = sat.getLocationState();
     assertTrue(state.getValue() instanceof ProperNameTextType);
     
-    tyler.efm.services.schema.common.AddressType tylerAddr = serializer.serializeTylerAddress(addr); 
+    tyler.efm.services.schema.common.AddressType tylerAddr =
+        EcfCourtSpecificSerializer.serializeTylerAddress(addr);
     assertEquals(tylerAddr.getAddressLine1(), "100 Circle Road");
     assertEquals(tylerAddr.getAddressLine2(), "Apt 2");
     assertEquals(tylerAddr.getCity(), "Plano");

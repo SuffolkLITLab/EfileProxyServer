@@ -60,8 +60,10 @@ public class FilingInformationDocassembleJacksonDeserializer
     List<Person> people = new ArrayList<Person>();
     JsonNode peopleElements = topObj.get(potentialMember).get("elements");
     for (int i = 0; i < peopleElements.size(); i++) {
+      collector.pushAttributeStack(potentialMember + "[" + i + "]");
       Result<Person, FilingError> per =
           PersonDocassembleJacksonDeserializer.fromNode(peopleElements.get(i), collector);
+      collector.popAttributeStack();
       if (per.isErr()) {
         FilingError ex = per.unwrapErrOrElseThrow();
         log.warn("Person exception: " + ex);
@@ -72,7 +74,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     return people;
   }
 
-  public Result<FilingInformation, FilingError> fromNode(JsonNode node, InfoCollector collector) throws FilingError {
+  public static Result<FilingInformation, FilingError> fromNode(JsonNode node, InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
       FilingError err = FilingError.malformedInterview("interview isn't a json object");
       collector.error(err);
@@ -272,8 +274,10 @@ public class FilingInformationDocassembleJacksonDeserializer
 
     for (int i = 0; i < elems.size(); i++) {
       try {
+        collector.pushAttributeStack("al_court_bundle.elements[" + i + "]");
         Optional<FilingDoc> maybeDoc = FilingDocDocassembleJacksonDeserializer.fromNode(
             elems.get(i), varToId, i, collector); 
+        collector.popAttributeStack();
         maybeDoc.ifPresent(doc -> {
           filingDocs.add(doc);
         });
@@ -302,8 +306,10 @@ public class FilingInformationDocassembleJacksonDeserializer
       InterviewVariable var = collector.requestVar("lead_contact", "Someone to contact about this case", "ALIndividual");
       collector.addRequired(var);
     } else {
+      collector.pushAttributeStack("lead_contact");
       Result<Person, FilingError> per =
           PersonDocassembleJacksonDeserializer.fromNode(node.get("lead_contact"), collector);
+      collector.popAttributeStack();
       if (per.isErr() || per.unwrapOrElseThrow().getContactInfo().getEmail().isEmpty()) {
         FilingError ex = per.unwrapErrOrElseThrow();
         log.warn("Person exception: " + ex);
