@@ -53,14 +53,17 @@ public class CaseCategory {
   }
   
   public static PreparedStatement prepFilableQueryTiming(Connection conn, String courtLocationId, 
-      String isInitial) throws SQLException {
-    PreparedStatement st = conn.prepareStatement(getFileableCaseCategoryForTiming());
-    st.setString(1, courtLocationId);
-    st.setString(2, isInitial);
-    return st;
+      Boolean isInitial) throws SQLException {
+    if (isInitial) {
+      PreparedStatement st = conn.prepareStatement(getFileableCaseCategoryForTiming());
+      st.setString(1, courtLocationId);
+      st.setString(2, Boolean.toString(isInitial));
+      return st;
+    }
+    return prepFileableQuery(conn, courtLocationId); 
   }
 
-  public static PreparedStatement prepFilableQuery(Connection conn, String courtLocationId) throws SQLException {
+  public static PreparedStatement prepFileableQuery(Connection conn, String courtLocationId) throws SQLException {
     PreparedStatement st = conn.prepareStatement(getFileableCaseCategoryForLoc());
     st.setString(1, courtLocationId);
     return st;
@@ -71,13 +74,6 @@ public class CaseCategory {
         SELECT code, name, ecfcasetype, procedureremedyinitial,
           procedureremedysubsequent, damageamountinitial, damageamountsubsequent
         FROM casecategory WHERE location=?""";
-  }
-
-  public static String getCaseCategoryForLoc() {
-    return """
-        SELECT code, name, ecfcasetype, procedureremedyinitial,
-          procedureremedysubsequent, damageamountinitial, damageamountsubsequent
-        FROM casecategory WHERE location=? AND name=?""";
   }
 
   public static String getFileableCaseCategoryForLoc() {

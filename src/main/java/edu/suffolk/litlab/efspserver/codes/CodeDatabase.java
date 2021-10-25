@@ -157,9 +157,9 @@ public class CodeDatabase extends DatabaseInterface {
     return safetyWrap(() -> {
       PreparedStatement st;
       if (initial.isPresent()) {
-        st = CaseCategory.prepFilableQueryTiming(conn, courtLocationId, initial.get().toString());
+        st = CaseCategory.prepFilableQueryTiming(conn, courtLocationId, initial.get());
       } else {
-        st = CaseCategory.prepFilableQuery(conn, courtLocationId); 
+        st = CaseCategory.prepFileableQuery(conn, courtLocationId); 
       }
       ResultSet rs = st.executeQuery();
       List<CaseCategory> cats = new ArrayList<CaseCategory>();
@@ -171,29 +171,6 @@ public class CodeDatabase extends DatabaseInterface {
     });
   }
 
-  /* Put in a partially filled case category, get out a full on from the tables. */
-  public Optional<CaseCategory> getCaseCategoryFor(String courtLocationId, String caseCatName) {
-    return safetyWrapOpt(() -> {
-      String query = CaseCategory.getCaseCategoryForLoc();
-      PreparedStatement st = conn.prepareStatement(query);
-      st.setString(1, courtLocationId);
-      st.setString(2, caseCatName);
-      ResultSet rs = st.executeQuery();
-      if (rs.next()) {
-        CaseCategory newCat = new CaseCategory(rs); 
-        if (rs.next()) {
-          log.error("There are multiple case categories for " + caseCatName + " and "
-              + courtLocationId);
-          return Optional.empty();
-        }
-        return Optional.of(newCat);
-      } else {
-        log.error("No categories for " + caseCatName + " and " + courtLocationId);
-        return Optional.empty();
-      }
-    });
-  }
-  
   public Optional<CaseCategory> getCaseCategoryWithKey(String courtLocationId, String caseCatCode) {
     return safetyWrapOpt(() -> {
       String query = CaseCategory.getCaseCategoryWithKey();
