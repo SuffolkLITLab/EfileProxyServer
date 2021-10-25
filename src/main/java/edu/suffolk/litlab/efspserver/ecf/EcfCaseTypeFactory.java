@@ -224,7 +224,7 @@ public class EcfCaseTypeFactory {
       id.setIdentificationID(XmlHelper.convertString(attorneyId));
       PersonType pt = ecfCommonObjFac.createPersonType();
       pt.getPersonOtherIdentification().add(id);
-      String xmlId = Integer.toString(attorneyCount);
+      String xmlId = "attorneyCount-" + Integer.toString(attorneyCount);
       pt.setId(xmlId);
       CaseParticipantType cp = ecfCommonObjFac.createCaseParticipantType();
       cp.setEntityRepresentation(ecfCommonObjFac.createEntityPerson(pt));

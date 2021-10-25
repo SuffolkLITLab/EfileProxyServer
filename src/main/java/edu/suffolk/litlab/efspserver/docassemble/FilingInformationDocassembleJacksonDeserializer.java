@@ -174,7 +174,7 @@ public class FilingInformationDocassembleJacksonDeserializer
 
       JsonNode partyToAttorneyJson = node.get("party_to_attorneys");
       if (partyToAttorneyJson != null && partyToAttorneyJson.isObject()) {
-        Map<String, List<String>> partyToAttorney = new HashMap<String, List<String>>();
+        Map<String, List<String>> partyToAttorney = new HashMap<>(); 
         Iterator<Entry<String, JsonNode>> elems = partyToAttorneyJson.fields();
         while (elems.hasNext()) {
           Entry<String, JsonNode> elem = elems.next();
@@ -182,6 +182,7 @@ public class FilingInformationDocassembleJacksonDeserializer
           elem.getValue().elements().forEachRemaining(v -> theseAttorneys.add(v.asText()));
           partyToAttorney.put(elem.getKey(), theseAttorneys);
         }
+        entities.setPartyAttorneyMap(partyToAttorney);
       }
     } else {
       entities.setAttorneyIds(List.of());
@@ -189,7 +190,7 @@ public class FilingInformationDocassembleJacksonDeserializer
 
     JsonNode serviceContactsJson = node.get("service_contacts");
     if (serviceContactsJson != null && serviceContactsJson.isArray()) {
-      List<CaseServiceContact> contacts = new ArrayList<CaseServiceContact>();
+      List<CaseServiceContact> contacts = new ArrayList<>();
       serviceContactsJson.elements().forEachRemaining(servObj -> {
         Optional<String> partyPerId = Optional.empty();
         if (servObj.has("party_association")) {
