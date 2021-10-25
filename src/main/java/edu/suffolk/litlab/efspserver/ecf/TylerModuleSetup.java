@@ -222,9 +222,9 @@ public class TylerModuleSetup implements EfmModuleSetup {
     log.info("Wsdl location: " + jaxWsEndpoint.getWsdlLocation());
     log.info("Address : " + jaxWsEndpoint.getAddress());
     log.info("Bean name: " + jaxWsEndpoint.getBeanName());
-    Endpoint cxfEndpoint = jaxWsEndpoint.getServer().getEndpoint();
-    cxfEndpoint.getBinding().getBindingInfo().setProperty("security.callback-handler", SoapX509CallbackHandler.class.getName());
-    cxfEndpoint.getBinding().getBindingInfo().setProperty("security.signature.properties", "client_sign.properties");
+    //Endpoint cxfEndpoint = jaxWsEndpoint.getServer().getEndpoint();
+    //cxfEndpoint.getBinding().getBindingInfo().setProperty("security.callback-handler", SoapX509CallbackHandler.class.getName());
+    //cxfEndpoint.getBinding().getBindingInfo().setProperty("security.signature.properties", "client_sign.properties");
     
     /*
     Map<String, Object> inProps = new HashMap<String, Object>();
