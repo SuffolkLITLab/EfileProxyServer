@@ -154,17 +154,13 @@ public class EcfCaseTypeFactory {
     // as x where x.code_count > 1 order by location;
 
     // But, what do they have different from each other? Not sure
-    tyler.ecf.extensions.common.ObjectFactory tylerObjFac =
-        new tyler.ecf.extensions.common.ObjectFactory();
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfCommonObjFac =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-    gov.niem.niem.niem_core._2.ObjectFactory of = new gov.niem.niem.niem_core._2.ObjectFactory();
-    gov.niem.niem.structures._2.ObjectFactory structObjFac =
-        new gov.niem.niem.structures._2.ObjectFactory();
+    var tylerObjFac = new tyler.ecf.extensions.common.ObjectFactory();
+    var ecfCommonObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+    var of = new gov.niem.niem.niem_core._2.ObjectFactory();
+    var structObjFac = new gov.niem.niem.structures._2.ObjectFactory();
 
     tyler.ecf.extensions.common.CaseAugmentationType ecfAug =
         tylerObjFac.createCaseAugmentationType();
-
 
     if (caseType.code.isEmpty()){
       log.warn("Type's code is empty?: " + caseType);
@@ -173,7 +169,6 @@ public class EcfCaseTypeFactory {
       log.info("Setting case type text to " + caseType.toString());
       ecfAug.setCaseTypeText(XmlHelper.convertText(caseType.code));
     }
-
 
     DataFieldRow subTypeConfig = cd.getDataField(courtLocation.code, "CaseInformationCaseSubType");
     if (subTypeConfig.isvisible) {
@@ -478,9 +473,9 @@ public class EcfCaseTypeFactory {
       JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
       Optional<String> caseDocketId,
       Optional<BigDecimal> amountInControversy) {
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory ecfCivilObjFac =
+    var ecfCivilObjFac =
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory();
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfCommonObjFac =
+    var ecfCommonObjFac =
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     CivilCaseType c = ecfCivilObjFac.createCivilCaseType();
     caseDocketId.ifPresent(docket -> {
@@ -510,9 +505,9 @@ public class EcfCaseTypeFactory {
       JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
       Optional<String> caseDocketId,
       JsonNode node) {
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.ObjectFactory ecfDomesticObjFac =
+    var ecfDomesticObjFac =
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.ObjectFactory();
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfCommonObjFac =
+    var ecfCommonObjFac =
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     DomesticCaseType d = ecfDomesticObjFac.createDomesticCaseType();
     caseDocketId.ifPresent(docket -> {

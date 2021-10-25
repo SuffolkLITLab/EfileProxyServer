@@ -186,7 +186,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
                   .collect(Collectors.toList()),
               queryType, info.getMiscInfo(), serializer, collector);
 
-      oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory coreObjFac =
+      var coreObjFac =
           new oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory();
       CoreFilingMessageType cfm = coreObjFac.createCoreFilingMessageType();
 
@@ -344,7 +344,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       return serveFilingIfReady(cfm, info, collector, apiToken);
     }
 
-    oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory wsOf =
+    var wsOf =
         new oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory();
     PaymentMessageType pmt = PaymentFactory.makePaymentMessage(info.getPaymentId());
     ReviewFilingRequestMessageType rfrm = wsOf.createReviewFilingRequestMessageType();

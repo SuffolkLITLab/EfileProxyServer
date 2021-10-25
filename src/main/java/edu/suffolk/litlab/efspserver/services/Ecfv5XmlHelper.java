@@ -70,9 +70,9 @@ public class Ecfv5XmlHelper {
   }
   
   public static ecfv5.gov.niem.release.niem.proxy.xsd._4.Boolean convertBool(boolean value) {
-    ecfv5.gov.niem.release.niem.proxy.xsd._4.Boolean val = new ecfv5.gov.niem.release.niem.proxy.xsd._4.Boolean();
-    val.setValue(value);
-    return val;
+    var boolVal = new ecfv5.gov.niem.release.niem.proxy.xsd._4.Boolean();
+    boolVal.setValue(value);
+    return boolVal;
   }
 
   public static CourtType convertCourtType(String courtId) {

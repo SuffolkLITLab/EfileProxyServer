@@ -254,8 +254,7 @@ public class CourtSchedulingService {
     }
     ct.getCaseAugmentationPoint().add(jxObjFac.createCaseAugmentation(jAug));
 
-    ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseAugmentationType ecfAug = 
-        oasisObjFac.createCaseAugmentationType();
+    var ecfAug = oasisObjFac.createCaseAugmentationType();
     TextType catText = niemObjFac.createTextType();
     catText.setValue(allCodes.cat.code);
     ecfAug.getRest().add(oasisObjFac.createCaseCategoryCode(catText));
@@ -315,8 +314,7 @@ public class CourtSchedulingService {
     }
     ct.getCaseAugmentationPoint().add(oasisObjFac.createCaseAugmentation(ecfAug));
 
-    ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.CaseAugmentationType oasisAug =
-        oasisCivilObjFac.createCaseAugmentationType();
+    var oasisAug = oasisCivilObjFac.createCaseAugmentationType();
     if (maybeAmt.isPresent()) {
       AmountType at = niemObjFac.createAmountType();
       Decimal d = proxyObjFac.createDecimal();
@@ -327,7 +325,7 @@ public class CourtSchedulingService {
     oasisAug.setJuryDemandIndicator(Ecfv5XmlHelper.convertBool(false));
     ct.getCaseAugmentationPoint().add(oasisCivilObjFac.createCaseAugmentation(oasisAug));
 
-    ecfv5.tyler.ecf.v5_0.extensions.common.CaseAugmentationType tylerAug = tylerObjFac.createCaseAugmentationType();
+    var tylerAug = tylerObjFac.createCaseAugmentationType();
     firstFiler.ifPresent(fil -> {
       FilingPartyEntityType fpet = tylerObjFac.createFilingPartyEntityType();
       log.info("Filing party: " + fil); 

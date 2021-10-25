@@ -124,7 +124,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   @Override
   public MessageReceiptMessageType notifyEvent(EventCallbackMessageType eventCallbackMessage) {
     log.info("Full NotifyEvent msg" + eventCallbackMessage);
-    // TODO Auto-generated method stub
+    // TODO not going to turn on for now. Someone should implement this and push upstream
     return null;
   }
 
