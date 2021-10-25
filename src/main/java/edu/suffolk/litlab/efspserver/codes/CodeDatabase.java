@@ -106,7 +106,7 @@ public class CodeDatabase extends DatabaseInterface {
       //ColumnSet cs = doc.getColumnSet();
       for (Row r : doc.getSimpleCodeList().getRow()) {
         // HACK(brycew): jeez, this is horrible. Figure a better option
-        Map<String, String> rowsVals = new HashMap<String, String>();
+        Map<String, String> rowsVals = new HashMap<>();
         for (Value v : r.getValue()) {
           Column c = (Column) v.getColumnRef();
           rowsVals.put(c.getId(), v.getSimpleValue().getValue());
@@ -145,7 +145,7 @@ public class CodeDatabase extends DatabaseInterface {
       PreparedStatement st = conn.prepareStatement(query);
       st.setString(1, courtLocationId);
       ResultSet rs = st.executeQuery();
-      List<CaseCategory> cats = new ArrayList<CaseCategory>();
+      List<CaseCategory> cats = new ArrayList<>();
       while (rs.next()) {
         cats.add(new CaseCategory(rs)); 
       }
@@ -162,7 +162,7 @@ public class CodeDatabase extends DatabaseInterface {
         st = CaseCategory.prepFileableQuery(conn, courtLocationId); 
       }
       ResultSet rs = st.executeQuery();
-      List<CaseCategory> cats = new ArrayList<CaseCategory>();
+      List<CaseCategory> cats = new ArrayList<>();
       while (rs.next()) {
         cats.add(new CaseCategory(rs)); 
       }
@@ -198,7 +198,7 @@ public class CodeDatabase extends DatabaseInterface {
         st = CaseType.prepQueryBroad(conn, courtLocationId, caseCategoryCode);
       }
       ResultSet rs = st.executeQuery();
-      List<CaseType> types = new ArrayList<CaseType>();
+      List<CaseType> types = new ArrayList<>();
       while (rs.next()) {
         types.add(new CaseType(rs));
       }
@@ -350,7 +350,7 @@ public class CodeDatabase extends DatabaseInterface {
       caseSt.setString(1, courtLocationId);
       caseSt.setString(2, typeCode);
       ResultSet rs = caseSt.executeQuery();
-      List<PartyType> partyTypes = new ArrayList<PartyType>();
+      List<PartyType> partyTypes = new ArrayList<>();
       while (rs.next()) {
         partyTypes.add(new PartyType(rs));
       }
@@ -373,7 +373,7 @@ public class CodeDatabase extends DatabaseInterface {
       st.setString(1, courtLocationId);
       st.setString(2, caseTypeId);
       ResultSet rs = st.executeQuery();
-      List<CrossReference> types = new ArrayList<CrossReference>();
+      List<CrossReference> types = new ArrayList<>();
       while (rs.next()) {
         types.add(new CrossReference(rs));
       }
@@ -387,7 +387,7 @@ public class CodeDatabase extends DatabaseInterface {
       PreparedStatement st = conn.prepareStatement(query);
       st.setString(1, courtLocationId);
       ResultSet rs = st.executeQuery();
-      List<ServiceCodeType> types = new ArrayList<ServiceCodeType>();
+      List<ServiceCodeType> types = new ArrayList<>();
       while (rs.next()) {
         types.add(new ServiceCodeType(rs));
       }

@@ -266,8 +266,7 @@ public class EcfCourtSpecificSerializer {
           log.info("Can't have language: " + lang);
           collector.addWrong(collector.requestVar("language", "The primary language of this person", "choice", langs));
         }
-        final gov.niem.niem.iso_639_3._2.ObjectFactory lctOf =
-            new gov.niem.niem.iso_639_3._2.ObjectFactory();
+        final var lctOf = new gov.niem.niem.iso_639_3._2.ObjectFactory();
         LanguageCodeType lct = lctOf.createLanguageCodeType();
         lct.setValue(lang);
         PersonLanguageType plt = niemObjFac.createPersonLanguageType();
@@ -333,8 +332,7 @@ public class EcfCourtSpecificSerializer {
   }
 
   public static tyler.efm.services.schema.common.AddressType serializeTylerAddress(Address myAddr) throws FilingError {
-    tyler.efm.services.schema.common.ObjectFactory efmObjFac =
-        new tyler.efm.services.schema.common.ObjectFactory();
+    var efmObjFac = new tyler.efm.services.schema.common.ObjectFactory();
     tyler.efm.services.schema.common.AddressType addr = efmObjFac.createAddressType();
     addr.setAddressLine1(myAddr.getStreet());
     addr.setAddressLine2(myAddr.getApartment());
@@ -451,10 +449,8 @@ public class EcfCourtSpecificSerializer {
           int sequenceNum, CaseCategory caseCategory, CaseType motionType, FilingCode filing,
           List<FilingComponent> components,
           JsonNode miscInfo, InfoCollector collector) throws IOException, FilingError {
-    tyler.ecf.extensions.common.ObjectFactory tylerObjFac =
-        new tyler.ecf.extensions.common.ObjectFactory();
-    gov.niem.niem.niem_core._2.ObjectFactory niemObjFac =
-        new gov.niem.niem.niem_core._2.ObjectFactory();
+    var tylerObjFac = new tyler.ecf.extensions.common.ObjectFactory();
+    var niemObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
     DocumentType docType = tylerObjFac.createDocumentType();
     DataFieldRow row = cd.getDataField(this.court.code, "DocumentDescription");
     if (row.isvisible) {
