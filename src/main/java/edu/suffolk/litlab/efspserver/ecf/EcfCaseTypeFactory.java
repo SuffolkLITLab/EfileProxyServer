@@ -194,16 +194,21 @@ public class EcfCaseTypeFactory {
     List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocation.code, caseType.code);
     List<String> partyTypeNames = partyTypes.stream().map(p -> p.name).collect(Collectors.toList());
     Set<String> requiredTypes = partyTypes.stream().filter(t -> t.isrequired).map(t -> t.code).collect(Collectors.toSet());
-    Set<String> existingTypes = new HashSet<String>();
+    Set<String> existingTypes = new HashSet<>();
+    Map<String, Object> partyIdToRefObj = new HashMap<>();
     for (Person plaintiff : info.getPlaintiffs()) {
       CaseParticipantType cp = serializer.serializeEcfCaseParticipant(plaintiff, collector, partyTypes, partyTypeNames);
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
+      partyIdToRefObj.put(plaintiff.getIdString(), cp.getEntityRepresentation().getValue());
+      log.info("Added " + plaintiff.getIdString() + " to cp");
       existingTypes.add(plaintiff.getRole());
     }
 
     for (Person defendant : info.getDefendants()) {
       CaseParticipantType cp = serializer.serializeEcfCaseParticipant(defendant, collector, partyTypes, partyTypeNames);
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
+      partyIdToRefObj.put(defendant.getIdString(), cp.getEntityRepresentation().getValue());
+      log.info("Added " + defendant.getIdString() + " to ref objs");
       existingTypes.add(defendant.getRole());
     }
     
@@ -217,7 +222,7 @@ public class EcfCaseTypeFactory {
     }
 
     int attorneyCount = 1;
-    Map<String, String> attorneyIdToXmlId = new HashMap<String, String>();
+    Map<String, PersonType> attorneyIdToXmlId = new HashMap<>();
     for (String attorneyId : info.getAttorneyIds()) {
       IdentificationType id = of.createIdentificationType();
       id.setIdentificationCategory(of.createIdentificationCategoryText(XmlHelper.convertText("ATTORNEYID")));
@@ -231,19 +236,21 @@ public class EcfCaseTypeFactory {
       // All attorneys have the role code of ATTY
       cp.setCaseParticipantRoleCode(XmlHelper.convertText("ATTY"));
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
-      attorneyIdToXmlId.put(attorneyId, xmlId);
+      attorneyIdToXmlId.put(attorneyId, pt);
       attorneyCount += 1;
     }
 
     DataFieldRow attRow = cd.getDataField(info.getCourtLocation(), "PartyAttorney");
-    for (Map.Entry<String, List<String>> partyAtts : info.getPartyAttorneyMap().entrySet()) {
-      String partyId = partyAtts.getKey();
+    for (Map.Entry<String, List<String>> partyAttys : info.getPartyAttorneyMap().entrySet()) {
+      log.info("Setting Attorneys for : " + partyAttys.getKey());
+      Object partyObj = partyIdToRefObj.get(partyAttys.getKey());
+      log.info("Party obj: " + partyObj);
       ReferenceType repdRef = structObjFac.createReferenceType();
-      repdRef.setRef(partyId);
+      repdRef.setRef(partyObj);
       if (!attRow.isvisible) {
         continue;
       }
-      if (partyAtts.getValue().isEmpty()) {
+      if (partyAttys.getValue().isEmpty()) {
         if (attRow.isrequired) {
           InterviewVariable var = collector.requestVar("party_to_attorney",
               "Attorneys are required for this court", "DADict");
@@ -252,20 +259,22 @@ public class EcfCaseTypeFactory {
         CaseOfficialType t = ecfCommonObjFac.createCaseOfficialType();
         t.getCaseRepresentedPartyReference().add(repdRef);
         ReferenceType attRef = structObjFac.createReferenceType();
-        attRef.setRef(partyId);
+        attRef.setRef(partyObj);
         t.setRoleOfPersonReference(attRef);
 
         ecfAug.getCaseOtherEntityAttorney().add(t);
       } else {
-        if (!courtLocation.allowmultipleattorneys && partyAtts.getValue().size() > 1) {
+        if (!courtLocation.allowmultipleattorneys && partyAttys.getValue().size() > 1) {
           FilingError err = FilingError.malformedInterview("Court " + info.getCourtLocation() + " doesn't allow multiple lawyers per case party.");
           collector.error(err);
         }
-        for (String attId : partyAtts.getValue()) {
+        for (String attyId : partyAttys.getValue()) {
+          log.info("Adding atty: " + attyId);
           CaseOfficialType t = ecfCommonObjFac.createCaseOfficialType();
           t.getCaseRepresentedPartyReference().add(repdRef);
           ReferenceType attRef = structObjFac.createReferenceType();
-          attRef.setRef(attorneyIdToXmlId.get(attId));
+          log.info("Atty obj: " + attorneyIdToXmlId.get(attyId));
+          attRef.setRef(attorneyIdToXmlId.get(attyId));
           t.setRoleOfPersonReference(attRef);
 
           ecfAug.getCaseOtherEntityAttorney().add(t);
