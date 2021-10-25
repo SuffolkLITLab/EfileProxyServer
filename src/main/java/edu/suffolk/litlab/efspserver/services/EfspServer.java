@@ -185,7 +185,7 @@ public class EfspServer {
     }
     OrgMessageSender sender = new OrgMessageSender(md, sendMsg.get());
 
-    List<EfmModuleSetup> modules = new ArrayList<EfmModuleSetup>();
+    List<EfmModuleSetup> modules = new ArrayList<>();
     TylerModuleSetup.create(cd, ud, sender).ifPresent(mod -> modules.add(mod));
     JeffNetModuleSetup.create(ud, new OrgMessageSender(md, sendMsg.get())).ifPresent(mod -> modules.add(mod));
     if (modules.isEmpty()) {

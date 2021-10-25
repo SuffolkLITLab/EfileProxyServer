@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.cxf.endpoint.Endpoint;
+import org.apache.cxf.interceptor.LoggingInInterceptor;
+import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -222,7 +224,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     log.info("Wsdl location: " + jaxWsEndpoint.getWsdlLocation());
     log.info("Address : " + jaxWsEndpoint.getAddress());
     log.info("Bean name: " + jaxWsEndpoint.getBeanName());
-    //Endpoint cxfEndpoint = jaxWsEndpoint.getServer().getEndpoint();
+    Endpoint cxfEndpoint = jaxWsEndpoint.getServer().getEndpoint();
     //cxfEndpoint.getBinding().getBindingInfo().setProperty("security.callback-handler", SoapX509CallbackHandler.class.getName());
     //cxfEndpoint.getBinding().getBindingInfo().setProperty("security.signature.properties", "client_sign.properties");
     
@@ -234,8 +236,9 @@ public class TylerModuleSetup implements EfmModuleSetup {
     cxfEndpoint.getInInterceptors().add(wssIn);
     Map<String, Object> outProps = new HashMap<String, Object>();
     WSS4JOutInterceptor wssOut = new WSS4JOutInterceptor(outProps);
-    cxfEndpoint.getOutInterceptors().add(wssOut);
     */
+    cxfEndpoint.getInInterceptors().add(new LoggingInInterceptor());
+    cxfEndpoint.getOutInterceptors().add(new LoggingOutInterceptor());
   }
 
   @Override

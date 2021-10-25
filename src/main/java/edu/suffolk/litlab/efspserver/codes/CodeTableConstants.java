@@ -15,15 +15,11 @@ public class CodeTableConstants {
   private static Logger log = 
       LoggerFactory.getLogger(CodeTableConstants.class); 
 
-  private static final Map<String, List<Pair<String, String>>> systemTableColumns = 
-      new HashMap<String, List<Pair<String, String>>>();
-  private static final Map<String, List<Pair<String, String>>> bothTableColumns = 
-      new HashMap<String, List<Pair<String, String>>>();
-  private static final Map<String, List<Pair<String, String>>> courtTableColumns = 
-      new HashMap<String, List<Pair<String, String>>>();
+  private static final Map<String, List<Pair<String, String>>> systemTableColumns = new HashMap<>();
+  private static final Map<String, List<Pair<String, String>>> bothTableColumns = new HashMap<>();
+  private static final Map<String, List<Pair<String, String>>> courtTableColumns = new HashMap<>();
   
-  private static final Map<String, List<String>> tablePrimaryKeys =
-      new HashMap<String, List<String>>();
+  private static final Map<String, List<String>> tablePrimaryKeys = new HashMap<>();
 
   // TODO(brycew-later): the types are confusing here: some are only ever ints, but
   // are coded as normalizedStrings in the XML. Unclear what to make ints in the
