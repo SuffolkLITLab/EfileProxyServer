@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,6 +169,8 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
 
     JsonNode attorneyIds = node.get("attorney_ids");
+    Pattern usersPattern = Pattern.compile("users\\[[0-9]+\\]");
+    Pattern otherPattern = Pattern.compile("other_parties\\[[0-9]+\\]");
     if (attorneyIds != null && attorneyIds.isArray()) {
       List<String> ids = new ArrayList<String>();
       attorneyIds.elements().forEachRemaining(jId -> ids.add(jId.asText()));
@@ -180,7 +184,20 @@ public class FilingInformationDocassembleJacksonDeserializer
           Entry<String, JsonNode> elem = elems.next();
           List<String> theseAttorneys = new ArrayList<String>();
           elem.getValue().elements().forEachRemaining(v -> theseAttorneys.add(v.asText()));
-          partyToAttorney.put(elem.getKey(), theseAttorneys);
+          Matcher matcher = usersPattern.matcher(elem.getKey());
+          String realKey = elem.getKey();
+          if (matcher.find()) {
+            realKey = varToId.get(elem.getKey());
+          } else {
+            Matcher otherMatcher = otherPattern.matcher(elem.getKey());
+            if (otherMatcher.find()) {
+              realKey = varToId.get(elem.getKey());
+            } else {
+              log.info("Existing filing party id: " + elem.getKey());
+              realKey = elem.getKey();
+            }
+          }
+          partyToAttorney.put(realKey, theseAttorneys);
         }
         entities.setPartyAttorneyMap(partyToAttorney);
       }
