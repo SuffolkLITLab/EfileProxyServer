@@ -95,21 +95,25 @@ public class CodesService {
     if (!cd.getAllLocations().contains(courtId)) {
       return Response.status(404).entity("Court does not exist " + courtId).build();
     }
-    Optional<Boolean> isInitial = Optional.empty();
-    if (timing == null || timing.isBlank()) {
-      isInitial = Optional.empty();
-    } else if (timing.equalsIgnoreCase("Intial")) {
-      isInitial = Optional.of(true);
-    } else if (timing.equalsIgnoreCase("Subsequent")) {
-      isInitial = Optional.of(false);
-    }
-    if (fileableOnly) {
-      List<CaseCategory> categories = cd.getFilableCaseCategories(courtId, isInitial);
-      return Response.ok(categories).build();
-    } else {
+    if (!fileableOnly) {
       List<CaseCategory> categories = cd.getCaseCategoriesFor(courtId);
       return Response.ok(categories).build();
     }
+    
+    Optional<Boolean> isInitial = Optional.empty();
+    log.info("Timing input: " + timing);
+    if (timing == null || timing.isBlank()) {
+      isInitial = Optional.empty();
+    } else if (timing.equalsIgnoreCase("Initial")) {
+      isInitial = Optional.of(true);
+    } else if (timing.equalsIgnoreCase("Subsequent")) {
+      isInitial = Optional.of(false);
+    } else {
+      log.warn("timing param expected to be initial / subsequent: was: " + timing);
+    }
+    log.info("Timing pass along: " + isInitial);
+    List<CaseCategory> categories = cd.getFilableCaseCategories(courtId, isInitial);
+    return Response.ok(categories).build();
   }
 
   @GET
@@ -119,20 +123,20 @@ public class CodesService {
     @QueryParam("category_id") String categoryId,
     @QueryParam("timing") String timing) throws SQLException {
 
-      if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
-      }
-      Optional<Boolean> isInitial = Optional.empty();
-      if (timing == null || timing.isBlank()) {
-        isInitial = Optional.empty();
-      } else if (timing.equalsIgnoreCase("Initial")) {
-        isInitial = Optional.of(true);
-      } else if (timing.equalsIgnoreCase("Subsequent")) {
-        isInitial = Optional.of(false);
-      } else {
-        log.warn("timing param expected to be initial / subsequent: was: " + timing);
-      }
-      List<CaseType> caseTypes = cd.getCaseTypesFor(courtId, categoryId, isInitial);
+    if (!cd.getAllLocations().contains(courtId)) {
+      return Response.status(404).entity("Court does not exist " + courtId).build();
+    }
+    Optional<Boolean> isInitial = Optional.empty();
+    if (timing == null || timing.isBlank()) {
+      isInitial = Optional.empty();
+    } else if (timing.equalsIgnoreCase("Initial")) {
+      isInitial = Optional.of(true);
+    } else if (timing.equalsIgnoreCase("Subsequent")) {
+      isInitial = Optional.of(false);
+    } else {
+      log.warn("timing param expected to be initial / subsequent: was: " + timing);
+    }
+    List<CaseType> caseTypes = cd.getCaseTypesFor(courtId, categoryId, isInitial);
 
     return Response.ok(caseTypes).build();
   }
