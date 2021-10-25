@@ -409,7 +409,7 @@ public class FirmAttorneyAndServiceService {
     }
   }
 
-  private Optional<Boolean> getJsonBoolean(JsonNode node, String attr) {
+  private static Optional<Boolean> getJsonBoolean(JsonNode node, String attr) {
       JsonNode maybeAttr = node.get(attr);
       if (maybeAttr != null && maybeAttr.isBoolean()) {
         return Optional.of(maybeAttr.asBoolean());

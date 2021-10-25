@@ -237,6 +237,7 @@ public class CasesService {
    * @param caseId
    * @return
    */
+  @SuppressWarnings("static-method")
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}/documents")
   public Response getDocument(@Context HttpHeaders httpHeaders,
@@ -319,7 +320,7 @@ public class CasesService {
     return Response.ok(resp.getServiceRecipient()).build();
   }
 
-  private boolean hasError(QueryResponseMessageType resp) {
+  private static boolean hasError(QueryResponseMessageType resp) {
     return resp.getError().size() > 1 ||
         (resp.getError().size() == 1 && !resp.getError().get(0).getErrorCode().getValue().equals("0"));
   }
