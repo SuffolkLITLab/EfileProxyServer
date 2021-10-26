@@ -517,6 +517,7 @@ public class EcfCaseTypeFactory {
     caseTrackingId.ifPresent(trackingId -> {
       c.setCaseTrackingID(XmlHelper.convertString(trackingId));
     });
+    c.getRest().add(caseAug);
     c.getRest().add(tylerAug);
     JAXBElement<TextType> causeOfAction = ecfCommonObjFac.createCauseOfActionCode(new TextType());
     c.getRest().add(causeOfAction);
