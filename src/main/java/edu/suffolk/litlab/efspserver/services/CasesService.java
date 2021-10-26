@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efspserver.services;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -33,6 +34,7 @@ import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.docassemble.NameDocassembleDeserializer;
+import edu.suffolk.litlab.efspserver.ecf.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import gov.niem.niem.niem_core._2.CaseType;
 import gov.niem.niem.niem_core._2.EntityType;
@@ -40,15 +42,11 @@ import gov.niem.niem.niem_core._2.TextType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseListQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseParticipantType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistresponsemessage_4.CaseListResponseMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryCriteriaType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.CivilCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.CriminalCaseType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.DomesticCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.serviceinformationquerymessage_4.ServiceInformationQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.serviceinformationresponsemessage_4.ServiceInformationResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.CourtRecordMDEPort;
@@ -148,8 +146,7 @@ public class CasesService {
       PersonType pt = ecfOf.createPersonType();
       pt.setPersonName(maybeName.getNameType());
 
-      oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType commonCpt =
-        ecfOf.createCaseParticipantType();
+      var commonCpt = ecfOf.createCaseParticipantType();
       commonCpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
       commonCpt.setCaseParticipantRoleCode(XmlHelper.convertText(""));
       
@@ -161,14 +158,21 @@ public class CasesService {
     if (businessNode != null && businessNode.isTextual()) {
       OrganizationType ot = ecfOf.createOrganizationType();
       ot.setOrganizationName(XmlHelper.convertText(businessNode.asText("")));
-      oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType commonCpt =
-        ecfOf.createCaseParticipantType();
+      var commonCpt = ecfOf.createCaseParticipantType();
       commonCpt.setEntityRepresentation(ecfOf.createEntityOrganization(ot));
       CaseParticipantType cpt = listObjFac.createCaseParticipantType();
       cpt.setCaseParticipant(ecfOf.createCaseParticipant(commonCpt));
+      query.getCaseListQueryCaseParticipant().add(cpt);
     }
     CaseListResponseMessageType resp = maybePort.get().getCaseList(query);
     if (hasError(resp)) {
+      // If the response has issues connecting with the CMS, we are still supposed to allow
+      // for case search / e-filing. So, we'll return an error with the error code, but also any
+      // cases that were still present.
+      Set<String> cmsConnectionErrors = Set.of("-11", "-15", "-10");
+      if (resp.getError().stream().allMatch(err -> cmsConnectionErrors.contains(err.getErrorCode().getValue()))) {
+        return Response.status(203).entity(resp.getCase()).build();
+      }
       return Response.status(400).entity(resp.getError()).build();
     }
     return Response.ok(resp.getCase()).build();
@@ -198,15 +202,24 @@ public class CasesService {
     query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     query.setCaseTrackingID(XmlHelper.convertString(caseId));
-    query.setCaseQueryCriteria(getCriteria());
+    query.setCaseQueryCriteria(EcfCaseTypeFactory.getCriteria());
     CaseResponseMessageType resp = maybePort.get().getCase(query);
+    int responseCode = 200;
     if (hasError(resp)) {
-      return Response.status(400).entity(resp.getError()).build();
+      // If the response has issues connecting with the CMS, we are still supposed to allow
+      // for case search / e-filing. So, we'll return an error with the error code, but also any
+      // cases that were still present.
+      Set<String> cmsConnectionErrors = Set.of("-11", "-15", "-10");
+      if (resp.getError().stream().allMatch(err -> cmsConnectionErrors.contains(err.getErrorCode().getValue()))) {
+        responseCode = 203;
+      } else {
+        return Response.status(400).entity(resp.getError()).build();
+      }
     }
 
     if (locationInfo.get().hasprotectedcasetypes) {
       CaseType caseType = resp.getCase().getValue();
-      Optional<CaseAugmentationType> caseAug = getCaseTypeCode(caseType);
+      Optional<CaseAugmentationType> caseAug = EcfCaseTypeFactory.getCaseTypeCode(caseType);
       caseAug.ifPresent(aug -> {
         if (locationInfo.get().protectedcasetypes.contains(aug.getCaseTypeText().getValue())) {
           TextType protectedText = XmlHelper.convertText(locationInfo.get().protectedcasereplacementstring);
@@ -215,20 +228,9 @@ public class CasesService {
         }
       });
     }
-    return Response.ok(resp.getCase()).build();
+    return Response.status(responseCode).entity(resp.getCase()).build();
   }
   
-  public static CaseQueryCriteriaType getCriteria() {
-    CaseQueryCriteriaType crit = new CaseQueryCriteriaType();
-    // TODO(brycew-later): should this be configurable?
-    crit.setIncludeParticipantsIndicator(XmlHelper.convertBool(true));
-    crit.setIncludeDocketEntryIndicator(XmlHelper.convertBool(false));
-    crit.setIncludeCalendarEventIndicator(XmlHelper.convertBool(false));
-    crit.setDocketEntryTypeCodeFilterText(XmlHelper.convertText("false"));
-    crit.setCalendarEventTypeCodeFilterText(XmlHelper.convertText("false"));
-    return crit;
-  }
-
   /**
    * Tyler says that Getting document isn't supported. This is here to make that clear to
    * users.
@@ -323,28 +325,6 @@ public class CasesService {
   private static boolean hasError(QueryResponseMessageType resp) {
     return resp.getError().size() > 1 ||
         (resp.getError().size() == 1 && !resp.getError().get(0).getErrorCode().getValue().equals("0"));
-  }
-
-  public static Optional<CaseAugmentationType> getCaseTypeCode(CaseType filedCase) {
-    List<JAXBElement<?>> restList = List.of();
-    if (filedCase instanceof CivilCaseType) {
-      CivilCaseType civilCase = (CivilCaseType) filedCase;
-      restList = civilCase.getRest();
-    } else if (filedCase instanceof DomesticCaseType) {
-      DomesticCaseType domesCase = (DomesticCaseType) filedCase;
-      restList = domesCase.getRest();
-    } else if (filedCase instanceof CriminalCaseType) {
-      CriminalCaseType criminalCase = (CriminalCaseType) filedCase;
-      restList = criminalCase.getRest();
-    }
-    for (JAXBElement<?> elem : restList) {
-      if (elem.getValue() instanceof CaseAugmentationType) {
-        CaseAugmentationType aug = (CaseAugmentationType) elem.getValue();
-        return Optional.of(aug);
-      }
-    }
-
-    return Optional.empty();
   }
 
   private Optional<CourtRecordMDEPort> setupRecordPort(HttpHeaders httpHeaders) {
