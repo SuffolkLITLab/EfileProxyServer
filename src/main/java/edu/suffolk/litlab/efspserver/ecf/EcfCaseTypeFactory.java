@@ -425,11 +425,11 @@ public class EcfCaseTypeFactory {
       damageConfig = cd.getDataField(courtLocationId,
           "CivilCaseDamageAmount" + ((initial) ? "Initial" : "Subsequent"));
     }
-    InterviewVariable var;
+    InterviewVariable docVar;
     if (damageAmounts.isEmpty()) {
-      var = collector.requestVar("procedure_remedy", "Procedure Remedy", "text");
+      docVar = collector.requestVar("procedure_remedy", "Procedure Remedy", "text");
     } else {
-      var = collector.requestVar("procedure_remedy", "Procedure Remedy", "choices",
+      docVar = collector.requestVar("procedure_remedy", "Procedure Remedy", "choices",
           damageAmounts.stream()
               .map(nac -> nac.getName())
               .collect(Collectors.toList()));
@@ -443,16 +443,16 @@ public class EcfCaseTypeFactory {
           type.setDamageAmountCode(XmlHelper.convertText(maybeDmg.get().getCode()));
           return Optional.of(type);
         } else {
-          collector.addWrong(var);
+          collector.addWrong(docVar);
         }
       } else {
         log.info("Dropping damage_amount " + jsonDmg.asText() + ", since isvisible is false for " + courtLocationId);
       }
     } else {
       if (damageConfig.isrequired) {
-        collector.addRequired(var);
+        collector.addRequired(docVar);
       } else {
-        collector.addOptional(var);
+        collector.addOptional(docVar);
       }
     }
     return existingType;

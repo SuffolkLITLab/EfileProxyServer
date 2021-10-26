@@ -188,7 +188,9 @@ public class TylerModuleSetup implements EfmModuleSetup {
       Set<String> allCourts = new HashSet<String>(cd.getAllLocations());
       // 0 and 1 are special "system" courts that have defaults for all courts.
       // They aren't available for filing
-      allCourts.remove("0");
+      // TODO(brycew): but don't actually remove 0, which is needed to search all courts at the same time?
+      // I do hate this interface
+      // allCourts.remove("0");
       allCourts.remove("1");
       return allCourts;
     } catch (SQLException ex) {

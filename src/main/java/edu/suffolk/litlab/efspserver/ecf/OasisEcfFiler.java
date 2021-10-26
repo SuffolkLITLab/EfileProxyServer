@@ -455,7 +455,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       java.time.LocalDate endDate, String apiToken) {
     try {
       List<String> courtIds = cd.getAllLocations();
-      if (!courtIds.contains(courtId)) {
+      if (courtId != null && !courtId.equals("0") && courtIds.contains(courtId)) {
         return Response.status(404).entity("Court " + courtId + " not in jurisdiction").build();
       }
 
@@ -464,7 +464,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         return Response.status(403).build();
       }
       FilingListQueryMessageType m = prep(listObjFac.createFilingListQueryMessageType(), courtId);
-      if (courtId.equals("0")) {
+      if (courtId.equals("0") || courtId == null) {
         // Search all courts
         m.setCaseCourt(null);
       }
