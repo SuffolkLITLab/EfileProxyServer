@@ -39,11 +39,14 @@ import javax.xml.bind.JAXBElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryCriteriaType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.CivilCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseOfficialType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.CriminalCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.DomesticCaseType;
+import tyler.ecf.extensions.common.CaseAugmentationType;
 import tyler.ecf.extensions.common.FilingAssociationType;
 import tyler.ecf.extensions.common.ProcedureRemedyType;
 import tyler.ecf.extensions.common.ProviderChargeType;
@@ -57,6 +60,40 @@ public class EcfCaseTypeFactory {
 
   public EcfCaseTypeFactory(CodeDatabase cd) {
     this.cd = cd;
+  }
+
+  public static Optional<CaseAugmentationType> getCaseTypeCode(
+      gov.niem.niem.niem_core._2.CaseType filedCase) {
+    List<JAXBElement<?>> restList = List.of();
+    if (filedCase instanceof CivilCaseType) {
+      CivilCaseType civilCase = (CivilCaseType) filedCase;
+      restList = civilCase.getRest();
+    } else if (filedCase instanceof DomesticCaseType) {
+      DomesticCaseType domesCase = (DomesticCaseType) filedCase;
+      restList = domesCase.getRest();
+    } else if (filedCase instanceof CriminalCaseType) {
+      CriminalCaseType criminalCase = (CriminalCaseType) filedCase;
+      restList = criminalCase.getRest();
+    }
+    for (JAXBElement<?> elem : restList) {
+      if (elem.getValue() instanceof CaseAugmentationType) {
+        CaseAugmentationType aug = (CaseAugmentationType) elem.getValue();
+        return Optional.of(aug);
+      }
+    }
+
+    return Optional.empty();
+  }
+
+  public static CaseQueryCriteriaType getCriteria() {
+    CaseQueryCriteriaType crit = new CaseQueryCriteriaType();
+    // TODO(brycew-later): should this be configurable?
+    crit.setIncludeParticipantsIndicator(XmlHelper.convertBool(true));
+    crit.setIncludeDocketEntryIndicator(XmlHelper.convertBool(false));
+    crit.setIncludeCalendarEventIndicator(XmlHelper.convertBool(false));
+    crit.setDocketEntryTypeCodeFilterText(XmlHelper.convertText("false"));
+    crit.setCalendarEventTypeCodeFilterText(XmlHelper.convertText("false"));
+    return crit;
   }
 
   /**
@@ -153,12 +190,6 @@ public class EcfCaseTypeFactory {
           EcfCourtSpecificSerializer serializer,
           InfoCollector collector
   ) throws SQLException, FilingError {
-    // NOTE: in the code tables, only a handful of outliers have more than 1 code for the same category per location
-    // SELECT x.code_count, x.name, x.location from
-    //    (select COUNT(code) as code_count, name, location from casecategory group by name, location)
-    // as x where x.code_count > 1 order by location;
-
-    // But, what do they have different from each other? Not sure
     var tylerObjFac = new tyler.ecf.extensions.common.ObjectFactory();
     var ecfCommonObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     var of = new gov.niem.niem.niem_core._2.ObjectFactory();
@@ -337,10 +368,8 @@ public class EcfCaseTypeFactory {
       ecfAug.setReturnDate(XmlHelper.convertDate(info.getReturnDate().get()));
     }
 
-    DataFieldRow filingcaseparties =
-        cd.getDataField(courtLocation.code, "FilingEventCaseParties");
-    gov.niem.niem.structures._2.ObjectFactory structOf =
-        new gov.niem.niem.structures._2.ObjectFactory();
+    DataFieldRow filingcaseparties = cd.getDataField(courtLocation.code, "FilingEventCaseParties");
+    var structOf = new gov.niem.niem.structures._2.ObjectFactory();
     if (filingcaseparties.isrequired) {
       for (String filingId : filingIds) {
         gov.niem.niem.structures._2.ReferenceType rt = structOf.createReferenceType();
@@ -369,7 +398,6 @@ public class EcfCaseTypeFactory {
     }
 
     log.info("Full ecfAug: " + ecfAug);
-
     return tylerObjFac.createCaseAugmentation(ecfAug);
   }
 

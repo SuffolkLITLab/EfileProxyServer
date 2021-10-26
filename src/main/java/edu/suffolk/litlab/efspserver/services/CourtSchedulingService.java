@@ -60,6 +60,7 @@ import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.PartyType;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.ecf.ComboCaseCodes;
+import edu.suffolk.litlab.efspserver.ecf.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efspserver.ecf.EcfCourtSpecificSerializer;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
@@ -166,11 +167,11 @@ public class CourtSchedulingService {
       CaseQueryMessageType query = new CaseQueryMessageType();
       ServiceHelpers.prep(query, info.getCourtLocation());
       query.setCaseTrackingID(XmlHelper.convertString(info.getPreviousCaseId().get()));
-      query.setCaseQueryCriteria(CasesService.getCriteria());
+      query.setCaseQueryCriteria(EcfCaseTypeFactory.getCriteria());
       CaseResponseMessageType resp = recordPort.get().getCase(query);
       resp.getCase().getValue().getCaseTrackingID();
       String catCode = resp.getCase().getValue().getCaseCategoryText().getValue();
-      String typeCode = CasesService.getCaseTypeCode(resp.getCase().getValue()).get().getCaseTypeText().getValue(); 
+      String typeCode = EcfCaseTypeFactory.getCaseTypeCode(resp.getCase().getValue()).get().getCaseTypeText().getValue(); 
       List<Optional<String>> maybeFilingCodes = info.getFilings().stream().map(f -> f.getFilingCode()).collect(Collectors.toList()); 
       if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
         InterviewVariable filingVar = collector.requestVar("court_bundle[i].tyler_filing_type", "What filing type is this?", "text"); 

@@ -15,7 +15,6 @@ import edu.suffolk.litlab.efspserver.codes.Disclaimer;
 import edu.suffolk.litlab.efspserver.codes.FilingCode;
 import edu.suffolk.litlab.efspserver.codes.FilingComponent;
 import edu.suffolk.litlab.efspserver.codes.ServiceCodeType;
-import edu.suffolk.litlab.efspserver.services.CasesService;
 import edu.suffolk.litlab.efspserver.services.EfmCheckableFilingInterface;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
@@ -158,11 +157,11 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         CaseQueryMessageType query = new CaseQueryMessageType();
         ServiceHelpers.prep(query, info.getCourtLocation());
         query.setCaseTrackingID(XmlHelper.convertString(info.getPreviousCaseId().get()));
-        query.setCaseQueryCriteria(CasesService.getCriteria());
+        query.setCaseQueryCriteria(EcfCaseTypeFactory.getCriteria());
         CaseResponseMessageType resp = recordPort.getCase(query);
         resp.getCase().getValue().getCaseTrackingID();
         String catCode = resp.getCase().getValue().getCaseCategoryText().getValue();
-        String typeCode = CasesService.getCaseTypeCode(resp.getCase().getValue()).get().getCaseTypeText().getValue(); 
+        String typeCode = EcfCaseTypeFactory.getCaseTypeCode(resp.getCase().getValue()).get().getCaseTypeText().getValue(); 
         List<Optional<String>> maybeFilingCodes = info.getFilings().stream().map(f -> f.getFilingCode()).collect(Collectors.toList()); 
         if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
           InterviewVariable filingVar = collector.requestVar("court_bundle[i].tyler_filing_type", "What filing type is this?", "text"); 
