@@ -164,6 +164,7 @@ public class CasesService {
       cpt.setCaseParticipant(ecfOf.createCaseParticipant(commonCpt));
       query.getCaseListQueryCaseParticipant().add(cpt);
     }
+    log.info(XmlHelper.objectToXmlStrOrError(query, CaseListQueryMessageType.class));
     CaseListResponseMessageType resp = maybePort.get().getCaseList(query);
     if (hasError(resp)) {
       // If the response has issues connecting with the CMS, we are still supposed to allow
