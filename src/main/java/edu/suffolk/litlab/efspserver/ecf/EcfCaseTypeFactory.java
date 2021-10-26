@@ -108,12 +108,12 @@ public class EcfCaseTypeFactory {
         }
       }
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase =
-          makeCivilCaseType(caseAug, tylerAug, info.getCaseDocketNumber(), amountInControversy);
+          makeCivilCaseType(caseAug, tylerAug, info.getCaseDocketNumber(), info.getPreviousCaseId(), amountInControversy);
       myCase.getValue().setCaseCategoryText(XmlHelper.convertText(caseCategoryCode));
       return myCase;
     } else if (caseCategory.ecfcasetype.equals("DomesticCase")) {
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase =
-          makeDomesticCaseType(caseAug, tylerAug, info.getCaseDocketNumber(), miscInfo);
+          makeDomesticCaseType(caseAug, tylerAug, info.getCaseDocketNumber(), info.getPreviousCaseId(), miscInfo);
       myCase.getValue().setCaseCategoryText(XmlHelper.convertText(caseCategoryCode));
       return myCase;
     } else {
@@ -472,6 +472,7 @@ public class EcfCaseTypeFactory {
       JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
       JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
       Optional<String> caseDocketId,
+      Optional<String> caseTrackingId,
       Optional<BigDecimal> amountInControversy) {
     var ecfCivilObjFac =
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory();
@@ -481,7 +482,9 @@ public class EcfCaseTypeFactory {
     caseDocketId.ifPresent(docket -> {
       c.setCaseDocketID(XmlHelper.convertString(docket));
     });
-    c.getRest().add(caseAug);
+    caseTrackingId.ifPresent(trackingId -> {
+      c.setCaseTrackingID(XmlHelper.convertString(trackingId));
+    });
     c.getRest().add(tylerAug);
     JAXBElement<TextType> causeOfAction = ecfCommonObjFac.createCauseOfActionCode(new TextType());
     c.getRest().add(causeOfAction);
@@ -504,6 +507,7 @@ public class EcfCaseTypeFactory {
       JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
       JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
       Optional<String> caseDocketId,
+      Optional<String> caseTrackingId,
       JsonNode node) {
     var ecfDomesticObjFac =
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.ObjectFactory();
@@ -512,6 +516,9 @@ public class EcfCaseTypeFactory {
     DomesticCaseType d = ecfDomesticObjFac.createDomesticCaseType();
     caseDocketId.ifPresent(docket -> {
       d.setCaseDocketID(XmlHelper.convertString(docket));
+    });
+    caseTrackingId.ifPresent(trackingId -> {
+      d.setCaseTrackingID(XmlHelper.convertString(trackingId));
     });
     d.getRest().add(caseAug);
     d.getRest().add(tylerAug);
