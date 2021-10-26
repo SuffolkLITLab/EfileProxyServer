@@ -100,10 +100,17 @@ public class FilingReviewService {
       @QueryParam("user_id") String userId, @QueryParam("start_date") String startStr,
       @QueryParam("end_date") String endStr) {
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
+    if (!filingInterfaces.containsKey(jurisdiction)) {
+      return Response.status(404).entity("Jurisdiction " + jurisdiction + " doesn't exist").build();
+    }
+
+    if (!filingInterfaces.get(jurisdiction).containsKey(courtId)) {
+      return Response.status(404).entity("Cannot send filing to " + courtId).build();
+    }
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
     }
-    EfmFilingInterface filer = checked.unwrapOrElseThrow();
+    EfmFilingInterface filer = filingInterfaces.get(jurisdiction).get(courtId);
     Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
