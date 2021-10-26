@@ -92,7 +92,7 @@ public class EcfCaseTypeFactory {
     CaseCategory caseCategory = initialCaseCategory;
     String caseCategoryCode = caseCategory.code;
     JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug =
-        makeNiemCaseAug(courtLocation.code);
+        makeNiemCaseAug(courtLocation.code, info.getPreviousCaseId());
     JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug =
               makeTylerCaseAug(courtLocation, caseCategory,
                   caseType, info, isInitialFiling, isFirstIndexedFiling,
@@ -126,11 +126,16 @@ public class EcfCaseTypeFactory {
   }
 
   private static JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType>
-      makeNiemCaseAug(String courtLocationId) {
-    gov.niem.niem.domains.jxdm._4.ObjectFactory jof =
-        new gov.niem.niem.domains.jxdm._4.ObjectFactory();
-    gov.niem.niem.domains.jxdm._4.CaseAugmentationType caseAug = jof.createCaseAugmentationType();
+      makeNiemCaseAug(String courtLocationId, Optional<String> trackingId) {
+    var jof = new gov.niem.niem.domains.jxdm._4.ObjectFactory();
+    var caseAug = jof.createCaseAugmentationType();
     caseAug.setCaseCourt(XmlHelper.convertCourtType(courtLocationId));
+    trackingId.ifPresent(tracking -> {
+      var coreObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
+      var ct = coreObjFac.createCaseType();
+      ct.setCaseTrackingID(XmlHelper.convertString(tracking));
+      caseAug.getCaseLineageCase().add(ct);
+    });
     return jof.createCaseAugmentation(caseAug);
   }
 
@@ -159,8 +164,7 @@ public class EcfCaseTypeFactory {
     var of = new gov.niem.niem.niem_core._2.ObjectFactory();
     var structObjFac = new gov.niem.niem.structures._2.ObjectFactory();
 
-    tyler.ecf.extensions.common.CaseAugmentationType ecfAug =
-        tylerObjFac.createCaseAugmentationType();
+    var ecfAug = tylerObjFac.createCaseAugmentationType();
 
     if (caseType.code.isEmpty()){
       log.warn("Type's code is empty?: " + caseType);
