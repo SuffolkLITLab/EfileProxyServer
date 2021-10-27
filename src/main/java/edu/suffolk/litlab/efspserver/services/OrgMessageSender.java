@@ -32,6 +32,7 @@ public class OrgMessageSender {
 
   private String defaultFrom = "massaccess@suffolk.edu";
   private String defaultSubject = "An update on your filing";
+  // TODO(brycew): consider better HTML styling on these emails if possible
   private String defaultTemplate = 
       """
       Dear {{ name }},
@@ -39,7 +40,7 @@ public class OrgMessageSender {
       The {{ court_name }} has sent a response to your filing in {{ case_type }} 
       (transaction ID is {{ transaction_id }}):
       
-      {{ status }}
+      "{{ status }}"
       
       {{ message_text }}
       

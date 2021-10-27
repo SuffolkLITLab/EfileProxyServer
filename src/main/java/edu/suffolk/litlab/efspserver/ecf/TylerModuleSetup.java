@@ -7,9 +7,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.cxf.endpoint.Endpoint;
-import org.apache.cxf.interceptor.LoggingInInterceptor;
-import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -214,23 +211,17 @@ public class TylerModuleSetup implements EfmModuleSetup {
     OasisEcfWsCallback implementor = new OasisEcfWsCallback(ud, cd, sender);
     String baseLocalUrl = System.getenv("BASE_LOCAL_URL");
     String address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT;
-    /*
-    svrFactory = new JaxWsServerFactoryBean();
-    svrFactory.setServiceClass(FilingAssemblyMDEPort.class);
-    svrFactory.setAddress(address);
-    svrFactory.setServiceBean(implementor);
-    svrFactory.create();
-    */
     log.info("Starting NFRC callback server at " + address);
     EndpointImpl jaxWsEndpoint = (EndpointImpl) javax.xml.ws.Endpoint.publish(address,  implementor);
     log.info("Wsdl location: " + jaxWsEndpoint.getWsdlLocation());
     log.info("Address : " + jaxWsEndpoint.getAddress());
     log.info("Bean name: " + jaxWsEndpoint.getBeanName());
-    Endpoint cxfEndpoint = jaxWsEndpoint.getServer().getEndpoint();
-    //cxfEndpoint.getBinding().getBindingInfo().setProperty("security.callback-handler", SoapX509CallbackHandler.class.getName());
-    //cxfEndpoint.getBinding().getBindingInfo().setProperty("security.signature.properties", "client_sign.properties");
+    //Endpoint cxfEndpoint = jaxWsEndpoint.getServer().getEndpoint();
     
     /*
+    // Tyler SHOULD actually send us signed messages, but they're lazy, and we have to do what they do.
+    cxfEndpoint.getBinding().getBindingInfo().setProperty("security.callback-handler", SoapX509CallbackHandler.class.getName());
+    cxfEndpoint.getBinding().getBindingInfo().setProperty("security.signature.properties", "client_sign.properties");
     Map<String, Object> inProps = new HashMap<String, Object>();
     //inProps.put(WSHandlerConstants.ACTION, "Signature");
     inProps.put(WSHandlerConstants.SIG_PROP_FILE, "client_sign.properties");
@@ -239,8 +230,9 @@ public class TylerModuleSetup implements EfmModuleSetup {
     Map<String, Object> outProps = new HashMap<String, Object>();
     WSS4JOutInterceptor wssOut = new WSS4JOutInterceptor(outProps);
     */
-    cxfEndpoint.getInInterceptors().add(new LoggingInInterceptor());
-    cxfEndpoint.getOutInterceptors().add(new LoggingOutInterceptor());
+    // Keep these lines around, good for debugging if SOAP starts to act up again
+    //cxfEndpoint.getInInterceptors().add(new LoggingInInterceptor());
+    //cxfEndpoint.getOutInterceptors().add(new LoggingOutInterceptor());
   }
 
   @Override
