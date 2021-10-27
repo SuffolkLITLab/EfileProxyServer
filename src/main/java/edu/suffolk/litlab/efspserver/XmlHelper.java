@@ -4,6 +4,8 @@ import gov.niem.niem.domains.jxdm._4.CourtType;
 import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.MeasureType;
 import gov.niem.niem.niem_core._2.TextType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
+
 import java.io.File;
 import java.io.StringWriter;
 import java.time.LocalDate;
@@ -146,6 +148,23 @@ public class XmlHelper {
         niemCoreObjFac.createOrganizationIdentification(XmlHelper.convertId(courtId));
     court.setOrganizationIdentification(idType);
     return court;
+  }
+  
+  public static String amountToString(AmountType amt) {
+    if (amt == null) {
+      return "";
+    }
+    String currencyId = amt.getCurrencyID();
+    String valStr = amt.getValue().toString();
+    if (currencyId == null) {
+      return valStr;
+    }
+    // TODO(brycew): more internationalization
+    if (currencyId.equals("USD")) {
+      return "$" + valStr;
+    } else {
+      return valStr + currencyId;
+    }
   }
 
   /**
