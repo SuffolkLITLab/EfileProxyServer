@@ -36,14 +36,14 @@ public class OrgMessageSender {
       """
       Dear {{ name }},
       
-      The {{ court_id }} has sent a response to your filing in {{ case_type }} 
+      The {{ court_name }} has sent a response to your filing in {{ case_type }} 
       (transaction ID is {{ transaction_id }}):
       
       {{ status }}
       
       {{ message_text }}
       
-      {% if variable is defined %}
+      {% if message_url is defined %}
       You can visit {{ message_url }} for more details.
       {% endif %}
       
@@ -56,7 +56,7 @@ public class OrgMessageSender {
       """
       Dear {{ name }},
       
-      The {{ court_id }} has received your filing in {{ case_type }}!
+      The {{ court_name }} has received your filing in {{ case_type }}!
       
       Its transaction ID is {{ transaction_id }}. You should keep track of this; the court might
       need it in your interactions with them.
@@ -102,7 +102,7 @@ public class OrgMessageSender {
     MessageInfo msgSettings = getSettings(transaction.serverId);
     Map<String, Object> templateVars = new HashMap<String, Object>();
     templateVars.put("name", transaction.name);
-    templateVars.put("court_id", transaction.courtId);
+    templateVars.put("court_name", transaction.courtId);
     templateVars.put("case_type", transaction.caseType);
     templateVars.putAll(statuses);
     templateVars.put("transaction_id", transaction.transactionId.toString());
@@ -116,9 +116,10 @@ public class OrgMessageSender {
         log.error(e.toString());
         return false;
       }
-    }
+    } 
       
     // TODO(brycew-later): handle sending SMS as well
+    log.warn("Can't send to this email: " + transaction.email);
     return false;
   }
   
@@ -128,7 +129,7 @@ public class OrgMessageSender {
     String ids = transactionIds.stream().map(t -> t.toString()).collect(Collectors.joining(", "));
     Map<String, Object> templateVars = new HashMap<String, Object>();
     templateVars.put("name", name);
-    templateVars.put("court_id", courtId);
+    templateVars.put("court_name", courtId);
     templateVars.put("case_type", caseType);
     templateVars.put("transaction_id", ids);
     boolean canEmail = email != null && SendMessage.isValidEmail(email);

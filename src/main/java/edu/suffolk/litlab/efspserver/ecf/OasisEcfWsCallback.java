@@ -1,6 +1,8 @@
 package edu.suffolk.litlab.efspserver.ecf;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,7 +20,11 @@ import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.TextType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.CardAccountType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.FilingStatusType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ReviewedDocumentType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.messagereceiptmessage_4.MessageReceiptMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.messagereceiptmessage_4.ObjectFactory;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.PaymentMessageType;
@@ -49,6 +55,89 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     this.cd = cd;
     this.msgSender = msgSender;
   }
+  
+  private static String chargeToStr(AllowanceChargeType charge) {
+    StringBuilder chargeReason = new StringBuilder(); 
+    String amountText = XmlHelper.amountToString(charge.getAmount());
+    chargeReason.append(amountText);
+    if (charge.getAllowanceChargeReason() != null) {
+      chargeReason.append(" for " ).append(charge.getAllowanceChargeReason().getValue());
+    }
+    charge.getPaymentMeans().stream().forEach(m -> {
+      CardAccountType acct = m.getCardAccount();
+      if (acct != null) {
+        String cardInfo = "";
+        if (acct.getCardTypeCode() != null) {
+          cardInfo += acct.getCardTypeCode().getValue();
+        }
+        if (acct.getPrimaryAccountNumberID() != null) {
+          cardInfo += " (" + acct.getPrimaryAccountNumberID().getValue() + ")";
+        }
+        if (acct.getExpiryDate() != null && acct.getExpiryDate().getValue() != null) {
+          cardInfo += " (exp " + acct.getExpiryDate().getValue().toString() + ")";
+        }
+        chargeReason.append(" paid for using " + cardInfo);
+      }
+    });
+    return chargeReason.toString();
+  }
+  
+  private Map<String, String> reviewedFilingToStr(ReviewFilingCallbackMessageType revFiling,
+      Transaction trans) {
+    List<NameAndCode> names = cd.getFilingStatuses(trans.courtId);
+
+    StringBuilder messageText = new StringBuilder();
+    Map<String, String> statuses = new HashMap<>();
+    if (revFiling.getReviewedLeadDocument() != null 
+        && revFiling.getReviewedLeadDocument().getValue() != null) {
+      ReviewedDocumentType leadDoc = revFiling.getReviewedLeadDocument().getValue();
+      if (leadDoc instanceof tyler.ecf.extensions.common.ReviewedDocumentType tylerDoc) {
+        if (tylerDoc.getDocumentDescriptionText() != null) {
+          messageText.append("The document (")
+                     .append(tylerDoc.getDocumentDescriptionText().getValue())
+                     .append(") ");
+        }
+        if (tylerDoc.getDocumentBinary() != null
+            && tylerDoc.getDocumentBinary().getBinaryDescriptionText() != null) {
+          messageText.append("with file name ")
+                     .append(tylerDoc.getDocumentBinary().getBinaryDescriptionText().getValue());
+        }
+        
+        if (tylerDoc.getFilingReviewCommentsText() != null) {
+          messageText.append(" has the following review comments: ")
+                     .append(tylerDoc.getFilingReviewCommentsText());
+        }
+        
+        if (tylerDoc.getRejectReasonText() != null) {
+          messageText.append(", was reject for the following reason: ")
+                     .append(tylerDoc.getRejectReasonText());
+        }
+      }
+    }
+    FilingStatusType filingStat = revFiling.getFilingStatus();
+    if (filingStat != null) {
+      messageText.append(revFiling.getFilingStatus().getStatusDescriptionText().stream()
+                          .reduce("", (des, tt) -> des + ((tt != null) ? tt.getValue() : ""), 
+                              (des1, des2) -> des1 + des2));
+      
+      final String replyCode = filingStat.getFilingStatusCode();
+      Optional<String> statusText = names.stream()
+          .filter(nac -> nac.getCode().equalsIgnoreCase(replyCode))
+          .map(nac -> nac.getName()).findFirst();
+
+      String statusCode = replyCode;
+      if (replyCode == null || replyCode.isBlank()) {
+        if (filingStat.getStatusText() != null) {
+          statusCode = filingStat.getStatusText().getValue();
+        } else {
+          statusCode = "";
+        }
+      }
+      statuses.put("status", statusText.orElse(statusCode));
+    }
+    statuses.put("message_text", messageText.toString());
+    return statuses;
+  }
 
   public MessageReceiptMessageType notifyFilingReviewComplete(
       NotifyFilingReviewCompleteRequestMessageType msg) {
@@ -63,61 +152,47 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       log.error("Why did Tyler send us a notifyFilingReviewComplete without either a filing"
           + " review or a payment receipt?");
       log.error(msg.toString());
-      ErrorType err = new ErrorType();
-      err.setErrorCode(XmlHelper.convertText("-1"));
-      err.setErrorText(XmlHelper.convertText("notifyFilingReviewComplete without a filing review or payment receipt"));
-      reply.getError().add(err);
-      return reply;
+      return error(reply, "705", "NotifyFilingReviewComplete message not found");
     }
 
-    // Handle payment stuff first
-    // TODO(#64): there is a Payment ID that we should save when handling payments
-    // Skip for now: shouldn't be getting those
-
+    // Handle payment stuff: Address is usually empty, it's all in Payment and AllowanceCharges
+    List<String> charges = new ArrayList<>();
+    for (AllowanceChargeType charge: payment.getAllowanceCharge()) {
+      charges.add(chargeToStr(charge));
+    }
 
     // Now for the review filing
-    revFiling.getCase().getValue();
-    revFiling.getFilingStatus();
-    List<IdentificationType> ids = revFiling.getDocumentIdentification();
     String filingId = "";
-    for (IdentificationType id : ids) {
-      TextType category = (TextType) (id.getIdentificationCategory().getValue());
-      if (category.getValue().equalsIgnoreCase("FILINGID")) {
-        filingId = id.getIdentificationID().getValue();
+    for (IdentificationType id : revFiling.getDocumentIdentification()) {
+      if (id.getIdentificationCategory().getValue() instanceof TextType category) {
+        if (category.getValue().equalsIgnoreCase("FILINGID")) {
+          filingId = id.getIdentificationID().getValue();
+        }
       }
       // TODO(brycew-later): do we need to do anything with the parent envelope?
       // Maybe check them as well? But the filingId should be the same overall, and we'll save
       // most of them.
     }
     if (filingId.isBlank()) {
-      log.error("Got back a review filing that has a blank / no FILINGID?!");
-      log.error(revFiling.toString());
-      return reply;
+      log.error("Got back a review filing that has a blank / no FILINGID? " + revFiling.toString());
+      return error(reply, "720", "Filing code not found in message");
     }
     try {
       Optional<Transaction> trans = ud.findTransaction(UUID.fromString(filingId));
       if (trans.isEmpty()) {
-        log.warn("No transaction on record for filingId: " + filingId);
-        return reply;
+        log.warn("No transaction on record for filingId: " + filingId + " no one to send to");
+        return error(reply, "724", "Filing ID " + filingId + " not found");
       }
       reply.setCaseCourt(XmlHelper.convertCourtType(trans.get().courtId));
-      List<NameAndCode> names = cd.getFilingStatuses(trans.get().courtId);
-      String replyCode = revFiling.getFilingStatus().getStatusText().getValue();
-      Optional<String> statusText = names.stream()
-          .filter(nac -> nac.getCode().equalsIgnoreCase(replyCode))
-          .map(nac -> nac.getName()).findFirst();
-      Map<String, String> statuses = Map.of(
-          "status", statusText.orElse(replyCode),
-          "message_text", revFiling.getFilingStatus().getStatusDescriptionText().stream().reduce("", (des, tt) -> des + tt.getValue(), (des1, des2) -> des1 + des2)
-          );
+      Map<String, String> statuses = reviewedFilingToStr(revFiling, trans.get());
       boolean success = msgSender.sendMessage(trans.get(), statuses);
       if (!success) {
         log.error("Couldn't properly send message to " + trans.get().name + "!");
       }
-      return reply;
+      return ok(reply);
     } catch (SQLException e) {
       log.error("Couldn't connect to the SQL database to get the transaction: " + e.toString());
-      return reply;
+      return error(reply, "-1", "Server error");
     }
   }
 
@@ -134,5 +209,17 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     log.info("Full NotifyServiceComplete msg" + serviceCallbackMessage);
     // TODO Auto-generated method stub
     return null;
+  }
+  
+  private static MessageReceiptMessageType ok(MessageReceiptMessageType reply) {
+    return error(reply, "0", "No Error");
+  }
+  
+  private static MessageReceiptMessageType error(MessageReceiptMessageType reply, String code, String text) {
+    ErrorType err = new ErrorType();
+    err.setErrorCode(XmlHelper.convertText(code));
+    err.setErrorText(XmlHelper.convertText(text));
+    reply.getError().add(err);
+    return reply;
   }
 }
