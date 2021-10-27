@@ -22,6 +22,7 @@ import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.TextType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.CardAccountType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentRenditionType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.FilingStatusType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ReviewedDocumentType;
@@ -82,6 +83,53 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     return chargeReason.toString();
   }
   
+  private static String documentToStr(ReviewedDocumentType doc) {
+    StringBuilder docText = new StringBuilder();
+    if (doc instanceof tyler.ecf.extensions.common.ReviewedDocumentType tylerDoc) {
+      if (tylerDoc.getDocumentDescriptionText() != null
+          && tylerDoc.getDocumentDescriptionText().getValue() != null
+          && tylerDoc.getDocumentDescriptionText().getValue().isBlank()) {
+        docText.append("The document (")
+                   .append(tylerDoc.getDocumentDescriptionText().getValue())
+                   .append(") ");
+      } else {
+        docText.append("The document ");
+      }
+      if (tylerDoc.getDocumentBinary() != null
+          && tylerDoc.getDocumentBinary().getBinaryDescriptionText() != null) {
+        docText.append("with file name ")
+                   .append(tylerDoc.getDocumentBinary().getBinaryDescriptionText().getValue());
+      } else if (tylerDoc.getDocumentRendition() != null) {
+        for (DocumentRenditionType ren: tylerDoc.getDocumentRendition()) {
+          if (ren.getDocumentBinary() != null 
+              && ren.getDocumentBinary().getBinaryDescriptionText() != null) {
+            docText.append(", file name ").append(ren.getDocumentBinary().getBinaryDescriptionText().getValue());
+          }
+        }
+      }
+        
+      if (tylerDoc.getFilingReviewCommentsText() != null) {
+        docText.append(" has the following review comments: ")
+                   .append(tylerDoc.getFilingReviewCommentsText().getValue());
+      }
+        
+      if (tylerDoc.getRejectReasonText() != null) {
+        docText.append(", was rejected for the following reason: ")
+                   .append(tylerDoc.getRejectReasonText().getValue());
+      }
+    } else {
+      docText.append("The review was about the document ");
+      for (DocumentRenditionType ren: doc.getDocumentRendition()) {
+        if (ren.getDocumentBinary() != null 
+            && ren.getDocumentBinary().getBinaryDescriptionText() != null) {
+          docText.append(", file name ").append(ren.getDocumentBinary().getBinaryDescriptionText().getValue());
+        }
+      }
+    }
+    docText.append('.');
+    return docText.toString();
+  }
+  
   private Map<String, String> reviewedFilingToStr(ReviewFilingCallbackMessageType revFiling,
       Transaction trans) {
     List<NameAndCode> names = cd.getFilingStatuses(trans.courtId);
@@ -91,32 +139,18 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     if (revFiling.getReviewedLeadDocument() != null 
         && revFiling.getReviewedLeadDocument().getValue() != null) {
       ReviewedDocumentType leadDoc = revFiling.getReviewedLeadDocument().getValue();
-      if (leadDoc instanceof tyler.ecf.extensions.common.ReviewedDocumentType tylerDoc) {
-        if (tylerDoc.getDocumentDescriptionText() != null) {
-          messageText.append("The document (")
-                     .append(tylerDoc.getDocumentDescriptionText().getValue())
-                     .append(") ");
-        }
-        if (tylerDoc.getDocumentBinary() != null
-            && tylerDoc.getDocumentBinary().getBinaryDescriptionText() != null) {
-          messageText.append("with file name ")
-                     .append(tylerDoc.getDocumentBinary().getBinaryDescriptionText().getValue());
-        }
-        
-        if (tylerDoc.getFilingReviewCommentsText() != null) {
-          messageText.append(" has the following review comments: ")
-                     .append(tylerDoc.getFilingReviewCommentsText());
-        }
-        
-        if (tylerDoc.getRejectReasonText() != null) {
-          messageText.append(", was reject for the following reason: ")
-                     .append(tylerDoc.getRejectReasonText());
+      messageText.append(documentToStr(leadDoc));
+    }
+    if (revFiling.getReviewedConnectedDocument() != null) {
+      for (var doc : revFiling.getReviewedConnectedDocument()) {
+        if (doc != null && doc.getValue() != null) {
+          messageText.append(documentToStr(doc.getValue())); 
         }
       }
     }
     FilingStatusType filingStat = revFiling.getFilingStatus();
     if (filingStat != null) {
-      messageText.append(revFiling.getFilingStatus().getStatusDescriptionText().stream()
+      messageText.append(' ').append(revFiling.getFilingStatus().getStatusDescriptionText().stream()
                           .reduce("", (des, tt) -> des + ((tt != null) ? tt.getValue() : ""), 
                               (des1, des2) -> des1 + des2));
       
