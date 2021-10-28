@@ -12,7 +12,6 @@ import edu.suffolk.litlab.efspserver.OptionalService;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
-import tyler.ecf.extensions.common.FilingTypeType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -142,7 +141,7 @@ public class FilingDocDocassembleJacksonDeserializer {
         FilingError err = FilingError.serverError("Couldn't connect to " + inUrl.toString());
         collector.error(err);
       }
-
+      
       return Optional.of(
           new FilingDoc(filingType, fileName,
               inStream.readAllBytes(),
@@ -157,7 +156,6 @@ public class FilingDocDocassembleJacksonDeserializer {
               optServices,
               courtesyCopies,
               preliminaryCopies,
-              FilingTypeType.E_FILE,
               sequenceNum == 0));
     } catch (IOException ex)  {
       FilingError err = FilingError.serverError("IOException trying to parse data_url: " + ex);
