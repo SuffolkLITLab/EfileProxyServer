@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tyler.ecf.extensions.common.FilingTypeType;
 
 public class FilingInformationToJeffNetTest {
 
@@ -55,7 +54,7 @@ public class FilingInformationToJeffNetTest {
     FilingDoc filingDoc = new FilingDoc(Optional.empty(), fileName, x,
         info.getPlaintiffs().stream().map((p) -> FilingDoc.PartyId.CurrentFiling(p.getIdString())).collect(
             Collectors.toList()), "5766",
-        componentCode, FilingTypeType.E_FILE, true);
+        componentCode, true);
     info.setFilings(List.of(filingDoc));
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node = mapper.readTree("{\"tyler_filing_type\": \"27967\"}"); 

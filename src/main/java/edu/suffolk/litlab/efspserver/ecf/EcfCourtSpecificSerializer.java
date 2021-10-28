@@ -555,7 +555,13 @@ public class EcfCourtSpecificSerializer {
       }
 
     }
-    docType.setFilingAction(doc.getFilingAction());
+    // TODO(brycew): for now, not doing per document Filing Action. Maybe reconsider eventually,
+    // but the defaults are fine, and it's only going to be more confusing with per doc options.
+    // From Reference Guide: if no FilingAction is provided, the original default behavior applies:
+    // * ReviewFiling API w/o service contacts: EFile
+    // * ReviewFiling API w/ service contacts: EfileAndServe
+    // * ServeFiling API: Serve
+    //docType.setFilingAction(doc.getFilingAction());
 
     // TODO(brycew-later): what should this actually be? Very unclear
     DocumentAttachmentType attachment = ecfOf.createDocumentAttachmentType();
