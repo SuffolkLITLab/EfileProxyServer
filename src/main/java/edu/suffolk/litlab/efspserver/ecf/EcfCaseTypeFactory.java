@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.FilingInformation;
-import edu.suffolk.litlab.efspserver.PaymentFactory;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
@@ -49,7 +48,6 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.DomesticCas
 import tyler.ecf.extensions.common.CaseAugmentationType;
 import tyler.ecf.extensions.common.FilingAssociationType;
 import tyler.ecf.extensions.common.ProcedureRemedyType;
-import tyler.ecf.extensions.common.ProviderChargeType;
 import tyler.ecf.extensions.common.ServicePartyDataType;
 
 public class EcfCaseTypeFactory {
@@ -120,7 +118,7 @@ public class EcfCaseTypeFactory {
       boolean isInitialFiling,
       boolean isFirstIndexedFiling,
       List<String> filingIds,
-      // HACK(brycew): hacky: needed because fee querys put the payment stuff in the tyler Aug
+      // HACK(brycew): hacky: needed because fee querys and Service put the payment stuff in the tyler Aug
       String queryType,
       JsonNode miscInfo, // TODO(brycew-later): if we get XML Answer files, this isn't generic
       EcfCourtSpecificSerializer serializer,
@@ -380,9 +378,8 @@ public class EcfCaseTypeFactory {
       }
     }
 
-    if (queryType.equalsIgnoreCase("fees")) {
-      ProviderChargeType pct = PaymentFactory.makeProviderChargeType(info.getPaymentId());
-      ecfAug.setProviderCharge(pct);
+    if (queryType.equalsIgnoreCase("fees") || queryType.equalsIgnoreCase("service")) {
+      ecfAug.setProviderCharge(PaymentFactory.makeProviderChargeType(info.getPaymentId()));
     }
     if (miscInfo.has("max_fee_amount") && courtLocation.allowmaxfeeamount) {
       AmountType amountType = new AmountType();

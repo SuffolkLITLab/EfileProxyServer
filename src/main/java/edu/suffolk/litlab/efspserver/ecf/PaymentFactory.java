@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efspserver;
+package edu.suffolk.litlab.efspserver.ecf;
 
 import java.math.BigDecimal;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
@@ -13,18 +13,21 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.PaymentMe
 import tyler.ecf.extensions.common.ProviderChargeType;
 
 public class PaymentFactory {
+  // TODO(brycew-later): this is the amount that we take as a cut
+  private static BigDecimal ourCut = new BigDecimal(0.00);
+  
+  // TODO(brycew): make tax configurable to Jurisdiction
+  private static BigDecimal taxPercent = new BigDecimal(0.0625);
 
   public static PaymentMessageType makePaymentMessage(String paymentId) {
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.ObjectFactory ecfObjFac = 
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.ObjectFactory();
+    var ecfObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.ObjectFactory();
     PaymentMessageType pmt = ecfObjFac.createPaymentMessageType();
     pmt.setFeeExceptionReasonCode("");
     pmt.setFeeExceptionSupportingText("");
     pmt.setPayerName("");
-    pmt.getAllowanceCharge().add(makeAllowanceChargeType(paymentId, true));
+    pmt.getAllowanceCharge().add(makeAllowanceChargeType(paymentId));
     // TODO(brycew-later): Do these need to be filled? With what?
-    oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory cacObjFac = 
-        new oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory();
+    var cacObjFac = new oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory();
     pmt.setAddress(cacObjFac.createAddressType());
     pmt.setPayment(cacObjFac.createPaymentType());
     return pmt;
@@ -34,42 +37,39 @@ public class PaymentFactory {
     tyler.ecf.extensions.common.ObjectFactory tylerObjFac = 
         new tyler.ecf.extensions.common.ObjectFactory();
     ProviderChargeType pct = tylerObjFac.createProviderChargeType();
-    pct.getAllowanceCharge().add(makeAllowanceChargeType(paymentId, true));
+    pct.getAllowanceCharge().add(makeAllowanceChargeType(paymentId));
     return pct;
   }
   
-  private static AllowanceChargeType makeAllowanceChargeType(String paymentId, boolean makeEfmCollectFeeAndTax) {
-    oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory cacObjFac = 
-        new oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory();
-    oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ObjectFactory cbcObjFac = 
-        new oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ObjectFactory();
+  private static AllowanceChargeType makeAllowanceChargeType(String paymentId) {
+    var cacObjFac = new oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory();
+    var cbcObjFac = new oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ObjectFactory();
     AllowanceChargeType act = cacObjFac.createAllowanceChargeType();
-    oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType at = 
-        cbcObjFac.createAmountType();
+    var at = cbcObjFac.createAmountType();
     at.setCurrencyID("USD");
-    // TODO(brycew-later): this is the amount that we take as a cut
-    BigDecimal ourCut = new BigDecimal(0.00);
     at.setValue(ourCut); 
     act.setAmount(at);
     ChargeIndicatorType cit = cbcObjFac.createChargeIndicatorType();
+    // BigDecimal.equals is weird about "scale" (i.e. 2.00 != 2.0), so we need to use compareTo.
+    // https://docs.oracle.com/javase/7/docs/api/java/math/BigDecimal.html#equals(java.lang.Object)
+    boolean makeEfmCollectFeeAndTax = (ourCut.compareTo(BigDecimal.ZERO) > 0);
     cit.setValue(makeEfmCollectFeeAndTax);
     act.setChargeIndicator(cit); 
-    if (!makeEfmCollectFeeAndTax) {
-      TaxCategoryType tct = cacObjFac.createTaxCategoryType();
+    if (makeEfmCollectFeeAndTax) {
       PercentType perc = cbcObjFac.createPercentType();
-      BigDecimal taxPerc = new BigDecimal(0.0625);
-      perc.setValue(taxPerc); 
+      perc.setValue(taxPercent); 
+      TaxCategoryType tct = cacObjFac.createTaxCategoryType();
+      tct.setPercent(perc);
       tct.setBaseUnitMeasure(cbcObjFac.createBaseUnitMeasureType()); 
       tct.setPerUnitAmount(cbcObjFac.createPerUnitAmountType()); 
       tct.setTaxExemptionReasonCode(cbcObjFac.createTaxExemptionReasonCodeType()); 
       tct.setTaxExemptionReason(cbcObjFac.createTaxExemptionReasonType());
       tct.setTierRange(cbcObjFac.createTierRangeType());
       tct.setTierRatePercent(cbcObjFac.createTierRatePercentType());
-      tct.setPercent(perc);
       act.getTaxCategory().add(tct);
-      TaxTotalType ttt = cacObjFac.createTaxTotalType();
       TaxAmountType tax = cbcObjFac.createTaxAmountType();
-      tax.setValue(ourCut.multiply(taxPerc));
+      tax.setValue(ourCut.multiply(taxPercent));
+      TaxTotalType ttt = cacObjFac.createTaxTotalType();
       ttt.setTaxAmount(tax);
       act.setTaxTotal(ttt);
     }
