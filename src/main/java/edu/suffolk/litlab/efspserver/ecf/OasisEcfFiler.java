@@ -5,7 +5,6 @@ import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
-import edu.suffolk.litlab.efspserver.PaymentFactory;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
@@ -335,7 +334,8 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         collector.error(err);
       }
       filingPort = maybeFilingPort.get();
-      cfm = prepareFiling(info, collector, apiToken, filingPort, recordPort.get(), "review");
+      String queryType = (choice.equals(ApiChoice.ServiceApi))? "service" : "review";
+      cfm = prepareFiling(info, collector, apiToken, filingPort, recordPort.get(), queryType);
     } catch (FilingError err) {
       return Result.err(err);
     }
