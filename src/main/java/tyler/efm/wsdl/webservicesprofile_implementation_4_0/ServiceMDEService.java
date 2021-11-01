@@ -1,6 +1,5 @@
 package tyler.efm.wsdl.webservicesprofile_implementation_4_0;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebEndpoint;
@@ -16,7 +15,7 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
  *
  */
 @WebServiceClient(name = "ServiceMDEService",
-                  wsdlLocation = "file:/home/litlab/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/filingreview/ECF-4.0-ServiceMDEService.wsdl",
+                  wsdlLocation = "classpath:wsdl/filingreview/ECF-4.0-ServiceMDEService.wsdl",
                   targetNamespace = "urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0")
 public class ServiceMDEService extends Service {
 
@@ -25,13 +24,11 @@ public class ServiceMDEService extends Service {
     public final static QName SERVICE = new QName("urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0", "ServiceMDEService");
     public final static QName ServiceMDEPort = new QName("urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0", "ServiceMDEPort");
     static {
-        URL url = null;
-        try {
-            url = new URL("file:/home/litlab/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/filingreview/ECF-4.0-ServiceMDEService.wsdl");
-        } catch (MalformedURLException e) {
+        URL url = ServiceMDEService.class.getClassLoader().getResource("wsdl/filingreview/ECF-4.0-ServiceMDEService.wsdl");
+        if (url == null) {
             java.util.logging.Logger.getLogger(ServiceMDEService.class.getName())
                 .log(java.util.logging.Level.INFO,
-                     "Can not initialize the default wsdl from {0}", "file:/home/litlab/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/filingreview/ECF-4.0-ServiceMDEService.wsdl");
+                     "Can not initialize the default wsdl from {0}", "classpath:wsdl/filingreview/ECF-4.0-ServiceMDEService.wsdl");
         }
         WSDL_LOCATION = url;
     }
