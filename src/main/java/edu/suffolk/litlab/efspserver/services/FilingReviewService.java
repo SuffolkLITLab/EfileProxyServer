@@ -338,7 +338,7 @@ public class FilingReviewService {
   }
 
   @POST
-  @Path("/jurisdictions/{jurisdictions}/courts/{court_id}/filings/serve")
+  @Path("/jurisdictions/{jurisdiction}/courts/{court_id}/filing/serve")
   public Response serveFiling(@Context HttpHeaders httpHeaders,
       @PathParam("jurisdiction") String jurisdiction,
       @PathParam("court_id") String courtId, 
