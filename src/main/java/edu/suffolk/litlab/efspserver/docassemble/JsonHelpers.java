@@ -47,4 +47,18 @@ public class JsonHelpers {
     }
     return returnList;
   }
+  
+  /** Returns a JsonNode where `.isArray()` is true */
+  public static Optional<JsonNode> unwrapDAList(JsonNode obj) {
+    if (obj == null) {
+      return Optional.empty();
+    }
+    if (obj.isArray()) {
+      return Optional.of(obj);
+    } 
+    if (obj.isObject() && obj.has("elements") && obj.get("elements").isArray()) {
+      return Optional.of(obj.get("elements"));
+    }
+    return Optional.empty();
+  }
 }

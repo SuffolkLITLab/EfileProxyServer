@@ -295,7 +295,7 @@ public class EcfCourtSpecificSerializer {
     cpt.setCaseParticipantRoleCode(tt);
     return cpt;
   }
-
+  
 
   public ContactInformationType serializeEcfContactInformation(
       ContactInformation contactInfo, InfoCollector collector) throws FilingError {

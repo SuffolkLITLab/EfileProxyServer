@@ -53,14 +53,13 @@ public class FilingInformationDocassembleJacksonDeserializer
     if (!topObj.has(potentialMember)) {
       return List.of();  // Just an empty list: we don't know if it's required
     }
-    if (!(topObj.get(potentialMember).isObject()
-          && topObj.get(potentialMember).has("elements")
-          && topObj.get(potentialMember).get("elements").isArray())) {
+    Optional<JsonNode> maybePplElements = JsonHelpers.unwrapDAList(topObj.get(potentialMember));
+    if (maybePplElements.isEmpty()) {
       throw FilingError.malformedInterview(
           potentialMember + " isn't an List with an elements array");
     }
     List<Person> people = new ArrayList<Person>();
-    JsonNode peopleElements = topObj.get(potentialMember).get("elements");
+    JsonNode peopleElements = maybePplElements.get(); 
     for (int i = 0; i < peopleElements.size(); i++) {
       collector.pushAttributeStack(potentialMember + "[" + i + "]");
       Result<Person, FilingError> per =
@@ -205,10 +204,10 @@ public class FilingInformationDocassembleJacksonDeserializer
       entities.setAttorneyIds(List.of());
     }
 
-    JsonNode serviceContactsJson = node.get("service_contacts");
-    if (serviceContactsJson != null && serviceContactsJson.isArray()) {
+    Optional<JsonNode> serviceContactsJson = JsonHelpers.unwrapDAList(node.get("service_contacts"));
+    if (serviceContactsJson.isPresent()) {
       List<CaseServiceContact> contacts = new ArrayList<>();
-      serviceContactsJson.elements().forEachRemaining(servObj -> {
+      serviceContactsJson.get().elements().forEachRemaining(servObj -> {
         Optional<String> partyPerId = Optional.empty();
         if (servObj.has("party_association")) {
           JsonNode partyAssocJson = servObj.get("party_association");
@@ -280,11 +279,12 @@ public class FilingInformationDocassembleJacksonDeserializer
     if (bundle == null) {
       collector.addRequired(bundleVar);
     }
-    if (!bundle.isObject() || !bundle.has("elements") || !bundle.get("elements").isArray()) {
+    Optional<JsonNode> maybeElems = JsonHelpers.unwrapDAList(bundle);
+    if (maybeElems.isEmpty()) {
       return Result.err(FilingError.malformedInterview(
           "al_court_bundle should be a JSON object with a elements array (i.e. a python DAList)"));
     }
-    JsonNode elems = bundle.get("elements");
+    JsonNode elems = maybeElems.get(); 
     if (elems == null || elems.isEmpty()) {
       elems = NullNode.getInstance();
       collector.addRequired(bundleVar);
