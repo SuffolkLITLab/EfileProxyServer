@@ -91,10 +91,6 @@ import tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
 public class OasisEcfFiler extends EfmCheckableFilingInterface {
   private static Logger log =
       LoggerFactory.getLogger(OasisEcfFiler.class);
-  private static FilingReviewMDEService filingFactory
-     = new FilingReviewMDEService(FilingReviewMDEService.WSDL_LOCATION,
-        FilingReviewMDEService.SERVICE);
-
   private CodeDatabase cd;
   private final String headerKey;
   private oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory
@@ -290,10 +286,11 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   
   private static Result<FilingResult, FilingError> serveFilingIfReady(CoreFilingMessageType cfm, 
       FilingInformation info, InfoCollector collector, String apiToken) {
-
-    ServiceMDEService ss = new ServiceMDEService(ServiceMDEService.WSDL_LOCATION);
-    ServiceMDEPort port = ss.getServiceMDEPort();
-    ServiceReceiptMessageType receipt = port.serveFiling(cfm);
+    Optional<ServiceMDEPort> port = setupServicePort(apiToken);
+    if (port.isEmpty()) {
+      return Result.err(FilingError.serverError("Couldn't make a service MDE port with the given API token"));
+    }
+    ServiceReceiptMessageType receipt = port.get().serveFiling(cfm);
     StringBuilder sb = new StringBuilder();
     boolean anyErrors = false;
     for (oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType err : receipt.getError()) {
@@ -658,8 +655,27 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
 
     return Optional.of(port);
   }
+  
+  private static Optional<ServiceMDEPort> setupServicePort(String apiToken) {
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
+    if (creds.isEmpty()) {
+      return Optional.empty();
+    }
 
-  private Optional<CourtRecordMDEPort> setupRecordPort(String apiToken) {
+    ServiceMDEPort port = makeServicePort();
+    Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
+    try {
+      List<Header> headersList = List.of(creds.get().toHeader());
+      ctx.put(Header.HEADER_LIST, headersList);
+    } catch (JAXBException ex) {
+      log.error(ex.toString());
+      return Optional.empty();
+    }
+
+    return Optional.of(port);
+  }
+
+  private static Optional<CourtRecordMDEPort> setupRecordPort(String apiToken) {
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
     if (creds.isEmpty()) {
       return Optional.empty();
@@ -679,12 +695,24 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     return Optional.of(port);
   }
 
-  private CourtRecordMDEService recordFactory = new CourtRecordMDEService(
+  private static CourtRecordMDEService recordFactory = new CourtRecordMDEService(
       CourtRecordMDEService.WSDL_LOCATION,
       CourtRecordMDEService.SERVICE);
 
+  private static FilingReviewMDEService filingFactory
+     = new FilingReviewMDEService(FilingReviewMDEService.WSDL_LOCATION,
+        FilingReviewMDEService.SERVICE);
+
+  private static ServiceMDEService serviceFactory = new ServiceMDEService(ServiceMDEService.WSDL_LOCATION);
+
   private static FilingReviewMDEPort makeFilingPort() {
     FilingReviewMDEPort port = filingFactory.getFilingReviewMDEPort();
+    ServiceHelpers.setupServicePort((BindingProvider) port);
+    return port;
+  }
+  
+  private static ServiceMDEPort makeServicePort() {
+    ServiceMDEPort port = serviceFactory.getServiceMDEPort();
     ServiceHelpers.setupServicePort((BindingProvider) port);
     return port;
   }
