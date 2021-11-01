@@ -89,8 +89,8 @@ public class FilingDocDocassembleJacksonDeserializer {
       String documentTypeFormatName = getStringDefault(node, "document_type", "");
 
       List<OptionalService> optServices = new ArrayList<OptionalService>();
-      JsonNode optServs = node.get("optional_services");
-      if (optServs != null && optServs.isArray()) {
+      Optional<JsonNode> maybeOptServs = JsonHelpers.unwrapDAList(node.get("optional_services"));
+      maybeOptServs.ifPresent(optServs -> {
         optServs.elements().forEachRemaining(optServ -> {
           String code = optServ.get("code").asText();
           Optional<Integer> mult = getIntMember(optServ, "multiplier"); 
@@ -98,7 +98,7 @@ public class FilingDocDocassembleJacksonDeserializer {
           Optional<BigDecimal> fee = (feeJson.isBigDecimal()) ? Optional.of(feeJson.decimalValue()) : Optional.empty();
           optServices.add(new OptionalService(code, mult, fee));
         });
-      }
+      });
       JsonNode jsonDueDate = node.get("due_date");
       Optional<LocalDate> maybeDueDate = Optional.empty();
       if (jsonDueDate != null && jsonDueDate.isTextual()) {
