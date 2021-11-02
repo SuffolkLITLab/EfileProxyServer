@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver.codes;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -58,8 +60,31 @@ public class FilingCode {
           rs.getString(14));
   }
   
+  public static PreparedStatement prepQueryWithCaseInfo(Connection conn, 
+      boolean initial, String courtLocationId, String categoryId, String caseTypeId) throws SQLException {
+    PreparedStatement st = conn.prepareStatement(getFilingWithCaseInfo(initial));
+    st.setString(1, courtLocationId);
+    st.setString(2, categoryId);
+    st.setString(3, caseTypeId);
+    return st;
+  }
+
+  public static PreparedStatement prepQueryNoCaseInfo(Connection conn, 
+      boolean initial, String courtLocationId) throws SQLException {
+    PreparedStatement st = conn.prepareStatement(getFilingNoCaseInfo(initial));
+    st.setString(1, courtLocationId);
+    return st;
+  }
+  
+  public static PreparedStatement prepQueryWithKey(Connection conn, String courtId, String typeCode) throws SQLException {
+    PreparedStatement st = conn.prepareStatement(getFilingWithKey());
+    st.setString(1, courtId);
+    st.setString(1, typeCode);
+    return st;
+  }
+  
   /** @param initial true if its an initial filing, false if it's a subsequent. */
-  public static String getFilingWithCaseInfo(boolean initial) {
+  private static String getFilingWithCaseInfo(boolean initial) {
     String mainQuery = """
           SELECT code, name, fee, casecategory, casetypeid, filingtype, iscourtuseonly, 
                  civilclaimamount, probateestateamount, amountincontroversy, useduedate, 
@@ -73,7 +98,7 @@ public class FilingCode {
     }
   }
   
-  public static String getFilingNoCaseInfo(boolean initial) {
+  private static String getFilingNoCaseInfo(boolean initial) {
     String mainQuery = """
           SELECT code, name, fee, casecategory, casetypeid, filingtype, iscourtuseonly, 
                  civilclaimamount, probateestateamount, amountincontroversy, useduedate, 
@@ -88,7 +113,7 @@ public class FilingCode {
     }
   }
   
-  public static String getFilingWithKey() {
+  private static String getFilingWithKey() {
     return """
         SELECT code, name, fee, casecategory, casetypeid, filingtype, iscourtuseonly,
                civilclaimamount, probateestateamount, amountincontroversy, useduedate,
