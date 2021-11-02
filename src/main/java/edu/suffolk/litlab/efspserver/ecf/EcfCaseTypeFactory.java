@@ -564,11 +564,11 @@ public class EcfCaseTypeFactory {
   private JAXBElement<CriminalCaseType> makeCriminalCaseType(
       JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
       JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug) {
-    // BIG OLD TODO(brycew-later): make all of the TODO's separate issues/tickets to implement criminal
+    // BIG OLD TODO(#86): make all of the TODO's separate issues/tickets to implement criminal
     // stuff. There's alot here.
-    // TODO(brycew-later): support criminal case filings
+    // TODO(#86): support criminal case filings
 
-    // TODO(brycew-later): there are just too many tables for separate TODOs.
+    // TODO(#86): there are just too many tables for separate TODOs.
     // Most of these are empty in IL, so we aren't supporting for now.
     // Listing them individually:
     // * vehicletype, i.e. Four Door, 34 PU, Moped, etc.

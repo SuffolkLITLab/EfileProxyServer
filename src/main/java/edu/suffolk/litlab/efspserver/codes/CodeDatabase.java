@@ -287,11 +287,7 @@ public class CodeDatabase extends DatabaseInterface {
 
   public List<FilingCode> getFilingType(String courtLocationId, String categoryCode, String typeCode, boolean initial) {
     return safetyWrap(() -> {
-      String specificQuery = FilingCode.getFilingWithCaseInfo(initial);
-      PreparedStatement specificSt = conn.prepareStatement(specificQuery);
-      specificSt.setString(1, courtLocationId);
-      specificSt.setString(2, categoryCode);
-      specificSt.setString(3, typeCode);
+      PreparedStatement specificSt = FilingCode.prepQueryWithCaseInfo(conn, initial, courtLocationId, categoryCode, typeCode);
       ResultSet rs = specificSt.executeQuery();
       List<FilingCode> filingTypes = new ArrayList<FilingCode>();
       while (rs.next()) {
@@ -299,12 +295,11 @@ public class CodeDatabase extends DatabaseInterface {
       }
       // If there's nothing for the specific category and type, then get filing types without categories or types
       if (filingTypes.isEmpty()) {
-        String broadQuery = FilingCode.getFilingNoCaseInfo(initial);
-        PreparedStatement broadSt = conn.prepareStatement(broadQuery);
+        PreparedStatement broadSt = FilingCode.prepQueryNoCaseInfo(conn, initial, courtLocationId);
         broadSt.setString(1, courtLocationId);
         ResultSet broadRs = broadSt.executeQuery();
         while(broadRs.next()) {
-          filingTypes.add(new FilingCode(rs));
+          filingTypes.add(new FilingCode(broadRs));
         }
       }
       return filingTypes;
@@ -313,10 +308,7 @@ public class CodeDatabase extends DatabaseInterface {
 
   public Optional<FilingCode> getFilingTypeWith(String courtLocationId, String filingCode) {
     return safetyWrapOpt(() -> {
-      String query = FilingCode.getFilingWithKey();
-      PreparedStatement st = conn.prepareStatement(query);
-      st.setString(1, courtLocationId);
-      st.setString(2, filingCode);
+      PreparedStatement st = FilingCode.prepQueryWithKey(conn, courtLocationId, filingCode); 
       ResultSet rs = st.executeQuery();
       if (rs.next()) {
         return Optional.of(new FilingCode(rs));

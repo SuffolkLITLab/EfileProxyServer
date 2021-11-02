@@ -69,6 +69,7 @@ public class CaseCategory {
     return st;
   }
 
+  // TODO(#86): stop filtering out criminal categories
   public static String getCaseCategoriesForLoc() {
     return """
         SELECT code, name, ecfcasetype, procedureremedyinitial,
