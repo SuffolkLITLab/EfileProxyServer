@@ -52,6 +52,7 @@ import ecfv5.tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
 import ecfv5.tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateResponseMessageType;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
+import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
@@ -184,9 +185,9 @@ public class CourtSchedulingService {
       allCodes = serializer.serializeCaseCodes(info, collector, isInitialFiling);
     }
     Optional<String> caseTrackingId = info.getPreviousCaseId(); 
-    List<FilingDoc.PartyId> partyIds = info.getFilers();
+    List<PartyId> partyIds = info.getFilers();
     // HACK(brycew): ECF allows multiple filers for an envelope, but this stupid Tyler call only takes a single Party Id. 
-    Optional<FilingDoc.PartyId> firstFiler = (partyIds.isEmpty()) ? Optional.empty() : Optional.of(partyIds.get(0));
+    Optional<PartyId> firstFiler = (partyIds.isEmpty()) ? Optional.empty() : Optional.of(partyIds.get(0));
     Optional<String> filingAttorneyId = info.getFilings().get(0).getFilingAttorney();
     Optional<LocalDate> returnDate = info.getReturnDate();
     if (returnDate.isEmpty()) {

@@ -12,6 +12,7 @@ import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
 import edu.suffolk.litlab.efspserver.Name;
+import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.services.EfmFilingInterface;
@@ -81,7 +82,7 @@ public class JeffNetFiler implements EfmFilingInterface {
     if (info.getFilings().isEmpty()) {
       return Result.err(FilingError.serverError("Error: cannot file with no filings"));
     }
-    List<FilingDoc.PartyId> newFilers = info.getFilers().stream().filter(f -> f.isInCurrentFiling()).collect(Collectors.toList());
+    List<PartyId> newFilers = info.getFilers().stream().filter(f -> f.isInCurrentFiling()).collect(Collectors.toList());
     if (newFilers.size() != info.getFilers().size()) {
       return Result.err(FilingError.malformedInterview("Error: JeffNet cannot reference alredy existing filing parties"));
     }

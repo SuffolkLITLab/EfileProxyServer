@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import edu.suffolk.litlab.efspserver.FilingDoc;
+import edu.suffolk.litlab.efspserver.PartyId;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -24,7 +26,7 @@ public class FilingJeffNetJacksonSerializer extends StdSerializer<FilingDoc> {
     List<FilingParty> filingPartyList = new ArrayList<FilingParty>();
 
     gen.writeStartObject();
-    for (FilingDoc.PartyId filingPartyId : filingDoc.getFilingPartyIds()) {
+    for (PartyId filingPartyId : filingDoc.getFilingPartyIds()) {
       FilingParty p = new FilingParty();
       p.id = filingPartyId.id;
       if (filingPartyId.isInCurrentFiling()) {

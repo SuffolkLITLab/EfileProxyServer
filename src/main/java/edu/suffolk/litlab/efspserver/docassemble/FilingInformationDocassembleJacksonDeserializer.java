@@ -207,17 +207,27 @@ public class FilingInformationDocassembleJacksonDeserializer
     Optional<JsonNode> serviceContactsJson = JsonHelpers.unwrapDAList(node.get("service_contacts"));
     if (serviceContactsJson.isPresent()) {
       List<CaseServiceContact> contacts = new ArrayList<>();
-      serviceContactsJson.get().elements().forEachRemaining(servObj -> {
+      Iterator<JsonNode> servObjs = serviceContactsJson.get().elements();
+      while (servObjs.hasNext()) {
+        var servObj = servObjs.next(); 
         Optional<String> partyPerId = Optional.empty();
-        if (servObj.has("party_association")) {
-          JsonNode partyAssocJson = servObj.get("party_association");
-          partyPerId = Optional.of(varToId.get(partyAssocJson.asText()));
+        JsonNode partyAssoc = servObj.get("party_association");
+        if (partyAssoc != null && partyAssoc.isTextual()) {
+          if (varToId.containsKey(partyAssoc.asText())) {
+            // TODO(brycew): should this just use pattern matcher above, to see for 'user[i]' again?
+            partyPerId = Optional.of(varToId.get(partyAssoc.asText()));
+          } else {
+            collector.addWrong(collector.requestVar("service_contacts[i].party_association", "Party association can only be parties in the current filing.", "text"));
+          }
+        } else if (partyAssoc != null && !partyAssoc.isNull()) {
+          log.warn("What is party_association? should be text: " + partyAssoc); 
         }
         CaseServiceContact contact = new CaseServiceContact(
             servObj.get("contact_id").asText(),
             servObj.get("service_type").asText(), partyPerId);
         contacts.add(contact);
-      });
+      }
+      entities.setServiceContacts(contacts);
     } else {
       entities.setServiceContacts(List.of());
     }

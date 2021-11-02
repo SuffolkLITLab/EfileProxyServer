@@ -25,32 +25,6 @@ public class FilingDoc {
   final private UUID id;
 
   
-  public static class PartyId {
-    public static PartyId CurrentFiling(String id) {
-      return new PartyId(id, Kind.CURRENT_FILING);
-    }
-    
-    public static PartyId Already(String id) {
-      return new PartyId(id, Kind.ALREADY_IN);
-    }
-    
-    private PartyId(String id, Kind kind) {
-      this.id = id;
-      this.kind = kind;
-    }
-    
-    public boolean isInCurrentFiling() {
-      return kind.equals(Kind.CURRENT_FILING);
-    }
-
-    public final String id;
-    private enum Kind {
-      CURRENT_FILING,
-      ALREADY_IN
-    }
-    private final Kind kind;
-  }
-
   // Required to at least have one
   private List<PartyId> filingPartyIds;
   private Optional<String> filingAttorney;

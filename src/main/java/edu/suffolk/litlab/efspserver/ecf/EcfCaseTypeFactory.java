@@ -7,7 +7,6 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
-import edu.suffolk.litlab.efspserver.codes.CaseType;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
@@ -111,8 +110,7 @@ public class EcfCaseTypeFactory {
   public JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>
       makeCaseTypeFromTylerCategory(
       CourtLocationInfo courtLocation,
-      CaseCategory initialCaseCategory,
-      CaseType caseType,
+      ComboCaseCodes comboCodes, 
       FilingInformation info,
       boolean anyAmountInControversy,
       boolean isInitialFiling,
@@ -122,17 +120,16 @@ public class EcfCaseTypeFactory {
       String queryType,
       JsonNode miscInfo, // TODO(brycew-later): if we get XML Answer files, this isn't generic
       EcfCourtSpecificSerializer serializer,
-      InfoCollector collector
+      InfoCollector collector,
+      Map<String, Object> serviceContactToXmlObjs
   ) throws SQLException, FilingError {
-    CaseCategory caseCategory = initialCaseCategory;
-    String caseCategoryCode = caseCategory.code;
     JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug =
         makeNiemCaseAug(courtLocation.code, info.getPreviousCaseId());
     JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug =
-              makeTylerCaseAug(courtLocation, caseCategory,
-                  caseType, info, isInitialFiling, isFirstIndexedFiling,
-                  filingIds, queryType, miscInfo, serializer, collector);
-    if (caseCategory.ecfcasetype.equals("CivilCase")) {
+              makeTylerCaseAug(courtLocation, comboCodes,
+                  info, isInitialFiling, isFirstIndexedFiling,
+                  filingIds, queryType, miscInfo, serializer, collector, serviceContactToXmlObjs);
+    if (comboCodes.cat.ecfcasetype.equals("CivilCase")) {
       Optional<BigDecimal> amountInControversy = Optional.empty();
       if (anyAmountInControversy) {
         JsonNode jsonAmt = info.getMiscInfo().get("amount_in_controversy");
@@ -144,15 +141,15 @@ public class EcfCaseTypeFactory {
       }
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase =
           makeCivilCaseType(caseAug, tylerAug, info.getCaseDocketNumber(), info.getPreviousCaseId(), amountInControversy);
-      myCase.getValue().setCaseCategoryText(XmlHelper.convertText(caseCategoryCode));
+      myCase.getValue().setCaseCategoryText(XmlHelper.convertText(comboCodes.cat.code));
       return myCase;
-    } else if (caseCategory.ecfcasetype.equals("DomesticCase")) {
+    } else if (comboCodes.cat.ecfcasetype.equals("DomesticCase")) {
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase =
           makeDomesticCaseType(caseAug, tylerAug, info.getCaseDocketNumber(), info.getPreviousCaseId(), miscInfo);
-      myCase.getValue().setCaseCategoryText(XmlHelper.convertText(caseCategoryCode));
+      myCase.getValue().setCaseCategoryText(XmlHelper.convertText(comboCodes.cat.code));
       return myCase;
     } else {
-      InterviewVariable var = collector.requestVar("tyler_case_category", "The " + caseCategory.name 
+      InterviewVariable var = collector.requestVar("tyler_case_category", "The " + comboCodes.cat.name 
           + " Case category requires an ECF case type that we don't support", "text");
       collector.addWrong(var);
       FilingError err = FilingError.wrongValue(var); 
@@ -177,8 +174,7 @@ public class EcfCaseTypeFactory {
   private JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType>
       makeTylerCaseAug(
           CourtLocationInfo courtLocation,
-          CaseCategory caseCategory,
-          CaseType caseType,
+          ComboCaseCodes comboCodes,
           FilingInformation info,
           boolean isInitialFiling,
           boolean isFirstIndexedFiling,
@@ -186,7 +182,8 @@ public class EcfCaseTypeFactory {
           String queryType,
           JsonNode miscInfo,
           EcfCourtSpecificSerializer serializer,
-          InfoCollector collector
+          InfoCollector collector,
+          Map<String, Object> serviceContactXmlObjs
   ) throws SQLException, FilingError {
     var tylerObjFac = new tyler.ecf.extensions.common.ObjectFactory();
     var ecfCommonObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
@@ -195,17 +192,17 @@ public class EcfCaseTypeFactory {
 
     var ecfAug = tylerObjFac.createCaseAugmentationType();
 
-    if (caseType.code.isEmpty()){
-      log.warn("Type's code is empty?: " + caseType);
+    if (comboCodes.type.code.isEmpty()){
+      log.warn("Type's code is empty?: " + comboCodes);
     }
     else {
-      log.info("Setting case type text to " + caseType.toString());
-      ecfAug.setCaseTypeText(XmlHelper.convertText(caseType.code));
+      log.info("Setting case type text to " + comboCodes.type.toString());
+      ecfAug.setCaseTypeText(XmlHelper.convertText(comboCodes.type.code));
     }
 
     DataFieldRow subTypeConfig = cd.getDataField(courtLocation.code, "CaseInformationCaseSubType");
     if (subTypeConfig.isvisible) {
-      List<NameAndCode> subTypes = cd.getCaseSubtypesFor(courtLocation.code, caseType.code);
+      List<NameAndCode> subTypes = cd.getCaseSubtypesFor(courtLocation.code, comboCodes.type.code);
       Optional<NameAndCode> maybeSubtype = subTypes.stream()
           .filter(type -> type.getCode().equals(info.getCaseSubtypeCode()))
           .findFirst();
@@ -219,7 +216,7 @@ public class EcfCaseTypeFactory {
       }
     }
 
-    List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocation.code, caseType.code);
+    List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocation.code, comboCodes.type.code);
     List<String> partyTypeNames = partyTypes.stream().map(p -> p.name).collect(Collectors.toList());
     Set<String> requiredTypes = partyTypes.stream().filter(t -> t.isrequired).map(t -> t.code).collect(Collectors.toSet());
     Set<String> existingTypes = new HashSet<>();
@@ -272,13 +269,13 @@ public class EcfCaseTypeFactory {
     for (Map.Entry<String, List<String>> partyAttys : info.getPartyAttorneyMap().entrySet()) {
       log.info("Setting Attorneys for : " + partyAttys.getKey());
       Object partyObj = partyIdToRefObj.get(partyAttys.getKey());
-      log.info("Party obj: " + partyObj);
       ReferenceType repdRef = structObjFac.createReferenceType();
       repdRef.setRef(partyObj);
       if (!attRow.isvisible) {
         continue;
       }
       if (partyAttys.getValue().isEmpty()) {
+        // Is Self-Represented
         if (attRow.isrequired) {
           InterviewVariable var = collector.requestVar("party_to_attorney",
               "Attorneys are required for this court", "DADict");
@@ -286,10 +283,9 @@ public class EcfCaseTypeFactory {
         }
         CaseOfficialType t = ecfCommonObjFac.createCaseOfficialType();
         t.getCaseRepresentedPartyReference().add(repdRef);
-        ReferenceType attRef = structObjFac.createReferenceType();
-        attRef.setRef(partyObj);
-        t.setRoleOfPersonReference(attRef);
-
+        ReferenceType selfRepresentedRep = structObjFac.createReferenceType();
+        selfRepresentedRep.setRef(partyObj);
+        t.setRoleOfPersonReference(selfRepresentedRep);
         ecfAug.getCaseOtherEntityAttorney().add(t);
       } else {
         if (!courtLocation.allowmultipleattorneys && partyAttys.getValue().size() > 1) {
@@ -297,14 +293,11 @@ public class EcfCaseTypeFactory {
           collector.error(err);
         }
         for (String attyId : partyAttys.getValue()) {
-          log.info("Adding atty: " + attyId);
           CaseOfficialType t = ecfCommonObjFac.createCaseOfficialType();
           t.getCaseRepresentedPartyReference().add(repdRef);
           ReferenceType attRef = structObjFac.createReferenceType();
-          log.info("Atty obj: " + attorneyIdToXmlId.get(attyId));
           attRef.setRef(attorneyIdToXmlId.get(attyId));
           t.setRoleOfPersonReference(attRef);
-
           ecfAug.getCaseOtherEntityAttorney().add(t);
         }
       }
@@ -312,25 +305,27 @@ public class EcfCaseTypeFactory {
 
     List<CaseServiceContact> attachedContacts = info.getServiceContacts().stream().filter(c -> c.partyAssociated.isPresent()).collect(Collectors.toList());
     boolean anyServicePartyAttached = attachedContacts.size() > 0;
-    gov.niem.niem.proxy.xsd._2.Boolean servPartyIndic = XmlHelper.convertBool(anyServicePartyAttached);
-    ecfAug.setAttachServiceContactIndicator(servPartyIndic);
+    ecfAug.setAttachServiceContactIndicator(XmlHelper.convertBool(anyServicePartyAttached));
     for (CaseServiceContact attachedContact : attachedContacts) {
       ServicePartyDataType ref = tylerObjFac.createServicePartyDataType();
       ReferenceType servRef = structObjFac.createReferenceType();
-      servRef.setRef(attachedContact.refId);
+      servRef.setRef(serviceContactXmlObjs.get(attachedContact.refId));
       ref.setServiceReference(servRef);
-      ReferenceType partyRef = structObjFac.createReferenceType();
-      partyRef.setRef(attachedContact.partyAssociated.get());
-      ref.setPartyReference(partyRef);
+      attachedContact.partyAssociated.ifPresent(partyId -> {
+        ReferenceType partyRef = structObjFac.createReferenceType();
+        partyRef.setRef(partyIdToRefObj.get(partyId));
+        ref.setPartyReference(partyRef);
+      });
+
       ecfAug.getExtendedData().add(tylerObjFac.createServicePartyReference(ref));
     }
 
 
     Optional<ProcedureRemedyType> res = makeProcedureRemedyType(isInitialFiling,
-        caseCategory, courtLocation.code, miscInfo, collector);
+        comboCodes.cat, courtLocation.code, miscInfo, collector);
 
     Optional<ProcedureRemedyType> resPlus = addDamageAmountType(
-        res, isInitialFiling, caseCategory, courtLocation.code, miscInfo, collector);
+        res, isInitialFiling, comboCodes.cat, courtLocation.code, miscInfo, collector);
     if (resPlus.isPresent()) {
       ecfAug.setProcedureRemedy(resPlus.get());
     }

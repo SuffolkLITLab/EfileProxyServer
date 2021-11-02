@@ -14,6 +14,7 @@ import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
 import edu.suffolk.litlab.efspserver.Name;
+import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,7 +53,7 @@ public class FilingInformationToJeffNetTest {
     String fileName = "quality_check_overlay.pdf";
     InputStream x = this.getClass().getResourceAsStream("/" + fileName); 
     FilingDoc filingDoc = new FilingDoc(Optional.empty(), fileName, x,
-        info.getPlaintiffs().stream().map((p) -> FilingDoc.PartyId.CurrentFiling(p.getIdString())).collect(
+        info.getPlaintiffs().stream().map(p -> PartyId.CurrentFiling(p.getIdString())).collect(
             Collectors.toList()), "5766",
         componentCode, true);
     info.setFilings(List.of(filingDoc));
