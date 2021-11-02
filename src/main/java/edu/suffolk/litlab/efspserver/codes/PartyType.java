@@ -7,6 +7,7 @@ import java.sql.SQLException;
 public class PartyType {
   public String code;
   public String name;
+  // NOTE: "Indicates wether a case can have more than one party with this party type." NOT that it's only for new parties. Jesus
   public boolean isAvailableForNewParties;
   public String casetypeid;
   public boolean isrequired;
