@@ -195,8 +195,7 @@ public class ServiceHelpers {
 
   public static <T extends QueryMessageType> T prep(T newMsg, String courtId) {
     EntityType typ = new EntityType();
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory commonObjFac 
-      = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+    var commonObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     JAXBElement<PersonType> elem2 = commonObjFac.createEntityPerson(new PersonType());
     typ.setEntityRepresentation(elem2);
     newMsg.setQuerySubmitter(typ);

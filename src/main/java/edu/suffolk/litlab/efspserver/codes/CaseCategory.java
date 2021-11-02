@@ -74,7 +74,7 @@ public class CaseCategory {
     return """
         SELECT code, name, ecfcasetype, procedureremedyinitial,
           procedureremedysubsequent, damageamountinitial, damageamountsubsequent
-        FROM casecategory WHERE location=?""";
+        FROM casecategory WHERE location=? AND ecfcasetype !='CriminalCase' """;
   }
 
   public static String getFileableCaseCategoryForLoc() {
@@ -90,7 +90,7 @@ public class CaseCategory {
                 FROM casecategory as cate
                   INNER JOIN casetype AS type
                   ON cate.code = type.casecategory AND cate.location = type.location
-                WHERE cate.location=?
+                WHERE cate.location=? AND cate.ecfcasetype != 'CriminalCase'
             ) cat
         WHERE cat.RN = 1
         """;
@@ -109,7 +109,7 @@ public class CaseCategory {
                 FROM casecategory as cate
                   INNER JOIN casetype AS type
                   ON cate.code = type.casecategory AND cate.location = type.location
-                WHERE cate.location=? and type.initial ILIKE ?
+                WHERE cate.location=? AND cate.ecfcasetype != 'CriminalCase' AND type.initial ILIKE ?
             ) cat
         WHERE cat.RN = 1
         """;
