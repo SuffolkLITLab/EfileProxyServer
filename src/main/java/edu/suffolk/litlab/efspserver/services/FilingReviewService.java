@@ -98,7 +98,8 @@ public class FilingReviewService {
   public Response getFilingList(@Context HttpHeaders httpHeaders,
       @PathParam("jurisdiction") String jurisdiction,
       @PathParam("court_id") String courtId,
-      @QueryParam("user_id") String userId, @QueryParam("start_date") String startStr,
+      @QueryParam("user_id") String userId, 
+      @QueryParam("start_date") String startStr,
       @QueryParam("end_date") String endStr) {
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
     if (!filingInterfaces.containsKey(jurisdiction)) {

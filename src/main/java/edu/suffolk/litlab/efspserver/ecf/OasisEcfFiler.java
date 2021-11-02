@@ -455,31 +455,36 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       java.time.LocalDate endDate, String apiToken) {
     try {
       List<String> courtIds = cd.getAllLocations();
-      if (courtId != null && !courtId.equals("0") && courtIds.contains(courtId)) {
+      if (courtId != null && !courtId.equals("0") && !courtIds.contains(courtId)) {
         return Response.status(404).entity("Court " + courtId + " not in jurisdiction").build();
       }
+    } catch (SQLException ex) {
+      log.error("Couldn't connect to database?" + ex);
+      return Response.status(500).entity("Ops Error: Could not connect to database").build();
+    }
 
-      Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
-      if (port.isEmpty()) {
-        return Response.status(403).build();
-      }
-      FilingListQueryMessageType m = prep(listObjFac.createFilingListQueryMessageType(), courtId);
-      if (courtId.equals("0") || courtId == null) {
-        // Search all courts
-        m.setCaseCourt(null);
-      }
-      if (userId != null && !userId.isBlank()) {
-        IdentificationType id = niemObjFac.createIdentificationType();
-        id.setIdentificationID(XmlHelper.convertString(userId));
-        gov.niem.niem.niem_core._2.PersonType per = niemObjFac.createPersonType();
-        per.getPersonOtherIdentification().add(id);
-        EntityType entity = niemObjFac.createEntityType();
-        entity.setEntityRepresentation(niemObjFac.createPerson(per));
-        m.setDocumentSubmitter(entity);
-      } else {
-        m.setDocumentSubmitter(null);
-      }
-      if (startDate != null && endDate != null) {
+    Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
+    if (port.isEmpty()) {
+      return Response.status(403).build();
+    }
+    FilingListQueryMessageType m = prep(listObjFac.createFilingListQueryMessageType(), courtId);
+    if (courtId.equals("0") || courtId == null) {
+      // Search all courts
+      m.setCaseCourt(null);
+    }
+    if (userId != null && !userId.isBlank()) {
+      IdentificationType id = niemObjFac.createIdentificationType();
+      id.setIdentificationID(XmlHelper.convertString(userId));
+      gov.niem.niem.niem_core._2.PersonType per = niemObjFac.createPersonType();
+      per.getPersonOtherIdentification().add(id);
+      EntityType entity = niemObjFac.createEntityType();
+      entity.setEntityRepresentation(niemObjFac.createPerson(per));
+      m.setDocumentSubmitter(entity);
+    } else {
+      m.setDocumentSubmitter(null);
+    }
+    if (startDate != null && endDate != null) {
+      try {
         GregorianCalendar startCal = new GregorianCalendar();
         startCal.set(startDate.getYear(), startDate.getMonthValue(), startDate.getDayOfMonth());
         DatatypeFactory fac = DatatypeFactory.newInstance();
@@ -499,25 +504,21 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         range.setStartDate(niemStart);
         range.setEndDate(niemEnd);
         m.getDateRange().add(range);
+      } catch (DatatypeConfigurationException ex) {
+        log.error("Why is datatypeconfigurationexception checked?: " + ex);
+        return Response.status(500).build();
       }
-      FilingListResponseMessageType resp = port.get().getFilingList(m);
-      for (MatchingFilingType match : resp.getMatchingFiling()) {
-        log.trace("Matched: " + match.getCaseTrackingID() + ", " + match);
-      }
-      return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
-          () -> {
-            if (resp.getMatchingFiling().size() <= 0) {
-              return Response.noContent().build();
-            }
-            return Response.ok().entity(resp.getMatchingFiling()).build();
-          });
-    } catch (SQLException ex) {
-      log.error("Couldn't connect to database?" + ex);
-      return Response.status(500).entity("Ops Error: Could not connect to database").build();
-    } catch (DatatypeConfigurationException ex) {
-      log.error("Why is datatypeconfigurationexception checked?: " + ex);
-      return Response.status(500).build();
     }
+    FilingListResponseMessageType resp = port.get().getFilingList(m);
+    for (MatchingFilingType match : resp.getMatchingFiling()) {
+      log.trace("Matched: " + match.getCaseTrackingID() + ", " + match);
+    }
+    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), () -> {
+        if (resp.getMatchingFiling().size() <= 0) {
+          return Response.noContent().build();
+        }
+        return Response.ok().entity(resp.getMatchingFiling()).build();
+    });
   }
 
   @Override
@@ -527,20 +528,20 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       if (!courtIds.contains(courtId)) {
         return Response.status(404).entity("Court " + courtId + " not in jurisdiction").build();
       }
-
-      Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
-      if (port.isEmpty()) {
-        return Response.status(403).build();
-      }
-      FilingStatusQueryMessageType status = prep(statusObjFac.createFilingStatusQueryMessageType(), courtId);
-      status.setDocumentIdentification(XmlHelper.convertId(filingId));
-      FilingStatusResponseMessageType statusResp = port.get().getFilingStatus(status);
-      
-      return ServiceHelpers.mapTylerCodesToHttp(statusResp.getError(),
-          () -> Response.ok().entity(statusResp).build());
     } catch (SQLException ex) {
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
     }
+
+    Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
+    if (port.isEmpty()) {
+      return Response.status(403).build();
+    }
+    FilingStatusQueryMessageType status = prep(statusObjFac.createFilingStatusQueryMessageType(), courtId);
+    status.setDocumentIdentification(XmlHelper.convertId(filingId));
+    FilingStatusResponseMessageType statusResp = port.get().getFilingStatus(status);
+      
+    return ServiceHelpers.mapTylerCodesToHttp(statusResp.getError(),
+        () -> Response.ok().entity(statusResp).build());
   }
 
   @Override
@@ -567,19 +568,19 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       if (!courtIds.contains(courtId)) {
         return Response.status(422).entity("Court " + courtId + " not in jurisdiction").build();
       }
-
-      Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
-      if (port.isEmpty()) {
-        return Response.status(403).build();
-      }
-      FilingDetailQueryMessageType m = prep(detailObjFac.createFilingDetailQueryMessageType(), courtId);
-      m.setDocumentIdentification(XmlHelper.convertId(filingId));
-      FilingDetailResponseMessageType resp = port.get().getFilingDetails(m);
-      return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
-          () -> Response.ok().entity(resp).build());
     } catch (SQLException ex) {
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
     }
+
+    Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
+    if (port.isEmpty()) {
+      return Response.status(403).build();
+    }
+    FilingDetailQueryMessageType m = prep(detailObjFac.createFilingDetailQueryMessageType(), courtId);
+    m.setDocumentIdentification(XmlHelper.convertId(filingId));
+    FilingDetailResponseMessageType resp = port.get().getFilingDetails(m);
+    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
+        () -> Response.ok().entity(resp).build());
   }
 
   @Override
