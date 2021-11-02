@@ -58,8 +58,8 @@ public class FilingInformation {
    *
    * @return The People who are filers in the filing documents
    */
-  public List<FilingDoc.PartyId> getFilers() {
-    List<FilingDoc.PartyId> filers = new ArrayList<FilingDoc.PartyId>();
+  public List<PartyId> getFilers() {
+    List<PartyId> filers = new ArrayList<PartyId>();
     filingDocs.forEach(d -> filers.addAll(d.getFilingPartyIds()));
     return filers;
   }

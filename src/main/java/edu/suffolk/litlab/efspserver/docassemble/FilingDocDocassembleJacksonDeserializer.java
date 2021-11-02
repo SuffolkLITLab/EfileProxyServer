@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.OptionalService;
+import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
@@ -118,17 +119,17 @@ public class FilingDocDocassembleJacksonDeserializer {
       
       Pattern usersPattern = Pattern.compile("users\\[[0-9]+\\]");
       Pattern otherPattern = Pattern.compile("other_parties\\[[0-9]+\\]");
-      List<FilingDoc.PartyId> fullParties = filingParties.stream().map(fp -> {
+      List<PartyId> fullParties = filingParties.stream().map(fp -> {
         Matcher matcher = usersPattern.matcher(fp);
         if (matcher.find()) {
-          return FilingDoc.PartyId.CurrentFiling(varToId.get(fp)); 
+          return PartyId.CurrentFiling(varToId.get(fp)); 
         } else {
           Matcher otherMatcher = otherPattern.matcher(fp);
           if (otherMatcher.find()) {
-            return FilingDoc.PartyId.CurrentFiling(varToId.get(fp)); 
+            return PartyId.CurrentFiling(varToId.get(fp)); 
           } else {
             log.info("Existing filing party id: " + fp);
-            return FilingDoc.PartyId.Already(fp); 
+            return PartyId.Already(fp); 
           }
         }
       }).collect(Collectors.toList());

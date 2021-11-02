@@ -34,6 +34,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -169,20 +170,45 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         allCodes = serializer.serializeCaseCodes(info, collector, isInitialFiling);
       }
 
+      var coreObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory();
+      CoreFilingMessageType cfm = coreObjFac.createCoreFilingMessageType();
+
+      int i = 0;
+      Map<String, Object> serviceContactXmlObjs = new HashMap<>();
+      for (CaseServiceContact servContact : info.getServiceContacts()) {
+        ElectronicServiceInformationType servInfo = commonObjFac.createElectronicServiceInformationType();
+        List<ServiceCodeType> types =  cd.getServiceTypes(info.getCourtLocation());
+        Optional<ServiceCodeType> serviceCode = types.stream().filter(t -> t.code.equalsIgnoreCase(servContact.serviceType)).findFirst();
+        InterviewVariable var = collector.requestVar("service_contact[" + i + "].service_type", "service type should be", "choices",
+            types.stream().map(t -> t.code).collect(Collectors.toList()));
+        if (serviceCode.isEmpty()) {
+          collector.addWrong(var);
+        }
+        /*
+        if (serviceCode.get().code.equals("-580") && isInitialFiling && locationInfo.get().disallowelectronicserviceonnewcontacts) { // Eservice
+          collector.addWrong(var.appendDesc(", but can't be e-service for an initial contact"));
+        }
+        */
+        IdentificationType id = XmlHelper.convertId(servContact.guid, "SERVICECONTACTID"); 
+        id.setIdentificationSourceText(XmlHelper.convertText(serviceCode.get().code));
+        servInfo.setServiceRecipientID(id);
+        servInfo.setId(servContact.refId);
+        servInfo.setReceivingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+        servInfo.setReceivingMDELocationID(XmlHelper.convertId(ServiceHelpers.ASSEMBLY_PORT)); 
+        serviceContactXmlObjs.put(servContact.refId, servInfo);
+        cfm.getElectronicServiceInformation().add(servInfo);
+      }
+
       boolean anyAmtInControversy = allCodes.filings.stream().anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"));
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> assembledCase =
           ecfCaseFactory.makeCaseTypeFromTylerCategory(
-              locationInfo.get(), allCodes.cat, allCodes.type,
+              locationInfo.get(), allCodes, 
               info, anyAmtInControversy, isInitialFiling, isFirstIndexedFiling,
               info.getFilings()
                   .stream()
                   .map(f -> f.getIdString())
                   .collect(Collectors.toList()),
-              queryType, info.getMiscInfo(), serializer, collector);
-
-      var coreObjFac =
-          new oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory();
-      CoreFilingMessageType cfm = coreObjFac.createCoreFilingMessageType();
+              queryType, info.getMiscInfo(), serializer, collector, serviceContactXmlObjs);
 
       Map<String, String> crossReferences = serializer.getCrossRefIds(info, collector, locationInfo.get().code, allCodes.type.code);
       for (Map.Entry<String, String> ref : crossReferences.entrySet()) {
@@ -207,26 +233,6 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       if (!isInitialFiling && !checkBoxSub.isvisible && info.getServiceContacts().size() > 0) {
         FilingError err = FilingError.malformedInterview("Court " + locationInfo.get().name + " doesn't allow service on subsequent filings");
         collector.error(err);
-      }
-
-      int i = 0;
-      for (CaseServiceContact servContact : info.getServiceContacts()) {
-        ElectronicServiceInformationType servInfo = commonObjFac.createElectronicServiceInformationType();
-        List<ServiceCodeType> types =  cd.getServiceTypes(info.getCourtLocation());
-        Optional<ServiceCodeType> code = types.stream().filter(t -> t.name.equalsIgnoreCase(servContact.serviceType)).findFirst();
-        InterviewVariable var = collector.requestVar("service_contact[" + i + "].service_type", "service type should be", "choices",
-            types.stream().map(t -> t.name).collect(Collectors.toList()));
-        if (code.isEmpty()) {
-          collector.addWrong(var);
-        }
-        if (code.get().code.equals("-580") && isInitialFiling && locationInfo.get().disallowelectronicserviceonnewcontacts) { // Eservice
-
-        }
-        IdentificationType id = niemObjFac.createIdentificationType();
-        id.setIdentificationSourceText(XmlHelper.convertText(code.get().code));
-        servInfo.setServiceRecipientID(id);
-        servInfo.setId(servContact.refId);
-        cfm.getElectronicServiceInformation().add(servInfo);
       }
 
       cfm.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
@@ -340,8 +346,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       return serveFilingIfReady(cfm, info, collector, apiToken);
     }
 
-    var wsOf =
-        new oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory();
+    var wsOf = new oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.ObjectFactory();
     PaymentMessageType pmt = PaymentFactory.makePaymentMessage(info.getPaymentId());
     ReviewFilingRequestMessageType rfrm = wsOf.createReviewFilingRequestMessageType();
     rfrm.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
@@ -355,8 +360,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     }
     MessageReceiptMessageType mrmt = filingPort.reviewFiling(rfrm);
     if (mrmt.getError().size() > 0) {
-      for (oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType err : mrmt
-          .getError()) {
+      for (var err : mrmt.getError()) {
         if (!err.getErrorCode().getValue().equals("0")) {
           log.warn("Error from Tyler: " + err.getErrorCode().getValue() + ", "
               + err.getErrorText().getValue());

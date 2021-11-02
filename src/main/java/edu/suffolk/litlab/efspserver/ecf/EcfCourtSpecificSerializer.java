@@ -25,6 +25,7 @@ import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.OptionalService;
+import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
@@ -502,7 +503,7 @@ public class EcfCourtSpecificSerializer {
       }
     }
 
-    for (FilingDoc.PartyId filingPartyId : doc.getFilingPartyIds()) {
+    for (PartyId filingPartyId : doc.getFilingPartyIds()) {
       if (filingPartyId.isInCurrentFiling()) {
         metadata.getFilingPartyID().add(XmlHelper.convertId(filingPartyId.id, "REFERENCE"));
       } else {
