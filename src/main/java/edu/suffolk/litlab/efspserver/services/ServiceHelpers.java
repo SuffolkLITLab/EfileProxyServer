@@ -172,7 +172,7 @@ public class ServiceHelpers {
   public static Response mapTylerCodesToHttp(
       List<oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType> errors,
       Supplier<Response> defaultRespFunc) {
-    for (oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType error : errors) {
+    for (var error : errors) {
       if (!checkErrors(error)) {
         continue;
       }

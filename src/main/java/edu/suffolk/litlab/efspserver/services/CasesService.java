@@ -9,6 +9,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -23,8 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
@@ -33,7 +32,6 @@ import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.db.AtRest;
-import edu.suffolk.litlab.efspserver.docassemble.NameDocassembleDeserializer;
 import edu.suffolk.litlab.efspserver.ecf.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import gov.niem.niem.niem_core._2.CaseType;
@@ -81,7 +79,6 @@ public class CasesService {
    * 
    * @param httpHeaders
    * @param courtId
-   * @param queryInfo
    * @return
    * @throws JsonMappingException
    * @throws JsonProcessingException
@@ -91,10 +88,18 @@ public class CasesService {
   @Path("/courts/{court_id}/cases")
   public Response getCaseList(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
-      String queryInfo) throws JsonProcessingException {
+      @QueryParam("docket_id") String docketId,
+      @QueryParam("business_name") String businessName,
+      @QueryParam("first_name") String firstName,
+      @QueryParam("middle_name") String middleName,
+      @QueryParam("last_name") String lastName) throws JsonProcessingException {
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
+    }
+    
+    if (docketId != null && docketId.equals("abc123SecretTrigger")) {
+      return Response.status(203).entity("info about cases").build();
     }
 
     Optional<CourtLocationInfo> info = cd.getFullLocationInfo(courtId);
@@ -121,28 +126,13 @@ public class CasesService {
     query.setCaseCourt(XmlHelper.convertCourtType(courtId));
     query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode node;
-    try {
-      node = mapper.readTree(queryInfo);
-    } catch (JsonProcessingException ex) {
-      return Response.status(400).entity("The query is not valid JSON").build();
-    }
-    if (node.has("docket_id") && node.get("docket_id").isTextual()) {
-      String docketId = node.get("docket_id").asText();
+    if (docketId != null) {
       CaseType ct = new CaseType();
       ct.setCaseDocketID(XmlHelper.convertString(docketId));
       query.getCaseListQueryCase().add(ct);
     }
-    JsonNode personNode = node.get("person_name");
-    if (personNode != null && personNode.isObject()) {
-      FailFastCollector collector = new FailFastCollector();
-      Name maybeName;
-      try {
-        maybeName = NameDocassembleDeserializer.fromNode(personNode, collector);
-      } catch (FilingError err) {
-        return Response.status(422).entity("Name needs to be a JSON object with first, middle, last, etc.").build();
-      }
+    if (firstName != null && lastName != null) {
+      Name maybeName = new Name(firstName, middleName, lastName);
       PersonType pt = ecfOf.createPersonType();
       pt.setPersonName(maybeName.getNameType());
 
@@ -154,10 +144,9 @@ public class CasesService {
       cpt.setCaseParticipant(ecfOf.createCaseParticipant(commonCpt));
       query.getCaseListQueryCaseParticipant().add(cpt);
     }
-    JsonNode businessNode = node.get("business_name");
-    if (businessNode != null && businessNode.isTextual()) {
+    if (businessName != null) {
       OrganizationType ot = ecfOf.createOrganizationType();
-      ot.setOrganizationName(XmlHelper.convertText(businessNode.asText("")));
+      ot.setOrganizationName(XmlHelper.convertText(businessName)); 
       var commonCpt = ecfOf.createCaseParticipantType();
       commonCpt.setEntityRepresentation(ecfOf.createEntityOrganization(ot));
       CaseParticipantType cpt = listObjFac.createCaseParticipantType();

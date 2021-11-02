@@ -28,8 +28,8 @@ public class Name {
     this("", companyName, "", "", "", "");
   }
 
-  public Name(String firstName, String lastName) {
-    this("", firstName, "", lastName, "", "");
+  public Name(String firstName, String middleName, String lastName) {
+    this("", firstName, middleName, lastName, "", "");
   }
 
   /** The full name, with no extra spaces. */

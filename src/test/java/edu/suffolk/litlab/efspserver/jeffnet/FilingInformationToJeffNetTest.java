@@ -38,8 +38,8 @@ public class FilingInformationToJeffNetTest {
     info.setCaseCategoryCode("CivilCase"); 
     info.setFilings(null);
     
-    Person plaintiff = new Person(new Name("Bob", "Zombie"), "test@example.com", false);
-    Person plaintiff2 = new Person(new Name("Jill", "Vampire"), 
+    Person plaintiff = new Person(new Name("Bob", "", "Zombie"), "test@example.com", false);
+    Person plaintiff2 = new Person(new Name("Jill", "", "Vampire"), 
         new ContactInformation(List.of(), Optional.empty(), Optional.empty()), Optional.empty(), 
         Optional.empty(), Optional.empty(), false, "");
     info.setPlaintiffs(List.of(plaintiff, plaintiff2));
