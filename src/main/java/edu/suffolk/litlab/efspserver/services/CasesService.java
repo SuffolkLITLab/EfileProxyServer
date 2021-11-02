@@ -98,10 +98,6 @@ public class CasesService {
       return Response.status(401).build();
     }
     
-    if (docketId != null && docketId.equals("abc123SecretTrigger")) {
-      return Response.status(203).entity("info about cases").build();
-    }
-
     Optional<CourtLocationInfo> info = cd.getFullLocationInfo(courtId);
     if (info.isEmpty()) {
       return Response.status(404).entity(courtId + " not in available courts to search").build();
@@ -126,6 +122,22 @@ public class CasesService {
     query.setCaseCourt(XmlHelper.convertCourtType(courtId));
     query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+    if (docketId != null && docketId.equals("abc123SecretTrigger")) {
+      Name maybeName = new Name("John", "", "Brown");
+      PersonType pt = ecfOf.createPersonType();
+      pt.setPersonName(maybeName.getNameType());
+
+      var commonCpt = ecfOf.createCaseParticipantType();
+      commonCpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
+      commonCpt.setCaseParticipantRoleCode(XmlHelper.convertText(""));
+      
+      CaseParticipantType cpt = listObjFac.createCaseParticipantType();
+      cpt.setCaseParticipant(ecfOf.createCaseParticipant(commonCpt));
+      query.getCaseListQueryCaseParticipant().add(cpt);
+      CaseListResponseMessageType resp = maybePort.get().getCaseList(query);
+      return Response.status(203).entity(resp.getCase()).build();
+    }
+
     if (docketId != null) {
       CaseType ct = new CaseType();
       ct.setCaseDocketID(XmlHelper.convertString(docketId));
