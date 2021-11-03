@@ -106,7 +106,18 @@ working in. For us it's mostly `illinois-stage`.
    These options are documented on the [main CXF site](http://cxf.apache.org/docs/wsdl-to-java.html),
    but to break it down simply:
 
-   * `-b` passes a JAXB binding xml file directly to JAXB. (NOTE(brycew): this doesn't actually do what I want it too now. :/)
+   * `-b` passes a JAXB binding xml file directly to JAXB. 
+      (NOTE(brycew): this doesn't work perfectly , but you can specify at lesat one file to expand the Enum members on. :/)
+      The file looks like this:
+      ```xml
+      <?xml version="1.0" ?>
+      <jaxb:bindings version="1.0" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	         xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+          <jaxb:bindings schemaLocation="filingreview/ecf-11.xsd"> 
+              <jaxb:globalBindings typesafeEnumMaxMembers="1024"/>
+          </jaxb:bindings>
+       </jaxb:bindings>
+      ```
    * `-xjc-Xts` makes better `toString` methods. Should honestly be default.
    * `-d` puts all of the generated java into that directory. This is outside of the project root, so I don't accidentaly
      overwrite anything when running the tool.
