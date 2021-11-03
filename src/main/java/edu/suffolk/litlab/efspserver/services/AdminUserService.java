@@ -2,7 +2,6 @@ package edu.suffolk.litlab.efspserver.services;
 
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,12 +27,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
+import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.EfmUserService;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.IEfmUserService;
@@ -99,19 +100,24 @@ public class AdminUserService {
   private static Logger log =
       LoggerFactory.getLogger(AdminUserService.class);
 
-  private EfmUserService userFactory;
-  private SecurityHub security;
-  private CodeDatabase cd;
+  private final EfmUserService userFactory;
+  private final EfmFirmService firmFactory;
+  private final SecurityHub security;
+  private final CodeDatabase cd;
 
-  public AdminUserService(SecurityHub security, CodeDatabase cd) {
+  public AdminUserService(String jurisdiction, SecurityHub security, CodeDatabase cd) {
     this.security = security;
     this.cd = cd;
-    init();
-  }
-
-  final void init() {
-    URL userWsdlUrl = EfmUserService.WSDL_LOCATION;
-    userFactory = AdminUserService.makeUserServiceFactory(userWsdlUrl);
+    Optional<EfmUserService> maybeUserFactory = SoapClientChooser.getEfmUserFactory(jurisdiction);
+    if (maybeUserFactory.isEmpty()) {
+      throw new RuntimeException("Can't find " + jurisdiction + " in the SoapClientChooser for EfmUser"); 
+    }
+    this.userFactory = maybeUserFactory.get();;
+    Optional<EfmFirmService> maybeFirmFactory = SoapClientChooser.getEfmFirmFactory(jurisdiction);
+    if (maybeFirmFactory.isEmpty()) {
+      throw new RuntimeException("Can't find " + jurisdiction + " in the SoapClientChooser for EfmFirm factory"); 
+    }
+    this.firmFactory = maybeFirmFactory.get();;
   }
 
   @POST
@@ -143,14 +149,14 @@ public class AdminUserService {
   }
 
   @GET
-  @Path("/user")
-  public Response getSelfUser(@Context HttpHeaders httpHeaders) {
+  @Path("/jurisdictions/{jurisdiction}/user")
+  public Response getSelfUser(@Context HttpHeaders httpHeaders,
+      @PathParam("jurisdiction") String jurisdiction) {
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    TylerLogin login = new TylerLogin();
-    String tylerId = httpHeaders.getHeaderString(login.getHeaderKey()); 
+    String tylerId = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyStatic()); 
     if (tylerId == null || tylerId.isBlank()) {
       return Response.status(500).entity(
           "Server does not have a Tyler UUID for the current account. Can you give it to me?").build();
@@ -230,7 +236,7 @@ public class AdminUserService {
   @Path("/users/{id}/resend-activation-email")
   public Response resendActivationEmail(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -251,7 +257,7 @@ public class AdminUserService {
   @Path("/users/{id}/password")
   public Response resetPassword(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, ResetPasswordParams params) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -331,7 +337,7 @@ public class AdminUserService {
   @Path("/users/{id}")
   public Response getUser(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -345,9 +351,10 @@ public class AdminUserService {
   }
 
   @GET
-  @Path("/users")
-  public Response getUserList(@Context HttpHeaders httpHeaders) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
+  @Path("/jurisdictions/{jurisdiction}/users")
+  public Response getUserList(@Context HttpHeaders httpHeaders,
+      @PathParam("jurisdiction") String jurisdiction) {
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -359,15 +366,15 @@ public class AdminUserService {
   
   @PATCH
   @Path("/user")
-  public Response updateUser(@Context HttpHeaders httpHeaders, UserType updatedUser) {
+  public Response updateUser(@Context HttpHeaders httpHeaders,
+      UserType updatedUser) {
     Optional<IEfmUserService> port = setupUserPort(httpHeaders, true);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    TylerLogin login = new TylerLogin();
     // Ensure the user exists already.
     GetUserRequestType getUserReq = new GetUserRequestType();
-    getUserReq.setUserID(httpHeaders.getHeaderString(login.getHeaderId()));
+    getUserReq.setUserID(httpHeaders.getHeaderString(TylerLogin.getHeaderId()));
     GetUserResponseType userRes = port.get().getUser(getUserReq);
     if (ServiceHelpers.checkErrors(userRes.getError())) {
       return Response.status(401, userRes.getError().getErrorText()).build();
@@ -392,7 +399,7 @@ public class AdminUserService {
   @Path("/users/{id}")
   public Response updateUser(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, UserType updatedUser) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -413,7 +420,7 @@ public class AdminUserService {
     return Response.noContent().build();
   }
   
-  private UpdateUserRequestType updateUser(UserType existingUser, UserType updatedUser) {
+  private static UpdateUserRequestType updateUser(UserType existingUser, UserType updatedUser) {
     if (updatedUser.getEmail() != null) {
       existingUser.setEmail(updatedUser.getEmail());
     }
@@ -441,7 +448,7 @@ public class AdminUserService {
   @Path("/users/{id}/roles")
   public Response getRoles(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -464,7 +471,7 @@ public class AdminUserService {
   @Path("/users/{id}/roles")
   public Response addRoles(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, List<RoleLocationType> toAdd) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -495,7 +502,7 @@ public class AdminUserService {
   @Path("/users/{id}/roles")
   public Response removeRoles(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, List<RoleLocationType> toRm) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -529,7 +536,7 @@ public class AdminUserService {
   public Response registerUser(@Context HttpHeaders httpHeaders,
       RegistrationRequestType req) {
     boolean needsAuth = req.getRegistrationType().equals(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security, needsAuth);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security, needsAuth);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -561,7 +568,7 @@ public class AdminUserService {
   @Path("/users/{id}")
   public Response removeUser(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -576,7 +583,7 @@ public class AdminUserService {
   @GET
   @Path("/notification-options")
   public Response getNotificationPreferenceList(@Context HttpHeaders httpHeaders) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(407).build();
     }
@@ -586,7 +593,7 @@ public class AdminUserService {
         () -> Response.ok(resp.getNotificationListItem()).build());
   }
 
-  private boolean passwordOk(DataFieldRow row, String password) {
+  private static boolean passwordOk(DataFieldRow row, String password) {
     if (row.isvisible && row.isrequired
         && password != null && !password.isEmpty()) {
       return row.matchRegex(password);
@@ -613,9 +620,8 @@ public class AdminUserService {
     }
     IEfmUserService port = makeUserPort(userFactory);
     if (needsSoapHeader) {
-      TylerLogin login = new TylerLogin();
       Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(
-          httpHeaders.getHeaderString(login.getHeaderKey()));
+          httpHeaders.getHeaderString(TylerLogin.getHeaderKeyStatic())); 
       if (creds.isEmpty()) {
         return Optional.empty();
       }
@@ -641,10 +647,6 @@ public class AdminUserService {
     IEfmUserService port = userService.getBasicHttpBindingIEfmUserService();
     ServiceHelpers.setupServicePort((BindingProvider) port);
     return port;
-  }
-
-  public static EfmUserService makeUserServiceFactory(URL userWsdlUrl) {
-    return new EfmUserService(userWsdlUrl, EfmUserService.SERVICE);
   }
 
 }

@@ -54,6 +54,7 @@ import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
+import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
@@ -108,12 +109,11 @@ public class CourtSchedulingService {
   private final Map<String, InterviewToFilingEntityConverter> converterMap;
   private final SecurityHub security;
   private final CodeDatabase cd;
-  private final CourtRecordMDEService recordFactory = new CourtRecordMDEService(
-      CourtRecordMDEService.WSDL_LOCATION,
-      CourtRecordMDEService.SERVICE);
+  private final CourtRecordMDEService recordFactory; 
 
   
-  public CourtSchedulingService(Map<String, InterviewToFilingEntityConverter> converterMap, SecurityHub security, CodeDatabase cd) {
+  public CourtSchedulingService(Map<String, InterviewToFilingEntityConverter> converterMap, 
+      SecurityHub security, CodeDatabase cd, String jurisdiction) {
     this.cd = cd;
     this.security = security;
     this.converterMap = converterMap;
@@ -125,6 +125,11 @@ public class CourtSchedulingService {
     this.niemObjFac = new ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory();
     this.proxyObjFac = new ecfv5.gov.niem.release.niem.proxy.xsd._4.ObjectFactory();
     this.jxObjFac = new ecfv5.gov.niem.release.niem.domains.jxdm._6.ObjectFactory();
+    Optional<CourtRecordMDEService> maybeCourt = SoapClientChooser.getCourtRecordFactory(jurisdiction);
+    if (maybeCourt.isEmpty()) {
+      throw new RuntimeException("Cannot find " + jurisdiction + " for court record factory");
+    }
+    this.recordFactory = maybeCourt.get();
   }
   
   @POST
@@ -479,8 +484,7 @@ public class CourtSchedulingService {
       log.warn("Couldn't checkLogin");
       return Optional.empty();
     }
-    TylerLogin login = new TylerLogin();
-    String tylerToken = httpHeaders.getHeaderString(login.getHeaderKey());
+    String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyStatic()); 
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds?");

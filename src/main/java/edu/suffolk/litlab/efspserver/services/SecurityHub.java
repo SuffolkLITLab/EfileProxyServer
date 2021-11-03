@@ -37,9 +37,9 @@ public class SecurityHub {
   private LoginInterface tylerLoginObj;
   private LoginInterface jeffNetLoginObj;
   
-  public SecurityHub(LoginDatabase ld) {
+  public SecurityHub(LoginDatabase ld, String jurisdiction) {
     this.ld = ld;
-    this.tylerLoginObj = new TylerLogin();
+    this.tylerLoginObj = new TylerLogin(jurisdiction);
     this.jeffNetLoginObj = new JeffNetLogin();
   }
 

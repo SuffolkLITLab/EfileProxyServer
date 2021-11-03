@@ -198,7 +198,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public EfmFilingInterface getInterface() {
-    return new OasisEcfFiler(cd);
+    return new OasisEcfFiler(this.tylerJurisdiction, cd);
   }
 
   @Override

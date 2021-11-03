@@ -1,6 +1,5 @@
 package edu.suffolk.litlab.efspserver.ecf;
 
-import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
 
@@ -11,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.services.LoginInterface;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import tyler.efm.services.EfmUserService;
@@ -22,11 +22,20 @@ public class TylerLogin implements LoginInterface {
   private static Logger log =
       LoggerFactory.getLogger(LoginInterface.class);
 
-  private EfmUserService userServiceFactory;
+  private final EfmUserService userServiceFactory;
+  private static final String HEADER_KEY = "TYLER_TOKEN";
 
-  public TylerLogin() {
-    URL userWsdlUrl = EfmUserService.WSDL_LOCATION;
-    userServiceFactory = makeUserServiceFactory(userWsdlUrl);
+  public TylerLogin(String jurisdiction) {
+    Optional<EfmUserService> maybeUserFactory = SoapClientChooser.getEfmUserFactory(jurisdiction);
+    if (maybeUserFactory.isPresent()) {
+      userServiceFactory = maybeUserFactory.get(); 
+    } else {
+      throw new RuntimeException(jurisdiction + " not in SoapClientChooser for EFMUser");
+    }
+  }
+  
+  public static String getHeaderKeyStatic() {
+    return HEADER_KEY;
   }
 
   @Override
@@ -76,16 +85,12 @@ public class TylerLogin implements LoginInterface {
     return port;
   }
 
-  public static EfmUserService makeUserServiceFactory(URL userWsdlUrl) {
-    return new EfmUserService(userWsdlUrl, EfmUserService.SERVICE);
-  }
-
   @Override
   public String getHeaderKey() {
-    return "TYLER-TOKEN";
+    return HEADER_KEY; 
   }
   
-  public String getHeaderId() {
+  public static String getHeaderId() {
     return "TYLER-ID";
   }
 
