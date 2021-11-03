@@ -40,10 +40,20 @@
 			<input message="tns:NotifyCourtDateRequest"/>
 			<output message="tns:NotifyCourtDateResponse"/>
 		</operation>
-		<operation name="ReserveCourtDate">
+
+        <!-- NOTE(brycew): This op isn't in the Tyler description, and cxf says 
+			org.apache.cxf.tools.common.ToolException: Non-unique body parts! In a port, 
+			operations must have unique operation signatures on the wire for successful 
+			dispatching. In port 
+			{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE}CourtSchedulingMDEPort, 
+			operations "{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE}ReserveCourtDate" 
+			and "{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE}ReserveCourtDateSync" 
+			have the same request body block {https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/MessageWrappers}ReserveCourtDateRequest
+		-->
+		<!--operation name="ReserveCourtDate">
 			<input message="tns:ReserveCourtDateRequest"/>
 			<output message="tns:ReserveCourtDateResponse"/>
-		</operation>
+		</operation-->
 		<operation name="ReserveCourtDateSync">
 			<input message="tns:ReserveCourtDateRequest"/>
 			<output message="tns:ReserveCourtDateSyncResponse"/>

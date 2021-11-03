@@ -22,7 +22,7 @@ public class SoapClientChooser {
 
   static Map<String, String> serviceMDEWsdls = Map.of(
       "illinois-stage", "wsdl/filingreview/ECF-4.0-ServiceMDEService.wsdl",
-      "illinois-test", "wsdl/test/ECF-4.0-ServiceMDEService.wdsl");
+      "illinois-test", "wsdl/test/ECF-4.0-ServiceMDEService.wsdl");
   
   static Map<String, String> filingReviewMDEWsdls = Map.of(
       "illinois-stage", "wsdl/filingreview/ECF-4.0-FilingReviewMDEService.wsdl",

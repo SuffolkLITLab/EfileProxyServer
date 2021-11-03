@@ -46,11 +46,13 @@ public class TylerModuleSetup implements EfmModuleSetup {
   private UserDatabase ud;
   private OrgMessageSender sender;
   private Scheduler scheduler;
+  private String tylerJurisdictionEnv;
 
   public static class CreationArgs {
     public String dbUser;
     public String dbPassword;
     public String tylerEndpoint;
+    public String tylerJurisdictionEnv;
     public String tylerJurisdiction;
     public String x509Password;
     public String togaKey;
@@ -76,6 +78,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     this.dbPassword = args.dbPassword;
     this.tylerEndpoint = args.tylerEndpoint;
     this.tylerJurisdiction = args.tylerJurisdiction;
+    this.tylerJurisdictionEnv = args.tylerJurisdictionEnv;
     this.x509Password = args.x509Password;
     this.togaKey = args.togaKey;
     this.togaUrl = args.togaUrl;
@@ -105,6 +108,14 @@ public class TylerModuleSetup implements EfmModuleSetup {
       return Optional.empty();
     }
     args.tylerJurisdiction = maybeTylerJurisdiction.get();
+    
+    Optional<String> maybeTylerEnv = EfmModuleSetup.GetEnv("TYLER_ENV");
+    if (maybeTylerEnv.isPresent()) {
+      log.info("Using " + maybeTylerEnv.get() + " for TYLER_ENV"); 
+      args.tylerJurisdictionEnv = args.tylerJurisdiction + "-" + maybeTylerEnv.get();
+    } else {
+      log.info("Not using any TYLER_ENV, maybe prod?");
+    }
 
     args.dbUser = EfmModuleSetup.GetEnv("POSTGRES_USER").orElse("postgres");
     Optional<String> maybeDbPassword = EfmModuleSetup.GetEnv("POSTGRES_PASSWORD");
@@ -176,9 +187,9 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public String getJurisdiction() {
-    // TODO Auto-generated method stub
     return tylerJurisdiction;
   }
+
   @Override
   public Set<String> getCourts() {
     try {
@@ -198,7 +209,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public EfmFilingInterface getInterface() {
-    return new OasisEcfFiler(this.tylerJurisdiction, cd);
+    return new OasisEcfFiler(this.tylerJurisdictionEnv, cd);
   }
 
   @Override

@@ -149,9 +149,8 @@ public class AdminUserService {
   }
 
   @GET
-  @Path("/jurisdictions/{jurisdiction}/user")
-  public Response getSelfUser(@Context HttpHeaders httpHeaders,
-      @PathParam("jurisdiction") String jurisdiction) {
+  @Path("/user")
+  public Response getSelfUser(@Context HttpHeaders httpHeaders) {
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -351,9 +350,8 @@ public class AdminUserService {
   }
 
   @GET
-  @Path("/jurisdictions/{jurisdiction}/users")
-  public Response getUserList(@Context HttpHeaders httpHeaders,
-      @PathParam("jurisdiction") String jurisdiction) {
+  @Path("/users")
+  public Response getUserList(@Context HttpHeaders httpHeaders) {
     Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (port.isEmpty()) {
       return Response.status(401).build();
