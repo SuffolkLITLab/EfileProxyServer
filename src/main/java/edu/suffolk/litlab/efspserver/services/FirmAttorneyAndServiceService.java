@@ -286,6 +286,9 @@ public class FirmAttorneyAndServiceService {
     return makeResponse(resp, ()->Response.ok("\"" + resp.getServiceContactID() + "\"").build());
   }
 
+  /**
+   * @param json should be a JSON object with a "caseId" and "casePartyId" keys, both with string values
+   */
   @PUT
   @Path("/service-contacts/{contact_id}/cases")
   public Response attachServiceContact(@Context HttpHeaders httpHeaders,
