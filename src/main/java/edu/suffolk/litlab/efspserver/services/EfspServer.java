@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efspserver.services;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import edu.suffolk.litlab.efspserver.HttpsCallbackHandler;
 import edu.suffolk.litlab.efspserver.SendMessage;
+import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.db.MessageSettingsDatabase;
@@ -10,6 +11,7 @@ import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingEntityConverter;
 import edu.suffolk.litlab.efspserver.ecf.TylerModuleSetup;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetModuleSetup;
+import tyler.efm.services.EfmFirmService;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -92,32 +94,46 @@ public class EfspServer {
       callbackMap.put(mod.getJurisdiction(), courtToCallback);
       filingMap.put(mod.getJurisdiction(), courtToFiler);
     }
+
+    Optional<String> tylerJurisdiction = GetEnv("TYLER_JURISDICTION");
+    Optional<String> tylerEnv = GetEnv("TYLER_ENV");
+    String jurisdiction = tylerJurisdiction.get();
+    if (tylerEnv.isPresent()) {
+      jurisdiction += "-" + tylerEnv.get();
+    }
+    Optional<EfmFirmService> firmFactory = SoapClientChooser.getEfmFirmFactory(jurisdiction); 
+    if (firmFactory.isEmpty()) {
+      throw new RuntimeException("Cannot find jurisdiction " + jurisdiction + " at start for EfmFirm");
+    }
     
     String baseLocalUrl = System.getenv("BASE_LOCAL_URL"); //"https://0.0.0.0:9000";
     cd.setAutocommit(true);
     ud.setAutocommit(true);
     ld.setAutocommit(true);
     md.setAutocommit(true);
-    SecurityHub security = new SecurityHub(ld);
-
+    SecurityHub security = new SecurityHub(ld, jurisdiction);
+    
     Map<Class<?>, SingletonResourceProvider> services = new HashMap<Class<?>, SingletonResourceProvider>();
-    services.put(AdminUserService.class, new SingletonResourceProvider(new AdminUserService(security, cd)));
+    services.put(AdminUserService.class, new SingletonResourceProvider(new AdminUserService(jurisdiction, security, cd)));
     services.put(FilingReviewService.class,
         new SingletonResourceProvider(new FilingReviewService(
             ud, converterMap, filingMap, callbackMap, security, sender)));
     services.put(FirmAttorneyAndServiceService.class,
-        new SingletonResourceProvider(new FirmAttorneyAndServiceService(security, cd)));
+        new SingletonResourceProvider(new FirmAttorneyAndServiceService(security, cd, firmFactory.get())));
     // TODO(brycew-later): refactor to reduce the number of services, or make just "Tyler services" and "JeffNet services" Providers
     if (GetEnv("TOGA_CLIENT_KEY").isPresent() && GetEnv("TOGA_URL").isPresent()) {
       services.put(PaymentsService.class,
-          new SingletonResourceProvider(new PaymentsService(security, GetEnv("TOGA_CLIENT_KEY").get(), GetEnv("TOGA_URL").get())));
+          new SingletonResourceProvider(new PaymentsService(security, 
+              GetEnv("TOGA_CLIENT_KEY").get(), 
+              GetEnv("TOGA_URL").get(),
+              firmFactory.get())));
     }
     services.put(CasesService.class,
-        new SingletonResourceProvider(new CasesService(security, cd)));
+        new SingletonResourceProvider(new CasesService(security, cd, jurisdiction)));
     services.put(CodesService.class,
         new SingletonResourceProvider(new CodesService(cd)));
     services.put(CourtSchedulingService.class,
-        new SingletonResourceProvider(new CourtSchedulingService(converterMap, security, cd)));
+        new SingletonResourceProvider(new CourtSchedulingService(converterMap, security, cd, jurisdiction)));
     services.put(MessageSettingsService.class,
         new SingletonResourceProvider(new MessageSettingsService(security, md)));
 

@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
+import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.schema.attachservicecontactrequest.AttachServiceContactRequestType;
 import tyler.efm.services.schema.attorneylistresponse.AttorneyListResponseType;
@@ -64,21 +65,23 @@ import tyler.efm.services.schema.updateservicecontactresponse.UpdateServiceConta
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 public class FirmAttorneyAndServiceService {
 
-  private SecurityHub security;
-  private CodeDatabase cd;
+  private final SecurityHub security;
+  private final CodeDatabase cd;
+  private final EfmFirmService firmFactory;
 
-  private tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac =
+  private static final tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac =
       new tyler.efm.services.schema.common.ObjectFactory();
 
-  public FirmAttorneyAndServiceService(SecurityHub security, CodeDatabase cd) {
+  public FirmAttorneyAndServiceService(SecurityHub security, CodeDatabase cd, EfmFirmService firmFactory) {
     this.security = security;
     this.cd = cd;
+    this.firmFactory = firmFactory;
   }
 
   @GET
   @Path("/firm")
   public Response getSelfFirm(@Context HttpHeaders httpHeaders) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -90,7 +93,7 @@ public class FirmAttorneyAndServiceService {
   @PATCH
   @Path("/firm")
   public Response updateFirm(@Context HttpHeaders httpHeaders, String json) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -126,7 +129,7 @@ public class FirmAttorneyAndServiceService {
   @GET
   @Path("/attorneys")
   public Response getAttorneyList(@Context HttpHeaders httpHeaders) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -139,7 +142,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/attorneys/{attorney_id}")
   public Response getAttorney(@Context HttpHeaders httpHeaders,
       @PathParam("attorney_id") String attorneyId) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -154,7 +157,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/attorneys")
   public Response createAttorney(@Context HttpHeaders httpHeaders,
       AttorneyType attorney) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -178,7 +181,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/attorneys/{attorney_id}")
   public Response updateAttorney(@Context HttpHeaders httpHeaders,
       @PathParam("attorney_id") String attorneyId, String json) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -209,7 +212,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/attorneys/{attorney_id}")
   public Response removeAttorney(@Context HttpHeaders httpHeaders,
       @PathParam("attorney_id") String attorneyId) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -223,7 +226,7 @@ public class FirmAttorneyAndServiceService {
   @GET
   @Path("/service-contacts")
   public Response getServiceContactList(@Context HttpHeaders httpHeaders) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -235,7 +238,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/service-contacts/{contact_id}")
   public Response getServiceContact(@Context HttpHeaders httpHeaders,
       @PathParam("contact_id") String contactId) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -250,7 +253,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/service-contacts/{contact_id}")
   public Response removeServiceContact(@Context HttpHeaders httpHeaders,
       @PathParam("contact_id") String contactId) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -265,7 +268,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/service-contacts")
   public Response createServiceContact(@Context HttpHeaders httpHeaders,
       ServiceContactInput input) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -293,7 +296,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/service-contacts/{contact_id}/cases")
   public Response attachServiceContact(@Context HttpHeaders httpHeaders,
       @PathParam("contact_id") String contactId, String json) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -323,7 +326,7 @@ public class FirmAttorneyAndServiceService {
   public Response detachServiceContact(@Context HttpHeaders httpHeaders,
       @PathParam("contact_id") String contactId, @PathParam("case_id") String caseId,
       @QueryParam("case_party_id") String casePartyId) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -342,7 +345,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/service-contacts/{contact_id}")
   public Response updateServiceContact(@Context HttpHeaders httpHeaders,
       @PathParam("contact_id") String contactId, String json) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -380,7 +383,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/service-contacts/public")
   public Response getPublicList(@Context HttpHeaders httpHeaders,
       String json) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }

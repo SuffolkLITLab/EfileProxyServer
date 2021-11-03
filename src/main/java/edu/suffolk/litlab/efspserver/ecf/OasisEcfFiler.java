@@ -5,6 +5,7 @@ import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
+import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
@@ -94,21 +95,24 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       LoggerFactory.getLogger(OasisEcfFiler.class);
   private CodeDatabase cd;
   private final String headerKey;
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory
+  private final oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory
       statusObjFac;
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory
+  private final oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory
       listObjFac;
-  private tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory detailObjFac;
-  private tyler.ecf.extensions.cancelfilingmessage.ObjectFactory cancelObjFac;
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory
+  private final tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory detailObjFac;
+  private final tyler.ecf.extensions.cancelfilingmessage.ObjectFactory cancelObjFac;
+  private final oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory
       commonObjFac;
-  private gov.niem.niem.niem_core._2.ObjectFactory niemObjFac;
-  private gov.niem.niem.proxy.xsd._2.ObjectFactory proxyObjFac;
+  private final gov.niem.niem.niem_core._2.ObjectFactory niemObjFac;
+  private final gov.niem.niem.proxy.xsd._2.ObjectFactory proxyObjFac;
+  private final CourtRecordMDEService recordFactory; 
+  private final FilingReviewMDEService filingFactory;
+  private final ServiceMDEService serviceFactory; 
 
 
-  public OasisEcfFiler(CodeDatabase cd) {
+  public OasisEcfFiler(String jurisdiction, CodeDatabase cd) {
     this.cd = cd;
-    TylerLogin login = new TylerLogin();
+    TylerLogin login = new TylerLogin(jurisdiction);
     this.headerKey = login.getHeaderKey();
     statusObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory();
     listObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory();
@@ -117,6 +121,22 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     commonObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     niemObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
     proxyObjFac = new gov.niem.niem.proxy.xsd._2.ObjectFactory();
+    Optional<CourtRecordMDEService> maybeCourt = SoapClientChooser.getCourtRecordFactory(jurisdiction);
+    if (maybeCourt.isEmpty()) {
+      throw new RuntimeException("Cannot find " + jurisdiction + " for court record factory");
+    }
+    this.recordFactory = maybeCourt.get();
+    Optional<FilingReviewMDEService> maybeReview = SoapClientChooser.getFilingReviewFactory(jurisdiction);
+    if (maybeReview.isEmpty()) {
+      throw new RuntimeException("Cannot find " + jurisdiction + " for filing review factory");
+    }
+    this.filingFactory = maybeReview.get();
+    Optional<ServiceMDEService> maybeServiceFac = SoapClientChooser.getServiceFactory(jurisdiction);
+    if (maybeServiceFac.isEmpty()) {
+      throw new RuntimeException("Cannot find " + jurisdiction + " for service mde factory");
+    }
+    this.serviceFactory = maybeServiceFac.get();
+
   }
 
   @Override
@@ -290,7 +310,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     }
   }
   
-  private static Result<FilingResult, FilingError> serveFilingIfReady(CoreFilingMessageType cfm, 
+  private Result<FilingResult, FilingError> serveFilingIfReady(CoreFilingMessageType cfm, 
       FilingInformation info, InfoCollector collector, String apiToken) {
     Optional<ServiceMDEPort> port = setupServicePort(apiToken);
     if (port.isEmpty()) {
@@ -642,7 +662,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     return ServiceHelpers.prep(newMsg, courtId);
   }
 
-  private static Optional<FilingReviewMDEPort> setupFilingPort(String apiToken) {
+  private Optional<FilingReviewMDEPort> setupFilingPort(String apiToken) {
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
     if (creds.isEmpty()) {
       return Optional.empty();
@@ -661,7 +681,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     return Optional.of(port);
   }
   
-  private static Optional<ServiceMDEPort> setupServicePort(String apiToken) {
+  private Optional<ServiceMDEPort> setupServicePort(String apiToken) {
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
     if (creds.isEmpty()) {
       return Optional.empty();
@@ -680,7 +700,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     return Optional.of(port);
   }
 
-  private static Optional<CourtRecordMDEPort> setupRecordPort(String apiToken) {
+  private Optional<CourtRecordMDEPort> setupRecordPort(String apiToken) {
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
     if (creds.isEmpty()) {
       return Optional.empty();
@@ -700,23 +720,13 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     return Optional.of(port);
   }
 
-  private static CourtRecordMDEService recordFactory = new CourtRecordMDEService(
-      CourtRecordMDEService.WSDL_LOCATION,
-      CourtRecordMDEService.SERVICE);
-
-  private static FilingReviewMDEService filingFactory
-     = new FilingReviewMDEService(FilingReviewMDEService.WSDL_LOCATION,
-        FilingReviewMDEService.SERVICE);
-
-  private static ServiceMDEService serviceFactory = new ServiceMDEService(ServiceMDEService.WSDL_LOCATION);
-
-  private static FilingReviewMDEPort makeFilingPort() {
+  private FilingReviewMDEPort makeFilingPort() {
     FilingReviewMDEPort port = filingFactory.getFilingReviewMDEPort();
     ServiceHelpers.setupServicePort((BindingProvider) port);
     return port;
   }
   
-  private static ServiceMDEPort makeServicePort() {
+  private ServiceMDEPort makeServicePort() {
     ServiceMDEPort port = serviceFactory.getServiceMDEPort();
     ServiceHelpers.setupServicePort((BindingProvider) port);
     return port;

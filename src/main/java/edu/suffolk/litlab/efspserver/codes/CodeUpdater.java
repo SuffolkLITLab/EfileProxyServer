@@ -1,9 +1,9 @@
 package edu.suffolk.litlab.efspserver.codes;
 
 import edu.suffolk.litlab.efspserver.HeaderSigner;
+import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
-import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -120,7 +120,7 @@ public class CodeUpdater {
    * @return
    * @throws IOException
    */
-  public InputStream getHtml(String urlToRead, String authHeader) throws IOException {
+  public static InputStream getHtml(String urlToRead, String authHeader) throws IOException {
     URL url = new URL(urlToRead);
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     conn.setRequestMethod("GET");
@@ -309,17 +309,23 @@ public class CodeUpdater {
     cd.commit();
   }
   
-  public static FilingReviewMDEPort loginWithTyler(String userEmail, String userPassword) throws JAXBException {
-    EfmUserService userService = TylerLogin.makeUserServiceFactory(EfmUserService.WSDL_LOCATION);
-    IEfmUserService userPort = userService.getBasicHttpBindingIEfmUserService();
+  public static FilingReviewMDEPort loginWithTyler(String jurisdiction, String userEmail, String userPassword) throws JAXBException {
+    Optional<EfmUserService> userService = SoapClientChooser.getEfmUserFactory(jurisdiction);
+    if (userService.isEmpty()) {
+      throw new RuntimeException("Can't find " + jurisdiction + " in Soap chooser for EFMUser");
+    }
+    Optional<FilingReviewMDEService> filingFactory = SoapClientChooser.getFilingReviewFactory(jurisdiction); 
+    if (filingFactory.isEmpty()) {
+      throw new RuntimeException("Can't find " + jurisdiction + " in Soap Chooser for filing review factory");
+    }
+    IEfmUserService userPort = userService.get().getBasicHttpBindingIEfmUserService();
     ServiceHelpers.setupServicePort((BindingProvider) userPort);
     AuthenticateRequestType authReq = new AuthenticateRequestType();
     authReq.setEmail(userEmail); 
     authReq.setPassword(userPassword); 
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
     List<Header> headersList = TylerUserNamePassword.makeHeaderList(authRes);
-    FilingReviewMDEService filingFactory = new FilingReviewMDEService();
-    FilingReviewMDEPort filingPort = filingFactory.getFilingReviewMDEPort(); 
+    FilingReviewMDEPort filingPort = filingFactory.get().getFilingReviewMDEPort(); 
     ServiceHelpers.setupServicePort((BindingProvider) filingPort);
     Map<String, Object> ctx = ((BindingProvider)filingPort).getRequestContext();
     ctx.put(Header.HEADER_LIST, headersList);
@@ -330,7 +336,14 @@ public class CodeUpdater {
       String x509Password) {
     SoapX509CallbackHandler.setX509Password(x509Password);
     try {
-      FilingReviewMDEPort filingPort = loginWithTyler(System.getenv("TYLER_USER_EMAIL"),
+      // TODO(brycew): need to still handle a whole slate of jurisdiction things
+      String jurisdiction = System.getenv("TYLER_JURISDICTION");
+      String tylerEnv = System.getenv("TYLER_ENV");
+      if (tylerEnv != null) {
+        jurisdiction += "-" + tylerEnv;
+      }
+      FilingReviewMDEPort filingPort = loginWithTyler(
+          jurisdiction, System.getenv("TYLER_USER_EMAIL"),
           System.getenv("TYLER_USER_PASSWORD")); 
       CodeDatabase usingCd;
       if (cd == null) {

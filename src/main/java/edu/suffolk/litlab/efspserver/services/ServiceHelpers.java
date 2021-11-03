@@ -91,10 +91,6 @@ public class ServiceHelpers {
     tylerToHttp.put("344", 422); // Doesn't handle cross references
   }
   
-  private static EfmFirmService firmFactory = new EfmFirmService(
-      EfmFirmService.WSDL_LOCATION, 
-      EfmFirmService.SERVICE);
-
   public static Optional<TylerUserNamePassword> userCredsFromAuthorization(String userColonPassword) {
     if (userColonPassword == null) {
       return Optional.empty();
@@ -205,11 +201,11 @@ public class ServiceHelpers {
     return newMsg;
   }
 
-  public static Optional<IEfmFirmService> setupFirmPort(HttpHeaders httpHeaders, SecurityHub security) {
-    return setupFirmPort(httpHeaders, security, true);
+  public static Optional<IEfmFirmService> setupFirmPort(EfmFirmService firmFactory, HttpHeaders httpHeaders, SecurityHub security) {
+    return setupFirmPort(firmFactory, httpHeaders, security, true);
   }
   
-  public static Optional<IEfmFirmService> setupFirmPort(HttpHeaders httpHeaders, 
+  public static Optional<IEfmFirmService> setupFirmPort(EfmFirmService firmFactory, HttpHeaders httpHeaders, 
       SecurityHub security, boolean needsSoapHeader) {
     String activeToken = httpHeaders.getHeaderString("X-API-KEY");
     Optional<AtRest> atRest= security.getAtRestInfo(activeToken); 
@@ -219,16 +215,15 @@ public class ServiceHelpers {
     }
 
     if (needsSoapHeader) {
-      TylerLogin login = new TylerLogin();
-      String tylerToken = httpHeaders.getHeaderString(login.getHeaderKey());
-      return setupFirmPort(tylerToken);
+      String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyStatic());
+      return setupFirmPort(firmFactory, tylerToken);
     }
     IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
     ServiceHelpers.setupServicePort((BindingProvider) port);
     return Optional.of(port);
   }
     
-  public static Optional<IEfmFirmService> setupFirmPort(String tylerToken) {
+  public static Optional<IEfmFirmService> setupFirmPort(EfmFirmService firmFactory, String tylerToken) {
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds from " + tylerToken + "?");

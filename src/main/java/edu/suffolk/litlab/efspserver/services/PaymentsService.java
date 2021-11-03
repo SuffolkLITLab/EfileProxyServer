@@ -41,6 +41,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.RandomString;
+import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.schema.baseresponse.BaseResponseType;
 import tyler.efm.services.schema.common.PaymentAccountType;
@@ -63,19 +64,20 @@ import tyler.efm.services.schema.updatepaymentaccountresponse.UpdatePaymentAccou
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class PaymentsService {
 
-  public PaymentsService(SecurityHub security, String togaKey, String togaUrl) {
+  public PaymentsService(SecurityHub security, String togaKey, String togaUrl, EfmFirmService firmFactory) {
     this.security = security;
     // Will generated 21 character long transaction ids, the max length.
     this.transactionIdGen = new RandomString(21);
     this.togaKey = togaKey;
     this.togaUrl = togaUrl;
     this.tempAccounts = new HashMap<String, TempAccount>();
+    this.firmFactory = firmFactory;
   }
 
   @GET
   @Path("/global-accounts")
   public Response getGlobalPaymentList(@Context HttpHeaders httpHeaders) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -88,7 +90,7 @@ public class PaymentsService {
   @Path("/global-accounts/{account_id}")
   public Response getGlobalPaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -103,7 +105,7 @@ public class PaymentsService {
   @Path("/global-accounts")
   public Response createGlobalWaiverAccount(@Context HttpHeaders httpHeaders,
       String accountName) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -115,7 +117,7 @@ public class PaymentsService {
   public Response updateGlobalPaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId, String json) {
 
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -133,7 +135,7 @@ public class PaymentsService {
   @Path("/global-accounts/{account_id}")
   public Response removeGlobalPaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -147,7 +149,7 @@ public class PaymentsService {
   @GET
   @Path("/payment-accounts")
   public Response getPaymentAccountList(@Context HttpHeaders httpHeaders) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -160,7 +162,7 @@ public class PaymentsService {
   @Path("/payment-accounts/{account_id}")
   public Response getPaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -176,7 +178,7 @@ public class PaymentsService {
   @Path("/payment-accounts/{account_id}")
   public Response removePaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -191,7 +193,7 @@ public class PaymentsService {
   @Path("/payment-accounts")
   public Response createWaiverAccount(@Context HttpHeaders httpHeaders,
       String accountName) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -203,7 +205,7 @@ public class PaymentsService {
   public Response updatePaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId,
       String json) throws JsonMappingException, JsonProcessingException {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -220,7 +222,7 @@ public class PaymentsService {
   @GET
   @Path("/types")
   public Response getPaymentAccountTypeList(@Context HttpHeaders httpHeaders) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -344,7 +346,7 @@ public class PaymentsService {
       String last4 = tenderDesc[last].substring(tenderDesc[last].length() - 4);
       newAccount.setCardLast4(last4);
       createAccount.setPaymentAccount(newAccount);
-      Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(tempInfo.loginInfo);
+      Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, tempInfo.loginInfo);
       if (firmPort.isEmpty()) {
         return Response.status(403).build();
       }
@@ -365,7 +367,7 @@ public class PaymentsService {
     }
   }
   
-  private Response createWaiverAccount(boolean global, String accountName, IEfmFirmService firmPort) {
+  private static Response createWaiverAccount(boolean global, String accountName, IEfmFirmService firmPort) {
     CreatePaymentAccountRequestType createAccount = new CreatePaymentAccountRequestType();
     PaymentAccountType newAccount = new PaymentAccountType();
     newAccount.setPaymentAccountTypeCode("WV");
@@ -442,5 +444,6 @@ public class PaymentsService {
   private final String togaKey;
   private final String callbackToUsUrl = ServiceHelpers.BASE_URL + "/payments/toga-account"; 
   private final String togaUrl;
+  private final EfmFirmService firmFactory;
 
 }

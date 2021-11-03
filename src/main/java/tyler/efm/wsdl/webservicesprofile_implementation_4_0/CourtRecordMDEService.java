@@ -15,7 +15,7 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
  *
  */
 @WebServiceClient(name = "CourtRecordMDEService",
-                  wsdlLocation = "file:/home/litlab/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/filingreview/ECF-4.0-CourtRecordMDEService.wsdl",
+                  wsdlLocation = "classpath:wsdl/filingreview/ECF-4.0-CourtRecordMDEService.wsdl",
                   targetNamespace = "urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0")
 public class CourtRecordMDEService extends Service {
 
