@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import tyler.ecf.extensions.common.FilingTypeType;
+
 // TODO(brycew-later): this class is a mess. Refactor, considering the same pattern that's in
 // FilingInformation: add a JsonNode / generic container for EFM specific settings
 public class FilingDoc {
@@ -43,6 +45,7 @@ public class FilingDoc {
   final private List<String> preliminaryCopies;
 
   final private List<OptionalService> optServices;
+  final private Optional<FilingTypeType> filingAction;
 
   final private boolean isLeadDoc;
 
@@ -59,7 +62,7 @@ public class FilingDoc {
       String filingComments) throws IOException  {
     this(filingCode, fileName, fileStream.readAllBytes(), Optional.empty(), Optional.empty(), Optional.empty(),
         filingPartyIds, Optional.empty(), "", "", "", Optional.empty(),
-        List.of(), List.of(), List.of(), true);
+        List.of(), List.of(), List.of(), Optional.empty(), true);
     this.documentTypeFormatStandardName = ""; // Default to blank: we can't get the confidential code
   }
 
@@ -70,6 +73,7 @@ public class FilingDoc {
     this(filingCode, fileName, fileStream.readAllBytes(), Optional.empty(), Optional.empty(), Optional.empty(),
         filingPartyIds, Optional.empty(), documentTypeFormatStandardName,
         filingComponentName, "", Optional.empty(), List.of(), List.of(), List.of(),
+        Optional.empty(),
         isLeadDoc);
   }
 
@@ -82,6 +86,7 @@ public class FilingDoc {
       String documentTypeFormatStandardName, String filingComponentName,
       String filingComments, Optional<String> motionType, List<OptionalService> optionalServices,
       List<String> courtesyCopies, List<String> preliminaryCopies, 
+      Optional<FilingTypeType> filingAction,
       boolean isLeadDoc) {
     this.filingCode = filingCode;
     this.fileName = fileName;
@@ -100,6 +105,7 @@ public class FilingDoc {
     this.motionType = motionType;
     this.courtesyCopies = courtesyCopies;
     this.preliminaryCopies = preliminaryCopies;
+    this.filingAction = filingAction;
     this.isLeadDoc = isLeadDoc;
   }
 
@@ -181,5 +187,9 @@ public class FilingDoc {
 
   public Optional<String> getFilingCode() {
     return filingCode;
+  }
+  
+  public Optional<FilingTypeType> getFilingAction() {
+    return filingAction;
   }
 }
