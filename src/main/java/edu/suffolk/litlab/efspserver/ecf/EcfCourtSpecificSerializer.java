@@ -677,19 +677,20 @@ public class EcfCourtSpecificSerializer {
 
   }
 
-  public Map<String, String> getCrossRefIds(FilingInformation info, InfoCollector collector, String locationCode, String caseTypeCode) throws FilingError {
-      List<CrossReference> refs = cd.getCrossReference(locationCode, caseTypeCode);
-      Map<String, CrossReference> refMap = new HashMap<String, CrossReference>();
+  public Map<String, String> getCrossRefIds(JsonNode miscInfo, InfoCollector collector, 
+      String caseTypeCode) throws FilingError {
+      List<CrossReference> refs = cd.getCrossReference(court.code, caseTypeCode);
+      Map<String, CrossReference> refMap = new HashMap<>();
       for (CrossReference ref : refs) {
         refMap.put(ref.code, ref);
       }
       InterviewVariable refsVar = collector.requestVar("cross_references",
           "References to other cases in different systems", "DAList");
-      Set<String> usedCodes = new HashSet<String>();
-      Map<String, String> ids = new HashMap<String, String>();
-      if (info.getMiscInfo().has("cross_references")
-          && info.getMiscInfo().get("cross_references").isObject()) {
-        JsonNode jsonRefs = info.getMiscInfo().get("cross_references");
+      Set<String> usedCodes = new HashSet<>();
+      Map<String, String> ids = new HashMap<>();
+      if (miscInfo.has("cross_references")
+          && miscInfo.get("cross_references").isObject()) {
+        JsonNode jsonRefs = miscInfo.get("cross_references");
         if (jsonRefs.has("_class") && jsonRefs.has("elements")) {
           jsonRefs= jsonRefs.get("elements");
         }

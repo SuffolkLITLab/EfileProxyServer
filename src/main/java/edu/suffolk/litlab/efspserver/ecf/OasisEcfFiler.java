@@ -219,18 +219,17 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         cfm.getElectronicServiceInformation().add(servInfo);
       }
 
-      boolean anyAmtInControversy = allCodes.filings.stream().anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"));
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> assembledCase =
           ecfCaseFactory.makeCaseTypeFromTylerCategory(
               locationInfo.get(), allCodes, 
-              info, anyAmtInControversy, isInitialFiling, isFirstIndexedFiling,
+              info, isInitialFiling, isFirstIndexedFiling,
               info.getFilings()
                   .stream()
                   .map(f -> f.getIdString())
                   .collect(Collectors.toList()),
               queryType, info.getMiscInfo(), serializer, collector, serviceContactXmlObjs);
 
-      Map<String, String> crossReferences = serializer.getCrossRefIds(info, collector, locationInfo.get().code, allCodes.type.code);
+      Map<String, String> crossReferences = serializer.getCrossRefIds(info.getMiscInfo(), collector, allCodes.type.code);
       for (Map.Entry<String, String> ref : crossReferences.entrySet()) {
         IdentificationType id = niemObjFac.createIdentificationType();
         id.setIdentificationID(XmlHelper.convertString(ref.getValue()));

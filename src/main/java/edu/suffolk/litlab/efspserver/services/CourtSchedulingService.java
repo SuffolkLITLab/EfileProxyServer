@@ -353,7 +353,7 @@ public class CourtSchedulingService {
       tylerAug.setFilingAttorney(faet);
     }
 
-    Map<String, String> crossReferences = serializer.getCrossRefIds(info, collector, courtId, allCodes.type.code);
+    Map<String, String> crossReferences = serializer.getCrossRefIds(info.getMiscInfo(), collector, allCodes.type.code);
     for (Map.Entry<String, String> refs : crossReferences.entrySet()) {
       IdentificationType idType = niemObjFac.createIdentificationType();
       idType.setIdentificationID(Ecfv5XmlHelper.convertString(refs.getValue()));
