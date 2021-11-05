@@ -112,7 +112,6 @@ public class EcfCaseTypeFactory {
       CourtLocationInfo courtLocation,
       ComboCaseCodes comboCodes, 
       FilingInformation info,
-      boolean anyAmountInControversy,
       boolean isInitialFiling,
       boolean isFirstIndexedFiling,
       List<String> filingIds,
@@ -131,6 +130,7 @@ public class EcfCaseTypeFactory {
                   filingIds, queryType, miscInfo, serializer, collector, serviceContactToXmlObjs);
     if (comboCodes.cat.ecfcasetype.equals("CivilCase")) {
       Optional<BigDecimal> amountInControversy = Optional.empty();
+      boolean anyAmountInControversy = comboCodes.filings.stream().anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"));
       if (anyAmountInControversy) {
         JsonNode jsonAmt = info.getMiscInfo().get("amount_in_controversy");
         if (jsonAmt != null && jsonAmt.isBigDecimal()) {
