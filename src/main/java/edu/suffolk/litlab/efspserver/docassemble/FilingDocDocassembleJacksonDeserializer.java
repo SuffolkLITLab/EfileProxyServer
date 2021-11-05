@@ -13,6 +13,7 @@ import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
+import tyler.ecf.extensions.common.FilingTypeType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -143,6 +144,21 @@ public class FilingDocDocassembleJacksonDeserializer {
         collector.error(err);
       }
       
+      Optional<String> actionStr = getStringMember(node, "filing_action");
+      Optional<FilingTypeType> action = Optional.empty(); 
+      if (actionStr.isPresent()) {
+        String s = actionStr.get();
+        if (s.equalsIgnoreCase("e_file") || s.equalsIgnoreCase("efile")) {
+          action = Optional.of(FilingTypeType.E_FILE);
+        } else if (s.equalsIgnoreCase("efile_and_serve") || s.equalsIgnoreCase("e_file_and_serve")) {
+          action = Optional.of(FilingTypeType.E_FILE_AND_SERVE);
+        } else if (s.equalsIgnoreCase("serve")) {
+          action = Optional.of(FilingTypeType.SERVE);
+        } else {
+          log.warn("Filing Action " + s + " isn't an allowed action, defaulting to default action for the operation");
+        }
+      }
+      
       return Optional.of(
           new FilingDoc(filingType, fileName,
               inStream.readAllBytes(),
@@ -157,6 +173,7 @@ public class FilingDocDocassembleJacksonDeserializer {
               optServices,
               courtesyCopies,
               preliminaryCopies,
+              action,
               sequenceNum == 0));
     } catch (IOException ex)  {
       FilingError err = FilingError.serverError("IOException trying to parse data_url: " + ex);
