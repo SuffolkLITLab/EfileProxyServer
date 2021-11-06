@@ -273,6 +273,9 @@ public class FilingReviewService {
     return callbackInterfaces.get(jurisdiction).get(courtId).statusCallback(httpHeaders, statusReport);
   }
 
+  // TODO(brycew): unclear why this API exists on the Tyler side if the same functionality is in
+  // ReviewFiling. Just to be ECF compliant? Unclear, but consider removing this code
+  /* 
   @POST
   @Path("/jurisdictions/{jurisdiction}/courts/{court_id}/filing/serve")
   public Response serveFiling(@Context HttpHeaders httpHeaders,
@@ -281,6 +284,7 @@ public class FilingReviewService {
       String allVars) {
     return fileOrServe(httpHeaders, jurisdiction, courtId, allVars, EfmFilingInterface.ApiChoice.ServiceApi);
   }
+  */
 
   @POST
   @Path("/jurisdictions/{jurisdiction}/courts/{court_id}/filings")

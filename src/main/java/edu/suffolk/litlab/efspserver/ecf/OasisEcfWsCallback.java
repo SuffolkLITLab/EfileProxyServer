@@ -233,16 +233,20 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   @Override
   public MessageReceiptMessageType notifyEvent(EventCallbackMessageType eventCallbackMessage) {
     log.info("Full NotifyEvent msg" + eventCallbackMessage);
-    // TODO not going to turn on for now. Someone should implement this and push upstream
-    return null;
+    // TODO(brycew): not going to do anything with for now. Someone should implement this and push upstream
+    MessageReceiptMessageType reply = recepitFac.createMessageReceiptMessageType();
+    ServiceHelpers.setupReplys(reply);
+    return ok(reply);
   }
 
   @Override
   public MessageReceiptMessageType notifyServiceComplete(
       ServiceCallbackMessageType serviceCallbackMessage) {
     log.info("Full NotifyServiceComplete msg" + serviceCallbackMessage);
-    // TODO Auto-generated method stub
-    return null;
+    // TODO(brycew): not going to do anything with for now. Someone should implement this and push upstream
+    MessageReceiptMessageType reply = recepitFac.createMessageReceiptMessageType();
+    ServiceHelpers.setupReplys(reply);
+    return ok(reply);
   }
   
   private static MessageReceiptMessageType ok(MessageReceiptMessageType reply) {
