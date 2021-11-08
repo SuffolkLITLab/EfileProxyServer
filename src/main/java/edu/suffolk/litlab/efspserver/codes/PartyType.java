@@ -19,6 +19,9 @@ public class PartyType {
   public String efspcode;
   public String location;
   
+  public static PartyType TestObj(String code, String name, String location) {
+    return new PartyType(code, name, "True", "123", "True", "386.53", "0", "", "", "", "", location);
+  }
 
   public PartyType(String code, String name, String isAvailable, String casetypeid, 
       String isrequired, String fee, String numberofpartiestoignore, String sendforredaction,

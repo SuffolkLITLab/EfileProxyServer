@@ -1,13 +1,19 @@
 package edu.suffolk.litlab.efspserver.ecf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
+import javax.xml.bind.JAXBElement;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,12 +24,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
 
+import edu.suffolk.litlab.efspserver.ContactInformation;
+import edu.suffolk.litlab.efspserver.Name;
+import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.CrossReference;
+import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
+import edu.suffolk.litlab.efspserver.codes.PartyType;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
+import gov.niem.niem.iso_639_3._2.LanguageCodeType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
+import tyler.ecf.extensions.common.CapabilityType;
 
 public class EcfCourtSpecificSerializerTest {
   
@@ -42,9 +58,52 @@ public class EcfCourtSpecificSerializerTest {
     List<CrossReference> blank = List.of();
     when(cd.getCrossReference("cook:cd1", caseType)).thenReturn(refs);
     when(cd.getCrossReference("adams", caseType)).thenReturn(blank);
+    when(cd.getLanguages("not_real")).thenReturn(List.of("English", "Polish", "Spanish"));
+    when(cd.getDataField(eq("not_real"), anyString())).thenReturn(DataFieldRow.MissingDataField(""));
+    when(cd.getDataField(eq("not_real"), eq("PartyGender"))).thenReturn(
+        new DataFieldRow("PartyGender", "Party Gender", "True", "False", "", "", "", "", "", "", "", ""));
     collector = new FailFastCollector();
   }
   
+  @Test
+  public void shouldBeEmptyPersonIfIsUser() throws FilingError {
+    ContactInformation info = new ContactInformation("bob@example.com");
+    CourtLocationInfo loc = new CourtLocationInfo();
+    loc.code = "not_real";
+    EcfCourtSpecificSerializer courtSer = new EcfCourtSpecificSerializer(cd, loc);
+    List<PartyType> okPartyTypes = List.of(PartyType.TestObj("1234", "Special", "not_real"));
+
+    Person user = new Person(new Name("Bob", "", "Zombie"), info, Optional.of("Male"), Optional.of("Spanish"), Optional.empty(), false, true, "1234");
+    CaseParticipantType cpt = courtSer.serializeEcfCaseParticipant(user, collector, okPartyTypes);
+    assertEquals(cpt.getCaseParticipantRoleCode().getValue(), "1234");
+    assertTrue(cpt.getEntityRepresentation().getValue() instanceof gov.niem.niem.niem_core._2.PersonType);
+    var pt = (gov.niem.niem.niem_core._2.PersonType) cpt.getEntityRepresentation().getValue();
+    assertTrue(pt.getPersonCapability().getValue() instanceof CapabilityType);
+    CapabilityType ct = (CapabilityType) pt.getPersonCapability().getValue();
+    assertTrue(ct.getIAmThisUserIndicator().isValue());
+    // The rest of the object should effectively be empty
+    assertNull(pt.getPersonSex());
+    assertNull(pt.getPersonStateIdentification());
+    
+    
+    Person org = new Person(new Name("Business Org", "", ""), info, Optional.empty(), Optional.empty(), Optional.empty(), true, true, "1234");
+    CaseParticipantType cptOrg = courtSer.serializeEcfCaseParticipant(org, collector, okPartyTypes);
+    assertEquals(cptOrg.getCaseParticipantRoleCode().getValue(), "1234");
+    assertTrue(cptOrg.getEntityRepresentation().getValue() instanceof OrganizationType);
+    OrganizationType orgPt = ((OrganizationType) cptOrg.getEntityRepresentation().getValue());
+    assertTrue(orgPt.getRest().size() > 0); 
+    
+    Person per= new Person(new Name("Bob", "", "Zombie"), info, Optional.of("Male"), Optional.of("Spanish"), Optional.empty(), false, false, "1234");
+    CaseParticipantType cptPer = courtSer.serializeEcfCaseParticipant(per, collector, okPartyTypes);
+    assertEquals(cptPer.getCaseParticipantRoleCode().getValue(), "1234");
+    assertTrue(cptPer.getEntityRepresentation().getValue() instanceof PersonType);
+    PersonType perPt = ((PersonType) cptPer.getEntityRepresentation().getValue());
+    assertTrue(perPt.getPersonSex() != null);
+    List<JAXBElement<?>> langs = perPt.getPersonPrimaryLanguage().getLanguage();
+    assertTrue(langs.size() > 0);
+    assertEquals(((LanguageCodeType) langs.get(0).getValue()).getValue(), "Spanish");
+  }
+
   @Test
   public void shouldThrowIfRequiredButNotPresent() {
     CourtLocationInfo loc = new CourtLocationInfo();

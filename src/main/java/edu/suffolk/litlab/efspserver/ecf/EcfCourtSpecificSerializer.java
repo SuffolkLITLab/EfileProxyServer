@@ -64,7 +64,6 @@ import gov.niem.niem.niem_core._2.TelephoneNumberType;
 import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.proxy.xsd._2.Base64Binary;
 import gov.niem.niem.proxy.xsd._2.Decimal;
-import gov.niem.niem.structures._2.AugmentationType;
 import gov.niem.niem.usps_states._2.USStateCodeSimpleType;
 import gov.niem.niem.usps_states._2.USStateCodeType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
@@ -76,6 +75,7 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.Organization
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonAugmentationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
+import tyler.ecf.extensions.common.CapabilityType;
 import tyler.ecf.extensions.common.DocumentOptionalServiceType;
 import tyler.ecf.extensions.common.DocumentType;
 
@@ -206,17 +206,12 @@ public class EcfCourtSpecificSerializer {
   /** Needs to have participant role set.
    * @throws FilingError */
   public CaseParticipantType serializeEcfCaseParticipant(Person per, InfoCollector collector, 
-      List<PartyType> partyTypes, List<String> partyTypeNames) throws FilingError {
-    AugmentationType aug;
-    if (per.isOrg()) {
-      aug = ecfOf.createOrganizationAugmentationType();
-    } else {
-      aug = ecfOf.createPersonAugmentationType();
-    }
+      List<PartyType> partyTypes) throws FilingError {
     final CaseParticipantType cpt = ecfOf.createCaseParticipantType();
     ContactInformationType cit = serializeEcfContactInformation(per.getContactInfo(), collector);
     if (per.isOrg()) {
-      ((OrganizationAugmentationType) aug).getContactInformation().add(cit);
+      OrganizationAugmentationType aug = ecfOf.createOrganizationAugmentationType();
+      aug.getContactInformation().add(cit);
       OrganizationType ot = ecfOf.createOrganizationType();
       DataFieldRow orgNameRow = cd.getDataField(this.court.code, "PartyBusinessName");
       if (!orgNameRow.matchRegex(per.getName().getFullName())) {
@@ -230,16 +225,26 @@ public class EcfCourtSpecificSerializer {
       }
       ot.setOrganizationName(XmlHelper.convertText(per.getName().getFullName()));
       ot.setId(per.getIdString());
-      ot.getRest().add(ecfOf.createOrganizationAugmentation((OrganizationAugmentationType) aug));
+      ot.getRest().add(ecfOf.createOrganizationAugmentation(aug));
       cpt.setEntityRepresentation(ecfOf.createEntityOrganization(ot));
+    } else if (per.isFormFiller()) {
+      gov.niem.niem.niem_core._2.PersonType specialPt = coreObjFac.createPersonType();
+      CapabilityType ct = new tyler.ecf.extensions.common.CapabilityType();
+      tyler.ecf.extensions.common.ObjectFactory extObjFac = new tyler.ecf.extensions.common.ObjectFactory();
+      ct.setIAmThisUserIndicator(XmlHelper.convertBool(true));
+      specialPt.setPersonCapability(extObjFac.createPersonCapability(ct));
+      cpt.setEntityRepresentation(coreObjFac.createEntityPerson(specialPt));
     } else {
       // Else, it's a person: add other optional person stuff
-      ((PersonAugmentationType) aug).getContactInformation().add(cit);
+      PersonAugmentationType aug = ecfOf.createPersonAugmentationType();
+      aug.getContactInformation().add(cit);
 
+      
       PersonType pt = ecfOf.createPersonType();
       pt.setId(per.getIdString());
+      
       pt.setPersonName(serializeNameType(per.getName(), collector));
-      pt.setPersonAugmentation((PersonAugmentationType) aug);
+      pt.setPersonAugmentation(aug);
 
       DataFieldRow genderRow = cd.getDataField(this.court.code, "PartyGender");
       if (genderRow.isvisible) {
@@ -287,7 +292,8 @@ public class EcfCourtSpecificSerializer {
         .findFirst();
     TextType tt = niemObjFac.createTextType();
     if (matchingType.isEmpty()) {
-      InterviewVariable ptVar = collector.requestVar("party_type", "Legal role of the party", "choices", partyTypeNames);
+      InterviewVariable ptVar = collector.requestVar("party_type", "Legal role of the party", "choices", 
+          partyTypes.stream().map(pt -> pt.code).collect(Collectors.toList()));
       collector.addWrong(ptVar);
       tt.setValue("");
     } else {

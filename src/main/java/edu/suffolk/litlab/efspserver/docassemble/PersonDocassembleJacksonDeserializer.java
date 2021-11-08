@@ -1,5 +1,8 @@
 package edu.suffolk.litlab.efspserver.docassemble;
 
+import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getStringMember;
+import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getBoolMember;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.hubspot.algebra.Result;
@@ -24,14 +27,6 @@ public class PersonDocassembleJacksonDeserializer {
   private static Logger log = LoggerFactory.getLogger(PersonDocassembleJacksonDeserializer.class);
 
   protected PersonDocassembleJacksonDeserializer() {}
-
-  private static Optional<String> getStringMember(JsonNode obj, String memberName) {
-    if (obj.has(memberName)
-        && obj.get(memberName).isTextual()) {
-      return Optional.of(obj.get(memberName).asText());
-    }
-    return Optional.empty();
-  }
 
   /** Parses a person from the Json Object. Used by Deserializers that include people.
    * @throws FilingError */
@@ -100,6 +95,7 @@ public class PersonDocassembleJacksonDeserializer {
     Optional<String> language = getStringMember(node, "prefered_language");
     Optional<String> gender = getStringMember(node, "gender");
     Optional<String> birthdateString = getStringMember(node, "date_of_birth");
+    boolean isFormFiller = getBoolMember(node, "is_form_filler").orElse(false);
     Optional<LocalDate> birthdate = birthdateString.map(bdStr -> {
       try {
         return Optional.<LocalDate>of(LocalDate.parse(bdStr)); 
@@ -111,7 +107,7 @@ public class PersonDocassembleJacksonDeserializer {
     Name name = NameDocassembleDeserializer.fromNode(node.get("name"), collector);
     collector.popAttributeStack();
     boolean isPer = !name.getMiddleName().isBlank() || !name.getLastName().isBlank();
-    Person per = new Person(name, info, gender, language, birthdate, !isPer, partyType);
+    Person per = new Person(name, info, gender, language, birthdate, !isPer, isFormFiller, partyType);
     log.debug("Read in a new person: " + per.getName().getFullName());
     return Result.ok(per);
   }
