@@ -78,6 +78,7 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import tyler.ecf.extensions.common.CapabilityType;
 import tyler.ecf.extensions.common.DocumentOptionalServiceType;
 import tyler.ecf.extensions.common.DocumentType;
+import tyler.ecf.extensions.common.FilingTypeType;
 
 public class EcfCourtSpecificSerializer {
   private static Logger log = LoggerFactory.getLogger(EcfCourtSpecificSerializer.class);
@@ -332,9 +333,22 @@ public class EcfCourtSpecificSerializer {
         cit.getContactMeans().add(niemObjFac.createContactTelephoneNumber(tnt));
       }
     }
-    contactInfo.getEmail().ifPresent((em) -> {
-      cit.getContactMeans().add(niemObjFac.createContactEmailID(XmlHelper.convertString(em)));
-    });
+    
+    DataFieldRow emailRow = cd.getDataField(this.court.code, "PartyEmail");
+    if (emailRow.isvisible) {
+      InterviewVariable var = collector.requestVar("email", "Email", "email");
+      if (contactInfo.getEmail().isPresent()) {
+        String em = contactInfo.getEmail().get();
+        if (emailRow.matchRegex(em)) {
+          cit.getContactMeans().add(niemObjFac.createContactEmailID(XmlHelper.convertString(em)));
+        } else {
+          collector.addWrong(var);
+        }
+      }
+      if (emailRow.isrequired) {
+        collector.addRequired(var);
+      }
+    }
     return cit;
   }
 
@@ -453,7 +467,7 @@ public class EcfCourtSpecificSerializer {
   }
   
   public JAXBElement<DocumentType> filingDocToXml(FilingDoc doc,
-          int sequenceNum, CaseCategory caseCategory, CaseType motionType, FilingCode filing,
+          int sequenceNum, boolean isInitialFiling, CaseCategory caseCategory, CaseType motionType, FilingCode filing,
           List<FilingComponent> components,
           JsonNode miscInfo, InfoCollector collector) throws IOException, FilingError {
     var tylerObjFac = new tyler.ecf.extensions.common.ObjectFactory();
@@ -561,11 +575,21 @@ public class EcfCourtSpecificSerializer {
         collector.addRequired(var);
       }
     }
+    Optional<Boolean> maybeServiceOnInitial = this.court.allowserviceoninitial;
+    boolean serviceOnInitial = maybeServiceOnInitial.orElse(cd.getDataField(this.court.code, "FilingServiceCheckBoxInitial").isvisible);
     // From Reference Guide: if no FilingAction is provided, the original default behavior applies:
     // * ReviewFiling API w/o service contacts: EFile
     // * ReviewFiling API w/ service contacts: EfileAndServe
     // * ServeFiling API: Serve
-    doc.getFilingAction().ifPresent(act -> docType.setFilingAction(act));
+    if (doc.getFilingAction().isPresent()) {
+      FilingTypeType act = doc.getFilingAction().get();
+      if (isInitialFiling && !serviceOnInitial && 
+          (act.equals(FilingTypeType.E_FILE_AND_SERVE) || act.equals(FilingTypeType.SERVE))) {
+        InterviewVariable var = collector.requestVar("filing_action", "Cannot do service on initial filing", "text");
+        collector.addWrong(var);
+      }
+      docType.setFilingAction(act);
+    }
 
     // TODO(brycew-later): what should this actually be? Very unclear
     DocumentAttachmentType attachment = ecfOf.createDocumentAttachmentType();
@@ -656,7 +680,13 @@ public class EcfCourtSpecificSerializer {
 
     log.info("Filing code: " + filing.code + " " + filing.name + ": " + docType + "///////" + attachment);
     if (doc.getInBase64()) {
-      attachment.setBinaryLocationURI(XmlHelper.convertUri(doc.getFileName()));
+      DataFieldRow originalName = cd.getDataField(this.court.code, "OriginalFileName");
+      if (originalName.matchRegex(doc.getFileName()) && doc.getFileName().length() < 50) {
+        attachment.setBinaryLocationURI(XmlHelper.convertUri(doc.getFileName()));
+      } else {
+        InterviewVariable oriNameVar = collector.requestVar("file_name", "file name of document: regex: " + originalName.regularexpression.toString(), "text"); 
+        collector.addWrong(oriNameVar);
+      }
       JAXBElement<Base64Binary> n =
           niemObjFac.createBinaryBase64Object(XmlHelper.convertBase64(doc.getFileContents()));
       //System.err.println(XmlHelper.objectToXmlStrOrError(n.getValue(), Base64Binary.class));
