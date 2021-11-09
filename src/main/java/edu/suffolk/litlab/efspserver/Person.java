@@ -4,26 +4,32 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
-
+/**
+ * Values for each individual legal person (a business or individual) involved in a case
+ * 
+ * @author brycew 
+ */
 public class Person {
 
-  private Name name;
+  private final Name name;
   // NOTE: from docassemble, we will take the mailing address if present, not the standard
   // address.
-  private ContactInformation contactInfo;
-  private Optional<String> gender;
+  private final ContactInformation contactInfo;
+  private final Optional<String> gender;
   private Optional<String> language;
-  private Optional<LocalDate> birthdate;
+  private final Optional<LocalDate> birthdate;
   // If true, this is actually a business or organization, i.e. a legal person, not an individual.
-  private boolean isOrg;
+  private final boolean isOrg;
 
-  private UUID id;
+  private final UUID id;
   private String role;
+  /** Is true if the person who's Tyler id is being used to file the form is this user. */
+  private final boolean isFormFiller;
 
-  /** Minimal constructor, empty lists and empty optionals. */
-  public Person(Name name, String email, boolean isOrg) {
-    this(name, new ContactInformation(email),
-        Optional.empty(), Optional.empty(), Optional.empty(), isOrg, "");
+  /** Minimal constructor, empty lists and empty optionals. Should only be used in tests. */
+  public static Person TestPerson(Name name, String email, boolean isOrg) {
+    return new Person(name, new ContactInformation(email),
+        Optional.empty(), Optional.empty(), Optional.empty(), isOrg, false, "");
   }
 
   /** Default constructor. */
@@ -33,6 +39,7 @@ public class Person {
       Optional<String> language,
       Optional<LocalDate> birthdate,
       boolean isOrg,
+      boolean isFormFiller,
       String role) {
     this.name = name;
     this.contactInfo = contactInfo;
@@ -40,6 +47,7 @@ public class Person {
     this.language = language;
     this.birthdate = birthdate;
     this.isOrg = isOrg;
+    this.isFormFiller = isFormFiller;
 
     this.id = UUID.randomUUID();
     this.role = role;
@@ -51,6 +59,10 @@ public class Person {
 
   public boolean isOrg() {
     return isOrg;
+  }
+  
+  public boolean isFormFiller() {
+    return isFormFiller;
   }
 
   public UUID getId() {

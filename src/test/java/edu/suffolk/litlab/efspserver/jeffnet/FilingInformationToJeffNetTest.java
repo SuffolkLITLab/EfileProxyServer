@@ -38,13 +38,13 @@ public class FilingInformationToJeffNetTest {
     info.setCaseCategoryCode("CivilCase"); 
     info.setFilings(null);
     
-    Person plaintiff = new Person(new Name("Bob", "", "Zombie"), "test@example.com", false);
+    Person plaintiff = Person.TestPerson(new Name("Bob", "", "Zombie"), "test@example.com", false);
     Person plaintiff2 = new Person(new Name("Jill", "", "Vampire"), 
         new ContactInformation(List.of(), Optional.empty(), Optional.empty()), Optional.empty(), 
-        Optional.empty(), Optional.empty(), false, "");
+        Optional.empty(), Optional.empty(), false, false, "");
     info.setPlaintiffs(List.of(plaintiff, plaintiff2));
     
-    Person defendant = new Person(new Name("Company LLC"), "", true);
+    Person defendant = Person.TestPerson(new Name("Company LLC"), "", true);
     info.setDefendants(List.of(defendant));
     
     // TODO(#52): Make and test multiple filings 

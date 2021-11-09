@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class ContactInformation {
-  private List<String> phoneNumbers;
-  private Optional<Address> address;
-  private Optional<String> email;
+  private final List<String> phoneNumbers;
+  private final Optional<Address> address;
+  private final Optional<String> email;
 
 
   /** Default constructor. */

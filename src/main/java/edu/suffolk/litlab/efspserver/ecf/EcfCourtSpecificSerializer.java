@@ -54,6 +54,7 @@ import gov.niem.niem.niem_core._2.AddressType;
 import gov.niem.niem.niem_core._2.ContactInformationType;
 import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.FullTelephoneNumberType;
+import gov.niem.niem.niem_core._2.NonNegativeDecimalType;
 import gov.niem.niem.niem_core._2.PersonLanguageType;
 import gov.niem.niem.niem_core._2.PersonNameTextType;
 import gov.niem.niem.niem_core._2.PersonNameType;
@@ -64,7 +65,6 @@ import gov.niem.niem.niem_core._2.TelephoneNumberType;
 import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.proxy.xsd._2.Base64Binary;
 import gov.niem.niem.proxy.xsd._2.Decimal;
-import gov.niem.niem.structures._2.AugmentationType;
 import gov.niem.niem.usps_states._2.USStateCodeSimpleType;
 import gov.niem.niem.usps_states._2.USStateCodeType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
@@ -76,8 +76,10 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.Organization
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonAugmentationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
+import tyler.ecf.extensions.common.CapabilityType;
 import tyler.ecf.extensions.common.DocumentOptionalServiceType;
 import tyler.ecf.extensions.common.DocumentType;
+import tyler.ecf.extensions.common.FilingTypeType;
 
 public class EcfCourtSpecificSerializer {
   private static Logger log = LoggerFactory.getLogger(EcfCourtSpecificSerializer.class);
@@ -206,17 +208,12 @@ public class EcfCourtSpecificSerializer {
   /** Needs to have participant role set.
    * @throws FilingError */
   public CaseParticipantType serializeEcfCaseParticipant(Person per, InfoCollector collector, 
-      List<PartyType> partyTypes, List<String> partyTypeNames) throws FilingError {
-    AugmentationType aug;
-    if (per.isOrg()) {
-      aug = ecfOf.createOrganizationAugmentationType();
-    } else {
-      aug = ecfOf.createPersonAugmentationType();
-    }
+      List<PartyType> partyTypes) throws FilingError {
     final CaseParticipantType cpt = ecfOf.createCaseParticipantType();
     ContactInformationType cit = serializeEcfContactInformation(per.getContactInfo(), collector);
     if (per.isOrg()) {
-      ((OrganizationAugmentationType) aug).getContactInformation().add(cit);
+      OrganizationAugmentationType aug = ecfOf.createOrganizationAugmentationType();
+      aug.getContactInformation().add(cit);
       OrganizationType ot = ecfOf.createOrganizationType();
       DataFieldRow orgNameRow = cd.getDataField(this.court.code, "PartyBusinessName");
       if (!orgNameRow.matchRegex(per.getName().getFullName())) {
@@ -230,16 +227,27 @@ public class EcfCourtSpecificSerializer {
       }
       ot.setOrganizationName(XmlHelper.convertText(per.getName().getFullName()));
       ot.setId(per.getIdString());
-      ot.getRest().add(ecfOf.createOrganizationAugmentation((OrganizationAugmentationType) aug));
+      ot.getRest().add(ecfOf.createOrganizationAugmentation(aug));
       cpt.setEntityRepresentation(ecfOf.createEntityOrganization(ot));
     } else {
       // Else, it's a person: add other optional person stuff
-      ((PersonAugmentationType) aug).getContactInformation().add(cit);
+      PersonAugmentationType aug = ecfOf.createPersonAugmentationType();
+      aug.getContactInformation().add(cit);
 
       PersonType pt = ecfOf.createPersonType();
       pt.setId(per.getIdString());
+
+      // Tyler docs have this as the only thing in a person if "I am user" is true, but 
+      // get filing fees API call complains about the Surname being empty. So now, it's everywhere
+      if (per.isFormFiller()) {
+        var extObjFac = new tyler.ecf.extensions.common.ObjectFactory();
+        CapabilityType ct = extObjFac.createCapabilityType(); 
+        ct.setIAmThisUserIndicator(XmlHelper.convertBool(true));
+        pt.setPersonCapability(extObjFac.createPersonCapability(ct));
+      }
+      
       pt.setPersonName(serializeNameType(per.getName(), collector));
-      pt.setPersonAugmentation((PersonAugmentationType) aug);
+      pt.setPersonAugmentation(aug);
 
       DataFieldRow genderRow = cd.getDataField(this.court.code, "PartyGender");
       if (genderRow.isvisible) {
@@ -287,7 +295,8 @@ public class EcfCourtSpecificSerializer {
         .findFirst();
     TextType tt = niemObjFac.createTextType();
     if (matchingType.isEmpty()) {
-      InterviewVariable ptVar = collector.requestVar("party_type", "Legal role of the party", "choices", partyTypeNames);
+      InterviewVariable ptVar = collector.requestVar("party_type", "Legal role of the party", "choices", 
+          partyTypes.stream().map(pt -> pt.code).collect(Collectors.toList()));
       collector.addWrong(ptVar);
       tt.setValue("");
     } else {
@@ -326,9 +335,22 @@ public class EcfCourtSpecificSerializer {
         cit.getContactMeans().add(niemObjFac.createContactTelephoneNumber(tnt));
       }
     }
-    contactInfo.getEmail().ifPresent((em) -> {
-      cit.getContactMeans().add(niemObjFac.createContactEmailID(XmlHelper.convertString(em)));
-    });
+    
+    DataFieldRow emailRow = cd.getDataField(this.court.code, "PartyEmail");
+    if (emailRow.isvisible) {
+      InterviewVariable var = collector.requestVar("email", "Email", "email");
+      if (contactInfo.getEmail().isPresent()) {
+        String em = contactInfo.getEmail().get();
+        if (emailRow.matchRegex(em)) {
+          cit.getContactMeans().add(niemObjFac.createContactEmailID(XmlHelper.convertString(em)));
+        } else {
+          collector.addWrong(var);
+        }
+      }
+      if (emailRow.isrequired) {
+        collector.addRequired(var);
+      }
+    }
     return cit;
   }
 
@@ -447,7 +469,7 @@ public class EcfCourtSpecificSerializer {
   }
   
   public JAXBElement<DocumentType> filingDocToXml(FilingDoc doc,
-          int sequenceNum, CaseCategory caseCategory, CaseType motionType, FilingCode filing,
+          int sequenceNum, boolean isInitialFiling, CaseCategory caseCategory, CaseType motionType, FilingCode filing,
           List<FilingComponent> components,
           JsonNode miscInfo, InfoCollector collector) throws IOException, FilingError {
     var tylerObjFac = new tyler.ecf.extensions.common.ObjectFactory();
@@ -555,11 +577,21 @@ public class EcfCourtSpecificSerializer {
         collector.addRequired(var);
       }
     }
+    Optional<Boolean> maybeServiceOnInitial = this.court.allowserviceoninitial;
+    boolean serviceOnInitial = maybeServiceOnInitial.orElse(cd.getDataField(this.court.code, "FilingServiceCheckBoxInitial").isvisible);
     // From Reference Guide: if no FilingAction is provided, the original default behavior applies:
     // * ReviewFiling API w/o service contacts: EFile
     // * ReviewFiling API w/ service contacts: EfileAndServe
     // * ServeFiling API: Serve
-    doc.getFilingAction().ifPresent(act -> docType.setFilingAction(act));
+    if (doc.getFilingAction().isPresent()) {
+      FilingTypeType act = doc.getFilingAction().get();
+      if (isInitialFiling && !serviceOnInitial && 
+          (act.equals(FilingTypeType.E_FILE_AND_SERVE) || act.equals(FilingTypeType.SERVE))) {
+        InterviewVariable var = collector.requestVar("filing_action", "Cannot do service on initial filing", "text");
+        collector.addWrong(var);
+      }
+      docType.setFilingAction(act);
+    }
 
     // TODO(brycew-later): what should this actually be? Very unclear
     DocumentAttachmentType attachment = ecfOf.createDocumentAttachmentType();
@@ -650,11 +682,24 @@ public class EcfCourtSpecificSerializer {
 
     log.info("Filing code: " + filing.code + " " + filing.name + ": " + docType + "///////" + attachment);
     if (doc.getInBase64()) {
-      attachment.setBinaryLocationURI(XmlHelper.convertUri(doc.getFileName()));
+      DataFieldRow originalName = cd.getDataField(this.court.code, "OriginalFileName");
+      if (originalName.matchRegex(doc.getFileName()) && doc.getFileName().length() < 50) {
+        attachment.setBinaryLocationURI(XmlHelper.convertUri(doc.getFileName()));
+      } else {
+        InterviewVariable oriNameVar = collector.requestVar("file_name", "file name of document: regex: " + originalName.regularexpression.toString(), "text"); 
+        collector.addWrong(oriNameVar);
+      }
       JAXBElement<Base64Binary> n =
           niemObjFac.createBinaryBase64Object(XmlHelper.convertBase64(doc.getFileContents()));
       //System.err.println(XmlHelper.objectToXmlStrOrError(n.getValue(), Base64Binary.class));
       attachment.setBinaryObject(n);
+      // TODO(brycew): depends on some DA code, should read in the PDF if possible here. Might be risky though.
+      if (miscInfo.has("page_count")) {
+        int count = miscInfo.get("page_count").asInt(1);
+        NonNegativeDecimalType nndt = new NonNegativeDecimalType();
+        nndt.setValue(new BigDecimal(count));
+        attachment.setBinarySizeValue(tylerObjFac.createPageCount(nndt));
+      }
     } else {
       // TODO(#62): DO this: make the file downloadable from the Proxy server
     }

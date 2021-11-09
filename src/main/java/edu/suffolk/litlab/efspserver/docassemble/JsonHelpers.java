@@ -10,8 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class JsonHelpers {
 
   public static Optional<String> getStringMember(JsonNode obj, String memberName) {
-    if (obj.has(memberName)
-        && obj.get(memberName).isTextual()) {
+    if (obj.has(memberName) && obj.get(memberName).isTextual()) {
       return Optional.of(obj.get(memberName).asText());
     }
     return Optional.empty();
@@ -25,9 +24,15 @@ public class JsonHelpers {
   }
   
   public static Optional<Integer> getIntMember(JsonNode obj, String memberName) {
-    if (obj.has(memberName)
-        && obj.get(memberName).isInt()) {
+    if (obj.has(memberName) && obj.get(memberName).isInt()) {
       return Optional.of(obj.get(memberName).asInt());
+    }
+    return Optional.empty();
+  }
+  
+  public static Optional<Boolean> getBoolMember(JsonNode obj, String memberName) {
+    if (obj.has(memberName) && obj.get(memberName).isBoolean()) {
+      return Optional.of(obj.get(memberName).asBoolean());
     }
     return Optional.empty();
   }
@@ -48,7 +53,11 @@ public class JsonHelpers {
     return returnList;
   }
   
-  /** Returns a JsonNode where `.isArray()` is true */
+  /** Returns the JsonNode where `.isArray()` is true. 
+   * 
+   * For DAList objects, Docassemble puts the actual JSON array nested in the `elements` attribute.
+   * This function lets you treat a normal JSON array and a DAList JSON object the same.
+   */
   public static Optional<JsonNode> unwrapDAList(JsonNode obj) {
     if (obj == null) {
       return Optional.empty();

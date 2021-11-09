@@ -148,15 +148,17 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       InfoCollector collector, String apiToken, FilingReviewMDEPort filingPort, CourtRecordMDEPort recordPort, String queryType) throws FilingError {
     EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
     try {
-      Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(info.getCourtLocation());
-      if (locationInfo.isEmpty()) {
+      Optional<CourtLocationInfo> maybeLocationInfo = cd.getFullLocationInfo(info.getCourtLocation());
+      if (maybeLocationInfo.isEmpty()) {
         collector.error(FilingError.serverError("Court setup wrong: can't find full location info for " + info.getCourtLocation()));
       }
+      
+      CourtLocationInfo locationInfo = maybeLocationInfo.orElse(new CourtLocationInfo());
       
       CourtPolicyQueryMessageType policyQuery = prep(new CourtPolicyQueryMessageType(), info.getCourtLocation());
       CourtPolicyResponseMessageType policy = filingPort.getPolicy(policyQuery);
 
-      if (!locationInfo.get().allowfilingintononindexedcase && info.getCaseDocketNumber().isPresent()
+      if (!locationInfo.allowfilingintononindexedcase && info.getCaseDocketNumber().isPresent()
           && info.getPreviousCaseId().isEmpty()) {
         FilingError err = FilingError.malformedInterview("Court " + info.getCourtLocation()
             + " doesn't allow subsequent filing into non-indexed cases. If this case is in the " 
@@ -165,7 +167,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         collector.error(err);
       }
       
-      EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo.get());
+      EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo);
       boolean isInitialFiling = info.getPreviousCaseId().isEmpty() && info.getCaseDocketNumber().isEmpty();
       boolean isFirstIndexedFiling = info.getPreviousCaseId().isEmpty(); 
       ComboCaseCodes allCodes;
@@ -221,7 +223,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
 
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> assembledCase =
           ecfCaseFactory.makeCaseTypeFromTylerCategory(
-              locationInfo.get(), allCodes, 
+              locationInfo, allCodes, 
               info, isInitialFiling, isFirstIndexedFiling,
               info.getFilings()
                   .stream()
@@ -239,18 +241,18 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         cfm.getDocumentIdentification().add(id);
       }
 
-      Optional<Boolean> serviceOnInitial = locationInfo.get().allowserviceoninitial;
+      Optional<Boolean> serviceOnInitial = locationInfo.allowserviceoninitial;
       if (serviceOnInitial.isEmpty()) {
-        serviceOnInitial = Optional.of(cd.getDataField(locationInfo.get().code, "FilingServiceCheckBoxInitial").isvisible);
+        serviceOnInitial = Optional.of(cd.getDataField(locationInfo.code, "FilingServiceCheckBoxInitial").isvisible);
       }
-      if (isInitialFiling && !serviceOnInitial.get()
+      if (isInitialFiling && !serviceOnInitial.orElse(cd.getDataField(locationInfo.code, "FilingServiceCheckBoxInitial").isvisible)
           && info.getServiceContacts().size() > 0) {
-        FilingError err = FilingError.malformedInterview("Court " + locationInfo.get().name + " doesn't allow service on initial filings");
+        FilingError err = FilingError.malformedInterview("Court " + locationInfo.name + " doesn't allow service on initial filings");
         collector.error(err);
       }
-      DataFieldRow checkBoxSub = cd.getDataField(locationInfo.get().code, "FilingServiceCheckBoxSubsequent");
+      DataFieldRow checkBoxSub = cd.getDataField(locationInfo.code, "FilingServiceCheckBoxSubsequent");
       if (!isInitialFiling && !checkBoxSub.isvisible && info.getServiceContacts().size() > 0) {
-        FilingError err = FilingError.malformedInterview("Court " + locationInfo.get().name + " doesn't allow service on subsequent filings");
+        FilingError err = FilingError.malformedInterview("Court " + locationInfo.name + " doesn't allow service on subsequent filings");
         collector.error(err);
       }
 
@@ -282,7 +284,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         }
 
         JAXBElement<DocumentType> result =
-                serializer.filingDocToXml(filingDoc, seqNum, allCodes.cat, allCodes.type,
+                serializer.filingDocToXml(filingDoc, seqNum, isInitialFiling, allCodes.cat, allCodes.type,
                     fc, components, info.getMiscInfo(), collector);
         if (filingDoc.isLead()) {
           cfm.getFilingLeadDocument().add(result);
@@ -298,9 +300,9 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
             + maxSize + ", are " + cumulativeBytes);
         collector.error(err);
       }
-      log.info("Full ecfAug: " + XmlHelper.objectToXmlStr(cfm, CoreFilingMessageType.class));
+      log.info("Full cfm: " + XmlHelper.objectToXmlStrOrError(cfm, CoreFilingMessageType.class));
       return cfm;
-    } catch (IOException | SQLException | JAXBException ex) {
+    } catch (IOException | SQLException ex ) { 
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
       ex.printStackTrace(pw);

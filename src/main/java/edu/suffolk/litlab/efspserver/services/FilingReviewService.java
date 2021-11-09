@@ -134,6 +134,7 @@ public class FilingReviewService {
       @PathParam("jurisdiction") String jurisdiction,
       @PathParam("court_id") String courtId, 
       String allVars) {
+    log.info("All vars:" + allVars);
     MediaType mediaType = httpHeaders.getMediaType();
     log.trace("Checking a filing: Media type: " + mediaType);
     log.trace("Court id: " + courtId);
@@ -174,6 +175,7 @@ public class FilingReviewService {
     MediaType mediaType = httpHeaders.getMediaType();
     log.trace("Checking a filing: Media type: " + mediaType);
     log.trace("Court id: " + courtId);
+    log.info("All vars:" + allVars);
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
