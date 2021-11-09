@@ -228,23 +228,20 @@ public class EcfCourtSpecificSerializer {
       ot.setId(per.getIdString());
       ot.getRest().add(ecfOf.createOrganizationAugmentation(aug));
       cpt.setEntityRepresentation(ecfOf.createEntityOrganization(ot));
-    } else if (per.isFormFiller()) {
-      PersonType specialPt = ecfOf.createPersonType();
-      specialPt.setId(per.getIdString());
-
-      var extObjFac = new tyler.ecf.extensions.common.ObjectFactory();
-      CapabilityType ct = extObjFac.createCapabilityType(); 
-      ct.setIAmThisUserIndicator(XmlHelper.convertBool(true));
-      specialPt.setPersonCapability(extObjFac.createPersonCapability(ct));
-      cpt.setEntityRepresentation(ecfOf.createEntityPerson(specialPt));
     } else {
       // Else, it's a person: add other optional person stuff
       PersonAugmentationType aug = ecfOf.createPersonAugmentationType();
       aug.getContactInformation().add(cit);
 
-      
       PersonType pt = ecfOf.createPersonType();
       pt.setId(per.getIdString());
+
+      if (per.isFormFiller()) {
+        var extObjFac = new tyler.ecf.extensions.common.ObjectFactory();
+        CapabilityType ct = extObjFac.createCapabilityType(); 
+        ct.setIAmThisUserIndicator(XmlHelper.convertBool(true));
+        pt.setPersonCapability(extObjFac.createPersonCapability(ct));
+      }
       
       pt.setPersonName(serializeNameType(per.getName(), collector));
       pt.setPersonAugmentation(aug);
