@@ -54,6 +54,7 @@ import gov.niem.niem.niem_core._2.AddressType;
 import gov.niem.niem.niem_core._2.ContactInformationType;
 import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.FullTelephoneNumberType;
+import gov.niem.niem.niem_core._2.NonNegativeDecimalType;
 import gov.niem.niem.niem_core._2.PersonLanguageType;
 import gov.niem.niem.niem_core._2.PersonNameTextType;
 import gov.niem.niem.niem_core._2.PersonNameType;
@@ -690,6 +691,12 @@ public class EcfCourtSpecificSerializer {
           niemObjFac.createBinaryBase64Object(XmlHelper.convertBase64(doc.getFileContents()));
       //System.err.println(XmlHelper.objectToXmlStrOrError(n.getValue(), Base64Binary.class));
       attachment.setBinaryObject(n);
+      if (miscInfo.has("page_count")) {
+        int count = miscInfo.get("page_count").asInt(1);
+        NonNegativeDecimalType nndt = new NonNegativeDecimalType();
+        nndt.setValue(new BigDecimal(count));
+        attachment.setBinarySizeValue(tylerObjFac.createPageCount(nndt));
+      }
     } else {
       // TODO(#62): DO this: make the file downloadable from the Proxy server
     }
