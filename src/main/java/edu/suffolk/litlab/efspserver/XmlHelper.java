@@ -178,7 +178,7 @@ public class XmlHelper {
   public static <T> String objectToXmlStrOrError(T toXml, Class<T> toXmlClazz) {
     try {
       return objectToXmlStr(toXml, toXmlClazz);
-    } catch (JAXBException ex) {
+    } catch (JAXBException | NullPointerException ex) {
       return ex.toString();
     }
   }
