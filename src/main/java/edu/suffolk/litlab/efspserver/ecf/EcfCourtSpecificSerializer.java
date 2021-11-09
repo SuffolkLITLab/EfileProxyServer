@@ -237,6 +237,8 @@ public class EcfCourtSpecificSerializer {
       PersonType pt = ecfOf.createPersonType();
       pt.setId(per.getIdString());
 
+      // Tyler docs have this as the only thing in a person if "I am user" is true, but 
+      // get filing fees API call complains about the Surname being empty. So now, it's everywhere
       if (per.isFormFiller()) {
         var extObjFac = new tyler.ecf.extensions.common.ObjectFactory();
         CapabilityType ct = extObjFac.createCapabilityType(); 
@@ -691,6 +693,7 @@ public class EcfCourtSpecificSerializer {
           niemObjFac.createBinaryBase64Object(XmlHelper.convertBase64(doc.getFileContents()));
       //System.err.println(XmlHelper.objectToXmlStrOrError(n.getValue(), Base64Binary.class));
       attachment.setBinaryObject(n);
+      // TODO(brycew): depends on some DA code, should read in the PDF if possible here. Might be risky though.
       if (miscInfo.has("page_count")) {
         int count = miscInfo.get("page_count").asInt(1);
         NonNegativeDecimalType nndt = new NonNegativeDecimalType();
