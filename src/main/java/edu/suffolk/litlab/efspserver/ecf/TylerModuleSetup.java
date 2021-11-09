@@ -157,8 +157,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
         log.info("Downloading all codes: please wait a bit");
         CodeUpdater.executeCommand("downloadAll", this.tylerEndpoint, cd, this.x509Password);
       }
-      Scheduler scheduler;
-      scheduler = StdSchedulerFactory.getDefaultScheduler();
+      Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
       scheduler.start();
       
       JobDetail job = JobBuilder.newJob(UpdateCodeVersions.class)

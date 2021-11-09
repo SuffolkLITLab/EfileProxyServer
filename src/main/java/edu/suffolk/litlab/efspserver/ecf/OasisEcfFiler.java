@@ -300,9 +300,9 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
             + maxSize + ", are " + cumulativeBytes);
         collector.error(err);
       }
-      log.info("Full ecfAug: " + XmlHelper.objectToXmlStr(cfm, CoreFilingMessageType.class));
+      log.info("Full ecfAug: " + XmlHelper.objectToXmlStrOrError(cfm, CoreFilingMessageType.class));
       return cfm;
-    } catch (IOException | SQLException | JAXBException ex) {
+    } catch (IOException | SQLException ex ) { 
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
       ex.printStackTrace(pw);
