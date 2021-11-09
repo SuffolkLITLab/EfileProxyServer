@@ -227,6 +227,15 @@ public class TylerModuleSetup implements EfmModuleSetup {
     log.info("Wsdl location: " + jaxWsEndpoint.getWsdlLocation());
     log.info("Address : " + jaxWsEndpoint.getAddress());
     log.info("Bean name: " + jaxWsEndpoint.getBeanName());
+    
+    
+    OasisEcfv5WsCallback impl2 = new OasisEcfv5WsCallback(ud, cd, sender);
+    String v5Address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT_V5;
+    EndpointImpl jaxWsV5Endpoint = (EndpointImpl) javax.xml.ws.Endpoint.publish(v5Address, impl2);
+    log.info("V5 Wsdl location: " + jaxWsV5Endpoint.getWsdlLocation());
+    log.info("V5 Address : " + jaxWsV5Endpoint.getAddress());
+    log.info("V5 Bean name: " + jaxWsV5Endpoint.getBeanName());
+
     //Endpoint cxfEndpoint = jaxWsEndpoint.getServer().getEndpoint();
     
     /*

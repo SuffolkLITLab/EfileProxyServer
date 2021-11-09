@@ -44,6 +44,17 @@ public class Ecfv5XmlHelper {
     dt.setDateRepresentation(niemCoreObjFac.createDate(d));
     return dt;
   }
+
+  public static ecfv5.gov.niem.release.niem.proxy.xsd._4.DateTime convertProxyDate(LocalDateTime date) {
+    GregorianCalendar cal = new GregorianCalendar();
+    cal.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), date.getHour(), date.getMinute(), date.getSecond());
+
+    ecfv5.gov.niem.release.niem.proxy.xsd._4.DateTime d = niemProxyObjFac.createDateTime();
+    d.setValue(datatypeFac.newXMLGregorianCalendar(cal));
+    return d;
+  }
+  
+  
   
   public static DateType convertDate(Date date) {
     GregorianCalendar cal = new GregorianCalendar();

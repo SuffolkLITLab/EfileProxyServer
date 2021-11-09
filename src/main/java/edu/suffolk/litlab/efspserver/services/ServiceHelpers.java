@@ -45,6 +45,7 @@ public class ServiceHelpers {
       
 
   public static String ASSEMBLY_PORT = "/filingassembly/callbacks/FilingAssemblyMDEPort";
+  public static String ASSEMBLY_PORT_V5 = "/filingassembly/callbacks/FilingAssemblyMDEPortEcfv5";
   public static String BASE_URL;
   public static String SERVICE_URL; 
   public static String REST_CALLBACK_URL;

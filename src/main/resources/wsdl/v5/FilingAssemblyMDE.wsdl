@@ -1,0 +1,14 @@
+<definitions xmlns:wsmp="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/FilingAssemblyMDE" 
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+        xmlns="http://schemas.xmlsoap.org/wsdl/" 
+        targetNamespace="urn:tyler:efm:wsdl:WebServicesProfile-Implementation-5.0">
+
+    <import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/FilingAssemblyMDE" location="FilingAssemblyMDE-Def.wsdl"/>
+	<service name="FilingAssemblyMDEService">
+		<port name="FilingAssemblyMDEPort" binding="wsmp:FilingAssemblyMDESoap">
+		    <soap:address location="https://efile.suffolklitlab.org:9001/filingassembly/callbacks/FilingAssemblyMDEPortEcfv5"/>
+		</port>
+	</service>
+</definitions>

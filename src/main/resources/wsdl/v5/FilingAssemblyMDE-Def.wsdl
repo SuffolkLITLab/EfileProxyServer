@@ -1,0 +1,71 @@
+<definitions targetNamespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/FilingAssemblyMDE" 
+    xmlns:tns="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/FilingAssemblyMDE" 
+    xmlns:wrapper="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/MessageWrappers" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+    xmlns="http://schemas.xmlsoap.org/wsdl/" 
+    xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" 
+    xmlns:wsrmp="http://docs.oasis-open.org/ws-rx/wsrmp/200702" 
+    xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+    <wsp:UsingPolicy wsdl:required="true"/>
+    <wsp:Policy wsu:Id="MyPolicy">
+        <wsrmp:RMAssertion/>
+    </wsp:Policy>
+    <wsdl:types>
+        <xsd:schema>
+            <xsd:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/MessageWrappers" schemaLocation="ecf-v5-1.xsd"/>
+        </xsd:schema>
+    </wsdl:types>
+    
+    <!-- messages -->
+    <message name="NotifyCourtDateRequest">
+        <part name="body" element="wrapper:NotifyCourtDateRequest"/>
+    </message>
+    <message name="NotifyCourtDateResponse">
+        <part name="body" element="wrapper:NotifyCourtDateResponse"/>
+    </message>
+    <message name="NotifyFilingReviewCompleteRequest">
+        <part name="body" element="wrapper:NotifyFilingReviewCompleteRequest"/>
+    </message>
+    <message name="NotifyFilingReviewCompleteResponse">
+        <part name="body" element="wrapper:NotifyFilingReviewCompleteResponse"/>
+    </message>
+    
+    <!-- ports -->
+    <portType name="FilingAssemblyMDE">
+        <operation name="NotifyCourtDate">
+            <input message="tns:NotifyCourtDateRequest"/>
+            <output message="tns:NotifyCourtDateResponse"/>
+        </operation>
+        <operation name="NotifyFilingReviewComplete">
+            <input message="tns:NotifyFilingReviewCompleteRequest"/>
+            <output message="tns:NotifyFilingReviewCompleteResponse"/>
+        </operation>
+    </portType>
+
+    <!-- bindings -->
+    <binding name="FilingAssemblyMDESoap" type="tns:FilingAssemblyMDE">
+        <wsp:PolicyReference URI="#MyPolicy"/>
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="NotifyCourtDate">
+            <soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/FilingAssemblyMDE/NotifyCourtDate"/>
+            <input>	
+                <soap:body use="literal"/>
+            </input>
+            <output>	
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="NotifyFilingReviewComplete">
+            <soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/FilingAssemblyMDE/NotifyFilingReviewComplete"/>
+            <input>	
+                <soap:body use="literal"/>
+            </input>
+            <output>	
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+    <!-- services not defined here...defined in an implementation-specific WSDL that imports this one -->
+</definitions>
