@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import edu.suffolk.litlab.efspserver.ContactInformation;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.Person;
+import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.CrossReference;
@@ -66,7 +68,7 @@ public class EcfCourtSpecificSerializerTest {
   }
   
   @Test
-  public void shouldBeEmptyPersonIfIsUser() throws FilingError {
+  public void shouldBeEmptyPersonIfIsUser() throws FilingError, JAXBException {
     ContactInformation info = new ContactInformation("bob@example.com");
     CourtLocationInfo loc = new CourtLocationInfo();
     loc.code = "not_real";
@@ -84,6 +86,7 @@ public class EcfCourtSpecificSerializerTest {
     // The rest of the object should effectively be empty
     assertNull(pt.getPersonSex());
     assertNull(pt.getPersonStateIdentification());
+    XmlHelper.objectToXmlStr(cpt, CaseParticipantType.class);
     
     
     Person org = new Person(new Name("Business Org", "", ""), info, Optional.empty(), Optional.empty(), Optional.empty(), true, true, "1234");
@@ -92,6 +95,7 @@ public class EcfCourtSpecificSerializerTest {
     assertTrue(cptOrg.getEntityRepresentation().getValue() instanceof OrganizationType);
     OrganizationType orgPt = ((OrganizationType) cptOrg.getEntityRepresentation().getValue());
     assertTrue(orgPt.getRest().size() > 0); 
+    XmlHelper.objectToXmlStr(cptOrg, CaseParticipantType.class);
     
     Person per= new Person(new Name("Bob", "", "Zombie"), info, Optional.of("Male"), Optional.of("Spanish"), Optional.empty(), false, false, "1234");
     CaseParticipantType cptPer = courtSer.serializeEcfCaseParticipant(per, collector, okPartyTypes);
@@ -102,6 +106,7 @@ public class EcfCourtSpecificSerializerTest {
     List<JAXBElement<?>> langs = perPt.getPersonPrimaryLanguage().getLanguage();
     assertTrue(langs.size() > 0);
     assertEquals(((LanguageCodeType) langs.get(0).getValue()).getValue(), "Spanish");
+    XmlHelper.objectToXmlStr(cptPer, CaseParticipantType.class);
   }
 
   @Test

@@ -229,12 +229,12 @@ public class EcfCourtSpecificSerializer {
       ot.getRest().add(ecfOf.createOrganizationAugmentation(aug));
       cpt.setEntityRepresentation(ecfOf.createEntityOrganization(ot));
     } else if (per.isFormFiller()) {
-      gov.niem.niem.niem_core._2.PersonType specialPt = coreObjFac.createPersonType();
-      CapabilityType ct = new tyler.ecf.extensions.common.CapabilityType();
-      tyler.ecf.extensions.common.ObjectFactory extObjFac = new tyler.ecf.extensions.common.ObjectFactory();
+      PersonType specialPt = ecfOf.createPersonType();
+      var extObjFac = new tyler.ecf.extensions.common.ObjectFactory();
+      CapabilityType ct = extObjFac.createCapabilityType(); 
       ct.setIAmThisUserIndicator(XmlHelper.convertBool(true));
       specialPt.setPersonCapability(extObjFac.createPersonCapability(ct));
-      cpt.setEntityRepresentation(coreObjFac.createEntityPerson(specialPt));
+      cpt.setEntityRepresentation(ecfOf.createEntityPerson(specialPt));
     } else {
       // Else, it's a person: add other optional person stuff
       PersonAugmentationType aug = ecfOf.createPersonAugmentationType();
