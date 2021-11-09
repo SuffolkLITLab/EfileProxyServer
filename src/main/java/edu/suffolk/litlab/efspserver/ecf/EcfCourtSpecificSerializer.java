@@ -230,6 +230,8 @@ public class EcfCourtSpecificSerializer {
       cpt.setEntityRepresentation(ecfOf.createEntityOrganization(ot));
     } else if (per.isFormFiller()) {
       PersonType specialPt = ecfOf.createPersonType();
+      specialPt.setId(per.getIdString());
+
       var extObjFac = new tyler.ecf.extensions.common.ObjectFactory();
       CapabilityType ct = extObjFac.createCapabilityType(); 
       ct.setIAmThisUserIndicator(XmlHelper.convertBool(true));
