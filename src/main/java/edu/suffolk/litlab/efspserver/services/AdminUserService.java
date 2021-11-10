@@ -33,6 +33,7 @@ import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.db.AtRest;
+import edu.suffolk.litlab.efspserver.db.NewTokens;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.EfmUserService;
@@ -142,9 +143,9 @@ public class AdminUserService {
       return Response.status(401).build();
     }
     log.info("Invoking User Auth for an apiKey");
-    Optional<Map<String, String>> activeToken = security.login(apiKey, loginInfo);
+    Optional<NewTokens> activeToken = security.login(apiKey, loginInfo);
     return activeToken
-        .map((tok) -> Response.ok(tok).build())
+        .map((toks) -> Response.ok(toks).build())
         .orElse(Response.status(403).build());
   }
 

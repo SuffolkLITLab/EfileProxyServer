@@ -17,6 +17,7 @@ import org.testcontainers.utility.DockerImageName;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
+import edu.suffolk.litlab.efspserver.db.NewTokens;
 
 public class LoginDatabaseTest {
 
@@ -45,16 +46,16 @@ public class LoginDatabaseTest {
 
     assertTrue(ld.login("fakeKey", "", okFunctions).isEmpty());
     
-    Optional<Map<String, String>> activeCantDoAnything = ld.login(cantDoAnything, "{}", okFunctions);
+    Optional<NewTokens> activeCantDoAnything = ld.login(cantDoAnything, "{}", okFunctions);
     assertTrue(activeCantDoAnything.isPresent());
-    Optional<Map<String, String>> repeatLogin = ld.login(cantDoAnything, "{}", okFunctions);
+    Optional<NewTokens> repeatLogin = ld.login(cantDoAnything, "{}", okFunctions);
     assertTrue(repeatLogin.isPresent());
     assertEquals(activeCantDoAnything.get(), repeatLogin.get());
     
-    Optional<Map<String, String>> activeTyler = ld.login(tylerOnly, "{\"tyler\": {}}", okFunctions);
+    Optional<NewTokens> activeTyler = ld.login(tylerOnly, "{\"tyler\": {}}", okFunctions);
     assertTrue(activeTyler.isPresent());
     
-    Optional<Map<String, String>> activeEverything = ld.login(everything, "{\"tyler\": {}, \"jeffnet\": {}}", okFunctions);
+    Optional<NewTokens> activeEverything = ld.login(everything, "{\"tyler\": {}, \"jeffnet\": {}}", okFunctions);
     assertTrue(activeEverything.isPresent());
   }
   
