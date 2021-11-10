@@ -1,17 +1,16 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import java.math.BigDecimal;
+import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.isNull;
+
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,26 +43,21 @@ import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.
 import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE;
 import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE_Service;
 import ecfv5.tyler.ecf.v5_0.extensions.common.CourtScheduleType;
-import ecfv5.tyler.ecf.v5_0.extensions.common.FilingAttorneyEntityType;
-import ecfv5.tyler.ecf.v5_0.extensions.common.FilingPartyEntityType;
-import ecfv5.tyler.ecf.v5_0.extensions.common.FilingReferenceType;
 import ecfv5.tyler.ecf.v5_0.extensions.reservedateresponse.ReserveDateResponseMessageType;
 import ecfv5.tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
 import ecfv5.tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateResponseMessageType;
-import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
-import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
-import edu.suffolk.litlab.efspserver.codes.PartyType;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.ecf.ComboCaseCodes;
 import edu.suffolk.litlab.efspserver.ecf.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efspserver.ecf.EcfCourtSpecificSerializer;
+import edu.suffolk.litlab.efspserver.ecf.Ecfv5CaseTypeFactory;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
@@ -72,23 +66,13 @@ import tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEServic
 import ecfv5.gov.niem.release.niem.domains.cbrn._4.MessageContentErrorType;
 import ecfv5.gov.niem.release.niem.domains.cbrn._4.MessageErrorType;
 import ecfv5.gov.niem.release.niem.domains.cbrn._4.MessageStatusType;
-import ecfv5.gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType;
-import ecfv5.gov.niem.release.niem.domains.jxdm._6.CaseOfficialType;
 import ecfv5.gov.niem.release.niem.domains.jxdm._6.CourtEventType;
-import ecfv5.gov.niem.release.niem.niem_core._4.AmountType;
 import ecfv5.gov.niem.release.niem.niem_core._4.CaseType;
 import ecfv5.gov.niem.release.niem.niem_core._4.DateRangeType;
 import ecfv5.gov.niem.release.niem.niem_core._4.DateType;
-import ecfv5.gov.niem.release.niem.niem_core._4.EntityType;
 import ecfv5.gov.niem.release.niem.niem_core._4.IdentificationType;
-import ecfv5.gov.niem.release.niem.niem_core._4.PersonType;
-import ecfv5.gov.niem.release.niem.niem_core._4.TextType;
-import ecfv5.gov.niem.release.niem.proxy.xsd._4.Decimal;
 import ecfv5.gov.niem.release.niem.proxy.xsd._4.Duration;
 import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseOfficialAugmentationType;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventAugmentationType;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAugmentationType;
 import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
 
 @Path("/scheduling/")
@@ -100,12 +84,8 @@ public class CourtSchedulingService {
 
   private ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ObjectFactory oasisWrapObjFac;
   private ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ObjectFactory reserveDateObjFac;
-  private ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ObjectFactory oasisObjFac;
-  private ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.ObjectFactory oasisCivilObjFac;
-  private ecfv5.tyler.ecf.v5_0.extensions.common.ObjectFactory tylerObjFac;
   private final ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory niemObjFac;
   private final ecfv5.gov.niem.release.niem.proxy.xsd._4.ObjectFactory proxyObjFac;
-  private final ecfv5.gov.niem.release.niem.domains.jxdm._6.ObjectFactory jxObjFac;
   private final Map<String, InterviewToFilingEntityConverter> converterMap;
   private final SecurityHub security;
   private final CodeDatabase cd;
@@ -118,19 +98,89 @@ public class CourtSchedulingService {
     this.security = security;
     this.converterMap = converterMap;
     this.oasisWrapObjFac = new ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ObjectFactory();
-    this.oasisObjFac = new ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ObjectFactory();
     this.reserveDateObjFac = new ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ObjectFactory();
-    this.oasisCivilObjFac = new ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.ObjectFactory();
-    this.tylerObjFac = new ecfv5.tyler.ecf.v5_0.extensions.common.ObjectFactory();
     this.niemObjFac = new ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory();
     this.proxyObjFac = new ecfv5.gov.niem.release.niem.proxy.xsd._4.ObjectFactory();
-    this.jxObjFac = new ecfv5.gov.niem.release.niem.domains.jxdm._6.ObjectFactory();
     Optional<CourtRecordMDEService> maybeCourt = SoapClientChooser.getCourtRecordFactory(jurisdiction);
     if (maybeCourt.isEmpty()) {
       throw new RuntimeException("Cannot find " + jurisdiction + " for court record factory");
     }
     this.recordFactory = maybeCourt.get();
   }
+
+  /**
+  @POST
+  @Path("/return_date_test123")
+  public Response getReturnDate(@Context HttpHeaders httpHeaders) throws SQLException, JAXBException {
+    String courtId = "cook:cvd1";
+    Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort(httpHeaders);
+    if (maybeServ.isEmpty()) {
+      return Response.status(401).build();
+    }
+    Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId); 
+    if (locationInfo.isEmpty()) {
+      return Response.status(404).entity("No court: " + courtId).build(); 
+    }
+    if (!locationInfo.get().allowreturndate) {
+      return Response.status(400).entity("Court " + courtId + " doesn't allow handling return dates").build();
+    }
+    
+    ReturnDateRequestType r = oasisWrapObjFac.createReturnDateRequestType();
+    ReturnDateMessageType m = new ReturnDateMessageType();
+    setupReq(m, courtId);
+    CaseType ct = niemObjFac.createCaseType();
+    
+    var jAug = jxObjFac.createCaseAugmentationType();
+    var event = jxObjFac.createCourtEventType();
+    var e = oasisObjFac.createCourtEventAugmentationType();
+    DateType currentDate = Ecfv5XmlHelper.convertDate(LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault()));
+    e.setCourtEventEnteredOnDocketDate(currentDate);
+    e.setCourtEventTypeCode(Ecfv5XmlHelper.convertText("141709"));
+    event.getCourtEventAugmentationPoint().add(oasisObjFac.createCourtEventAugmentation(e));
+    jAug.getCaseCourtEvent().add(event);
+    ct.getCaseAugmentationPoint().add(jxObjFac.createCaseAugmentation(jAug));
+
+    var ecfAug = oasisObjFac.createCaseAugmentationType();
+    ecfAug.getRest().add(oasisObjFac.createCaseCategoryCode(Ecfv5XmlHelper.convertText("7"))); 
+    ecfAug.getRest().add(oasisObjFac.createCaseTypeCode(Ecfv5XmlHelper.convertNormalized("63655")));
+    EntityType ent = niemObjFac.createEntityType();
+    PersonAugmentationType pat = oasisObjFac.createPersonAugmentationType();
+    pat.getCaseParticipantRoleCode().add(Ecfv5XmlHelper.convertText("9837"));
+    pat.setParticipantID(Ecfv5XmlHelper.convertId("SRL"));
+    PersonType perType = niemObjFac.createPersonType();
+    perType.getPersonAugmentationPoint().add(oasisObjFac.createPersonAugmentation(pat));
+    ent.setEntityRepresentation(niemObjFac.createEntityPerson(perType));
+    ent.setId("Party1");
+    ecfAug.getRest().add(oasisObjFac.createCaseParty(ent)); 
+    ct.getCaseAugmentationPoint().add(oasisObjFac.createCaseAugmentation(ecfAug));
+    
+    var tylerAug = tylerObjFac.createCaseAugmentationType();
+    IdentificationType idType = niemObjFac.createIdentificationType();
+    idType.setIdentificationID(Ecfv5XmlHelper.convertString("99500")); 
+    idType.setIdentificationSourceText(Ecfv5XmlHelper.convertText("87374")); 
+    tylerAug.getCrossReferenceNumber().add(idType);
+    ct.getCaseAugmentationPoint().add(tylerObjFac.createCaseAugmentation(tylerAug));
+
+    var oasisAug = oasisCivilObjFac.createCaseAugmentationType();
+    AmountType at = niemObjFac.createAmountType();
+    Decimal d = proxyObjFac.createDecimal();
+    d.setValue(new BigDecimal(0.00));
+    at.setAmount(d); 
+    oasisAug.setAmountInControversy(at);
+    oasisAug.setJuryDemandIndicator(Ecfv5XmlHelper.convertBool(false));
+    ct.getCaseAugmentationPoint().add(oasisCivilObjFac.createCaseAugmentation(oasisAug));
+    m.setCase(ct);
+    LocalDate returnDate = LocalDate.of(2021, 11, 17);
+    m.setReturnDate(Ecfv5XmlHelper.convertDate(returnDate));
+    m.setOutOfStateIndicator(Ecfv5XmlHelper.convertBool(false));
+    r.setReturnDateMessage(m);
+
+    log.info("Full msg: " + XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
+    ReturnDateResponseMessageType resp = maybeServ.get().getReturnDate(r).getReturnDateResponseMessage();
+    log.info("Full resp: " + XmlHelper.objectToXmlStrOrError(resp, ReturnDateResponseMessageType.class));
+    return Response.ok(resp).build();
+  }
+  */
   
   @POST
   @Path("/courts/{court_id}/return_date")
@@ -150,6 +200,9 @@ public class CourtSchedulingService {
     }
     
     MediaType mediaType = httpHeaders.getMediaType();
+    if (mediaType == null) {
+      mediaType = MediaType.valueOf("application/json");
+    }
     InfoCollector collector = new FailFastCollector();
     Result<FilingInformation, FilingError> res = converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
     if (res.isErr()) {
@@ -165,6 +218,7 @@ public class CourtSchedulingService {
     boolean isInitialFiling = info.getPreviousCaseId().isEmpty() && info.getCaseDocketNumber().isEmpty();
     boolean isFirstIndexedFiling = info.getPreviousCaseId().isEmpty(); 
     ComboCaseCodes allCodes;
+    Optional<Map<String, Person>> existingParties = Optional.empty();
     if (!isFirstIndexedFiling) {
       Optional<CourtRecordMDEPort> recordPort = setupRecordPort(apiKey);
       if (recordPort.isEmpty()) {
@@ -175,9 +229,13 @@ public class CourtSchedulingService {
       query.setCaseTrackingID(XmlHelper.convertString(info.getPreviousCaseId().get()));
       query.setCaseQueryCriteria(EcfCaseTypeFactory.getCriteria());
       CaseResponseMessageType resp = recordPort.get().getCase(query);
-      resp.getCase().getValue().getCaseTrackingID();
       String catCode = resp.getCase().getValue().getCaseCategoryText().getValue();
-      String typeCode = EcfCaseTypeFactory.getCaseTypeCode(resp.getCase().getValue()).get().getCaseTypeText().getValue(); 
+      String typeCode = EcfCaseTypeFactory.getCaseAugmentation(resp.getCase().getValue()).get().getCaseTypeText().getValue(); 
+      existingParties = EcfCaseTypeFactory.getCaseParticipants(resp.getCase().getValue());
+      if (existingParties.isEmpty()) {
+        log.info("Couldn't get exsting parties?");
+        throw FilingError.serverError("Couldn't get existing parties for case " + info.getPreviousCaseId().get());
+      }
       List<Optional<String>> maybeFilingCodes = info.getFilings().stream().map(f -> f.getFilingCode()).collect(Collectors.toList()); 
       if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
         InterviewVariable filingVar = collector.requestVar("court_bundle[i].tyler_filing_type", "What filing type is this?", "text"); 
@@ -189,181 +247,30 @@ public class CourtSchedulingService {
     } else {
       allCodes = serializer.serializeCaseCodes(info, collector, isInitialFiling);
     }
-    Optional<String> caseTrackingId = info.getPreviousCaseId(); 
-    List<PartyId> partyIds = info.getFilers();
-    // HACK(brycew): ECF allows multiple filers for an envelope, but this stupid Tyler call only takes a single Party Id. 
-    Optional<PartyId> firstFiler = (partyIds.isEmpty()) ? Optional.empty() : Optional.of(partyIds.get(0));
-    Optional<String> filingAttorneyId = info.getFilings().get(0).getFilingAttorney();
     Optional<LocalDate> returnDate = info.getReturnDate();
     if (returnDate.isEmpty()) {
       return Response.status(400).entity("Need return_date").build();
     }
     
+    ReturnDateRequestType r = oasisWrapObjFac.createReturnDateRequestType();
+    ReturnDateMessageType m = new ReturnDateMessageType();
+    setupReq(m, courtId);
+    Ecfv5CaseTypeFactory caseTypeFac = new Ecfv5CaseTypeFactory();
+    Result<CaseType, FilingError> ctRes = caseTypeFac.createCaseType(info, allCodes, cd, serializer,
+        collector, existingParties.get());
+
+    if (ctRes.isErr()) {
+      return Response.status(400).entity(ctRes.unwrapErrOrElseThrow().toJson()).build();
+    }
+
+    CaseType ct = ctRes.unwrapOrElseThrow();
+    m.setCase(ct);
+    m.setReturnDate(Ecfv5XmlHelper.convertDate(returnDate.get()));
+
     boolean outOfState = false; 
     if (info.getMiscInfo().has("out_of_state")) {
       outOfState = info.getMiscInfo().get("out_of_state").asBoolean(false);
     }
-    Optional<BigDecimal> maybeAmt = Optional.empty();
-    if (allCodes.filings.stream().anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"))) {
-      JsonNode jsonAmt = info.getMiscInfo().get("amount_in_controversy");
-      if (isNull(jsonAmt) || !jsonAmt.isBigDecimal()) {
-        return Response.status(400).entity("Amount in controversy required").build();
-      }
-      maybeAmt = Optional.of(jsonAmt.decimalValue());
-    }
-    
-    ReturnDateRequestType r = oasisWrapObjFac.createReturnDateRequestType();
-    ReturnDateMessageType m = new ReturnDateMessageType();
-    setupReq(m, courtId);
-    CaseType ct = niemObjFac.createCaseType();
-    caseTrackingId.ifPresent(id -> ct.setCaseTrackingID(Ecfv5XmlHelper.convertString(id)));
-
-    DateType currentDate = Ecfv5XmlHelper.convertDate(LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault()));
-    CourtEventType event = jxObjFac.createCourtEventType();
-    int i = 0;
-    for (FilingDoc doc : info.getFilings()) {
-      Optional<String> motionTypeCode = doc.getMotionType();
-      CourtEventAugmentationType e = oasisObjFac.createCourtEventAugmentationType();
-      e.setCourtEventEnteredOnDocketDate(currentDate);
-      e.setCourtEventTypeCode(Ecfv5XmlHelper.convertText(allCodes.filings.get(i).code));
-      motionTypeCode.ifPresentOrElse(mot -> {
-        e.setCourtLocationCode(tylerObjFac.createMotionTypeCode(Ecfv5XmlHelper.convertText(mot)));
-      }, () -> {
-        e.setCourtLocationCode(tylerObjFac.createMotionTypeCode(Ecfv5XmlHelper.convertText("")));
-      });
-      event.getCourtEventAugmentationPoint().add(oasisObjFac.createCourtEventAugmentation(e));
-      i++;
-    }
-    CaseAugmentationType jAug = jxObjFac.createCaseAugmentationType();
-    jAug.getCaseCourtEvent().add(event);
-    i = 1;
-    for (String attorneyId : info.getAttorneyIds()) {
-      Optional<String> partyRepresented = info.getPartyRepByAttorney(attorneyId);
-      if (partyRepresented.isEmpty()) {
-        return Response.status(400).entity("Attorney " + attorneyId + " doesn't represent any parties").build();
-      }
-      CaseOfficialType cot = jxObjFac.createCaseOfficialType();
-      PersonType per = niemObjFac.createPersonType();
-      per.setId("Attorney" + i);
-      IdentificationType idTy = niemObjFac.createIdentificationType();
-      idTy.setIdentificationID(Ecfv5XmlHelper.convertString(attorneyId));
-      idTy.setIdentificationSourceText(Ecfv5XmlHelper.convertText("ATTORNEYID"));
-      per.getPersonOtherIdentification().add(idTy);
-      cot.setRoleOfPerson(per);
-      CaseOfficialAugmentationType caseOffAug = oasisObjFac.createCaseOfficialAugmentationType();
-      EntityType ent = niemObjFac.createEntityType();
-      log.info("Party rep: " + partyRepresented.get());
-      ent.setRef(partyRepresented.get());
-      caseOffAug.getCaseRepresentedParty().add(ent);
-      cot.getCaseOfficialAugmentationPoint().add(oasisObjFac.createCaseOfficialAugmentation(caseOffAug));
-      jAug.getCaseOfficial().add(cot);
-      i++;
-    }
-    ct.getCaseAugmentationPoint().add(jxObjFac.createCaseAugmentation(jAug));
-
-    var ecfAug = oasisObjFac.createCaseAugmentationType();
-    TextType catText = niemObjFac.createTextType();
-    catText.setValue(allCodes.cat.code);
-    ecfAug.getRest().add(oasisObjFac.createCaseCategoryCode(catText));
-    ecfAug.getRest().add(oasisObjFac.createCaseTypeCode(Ecfv5XmlHelper.convertNormalized(allCodes.type.code)));
-    // TODO(brycew-later): write ecfv5 versions of this. Right now, don't have time to reimplement everything, so checking with old ecfv4 code and building here 
-    List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, allCodes.type.code); 
-    List<String> partyTypeNames = partyTypes.stream().map(p -> p.name).collect(Collectors.toList());
-    Map<String, EntityType> idToCaseParty = new HashMap<String, EntityType>();
-    
-    Function<Person, Result<EntityType, Response>> genEnt = (per) -> {
-      Optional<PartyType> matchingType = partyTypes.stream()
-          .filter(pt -> pt.code.equalsIgnoreCase(per.getRole()))
-          .findFirst();
-      TextType roleText = niemObjFac.createTextType();
-      if (matchingType.isEmpty()) {
-        InterviewVariable ptVar = collector.requestVar("party_type", "Legal role of the party", "choices", partyTypeNames);
-        try {
-          collector.addWrong(ptVar);
-        } catch (FilingError err) {
-          // N/A
-        }
-        return Result.err(Response.status(400).entity(collector.jsonSummary()).build());
-      } else {
-        roleText.setValue(matchingType.get().code);
-      }
-      EntityType ent = niemObjFac.createEntityType();
-      PersonAugmentationType pat = oasisObjFac.createPersonAugmentationType();
-      pat.getCaseParticipantRoleCode().add(roleText);
-      if (!info.getPartyAttorneyMap().containsKey(per.getIdString()) 
-          || info.getPartyAttorneyMap().get(per.getIdString()).isEmpty()) {
-        IdentificationType idType = niemObjFac.createIdentificationType();
-        idType.setIdentificationID(Ecfv5XmlHelper.convertString("SRL"));
-        pat.setParticipantID(idType);
-      } else {
-        pat.setParticipantID(null); 
-      }
-      PersonType perType = niemObjFac.createPersonType();
-      perType.getPersonAugmentationPoint().add(oasisObjFac.createPersonAugmentation(pat));
-      ent.setEntityRepresentation(niemObjFac.createEntityPerson(perType)); 
-      ent.setId(per.getIdString());
-      idToCaseParty.put(per.getIdString(), ent);
-      return Result.ok(ent);
-    };
-    for (Person per: info.getPlaintiffs()) {
-      Result<EntityType, Response> ent = genEnt.apply(per);
-      if (ent.isErr()) {
-        return ent.unwrapErrOrElseThrow();
-      }
-      ecfAug.getRest().add(oasisObjFac.createCaseParty(ent.unwrapOrElseThrow()));
-    }
-    for (Person per: info.getDefendants()) {
-      Result<EntityType, Response> ent = genEnt.apply(per);
-      if (ent.isErr()) {
-        return ent.unwrapErrOrElseThrow();
-      }
-      ecfAug.getRest().add(oasisObjFac.createCaseParty(ent.unwrapOrElseThrow()));
-    }
-    ct.getCaseAugmentationPoint().add(oasisObjFac.createCaseAugmentation(ecfAug));
-
-    var oasisAug = oasisCivilObjFac.createCaseAugmentationType();
-    if (maybeAmt.isPresent()) {
-      AmountType at = niemObjFac.createAmountType();
-      Decimal d = proxyObjFac.createDecimal();
-      d.setValue(maybeAmt.get());
-      at.setAmount(d); 
-      oasisAug.setAmountInControversy(at);
-    }
-    oasisAug.setJuryDemandIndicator(Ecfv5XmlHelper.convertBool(false));
-    ct.getCaseAugmentationPoint().add(oasisCivilObjFac.createCaseAugmentation(oasisAug));
-
-    var tylerAug = tylerObjFac.createCaseAugmentationType();
-    firstFiler.ifPresent(fil -> {
-      FilingPartyEntityType fpet = tylerObjFac.createFilingPartyEntityType();
-      log.info("Filing party: " + fil); 
-      if (fil.isInCurrentFiling()) {
-        FilingReferenceType frt = tylerObjFac.createFilingReferenceType();
-        frt.setRef(idToCaseParty.get(fil.id));
-        fpet.setPartyReference(frt);
-      } else {
-        IdentificationType idType = niemObjFac.createIdentificationType();
-        idType.setIdentificationID(Ecfv5XmlHelper.convertString(fil.id));
-        fpet.setPartyIdentification(idType); 
-      }
-      tylerAug.setFilingParty(fpet);
-    });
-    if (filingAttorneyId.isPresent()) {
-      FilingAttorneyEntityType faet = tylerObjFac.createFilingAttorneyEntityType();
-      faet.setAttorneyIdentification(Ecfv5XmlHelper.convertId(filingAttorneyId.get()));
-      tylerAug.setFilingAttorney(faet);
-    }
-
-    Map<String, String> crossReferences = serializer.getCrossRefIds(info.getMiscInfo(), collector, allCodes.type.code);
-    for (Map.Entry<String, String> refs : crossReferences.entrySet()) {
-      IdentificationType idType = niemObjFac.createIdentificationType();
-      idType.setIdentificationID(Ecfv5XmlHelper.convertString(refs.getValue()));
-      idType.setIdentificationSourceText(Ecfv5XmlHelper.convertText(refs.getKey()));
-      tylerAug.getCrossReferenceNumber().add(idType);
-    }
-
-    ct.getCaseAugmentationPoint().add(tylerObjFac.createCaseAugmentation(tylerAug));
-    m.setCase(ct);
-    m.setReturnDate(Ecfv5XmlHelper.convertDate(returnDate.get()));
     m.setOutOfStateIndicator(Ecfv5XmlHelper.convertBool(outOfState));
     r.setReturnDateMessage(m);
     log.info("Full msg: " + XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
@@ -371,8 +278,11 @@ public class CourtSchedulingService {
     log.info("Full resp: " + XmlHelper.objectToXmlStrOrError(resp, ReturnDateResponseMessageType.class));
     for (MessageContentErrorType err : resp.getMessageStatus().getMessageContentError()) {
       if (err.getErrorDescription().getErrorCodeText().getValue().equals("344")) {
-        tylerAug.getCrossReferenceNumber().clear();
-        ct.getCaseAugmentationPoint().add(tylerObjFac.createCaseAugmentation(tylerAug));
+        for (var aug : ct.getCaseAugmentationPoint()) {
+          if (aug.getValue() instanceof ecfv5.tyler.ecf.v5_0.extensions.common.CaseAugmentationType tylerAug) {
+            tylerAug.getCrossReferenceNumber().clear();
+          }
+        }
         m.setCase(ct);
         r.setReturnDateMessage(m);
         log.info("New full msg: " + XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
@@ -382,8 +292,11 @@ public class CourtSchedulingService {
     }
     MessageErrorType err = resp.getMessageStatus().getMessageHandlingError();
       if (err.getErrorCodeText().getValue().equals("344")) {
-        tylerAug.getCrossReferenceNumber().clear();
-        ct.getCaseAugmentationPoint().add(tylerObjFac.createCaseAugmentation(tylerAug));
+        for (var aug : ct.getCaseAugmentationPoint()) {
+          if (aug.getValue() instanceof ecfv5.tyler.ecf.v5_0.extensions.common.CaseAugmentationType tylerAug) {
+            tylerAug.getCrossReferenceNumber().clear();
+          }
+        }
         m.setCase(ct);
         r.setReturnDateMessage(m);
         log.info("New full msg: " + XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
@@ -537,7 +450,4 @@ public class CourtSchedulingService {
     return !ms.getMessageContentError().isEmpty() && !(errorCodeText.isBlank() || errorCodeText.equals("0"));
   }
   
-  private static boolean isNull(JsonNode j) {
-    return j == null || j.isNull();
-  }
 }

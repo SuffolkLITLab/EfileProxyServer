@@ -29,7 +29,7 @@ public class FilingInformation {
    * don't want to modify any attorneys). 
    * A party with an empty list means the party is Pro Se.
    */
-  private Map<String, List<String>> partyToAttorneyIds = Map.of();
+  private Map<PartyId, List<String>> partyToAttorneyIds = Map.of();
   
   /** List of service contacts to add to the case. Contacts are mostly an ID of the contact already
    * registered within the EFM system.
@@ -104,14 +104,14 @@ public class FilingInformation {
     return attorneyIds;
   }
   
-  public Map<String, List<String>> getPartyAttorneyMap() {
+  public Map<PartyId, List<String>> getPartyAttorneyMap() {
     return partyToAttorneyIds;
   }
   
   /** We only store the mapping from Party to attorneys (since parties can have multiple attorneys,
    * but not vice-versa. */
-  public Optional<String> getPartyRepByAttorney(String attorneyId) {
-    for (Map.Entry<String, List<String>> partyToAttorneys : partyToAttorneyIds.entrySet()) {
+  public Optional<PartyId> getPartyRepByAttorney(String attorneyId) {
+    for (Map.Entry<PartyId, List<String>> partyToAttorneys : partyToAttorneyIds.entrySet()) {
       if (partyToAttorneys.getValue().contains(attorneyId)) {
         return Optional.of(partyToAttorneys.getKey());
       }
@@ -175,7 +175,7 @@ public class FilingInformation {
     this.attorneyIds = attorneyIds;
   }
   
-  public void setPartyAttorneyMap(Map<String, List<String>> partyToAttorneyIds) {
+  public void setPartyAttorneyMap(Map<PartyId, List<String>> partyToAttorneyIds) {
     this.partyToAttorneyIds = partyToAttorneyIds; 
   }
   

@@ -225,7 +225,7 @@ public class CasesService {
 
     if (locationInfo.get().hasprotectedcasetypes) {
       CaseType caseType = resp.getCase().getValue();
-      Optional<CaseAugmentationType> caseAug = EcfCaseTypeFactory.getCaseTypeCode(caseType);
+      Optional<CaseAugmentationType> caseAug = EcfCaseTypeFactory.getCaseAugmentation(caseType);
       caseAug.ifPresent(aug -> {
         if (locationInfo.get().protectedcasetypes.contains(aug.getCaseTypeText().getValue())) {
           TextType protectedText = XmlHelper.convertText(locationInfo.get().protectedcasereplacementstring);
