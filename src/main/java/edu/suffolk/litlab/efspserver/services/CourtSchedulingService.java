@@ -257,7 +257,7 @@ public class CourtSchedulingService {
     setupReq(m, courtId);
     Ecfv5CaseTypeFactory caseTypeFac = new Ecfv5CaseTypeFactory();
     Result<CaseType, FilingError> ctRes = caseTypeFac.createCaseType(info, allCodes, cd, serializer,
-        collector, existingParties.get());
+        collector, existingParties);
 
     if (ctRes.isErr()) {
       return Response.status(400).entity(ctRes.unwrapErrOrElseThrow().toJson()).build();

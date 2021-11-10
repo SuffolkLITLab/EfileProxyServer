@@ -74,7 +74,7 @@ public class Ecfv5CaseTypeFactory {
   public Result<CaseType, FilingError> createCaseType(FilingInformation info, 
       ComboCaseCodes allCodes, CodeDatabase cd, 
       EcfCourtSpecificSerializer serializer,
-      InfoCollector collector, Map<String, Person> existingParties) {
+      InfoCollector collector, Optional<Map<String, Person>> existingParties) {
     Optional<BigDecimal> maybeAmt = Optional.empty();
     if (allCodes.filings.stream().anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"))) {
       log.info(info.getMiscInfo().toPrettyString());
@@ -160,10 +160,14 @@ public class Ecfv5CaseTypeFactory {
       }
       for (Map.Entry<PartyId, List<String>> partyAndAtt : info.getPartyAttorneyMap().entrySet()) {
         if (!partyAndAtt.getValue().isEmpty() && !partyAndAtt.getKey().isInCurrentFiling()) {
-          if (!existingParties.containsKey(partyAndAtt.getKey().id)) {
+          if (existingParties.isEmpty()) {
+            collector.error(FilingError.serverError("PartyAttorney maps references parties not in "
+                + "current filing, but we don't have that datastructure."));
+          }
+          if (!existingParties.get().containsKey(partyAndAtt.getKey().id)) {
             collector.addWrong(collector.requestVar("party_to_attorneys", "Can't find the existing party ID in the existing parties", "text"));
           }
-          EntityType ent = serializeExistingParticipant(partyAndAtt.getKey().id, existingParties.get(partyAndAtt.getKey().id));
+          EntityType ent = serializeExistingParticipant(partyAndAtt.getKey().id, existingParties.get().get(partyAndAtt.getKey().id));
           ecfAug.getRest().add(oasisObjFac.createCaseParty(ent));
         }
       }
