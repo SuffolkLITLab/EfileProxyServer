@@ -177,15 +177,13 @@ public class Ecfv5CaseTypeFactory {
     
     ct.getCaseAugmentationPoint().add(oasisObjFac.createCaseAugmentation(ecfAug));
     var oasisAug = oasisCivilObjFac.createCaseAugmentationType();
-    Decimal d = proxyObjFac.createDecimal();
     if (maybeAmt.isPresent()) {
+      Decimal d = proxyObjFac.createDecimal();
       d.setValue(maybeAmt.get());
-    } else {
-      d.setValue(new BigDecimal(0.0));
+      AmountType at = niemObjFac.createAmountType();
+      at.setAmount(d); 
+      oasisAug.setAmountInControversy(at);
     }
-    AmountType at = niemObjFac.createAmountType();
-    at.setAmount(d); 
-    oasisAug.setAmountInControversy(at);
     oasisAug.setJuryDemandIndicator(convertBool(false));
     ct.getCaseAugmentationPoint().add(oasisCivilObjFac.createCaseAugmentation(oasisAug));
 
