@@ -694,6 +694,7 @@ public class EcfCourtSpecificSerializer {
       //System.err.println(XmlHelper.objectToXmlStrOrError(n.getValue(), Base64Binary.class));
       attachment.setBinaryObject(n);
       // TODO(brycew): depends on some DA code, should read in the PDF if possible here. Might be risky though.
+      // https://stackoverflow.com/questions/6026971/page-count-of-pdf-with-java
       if (miscInfo.has("page_count")) {
         int count = miscInfo.get("page_count").asInt(1);
         NonNegativeDecimalType nndt = new NonNegativeDecimalType();

@@ -354,7 +354,12 @@ public class FilingInformationDocassembleJacksonDeserializer
     Optional<LocalDate> maybeReturnDate = Optional.empty();
     if (jsonReturnDate != null && jsonReturnDate.isTextual()) {
       // TODO(#47): Time zone user is using?
-      maybeReturnDate = Optional.of(LocalDate.ofInstant(Instant.parse(jsonReturnDate.asText()), ZoneId.of("America/Chicago")));
+      try {
+        maybeReturnDate = Optional.of(LocalDate.parse(jsonReturnDate.asText(), DateTimeFormatter.ISO_DATE)); 
+      } catch (DateTimeParseException ex) {
+        InterviewVariable var = collector.requestVar("return_date", "Should be as YYYY-MM-DD+01:00", "date");
+        collector.addWrong(var);
+      }
     }
     entities.setReturnDate(maybeReturnDate);
 

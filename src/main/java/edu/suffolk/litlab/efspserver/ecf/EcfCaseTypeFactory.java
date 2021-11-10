@@ -62,19 +62,15 @@ public class EcfCaseTypeFactory {
   public static Optional<CaseAugmentationType> getCaseTypeCode(
       gov.niem.niem.niem_core._2.CaseType filedCase) {
     List<JAXBElement<?>> restList = List.of();
-    if (filedCase instanceof CivilCaseType) {
-      CivilCaseType civilCase = (CivilCaseType) filedCase;
+    if (filedCase instanceof CivilCaseType civilCase) {
       restList = civilCase.getRest();
-    } else if (filedCase instanceof DomesticCaseType) {
-      DomesticCaseType domesCase = (DomesticCaseType) filedCase;
+    } else if (filedCase instanceof DomesticCaseType domesCase) {
       restList = domesCase.getRest();
-    } else if (filedCase instanceof CriminalCaseType) {
-      CriminalCaseType criminalCase = (CriminalCaseType) filedCase;
+    } else if (filedCase instanceof CriminalCaseType criminalCase) {
       restList = criminalCase.getRest();
     }
     for (JAXBElement<?> elem : restList) {
-      if (elem.getValue() instanceof CaseAugmentationType) {
-        CaseAugmentationType aug = (CaseAugmentationType) elem.getValue();
+      if (elem.getValue() instanceof CaseAugmentationType aug) {
         return Optional.of(aug);
       }
     }
@@ -133,7 +129,7 @@ public class EcfCaseTypeFactory {
       boolean anyAmountInControversy = comboCodes.filings.stream().anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"));
       if (anyAmountInControversy) {
         JsonNode jsonAmt = info.getMiscInfo().get("amount_in_controversy");
-        if (jsonAmt != null && jsonAmt.isBigDecimal()) {
+        if (jsonAmt != null && jsonAmt.isNumber()) {
           amountInControversy = Optional.of(jsonAmt.decimalValue());
         } else {
           collector.addRequired(collector.requestVar("amount_in_controversy", "ad danum amount", "currency"));
@@ -378,7 +374,7 @@ public class EcfCaseTypeFactory {
     if (miscInfo.has("max_fee_amount") && courtLocation.allowmaxfeeamount) {
       AmountType amountType = new AmountType();
       amountType.setCurrencyCode(CurrencyCodeSimpleType.USD);
-      if (miscInfo.get("max_fee_amount").isBigDecimal()) {
+      if (miscInfo.get("max_fee_amount").isNumber()) {
         BigDecimal amnt = miscInfo.get("max_fee_amount").decimalValue();
         amountType.setValue(amnt);
         ecfAug.setMaxFeeAmount(amountType);

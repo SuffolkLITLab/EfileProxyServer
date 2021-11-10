@@ -9,6 +9,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class JsonHelpers {
 
+  public static boolean isNull(JsonNode j) {
+    return j == null || j.isNull();
+  }
+
   public static Optional<String> getStringMember(JsonNode obj, String memberName) {
     if (obj.has(memberName) && obj.get(memberName).isTextual()) {
       return Optional.of(obj.get(memberName).asText());

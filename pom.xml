@@ -344,6 +344,7 @@
                     <version>0.8.7</version>
                     <configuration>
                         <excludes>
+                            <exclude>ecfv5/**/*.class</exclude>
                             <exclude>gov/**/*.class</exclude>
                             <exclude>oasis/**/*.class</exclude>
                             <exclude>tyler/**/*.class</exclude>
