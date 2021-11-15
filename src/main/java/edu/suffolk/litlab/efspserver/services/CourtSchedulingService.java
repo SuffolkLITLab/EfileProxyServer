@@ -309,7 +309,7 @@ public class CourtSchedulingService {
       return Response.status(400).entity(resp.getMessageStatus()).build();
     }
     if (resp.getReturnDate() != null) {
-      return Response.ok(resp).build();
+      return Response.ok(resp.getReturnDate().getDateRepresentation().getValue()).build();
     } else {
       return Response.status(502).entity("No actual return dates given!").build();
     }
