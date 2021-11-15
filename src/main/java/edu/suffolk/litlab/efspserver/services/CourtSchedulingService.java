@@ -290,6 +290,8 @@ public class CourtSchedulingService {
         log.info("New full resp: " + XmlHelper.objectToXmlStrOrError(resp, ReturnDateResponseMessageType.class));
       }
     }
+    // TODO(brycew:) have gotten "451: AmountInControversy is not supported" for Handling error, should
+    // able to automatically not do the amount in those cases.
     MessageErrorType err = resp.getMessageStatus().getMessageHandlingError();
       if (err.getErrorCodeText().getValue().equals("344")) {
         for (var aug : ct.getCaseAugmentationPoint()) {
@@ -306,7 +308,11 @@ public class CourtSchedulingService {
     if (hasError(resp)) {
       return Response.status(400).entity(resp.getMessageStatus()).build();
     }
-    return Response.ok(resp).build();
+    if (resp.getReturnDate() != null) {
+      return Response.ok(resp).build();
+    } else {
+      return Response.status(502).entity("No actual return dates given!").build();
+    }
     } catch (FilingError err) {
       return Response.status(422).entity(collector.jsonSummary()).build();
     }
