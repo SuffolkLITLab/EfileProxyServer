@@ -28,4 +28,27 @@ public class NewTokens {
   public void setEmployeeMap(Map<String, String> tokens) {
       this.tokens = tokens;
   }
+  
+  @Override
+  public boolean equals(Object other) {
+    if (other == null) {
+      return false;
+    }
+    if (other instanceof NewTokens otherTokens) {
+      return tokens.equals(otherTokens.tokens);
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    return tokens.hashCode();
+  }
+  
+  @Override
+  public String toString() {
+    return tokens.toString();
+  }
+  
 }
