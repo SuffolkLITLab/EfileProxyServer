@@ -16,7 +16,9 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
 /**
@@ -63,7 +65,9 @@ public class XmlHelper {
     cal.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), 0, 0, 0);
     
     gov.niem.niem.proxy.xsd._2.Date d = niemProxyObjFac.createDate();
-    d.setValue(datatypeFac.newXMLGregorianCalendar(cal));
+    XMLGregorianCalendar x = datatypeFac.newXMLGregorianCalendar(cal);
+    x.setTimezone(DatatypeConstants.FIELD_UNDEFINED); 
+    d.setValue(x);
 
     DateType dt = niemCoreObjFac.createDateType();
     dt.setDateRepresentation(niemCoreObjFac.createDate(d));
