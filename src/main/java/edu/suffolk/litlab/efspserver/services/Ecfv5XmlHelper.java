@@ -6,7 +6,9 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import ecfv5.gov.niem.release.niem.domains.jxdm._6.CourtType;
 import ecfv5.gov.niem.release.niem.niem_core._4.DateType;
@@ -38,7 +40,9 @@ public class Ecfv5XmlHelper {
     cal.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), 0, 0, 0);
 
     ecfv5.gov.niem.release.niem.proxy.xsd._4.Date d = niemProxyObjFac.createDate();
-    d.setValue(datatypeFac.newXMLGregorianCalendar(cal));
+    XMLGregorianCalendar x = datatypeFac.newXMLGregorianCalendar(cal);
+    x.setTimezone(DatatypeConstants.FIELD_UNDEFINED); 
+    d.setValue(x);
 
     DateType dt = niemCoreObjFac.createDateType(); 
     dt.setDateRepresentation(niemCoreObjFac.createDate(d));

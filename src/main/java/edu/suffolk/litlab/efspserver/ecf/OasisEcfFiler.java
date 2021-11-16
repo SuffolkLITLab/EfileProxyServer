@@ -179,7 +179,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         CaseResponseMessageType resp = recordPort.getCase(query);
         resp.getCase().getValue().getCaseTrackingID();
         String catCode = resp.getCase().getValue().getCaseCategoryText().getValue();
-        String typeCode = EcfCaseTypeFactory.getCaseTypeCode(resp.getCase().getValue()).get().getCaseTypeText().getValue(); 
+        String typeCode = EcfCaseTypeFactory.getCaseAugmentation(resp.getCase().getValue()).get().getCaseTypeText().getValue(); 
         List<Optional<String>> maybeFilingCodes = info.getFilings().stream().map(f -> f.getFilingCode()).collect(Collectors.toList()); 
         if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
           InterviewVariable filingVar = collector.requestVar("court_bundle[i].tyler_filing_type", "What filing type is this?", "text"); 

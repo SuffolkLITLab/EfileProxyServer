@@ -3,7 +3,10 @@ package edu.suffolk.litlab.efspserver.ecf;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.suffolk.litlab.efspserver.CaseServiceContact;
+import edu.suffolk.litlab.efspserver.ContactInformation;
 import edu.suffolk.litlab.efspserver.FilingInformation;
+import edu.suffolk.litlab.efspserver.Name;
+import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
@@ -19,6 +22,7 @@ import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import gov.niem.niem.iso_4217._2.CurrencyCodeSimpleType;
 import gov.niem.niem.niem_core._2.AmountType;
 import gov.niem.niem.niem_core._2.IdentificationType;
+import gov.niem.niem.niem_core._2.PersonNameType;
 import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.structures._2.ReferenceType;
 
@@ -28,6 +32,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.Optional;
 import java.util.Set;
@@ -41,6 +46,7 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQue
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.CivilCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseOfficialType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.CriminalCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.DomesticCaseType;
@@ -59,27 +65,66 @@ public class EcfCaseTypeFactory {
     this.cd = cd;
   }
 
-  public static Optional<CaseAugmentationType> getCaseTypeCode(
+  public static Optional<CaseAugmentationType> getCaseAugmentation(
       gov.niem.niem.niem_core._2.CaseType filedCase) {
     List<JAXBElement<?>> restList = List.of();
-    if (filedCase instanceof CivilCaseType) {
-      CivilCaseType civilCase = (CivilCaseType) filedCase;
+    if (filedCase instanceof CivilCaseType civilCase) {
       restList = civilCase.getRest();
-    } else if (filedCase instanceof DomesticCaseType) {
-      DomesticCaseType domesCase = (DomesticCaseType) filedCase;
+    } else if (filedCase instanceof DomesticCaseType domesCase) {
       restList = domesCase.getRest();
-    } else if (filedCase instanceof CriminalCaseType) {
-      CriminalCaseType criminalCase = (CriminalCaseType) filedCase;
+    } else if (filedCase instanceof CriminalCaseType criminalCase) {
       restList = criminalCase.getRest();
     }
     for (JAXBElement<?> elem : restList) {
-      if (elem.getValue() instanceof CaseAugmentationType) {
-        CaseAugmentationType aug = (CaseAugmentationType) elem.getValue();
+      if (elem.getValue() instanceof CaseAugmentationType aug) {
         return Optional.of(aug);
       }
     }
 
     return Optional.empty();
+  }
+  
+  /** TODO(brycew): finish this function, lots of possible rabbit holes here. */
+  public static Optional<Map<String, Person>> getCaseParticipants(
+      gov.niem.niem.niem_core._2.CaseType filedCase) {
+    Map<String, Person> existingParticipants = new HashMap<>();
+    Optional<CaseAugmentationType> maybeAug = getCaseAugmentation(filedCase);
+    if (maybeAug.isEmpty()) {
+      return Optional.empty();
+    }
+    
+    for (var jaxPart : maybeAug.get().getCaseParticipant()) {
+      String role = jaxPart.getValue().getCaseParticipantRoleCode().getValue();
+      var entRep = jaxPart.getValue().getEntityRepresentation();
+      boolean isOrg = false;
+      String efmId = "";
+      Name name = new Name("", "", "");
+      if (entRep.getValue() instanceof PersonType perType) {
+        isOrg = false;
+        if (perType.getPersonName() != null) {
+          PersonNameType xmlName = perType.getPersonName();
+          String firstName = (xmlName.getPersonGivenName() != null) ? xmlName.getPersonGivenName().getValue() : "";
+          String middleName = (xmlName.getPersonMiddleName() != null) ? xmlName.getPersonMiddleName().getValue() : "";
+          String lastName = (xmlName.getPersonSurName() != null) ? xmlName.getPersonSurName().getValue() : "";
+          name = new Name(firstName, middleName, lastName);
+        }
+        for (IdentificationType idType : perType.getPersonOtherIdentification()) {
+          efmId = idType.getIdentificationID().getValue();
+        }
+      } else if (entRep.getValue() instanceof OrganizationType orgType) {
+        isOrg = true;
+        IdentificationType idType = orgType.getOrganizationIdentification().getValue();
+        efmId = idType.getIdentificationID().getValue();
+      }
+      if (efmId.isBlank()) {
+        log.warn("Need Id for participants on existing case");
+        return Optional.empty();
+      }
+      Person per = Person.FromEfm(name, new ContactInformation(""), 
+          Optional.empty(), Optional.empty(), Optional.empty(), isOrg, role, UUID.fromString(efmId));
+      existingParticipants.put(efmId, per);
+    }
+    return Optional.of(existingParticipants);
   }
 
   public static CaseQueryCriteriaType getCriteria() {
@@ -133,7 +178,7 @@ public class EcfCaseTypeFactory {
       boolean anyAmountInControversy = comboCodes.filings.stream().anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"));
       if (anyAmountInControversy) {
         JsonNode jsonAmt = info.getMiscInfo().get("amount_in_controversy");
-        if (jsonAmt != null && jsonAmt.isBigDecimal()) {
+        if (jsonAmt != null && jsonAmt.isNumber()) {
           amountInControversy = Optional.of(jsonAmt.decimalValue());
         } else {
           collector.addRequired(collector.requestVar("amount_in_controversy", "ad danum amount", "currency"));
@@ -265,9 +310,9 @@ public class EcfCaseTypeFactory {
     }
 
     DataFieldRow attRow = cd.getDataField(info.getCourtLocation(), "PartyAttorney");
-    for (Map.Entry<String, List<String>> partyAttys : info.getPartyAttorneyMap().entrySet()) {
+    for (Map.Entry<PartyId, List<String>> partyAttys : info.getPartyAttorneyMap().entrySet()) {
       log.info("Setting Attorneys for : " + partyAttys.getKey());
-      Object partyObj = partyIdToRefObj.get(partyAttys.getKey());
+      Object partyObj = partyIdToRefObj.get(partyAttys.getKey().id);
       ReferenceType repdRef = structObjFac.createReferenceType();
       repdRef.setRef(partyObj);
       if (!attRow.isvisible) {
@@ -378,7 +423,7 @@ public class EcfCaseTypeFactory {
     if (miscInfo.has("max_fee_amount") && courtLocation.allowmaxfeeamount) {
       AmountType amountType = new AmountType();
       amountType.setCurrencyCode(CurrencyCodeSimpleType.USD);
-      if (miscInfo.get("max_fee_amount").isBigDecimal()) {
+      if (miscInfo.get("max_fee_amount").isNumber()) {
         BigDecimal amnt = miscInfo.get("max_fee_amount").decimalValue();
         amountType.setValue(amnt);
         ecfAug.setMaxFeeAmount(amountType);

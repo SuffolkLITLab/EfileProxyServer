@@ -20,6 +20,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <jacoco.skip>false</jacoco.skip>
+        <skipTestsOnBuild>true</skipTestsOnBuild>
     </properties>
 
     <dependencies>
@@ -344,6 +345,7 @@
                     <version>0.8.7</version>
                     <configuration>
                         <excludes>
+                            <exclude>ecfv5/**/*.class</exclude>
                             <exclude>gov/**/*.class</exclude>
                             <exclude>oasis/**/*.class</exclude>
                             <exclude>tyler/**/*.class</exclude>
@@ -396,7 +398,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.3.0</version>
-                <configuration></configuration>
+                <configuration>
+                </configuration>
             </plugin>
         </plugins>
     </reporting>

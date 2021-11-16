@@ -125,7 +125,7 @@ public class LoginDatabase extends DatabaseInterface {
    * @param jsonLoginInfo The JSON string with login info for whatever modules it's wants to login to
    * @return The new API Token that the REST client should now send to the Server
    */
-  public Optional<Map<String, String>> login(String apiKey, String jsonLoginInfo, 
+  public Optional<NewTokens> login(String apiKey, String jsonLoginInfo, 
       Map<String, Function<JsonNode, Optional<Map<String, String>>>> loginFunctions) throws SQLException {
     if (conn == null) {
       log.error("Connection in login wasn't open yet!");
@@ -171,7 +171,8 @@ public class LoginDatabase extends DatabaseInterface {
       log.info("New tokens: " + maybeNewTokens.get());
       newTokens.putAll(maybeNewTokens.get());
     }
-    return Optional.of(newTokens);
+    NewTokens tokensObj = new NewTokens(newTokens);
+    return Optional.of(tokensObj);
   }
   
   /** Example on how to trigger: mvn exec:java@LoginDatabase -Dexec.args="localhostServer true true" */

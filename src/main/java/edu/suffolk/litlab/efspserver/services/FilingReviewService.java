@@ -134,10 +134,10 @@ public class FilingReviewService {
       @PathParam("jurisdiction") String jurisdiction,
       @PathParam("court_id") String courtId, 
       String allVars) {
-    log.info("All vars:" + allVars);
     MediaType mediaType = httpHeaders.getMediaType();
-    log.trace("Checking a filing: Media type: " + mediaType);
-    log.trace("Court id: " + courtId);
+    if (mediaType == null) {
+      mediaType = MediaType.valueOf("application/json");
+    }
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
@@ -173,7 +173,9 @@ public class FilingReviewService {
       @PathParam("court_id") String courtId, 
       String allVars) {
     MediaType mediaType = httpHeaders.getMediaType();
-    log.trace("Checking a filing: Media type: " + mediaType);
+    if (mediaType == null) {
+      mediaType = MediaType.valueOf("application/json");
+    }
     log.trace("Court id: " + courtId);
     log.info("All vars:" + allVars);
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
@@ -208,7 +210,9 @@ public class FilingReviewService {
       @PathParam("court_id") String courtId, 
       String allVars) {
     MediaType mediaType = httpHeaders.getMediaType();
-    log.trace("Checking a filing: Media type: " + mediaType);
+    if (mediaType == null) {
+      mediaType = MediaType.valueOf("application/json");
+    }
     log.trace("Court id: " + courtId);
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
     if (checked.isErr()) {
@@ -260,18 +264,12 @@ public class FilingReviewService {
       @PathParam("jurisdiction") String jurisdiction, 
       @PathParam("court_id") String courtId, 
       String statusReport) {
-    MediaType mediaType = httpHeaders.getMediaType();
-    log.trace("Got callback for filing! media type: " + mediaType + ", court id: " + courtId);
-    log.trace("Everything they sent: " + statusReport);
-    
     if (!callbackInterfaces.containsKey(jurisdiction)) {
       return Response.status(404).entity("Jurisdiction " + jurisdiction + " doesn't exist").build();
     }
-
     if (!callbackInterfaces.get(jurisdiction).containsKey(courtId)) {
       return Response.status(404).entity("Court " + courtId + " in " + jurisdiction + " doesn't exist").build();
     }
-
     return callbackInterfaces.get(jurisdiction).get(courtId).statusCallback(httpHeaders, statusReport);
   }
 
@@ -299,6 +297,9 @@ public class FilingReviewService {
   
   private Response fileOrServe(HttpHeaders httpHeaders, String jurisdiction, String courtId, String allVars, EfmFilingInterface.ApiChoice choice) {
     MediaType mediaType = httpHeaders.getMediaType();
+    if (mediaType == null) {
+      mediaType = MediaType.valueOf("application/json");
+    }
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
@@ -362,7 +363,6 @@ public class FilingReviewService {
 
   private Result<FilingInformation, Response> parseFiling(HttpHeaders httpHeaders, String allVars,
       EfmFilingInterface filer, String courtId, MediaType mediaType) {
-    log.trace("Media type: " + mediaType);
     log.trace("Court id: " + courtId);
     log.trace("All vars: " + allVars.substring(0, Integer.min(100, allVars.length() - 1)));
     if (!converterMap.containsKey(mediaType.toString())) {

@@ -9,12 +9,16 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountTy
 import java.io.File;
 import java.io.StringWriter;
 import java.time.LocalDate;
+import java.util.GregorianCalendar;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
 /**
@@ -38,18 +42,12 @@ public class XmlHelper {
   static final gov.niem.niem.proxy.xsd._2.ObjectFactory niemProxyObjFac;
   static final gov.niem.niem.niem_core._2.ObjectFactory niemCoreObjFac;
   static final gov.niem.niem.domains.jxdm._4.ObjectFactory jxObjFac;
+  static final DatatypeFactory datatypeFac;
 
   static {
     niemProxyObjFac = new gov.niem.niem.proxy.xsd._2.ObjectFactory();
     niemCoreObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
     jxObjFac = new gov.niem.niem.domains.jxdm._4.ObjectFactory();
-  }
-
-  /** Creates a date from a java date. Doesn't have time associated with it. */
-  public static DateType convertDate(LocalDate date) {
-    DateType dt = niemCoreObjFac.createDateType();
-    gov.niem.niem.proxy.xsd._2.Date d = niemProxyObjFac.createDate();
-    DatatypeFactory datatypeFac;
     try {
       datatypeFac = DatatypeFactory.newInstance();
     } catch (DatatypeConfigurationException e) {
@@ -57,11 +55,21 @@ public class XmlHelper {
       e.printStackTrace();
       throw new RuntimeException(e);
     }
-    // TODO(#47): THIS TIMEZONE IS WRONG: how should LocalDate +
-    // GregorianCalendar operate?
-    d.setValue(datatypeFac.newXMLGregorianCalendarDate(date.getYear(),
-        date.getMonth().getValue(), date.getDayOfMonth(), 0));
+  }
 
+  /** Creates a date from a java date. Doesn't have time associated with it. */
+  public static DateType convertDate(LocalDate date) {
+    GregorianCalendar cal = new GregorianCalendar();
+    // TODO(#47): DEFAULT TIMEZONE IS WRONG: how should LocalDate +
+    // GregorianCalendar operate?
+    cal.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), 0, 0, 0);
+    
+    gov.niem.niem.proxy.xsd._2.Date d = niemProxyObjFac.createDate();
+    XMLGregorianCalendar x = datatypeFac.newXMLGregorianCalendar(cal);
+    x.setTimezone(DatatypeConstants.FIELD_UNDEFINED); 
+    d.setValue(x);
+
+    DateType dt = niemCoreObjFac.createDateType();
     dt.setDateRepresentation(niemCoreObjFac.createDate(d));
     return dt;
   }

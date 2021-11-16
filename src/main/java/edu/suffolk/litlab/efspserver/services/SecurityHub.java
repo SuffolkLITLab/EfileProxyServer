@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
+import edu.suffolk.litlab.efspserver.db.NewTokens;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetLogin;
@@ -53,7 +54,7 @@ public class SecurityHub {
    *   For example, TYLER-TOKEN will have the provided Tyler email + ":" + password Hash, used to authenticate the
    *   user. 
    */
-  public Optional<Map<String, String>> login(String apiKey, String jsonLoginInfo) {
+  public Optional<NewTokens> login(String apiKey, String jsonLoginInfo) {
     Map<String, Function<JsonNode, Optional<Map<String, String>>>> loginFunctions = Map.of(
         "tyler", (info) -> tylerLoginObj.login(info),
         "jeffnet", (info) -> jeffNetLoginObj.login(info));

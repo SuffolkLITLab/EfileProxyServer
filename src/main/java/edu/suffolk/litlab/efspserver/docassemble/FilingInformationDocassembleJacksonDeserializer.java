@@ -12,6 +12,7 @@ import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
+import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
@@ -20,8 +21,8 @@ import edu.suffolk.litlab.efspserver.services.JsonExtractException;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -177,26 +178,27 @@ public class FilingInformationDocassembleJacksonDeserializer
 
       JsonNode partyToAttorneyJson = node.get("party_to_attorneys");
       if (partyToAttorneyJson != null && partyToAttorneyJson.isObject()) {
-        Map<String, List<String>> partyToAttorney = new HashMap<>(); 
+        Map<PartyId, List<String>> partyToAttorney = new HashMap<>(); 
         Iterator<Entry<String, JsonNode>> elems = partyToAttorneyJson.fields();
         while (elems.hasNext()) {
           Entry<String, JsonNode> elem = elems.next();
           List<String> theseAttorneys = new ArrayList<String>();
           elem.getValue().elements().forEachRemaining(v -> theseAttorneys.add(v.asText()));
           Matcher matcher = usersPattern.matcher(elem.getKey());
-          String realKey = elem.getKey();
+          final String realKey = elem.getKey();
+          PartyId realId = null;
           if (matcher.find()) {
-            realKey = varToId.get(elem.getKey());
+            realId = PartyId.CurrentFiling(varToId.get(elem.getKey()));
           } else {
             Matcher otherMatcher = otherPattern.matcher(elem.getKey());
             if (otherMatcher.find()) {
-              realKey = varToId.get(elem.getKey());
+              realId = PartyId.CurrentFiling(varToId.get(elem.getKey()));
             } else {
               log.info("Existing filing party id: " + elem.getKey());
-              realKey = elem.getKey();
+              realId = PartyId.Already(realKey);
             }
           }
-          partyToAttorney.put(realKey, theseAttorneys);
+          partyToAttorney.put(realId, theseAttorneys);
         }
         entities.setPartyAttorneyMap(partyToAttorney);
       }
@@ -354,7 +356,12 @@ public class FilingInformationDocassembleJacksonDeserializer
     Optional<LocalDate> maybeReturnDate = Optional.empty();
     if (jsonReturnDate != null && jsonReturnDate.isTextual()) {
       // TODO(#47): Time zone user is using?
-      maybeReturnDate = Optional.of(LocalDate.ofInstant(Instant.parse(jsonReturnDate.asText()), ZoneId.of("America/Chicago")));
+      try {
+        maybeReturnDate = Optional.of(LocalDate.parse(jsonReturnDate.asText(), DateTimeFormatter.ISO_DATE)); 
+      } catch (DateTimeParseException ex) {
+        InterviewVariable var = collector.requestVar("return_date", "Should be as YYYY-MM-DD+01:00", "date");
+        collector.addWrong(var);
+      }
     }
     entities.setReturnDate(maybeReturnDate);
 

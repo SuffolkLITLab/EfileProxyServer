@@ -9,9 +9,9 @@ ONBUILD COPY pom.xml LICENSE quartz.properties /usr/src/app/
 
 FROM build_${EFM_SUPPORT}
 # Install all of the maven packages, so we don't have to every time we change code
-RUN mvn -f /usr/src/app/pom.xml clean dependency:resolve dependency:go-offline test package && mvn -f /usr/src/app/pom.xml test
+RUN mvn -f /usr/src/app/pom.xml -DskipTests clean dependency:resolve dependency:go-offline package && mvn -f /usr/src/app/pom.xml test
 COPY src /usr/src/app/src
-RUN mvn -f /usr/src/app/pom.xml package dependency:build-classpath -Dmdep.outputFile=cp.txt -PnoDockerTests
+RUN mvn -f /usr/src/app/pom.xml -DskipTests package dependency:build-classpath -Dmdep.outputFile=cp.txt -PnoDockerTests
 COPY docker_run_script.sh /usr/src/app
 
 EXPOSE 9000

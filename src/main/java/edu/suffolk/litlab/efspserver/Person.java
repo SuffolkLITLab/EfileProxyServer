@@ -31,6 +31,12 @@ public class Person {
     return new Person(name, new ContactInformation(email),
         Optional.empty(), Optional.empty(), Optional.empty(), isOrg, false, "");
   }
+  
+  public static Person FromEfm(Name name, ContactInformation contactInfo, 
+      Optional<String> gender, Optional<String> language, Optional<LocalDate> birthdate, boolean isOrg,
+      String role, UUID efmId) {
+    return new Person(name, contactInfo, gender, language, birthdate, isOrg, false, role, efmId);
+  }
 
   /** Default constructor. */
   public Person(Name name,
@@ -41,6 +47,19 @@ public class Person {
       boolean isOrg,
       boolean isFormFiller,
       String role) {
+    this(name, contactInfo, gender, language, birthdate, 
+        isOrg, isFormFiller, role, UUID.randomUUID());
+  }
+  
+  private Person(Name name,
+      ContactInformation contactInfo,
+      Optional<String> gender,
+      Optional<String> language,
+      Optional<LocalDate> birthdate,
+      boolean isOrg,
+      boolean isFormFiller,
+      String role,
+      UUID id) {
     this.name = name;
     this.contactInfo = contactInfo;
     this.gender = gender;
@@ -48,8 +67,7 @@ public class Person {
     this.birthdate = birthdate;
     this.isOrg = isOrg;
     this.isFormFiller = isFormFiller;
-
-    this.id = UUID.randomUUID();
+    this.id = id;
     this.role = role;
   }
 
