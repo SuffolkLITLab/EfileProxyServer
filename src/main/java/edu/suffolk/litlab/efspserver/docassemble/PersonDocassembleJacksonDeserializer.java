@@ -45,7 +45,7 @@ public class PersonDocassembleJacksonDeserializer {
         phones.add(mobile);
       }
     } else {
-      InterviewVariable var = new InterviewVariable("mobile_number",
+      InterviewVariable var = collector.requestVar("mobile_number",
           "A mobile or cell phone number", "text", List.of());
       collector.addOptional(var);
     }
@@ -62,7 +62,7 @@ public class PersonDocassembleJacksonDeserializer {
         return Result.err(err);
       }
     } else {
-      InterviewVariable var = new InterviewVariable("phone_number",
+      InterviewVariable var = collector.requestVar("phone_number",
           "A mobile or cell phone number", "text", List.of());
       collector.addOptional(var);
     }
