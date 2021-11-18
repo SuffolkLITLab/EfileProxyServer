@@ -47,6 +47,7 @@ import ecfv5.tyler.ecf.v5_0.extensions.reservedateresponse.ReserveDateResponseMe
 import ecfv5.tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
 import ecfv5.tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateResponseMessageType;
 import edu.suffolk.litlab.efspserver.FilingInformation;
+import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
@@ -70,6 +71,7 @@ import ecfv5.gov.niem.release.niem.domains.jxdm._6.CourtEventType;
 import ecfv5.gov.niem.release.niem.niem_core._4.CaseType;
 import ecfv5.gov.niem.release.niem.niem_core._4.DateRangeType;
 import ecfv5.gov.niem.release.niem.niem_core._4.DateType;
+import ecfv5.gov.niem.release.niem.niem_core._4.EntityType;
 import ecfv5.gov.niem.release.niem.niem_core._4.IdentificationType;
 import ecfv5.gov.niem.release.niem.proxy.xsd._4.Duration;
 import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
@@ -218,7 +220,7 @@ public class CourtSchedulingService {
     boolean isInitialFiling = info.getPreviousCaseId().isEmpty() && info.getCaseDocketNumber().isEmpty();
     boolean isFirstIndexedFiling = info.getPreviousCaseId().isEmpty(); 
     ComboCaseCodes allCodes;
-    Optional<Map<String, Person>> existingParties = Optional.empty();
+    Optional<Map<PartyId, Person>> existingParties = Optional.empty();
     if (!isFirstIndexedFiling) {
       Optional<CourtRecordMDEPort> recordPort = setupRecordPort(apiKey);
       if (recordPort.isEmpty()) {
@@ -316,6 +318,70 @@ public class CourtSchedulingService {
     } catch (FilingError err) {
       return Response.status(422).entity(collector.jsonSummary()).build();
     }
+  }
+  
+  @POST
+  @Path("/reserve_date_abc123")
+  public Response reserveCourtDateSyncTest(@Context HttpHeaders httpHeaders,
+      String paramStr) {
+    ReserveCourtDateMessageType msg = reserveDateObjFac.createReserveCourtDateMessageType();
+    EntityType ent = niemObjFac.createEntityType();
+    msg.getDocumentFiler().add(ent);
+    setupReq(msg, "cook:cvd1");
+    IdentificationType idType = niemObjFac.createIdentificationType();
+    idType.setIdentificationID(Ecfv5XmlHelper.convertString("253102")); 
+    msg.getDocumentIdentification().add(idType);
+
+      // Ok! Continue without a duration / date
+    Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort(httpHeaders);
+    if (maybeServ.isEmpty()) {
+      return Response.status(401).build();
+    }
+
+    /**
+      DateRangeType drt = niemObjFac.createDateRangeType();
+      String startDateTime = "2021-12-18T10:20:47.0Z"; //afterJson.asText();
+      drt.setStartDate(Ecfv5XmlHelper.convertDate(LocalDateTime.ofInstant(Instant.parse(startDateTime), ZoneId.systemDefault())));
+      String endDateTime = "2021-12-18T12:20:47.0Z"; //beforeJson.asText();
+      drt.setEndDate(Ecfv5XmlHelper.convertDate(LocalDateTime.ofInstant(Instant.parse(endDateTime), ZoneId.systemDefault())));
+      msg.getPotentialStartTimeRange().add(drt);
+
+      int estDurInSeconds = 3600; 
+      Duration dur = proxyObjFac.createDuration();
+      DatatypeFactory df;
+      try {
+        df = DatatypeFactory.newInstance();
+      dur.setValue(df.newDuration(estDurInSeconds * 1000)); // argument is in milliseconds
+      msg.setEstimatedDuration(dur);
+      } catch (DatatypeConfigurationException e) {
+        log.error(e.toString());
+      }
+      */
+
+    ReserveCourtDateRequestType req = oasisWrapObjFac.createReserveCourtDateRequestType();
+    req.setReserveCourtDateMessage(msg);
+    log.info("full reserve REQ: " + XmlHelper.objectToXmlStrOrError(req, ReserveCourtDateRequestType.class));
+    ReserveDateResponseMessageType resp = maybeServ.get().reserveCourtDateSync(req).getReserveDateResponseMessage();
+    log.info("Full reserve resp: " + XmlHelper.objectToXmlStrOrError(resp, ReserveDateResponseMessageType.class));
+    if (hasError(resp)) {
+      return Response.status(400).entity(resp.getMessageStatus()).build();
+    }
+    // get all the jxdm augs and get the courtEvents (just the first one?)
+    Stream<List<CourtEventType>> augEvent = resp.getCase().getCaseAugmentationPoint().stream().filter(aug -> {
+      return aug.getValue() instanceof ecfv5.gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType;
+    }).map(aug -> ((ecfv5.gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType) aug.getValue()).getCaseCourtEvent());
+    List<CourtScheduleType> ret = new ArrayList<CourtScheduleType>();
+    augEvent.forEach(events -> {
+      for (CourtEventType event : events) {
+        Stream<List<CourtScheduleType>> bb = event.getCourtEventAugmentationPoint().stream().filter(p -> {
+          // get the tylerCourtEventAugmentation
+          return p.getValue() instanceof ecfv5.tyler.ecf.v5_0.extensions.common.CourtEventAugmentationType;
+          // make a list of each CourtSchedule
+        }).map(p -> ((ecfv5.tyler.ecf.v5_0.extensions.common.CourtEventAugmentationType) p.getValue()).getCourtSchedule());
+        bb.forEach(schedList -> ret.addAll(schedList));
+      }
+    });
+    return Response.ok(ret).build();
   }
   
   @POST
@@ -453,7 +519,9 @@ public class CourtSchedulingService {
   private static boolean hasError(ResponseMessageType rt) {
     MessageStatusType ms = rt.getMessageStatus();
     String errorCodeText = ms.getMessageHandlingError().getErrorCodeText().getValue();
-    return !ms.getMessageContentError().isEmpty() && !(errorCodeText.isBlank() || errorCodeText.equals("0"));
+    log.info("Ms: " + ms);
+    log.info("error code: " + errorCodeText);
+    return !ms.getMessageContentError().isEmpty() || (!errorCodeText.isBlank() && !errorCodeText.equals("0"));
   }
   
 }
