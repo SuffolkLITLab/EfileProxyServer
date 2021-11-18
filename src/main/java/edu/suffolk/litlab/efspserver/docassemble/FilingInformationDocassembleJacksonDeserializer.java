@@ -354,7 +354,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     
     JsonNode jsonReturnDate = node.get("return_date");
     Optional<LocalDate> maybeReturnDate = Optional.empty();
-    if (jsonReturnDate != null && jsonReturnDate.isTextual()) {
+    if (jsonReturnDate != null && jsonReturnDate.isTextual() && !jsonReturnDate.asText("").isBlank()) {
       // TODO(#47): Time zone user is using?
       try {
         maybeReturnDate = Optional.of(LocalDate.parse(jsonReturnDate.asText(), DateTimeFormatter.ISO_DATE)); 
