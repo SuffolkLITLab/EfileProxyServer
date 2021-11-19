@@ -188,7 +188,6 @@ public class CourtSchedulingService {
   @Path("/courts/{court_id}/return_date")
   public Response getReturnDate(@Context HttpHeaders httpHeaders, 
       @PathParam("court_id") String courtId, String allVars) throws SQLException, JAXBException {
-    String apiKey = httpHeaders.getHeaderString("X-API-KEY");
     Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort(httpHeaders);
     if (maybeServ.isEmpty()) {
       return Response.status(401).build();
@@ -222,7 +221,7 @@ public class CourtSchedulingService {
     ComboCaseCodes allCodes;
     Optional<Map<PartyId, Person>> existingParties = Optional.empty();
     if (!isFirstIndexedFiling) {
-      Optional<CourtRecordMDEPort> recordPort = setupRecordPort(apiKey);
+      Optional<CourtRecordMDEPort> recordPort = setupRecordPort(httpHeaders);
       if (recordPort.isEmpty()) {
         return Response.status(500).entity("Can't make connection to retrieve court records for subsequent case").build();
       }
@@ -488,10 +487,11 @@ public class CourtSchedulingService {
     return Optional.of(serv);
   }
 
-  private Optional<CourtRecordMDEPort> setupRecordPort(String apiToken) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
+  private Optional<CourtRecordMDEPort> setupRecordPort(HttpHeaders httpHeaders) {
+    String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyStatic()); 
+
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
-      log.warn("Bad creds: " + apiToken);
       return Optional.empty();
     }
 
