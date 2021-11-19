@@ -491,6 +491,7 @@ public class CourtSchedulingService {
   private Optional<CourtRecordMDEPort> setupRecordPort(String apiToken) {
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
     if (creds.isEmpty()) {
+      log.warn("Bad creds: " + apiToken);
       return Optional.empty();
     }
 
