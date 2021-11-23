@@ -79,6 +79,7 @@ public class Ecfv5XmlHelper {
     ecfv5.gov.niem.release.niem.proxy.xsd._4.DateTime t = niemProxyObjFac.createDateTime();
     XMLGregorianCalendar x = datatypeFac.newXMLGregorianCalendar(cal);
     x.setMillisecond(DatatypeConstants.FIELD_UNDEFINED);
+    x.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
     t.setValue(x);
 
     DateType dt = niemCoreObjFac.createDateType(); 
