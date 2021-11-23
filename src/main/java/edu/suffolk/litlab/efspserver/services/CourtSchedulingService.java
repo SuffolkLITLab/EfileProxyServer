@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
@@ -419,9 +420,9 @@ public class CourtSchedulingService {
     } else {
       DateRangeType drt = niemObjFac.createDateRangeType();
       String startDateTime = afterJson.asText();
-      drt.setStartDate(Ecfv5XmlHelper.convertDate(LocalDateTime.ofInstant(Instant.parse(startDateTime), ZoneId.systemDefault())));
+      drt.setStartDate(Ecfv5XmlHelper.convertDate(OffsetDateTime.parse(startDateTime))); 
       String endDateTime = beforeJson.asText();
-      drt.setEndDate(Ecfv5XmlHelper.convertDate(LocalDateTime.ofInstant(Instant.parse(endDateTime), ZoneId.systemDefault())));
+      drt.setEndDate(Ecfv5XmlHelper.convertDate(OffsetDateTime.parse(endDateTime))); 
       msg.getPotentialStartTimeRange().add(drt);
 
       int estDurInSeconds = estDurJson.asInt();
