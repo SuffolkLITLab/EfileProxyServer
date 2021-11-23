@@ -428,7 +428,13 @@ public class CourtSchedulingService {
       int estDurInSeconds = estDurJson.asInt();
       Duration dur = proxyObjFac.createDuration();
       DatatypeFactory df = DatatypeFactory.newInstance();
-      dur.setValue(df.newDuration(estDurInSeconds * 1000)); // argument is in milliseconds
+      int cappedSeconds = estDurInSeconds % 60;
+      int cappedMinutes = (estDurInSeconds / 60) % 60;
+      int cappedHours = (estDurInSeconds / 60 / 60) % 60;
+      // TODO(brycew): can court sessions last days?
+      javax.xml.datatype.Duration tmpDur = df.newDuration(true, 0, 0, 0, cappedHours, cappedMinutes, cappedSeconds); 
+      //df.newDuration(estDurInSeconds * 1000)); // argument is in milliseconds
+      dur.setValue(tmpDur); 
       msg.setEstimatedDuration(dur);
     }
 
