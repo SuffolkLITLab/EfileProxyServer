@@ -1,11 +1,10 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -92,6 +91,7 @@ public class Ecfv5XmlHelper {
   }
 
   public static DateType convertDate(OffsetDateTime date) {
+    date.truncatedTo(ChronoUnit.MILLIS);
     OffsetDateTime op = date.toInstant().atOffset(ZoneOffset.UTC);
     GregorianCalendar cal = new GregorianCalendar();
     cal.set(op.getYear(), op.getMonthValue() - 1, op.getDayOfMonth(), op.getHour(), op.getMinute(), op.getSecond());
@@ -99,7 +99,7 @@ public class Ecfv5XmlHelper {
 
     ecfv5.gov.niem.release.niem.proxy.xsd._4.DateTime t = niemProxyObjFac.createDateTime();
     XMLGregorianCalendar x = datatypeFac.newXMLGregorianCalendar(cal);
-    x.setMillisecond(DatatypeConstants.FIELD_UNDEFINED);
+    //x.getFractionalSecond();
     t.setValue(x);
 
     DateType dt = niemCoreObjFac.createDateType(); 
