@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -77,8 +76,10 @@ public class Ecfv5XmlHelper {
   }
   
   public static DateType convertDate(LocalDateTime date) {
+    OffsetDateTime op = date.atOffset(ZoneOffset.ofHours(-5)).toInstant().atOffset(ZoneOffset.UTC);
     GregorianCalendar cal = new GregorianCalendar();
-    cal.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), date.getHour(), date.getMinute(), date.getSecond());
+    cal.set(op.getYear(), op.getMonthValue() - 1, op.getDayOfMonth(), op.getHour(), op.getMinute(), op.getSecond());
+    cal.setTimeZone(TimeZone.getTimeZone("UTC"));
 
     ecfv5.gov.niem.release.niem.proxy.xsd._4.DateTime t = niemProxyObjFac.createDateTime();
     XMLGregorianCalendar x = datatypeFac.newXMLGregorianCalendar(cal);
@@ -91,7 +92,7 @@ public class Ecfv5XmlHelper {
   }
 
   public static DateType convertDate(OffsetDateTime date) {
-    date.truncatedTo(ChronoUnit.MILLIS);
+    //date.truncatedTo(ChronoUnit.MILLIS);
     OffsetDateTime op = date.toInstant().atOffset(ZoneOffset.UTC);
     GregorianCalendar cal = new GregorianCalendar();
     cal.set(op.getYear(), op.getMonthValue() - 1, op.getDayOfMonth(), op.getHour(), op.getMinute(), op.getSecond());
@@ -99,6 +100,7 @@ public class Ecfv5XmlHelper {
 
     ecfv5.gov.niem.release.niem.proxy.xsd._4.DateTime t = niemProxyObjFac.createDateTime();
     XMLGregorianCalendar x = datatypeFac.newXMLGregorianCalendar(cal);
+    x.setMillisecond(DatatypeConstants.FIELD_UNDEFINED);
     //x.getFractionalSecond();
     t.setValue(x);
 
