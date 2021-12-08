@@ -65,7 +65,8 @@ public class Ecfv5XmlHelper {
     return outputDate;
   }
   
-  public static DateType convertDate(Instant inst) {
+  /** Always returns datetimes that are UTC and with no milliseconds. */
+  public static DateType convertDateTime(Instant inst) {
     OffsetDateTime op = inst.atOffset(ZoneOffset.UTC);
     GregorianCalendar cal = new GregorianCalendar();
     cal.set(op.getYear(), op.getMonthValue() - 1, op.getDayOfMonth(), op.getHour(), op.getMinute(), op.getSecond());

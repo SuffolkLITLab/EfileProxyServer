@@ -251,7 +251,6 @@ public class CourtSchedulingService {
       return Response.status(400).entity("Need return_date").build();
     }
     
-    ReturnDateRequestType r = oasisWrapObjFac.createReturnDateRequestType();
     ReturnDateMessageType m = new ReturnDateMessageType();
     setupReq(m, courtId);
     Ecfv5CaseTypeFactory caseTypeFac = new Ecfv5CaseTypeFactory();
@@ -271,6 +270,7 @@ public class CourtSchedulingService {
       outOfState = info.getMiscInfo().get("out_of_state").asBoolean(false);
     }
     m.setOutOfStateIndicator(Ecfv5XmlHelper.convertBool(outOfState));
+    ReturnDateRequestType r = oasisWrapObjFac.createReturnDateRequestType();
     r.setReturnDateMessage(m);
     log.info("Full msg: " + XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
     ReturnDateResponseMessageType resp = maybeServ.get().getReturnDate(r).getReturnDateResponseMessage();
@@ -449,7 +449,7 @@ public class CourtSchedulingService {
   }
   
   private static void setupReq(CaseFilingType cft, String courtId) {
-    DateType currentDate = Ecfv5XmlHelper.convertDate(Instant.now()); 
+    DateType currentDate = Ecfv5XmlHelper.convertDateTime(Instant.now()); 
     cft.setDocumentPostDate(currentDate);
     cft.setCaseCourt(Ecfv5XmlHelper.convertCourtType(courtId));
     cft.setServiceInteractionProfileCode(Ecfv5XmlHelper.convertNormalized(ServiceHelpers.MDE_PROFILE_CODE_5));

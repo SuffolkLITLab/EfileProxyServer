@@ -31,7 +31,7 @@ public class Ecfv5XmlHelperTest {
     assertEquals("16:32:58.1Z", reserveDate.split("T")[1]); 
     
     Instant inst = Instant.ofEpochMilli(1638983486955l);
-    String postDate = stringFromXmlDate(Ecfv5XmlHelper.convertDate(inst));
+    String postDate = stringFromXmlDate(Ecfv5XmlHelper.convertDateTime(inst));
     
     assertEquals("2021-12-08", postDate.split("T")[0]);
     // No milliseconds and UTC is important

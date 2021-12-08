@@ -2,7 +2,7 @@ package edu.suffolk.litlab.efspserver.ecf;
 
 import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertString;
 import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertNormalized;
-import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertDate;
+import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertDateTime;
 import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertText;
 import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertId;
 import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertBool;
@@ -10,12 +10,10 @@ import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.isNull;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.time.ZoneId;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -90,7 +88,7 @@ public class Ecfv5CaseTypeFactory {
     info.getPreviousCaseId().ifPresent(id -> ct.setCaseTrackingID(convertString(id)));
     
     // TODO(brycew): Time Zones
-    DateType currentDate = convertDate(LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault()));
+    DateType currentDate = convertDateTime(Instant.now()); 
     CourtEventType event = jxObjFac.createCourtEventType();
     int i = 0;
     for (FilingDoc doc : info.getFilings()) {
