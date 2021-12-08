@@ -5,9 +5,7 @@ import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.isNull;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +70,6 @@ import ecfv5.gov.niem.release.niem.domains.jxdm._6.CourtEventType;
 import ecfv5.gov.niem.release.niem.niem_core._4.CaseType;
 import ecfv5.gov.niem.release.niem.niem_core._4.DateRangeType;
 import ecfv5.gov.niem.release.niem.niem_core._4.DateType;
-import ecfv5.gov.niem.release.niem.niem_core._4.EntityType;
 import ecfv5.gov.niem.release.niem.niem_core._4.IdentificationType;
 import ecfv5.gov.niem.release.niem.proxy.xsd._4.Duration;
 import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
@@ -321,70 +318,6 @@ public class CourtSchedulingService {
   }
   
   @POST
-  @Path("/reserve_date_abc123")
-  public Response reserveCourtDateSyncTest(@Context HttpHeaders httpHeaders,
-      String paramStr) {
-    ReserveCourtDateMessageType msg = reserveDateObjFac.createReserveCourtDateMessageType();
-    EntityType ent = niemObjFac.createEntityType();
-    msg.getDocumentFiler().add(ent);
-    setupReq(msg, "cook:cvd1");
-    IdentificationType idType = niemObjFac.createIdentificationType();
-    idType.setIdentificationID(Ecfv5XmlHelper.convertString("253102")); 
-    msg.getDocumentIdentification().add(idType);
-
-      // Ok! Continue without a duration / date
-    Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort(httpHeaders);
-    if (maybeServ.isEmpty()) {
-      return Response.status(401).build();
-    }
-
-    /**
-      DateRangeType drt = niemObjFac.createDateRangeType();
-      String startDateTime = "2021-12-18T10:20:47.0Z"; //afterJson.asText();
-      drt.setStartDate(Ecfv5XmlHelper.convertDate(LocalDateTime.ofInstant(Instant.parse(startDateTime), ZoneId.systemDefault())));
-      String endDateTime = "2021-12-18T12:20:47.0Z"; //beforeJson.asText();
-      drt.setEndDate(Ecfv5XmlHelper.convertDate(LocalDateTime.ofInstant(Instant.parse(endDateTime), ZoneId.systemDefault())));
-      msg.getPotentialStartTimeRange().add(drt);
-
-      int estDurInSeconds = 3600; 
-      Duration dur = proxyObjFac.createDuration();
-      DatatypeFactory df;
-      try {
-        df = DatatypeFactory.newInstance();
-      dur.setValue(df.newDuration(estDurInSeconds * 1000)); // argument is in milliseconds
-      msg.setEstimatedDuration(dur);
-      } catch (DatatypeConfigurationException e) {
-        log.error(e.toString());
-      }
-      */
-
-    ReserveCourtDateRequestType req = oasisWrapObjFac.createReserveCourtDateRequestType();
-    req.setReserveCourtDateMessage(msg);
-    log.info("full reserve REQ: " + XmlHelper.objectToXmlStrOrError(req, ReserveCourtDateRequestType.class));
-    ReserveDateResponseMessageType resp = maybeServ.get().reserveCourtDateSync(req).getReserveDateResponseMessage();
-    log.info("Full reserve resp: " + XmlHelper.objectToXmlStrOrError(resp, ReserveDateResponseMessageType.class));
-    if (hasError(resp)) {
-      return Response.status(400).entity(resp.getMessageStatus()).build();
-    }
-    // get all the jxdm augs and get the courtEvents (just the first one?)
-    Stream<List<CourtEventType>> augEvent = resp.getCase().getCaseAugmentationPoint().stream().filter(aug -> {
-      return aug.getValue() instanceof ecfv5.gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType;
-    }).map(aug -> ((ecfv5.gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType) aug.getValue()).getCaseCourtEvent());
-    List<CourtScheduleType> ret = new ArrayList<CourtScheduleType>();
-    augEvent.forEach(events -> {
-      for (CourtEventType event : events) {
-        Stream<List<CourtScheduleType>> bb = event.getCourtEventAugmentationPoint().stream().filter(p -> {
-          // get the tylerCourtEventAugmentation
-          return p.getValue() instanceof ecfv5.tyler.ecf.v5_0.extensions.common.CourtEventAugmentationType;
-          // make a list of each CourtSchedule
-        }).map(p -> ((ecfv5.tyler.ecf.v5_0.extensions.common.CourtEventAugmentationType) p.getValue()).getCourtSchedule());
-        bb.forEach(schedList -> ret.addAll(schedList));
-      }
-    });
-    return Response.ok(ret).build();
-  }
-  
-  @POST
   @Path("/courts/{court_id}/reserve_date")
   public Response reserveCourtDateSync(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, String paramStr) throws JsonMappingException, JsonProcessingException, DatatypeConfigurationException {
@@ -420,9 +353,9 @@ public class CourtSchedulingService {
     } else {
       DateRangeType drt = niemObjFac.createDateRangeType();
       String startDateTime = afterJson.asText();
-      drt.setStartDate(Ecfv5XmlHelper.convertDate(OffsetDateTime.parse(startDateTime))); 
+      drt.setStartDate(Ecfv5XmlHelper.convertCourtReserveDate(OffsetDateTime.parse(startDateTime))); 
       String endDateTime = beforeJson.asText();
-      drt.setEndDate(Ecfv5XmlHelper.convertDate(OffsetDateTime.parse(endDateTime))); 
+      drt.setEndDate(Ecfv5XmlHelper.convertCourtReserveDate(OffsetDateTime.parse(endDateTime))); 
       msg.getPotentialStartTimeRange().add(drt);
 
       int estDurInSeconds = estDurJson.asInt();
@@ -430,10 +363,9 @@ public class CourtSchedulingService {
       DatatypeFactory df = DatatypeFactory.newInstance();
       int cappedSeconds = estDurInSeconds % 60;
       int cappedMinutes = (estDurInSeconds / 60) % 60;
-      int cappedHours = (estDurInSeconds / 60 / 60) % 60;
       // TODO(brycew): can court sessions last days?
+      int cappedHours = (estDurInSeconds / 60 / 60) % 60;
       javax.xml.datatype.Duration tmpDur = df.newDuration(true, 0, 0, 0, cappedHours, cappedMinutes, cappedSeconds); 
-      //df.newDuration(estDurInSeconds * 1000)); // argument is in milliseconds
       dur.setValue(tmpDur); 
       msg.setEstimatedDuration(dur);
     }
@@ -517,7 +449,7 @@ public class CourtSchedulingService {
   }
   
   private static void setupReq(CaseFilingType cft, String courtId) {
-    DateType currentDate = Ecfv5XmlHelper.convertDate(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
+    DateType currentDate = Ecfv5XmlHelper.convertDate(Instant.now()); 
     cft.setDocumentPostDate(currentDate);
     cft.setCaseCourt(Ecfv5XmlHelper.convertCourtType(courtId));
     cft.setServiceInteractionProfileCode(Ecfv5XmlHelper.convertNormalized(ServiceHelpers.MDE_PROFILE_CODE_5));
