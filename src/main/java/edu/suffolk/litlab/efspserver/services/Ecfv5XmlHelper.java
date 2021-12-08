@@ -1,10 +1,14 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.Date;
+import java.time.temporal.ChronoUnit;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
@@ -38,79 +42,81 @@ public class Ecfv5XmlHelper {
     }
   }
 
-  public static DateType convertDate(LocalDate date) {
-    GregorianCalendar cal = new GregorianCalendar();
-    cal.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), 0, 0, 0);
-
-    ecfv5.gov.niem.release.niem.proxy.xsd._4.Date d = niemProxyObjFac.createDate();
-    XMLGregorianCalendar x = datatypeFac.newXMLGregorianCalendar(cal);
-    x.setTimezone(DatatypeConstants.FIELD_UNDEFINED); 
-    d.setValue(x);
-
-    DateType dt = niemCoreObjFac.createDateType(); 
-    dt.setDateRepresentation(niemCoreObjFac.createDate(d));
-    return dt;
-  }
-
   public static ecfv5.gov.niem.release.niem.proxy.xsd._4.DateTime convertProxyDate(LocalDateTime date) {
     GregorianCalendar cal = new GregorianCalendar();
     cal.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), date.getHour(), date.getMinute(), date.getSecond());
 
-    ecfv5.gov.niem.release.niem.proxy.xsd._4.DateTime d = niemProxyObjFac.createDateTime();
-    d.setValue(datatypeFac.newXMLGregorianCalendar(cal));
-    return d;
+    var outputDate = niemProxyObjFac.createDateTime();
+    outputDate.setValue(datatypeFac.newXMLGregorianCalendar(cal));
+    return outputDate;
   }
-  
-  
-  
-  public static DateType convertDate(Date date) {
+
+  public static DateType convertDate(LocalDate date) {
     GregorianCalendar cal = new GregorianCalendar();
-    cal.setTime(date);
+    cal.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), 0, 0, 0);
 
-    ecfv5.gov.niem.release.niem.proxy.xsd._4.Date d = niemProxyObjFac.createDate();
-    d.setValue(datatypeFac.newXMLGregorianCalendar(cal));
+    XMLGregorianCalendar xmlCal = datatypeFac.newXMLGregorianCalendar(cal);
+    xmlCal.setTimezone(DatatypeConstants.FIELD_UNDEFINED); 
+    var proxyDate = niemProxyObjFac.createDate();
+    proxyDate.setValue(xmlCal);
 
-    DateType dt = niemCoreObjFac.createDateType(); 
-    dt.setDateRepresentation(niemCoreObjFac.createDate(d));
-    return dt;
+    DateType outputDate = niemCoreObjFac.createDateType(); 
+    outputDate.setDateRepresentation(niemCoreObjFac.createDate(proxyDate));
+    return outputDate;
   }
   
-  public static DateType convertDate(LocalDateTime date) {
-    OffsetDateTime op = date.atOffset(ZoneOffset.ofHours(-5)).toInstant().atOffset(ZoneOffset.UTC);
+  public static DateType convertDate(Instant inst) {
+    OffsetDateTime op = inst.atOffset(ZoneOffset.UTC);
     GregorianCalendar cal = new GregorianCalendar();
     cal.set(op.getYear(), op.getMonthValue() - 1, op.getDayOfMonth(), op.getHour(), op.getMinute(), op.getSecond());
     cal.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-    ecfv5.gov.niem.release.niem.proxy.xsd._4.DateTime t = niemProxyObjFac.createDateTime();
-    XMLGregorianCalendar x = datatypeFac.newXMLGregorianCalendar(cal);
-    x.setMillisecond(DatatypeConstants.FIELD_UNDEFINED);
-    t.setValue(x);
+    XMLGregorianCalendar xmlCal = datatypeFac.newXMLGregorianCalendar(cal);
+    xmlCal.setMillisecond(DatatypeConstants.FIELD_UNDEFINED);
+    var proxyDateTime = niemProxyObjFac.createDateTime();
+    proxyDateTime.setValue(xmlCal);
+
+    DateType date = niemCoreObjFac.createDateType(); 
+    date.setDateRepresentation(niemCoreObjFac.createDateTime(proxyDateTime));
+    return date;
+  }
+
+  /**
+   * Tyler requires that you "[respond] back with the same time stamp that the response provides to you"
+   * This is difficult given that we send that timestamp to DA and get it back, as a timestamp
+   * object that represents the same time, but might not be formatted the exact same.
+   * 
+   * We make an assumption here that all DA timestamps given to us from the Court look like: "2022-03-25T15:00:00.0Z"
+   * 
+   * @param date The timestamp that we are trying to select, might be of arbitrary sub-second precision
+   * @return a DateType that has _only_ the tenths decimal place, so it serializes like "2022-03-25T15:00:00.0Z"
+   */
+  public static DateType convertCourtReserveDate(OffsetDateTime date) {
+    System.out.println("Pre-Truncated: " + date.getNano());
+    OffsetDateTime dateOff = date.truncatedTo(ChronoUnit.MILLIS);
+    System.out.println("Truncated: " + dateOff.getNano());
+    OffsetDateTime op = dateOff.toInstant().atOffset(ZoneOffset.UTC);
+    GregorianCalendar cal = new GregorianCalendar();
+    cal.set(op.getYear(), op.getMonthValue() - 1, op.getDayOfMonth(), op.getHour(), op.getMinute(), op.getSecond());
+    cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+    var t = niemProxyObjFac.createDateTime();
+    XMLGregorianCalendar xmlCal = datatypeFac.newXMLGregorianCalendar(cal);
+    xmlCal.setMillisecond(dateOff.getNano() / 1000000);
+    BigDecimal d = xmlCal.getFractionalSecond();
+    MathContext mc = new MathContext(1, RoundingMode.DOWN);
+    xmlCal.setFractionalSecond(d.round(mc));
+    t.setValue(xmlCal);
 
     DateType dt = niemCoreObjFac.createDateType(); 
     dt.setDateRepresentation(niemCoreObjFac.createDateTime(t));
     return dt;
   }
-
-  public static DateType convertDate(OffsetDateTime date) {
-    //date.truncatedTo(ChronoUnit.MILLIS);
-    OffsetDateTime op = date.toInstant().atOffset(ZoneOffset.UTC);
-    GregorianCalendar cal = new GregorianCalendar();
-    cal.set(op.getYear(), op.getMonthValue() - 1, op.getDayOfMonth(), op.getHour(), op.getMinute(), op.getSecond());
-    cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-    ecfv5.gov.niem.release.niem.proxy.xsd._4.DateTime t = niemProxyObjFac.createDateTime();
-    XMLGregorianCalendar x = datatypeFac.newXMLGregorianCalendar(cal);
-    x.setMillisecond(DatatypeConstants.FIELD_UNDEFINED);
-    //x.getFractionalSecond();
-    t.setValue(x);
-
-    DateType dt = niemCoreObjFac.createDateType(); 
-    dt.setDateRepresentation(niemCoreObjFac.createDateTime(t));
-    return dt;
-  }
+  
+  /////// Wrapper functions: no semantic changes of the input to the output.
   
   public static ecfv5.gov.niem.release.niem.proxy.xsd._4.Boolean convertBool(boolean value) {
-    var boolVal = new ecfv5.gov.niem.release.niem.proxy.xsd._4.Boolean();
+    var boolVal = niemProxyObjFac.createBoolean(); 
     boolVal.setValue(value);
     return boolVal;
   }
@@ -122,13 +128,13 @@ public class Ecfv5XmlHelper {
   }
 
   public static IdentificationType convertId(String idStr) {
-    ecfv5.gov.niem.release.niem.niem_core._4.IdentificationType id = niemCoreObjFac.createIdentificationType();
+    IdentificationType id = niemCoreObjFac.createIdentificationType();
     id.setIdentificationID(convertString(idStr));
     return id;
   }
   public static IdentificationType convertId(
       String idStr, String category) {
-    ecfv5.gov.niem.release.niem.niem_core._4.IdentificationType id = niemCoreObjFac.createIdentificationType();
+    IdentificationType id = niemCoreObjFac.createIdentificationType();
     id.setIdentificationID(convertString(idStr));
     id.setIdentificationCategoryAbstract(
         niemCoreObjFac.createIdentificationCategoryAbstract(convertText(category)));
@@ -136,7 +142,7 @@ public class Ecfv5XmlHelper {
   }
 
   public static ecfv5.gov.niem.release.niem.proxy.xsd._4.String convertString(String str) {
-    ecfv5.gov.niem.release.niem.proxy.xsd._4.String outStr = niemProxyObjFac.createString();
+    var outStr = niemProxyObjFac.createString();
     outStr.setValue(str);
     return outStr;
   }
