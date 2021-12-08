@@ -23,7 +23,7 @@ public class Ecfv5XmlHelperTest {
   @Test
   public void testConvertDate() {
     OffsetDateTime now = OffsetDateTime.of(2021, 12, 8, 16, 32, 58, 123456789, ZoneOffset.UTC); 
-    String reserveDate = stringFromXmlDate(Ecfv5XmlHelper.convertCourtReserveDate(now)); 
+    String reserveDate = stringFromXmlDate(Ecfv5XmlHelper.convertCourtReserveDate(now, 1)); 
     
     // Tyler has a very specific way that it wants the timestamp to look:
     // Exactly one decimal place for seconds
@@ -31,7 +31,7 @@ public class Ecfv5XmlHelperTest {
     assertEquals("16:32:58.1Z", reserveDate.split("T")[1]); 
     
     Instant inst = Instant.ofEpochMilli(1638983486955l);
-    String postDate = stringFromXmlDate(Ecfv5XmlHelper.convertDateTime(inst));
+    String postDate = stringFromXmlDate(Ecfv5XmlHelper.convertDateTime(inst, 0));
     
     assertEquals("2021-12-08", postDate.split("T")[0]);
     // No milliseconds and UTC is important
