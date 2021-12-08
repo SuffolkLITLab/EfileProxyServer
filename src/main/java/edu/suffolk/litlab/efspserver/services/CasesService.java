@@ -165,6 +165,7 @@ public class CasesService {
       ot.setOrganizationName(XmlHelper.convertText(businessName)); 
       var commonCpt = ecfOf.createCaseParticipantType();
       commonCpt.setEntityRepresentation(ecfOf.createEntityOrganization(ot));
+      commonCpt.setCaseParticipantRoleCode(XmlHelper.convertText(""));
       CaseParticipantType cpt = listObjFac.createCaseParticipantType();
       cpt.setCaseParticipant(ecfOf.createCaseParticipant(commonCpt));
       query.getCaseListQueryCaseParticipant().add(cpt);
