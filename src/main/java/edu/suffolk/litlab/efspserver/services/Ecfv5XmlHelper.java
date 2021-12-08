@@ -66,20 +66,9 @@ public class Ecfv5XmlHelper {
   }
   
   /** Always returns datetimes that are UTC and with no milliseconds. */
-  public static DateType convertDateTime(Instant inst) {
+  public static DateType convertDateTime(Instant inst, int fracSecondPrecision) {
     OffsetDateTime op = inst.atOffset(ZoneOffset.UTC);
-    GregorianCalendar cal = new GregorianCalendar();
-    cal.set(op.getYear(), op.getMonthValue() - 1, op.getDayOfMonth(), op.getHour(), op.getMinute(), op.getSecond());
-    cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-    XMLGregorianCalendar xmlCal = datatypeFac.newXMLGregorianCalendar(cal);
-    xmlCal.setMillisecond(DatatypeConstants.FIELD_UNDEFINED);
-    var proxyDateTime = niemProxyObjFac.createDateTime();
-    proxyDateTime.setValue(xmlCal);
-
-    DateType date = niemCoreObjFac.createDateType(); 
-    date.setDateRepresentation(niemCoreObjFac.createDateTime(proxyDateTime));
-    return date;
+    return convertCourtReserveDate(op, fracSecondPrecision);
   }
 
   /**
@@ -90,23 +79,26 @@ public class Ecfv5XmlHelper {
    * We make an assumption here that all DA timestamps given to us from the Court look like: "2022-03-25T15:00:00.0Z"
    * 
    * @param date The timestamp that we are trying to select, might be of arbitrary sub-second precision
+   * @param fracSecondPrecision: only takes 0, 1, 2, 3, uses that many decimal places in the seconds 
    * @return a DateType that has _only_ the tenths decimal place, so it serializes like "2022-03-25T15:00:00.0Z"
    */
-  public static DateType convertCourtReserveDate(OffsetDateTime date) {
+  public static DateType convertCourtReserveDate(OffsetDateTime date, int fracSecondPrecision) {
     System.out.println("Pre-Truncated: " + date.getNano());
-    OffsetDateTime dateOff = date.truncatedTo(ChronoUnit.MILLIS);
-    System.out.println("Truncated: " + dateOff.getNano());
-    OffsetDateTime op = dateOff.toInstant().atOffset(ZoneOffset.UTC);
+    OffsetDateTime op = date.toInstant().atOffset(ZoneOffset.UTC);
     GregorianCalendar cal = new GregorianCalendar();
     cal.set(op.getYear(), op.getMonthValue() - 1, op.getDayOfMonth(), op.getHour(), op.getMinute(), op.getSecond());
     cal.setTimeZone(TimeZone.getTimeZone("UTC"));
 
     var t = niemProxyObjFac.createDateTime();
     XMLGregorianCalendar xmlCal = datatypeFac.newXMLGregorianCalendar(cal);
-    xmlCal.setMillisecond(dateOff.getNano() / 1000000);
-    BigDecimal d = xmlCal.getFractionalSecond();
-    MathContext mc = new MathContext(1, RoundingMode.DOWN);
-    xmlCal.setFractionalSecond(d.round(mc));
+    xmlCal.setMillisecond(date.getNano() / 1000000);
+    if (fracSecondPrecision == 0) {
+      xmlCal.setMillisecond(DatatypeConstants.FIELD_UNDEFINED);
+    } else if (fracSecondPrecision > 0) {
+      BigDecimal d = xmlCal.getFractionalSecond();
+      MathContext mc = new MathContext(fracSecondPrecision, RoundingMode.DOWN);
+      xmlCal.setFractionalSecond(d.round(mc));
+    }
     t.setValue(xmlCal);
 
     DateType dt = niemCoreObjFac.createDateType(); 

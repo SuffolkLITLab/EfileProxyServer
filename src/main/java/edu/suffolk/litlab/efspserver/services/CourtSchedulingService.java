@@ -353,9 +353,9 @@ public class CourtSchedulingService {
     } else {
       DateRangeType drt = niemObjFac.createDateRangeType();
       String startDateTime = afterJson.asText();
-      drt.setStartDate(Ecfv5XmlHelper.convertCourtReserveDate(OffsetDateTime.parse(startDateTime))); 
+      drt.setStartDate(Ecfv5XmlHelper.convertCourtReserveDate(OffsetDateTime.parse(startDateTime), 1)); 
       String endDateTime = beforeJson.asText();
-      drt.setEndDate(Ecfv5XmlHelper.convertCourtReserveDate(OffsetDateTime.parse(endDateTime))); 
+      drt.setEndDate(Ecfv5XmlHelper.convertCourtReserveDate(OffsetDateTime.parse(endDateTime), 1)); 
       msg.getPotentialStartTimeRange().add(drt);
 
       int estDurInSeconds = estDurJson.asInt();
@@ -449,7 +449,7 @@ public class CourtSchedulingService {
   }
   
   private static void setupReq(CaseFilingType cft, String courtId) {
-    DateType currentDate = Ecfv5XmlHelper.convertDateTime(Instant.now()); 
+    DateType currentDate = Ecfv5XmlHelper.convertDateTime(Instant.now(), 0); 
     cft.setDocumentPostDate(currentDate);
     cft.setCaseCourt(Ecfv5XmlHelper.convertCourtType(courtId));
     cft.setServiceInteractionProfileCode(Ecfv5XmlHelper.convertNormalized(ServiceHelpers.MDE_PROFILE_CODE_5));
