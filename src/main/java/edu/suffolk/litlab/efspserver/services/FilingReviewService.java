@@ -70,7 +70,10 @@ public class FilingReviewService {
   @Path("/jurisdictions/{jurisdiction}/courts")
   public Response getCourts(@Context HttpHeaders httpHeaders, 
       @PathParam("jurisdiction") String jurisdiction) throws SQLException {
-    return Response.ok(filingInterfaces.get(jurisdiction).keySet().stream().sorted().collect(Collectors.toList())).build();
+    if (filingInterfaces.containsKey(jurisdiction)) {
+      return Response.ok(filingInterfaces.get(jurisdiction).keySet().stream().sorted().collect(Collectors.toList())).build();
+    }
+    return Response.status(400).entity("Could not find jurisdiction " + jurisdiction).build();
   }
   
   @GET
