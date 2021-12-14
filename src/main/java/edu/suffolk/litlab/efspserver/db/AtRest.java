@@ -6,6 +6,7 @@ import java.util.UUID;
 
 /** The type for the "at_rest" table for API Keys. API Key is not present, so it never permanently 
  * leaves the database.
+ *
  * @author brycew 
  */
 public class AtRest {
