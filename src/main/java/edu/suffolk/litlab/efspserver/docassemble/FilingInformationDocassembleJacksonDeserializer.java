@@ -235,11 +235,15 @@ public class FilingInformationDocassembleJacksonDeserializer
         log.warn("Person exception: " + ex);
         collector.error(ex);
       }
-      if (per.unwrapOrElseThrow().getContactInfo().getEmail().isEmpty()) {
-        InterviewVariable var = collector.requestVar("lead_contact.email", "We need an email to contact someone about this case.", "text");
-        collector.addRequired(var);
+      if (per.isOk()) {
+        if (per.unwrapOrElseThrow().getContactInfo().getEmail().isEmpty()) {
+          InterviewVariable var = collector.requestVar("lead_contact.email", "We need an email to contact someone about this case.", "text");
+          collector.addRequired(var);
+        }
+        entities.setLeadContact(per.unwrapOrElseThrow());
+      } else {
+        entities.setLeadContact(null);
       }
-      entities.setLeadContact(per.unwrapOrElseThrow());
     }
     
     entities.setReturnDate(extractReturnDate(node.get("return_date"), collector));
