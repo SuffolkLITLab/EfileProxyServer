@@ -41,8 +41,8 @@ public class FilingInformationJeffNetSerializer extends StdSerializer<FilingInfo
     caseInfo.caseType = info.getCaseTypeCode();
     caseInfo.caseSubtype = info.getCaseSubtypeCode();
     caseInfo.participants = new ArrayList<Person>();
-    caseInfo.participants.addAll(info.getDefendants());
-    caseInfo.participants.addAll(info.getPlaintiffs());
+    caseInfo.participants.addAll(info.getNewDefendants());
+    caseInfo.participants.addAll(info.getNewPlaintiffs());
 
     SendingMde mde = new SendingMde();
     mde.ourUrl = ServiceHelpers.BASE_URL;

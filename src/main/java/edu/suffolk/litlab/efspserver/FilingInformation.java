@@ -11,8 +11,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class FilingInformation {
 
   private String courtLocationId;
-  private List<Person> plaintiffs = List.of();
-  private List<Person> defendants = List.of();
+  /** Plaintiffs that are new to the case; not in the case info before this filing */
+  private List<Person> newPlaintiffs = List.of();
+  private List<Person> newDefendants = List.of();
   
   /** A list of attorney UIDs. 
    * 
@@ -23,6 +24,7 @@ public class FilingInformation {
    * Make it more generic if possible.
    */
   private List<String> attorneyIds = List.of();
+
   /** A map from party Ids (in the person Objs) to a list of their Attorneys
    * 
    * A party not present in the map means you don't know who the attorney is (or for subsequent filings,
@@ -73,31 +75,16 @@ public class FilingInformation {
     return leadContact;
   }
   
-  public Optional<Person> getFilerById(String id) {
-    for (Person per : plaintiffs) {
-      if (per.getIdString().equals(id)) {
-        return Optional.of(per);
-      }
-    }
-    for (Person per : defendants) {
-      if (per.getIdString().equals(id)) {
-        return Optional.of(per);
-      }
-    }
-    
-    return Optional.empty();
-  }
-  
   public String getCourtLocation() {
     return courtLocationId;
   }
   
-  public List<Person> getPlaintiffs() {
-    return plaintiffs;
+  public List<Person> getNewPlaintiffs() {
+    return newPlaintiffs;
   }
   
-  public List<Person> getDefendants() {
-    return defendants;
+  public List<Person> getNewDefendants() {
+    return newDefendants;
   }
   
   public List<String> getAttorneyIds() {
@@ -111,7 +98,6 @@ public class FilingInformation {
   /** We only store the mapping from Party to attorneys (since parties can have multiple attorneys,
    * but not vice-versa. */
   public List<PartyId> getPartyRepByAttorney(String attorneyId) {
-
     List<PartyId> parties = new ArrayList<>();
     for (Map.Entry<PartyId, List<String>> partyToAttorneys : partyToAttorneyIds.entrySet()) {
       if (partyToAttorneys.getValue().contains(attorneyId)) {
@@ -165,12 +151,12 @@ public class FilingInformation {
     this.courtLocationId = courtLocationId;
   }
   
-  public void setPlaintiffs(List<Person> plaintiffs) {
-    this.plaintiffs = plaintiffs;
+  public void setNewPlaintiffs(List<Person> plaintiffs) {
+    this.newPlaintiffs = plaintiffs;
   }
   
-  public void setDefendants(List<Person> defendants) {
-    this.defendants = defendants;
+  public void setNewDefendants(List<Person> defendants) {
+    this.newDefendants = defendants;
   }
   
   public void setAttorneyIds(List<String> attorneyIds) {
@@ -190,11 +176,11 @@ public class FilingInformation {
   }
   
   public void setPreviousCaseId(String id) {
-    this.prevCaseId = Optional.of(id);
+    this.prevCaseId = Optional.ofNullable(id);
   }
 
   public void setCaseDocketNumber(String num) {
-    this.caseDocketNumber = Optional.of(num);
+    this.caseDocketNumber = Optional.ofNullable(num);
   }
   
   public void setCaseTypeCode(String caseTypeCode) {

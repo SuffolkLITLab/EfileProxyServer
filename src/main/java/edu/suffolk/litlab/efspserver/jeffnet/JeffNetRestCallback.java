@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import edu.suffolk.litlab.efspserver.db.Transaction;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
@@ -50,8 +51,8 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
       return Response.status(400).build();
     }
 
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+    ObjectMapper mapper = JsonMapper.builder().configure(
+        MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true).build();
     FileResponse resp;
     try {
       resp = mapper.readValue(statusReport, FileResponse.class);

@@ -263,15 +263,21 @@ public class EcfCaseTypeFactory {
     Set<String> requiredTypes = partyTypes.stream().filter(t -> t.isrequired).map(t -> t.code).collect(Collectors.toSet());
     Set<String> existingTypes = new HashSet<>();
     Map<String, Object> partyIdToRefObj = new HashMap<>();
-    for (Person plaintiff : info.getPlaintiffs()) {
+    int i = 0;
+    for (Person plaintiff : info.getNewPlaintiffs()) {
+      collector.pushAttributeStack("plaintiffs[" + i + ']');
       CaseParticipantType cp = serializer.serializeEcfCaseParticipant(plaintiff, collector, partyTypes);
+      collector.popAttributeStack();
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
       partyIdToRefObj.put(plaintiff.getIdString(), cp.getEntityRepresentation().getValue());
       existingTypes.add(plaintiff.getRole());
     }
 
-    for (Person defendant : info.getDefendants()) {
+    i = 0;
+    for (Person defendant : info.getNewDefendants()) {
+      collector.pushAttributeStack("defendants[" + i + ']');
       CaseParticipantType cp = serializer.serializeEcfCaseParticipant(defendant, collector, partyTypes);
+      collector.popAttributeStack();
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
       partyIdToRefObj.put(defendant.getIdString(), cp.getEntityRepresentation().getValue());
       existingTypes.add(defendant.getRole());

@@ -114,7 +114,7 @@ public class Ecfv5CaseTypeFactory {
     
     try {
       i = 0;
-      for (Person per: info.getPlaintiffs()) {
+      for (Person per: info.getNewPlaintiffs()) {
         collector.pushAttributeStack("plaintiffs[" + i + ']');
         EntityType ent = serializeCaseParticipant(per, info, collector, partyTypes, idToCaseParty);
         collector.popAttributeStack();
@@ -122,7 +122,7 @@ public class Ecfv5CaseTypeFactory {
         i++;
       }
       i = 0;
-      for (Person per: info.getDefendants()) {
+      for (Person per: info.getNewDefendants()) {
         collector.pushAttributeStack("defendants[" + i + ']');
         EntityType ent = serializeCaseParticipant(per, info, collector, partyTypes, idToCaseParty);
         collector.popAttributeStack();
