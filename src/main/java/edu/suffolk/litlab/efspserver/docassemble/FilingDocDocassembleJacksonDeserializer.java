@@ -48,28 +48,28 @@ public class FilingDocDocassembleJacksonDeserializer {
       collector.error(err);
     }
 
+    // Get: filename
+    JsonNode filenameNode = node.get("filename");
+    String fileName = filenameNode.asText("") + ".pdf";
+    if (!node.has("proxy_enabled") || !node.get("proxy_enabled").asBoolean(false)) {
+      log.info(fileName + " isn't proxy enabled");
+      return Optional.empty();
+    }
+
+    if (filenameNode == null || !filenameNode.isTextual()) {
+      InterviewVariable nameVar = collector.requestVar("filename", "The file name of the filing document", "text");
+      collector.addRequired(nameVar);
+    }
+
     InterviewVariable filingVar = collector.requestVar("tyler_filing_type", "What filing type is this?", "text"); 
     JsonNode filingJson = node.get("tyler_filing_type");
     Optional<String> filingType = Optional.empty(); 
     if (filingJson != null && filingJson.isTextual()) {
       filingType = Optional.of(filingJson.asText());
     } else {
-      log.warn("tyler filing type not present in the info!: " + node);
+      log.warn("tyler_filing_type not present in the info!: " + node);
       // Optional for non-tyler ones. Will be enforced at the tyler level
       collector.addOptional(filingVar.appendDesc((node.has("instanceName")) ? node.get("instanceName").asText("?") : "?"));
-    }
-
-    // Get: filename
-    JsonNode filenameNode = node.get("filename");
-    if (filenameNode == null || !filenameNode.isTextual()) {
-      InterviewVariable nameVar = collector.requestVar("filename", "The file name of the filing document", "text");
-      collector.addRequired(nameVar);
-    }
-    String fileName = filenameNode.asText("") + ".pdf";
-
-    if (!node.has("proxy_enabled") || !node.get("proxy_enabled").asBoolean(false)) {
-      log.info(fileName + " isn't proxy enabled");
-      return Optional.empty();
     }
 
     try {

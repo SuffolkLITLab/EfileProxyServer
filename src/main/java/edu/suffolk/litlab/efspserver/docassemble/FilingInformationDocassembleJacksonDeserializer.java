@@ -230,20 +230,19 @@ public class FilingInformationDocassembleJacksonDeserializer
       Result<Person, FilingError> per =
           PersonDocassembleJacksonDeserializer.fromNode(node.get("lead_contact"), collector);
       collector.popAttributeStack();
-      if (per.isErr() || per.unwrapOrElseThrow().getContactInfo().getEmail().isEmpty()) {
+      if (per.isErr()) {
         FilingError ex = per.unwrapErrOrElseThrow();
         log.warn("Person exception: " + ex);
         collector.error(ex);
-      }
-      if (per.isOk()) {
-        if (per.unwrapOrElseThrow().getContactInfo().getEmail().isEmpty()) {
+        entities.setLeadContact(null);
+      } else {
+        Person person = per.unwrapOrElseThrow();
+        if (person.getContactInfo().getEmail().isEmpty()) {
           InterviewVariable var = collector.requestVar("lead_contact.email", "We need an email to contact someone about this case.", "text");
           collector.addRequired(var);
         }
-        entities.setLeadContact(per.unwrapOrElseThrow());
-      } else {
-        entities.setLeadContact(null);
-      }
+        entities.setLeadContact(person); 
+      } 
     }
     
     entities.setReturnDate(extractReturnDate(node.get("return_date"), collector));
