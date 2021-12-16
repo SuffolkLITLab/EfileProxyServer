@@ -438,8 +438,12 @@ public class EcfCaseTypeFactory {
     }
 
     if (queryType.equalsIgnoreCase("fees") || queryType.equalsIgnoreCase("service")) {
+      if (info.getPaymentId() == null || info.getPaymentId().isBlank()) {
+        collector.addRequired(collector.requestVar("tyler_payment_id", "The ID of the payment method", "text"));
+      }
       ecfAug.setProviderCharge(PaymentFactory.makeProviderChargeType(info.getPaymentId()));
     }
+
     if (miscInfo.has("max_fee_amount") && courtLocation.allowmaxfeeamount) {
       AmountType amountType = new AmountType();
       amountType.setCurrencyCode(CurrencyCodeSimpleType.USD);
