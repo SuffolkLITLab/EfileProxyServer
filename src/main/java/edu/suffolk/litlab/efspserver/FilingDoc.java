@@ -49,23 +49,6 @@ public class FilingDoc {
 
   final private boolean isLeadDoc;
 
-  public FilingDoc(Optional<String> filingCode, String fileName, InputStream fileStream) throws IOException {
-    this(filingCode, fileName, fileStream, List.of(), "");
-  }
-
-  /** FilingDoc constructor for Jefferson Parish data.
-   *
-   * @throws IOException If the input stream can't be opened or read from
-   */
-  public FilingDoc(Optional<String> filingCode, String fileName, InputStream fileStream,
-      List<PartyId> filingPartyIds,
-      String filingComments) throws IOException  {
-    this(filingCode, fileName, fileStream.readAllBytes(), Optional.empty(), Optional.empty(), Optional.empty(),
-        filingPartyIds, Optional.empty(), "", "", "", Optional.empty(),
-        List.of(), List.of(), List.of(), Optional.empty(), true);
-    this.documentTypeFormatStandardName = ""; // Default to blank: we can't get the confidential code
-  }
-
   public FilingDoc(Optional<String> filingCode, String fileName, InputStream fileStream,
       List<PartyId> filingPartyIds,
       String documentTypeFormatStandardName,
