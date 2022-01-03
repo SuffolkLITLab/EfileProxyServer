@@ -91,7 +91,7 @@ public class JeffNetFiler implements EfmFilingInterface {
     }
 
     ObjectMapper mapper = JsonMapper.builder().configure(
-        MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true).build();
+        MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true).build();
     mapper.registerModule(this.module);
 
     try {
