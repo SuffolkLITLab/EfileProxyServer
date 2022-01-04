@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.docassemble;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +31,13 @@ public class JsonHelpers {
   public static Optional<Integer> getIntMember(JsonNode obj, String memberName) {
     if (obj.has(memberName) && obj.get(memberName).isInt()) {
       return Optional.of(obj.get(memberName).asInt());
+    }
+    return Optional.empty();
+  }
+  
+  public static Optional<BigDecimal> getNumberMember(JsonNode obj, String memberName) {
+    if (obj.has(memberName) && obj.get(memberName).isNumber()) {
+      return Optional.of(obj.get(memberName).decimalValue());
     }
     return Optional.empty();
   }

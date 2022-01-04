@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efspserver.docassemble;
 
 import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getIntMember;
+import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getNumberMember;
 import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getStringDefault;
 import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getStringMember;
 import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getMemberList;
@@ -101,8 +102,7 @@ public class FilingDocDocassembleJacksonDeserializer {
         optServs.elements().forEachRemaining(optServ -> {
           String code = optServ.get("code").asText();
           Optional<Integer> mult = getIntMember(optServ, "multiplier"); 
-          JsonNode feeJson = optServ.get("fee_amount");
-          Optional<BigDecimal> fee = (feeJson.isNumber()) ? Optional.of(feeJson.decimalValue()) : Optional.empty();
+          Optional<BigDecimal> fee = getNumberMember(optServ, "fee_amount"); 
           optServices.add(new OptionalService(code, mult, fee));
         });
       });
