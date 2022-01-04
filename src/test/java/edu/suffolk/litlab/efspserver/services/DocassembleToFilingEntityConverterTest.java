@@ -85,14 +85,14 @@ public class DocassembleToFilingEntityConverterTest {
         converter.extractEntities(interviewContents);
     assertThat(maybeEntities).isOk(); 
     FilingInformation entities = maybeEntities.unwrapOrElseThrow();
-    assertEquals(2, entities.getPlaintiffs().size(), 
-        entities.getPlaintiffs().stream().map((p) -> p.getName().getFullName())
+    assertEquals(2, entities.getNewPlaintiffs().size(), 
+        entities.getNewPlaintiffs().stream().map((p) -> p.getName().getFullName())
           .reduce("", (p, p2) -> p + " " + p2));
-    assertEquals(1, entities.getDefendants().size(),
-        entities.getDefendants().stream().map((p) -> p.getName().getFullName())
+    assertEquals(1, entities.getNewDefendants().size(),
+        entities.getNewDefendants().stream().map((p) -> p.getName().getFullName())
           .reduce("", (p, p2) -> p + ", " + p2));
     
-    Person plaintiff = entities.getPlaintiffs().get(0);
+    Person plaintiff = entities.getNewPlaintiffs().get(0);
     assertEquals("Bob Zombie", plaintiff.getName().getFullName());
     assertTrue(plaintiff.getContactInfo().getEmail().isPresent(),
         "user[0] should have email");
@@ -103,11 +103,11 @@ public class DocassembleToFilingEntityConverterTest {
     assertTrue(plaintiff.getLanguage().isPresent(), "user[0] should have a specified language");
     assertEquals("Spanish", plaintiff.getLanguage().get());
     
-    Person plaintiff2 = entities.getPlaintiffs().get(1);
+    Person plaintiff2 = entities.getNewPlaintiffs().get(1);
     assertEquals("Jill Vampire", plaintiff2.getName().getFullName());
     assertTrue(plaintiff2.getContactInfo().getEmail().isEmpty(), "user[1] should have empty email");
     
-    Person defendant = entities.getDefendants().get(0);
+    Person defendant = entities.getNewDefendants().get(0);
     assertEquals("Company LLC", defendant.getName().getFullName());
     assertTrue(defendant.getContactInfo().getAddress().isPresent());
     assertEquals("Boston", defendant.getContactInfo().getAddress().get().getCity());

@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.SoapClientChooser;
@@ -84,7 +83,6 @@ public class CasesService {
    * @param httpHeaders
    * @param courtId
    * @return
-   * @throws JsonMappingException
    * @throws JsonProcessingException
    * @throws JAXBException
    */
@@ -165,6 +163,7 @@ public class CasesService {
       ot.setOrganizationName(XmlHelper.convertText(businessName)); 
       var commonCpt = ecfOf.createCaseParticipantType();
       commonCpt.setEntityRepresentation(ecfOf.createEntityOrganization(ot));
+      commonCpt.setCaseParticipantRoleCode(XmlHelper.convertText(""));
       CaseParticipantType cpt = listObjFac.createCaseParticipantType();
       cpt.setCaseParticipant(ecfOf.createCaseParticipant(commonCpt));
       query.getCaseListQueryCaseParticipant().add(cpt);
@@ -240,6 +239,7 @@ public class CasesService {
   /**
    * Tyler says that Getting document isn't supported. This is here to make that clear to
    * users.
+   *
    * @param httpHeaders
    * @param courtId
    * @param caseId

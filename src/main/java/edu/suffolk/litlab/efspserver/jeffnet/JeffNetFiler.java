@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
@@ -82,14 +83,16 @@ public class JeffNetFiler implements EfmFilingInterface {
     if (info.getFilings().isEmpty()) {
       return Result.err(FilingError.serverError("Error: cannot file with no filings"));
     }
-    List<PartyId> newFilers = info.getFilers().stream().filter(f -> f.isInCurrentFiling()).collect(Collectors.toList());
+    List<PartyId> newFilers = info.getFilers().stream()
+        .filter(f -> f.isInCurrentFiling())
+        .collect(Collectors.toList());
     if (newFilers.size() != info.getFilers().size()) {
       return Result.err(FilingError.malformedInterview("Error: JeffNet cannot reference alredy existing filing parties"));
     }
 
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = JsonMapper.builder().configure(
+        MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true).build();
     mapper.registerModule(this.module);
-    mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
 
     try {
       String finalStr = mapper.writeValueAsString(info);

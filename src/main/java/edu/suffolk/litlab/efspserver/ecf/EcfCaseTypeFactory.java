@@ -85,9 +85,9 @@ public class EcfCaseTypeFactory {
   }
   
   /** TODO(brycew): finish this function, lots of possible rabbit holes here. */
-  public static Optional<Map<String, Person>> getCaseParticipants(
+  public static Optional<Map<PartyId, Person>> getCaseParticipants(
       gov.niem.niem.niem_core._2.CaseType filedCase) {
-    Map<String, Person> existingParticipants = new HashMap<>();
+    Map<PartyId, Person> existingParticipants = new HashMap<>();
     Optional<CaseAugmentationType> maybeAug = getCaseAugmentation(filedCase);
     if (maybeAug.isEmpty()) {
       return Optional.empty();
@@ -122,7 +122,7 @@ public class EcfCaseTypeFactory {
       }
       Person per = Person.FromEfm(name, new ContactInformation(""), 
           Optional.empty(), Optional.empty(), Optional.empty(), isOrg, role, UUID.fromString(efmId));
-      existingParticipants.put(efmId, per);
+      existingParticipants.put(PartyId.Already(efmId), per);
     }
     return Optional.of(existingParticipants);
   }
@@ -234,13 +234,11 @@ public class EcfCaseTypeFactory {
     var ecfCommonObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     var of = new gov.niem.niem.niem_core._2.ObjectFactory();
     var structObjFac = new gov.niem.niem.structures._2.ObjectFactory();
-
     var ecfAug = tylerObjFac.createCaseAugmentationType();
 
     if (comboCodes.type.code.isEmpty()){
       log.warn("Type's code is empty?: " + comboCodes);
-    }
-    else {
+    } else {
       log.info("Setting case type text to " + comboCodes.type.toString());
       ecfAug.setCaseTypeText(XmlHelper.convertText(comboCodes.type.code));
     }
@@ -265,19 +263,23 @@ public class EcfCaseTypeFactory {
     Set<String> requiredTypes = partyTypes.stream().filter(t -> t.isrequired).map(t -> t.code).collect(Collectors.toSet());
     Set<String> existingTypes = new HashSet<>();
     Map<String, Object> partyIdToRefObj = new HashMap<>();
-    for (Person plaintiff : info.getPlaintiffs()) {
+    int i = 0;
+    for (Person plaintiff : info.getNewPlaintiffs()) {
+      collector.pushAttributeStack("plaintiffs[" + i + ']');
       CaseParticipantType cp = serializer.serializeEcfCaseParticipant(plaintiff, collector, partyTypes);
+      collector.popAttributeStack();
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
       partyIdToRefObj.put(plaintiff.getIdString(), cp.getEntityRepresentation().getValue());
-      log.info("Added " + plaintiff.getIdString() + " to cp");
       existingTypes.add(plaintiff.getRole());
     }
 
-    for (Person defendant : info.getDefendants()) {
+    i = 0;
+    for (Person defendant : info.getNewDefendants()) {
+      collector.pushAttributeStack("defendants[" + i + ']');
       CaseParticipantType cp = serializer.serializeEcfCaseParticipant(defendant, collector, partyTypes);
+      collector.popAttributeStack();
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
       partyIdToRefObj.put(defendant.getIdString(), cp.getEntityRepresentation().getValue());
-      log.info("Added " + defendant.getIdString() + " to ref objs");
       existingTypes.add(defendant.getRole());
     }
     
@@ -312,7 +314,25 @@ public class EcfCaseTypeFactory {
     DataFieldRow attRow = cd.getDataField(info.getCourtLocation(), "PartyAttorney");
     for (Map.Entry<PartyId, List<String>> partyAttys : info.getPartyAttorneyMap().entrySet()) {
       log.info("Setting Attorneys for : " + partyAttys.getKey());
-      Object partyObj = partyIdToRefObj.get(partyAttys.getKey().id);
+      Object partyObj;
+      if (!partyAttys.getKey().isInCurrentFiling()){
+        PersonType pt = ecfCommonObjFac.createPersonType();
+        pt.setId(partyAttys.getKey().id);
+        IdentificationType id = of.createIdentificationType();
+        id.setIdentificationCategory(of.createIdentificationCategoryText(XmlHelper.convertText("CASEPARTYID")));
+        id.setIdentificationID(XmlHelper.convertString(partyAttys.getKey().id));
+        pt.getPersonOtherIdentification().add(id);
+
+        CaseParticipantType cpt = ecfCommonObjFac.createCaseParticipantType();
+        cpt.setEntityRepresentation(ecfCommonObjFac.createEntityPerson(pt));
+        ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cpt));
+        partyObj = pt;
+      } else if (partyIdToRefObj.containsKey(partyAttys.getKey().id)) {
+        partyObj = partyIdToRefObj.get(partyAttys.getKey().id);
+      } else {
+        log.warn("Can't handle current filing participant not already added?!");
+        continue;
+      }
       ReferenceType repdRef = structObjFac.createReferenceType();
       repdRef.setRef(partyObj);
       if (!attRow.isvisible) {
@@ -418,8 +438,12 @@ public class EcfCaseTypeFactory {
     }
 
     if (queryType.equalsIgnoreCase("fees") || queryType.equalsIgnoreCase("service")) {
+      if (info.getPaymentId() == null || info.getPaymentId().isBlank()) {
+        collector.addRequired(collector.requestVar("tyler_payment_id", "The ID of the payment method", "text"));
+      }
       ecfAug.setProviderCharge(PaymentFactory.makeProviderChargeType(info.getPaymentId()));
     }
+
     if (miscInfo.has("max_fee_amount") && courtLocation.allowmaxfeeamount) {
       AmountType amountType = new AmountType();
       amountType.setCurrencyCode(CurrencyCodeSimpleType.USD);

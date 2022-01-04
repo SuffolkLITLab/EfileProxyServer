@@ -42,10 +42,10 @@ public class FilingInformationToJeffNetTest {
     Person plaintiff2 = new Person(new Name("Jill", "", "Vampire"), 
         new ContactInformation(List.of(), Optional.empty(), Optional.empty()), Optional.empty(), 
         Optional.empty(), Optional.empty(), false, false, "");
-    info.setPlaintiffs(List.of(plaintiff, plaintiff2));
+    info.setNewPlaintiffs(List.of(plaintiff, plaintiff2));
     
     Person defendant = Person.TestPerson(new Name("Company LLC"), "", true);
-    info.setDefendants(List.of(defendant));
+    info.setNewDefendants(List.of(defendant));
     
     // TODO(#52): Make and test multiple filings 
 
@@ -53,7 +53,7 @@ public class FilingInformationToJeffNetTest {
     String fileName = "quality_check_overlay.pdf";
     InputStream x = this.getClass().getResourceAsStream("/" + fileName); 
     FilingDoc filingDoc = new FilingDoc(Optional.empty(), fileName, x,
-        info.getPlaintiffs().stream().map(p -> PartyId.CurrentFiling(p.getIdString())).collect(
+        info.getNewPlaintiffs().stream().map(p -> PartyId.CurrentFiling(p.getIdString())).collect(
             Collectors.toList()), "5766",
         componentCode, true);
     info.setFilings(List.of(filingDoc));

@@ -8,10 +8,10 @@ import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 
-import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -23,8 +23,12 @@ public class AddressDocassembleJacksonDeserializer {
   protected AddressDocassembleJacksonDeserializer() {}
 
   /** Parses an address from the DA Json Object. Used by Deserializers that include addresses.
-   * @throws FilingError */
-  public static Optional<Address> fromNode(JsonNode node, InfoCollector collector) throws FilingError {
+   *
+   * @throws FilingError if @param node isn't a JSON object describing an address
+   */
+  public static Optional<Address> fromNode(
+          JsonNode node, 
+          InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
       FilingError err = FilingError.malformedInterview(
           "Refusing to parse address that isn't a Json Object: " + node.toPrettyString());
@@ -37,7 +41,7 @@ public class AddressDocassembleJacksonDeserializer {
     for (String member : List.of("address", "unit", "city", "state", "zip")) {
       if (!node.has(member)) {
         potentiallyReq.add(collector.requestVar(member, "part of the address", "text"));
-	continue;
+        continue;
       }
       onePresent = true;
       if (node.has(member) && !node.get(member).isTextual()) {
@@ -49,11 +53,11 @@ public class AddressDocassembleJacksonDeserializer {
       }
     }
     if (!onePresent) {
-	 log.info("None of the address parts are present, won't try to build address");
+      log.info("None of the address parts are present, won't try to build address");
       return Optional.empty();
     }
     if (onePresent && !potentiallyReq.isEmpty()) {
-      for (InterviewVariable memberVar: potentiallyReq) {
+      for (InterviewVariable memberVar : potentiallyReq) {
         collector.addRequired(memberVar);
       }
     }

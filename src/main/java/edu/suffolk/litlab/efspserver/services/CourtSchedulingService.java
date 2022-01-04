@@ -5,8 +5,7 @@ import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.isNull;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +46,7 @@ import ecfv5.tyler.ecf.v5_0.extensions.reservedateresponse.ReserveDateResponseMe
 import ecfv5.tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
 import ecfv5.tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateResponseMessageType;
 import edu.suffolk.litlab.efspserver.FilingInformation;
+import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
@@ -186,7 +186,6 @@ public class CourtSchedulingService {
   @Path("/courts/{court_id}/return_date")
   public Response getReturnDate(@Context HttpHeaders httpHeaders, 
       @PathParam("court_id") String courtId, String allVars) throws SQLException, JAXBException {
-    String apiKey = httpHeaders.getHeaderString("X-API-KEY");
     Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort(httpHeaders);
     if (maybeServ.isEmpty()) {
       return Response.status(401).build();
@@ -218,9 +217,9 @@ public class CourtSchedulingService {
     boolean isInitialFiling = info.getPreviousCaseId().isEmpty() && info.getCaseDocketNumber().isEmpty();
     boolean isFirstIndexedFiling = info.getPreviousCaseId().isEmpty(); 
     ComboCaseCodes allCodes;
-    Optional<Map<String, Person>> existingParties = Optional.empty();
+    Optional<Map<PartyId, Person>> existingParties = Optional.empty();
     if (!isFirstIndexedFiling) {
-      Optional<CourtRecordMDEPort> recordPort = setupRecordPort(apiKey);
+      Optional<CourtRecordMDEPort> recordPort = setupRecordPort(httpHeaders);
       if (recordPort.isEmpty()) {
         return Response.status(500).entity("Can't make connection to retrieve court records for subsequent case").build();
       }
@@ -252,7 +251,6 @@ public class CourtSchedulingService {
       return Response.status(400).entity("Need return_date").build();
     }
     
-    ReturnDateRequestType r = oasisWrapObjFac.createReturnDateRequestType();
     ReturnDateMessageType m = new ReturnDateMessageType();
     setupReq(m, courtId);
     Ecfv5CaseTypeFactory caseTypeFac = new Ecfv5CaseTypeFactory();
@@ -272,6 +270,7 @@ public class CourtSchedulingService {
       outOfState = info.getMiscInfo().get("out_of_state").asBoolean(false);
     }
     m.setOutOfStateIndicator(Ecfv5XmlHelper.convertBool(outOfState));
+    ReturnDateRequestType r = oasisWrapObjFac.createReturnDateRequestType();
     r.setReturnDateMessage(m);
     log.info("Full msg: " + XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
     ReturnDateResponseMessageType resp = maybeServ.get().getReturnDate(r).getReturnDateResponseMessage();
@@ -354,15 +353,20 @@ public class CourtSchedulingService {
     } else {
       DateRangeType drt = niemObjFac.createDateRangeType();
       String startDateTime = afterJson.asText();
-      drt.setStartDate(Ecfv5XmlHelper.convertDate(LocalDateTime.ofInstant(Instant.parse(startDateTime), ZoneId.systemDefault())));
+      drt.setStartDate(Ecfv5XmlHelper.convertCourtReserveDate(OffsetDateTime.parse(startDateTime), 1)); 
       String endDateTime = beforeJson.asText();
-      drt.setEndDate(Ecfv5XmlHelper.convertDate(LocalDateTime.ofInstant(Instant.parse(endDateTime), ZoneId.systemDefault())));
+      drt.setEndDate(Ecfv5XmlHelper.convertCourtReserveDate(OffsetDateTime.parse(endDateTime), 1)); 
       msg.getPotentialStartTimeRange().add(drt);
 
       int estDurInSeconds = estDurJson.asInt();
       Duration dur = proxyObjFac.createDuration();
       DatatypeFactory df = DatatypeFactory.newInstance();
-      dur.setValue(df.newDuration(estDurInSeconds * 1000)); // argument is in milliseconds
+      int cappedSeconds = estDurInSeconds % 60;
+      int cappedMinutes = (estDurInSeconds / 60) % 60;
+      // TODO(brycew): can court sessions last days?
+      int cappedHours = (estDurInSeconds / 60 / 60) % 60;
+      javax.xml.datatype.Duration tmpDur = df.newDuration(true, 0, 0, 0, cappedHours, cappedMinutes, cappedSeconds); 
+      dur.setValue(tmpDur); 
       msg.setEstimatedDuration(dur);
     }
 
@@ -422,8 +426,10 @@ public class CourtSchedulingService {
     return Optional.of(serv);
   }
 
-  private Optional<CourtRecordMDEPort> setupRecordPort(String apiToken) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
+  private Optional<CourtRecordMDEPort> setupRecordPort(HttpHeaders httpHeaders) {
+    String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyStatic()); 
+
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       return Optional.empty();
     }
@@ -443,7 +449,7 @@ public class CourtSchedulingService {
   }
   
   private static void setupReq(CaseFilingType cft, String courtId) {
-    DateType currentDate = Ecfv5XmlHelper.convertDate(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()));
+    DateType currentDate = Ecfv5XmlHelper.convertDateTime(Instant.now(), 0); 
     cft.setDocumentPostDate(currentDate);
     cft.setCaseCourt(Ecfv5XmlHelper.convertCourtType(courtId));
     cft.setServiceInteractionProfileCode(Ecfv5XmlHelper.convertNormalized(ServiceHelpers.MDE_PROFILE_CODE_5));
@@ -453,7 +459,9 @@ public class CourtSchedulingService {
   private static boolean hasError(ResponseMessageType rt) {
     MessageStatusType ms = rt.getMessageStatus();
     String errorCodeText = ms.getMessageHandlingError().getErrorCodeText().getValue();
-    return !ms.getMessageContentError().isEmpty() && !(errorCodeText.isBlank() || errorCodeText.equals("0"));
+    log.info("Ms: " + ms);
+    log.info("error code: " + errorCodeText);
+    return !ms.getMessageContentError().isEmpty() || (!errorCodeText.isBlank() && !errorCodeText.equals("0"));
   }
   
 }

@@ -2,7 +2,7 @@ package edu.suffolk.litlab.efspserver.ecf;
 
 import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertString;
 import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertNormalized;
-import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertDate;
+import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertDateTime;
 import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertText;
 import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertId;
 import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertBool;
@@ -10,12 +10,10 @@ import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.isNull;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.time.ZoneId;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -74,7 +72,7 @@ public class Ecfv5CaseTypeFactory {
   public Result<CaseType, FilingError> createCaseType(FilingInformation info, 
       ComboCaseCodes allCodes, CodeDatabase cd, 
       EcfCourtSpecificSerializer serializer,
-      InfoCollector collector, Optional<Map<String, Person>> existingParties) {
+      InfoCollector collector, Optional<Map<PartyId, Person>> existingParties) {
     Optional<BigDecimal> maybeAmt = Optional.empty();
     if (allCodes.filings.stream().anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"))) {
       log.info(info.getMiscInfo().toPrettyString());
@@ -90,7 +88,7 @@ public class Ecfv5CaseTypeFactory {
     info.getPreviousCaseId().ifPresent(id -> ct.setCaseTrackingID(convertString(id)));
     
     // TODO(brycew): Time Zones
-    DateType currentDate = convertDate(LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault()));
+    DateType currentDate = convertDateTime(Instant.now(), 1); 
     CourtEventType event = jxObjFac.createCourtEventType();
     int i = 0;
     for (FilingDoc doc : info.getFilings()) {
@@ -105,12 +103,56 @@ public class Ecfv5CaseTypeFactory {
       event.getCourtEventAugmentationPoint().add(oasisObjFac.createCourtEventAugmentation(e));
       i++;
     }
+
+    var ecfAug = oasisObjFac.createCaseAugmentationType();
+    ecfAug.getRest().add(oasisObjFac.createCaseCategoryCode(convertText(allCodes.cat.code)));
+    ecfAug.getRest().add(oasisObjFac.createCaseTypeCode(convertNormalized(allCodes.type.code)));
+
+    // TODO(brycew-later): write ecfv5 versions of this. Right now, don't have time to reimplement everything, so checking with old ecfv4 code and building here 
+    List<PartyType> partyTypes = cd.getPartyTypeFor(info.getCourtLocation(), allCodes.type.code); 
+    Map<PartyId, EntityType> idToCaseParty = new HashMap<PartyId, EntityType>();
+    
+    try {
+      i = 0;
+      for (Person per: info.getNewPlaintiffs()) {
+        collector.pushAttributeStack("plaintiffs[" + i + ']');
+        EntityType ent = serializeCaseParticipant(per, info, collector, partyTypes, idToCaseParty);
+        collector.popAttributeStack();
+        ecfAug.getRest().add(oasisObjFac.createCaseParty(ent)); 
+        i++;
+      }
+      i = 0;
+      for (Person per: info.getNewDefendants()) {
+        collector.pushAttributeStack("defendants[" + i + ']');
+        EntityType ent = serializeCaseParticipant(per, info, collector, partyTypes, idToCaseParty);
+        collector.popAttributeStack();
+        ecfAug.getRest().add(oasisObjFac.createCaseParty(ent)); 
+        i++;
+      }
+      for (Map.Entry<PartyId, List<String>> partyAndAtt : info.getPartyAttorneyMap().entrySet()) {
+        if (!partyAndAtt.getValue().isEmpty() && !partyAndAtt.getKey().isInCurrentFiling()) {
+          if (existingParties.isEmpty()) {
+            collector.error(FilingError.serverError("PartyAttorney maps references parties not in "
+                + "current filing, but we don't have that datastructure.")); 
+          }
+          if (!existingParties.get().containsKey(partyAndAtt.getKey())) {
+            collector.addWrong(collector.requestVar("party_to_attorneys", "Can't find the existing party ID in the existing parties", "text"));
+          }
+          EntityType ent = serializeExistingParticipant(partyAndAtt.getKey().id, existingParties.get().get(partyAndAtt.getKey()));
+          idToCaseParty.put(partyAndAtt.getKey(), ent);
+          ecfAug.getRest().add(oasisObjFac.createCaseParty(ent));
+        }
+      }
+    } catch (FilingError err) {
+      return Result.err(err);
+    }
+    
     CaseAugmentationType jAug = jxObjFac.createCaseAugmentationType();
     jAug.getCaseCourtEvent().add(event);
     i = 1;
     for (String attorneyId : info.getAttorneyIds()) {
-      Optional<PartyId> partyRepresented = info.getPartyRepByAttorney(attorneyId);
-      if (partyRepresented.isEmpty()) {
+      List<PartyId> partiesRepresented = info.getPartyRepByAttorney(attorneyId);
+      if (partiesRepresented.isEmpty()) {
         return Result.err(FilingError.malformedInterview("Attorney " + attorneyId + " doesn't represent any parties"));
       }
       CaseOfficialType cot = jxObjFac.createCaseOfficialType();
@@ -122,59 +164,21 @@ public class Ecfv5CaseTypeFactory {
       per.getPersonOtherIdentification().add(idTy);
       cot.setRoleOfPerson(per);
       CaseOfficialAugmentationType caseOffAug = oasisObjFac.createCaseOfficialAugmentationType();
-      EntityType ent = niemObjFac.createEntityType();
-      log.info("Party rep: " + partyRepresented.get());
-      // TODO(brycew): this is wrong
-      ent.setRef(partyRepresented.get().id);
-      caseOffAug.getCaseRepresentedParty().add(ent);
+      for (PartyId id : partiesRepresented) {
+        if (idToCaseParty.containsKey(id)) {
+          EntityType representedEnt = niemObjFac.createEntityType();
+          representedEnt.setRef(idToCaseParty.get(id));
+          caseOffAug.getCaseRepresentedParty().add(representedEnt);
+        } else {
+          log.warn("Attorney " + attorneyId + " represents party " + id + ", but party doesn't exist?");
+        }
+      }
       cot.getCaseOfficialAugmentationPoint().add(oasisObjFac.createCaseOfficialAugmentation(caseOffAug));
       jAug.getCaseOfficial().add(cot);
       i++;
     }
     ct.getCaseAugmentationPoint().add(jxObjFac.createCaseAugmentation(jAug));
 
-    var ecfAug = oasisObjFac.createCaseAugmentationType();
-    ecfAug.getRest().add(oasisObjFac.createCaseCategoryCode(convertText(allCodes.cat.code)));
-    ecfAug.getRest().add(oasisObjFac.createCaseTypeCode(convertNormalized(allCodes.type.code)));
-
-    // TODO(brycew-later): write ecfv5 versions of this. Right now, don't have time to reimplement everything, so checking with old ecfv4 code and building here 
-    List<PartyType> partyTypes = cd.getPartyTypeFor(info.getCourtLocation(), allCodes.type.code); 
-    Map<String, EntityType> idToCaseParty = new HashMap<String, EntityType>();
-    
-    try {
-      i = 0;
-      for (Person per: info.getPlaintiffs()) {
-        collector.pushAttributeStack("plaintiffs[" + i + ']');
-        EntityType ent = serializeCaseParticipant(per, info, collector, partyTypes, idToCaseParty);
-        collector.popAttributeStack();
-        ecfAug.getRest().add(oasisObjFac.createCaseParty(ent)); 
-        i++;
-      }
-      i = 0;
-      for (Person per: info.getDefendants()) {
-        collector.pushAttributeStack("defendants[" + i + ']');
-        EntityType ent = serializeCaseParticipant(per, info, collector, partyTypes, idToCaseParty);
-        collector.popAttributeStack();
-        ecfAug.getRest().add(oasisObjFac.createCaseParty(ent)); 
-        i++;
-      }
-      for (Map.Entry<PartyId, List<String>> partyAndAtt : info.getPartyAttorneyMap().entrySet()) {
-        if (!partyAndAtt.getValue().isEmpty() && !partyAndAtt.getKey().isInCurrentFiling()) {
-          if (existingParties.isEmpty()) {
-            collector.error(FilingError.serverError("PartyAttorney maps references parties not in "
-                + "current filing, but we don't have that datastructure."));
-          }
-          if (!existingParties.get().containsKey(partyAndAtt.getKey().id)) {
-            collector.addWrong(collector.requestVar("party_to_attorneys", "Can't find the existing party ID in the existing parties", "text"));
-          }
-          EntityType ent = serializeExistingParticipant(partyAndAtt.getKey().id, existingParties.get().get(partyAndAtt.getKey().id));
-          ecfAug.getRest().add(oasisObjFac.createCaseParty(ent));
-        }
-      }
-    } catch (FilingError err) {
-      return Result.err(err);
-    }
-    
     ct.getCaseAugmentationPoint().add(oasisObjFac.createCaseAugmentation(ecfAug));
     var oasisAug = oasisCivilObjFac.createCaseAugmentationType();
     if (maybeAmt.isPresent()) {
@@ -195,7 +199,7 @@ public class Ecfv5CaseTypeFactory {
       FilingPartyEntityType fpet = tylerObjFac.createFilingPartyEntityType();
       if (fil.isInCurrentFiling()) {
         FilingReferenceType frt = tylerObjFac.createFilingReferenceType();
-        frt.setRef(idToCaseParty.get(fil.id));
+        frt.setRef(idToCaseParty.get(fil));
         fpet.setPartyReference(frt);
       } else {
         fpet.setPartyIdentification(convertId(fil.id)); 
@@ -243,7 +247,7 @@ public class Ecfv5CaseTypeFactory {
   
   private EntityType serializeCaseParticipant(Person per, FilingInformation info, 
       InfoCollector collector, 
-      List<PartyType> partyTypes, Map<String, EntityType> idToCaseParty) throws FilingError {
+      List<PartyType> partyTypes, Map<PartyId, EntityType> idToCaseParty) throws FilingError {
     Optional<PartyType> matchingType = partyTypes.stream()
         .filter(pt -> pt.code.equalsIgnoreCase(per.getRole()))
         .findFirst();
@@ -281,7 +285,7 @@ public class Ecfv5CaseTypeFactory {
       perType.getPersonAugmentationPoint().add(oasisObjFac.createPersonAugmentation(pat));
       ent.setEntityRepresentation(niemObjFac.createEntityPerson(perType)); 
     }
-    idToCaseParty.put(per.getIdString(), ent);
+    idToCaseParty.put(key, ent);
     return ent;
   }
 }

@@ -144,7 +144,7 @@ public class ServiceHelpers {
       oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType error) {
     if (error.getErrorCode() != null && !error.getErrorCode().getValue().equals("0")) {
       log.error("Error!: " + error.getErrorCode().getValue() 
-          + ": " + error.getErrorText());
+          + ": " + error.getErrorText().getValue());
       return true;
     }
     return false;
@@ -180,7 +180,7 @@ public class ServiceHelpers {
       }
     
       // 422 as semantic issues covers most of the error codes
-      return Response.status(422).entity(error.getErrorText()).build(); 
+      return Response.status(422).entity(error.getErrorText().getValue()).build(); 
     }
     return defaultRespFunc.get();
   }
