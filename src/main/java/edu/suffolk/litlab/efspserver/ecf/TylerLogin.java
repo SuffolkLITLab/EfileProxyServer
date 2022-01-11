@@ -23,7 +23,7 @@ public class TylerLogin implements LoginInterface {
       LoggerFactory.getLogger(LoginInterface.class);
 
   private final EfmUserService userServiceFactory;
-  private static final String HEADER_KEY = "TYLER_TOKEN";
+  private static final String HEADER_KEY = "TYLER-TOKEN";
 
   public TylerLogin(String jurisdiction) {
     Optional<EfmUserService> maybeUserFactory = SoapClientChooser.getEfmUserFactory(jurisdiction);
