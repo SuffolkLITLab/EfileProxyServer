@@ -41,6 +41,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.RandomString;
+import edu.suffolk.litlab.efspserver.XmlHelper;
+
 import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.schema.baseresponse.BaseResponseType;
@@ -323,7 +325,7 @@ public class PaymentsService {
   @Path("/toga-account")
   public Response makeNewPaymentAccount(@Context HttpHeaders httpHeaders,
       @FormParam("ResponseXML") String body) {
-    log.info("Making new payment account: " + body);
+    log.info("Making new payment account with Tyler's response: " + body);
     try {
       JAXBContext jaxContext = JAXBContext.newInstance(TogaResponseXml.class);
       Unmarshaller unmar = jaxContext.createUnmarshaller();
@@ -342,10 +344,11 @@ public class PaymentsService {
       newAccount.setCardType(tylerCommonObjFac.createPaymentAccountTypeCardType(cardType));
       newAccount.setCardMonth(tylerCommonObjFac.createPaymentAccountTypeCardMonth(resp.expirationMonth));
       newAccount.setCardYear(tylerCommonObjFac.createPaymentAccountTypeCardYear(resp.expirationYear));
-      int last = tenderDesc.length - 1;
-      String last4 = tenderDesc[last].substring(tenderDesc[last].length() - 4);
+      String lastItem = tenderDesc[tenderDesc.length - 1];
+      String last4 = lastItem.substring(lastItem.length() - 4);
       newAccount.setCardLast4(last4);
       createAccount.setPaymentAccount(newAccount);
+      log.info("Final reply for payment account: " + XmlHelper.objectToXmlStrOrError(createAccount, CreatePaymentAccountRequestType.class));
       Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, tempInfo.loginInfo);
       if (firmPort.isEmpty()) {
         return Response.status(403).build();
