@@ -240,7 +240,7 @@ public class PaymentsService {
   public Response redirectToToga(@Context HttpHeaders httpHeaders,
       @FormParam("account_name") String name, @FormParam("global") boolean global,
       @FormParam("type_code") String typeCode, @FormParam("tyler_info") String tylerInfo,
-      @FormParam("original_url") String originalUrl) {
+      @FormParam("original_url") String originalUrl, @FormParam("error_url") String errorUrl) {
     String errorHtml = """
     <html>
       <head>
@@ -263,6 +263,7 @@ public class PaymentsService {
     account.typeCode = typeCode;
     account.loginInfo = tylerInfo;
     account.originalUrl = originalUrl;
+    account.errorUrl = errorUrl;
     log.info("Going back to original url: " + originalUrl);
     tempAccounts.put(transactionId, account);
 
@@ -360,13 +361,14 @@ public class PaymentsService {
         accountResp = firmPort.get().createPaymentAccount(createAccount);
       }
       if (ServiceHelpers.hasError(accountResp)) {
-        return Response.status(400).entity(accountResp.getError().getErrorCode() + " " + accountResp.getError().getErrorText()).build();
+        log.error(accountResp.getError().getErrorCode() + " " + accountResp.getError().getErrorText());
+        return Response.status(302).header("Location", tempInfo.errorUrl).build();
       }
       return Response.status(302).header("Location", tempInfo.originalUrl).build();
     } catch (JAXBException jaxbEx) {
       log.error("Couldn't process the TOGA response in XML: " + body);
       log.error(jaxbEx.toString());
-      return Response.status(400).build();
+      return Response.status(400).entity("<html><body>Sorry, we had an error processing that payment account. Please try again.</body></html>").build();
     }
   }
   
@@ -434,6 +436,7 @@ public class PaymentsService {
     boolean global;
     String typeCode;
     String originalUrl;
+    String errorUrl;
   }
 
   private final Map<String, TempAccount> tempAccounts;
