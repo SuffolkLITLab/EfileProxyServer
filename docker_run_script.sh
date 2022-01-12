@@ -2,7 +2,7 @@
 
 set -ex
 cd /usr/src/app
-java -cp $(cat cp.txt):target/assemblyline-efsp-0.3.3.jar \
+java -cp $(cat cp.txt):target/assemblyline-efsp-0.3.5.jar \
 	edu.suffolk.litlab.efspserver.services.EfspServer \
 	-Djava.util.logging.config.file=logging.properties \
     -Dlog4j2.formatMsgNoLookups=true
