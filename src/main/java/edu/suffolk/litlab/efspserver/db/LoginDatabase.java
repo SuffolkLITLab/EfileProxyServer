@@ -180,17 +180,19 @@ public class LoginDatabase extends DatabaseInterface {
     if (args.length != 3) {
       System.out.println("Only 3 params: server name, tyler enabled, jeffnet enabled");
     }
-    String serverName = args[0];
-    String tylerEnabled = args[1];
-    String jeffnetEnabled = args[2];
+    String serverName = args[0].strip();
+    String tylerEnabled = args[1].strip();
+    String jeffnetEnabled = args[2].strip();
     
     LoginDatabase ld = new LoginDatabase(System.getenv("POSTGRES_URL"), 
         Integer.parseInt(System.getenv("POSTGRES_PORT")), System.getenv("POSTGRES_USER_DB"));
     ld.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
     ld.setAutocommit(true);
-    String newApiKey = ld.addNewUser(serverName, Boolean.parseBoolean(tylerEnabled), 
-        Boolean.parseBoolean(jeffnetEnabled));
+    boolean tylerBool = Boolean.parseBoolean(tylerEnabled);
+    boolean jeffnetBool = Boolean.parseBoolean(jeffnetEnabled);
+    String newApiKey = ld.addNewUser(serverName, tylerBool, jeffnetBool);
     System.out.println("New Api Key for " + serverName + ": " + newApiKey);
+    System.out.println("Using tyler: " + tylerBool + " and using jeffnet: " + jeffnetBool);
   }
 
 }

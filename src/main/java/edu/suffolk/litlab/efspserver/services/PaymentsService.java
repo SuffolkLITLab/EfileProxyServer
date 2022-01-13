@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -47,6 +48,7 @@ import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.schema.baseresponse.BaseResponseType;
 import tyler.efm.services.schema.common.PaymentAccountType;
+import tyler.efm.services.schema.common.PaymentAccountTypeType;
 import tyler.efm.services.schema.createpaymentaccountrequest.CreatePaymentAccountRequestType;
 import tyler.efm.services.schema.createpaymentaccountresponse.CreatePaymentAccountResponseType;
 import tyler.efm.services.schema.getpaymentaccountrequest.GetPaymentAccountRequestType;
@@ -256,7 +258,20 @@ public class PaymentsService {
     account.name = name;
     account.global = global;
     if (typeCode.equals("WV")) {
-      String err = "Don't need TOGA to create a Waiver";
+      String err = "Don't need TOGA to create a Waiver: send a POST to /waiver-accounts";
+      log.error(err);
+      return Response.status(422).entity(errorHtml.formatted(err)).build();
+    }
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, tylerInfo); 
+    if (firmPort.isEmpty()) {
+      String err = "Unable to use your login information with Tyler: will not be able to create the payment account.";
+      log.error(err);
+      return Response.status(422).entity(errorHtml.formatted(err)).build();
+    }
+    PaymentAccountTypeListResponseType types = firmPort.get().getPaymentAccountTypeList();
+    // If this Tyler system dosen't support this payment account type (Credit, bank, etc.), error out
+    if (!types.getPaymentAccountType().stream().anyMatch(type -> type.getCode().equalsIgnoreCase(typeCode))) {
+      String err = "Cannot create that type of payment account.";
       log.error(err);
       return Response.status(422).entity(errorHtml.formatted(err)).build();
     }
@@ -336,13 +351,44 @@ public class PaymentsService {
       CreatePaymentAccountRequestType createAccount = new CreatePaymentAccountRequestType();
       TempAccount tempInfo = tempAccounts.get(resp.transactionId);
       PaymentAccountType newAccount = new PaymentAccountType();
-      newAccount.setPaymentAccountTypeCode(tempInfo.typeCode);
-      newAccount.setAccountName(tempInfo.name);
-      newAccount.setAccountToken(resp.payorToken);
-      newAccount.setCardHolderName(tylerCommonObjFac.createPaymentAccountTypeCardHolderName(resp.payorName));
+      Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, tempInfo.loginInfo);
+      if (firmPort.isEmpty()) {
+        return Response.status(403).build();
+      }
+      List<PaymentAccountTypeType> types = firmPort.get().getPaymentAccountTypeList().getPaymentAccountType();
+
+      // Since users can change their minds and enter a credit card on the TOGA site while telling
+      // us they wanted a bank account, we default to the TOGA response. There are several cases: 
+      // * TOGA response is a credit card and it's accepted: use it!
+      // * it's a Credit card, but not accepted: fallback
+      // * it's a bank account, is accepted: use it!
+      // * it's a bank account, but not accepted: fallback
+      // * can't tell what it is: fallback
       String[] tenderDesc = resp.tenderDescription.split(" ");
       String cardType = tenderDesc[0];
       newAccount.setCardType(tylerCommonObjFac.createPaymentAccountTypeCardType(cardType));
+      log.info("Card Type: " + cardType);
+      if (cardType.equalsIgnoreCase("MASTERCARD") || cardType.equalsIgnoreCase("DISCOVER") || cardType.equalsIgnoreCase("VISA") 
+          || cardType.equalsIgnoreCase("American Express")) {
+        if (types.stream().anyMatch(type -> type.getCode().equalsIgnoreCase("CC"))) {
+          newAccount.setPaymentAccountTypeCode("CC");
+        } else {
+          // Fallback to the given type code
+          newAccount.setPaymentAccountTypeCode(tempInfo.typeCode);
+        }
+      } else if (cardType.equalsIgnoreCase("Checking") || cardType.equalsIgnoreCase("Savings")) {
+        if (types.stream().anyMatch(type -> type.getCode().equalsIgnoreCase("BankAccount"))) {
+          newAccount.setPaymentAccountTypeCode("BankAccount");
+        } else {
+          newAccount.setPaymentAccountTypeCode(tempInfo.typeCode);
+        }
+      } else {
+        // We don't know what this account type is! Fallback to what we were given initially
+        newAccount.setPaymentAccountTypeCode(tempInfo.typeCode);
+      }
+      newAccount.setAccountName(tempInfo.name);
+      newAccount.setAccountToken(resp.payorToken);
+      newAccount.setCardHolderName(tylerCommonObjFac.createPaymentAccountTypeCardHolderName(resp.payorName));
       newAccount.setCardMonth(tylerCommonObjFac.createPaymentAccountTypeCardMonth(resp.expirationMonth));
       newAccount.setCardYear(tylerCommonObjFac.createPaymentAccountTypeCardYear(resp.expirationYear));
       String lastItem = tenderDesc[tenderDesc.length - 1];
@@ -350,10 +396,6 @@ public class PaymentsService {
       newAccount.setCardLast4(last4);
       createAccount.setPaymentAccount(newAccount);
       log.info("Final reply for payment account: " + XmlHelper.objectToXmlStrOrError(createAccount, CreatePaymentAccountRequestType.class));
-      Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, tempInfo.loginInfo);
-      if (firmPort.isEmpty()) {
-        return Response.status(403).build();
-      }
       CreatePaymentAccountResponseType accountResp;
       if (tempInfo.global) {
         accountResp = firmPort.get().createGlobalPaymentAccount(createAccount);
