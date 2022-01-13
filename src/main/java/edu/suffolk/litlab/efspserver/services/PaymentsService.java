@@ -369,7 +369,7 @@ public class PaymentsService {
       newAccount.setCardType(tylerCommonObjFac.createPaymentAccountTypeCardType(cardType));
       log.info("Card Type: " + cardType);
       if (cardType.equalsIgnoreCase("MASTERCARD") || cardType.equalsIgnoreCase("DISCOVER") || cardType.equalsIgnoreCase("VISA") 
-          || cardType.equalsIgnoreCase("American Express")) {
+          || cardType.equalsIgnoreCase("AMEX")) {
         if (types.stream().anyMatch(type -> type.getCode().equalsIgnoreCase("CC"))) {
           newAccount.setPaymentAccountTypeCode("CC");
         } else {
