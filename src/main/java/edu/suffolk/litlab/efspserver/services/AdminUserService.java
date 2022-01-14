@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPointsToMap;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 
 import java.util.List;
@@ -95,7 +96,7 @@ import tyler.efm.services.schema.userlistresponse.UserListResponseType;
  *
  */
 @Path("/adminusers/")
-@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+@Produces(MediaType.APPLICATION_JSON)
 public class AdminUserService {
 
   private static Logger log =
@@ -119,6 +120,13 @@ public class AdminUserService {
       throw new RuntimeException("Can't find " + jurisdiction + " in the SoapClientChooser for EfmFirm factory"); 
     }
     this.firmFactory = maybeFirmFactory.get();;
+  }
+
+  @GET
+  @Path("/")
+  public Response getAll() {
+    EndpointReflection ef = new EndpointReflection();
+    return Response.ok(endPointsToMap(ef.findRESTEndpoints(List.of(AdminUserService.class)))).build();
   }
 
   @POST

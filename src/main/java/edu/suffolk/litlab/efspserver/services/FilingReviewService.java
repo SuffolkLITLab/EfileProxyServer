@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPointsToMap;
+
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 
@@ -32,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Path("/filingreview/")
-@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@Produces({MediaType.APPLICATION_JSON})
 public class FilingReviewService {
 
   private static Logger log =
@@ -58,6 +60,13 @@ public class FilingReviewService {
     this.ud = ud;
     this.security = security;
     this.msgSender = msgSender;
+  }
+
+  @GET
+  @Path("/")
+  public Response getAll() {
+    EndpointReflection ef = new EndpointReflection();
+    return Response.ok(endPointsToMap(ef.findRESTEndpoints(List.of(FilingReviewService.class)))).build();
   }
 
   @GET

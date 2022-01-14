@@ -136,6 +136,7 @@ public class EfspServer {
         new SingletonResourceProvider(new CourtSchedulingService(converterMap, security, cd, jurisdiction)));
     services.put(MessageSettingsService.class,
         new SingletonResourceProvider(new MessageSettingsService(security, md)));
+    services.put(RootService.class, new SingletonResourceProvider(new RootService()));
 
     sf = new JAXRSServerFactoryBean();
     sf.setResourceClasses(new ArrayList<Class<?>>(services.keySet()));

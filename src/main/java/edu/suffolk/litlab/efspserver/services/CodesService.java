@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPointsToMap;
+
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +40,7 @@ import edu.suffolk.litlab.efspserver.codes.OptionalServiceCode;
 import edu.suffolk.litlab.efspserver.codes.PartyType;
 import edu.suffolk.litlab.efspserver.codes.ServiceCodeType;
 
-@Path("/codes/")
+@Path("/codes")
 @Produces({MediaType.APPLICATION_JSON})
 public class CodesService {
   private static Logger log = LoggerFactory.getLogger(CodesService.class);
@@ -46,6 +48,14 @@ public class CodesService {
   private final CodeDatabase cd;
   public CodesService(CodeDatabase cd) {
     this.cd = cd;
+  }
+
+  @GET
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getAll() {
+    EndpointReflection ef = new EndpointReflection();
+    return Response.ok(endPointsToMap(ef.findRESTEndpoints(List.of(CodesService.class)))).build();
   }
 
   @GET
