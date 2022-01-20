@@ -499,7 +499,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       gov.niem.niem.niem_core._2.PersonType per = niemObjFac.createPersonType();
       per.getPersonOtherIdentification().add(id);
       EntityType entity = niemObjFac.createEntityType();
-      entity.setEntityRepresentation(niemObjFac.createPerson(per));
+      entity.setEntityRepresentation(niemObjFac.createEntityPerson(per));
       m.setDocumentSubmitter(entity);
     } else {
       m.setDocumentSubmitter(null);
