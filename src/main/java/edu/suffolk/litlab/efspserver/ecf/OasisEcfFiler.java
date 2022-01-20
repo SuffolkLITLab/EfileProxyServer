@@ -483,6 +483,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       log.error("Couldn't connect to database?" + ex);
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
     }
+    log.info("Getting filing list with these params: " + courtId + ", " + userId + ", " + startDate + ", " + endDate + ", " + apiToken);
 
     Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
     if (port.isEmpty()) {
@@ -530,6 +531,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         return Response.status(500).build();
       }
     }
+    log.info("Final query: " + XmlHelper.objectToXmlStrOrError(m, FilingListQueryMessageType.class));
     FilingListResponseMessageType resp = port.get().getFilingList(m);
     for (MatchingFilingType match : resp.getMatchingFiling()) {
       log.trace("Matched: " + match.getCaseTrackingID() + ", " + match);
