@@ -175,7 +175,7 @@ public class CasesService {
       // for case search / e-filing. So, we'll return an error with the error code, but also any
       // cases that were still present.
       Set<String> cmsConnectionErrors = Set.of("-11", "-15", "-10");
-      if (resp.getError().stream().allMatch(err -> cmsConnectionErrors.contains(err.getErrorCode().getValue()))) {
+      if (resp.getError().stream().anyMatch(err -> cmsConnectionErrors.contains(err.getErrorCode().getValue()))) {
         return Response.status(203).entity(resp.getCase()).build();
       }
       return Response.status(400).entity(resp.getError()).build();
@@ -215,7 +215,7 @@ public class CasesService {
       // for case search / e-filing. So, we'll return an error with the error code, but also any
       // cases that were still present.
       Set<String> cmsConnectionErrors = Set.of("-11", "-15", "-10");
-      if (resp.getError().stream().allMatch(err -> cmsConnectionErrors.contains(err.getErrorCode().getValue()))) {
+      if (resp.getError().stream().anyMatch(err -> cmsConnectionErrors.contains(err.getErrorCode().getValue()))) {
         responseCode = 203;
       } else {
         return Response.status(400).entity(resp.getError()).build();

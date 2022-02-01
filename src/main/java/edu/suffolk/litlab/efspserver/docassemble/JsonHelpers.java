@@ -82,4 +82,17 @@ public class JsonHelpers {
     }
     return Optional.empty();
   }
+  
+  public static Optional<JsonNode> unwrapDADict(JsonNode obj) {
+    if (obj == null) {
+      return Optional.empty();
+    }
+    if (obj.isArray()) {
+      return Optional.of(obj);
+    } 
+    if (obj.isObject() && obj.has("elements") && obj.get("elements").isObject()) {
+      return Optional.of(obj.get("elements"));
+    }
+    return Optional.empty();
+  }
 }

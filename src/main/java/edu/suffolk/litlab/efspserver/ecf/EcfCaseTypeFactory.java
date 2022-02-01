@@ -317,6 +317,10 @@ public class EcfCaseTypeFactory {
       Object partyObj;
       if (!partyAttys.getKey().isInCurrentFiling()){
         PersonType pt = ecfCommonObjFac.createPersonType();
+        if (partyAttys.getKey().id.contains(" ")) {
+          FilingError err = FilingError.serverError("Party ID " + partyAttys.getKey().id + " should be a GUID but isn't");
+          collector.error(err);
+        }
         pt.setId(partyAttys.getKey().id);
         IdentificationType id = of.createIdentificationType();
         id.setIdentificationCategory(of.createIdentificationCategoryText(XmlHelper.convertText("CASEPARTYID")));

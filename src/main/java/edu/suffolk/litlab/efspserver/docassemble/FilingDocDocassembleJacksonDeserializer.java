@@ -134,7 +134,7 @@ public class FilingDocDocassembleJacksonDeserializer {
           if (otherMatcher.find()) {
             return PartyId.CurrentFiling(varToId.get(fp)); 
           } else {
-            log.info("Existing filing party id: " + fp);
+            log.info("Existing filing party id in doc: " + fp);
             return PartyId.Already(fp); 
           }
         }
