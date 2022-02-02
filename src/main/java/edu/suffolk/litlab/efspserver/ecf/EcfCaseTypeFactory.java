@@ -52,6 +52,7 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.CriminalCas
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.DomesticCaseType;
 import tyler.ecf.extensions.common.CaseAugmentationType;
 import tyler.ecf.extensions.common.FilingAssociationType;
+import tyler.ecf.extensions.common.OrganizationIdentificationType;
 import tyler.ecf.extensions.common.ProcedureRemedyType;
 import tyler.ecf.extensions.common.ServicePartyDataType;
 
@@ -115,7 +116,22 @@ public class EcfCaseTypeFactory {
       } else if (entRep.getValue() instanceof OrganizationType orgType) {
         isOrg = true;
         IdentificationType idType = orgType.getOrganizationIdentification().getValue();
-        efmId = idType.getIdentificationID().getValue();
+        if (idType instanceof OrganizationIdentificationType orgIdObj) {
+          for (IdentificationType orgId : orgIdObj.getIdentification()) {
+            if (((TextType) orgId.getIdentificationCategory().getValue()).getValue().equals("CASEPARTYID")
+                && orgId.getIdentificationID() != null) {
+              efmId = orgId.getIdentificationID().getValue();
+              break;
+            }
+          }
+          if (efmId.isBlank() && orgIdObj.getIdentificationID() != null) {
+            efmId = orgIdObj.getIdentificationID().getValue();
+          }
+        } else {
+          if (idType != null && idType.getIdentificationID() != null) {
+            efmId = idType.getIdentificationID().getValue();
+          }
+        }
       }
       if (efmId.isBlank()) {
         log.warn("Need Id for participants on existing case");
