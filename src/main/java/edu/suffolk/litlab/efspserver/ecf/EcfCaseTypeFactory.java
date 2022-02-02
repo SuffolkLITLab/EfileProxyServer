@@ -261,7 +261,7 @@ public class EcfCaseTypeFactory {
 
     List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocation.code, comboCodes.type.code);
     Set<String> requiredTypes = partyTypes.stream().filter(t -> t.isrequired).map(t -> t.code).collect(Collectors.toSet());
-    Set<String> existingTypes = new HashSet<>();
+    Set<String> hereTypes = new HashSet<>();
     Map<String, Object> partyIdToRefObj = new HashMap<>();
     int i = 0;
     for (Person plaintiff : info.getNewPlaintiffs()) {
@@ -270,7 +270,7 @@ public class EcfCaseTypeFactory {
       collector.popAttributeStack();
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
       partyIdToRefObj.put(plaintiff.getIdString(), cp.getEntityRepresentation().getValue());
-      existingTypes.add(plaintiff.getRole());
+      hereTypes.add(plaintiff.getRole());
     }
 
     i = 0;
@@ -280,14 +280,16 @@ public class EcfCaseTypeFactory {
       collector.popAttributeStack();
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
       partyIdToRefObj.put(defendant.getIdString(), cp.getEntityRepresentation().getValue());
-      existingTypes.add(defendant.getRole());
+      hereTypes.add(defendant.getRole());
     }
     
-    if (isFirstIndexedFiling) {  // We can assume that the initial filing handled all of the required parties
-      requiredTypes.removeAll(existingTypes);
+    // We need to make sure the initial filing handles all required parties: subsequents we can
+    // assume the required parties are there
+    if (isFirstIndexedFiling) {  
+      requiredTypes.removeAll(hereTypes);
       if (!requiredTypes.isEmpty()) {
         FilingError err = FilingError.serverError("DEV ERROR: All required parties not covered by existing party types. ("
-            + existingTypes + ". Missing " + requiredTypes);
+            + hereTypes + ". Missing " + requiredTypes);
         collector.error(err);
       }
     }
@@ -329,6 +331,7 @@ public class EcfCaseTypeFactory {
 
         CaseParticipantType cpt = ecfCommonObjFac.createCaseParticipantType();
         cpt.setEntityRepresentation(ecfCommonObjFac.createEntityPerson(pt));
+        cpt.setCaseParticipantRoleCode(XmlHelper.convertText(comboCodes.partyTypes.get(partyAttys.getKey().id).code));
         ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cpt));
         partyObj = pt;
       } else if (partyIdToRefObj.containsKey(partyAttys.getKey().id)) {

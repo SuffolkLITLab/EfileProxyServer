@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.xml.bind.JAXBElement;
 
 import org.slf4j.Logger;
@@ -100,13 +102,15 @@ public class EcfCourtSpecificSerializer {
   
   /** Given the case info from a case that's already in the court's system on a subsequent filing. */
   public ComboCaseCodes serializeCaseCodesIndexed(String caseCategoryCode, 
-      String caseTypeCode, List<String> filingCodeStrs, InfoCollector collector) throws FilingError {
+      String caseTypeCode, List<String> filingCodeStrs, Map<String, String> existingPartyCodes, Map<String, String> newPartyCodes, 
+      InfoCollector collector) throws FilingError {
     CaseCategory caseCategory = vetCaseCat(cd.getCaseCategoryWithKey(this.court.code, caseCategoryCode), collector);
     List<CaseType> caseTypes = cd.getCaseTypesFor(court.code, caseCategory.code, Optional.empty());
     Optional<CaseType> maybeType = cd.getCaseTypeWith(court.code, caseTypeCode);
     CaseType type = vetCaseType(maybeType, caseTypes, caseCategory, collector, false);
     List<FilingCode> filingRealCodes = vetFilingTypes(filingCodeStrs, caseCategory, type, collector, false);
-    return new ComboCaseCodes(caseCategory, type, filingRealCodes);
+    Map<String, PartyType> partyTypes = vetPartyTypes(existingPartyCodes, newPartyCodes, type);
+    return new ComboCaseCodes(caseCategory, type, filingRealCodes, partyTypes);
   }
   
   /** Either an initial filing, or a non-indexed case. */
@@ -132,7 +136,10 @@ public class EcfCourtSpecificSerializer {
     }
     List<String> filingCodeStrs = maybeFilingCodes.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
     List<FilingCode> filingCodes = vetFilingTypes(filingCodeStrs, caseCategory, type, collector, isInitialFiling);
-    return new ComboCaseCodes(caseCategory, type, filingCodes); 
+    Map<String, String> partyCodes = Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
+        .collect(Collectors.toMap(per -> per.getIdString(), per -> per.getRole()));
+    Map<String, PartyType> partyTypes = vetPartyTypes(Map.of(), partyCodes, type);
+    return new ComboCaseCodes(caseCategory, type, filingCodes, partyTypes); 
   }
 
   private CaseCategory vetCaseCat(Optional<CaseCategory> caseCat, InfoCollector collector) throws FilingError {
@@ -202,6 +209,29 @@ public class EcfCourtSpecificSerializer {
     }
     
     return maybeCodes.stream().map(f -> f.get()).collect(Collectors.toList());
+  }
+  
+  /** 
+   * existingPartyCodes: str of Tyler party ID to their role code string
+   * newPartyCodes: str of our generated ID of party to their role code string
+   * @return the combined map of tyler ids and our ids to each party type
+   */
+  private Map<String, PartyType> vetPartyTypes(Map<String, String> existingPartyCodes, Map<String, String> newPartyCodes, CaseType type) throws FilingError {
+    List<PartyType> allTypes = cd.getPartyTypeFor(court.code, type.code);
+    Map<String, PartyType> codeToPartyType = allTypes.stream().collect(Collectors.toMap(pt -> pt.code, pt -> pt));
+    Map<String, PartyType> partyTypes = new HashMap<>();
+    for (Map.Entry<String, String> party : existingPartyCodes.entrySet()) {
+      if (codeToPartyType.containsKey(party.getValue())) {
+        partyTypes.put(party.getKey(), codeToPartyType.get(party.getValue()));
+      }
+    }
+    for (Map.Entry<String, String> party : newPartyCodes.entrySet()) {
+      if (codeToPartyType.containsKey(party.getValue())) {
+        partyTypes.put(party.getKey(), codeToPartyType.get(party.getValue()));
+      }
+    }
+    // TODO(brycew): move more detailed vetting to be here: stuff in EcfCaseTypeFactory.java:263
+    return partyTypes;
   }
 
 

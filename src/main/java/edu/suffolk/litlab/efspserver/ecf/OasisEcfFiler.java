@@ -5,6 +5,8 @@ import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
+import edu.suffolk.litlab.efspserver.PartyId;
+import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
@@ -42,6 +44,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
@@ -180,14 +183,18 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         resp.getCase().getValue().getCaseTrackingID();
         String catCode = resp.getCase().getValue().getCaseCategoryText().getValue();
         String typeCode = EcfCaseTypeFactory.getCaseAugmentation(resp.getCase().getValue()).get().getCaseTypeText().getValue(); 
+        Map<PartyId, Person> exisitingPartips = EcfCaseTypeFactory.getCaseParticipants(resp.getCase().getValue()).get(); 
         List<Optional<String>> maybeFilingCodes = info.getFilings().stream().map(f -> f.getFilingCode()).collect(Collectors.toList()); 
         if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
           InterviewVariable filingVar = collector.requestVar("court_bundle[i].tyler_filing_type", "What filing type is this?", "text"); 
           collector.addRequired(filingVar);
         }
         List<String> filingCodeStrs = maybeFilingCodes.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
+        Map<String, String> newPartyCodes = Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
+            .collect(Collectors.toMap(per -> per.getIdString(), per -> per.getRole()));
+        Map<String, String> existingPartyCodes = exisitingPartips.entrySet().stream().collect(Collectors.toMap(ent -> ent.getKey().id, ent -> ent.getValue().getRole()));
         log.info("Existing cat, type, and filings: " + catCode + "," + typeCode + "," + filingCodeStrs);
-        allCodes = serializer.serializeCaseCodesIndexed(catCode, typeCode, filingCodeStrs, collector);
+        allCodes = serializer.serializeCaseCodesIndexed(catCode, typeCode, filingCodeStrs, existingPartyCodes, newPartyCodes, collector);
       } else {
         allCodes = serializer.serializeCaseCodes(info, collector, isInitialFiling);
       }
@@ -223,7 +230,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
 
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> assembledCase =
           ecfCaseFactory.makeCaseTypeFromTylerCategory(
-              locationInfo, allCodes, 
+              locationInfo, allCodes,
               info, isInitialFiling, isFirstIndexedFiling,
               info.getFilings()
                   .stream()
