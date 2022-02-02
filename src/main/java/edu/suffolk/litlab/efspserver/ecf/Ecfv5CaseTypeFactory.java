@@ -138,7 +138,7 @@ public class Ecfv5CaseTypeFactory {
           if (!existingParties.get().containsKey(partyAndAtt.getKey())) {
             collector.addWrong(collector.requestVar("party_to_attorneys", "Can't find the existing party ID in the existing parties", "text"));
           }
-          EntityType ent = serializeExistingParticipant(partyAndAtt.getKey().id, existingParties.get().get(partyAndAtt.getKey()));
+          EntityType ent = serializeExistingParticipant("id-" + partyAndAtt.getKey().id, existingParties.get().get(partyAndAtt.getKey()));
           idToCaseParty.put(partyAndAtt.getKey(), ent);
           ecfAug.getRest().add(oasisObjFac.createCaseParty(ent));
         }
@@ -230,6 +230,7 @@ public class Ecfv5CaseTypeFactory {
     return Result.ok(ct);
   }
   
+  /** id should start with a letter and not contain spaces. */
   private EntityType serializeExistingParticipant(String id, Person existingParty) {
     EntityType ent = niemObjFac.createEntityType();
     ent.setId(id);

@@ -321,7 +321,7 @@ public class EcfCaseTypeFactory {
           FilingError err = FilingError.serverError("Party ID " + partyAttys.getKey().id + " should be a GUID but isn't");
           collector.error(err);
         }
-        pt.setId(partyAttys.getKey().id);
+        pt.setId("id-" + partyAttys.getKey().id);
         IdentificationType id = of.createIdentificationType();
         id.setIdentificationCategory(of.createIdentificationCategoryText(XmlHelper.convertText("CASEPARTYID")));
         id.setIdentificationID(XmlHelper.convertString(partyAttys.getKey().id));
