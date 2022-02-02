@@ -92,6 +92,7 @@ public class EcfCaseTypeFactory {
     if (maybeAug.isEmpty()) {
       return Optional.empty();
     }
+    log.info("Getting info from: " + XmlHelper.objectToXmlStrOrError(maybeAug.get(), CaseAugmentationType.class));
     
     for (var jaxPart : maybeAug.get().getCaseParticipant()) {
       String role = jaxPart.getValue().getCaseParticipantRoleCode().getValue();
