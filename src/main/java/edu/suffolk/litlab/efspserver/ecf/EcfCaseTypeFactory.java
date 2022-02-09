@@ -349,7 +349,7 @@ public class EcfCaseTypeFactory {
           OrganizationIdentificationType orgId = tylerObjFac.createOrganizationIdentificationType();
           orgId.getIdentification().add(id);
           OrganizationType ot = ecfCommonObjFac.createOrganizationType();
-          ot.setOrganizationIdentification(tylerObjFac.createIdentification(id));
+          ot.setOrganizationIdentification(tylerObjFac.createOrganizationOtherIdentification(orgId));
           ot.setId("id-" + partyAttys.getKey().id);
           cpt.setEntityRepresentation(ecfCommonObjFac.createEntityOrganization(ot));
           partyObj = ot;
