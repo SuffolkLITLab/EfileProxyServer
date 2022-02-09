@@ -342,19 +342,18 @@ public class EcfCaseTypeFactory {
           collector.error(err);
         }
         CaseParticipantType cpt = ecfCommonObjFac.createCaseParticipantType();
+        IdentificationType id = of.createIdentificationType();
+        id.setIdentificationCategory(of.createIdentificationCategoryText(XmlHelper.convertText("CASEPARTYID")));
+        id.setIdentificationID(XmlHelper.convertString(partyAttys.getKey().id));
         if (comboCodes.partyInfo.get(partyAttys.getKey().id).getRight()) {
           OrganizationIdentificationType orgId = tylerObjFac.createOrganizationIdentificationType();
-          orgId.setIdentificationCategory(of.createIdentificationCategoryText(XmlHelper.convertText("CASEPARTYID")));
-          orgId.setIdentificationID(XmlHelper.convertString(partyAttys.getKey().id));
+          orgId.getIdentification().add(id);
           OrganizationType ot = ecfCommonObjFac.createOrganizationType();
-          ot.setOrganizationIdentification(tylerObjFac.createOrganizationOtherIdentification(orgId));
+          ot.setOrganizationIdentification(tylerObjFac.createIdentification(id));
           ot.setId("id-" + partyAttys.getKey().id);
           cpt.setEntityRepresentation(ecfCommonObjFac.createEntityOrganization(ot));
           partyObj = ot;
         } else {
-          IdentificationType id = of.createIdentificationType();
-          id.setIdentificationCategory(of.createIdentificationCategoryText(XmlHelper.convertText("CASEPARTYID")));
-          id.setIdentificationID(XmlHelper.convertString(partyAttys.getKey().id));
           PersonType pt = ecfCommonObjFac.createPersonType();
           pt.setId("id-" + partyAttys.getKey().id);
           pt.getPersonOtherIdentification().add(id);
