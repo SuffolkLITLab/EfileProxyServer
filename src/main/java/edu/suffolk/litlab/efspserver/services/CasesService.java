@@ -265,8 +265,7 @@ public class CasesService {
 
     ServiceAttachCaseListQueryMessageType query = new ServiceAttachCaseListQueryMessageType();
     EntityType typ = new EntityType();
-    JAXBElement<PersonType> elem2 = ecfOf.createEntityPerson(new PersonType());
-    typ.setEntityRepresentation(elem2);
+    typ.setEntityRepresentation(ecfOf.createEntityPerson(new PersonType()));
     query.setQuerySubmitter(typ);
     query.setCaseCourt(XmlHelper.convertCourtType(courtId));
     query.setServiceContactIdentification(XmlHelper.convertId(serviceId));

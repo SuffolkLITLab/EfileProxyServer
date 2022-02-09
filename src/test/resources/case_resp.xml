@@ -1,0 +1,121 @@
+<CaseResponseMessage xmlns="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseResponseMessage-4.0" xmlns:tyler="urn:tyler:ecf:extensions:Common" xmlns:j="http://niem.gov/niem/domains/jxdm/4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:s="http://niem.gov/niem/structures/2.0">
+  <ecf:SendingMDELocationID>
+    <nc:IdentificationID />
+  </ecf:SendingMDELocationID>
+  <ecf:SendingMDEProfileCode />
+  <j:CaseCourt />
+  <ecf:Error>
+    <ecf:ErrorCode>0</ecf:ErrorCode>
+    <ecf:ErrorText>No error</ecf:ErrorText>
+  </ecf:Error>
+  <civil:CivilCase xmlns:civil="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CivilCase-4.0">
+    <nc:ActivityDate>
+      <nc:DateTime>2022-01-27T06:00:00.0Z</nc:DateTime>
+    </nc:ActivityDate>
+    <nc:ActivityStatus>
+      <nc:StatusText>Open</nc:StatusText>
+      <nc:StatusDescriptionText>CASE_STATUS</nc:StatusDescriptionText>
+    </nc:ActivityStatus>
+    <nc:CaseTitleText>ABC CORP VS. ORG XYZ</nc:CaseTitleText>
+    <nc:CaseCategoryText>190921</nc:CaseCategoryText>
+    <nc:CaseTrackingID>IL016025J2022EV12</nc:CaseTrackingID>
+    <nc:CaseDocketID>2022EV12</nc:CaseDocketID>
+    <j:CaseAugmentation>
+      <j:CaseCourt>
+        <nc:OrganizationIdentification>
+          <nc:IdentificationID>coles</nc:IdentificationID>
+        </nc:OrganizationIdentification>
+      </j:CaseCourt>
+      <j:CaseJudge>
+        <j:JudicialOfficialBarMembership>
+          <j:JudicialOfficialBarIdentification>
+            <nc:IdentificationID />
+          </j:JudicialOfficialBarIdentification>
+        </j:JudicialOfficialBarMembership>
+      </j:CaseJudge>
+      <j:CaseLineageCase>
+        <nc:CaseTrackingID>a08f60c4-832c-48b9-8ce0-7563a6613aaa</nc:CaseTrackingID>
+      </j:CaseLineageCase>
+    </j:CaseAugmentation>
+    <tyler:CaseAugmentation>
+      <ecf:CaseParticipant>
+        <ecf:EntityOrganization s:id="Party1">
+          <tyler:OrganizationOtherIdentification>
+            <tyler:Identification>
+              <nc:IdentificationID>7df2f0f0-abca-4cc1-a5b5-8b621955079d</nc:IdentificationID>
+              <nc:IdentificationCategoryText>CASEPARTYID</nc:IdentificationCategoryText>
+            </tyler:Identification>
+          </tyler:OrganizationOtherIdentification>
+          <nc:OrganizationName>ABC CORP</nc:OrganizationName>
+          <ecf:OrganizationAugmentation>
+            <nc:ContactInformation>
+              <nc:ContactTelephoneNumber>
+                <nc:FullTelephoneNumber>
+                  <nc:TelephoneNumberFullID>
+                  </nc:TelephoneNumberFullID>
+                </nc:FullTelephoneNumber>
+              </nc:ContactTelephoneNumber>
+              <nc:ContactEmailID>
+              </nc:ContactEmailID>
+              <nc:ContactMailingAddress>
+                <nc:StructuredAddress>
+                  <nc:LocationStreet>
+                    <nc:StreetFullText />
+                  </nc:LocationStreet>
+                  <nc:AddressSecondaryUnitText />
+                  <nc:LocationCityName />
+                  <nc:LocationStateName />
+                  <nc:LocationCountryFIPS10-4Code>US</nc:LocationCountryFIPS10-4Code>
+                  <nc:LocationPostalCode />
+                </nc:StructuredAddress>
+              </nc:ContactMailingAddress>
+            </nc:ContactInformation>
+          </ecf:OrganizationAugmentation>
+        </ecf:EntityOrganization>
+        <ecf:CaseParticipantRoleCode>20646</ecf:CaseParticipantRoleCode>
+      </ecf:CaseParticipant>
+      <ecf:CaseParticipant>
+        <ecf:EntityOrganization s:id="Party2">
+          <tyler:OrganizationOtherIdentification>
+            <tyler:Identification>
+              <nc:IdentificationID>e56ed9ec-b473-41cc-bfb6-fec4129422bb</nc:IdentificationID>
+              <nc:IdentificationCategoryText>CASEPARTYID</nc:IdentificationCategoryText>
+            </tyler:Identification>
+          </tyler:OrganizationOtherIdentification>
+          <nc:OrganizationName>ORG XYZ</nc:OrganizationName>
+          <ecf:OrganizationAugmentation>
+            <nc:ContactInformation>
+              <nc:ContactTelephoneNumber>
+                <nc:FullTelephoneNumber>
+                  <nc:TelephoneNumberFullID>
+                  </nc:TelephoneNumberFullID>
+                </nc:FullTelephoneNumber>
+              </nc:ContactTelephoneNumber>
+              <nc:ContactEmailID>
+              </nc:ContactEmailID>
+              <nc:ContactMailingAddress>
+                <nc:StructuredAddress>
+                  <nc:LocationStreet>
+                    <nc:StreetFullText />
+                  </nc:LocationStreet>
+                  <nc:AddressSecondaryUnitText />
+                  <nc:LocationCityName />
+                  <nc:LocationStateName />
+                  <nc:LocationCountryFIPS10-4Code>US</nc:LocationCountryFIPS10-4Code>
+                  <nc:LocationPostalCode />
+                </nc:StructuredAddress>
+              </nc:ContactMailingAddress>
+            </nc:ContactInformation>
+          </ecf:OrganizationAugmentation>
+        <!-- TODO(brycew): got this file from Tyler: was it invalid when sent to us? -->
+        </ecf:EntityOrganization>
+        <ecf:CaseParticipantRoleCode>20641</ecf:CaseParticipantRoleCode>
+      </ecf:CaseParticipant>
+      <tyler:CaseTypeText>205200</tyler:CaseTypeText>
+    </tyler:CaseAugmentation>
+    <ecf:CauseOfActionCode />
+    <civil:ClassActionIndicator>false</civil:ClassActionIndicator>
+    <civil:JuryDemandIndicator>false</civil:JuryDemandIndicator>
+    <civil:ReliefTypeCode />
+  </civil:CivilCase>
+</CaseResponseMessage>

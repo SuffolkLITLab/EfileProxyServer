@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 import javax.xml.bind.JAXBElement;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,14 +103,14 @@ public class EcfCourtSpecificSerializer {
   
   /** Given the case info from a case that's already in the court's system on a subsequent filing. */
   public ComboCaseCodes serializeCaseCodesIndexed(String caseCategoryCode, 
-      String caseTypeCode, List<String> filingCodeStrs, Map<String, String> existingPartyCodes, Map<String, String> newPartyCodes, 
+      String caseTypeCode, List<String> filingCodeStrs, Map<String, Person> existingParties, Map<String, Person> newParties, 
       InfoCollector collector) throws FilingError {
     CaseCategory caseCategory = vetCaseCat(cd.getCaseCategoryWithKey(this.court.code, caseCategoryCode), collector);
     List<CaseType> caseTypes = cd.getCaseTypesFor(court.code, caseCategory.code, Optional.empty());
     Optional<CaseType> maybeType = cd.getCaseTypeWith(court.code, caseTypeCode);
     CaseType type = vetCaseType(maybeType, caseTypes, caseCategory, collector, false);
     List<FilingCode> filingRealCodes = vetFilingTypes(filingCodeStrs, caseCategory, type, collector, false);
-    Map<String, PartyType> partyTypes = vetPartyTypes(existingPartyCodes, newPartyCodes, type);
+    Map<String, Pair<PartyType, Boolean>> partyTypes = vetPartyTypes(existingParties, newParties, type);
     return new ComboCaseCodes(caseCategory, type, filingRealCodes, partyTypes);
   }
   
@@ -136,9 +137,9 @@ public class EcfCourtSpecificSerializer {
     }
     List<String> filingCodeStrs = maybeFilingCodes.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
     List<FilingCode> filingCodes = vetFilingTypes(filingCodeStrs, caseCategory, type, collector, isInitialFiling);
-    Map<String, String> partyCodes = Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
-        .collect(Collectors.toMap(per -> per.getIdString(), per -> per.getRole()));
-    Map<String, PartyType> partyTypes = vetPartyTypes(Map.of(), partyCodes, type);
+    Map<String, Person> partyInfo = Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
+        .collect(Collectors.toMap(per -> per.getIdString(), per -> per));
+    Map<String, Pair<PartyType, Boolean>> partyTypes = vetPartyTypes(Map.of(), partyInfo, type);
     return new ComboCaseCodes(caseCategory, type, filingCodes, partyTypes); 
   }
 
@@ -216,22 +217,24 @@ public class EcfCourtSpecificSerializer {
    * newPartyCodes: str of our generated ID of party to their role code string
    * @return the combined map of tyler ids and our ids to each party type
    */
-  private Map<String, PartyType> vetPartyTypes(Map<String, String> existingPartyCodes, Map<String, String> newPartyCodes, CaseType type) throws FilingError {
+  private Map<String, Pair<PartyType, Boolean>> vetPartyTypes(
+      Map<String, Person> existingParties, 
+      Map<String, Person> newParties, CaseType type) throws FilingError {
     List<PartyType> allTypes = cd.getPartyTypeFor(court.code, type.code);
     Map<String, PartyType> codeToPartyType = allTypes.stream().collect(Collectors.toMap(pt -> pt.code, pt -> pt));
-    Map<String, PartyType> partyTypes = new HashMap<>();
-    for (Map.Entry<String, String> party : existingPartyCodes.entrySet()) {
-      if (codeToPartyType.containsKey(party.getValue())) {
-        partyTypes.put(party.getKey(), codeToPartyType.get(party.getValue()));
+    Map<String, Pair<PartyType, Boolean>> partyInfo = new HashMap<>();
+    for (Map.Entry<String, Person> party : existingParties.entrySet()) {
+      if (codeToPartyType.containsKey(party.getValue().getRole())) {
+        partyInfo.put(party.getKey(), Pair.of(codeToPartyType.get(party.getValue().getRole()), party.getValue().isOrg()));
       }
     }
-    for (Map.Entry<String, String> party : newPartyCodes.entrySet()) {
-      if (codeToPartyType.containsKey(party.getValue())) {
-        partyTypes.put(party.getKey(), codeToPartyType.get(party.getValue()));
+    for (Map.Entry<String, Person> party : newParties.entrySet()) {
+      if (codeToPartyType.containsKey(party.getValue().getRole())) {
+        partyInfo.put(party.getKey(), Pair.of(codeToPartyType.get(party.getValue().getRole()), party.getValue().isOrg()));
       }
     }
     // TODO(brycew): move more detailed vetting to be here: stuff in EcfCaseTypeFactory.java:263
-    return partyTypes;
+    return partyInfo;
   }
 
 

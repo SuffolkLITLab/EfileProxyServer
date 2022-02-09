@@ -131,6 +131,9 @@ public class EcfCaseTypeFactory {
             efmId = idType.getIdentificationID().getValue();
           }
         }
+        if (orgType.getOrganizationName() != null) {
+          name = new Name(orgType.getOrganizationName().getValue());
+        }
       }
       if (efmId.isBlank()) {
         log.warn("Need Id for participants on existing case");
@@ -176,7 +179,7 @@ public class EcfCaseTypeFactory {
       boolean isInitialFiling,
       boolean isFirstIndexedFiling,
       List<String> filingIds,
-      // HACK(brycew): hacky: needed because fee querys and Service put the payment stuff in the tyler Aug
+      // HACK(brycew): hacky: needed because "fees" querys and "service" put the payment stuff in the tyler Aug
       String queryType,
       JsonNode miscInfo, // TODO(brycew-later): if we get XML Answer files, this isn't generic
       EcfCourtSpecificSerializer serializer,
@@ -334,22 +337,32 @@ public class EcfCaseTypeFactory {
       log.info("Setting Attorneys for : " + partyAttys.getKey());
       Object partyObj;
       if (!partyAttys.getKey().isInCurrentFiling()){
-        PersonType pt = ecfCommonObjFac.createPersonType();
         if (partyAttys.getKey().id.contains(" ")) {
           FilingError err = FilingError.serverError("Party ID " + partyAttys.getKey().id + " should be a GUID but isn't");
           collector.error(err);
         }
-        pt.setId("id-" + partyAttys.getKey().id);
-        IdentificationType id = of.createIdentificationType();
-        id.setIdentificationCategory(of.createIdentificationCategoryText(XmlHelper.convertText("CASEPARTYID")));
-        id.setIdentificationID(XmlHelper.convertString(partyAttys.getKey().id));
-        pt.getPersonOtherIdentification().add(id);
-
         CaseParticipantType cpt = ecfCommonObjFac.createCaseParticipantType();
-        cpt.setEntityRepresentation(ecfCommonObjFac.createEntityPerson(pt));
-        cpt.setCaseParticipantRoleCode(XmlHelper.convertText(comboCodes.partyTypes.get(partyAttys.getKey().id).code));
+        if (comboCodes.partyInfo.get(partyAttys.getKey().id).getRight()) {
+          OrganizationIdentificationType orgId = tylerObjFac.createOrganizationIdentificationType();
+          orgId.setIdentificationCategory(of.createIdentificationCategoryText(XmlHelper.convertText("CASEPARTYID")));
+          orgId.setIdentificationID(XmlHelper.convertString(partyAttys.getKey().id));
+          OrganizationType ot = ecfCommonObjFac.createOrganizationType();
+          ot.setOrganizationIdentification(tylerObjFac.createOrganizationOtherIdentification(orgId));
+          ot.setId("id-" + partyAttys.getKey().id);
+          cpt.setEntityRepresentation(ecfCommonObjFac.createEntityOrganization(ot));
+          partyObj = ot;
+        } else {
+          IdentificationType id = of.createIdentificationType();
+          id.setIdentificationCategory(of.createIdentificationCategoryText(XmlHelper.convertText("CASEPARTYID")));
+          id.setIdentificationID(XmlHelper.convertString(partyAttys.getKey().id));
+          PersonType pt = ecfCommonObjFac.createPersonType();
+          pt.setId("id-" + partyAttys.getKey().id);
+          pt.getPersonOtherIdentification().add(id);
+          cpt.setEntityRepresentation(ecfCommonObjFac.createEntityPerson(pt));
+          partyObj = pt;
+        }
+        cpt.setCaseParticipantRoleCode(XmlHelper.convertText(comboCodes.partyInfo.get(partyAttys.getKey().id).getLeft().code));
         ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cpt));
-        partyObj = pt;
       } else if (partyIdToRefObj.containsKey(partyAttys.getKey().id)) {
         partyObj = partyIdToRefObj.get(partyAttys.getKey().id);
       } else {
