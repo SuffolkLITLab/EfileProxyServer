@@ -69,7 +69,8 @@ public class FilingInformationDocassembleJacksonDeserializer
     JsonNode peopleElements = maybePplElements.get(); 
     for (int i = 0; i < peopleElements.size(); i++) {
       JsonNode perJson = peopleElements.get(i);
-      if (!filterFlag.isBlank()) {
+      if (filterFlag != null && !filterFlag.isBlank()) {
+        // Assume not setting filterFlag is the same as it being false (i.e. skipping)
         if (!perJson.has(filterFlag) || !perJson.get(filterFlag).asBoolean(false)) {
           continue;
         }

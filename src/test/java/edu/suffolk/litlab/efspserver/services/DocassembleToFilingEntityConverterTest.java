@@ -142,4 +142,14 @@ public class DocassembleToFilingEntityConverterTest {
     assertEquals(info.getNewPlaintiffs().size(), 1);
     assertTrue(info.getNewPlaintiffs().get(0).isFormFiller());
   }
+
+  @Test
+  public void testfilteredOutNotNew() throws IOException {
+    String contents = getFileContents("/checking_filtered_users.json");
+    Result<FilingInformation, FilingError> maybeInfo = converter.extractEntities(contents);
+    assertThat(maybeInfo).isOk();
+    FilingInformation info = maybeInfo.unwrapOrElseThrow();
+    assertEquals(1, info.getNewPlaintiffs().size(), "Should have only been 1 plaintiff, but were " + info.getNewPlaintiffs().size());
+    assertTrue(info.getNewPlaintiffs().get(0).isFormFiller());
+  }
 }
