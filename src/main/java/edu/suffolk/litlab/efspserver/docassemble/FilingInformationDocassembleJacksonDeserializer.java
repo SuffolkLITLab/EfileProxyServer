@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +40,6 @@ public class FilingInformationDocassembleJacksonDeserializer
       FilingInformationDocassembleJacksonDeserializer.class);
 
   private static final long serialVersionUID = 1L;
-  private static Pattern usersPattern = Pattern.compile("(added\\_)?users\\[[0-9]+\\]");
-  private static Pattern otherPattern = Pattern.compile("(added\\_)?other_parties\\[[0-9]+\\]");
   private InfoCollector classCollector;
 
   public FilingInformationDocassembleJacksonDeserializer(Class<FilingInformation> t, InfoCollector collector) {
@@ -259,7 +255,8 @@ public class FilingInformationDocassembleJacksonDeserializer
     return ids;
   }
   
-  private static Map<PartyId, List<String>> extractPartyAttorneyMap(JsonNode maybePartyToAttorney, Map<String, String> varToId) {
+  private static Map<PartyId, List<String>> extractPartyAttorneyMap(JsonNode maybePartyToAttorney, 
+      Map<String, String> varToId) {
     Map<PartyId, List<String>> partyToAttorney = new HashMap<>(); 
     Optional<JsonNode> partyToAttorneyJson = JsonHelpers.unwrapDADict(maybePartyToAttorney);
     if (partyToAttorneyJson.isPresent()) {
@@ -267,21 +264,16 @@ public class FilingInformationDocassembleJacksonDeserializer
       while (fields.hasNext()) {
         Entry<String, JsonNode> elem = fields.next();
         final String userStr = elem.getKey();
-        Matcher userMatcher = usersPattern.matcher(userStr); 
         PartyId realId = null;
-        if (userMatcher.find()) {
+        if (varToId.containsKey(userStr)) {
+          log.info("filing party in current filing for attorney map: " + userStr);
           realId = PartyId.CurrentFiling(varToId.get(userStr));
         } else {
-          Matcher otherMatcher = otherPattern.matcher(userStr);
-          if (otherMatcher.find()) {
-            realId = PartyId.CurrentFiling(varToId.get(userStr));
-          } else {
-            log.info("Existing filing party id for attorney: " + userStr);
-            realId = PartyId.Already(userStr);
-          }
+          log.info("Existing filing party id for attorney map: " + userStr);
+          realId = PartyId.Already(userStr);
         }
         // Get the attorney elements (just strings in a list or DAList) into this Java List
-        List<String> theseAttorneys = new ArrayList<String>();
+        var theseAttorneys = new ArrayList<String>();
         JsonHelpers.unwrapDAList(elem.getValue()).ifPresent(x -> x.elements().forEachRemaining(v -> theseAttorneys.add(v.asText())));
         partyToAttorney.put(realId, theseAttorneys);
       }

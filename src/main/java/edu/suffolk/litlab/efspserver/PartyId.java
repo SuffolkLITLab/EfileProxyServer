@@ -50,4 +50,9 @@ public class PartyId {
   public int hashCode() {
     return (new HashCodeBuilder(17, 31)).append(id).append(kind).toHashCode();
   }
+  
+  @Override
+  public String toString() {
+    return "PartyId[id: " + id + ", kind: " + kind + "]";
+  }
 }
