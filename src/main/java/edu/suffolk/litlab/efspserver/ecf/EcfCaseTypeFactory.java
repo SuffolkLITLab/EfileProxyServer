@@ -364,8 +364,11 @@ public class EcfCaseTypeFactory {
         ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cpt));
       } else if (partyIdToRefObj.containsKey(partyAttys.getKey().id)) {
         partyObj = partyIdToRefObj.get(partyAttys.getKey().id);
+      } else if (partyIdToRefObj.isEmpty()) {
+        log.warn("No current filing parties, but " + partyAttys.getKey().id + " is in the current filing?");
+        continue;
       } else {
-        log.warn("Can't handle current filing participant not already added?!");
+        log.warn("Can't handle current filing participant (" + partyAttys.getKey().id + ") not already added?!");
         continue;
       }
       ReferenceType repdRef = structObjFac.createReferenceType();

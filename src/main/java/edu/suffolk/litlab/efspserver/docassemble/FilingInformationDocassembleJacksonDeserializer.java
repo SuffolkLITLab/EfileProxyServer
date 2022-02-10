@@ -47,6 +47,14 @@ public class FilingInformationDocassembleJacksonDeserializer
     this.classCollector = collector;
   }
 
+  /** 
+   * @param topObj
+   * @param potentialMember
+   * @param collector
+   * @param filterFlag: the person will be skipped if that attribute is set to false.
+   * @return
+   * @throws FilingError
+   */
   private static List<Person> collectPeople(JsonNode topObj,
       String potentialMember, InfoCollector collector, String filterFlag) throws FilingError {
     if (!topObj.has(potentialMember)) {
@@ -62,7 +70,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     for (int i = 0; i < peopleElements.size(); i++) {
       JsonNode perJson = peopleElements.get(i);
       if (!filterFlag.isBlank()) {
-        if (!perJson.has(filterFlag) || perJson.get(filterFlag).asBoolean(false)) {
+        if (!perJson.has(filterFlag) || !perJson.get(filterFlag).asBoolean(false)) {
           continue;
         }
       }
@@ -125,6 +133,7 @@ public class FilingInformationDocassembleJacksonDeserializer
         collector.addRequired(var);
       }
     } else {
+      log.info("Not first indexed");
       users = collectPeople(node, "users", collector, "is_new");
       otherParties = collectPeople(node, "other_parties", collector, "is_new");
     }
@@ -259,6 +268,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       Map<String, String> varToId) {
     Map<PartyId, List<String>> partyToAttorney = new HashMap<>(); 
     Optional<JsonNode> partyToAttorneyJson = JsonHelpers.unwrapDADict(maybePartyToAttorney);
+    log.info("" + varToId);
     if (partyToAttorneyJson.isPresent()) {
       Iterator<Entry<String, JsonNode>> fields = partyToAttorneyJson.get().fields();
       while (fields.hasNext()) {
