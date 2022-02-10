@@ -141,6 +141,7 @@ public class FilingReviewService {
     if (mediaType == null) {
       mediaType = MediaType.valueOf("application/json");
     }
+    log.info("All vars for check:" + allVars);
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(jurisdiction, courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
