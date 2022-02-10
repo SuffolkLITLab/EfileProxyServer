@@ -37,6 +37,7 @@ import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.CrossReference;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
+import edu.suffolk.litlab.efspserver.codes.DataFields;
 import edu.suffolk.litlab.efspserver.codes.DocumentTypeTableRow;
 import edu.suffolk.litlab.efspserver.codes.FileType;
 import edu.suffolk.litlab.efspserver.codes.FilingCode;
@@ -87,8 +88,9 @@ import tyler.ecf.extensions.common.FilingTypeType;
 public class EcfCourtSpecificSerializer {
   private static Logger log = LoggerFactory.getLogger(EcfCourtSpecificSerializer.class);
 
-  private CodeDatabase cd;
-  private CourtLocationInfo court;
+  private final CodeDatabase cd;
+  private final CourtLocationInfo court;
+  public final DataFields allDataFields;
   gov.niem.niem.niem_core._2.ObjectFactory niemObjFac =
       new gov.niem.niem.niem_core._2.ObjectFactory();
   gov.niem.niem.niem_core._2.ObjectFactory coreObjFac =
@@ -99,6 +101,7 @@ public class EcfCourtSpecificSerializer {
   public EcfCourtSpecificSerializer(CodeDatabase cd, CourtLocationInfo court) {
     this.cd = cd;
     this.court = court;
+    this.allDataFields = cd.getDataFields(court.code);
   }
   
   /** Given the case info from a case that's already in the court's system on a subsequent filing. */
@@ -248,7 +251,7 @@ public class EcfCourtSpecificSerializer {
       OrganizationAugmentationType aug = ecfOf.createOrganizationAugmentationType();
       aug.getContactInformation().add(cit);
       OrganizationType ot = ecfOf.createOrganizationType();
-      DataFieldRow orgNameRow = cd.getDataField(this.court.code, "PartyBusinessName");
+      DataFieldRow orgNameRow = allDataFields.getFieldRow("PartyBusinessName");
       if (!orgNameRow.matchRegex(per.getName().getFullName())) {
         InterviewVariable var =
             collector.requestVar("name", "Name needs to match the regex: " + orgNameRow.regularexpression, "text");
@@ -282,7 +285,7 @@ public class EcfCourtSpecificSerializer {
       pt.setPersonName(serializeNameType(per.getName(), collector));
       pt.setPersonAugmentation(aug);
 
-      DataFieldRow genderRow = cd.getDataField(this.court.code, "PartyGender");
+      DataFieldRow genderRow = allDataFields.getFieldRow("PartyGender");
       if (genderRow.isvisible) {
         if (per.getGender().isPresent()) {
           String gen = per.getGender().get();
@@ -349,7 +352,7 @@ public class EcfCourtSpecificSerializer {
       cit.getContactMeans().add(contactMeans);
     }
 
-    DataFieldRow phoneRow = cd.getDataField(this.court.code, "PartyPhone");
+    DataFieldRow phoneRow = allDataFields.getFieldRow("PartyPhone");
     if (phoneRow.isvisible) {
       List<String> numbers = contactInfo.getPhoneNumbers();
       InterviewVariable var = collector.requestVar("phone_number", "Phone number", "text");
@@ -369,7 +372,7 @@ public class EcfCourtSpecificSerializer {
       }
     }
     
-    DataFieldRow emailRow = cd.getDataField(this.court.code, "PartyEmail");
+    DataFieldRow emailRow = allDataFields.getFieldRow("PartyEmail");
     if (emailRow.isvisible) {
       InterviewVariable var = collector.requestVar("email", "Email", "email");
       if (contactInfo.getEmail().isPresent()) {
@@ -452,17 +455,17 @@ public class EcfCourtSpecificSerializer {
     };
     PersonNameType personName = niemObjFac.createPersonNameType();
     personName.setPersonGivenName(checkName(name.getFirstName(),
-        cd.getDataField(this.court.code, "PartyFirstName"), collector,
+        allDataFields.getFieldRow("PartyFirstName"), collector,
         collector.requestVar("name.first", "First name of a case party", "text")));
     personName.setPersonMaidenName(wrapName.apply(name.getMaidenName()));
     personName.setPersonMiddleName(checkName(name.getMiddleName(),
-        cd.getDataField(this.court.code, "PartyMiddleName"), collector,
+        allDataFields.getFieldRow("PartyMiddleName"), collector,
         collector.requestVar("name.middle", "Middle name of the case party", "text")));
     personName.setPersonSurName(checkName(name.getLastName(),
-        cd.getDataField(this.court.code, "PartyLastName"), collector,
+        allDataFields.getFieldRow("PartyLastName"), collector,
         collector.requestVar("name.last", "Last name of the case party", "text")));
     personName.setPersonNamePrefixText(wrapName.apply(name.getPrefix()));
-    DataFieldRow suffixRow = cd.getDataField(this.court.code, "PartyNameSuffix");
+    DataFieldRow suffixRow = allDataFields.getFieldRow("PartyNameSuffix");
     if (suffixRow.isvisible) {
       List<NameAndCode> suffixes = cd.getNameSuffixes(this.court.code);
       InterviewVariable var = collector.requestVar("name.suffix", "Suffix of the name of the party",
@@ -508,7 +511,7 @@ public class EcfCourtSpecificSerializer {
     var tylerObjFac = new tyler.ecf.extensions.common.ObjectFactory();
     var niemObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
     DocumentType docType = tylerObjFac.createDocumentType();
-    DataFieldRow row = cd.getDataField(this.court.code, "DocumentDescription");
+    DataFieldRow row = allDataFields.getFieldRow("DocumentDescription");
     if (row.isvisible) {
       docType.setDocumentDescriptionText(XmlHelper.convertText(
           findDocumentDescription(doc.getDescription(), row, doc, filing, collector)));
@@ -520,7 +523,7 @@ public class EcfCourtSpecificSerializer {
       collector.error(err);
     }
 
-    DataFieldRow fileRefRow = cd.getDataField(this.court.code, "FilingReferenceNumber");
+    DataFieldRow fileRefRow = allDataFields.getFieldRow("FilingReferenceNumber");
     if (fileRefRow.isvisible) {
       if (doc.getFilingReferenceNum().isPresent()) {
         docType.setDocumentFileControlID(XmlHelper.convertString(doc.getFilingReferenceNum().get()));
@@ -529,7 +532,7 @@ public class EcfCourtSpecificSerializer {
         collector.addRequired(var);
       }
     }
-    DataFieldRow dueDateRow = cd.getDataField(this.court.code, "DueDateAvailableForFilers");
+    DataFieldRow dueDateRow = allDataFields.getFieldRow("DueDateAvailableForFilers");
     if (filing.useduedate && dueDateRow.isvisible) {
       if (doc.getDueDate().isPresent()) {
         DateType cutOffDate = XmlHelper.convertDate(doc.getDueDate().get());
@@ -545,7 +548,7 @@ public class EcfCourtSpecificSerializer {
     DocumentMetadataType metadata = ecfOf.createDocumentMetadataType();
     metadata.setRegisterActionDescriptionText(XmlHelper.convertText(filing.code));
 
-    DataFieldRow attorneyRow = cd.getDataField(this.court.code, "FilingFilingAttorneyView");
+    DataFieldRow attorneyRow = allDataFields.getFieldRow("FilingFilingAttorneyView");
     if (attorneyRow.isvisible) {
       if (doc.getFilingAttorney().isPresent()) {
         metadata.setFilingAttorneyID(XmlHelper.convertId(doc.getFilingAttorney().get(), "REFERENCE"));
@@ -576,7 +579,7 @@ public class EcfCourtSpecificSerializer {
     docType.setCourtesyCopiesText(XmlHelper.convertText(cc));
     String prelim = doc.getPreliminaryCopies().stream().reduce("", (base, str) -> base + "," + str);
     docType.setPreliminaryCopiesText(XmlHelper.convertText(prelim));
-    DataFieldRow commentRow = cd.getDataField(this.court.code, "FilingFilingComments");
+    DataFieldRow commentRow = allDataFields.getFieldRow("FilingFilingComments");
     if (commentRow.isvisible) {
       String comment = doc.getFilingComments();
       if (!commentRow.matchRegex(comment)) {
@@ -591,7 +594,7 @@ public class EcfCourtSpecificSerializer {
       docType.setFilingCommentsText(XmlHelper.convertText(doc.getFilingComments()));
     }
 
-    DataFieldRow motionRow = cd.getDataField(this.court.code, "FilingMotionType");
+    DataFieldRow motionRow = allDataFields.getFieldRow("FilingMotionType");
     if (motionRow.isvisible) {
       List<NameAndCode> motionTypes = cd.getMotionTypes(this.court.code, filing.code);
       InterviewVariable var = collector.requestVar("motion_type", "the motion type (?)", "choices",
@@ -611,7 +614,7 @@ public class EcfCourtSpecificSerializer {
       }
     }
     Optional<Boolean> maybeServiceOnInitial = this.court.allowserviceoninitial;
-    boolean serviceOnInitial = maybeServiceOnInitial.orElse(cd.getDataField(this.court.code, "FilingServiceCheckBoxInitial").isvisible);
+    boolean serviceOnInitial = maybeServiceOnInitial.orElse(allDataFields.getFieldRow("FilingServiceCheckBoxInitial").isvisible);
     // From Reference Guide: if no FilingAction is provided, the original default behavior applies:
     // * ReviewFiling API w/o service contacts: EFile
     // * ReviewFiling API w/ service contacts: EfileAndServe
@@ -691,7 +694,7 @@ public class EcfCourtSpecificSerializer {
 
     // Literally should just be if it's confidential or not. (or "Hot fix" or public).
     // Search options in "documenttype" table with location
-    DataFieldRow documentType = cd.getDataField(this.court.code, "DocumentType");
+    DataFieldRow documentType = allDataFields.getFieldRow("DocumentType");
     if (documentType.isvisible) {
       List<DocumentTypeTableRow> docTypes = cd.getDocumentTypes(court.code, filing.code);
       InterviewVariable docTypeVar = collector.requestVar("document_type",
@@ -715,7 +718,7 @@ public class EcfCourtSpecificSerializer {
 
     log.info("Filing code: " + filing.code + " " + filing.name + ": " + docType + "///////" + attachment);
     if (doc.getInBase64()) {
-      DataFieldRow originalName = cd.getDataField(this.court.code, "OriginalFileName");
+      DataFieldRow originalName = allDataFields.getFieldRow("OriginalFileName");
       if (originalName.matchRegex(doc.getFileName()) && doc.getFileName().length() < 50) {
         attachment.setBinaryLocationURI(XmlHelper.convertUri(doc.getFileName()));
       } else {

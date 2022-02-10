@@ -261,6 +261,33 @@ public class CodeDatabase extends DatabaseInterface {
       return DataFieldRow.MissingDataField(dataName);
     }
   }
+  
+  /** gets all data fields if dataNames is empty, otherwise just those that match the code. */
+  public DataFields getDataFields(String courtLocationId) {
+    if (conn == null) {
+      log.error("SQL connection not created in DataField yet");
+      return new DataFields(Map.of()); 
+    }
+
+    try {
+      String query = CodeTableConstants.getAllDataFieldConfigsForLoc();
+      PreparedStatement st = conn.prepareStatement(query);
+      st.setString(1, courtLocationId);
+      ResultSet rs = st.executeQuery();
+      var dataFieldMap = new HashMap<String, DataFieldRow>();
+      while (rs.next()) {
+        DataFieldRow dfr = new DataFieldRow(rs.getString(1), rs.getString(2), rs.getString(3),
+            rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8),
+            rs.getString(9), rs.getString(10), rs.getString(11), rs.getString(12));
+        dataFieldMap.put(dfr.code, dfr);
+      }
+      return new DataFields(dataFieldMap);
+    } catch (SQLException ex) {
+      log.error("SQLException: " + ex.toString());
+      return new DataFields(Map.of()); 
+    }
+    
+  }
 
   public List<NameAndCode> getProcedureOrRemedy(String courtLocationId, String caseCategory) {
     if (conn == null) {

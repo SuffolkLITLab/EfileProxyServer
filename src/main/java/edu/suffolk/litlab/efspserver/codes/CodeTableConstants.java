@@ -450,6 +450,12 @@ public class CodeTableConstants {
         + "validationmessage, regularexpression, defaultvalueexpression, isreadonly, location "
         + "FROM datafieldconfig WHERE location=? AND code=?";
   }
+
+  public static String getAllDataFieldConfigsForLoc() {
+    return "SELECT code, name, isvisible, isrequired, helptext, ghosttext, contextualhelpdata, "
+        + "validationmessage, regularexpression, defaultvalueexpression, isreadonly, location "
+        + "FROM datafieldconfig WHERE location=?";
+  }
   
   public static String getProcedureOrRemedy() {
     return "SELECT name, code FROM procedureremedy WHERE location=? AND casecategory=?";

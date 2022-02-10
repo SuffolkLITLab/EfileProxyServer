@@ -262,7 +262,7 @@ public class EcfCaseTypeFactory {
       ecfAug.setCaseTypeText(XmlHelper.convertText(comboCodes.type.code));
     }
 
-    DataFieldRow subTypeConfig = cd.getDataField(courtLocation.code, "CaseInformationCaseSubType");
+    DataFieldRow subTypeConfig = serializer.allDataFields.getFieldRow("CaseInformationCaseSubType");
     if (subTypeConfig.isvisible) {
       List<NameAndCode> subTypes = cd.getCaseSubtypesFor(courtLocation.code, comboCodes.type.code);
       Optional<NameAndCode> maybeSubtype = subTypes.stream()
@@ -332,7 +332,7 @@ public class EcfCaseTypeFactory {
       attorneyCount += 1;
     }
 
-    DataFieldRow attRow = cd.getDataField(info.getCourtLocation(), "PartyAttorney");
+    DataFieldRow attRow = serializer.allDataFields.getFieldRow("PartyAttorney");
     for (Map.Entry<PartyId, List<String>> partyAttys : info.getPartyAttorneyMap().entrySet()) {
       log.info("Setting Attorneys for : " + partyAttys.getKey());
       Object partyObj;
@@ -424,16 +424,16 @@ public class EcfCaseTypeFactory {
 
 
     Optional<ProcedureRemedyType> res = makeProcedureRemedyType(isInitialFiling,
-        comboCodes.cat, courtLocation.code, miscInfo, collector);
+        comboCodes.cat, courtLocation.code, miscInfo, collector, serializer);
 
     Optional<ProcedureRemedyType> resPlus = addDamageAmountType(
-        res, isInitialFiling, comboCodes.cat, courtLocation.code, miscInfo, collector);
+        res, isInitialFiling, comboCodes.cat, courtLocation.code, miscInfo, collector, serializer);
     if (resPlus.isPresent()) {
       ecfAug.setProcedureRemedy(resPlus.get());
     }
 
     // Filing
-    DataFieldRow filertype = cd.getDataField(courtLocation.code, "FilingFilerType");
+    DataFieldRow filertype = serializer.allDataFields.getFieldRow("FilingFilerType");
     if (filertype.isvisible) {
       List<FilerType> allTypes = cd.getFilerTypes(courtLocation.code);
       String filerTypeName = "filer_type";
@@ -463,7 +463,7 @@ public class EcfCaseTypeFactory {
       ecfAug.setReturnDate(XmlHelper.convertDate(info.getReturnDate().get()));
     }
 
-    DataFieldRow filingcaseparties = cd.getDataField(courtLocation.code, "FilingEventCaseParties");
+    DataFieldRow filingcaseparties = serializer.allDataFields.getFieldRow("FilingEventCaseParties");
     var structOf = new gov.niem.niem.structures._2.ObjectFactory();
     if (filingcaseparties.isrequired) {
       for (String filingId : filingIds) {
@@ -502,13 +502,13 @@ public class EcfCaseTypeFactory {
   private Optional<ProcedureRemedyType> makeProcedureRemedyType(
       boolean initial,
       CaseCategory cat,
-      String courtLocationId, JsonNode miscInfo, InfoCollector collector) throws SQLException, FilingError {
+      String courtLocationId, JsonNode miscInfo, InfoCollector collector, EcfCourtSpecificSerializer serializer) throws SQLException, FilingError {
     List<NameAndCode> procedureRemedies = cd.getProcedureOrRemedy(courtLocationId, cat.getCode());
     String procedureViewName = "CivilCaseProcedureView" + ((initial) ? "Initial" : "Subsequent");
     DataFieldRow procedureView = DataFieldRow.MissingDataField(procedureViewName);
     String procBehavior = (initial) ? cat.procedureremedyinitial : cat.procedureremedysubsequent;
     if (!procBehavior.isEmpty() && !procBehavior.equals("Not Available")) {
-      procedureView = cd.getDataField(courtLocationId, procedureViewName);
+      procedureView = serializer.allDataFields.getFieldRow(procedureViewName);
     }
     InterviewVariable var;
     if (procedureRemedies.isEmpty()) {
@@ -547,12 +547,12 @@ public class EcfCaseTypeFactory {
   private Optional<ProcedureRemedyType> addDamageAmountType(
       Optional<ProcedureRemedyType> existingType,
       boolean initial, CaseCategory cat,
-      String courtLocationId, JsonNode miscInfo, InfoCollector collector) throws SQLException, FilingError {
+      String courtLocationId, JsonNode miscInfo, InfoCollector collector, EcfCourtSpecificSerializer serializer) throws SQLException, FilingError {
     List<NameAndCode> damageAmounts = cd.getDamageAmount(courtLocationId, cat.getCode());
     DataFieldRow damageConfig = cd.getDataField(courtLocationId, "DamageAmount"); 
     String damgBehavior = (initial) ? cat.damageamountinitial : cat.damageamountsubsequent;
     if (!damgBehavior.isEmpty() && !damgBehavior.equals("Not Available")) {
-      damageConfig = cd.getDataField(courtLocationId,
+      damageConfig = serializer.allDataFields.getFieldRow(
           "CivilCaseDamageAmount" + ((initial) ? "Initial" : "Subsequent"));
     }
     InterviewVariable docVar;

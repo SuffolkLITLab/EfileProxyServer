@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
 
 import java.util.List;
@@ -32,6 +31,7 @@ import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.CrossReference;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
+import edu.suffolk.litlab.efspserver.codes.DataFields;
 import edu.suffolk.litlab.efspserver.codes.PartyType;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
@@ -60,9 +60,10 @@ public class EcfCourtSpecificSerializerTest {
     when(cd.getCrossReference("cook:cd1", caseType)).thenReturn(refs);
     when(cd.getCrossReference("adams", caseType)).thenReturn(blank);
     when(cd.getLanguages("not_real")).thenReturn(List.of("English", "Polish", "Spanish"));
-    when(cd.getDataField(eq("not_real"), anyString())).thenReturn(DataFieldRow.MissingDataField(""));
-    when(cd.getDataField(eq("not_real"), eq("PartyGender"))).thenReturn(
-        new DataFieldRow("PartyGender", "Party Gender", "True", "False", "", "", "", "", "", "", "", ""));
+    when(cd.getDataFields(eq("not_real"))).thenReturn(new DataFields(
+        Map.of("PartyGender", 
+               new DataFieldRow("PartyGender", "Party Gender", "True", "False", "", "", "", "", "", "", "", ""))
+        ));
     collector = new FailFastCollector();
   }
   
@@ -98,10 +99,11 @@ public class EcfCourtSpecificSerializerTest {
     
     Person per= new Person(new Name("Bob", "", "Zombie"), info, Optional.of("Male"), Optional.of("Spanish"), Optional.empty(), false, false, "1234");
     CaseParticipantType cptPer = courtSer.serializeEcfCaseParticipant(per, collector, okPartyTypes);
+    System.out.println(XmlHelper.objectToXmlStr(cpt, CaseParticipantType.class));
     assertEquals(cptPer.getCaseParticipantRoleCode().getValue(), "1234");
     assertTrue(cptPer.getEntityRepresentation().getValue() instanceof PersonType);
     PersonType perPt = ((PersonType) cptPer.getEntityRepresentation().getValue());
-    assertTrue(perPt.getPersonSex() != null);
+    assertTrue(perPt.getPersonSex() != null, "Person sex should be not null, but was " + perPt.getPersonSex());
     List<JAXBElement<?>> langs = perPt.getPersonPrimaryLanguage().getLanguage();
     assertTrue(langs.size() > 0);
     assertEquals(((LanguageCodeType) langs.get(0).getValue()).getValue(), "Spanish");
