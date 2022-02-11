@@ -244,7 +244,8 @@ public class FilingInformationDocassembleJacksonDeserializer
       } else {
         Person person = per.unwrapOrElseThrow();
         if (person.getContactInfo().getEmail().isEmpty()) {
-          InterviewVariable var = collector.requestVar("lead_contact.email", "We need an email to contact someone about this case.", "text");
+          InterviewVariable var = collector.requestVar("lead_contact.email", 
+              "We need an email to contact someone about this case.", "text");
           collector.addRequired(var);
         }
         entities.setLeadContact(person); 
@@ -300,24 +301,37 @@ public class FilingInformationDocassembleJacksonDeserializer
     if (serviceContactsJson.isPresent()) {
       List<CaseServiceContact> contacts = new ArrayList<>();
       Iterator<JsonNode> servObjs = serviceContactsJson.get().elements();
+      int servIdx = 0;
       while (servObjs.hasNext()) {
+        collector.pushAttributeStack("service_contacts[" + servIdx + "]");
         var servObj = servObjs.next(); 
         Optional<String> partyPerId = Optional.empty();
         JsonNode partyAssoc = servObj.get("party_association");
         if (partyAssoc != null && partyAssoc.isTextual()) {
           if (varToId.containsKey(partyAssoc.asText())) {
-            // TODO(brycew): should this just use pattern matcher above, to see for 'user[i]' again?
             partyPerId = Optional.of(varToId.get(partyAssoc.asText()));
           } else {
-            collector.addWrong(collector.requestVar("service_contacts[i].party_association", "Party association can only be parties in the current filing.", "text"));
+            collector.addWrong(collector.requestVar("party_association", 
+                "Party association can only be parties in the current filing.", "text"));
           }
         } else if (partyAssoc != null && !partyAssoc.isNull()) {
           log.warn("What is party_association? should be text: " + partyAssoc); 
+          collector.addWrong(collector.requestVar("party_association", 
+              "Party association should be text, is" + partyAssoc.toString(), "text"));
+        }
+        JsonNode contactId = servObj.get("contact_id");
+        if (contactId == null || !contactId.isTextual()) {
+          collector.addWrong(collector.requestVar("contact_id", "Service contacts must have a contact id", "text"));
+        }
+        JsonNode serviceType = servObj.get("service_type");
+        if (serviceType == null || !serviceType.isTextual()) {
+          collector.addWrong(collector.requestVar("service_type", "Service contacts must have a service type code", "text"));
         }
         CaseServiceContact contact = new CaseServiceContact(
             servObj.get("contact_id").asText(),
             servObj.get("service_type").asText(), partyPerId);
         contacts.add(contact);
+        servIdx++;
       }
       return contacts;
     } else {
