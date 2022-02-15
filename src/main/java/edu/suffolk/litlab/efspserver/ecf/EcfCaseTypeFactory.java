@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.Optional;
 import java.util.Set;
 
@@ -332,37 +333,48 @@ public class EcfCaseTypeFactory {
       attorneyCount += 1;
     }
 
-    DataFieldRow attRow = serializer.allDataFields.getFieldRow("PartyAttorney");
-    for (Map.Entry<PartyId, List<String>> partyAttys : info.getPartyAttorneyMap().entrySet()) {
-      log.info("Setting Attorneys for : " + partyAttys.getKey());
-      Object partyObj;
-      if (!partyAttys.getKey().isInCurrentFiling()){
-        if (partyAttys.getKey().id.contains(" ")) {
-          FilingError err = FilingError.serverError("Party ID " + partyAttys.getKey().id + " should be a GUID but isn't");
+    
+    // Add all of the existing parties that are referenced somehow (either adding new attorney
+    // or service contact) to the XML
+    var stream = Stream.concat(
+        info.getServiceContacts().stream().filter(c -> c.partyAssociated.isPresent()).map(c -> c.partyAssociated.get()),
+        info.getPartyAttorneyMap().entrySet().stream().map(pa -> pa.getKey()));
+    Iterable<PartyId> iterator = stream::iterator;
+    for (PartyId partyId : iterator) {
+      if (!partyId.isInCurrentFiling()){
+        if (partyId.id.contains(" ")) {
+          FilingError err = FilingError.serverError("Party ID " + partyId.id + " should be a GUID but isn't");
           collector.error(err);
         }
         CaseParticipantType cpt = ecfCommonObjFac.createCaseParticipantType();
         IdentificationType id = of.createIdentificationType();
         id.setIdentificationCategory(of.createIdentificationCategoryText(XmlHelper.convertText("CASEPARTYID")));
-        id.setIdentificationID(XmlHelper.convertString(partyAttys.getKey().id));
-        if (comboCodes.partyInfo.get(partyAttys.getKey().id).getRight()) {
+        id.setIdentificationID(XmlHelper.convertString(partyId.id));
+        if (comboCodes.partyInfo.get(partyId.id).getRight()) {
           OrganizationIdentificationType orgId = tylerObjFac.createOrganizationIdentificationType();
           orgId.getIdentification().add(id);
           OrganizationType ot = ecfCommonObjFac.createOrganizationType();
           ot.setOrganizationIdentification(tylerObjFac.createOrganizationOtherIdentification(orgId));
-          ot.setId("id-" + partyAttys.getKey().id);
+          ot.setId("id-" + partyId.id);
           cpt.setEntityRepresentation(ecfCommonObjFac.createEntityOrganization(ot));
-          partyObj = ot;
+          partyIdToRefObj.put(partyId.id, ot);
         } else {
           PersonType pt = ecfCommonObjFac.createPersonType();
-          pt.setId("id-" + partyAttys.getKey().id);
+          pt.setId("id-" + partyId.id);
           pt.getPersonOtherIdentification().add(id);
           cpt.setEntityRepresentation(ecfCommonObjFac.createEntityPerson(pt));
-          partyObj = pt;
+          partyIdToRefObj.put(partyId.id, pt);
         }
-        cpt.setCaseParticipantRoleCode(XmlHelper.convertText(comboCodes.partyInfo.get(partyAttys.getKey().id).getLeft().code));
+        cpt.setCaseParticipantRoleCode(XmlHelper.convertText(comboCodes.partyInfo.get(partyId.id).getLeft().code));
         ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cpt));
-      } else if (partyIdToRefObj.containsKey(partyAttys.getKey().id)) {
+      }
+    }
+    
+    DataFieldRow attRow = serializer.allDataFields.getFieldRow("PartyAttorney");
+    for (Map.Entry<PartyId, List<String>> partyAttys : info.getPartyAttorneyMap().entrySet()) {
+      log.info("Setting Attorneys for : " + partyAttys.getKey());
+      Object partyObj;
+      if (partyIdToRefObj.containsKey(partyAttys.getKey().id)) {
         partyObj = partyIdToRefObj.get(partyAttys.getKey().id);
       } else if (partyIdToRefObj.isEmpty()) {
         log.warn("No current filing parties, but " + partyAttys.getKey().id + " is in the current filing?");
@@ -414,14 +426,16 @@ public class EcfCaseTypeFactory {
       servRef.setRef(serviceContactXmlObjs.get(attachedContact.refId));
       ref.setServiceReference(servRef);
       attachedContact.partyAssociated.ifPresent(partyId -> {
-        ReferenceType partyRef = structObjFac.createReferenceType();
-        partyRef.setRef(partyIdToRefObj.get(partyId));
-        ref.setPartyReference(partyRef);
+        if (partyIdToRefObj.containsKey(partyId.id)) {
+          ReferenceType partyRef = structObjFac.createReferenceType();
+          partyRef.setRef(partyIdToRefObj.get(partyId.id));
+          ref.setPartyReference(partyRef);
+        } else {
+          log.warn("Couldn't find partyId: " + partyId + ", not in " + partyIdToRefObj.keySet());
+        }
       });
-
       ecfAug.getExtendedData().add(tylerObjFac.createServicePartyReference(ref));
     }
-
 
     Optional<ProcedureRemedyType> res = makeProcedureRemedyType(isInitialFiling,
         comboCodes.cat, courtLocation.code, miscInfo, collector, serializer);
@@ -498,7 +512,7 @@ public class EcfCaseTypeFactory {
     log.info("Full ecfAug: " + ecfAug);
     return tylerObjFac.createCaseAugmentation(ecfAug);
   }
-
+  
   private Optional<ProcedureRemedyType> makeProcedureRemedyType(
       boolean initial,
       CaseCategory cat,

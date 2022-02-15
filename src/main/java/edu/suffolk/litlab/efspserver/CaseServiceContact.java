@@ -7,10 +7,10 @@ public class CaseServiceContact {
   public final String guid;
   public final String serviceType;
   /** If present, it's the name of the Person Obj Id that this contact is associated with. */
-  public final Optional<String> partyAssociated;
+  public final Optional<PartyId> partyAssociated;
   public final String refId;
 
-  public CaseServiceContact(String guid, String serviceType, Optional<String> partyAssociated) {
+  public CaseServiceContact(String guid, String serviceType, Optional<PartyId> partyAssociated) {
     this.guid = guid;
     this.serviceType = serviceType;
     this.partyAssociated = partyAssociated;

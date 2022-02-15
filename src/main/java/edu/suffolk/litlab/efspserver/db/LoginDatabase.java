@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -151,9 +150,9 @@ public class LoginDatabase extends DatabaseInterface {
       log.error("Can't login with a json that's not an object: " + loginInfo.toPrettyString());
       return Optional.empty();
     }
-    Iterator<String> orgs = loginInfo.fieldNames();
-    while (orgs.hasNext()) {
-      String orgName = orgs.next().toLowerCase();
+    Iterable<String> orgs = loginInfo::fieldNames;
+    for (String orgName : orgs) {
+      orgName = orgName.toLowerCase(); 
       if (orgName.equalsIgnoreCase("api_key")) {
         continue;
       }

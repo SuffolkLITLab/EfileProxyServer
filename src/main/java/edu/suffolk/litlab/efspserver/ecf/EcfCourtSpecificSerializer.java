@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -773,9 +772,8 @@ public class EcfCourtSpecificSerializer {
         if (jsonRefs.has("_class") && jsonRefs.has("elements")) {
           jsonRefs= jsonRefs.get("elements");
         }
-        Iterator<String> refNames = jsonRefs.fieldNames();
-        while (refNames.hasNext()) {
-          String refKey = refNames.next();
+        Iterable<String> refNames = jsonRefs::fieldNames;
+        for (String refKey : refNames) {
           if (refMap.containsKey(refKey)) {
             CrossReference myRef = refMap.get(refKey);
             String refValue = jsonRefs.get(refKey).asText();

@@ -25,7 +25,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -272,9 +271,8 @@ public class FilingInformationDocassembleJacksonDeserializer
     Optional<JsonNode> partyToAttorneyJson = JsonHelpers.unwrapDADict(maybePartyToAttorney);
     log.info("" + varToId);
     if (partyToAttorneyJson.isPresent()) {
-      Iterator<Entry<String, JsonNode>> fields = partyToAttorneyJson.get().fields();
-      while (fields.hasNext()) {
-        Entry<String, JsonNode> elem = fields.next();
+      Iterable<Entry<String, JsonNode>> fields = partyToAttorneyJson.get()::fields;
+      for (Entry<String, JsonNode> elem : fields) {
         final String userStr = elem.getKey();
         PartyId realId = null;
         if (varToId.containsKey(userStr)) {
@@ -300,19 +298,18 @@ public class FilingInformationDocassembleJacksonDeserializer
     Optional<JsonNode> serviceContactsJson = JsonHelpers.unwrapDAList(maybeContacts);
     if (serviceContactsJson.isPresent()) {
       List<CaseServiceContact> contacts = new ArrayList<>();
-      Iterator<JsonNode> servObjs = serviceContactsJson.get().elements();
+      Iterable<JsonNode> servObjs = serviceContactsJson.get()::elements;
       int servIdx = 0;
-      while (servObjs.hasNext()) {
+      for (JsonNode servObj : servObjs) {
         collector.pushAttributeStack("service_contacts[" + servIdx + "]");
-        var servObj = servObjs.next(); 
-        Optional<String> partyPerId = Optional.empty();
+        Optional<PartyId> realId = Optional.empty();
         JsonNode partyAssoc = servObj.get("party_association");
         if (partyAssoc != null && partyAssoc.isTextual()) {
           if (varToId.containsKey(partyAssoc.asText())) {
-            partyPerId = Optional.of(varToId.get(partyAssoc.asText()));
+            realId = Optional.of(PartyId.CurrentFiling(varToId.get(partyAssoc.asText())));
           } else {
-            collector.addWrong(collector.requestVar("party_association", 
-                "Party association can only be parties in the current filing.", "text"));
+            log.info("Exisiting filing party id for service party assoc");
+            realId = Optional.of(PartyId.Already(partyAssoc.asText()));
           }
         } else if (partyAssoc != null && !partyAssoc.isNull()) {
           log.warn("What is party_association? should be text: " + partyAssoc); 
@@ -329,7 +326,7 @@ public class FilingInformationDocassembleJacksonDeserializer
         }
         CaseServiceContact contact = new CaseServiceContact(
             servObj.get("contact_id").asText(),
-            servObj.get("service_type").asText(), partyPerId);
+            servObj.get("service_type").asText(), realId);
         contacts.add(contact);
         servIdx++;
       }

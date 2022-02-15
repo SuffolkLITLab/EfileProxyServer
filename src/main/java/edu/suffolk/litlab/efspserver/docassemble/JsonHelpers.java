@@ -2,7 +2,6 @@ package edu.suffolk.litlab.efspserver.docassemble;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,9 +54,8 @@ public class JsonHelpers {
     }
     JsonNode listNode = obj.get(memberName);
     List<String> returnList = new ArrayList<String>();
-    Iterator<JsonNode> elems = listNode.elements();
-    while (elems.hasNext()) {
-      JsonNode elemNode = elems.next();
+    Iterable<JsonNode> elems = listNode::elements;
+    for (JsonNode elemNode : elems) {
       if (elemNode.isTextual()) {
         returnList.add(elemNode.asText()); 
       }
