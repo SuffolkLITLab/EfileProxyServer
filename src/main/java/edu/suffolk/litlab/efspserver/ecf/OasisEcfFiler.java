@@ -228,6 +228,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         cfm.getElectronicServiceInformation().add(servInfo);
       }
 
+      log.info("Assembling case");
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> assembledCase =
           ecfCaseFactory.makeCaseTypeFromTylerCategory(
               locationInfo, allCodes,
@@ -272,6 +273,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       long maxSize = XmlHelper.sizeMeasureAsBytes(maxIndivDocSize);
       long cumulativeBytes = 0;
       for (FilingDoc filingDoc : info.getFilings()) {
+        log.info("Adding a document to the XML");
         long bytes = filingDoc.getFileContents().length;
         if (bytes > maxSize) {
           FilingError err = FilingError.malformedInterview("Document " + filingDoc.getFileName() 
