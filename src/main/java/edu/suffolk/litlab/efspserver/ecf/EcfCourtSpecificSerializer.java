@@ -516,8 +516,8 @@ public class EcfCourtSpecificSerializer {
           findDocumentDescription(doc.getDescription(), row, doc, filing, collector)));
     }
     List<FileType> allowedFileTypes = cd.getAllowedFileTypes(this.court.code);
-    List<FileType> correctExtension = allowedFileTypes.stream().filter(t -> t.matchesFile(doc.getFileName())).collect(Collectors.toList());
-    if (correctExtension.isEmpty()) {
+    boolean correctExtension = allowedFileTypes.stream().anyMatch(t -> t.matchesFile(doc.getFileName())); 
+    if (correctExtension) {
       FilingError err = FilingError.malformedInterview("Extension of " + doc.getFileName() + " not allowed! Try these instead: " + allowedFileTypes);
       collector.error(err);
     }
@@ -649,46 +649,41 @@ public class EcfCourtSpecificSerializer {
       components.remove(filtered.get());
     }
 
-    List<OptionalServiceCode> codes = cd.getOptionalServices(this.court.code, filing.code);
-    Map<String, OptionalServiceCode> codeMap = codes.stream().reduce(new HashMap<String, OptionalServiceCode>(),
-      (m, s) -> {
-        m.put(s.code, s);
-        return m;
-      }, (m1, m2) -> {
-        m1.putAll(m2);
-        return m1;
-    });
-    InterviewVariable servVar = collector.requestVar("optional_services", "things the court can do", "DADict");
-
-    for (OptionalService serv : doc.getOptionalServices()) {
-      DocumentOptionalServiceType xmlServ = tylerObjFac.createDocumentOptionalServiceType();
-      if (!codeMap.containsKey(serv.code)) {
-        collector.addWrong(servVar);
-      }
-      xmlServ.setIdentificationID(XmlHelper.convertString(serv.code));
-      OptionalServiceCode codeSettings = codeMap.get(serv.code);
-      if (codeSettings.hasfeeprompt) {
-        if (serv.feeAmount.isEmpty()) {
-          collector.addWrong(servVar.appendDesc(": needs fee prompt"));
-        } else {
-          Decimal dec = new Decimal();
-          dec.setValue(serv.feeAmount.get());
-          xmlServ.setFeeAmount(dec);
+    if (!doc.getOptionalServices().isEmpty()) {
+      List<OptionalServiceCode> codes = cd.getOptionalServices(this.court.code, filing.code);
+      var codeMap = new HashMap<String, OptionalServiceCode>();
+      codes.stream().forEach(sv -> codeMap.put(sv.code, sv)); 
+      InterviewVariable servVar = collector.requestVar("optional_services", "things the court can do", "DADict");
+      for (OptionalService serv : doc.getOptionalServices()) {
+        DocumentOptionalServiceType xmlServ = tylerObjFac.createDocumentOptionalServiceType();
+        if (!codeMap.containsKey(serv.code)) {
+          collector.addWrong(servVar);
         }
-      }
-      if (!codeSettings.hasfeeprompt && serv.feeAmount.isPresent()) {
-        collector.addWrong(servVar.appendDesc(": doesn't need fee prompt"));
-      }
-      if (codeSettings.multiplier.equalsIgnoreCase("true")) {
-        if (serv.multiplier.isEmpty()) {
-          collector.addWrong(servVar.appendDesc(": needs multiplier"));
-        } else {
-          Decimal dec = new Decimal();
-          dec.setValue(new BigDecimal(serv.multiplier.get()));
-          xmlServ.setMultiplier(dec);
+        xmlServ.setIdentificationID(XmlHelper.convertString(serv.code));
+        OptionalServiceCode codeSettings = codeMap.get(serv.code);
+        if (codeSettings.hasfeeprompt) {
+          if (serv.feeAmount.isEmpty()) {
+            collector.addWrong(servVar.appendDesc(": needs fee prompt"));
+          } else {
+            Decimal dec = new Decimal();
+            dec.setValue(serv.feeAmount.get());
+            xmlServ.setFeeAmount(dec);
+          }
         }
+        if (!codeSettings.hasfeeprompt && serv.feeAmount.isPresent()) {
+          collector.addWrong(servVar.appendDesc(": doesn't need fee prompt"));
+        }
+        if (codeSettings.multiplier.equalsIgnoreCase("true")) {
+          if (serv.multiplier.isEmpty()) {
+            collector.addWrong(servVar.appendDesc(": needs multiplier"));
+          } else {
+            Decimal dec = new Decimal();
+            dec.setValue(new BigDecimal(serv.multiplier.get()));
+            xmlServ.setMultiplier(dec);
+          }
+        }
+        docType.getDocumentOptionalService().add(xmlServ);
       }
-      docType.getDocumentOptionalService().add(xmlServ);
     }
 
     // Literally should just be if it's confidential or not. (or "Hot fix" or public).
