@@ -148,7 +148,8 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   }
 
   private CoreFilingMessageType prepareFiling(FilingInformation info,
-      InfoCollector collector, String apiToken, FilingReviewMDEPort filingPort, CourtRecordMDEPort recordPort, String queryType) throws FilingError {
+      InfoCollector collector, String apiToken, FilingReviewMDEPort filingPort, 
+      CourtRecordMDEPort recordPort, String queryType) throws FilingError {
     EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
     try {
       Optional<CourtLocationInfo> maybeLocationInfo = cd.getFullLocationInfo(info.getCourtLocation());
@@ -198,6 +199,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       } else {
         allCodes = serializer.serializeCaseCodes(info, collector, isInitialFiling);
       }
+      log.info("have all codes");
 
       var coreObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory();
       CoreFilingMessageType cfm = coreObjFac.createCoreFilingMessageType();
@@ -238,6 +240,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
                   .map(f -> f.getIdString())
                   .collect(Collectors.toList()),
               queryType, info.getMiscInfo(), serializer, collector, serviceContactXmlObjs);
+      log.info("Assembled case");
 
       Map<String, String> crossReferences = serializer.getCrossRefIds(info.getMiscInfo(), collector, allCodes.type.code);
       for (Map.Entry<String, String> ref : crossReferences.entrySet()) {
@@ -301,6 +304,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
           cfm.getFilingConnectedDocument().add(result);
         }
         seqNum += 1;
+        log.info("Added a document to the XML");
       }
       MeasureType maxTotalDocSize = policy.getDevelopmentPolicyParameters().getValue().getMaximumAllowedMessageSize();
       long maxTotal = XmlHelper.sizeMeasureAsBytes(maxTotalDocSize);

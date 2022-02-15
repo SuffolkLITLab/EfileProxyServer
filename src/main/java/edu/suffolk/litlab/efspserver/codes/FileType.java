@@ -5,10 +5,10 @@ import java.sql.SQLException;
 
 public class FileType {
   
-  String name;
-  String code;
-  String extension;
-  String location;
+  public final String name;
+  public final String code;
+  public final String extension;
+  public final String location;
   
   public FileType(String name, String code, String extension, String location) {
     this.name = name;
@@ -30,6 +30,11 @@ public class FileType {
     return """
         SELECT name, code, extension, location
         FROM filetype WHERE location=?""";
+  }
+  
+  @Override
+  public String toString() {
+    return "FileType[name: " + name + ", code: " + code + ", extension: " + extension + ", location: " +location + "]";
   }
 
 }
