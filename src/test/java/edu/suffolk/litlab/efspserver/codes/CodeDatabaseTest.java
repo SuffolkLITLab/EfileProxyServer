@@ -39,7 +39,7 @@ public class CodeDatabaseTest {
   public void allNamespacesMapToTables() {
     Collection<String> tables = CodeUpdater.ncToTableName.values();
     for (String table : tables) {
-      assertNotEquals(CodeTableConstants.getTableColumns(table).orElse(List.of()).size(),
+      assertNotEquals(CodeTableConstants.getTableColumns(table).size(),
           0, "Expected " + table + " to exist");
     }
   }
