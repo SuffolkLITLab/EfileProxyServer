@@ -285,6 +285,8 @@ public class CodeUpdater {
       }
     }
     cd.commit();
+    cd.vacuumAll();
+    cd.commit();
   }
 
   public void downloadAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
@@ -306,6 +308,8 @@ public class CodeUpdater {
       downloadCourtTables(location, Optional.empty(), cd, signer, filingPort);
     }
     log.info("Downloads took: " + downloads + ", and updates took: " + updates);
+    cd.commit();
+    cd.vacuumAll();
     cd.commit();
   }
   

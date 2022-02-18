@@ -373,6 +373,13 @@ public class CodeDatabase extends DatabaseInterface {
     });
     
   }
+  
+  public void vacuumAll() throws SQLException {
+    String vacuum = CodeTableConstants.vacuumAnalyzeAll();
+    PreparedStatement vacuumSt = conn.prepareStatement(vacuum);
+    log.info("Full vacuum statement: " + vacuumSt.toString());
+    vacuumSt.executeUpdate();
+  }
 
 
   public List<NameAndCode> getDamageAmount(String courtLocationId, String caseCategory) {

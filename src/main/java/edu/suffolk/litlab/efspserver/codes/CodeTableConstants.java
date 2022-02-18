@@ -464,7 +464,11 @@ public class CodeTableConstants {
   public static String getNameSuffixes() {
     return "SELECT name, code FROM namesuffix WHERE location=?";
   }
-
+  
+  public static String vacuumAnalyzeAll() {
+    return "VACUUM ANALYZE";
+  }
+  
   public static String getCreateTable(String tableName) {
     if (createQueries.containsKey(tableName)) {
       return createQueries.get(tableName);
