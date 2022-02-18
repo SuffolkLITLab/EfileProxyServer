@@ -73,7 +73,6 @@ import tyler.efm.services.schema.userlistresponse.UserListResponseType;
  * * User Service
  *   * AuthenticateUser
  *   * ChangePassword
- *   * ~GetPasswordQuestion~ (is deprecated by Tyler)
  *   * ResetPassword
  *   * GetUser (User Service)
  *   * UpdateUser (User Service)
@@ -188,20 +187,6 @@ public class AdminUserService {
 
     return ServiceHelpers.mapTylerCodesToHttp(notifResp.getError(),
         () -> Response.ok(notifResp.getNotification()).build());
-  }
-
-  @GET
-  @Path("/user/password-question")
-  public Response getPasswordQuestion(@Context HttpHeaders httpHeaders, String email) {
-    Optional<IEfmUserService> port = setupUserPort(httpHeaders, false);
-    if (port.isEmpty()) {
-      return Response.status(401).build();
-    }
-
-    GetPasswordQuestionRequestType req = new GetPasswordQuestionRequestType();
-    req.setEmail(email);
-    PasswordQuestionResponseType resp = port.get().getPasswordQuestion(req);
-    return ServiceHelpers.makeResponse(resp, () -> Response.ok("\"" + resp.getPasswordQuestion() + "\"").build());
   }
 
   @PATCH
@@ -538,6 +523,7 @@ public class AdminUserService {
    * @param req
    * @return
    */
+  // TODO(#2): is this really idempotent? I'm not sure
   @PUT
   @Path("/users")
   public Response registerUser(@Context HttpHeaders httpHeaders,
@@ -562,6 +548,7 @@ public class AdminUserService {
       return Response.status(400).entity(globalPasswordRow.validationmessage).build();
     }
     RegistrationResponseType regResp = port.get().registerUser(req);
+    // TODO(#2): need to return `created` here, with a URI for the user.
     return makeResponse(regResp, () -> Response.ok(regResp).build());
   }
 

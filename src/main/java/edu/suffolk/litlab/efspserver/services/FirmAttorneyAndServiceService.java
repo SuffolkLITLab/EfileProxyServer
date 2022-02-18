@@ -326,6 +326,8 @@ public class FirmAttorneyAndServiceService {
       req.setCasePartyID(node.get("casePartyId").asText());
     }
     BaseResponseType resp = firmPort.get().attachServiceContact(req);
+    // TODO(#2): should be idempotent, and should also return `created` on successful.
+    // Need to make a URL that we can get more info at though
     return makeResponse(resp, () -> Response.ok().build());
   }
 
