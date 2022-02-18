@@ -285,6 +285,8 @@ public class CodeUpdater {
       }
     }
     cd.commit();
+    cd.setAutocommit(true);
+    cd.vacuumAll();
   }
 
   public void downloadAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
@@ -307,6 +309,8 @@ public class CodeUpdater {
     }
     log.info("Downloads took: " + downloads + ", and updates took: " + updates);
     cd.commit();
+    cd.setAutocommit(true);
+    cd.vacuumAll();
   }
   
   public static FilingReviewMDEPort loginWithTyler(String jurisdiction, String userEmail, String userPassword) throws JAXBException {

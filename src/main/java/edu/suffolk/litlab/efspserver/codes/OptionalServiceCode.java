@@ -26,8 +26,9 @@ public class OptionalServiceCode {
   /** Text presented to the filer when prompting for the fee amount. */
   public final String feeprompttext;
   
-  public OptionalServiceCode(String code, String name, String displayorder, String fee, String filingcodeid,
-      String multiplier, String altfeedesc, String hasfeeprompt, String feeprompttext) {
+  public OptionalServiceCode(String code, String name, String displayorder, String fee, 
+      String filingcodeid, String multiplier, String altfeedesc, String hasfeeprompt, 
+      String feeprompttext) {
     this.code = code;
     this.name = name;
     this.displayorder = displayorder;
@@ -44,7 +45,8 @@ public class OptionalServiceCode {
         rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9));
   }
   
-  public static PreparedStatement prepQuery(Connection conn, String courtId, String filingCodeId) throws SQLException {
+  public static PreparedStatement prepQuery(Connection conn, String courtId, 
+      String filingCodeId) throws SQLException {
     PreparedStatement st = conn.prepareStatement(query());
     st.setString(1, courtId);
     st.setString(2, filingCodeId);
@@ -53,7 +55,8 @@ public class OptionalServiceCode {
   
   public static String query() {
     return """
-        SELECT code, name, displayorder, fee, filingcodeid, multiplier, altfeedesc, hasfeeprompt, feeprompttext
+        SELECT code, name, displayorder, fee, filingcodeid, multiplier, altfeedesc, hasfeeprompt,
+          feeprompttext
         FROM optionalservices
         WHERE location=? AND filingcodeid=?
         """;

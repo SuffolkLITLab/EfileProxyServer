@@ -9,6 +9,7 @@ services:
       - "db2"
   db2:
     image: "postgres:latest"
+    shm_size: 128MB
     env_file: .devenv
     volumes:
       - data-volume2:/var/lib/postgresql/data

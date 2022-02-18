@@ -67,7 +67,6 @@ public class CodeDatabase extends DatabaseInterface {
     ResultSet rs = existsSt.executeQuery();
     boolean next = rs.next();
     int firstVal = rs.getInt(1);
-    //log.info("Maybe creating " + tableName + "? next: " + next + ", firstVal: " + firstVal);
     if (!next || firstVal <= 0) { // There's no table! Make one
       String createQuery = CodeTableConstants.getCreateTable(tableName);
       if (createQuery.isEmpty()) {
@@ -79,6 +78,31 @@ public class CodeDatabase extends DatabaseInterface {
       createSt.executeUpdate();
     }
 
+  }
+  
+  public void createIndicesIfAbsent(String tableName) throws SQLException {
+    if (conn == null) {
+      throw new SQLException();
+    }
+    if (tableName.contains("(") || tableName.contains(")") || tableName.contains(" ")) {
+      log.warn("Must be a valid table name: " + tableName + " is not");
+      return;
+    }
+    
+    String indicesExist = CodeTableConstants.getIndicesExist();
+    PreparedStatement existsSt = conn.prepareStatement(indicesExist);
+    existsSt.setString(1, tableName);
+    ResultSet rs = existsSt.executeQuery();
+    boolean next = rs.next();
+    int firstVal = rs.getInt(1);
+    if (!next || firstVal <= 0) {
+      // Create the indices: might take a while
+      List<String> createIndices = CodeTableConstants.getCreateIndex(tableName);
+      for (String createIndex : createIndices) {
+        PreparedStatement createSt = conn.prepareStatement(createIndex);
+        createSt.executeUpdate();
+      }
+    }
   }
 
   public void updateTable(String tableName, String courtName, InputStream inStream)
@@ -92,13 +116,14 @@ public class CodeDatabase extends DatabaseInterface {
     }
 
     createTableIfAbsent(tableName);
+    createIndicesIfAbsent(tableName);
 
     XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
     XMLStreamReader sr = xmlInputFactory.createXMLStreamReader(inStream);
     Unmarshaller u = JAXBContext.newInstance(CodeListDocument.class).createUnmarshaller();
     final CodeListDocument doc = u.unmarshal(sr, CodeListDocument.class).getValue();
 
-    String insertQuery = CodeTableConstants.getInsertInto(tableName, courtName);
+    String insertQuery = CodeTableConstants.getInsertInto(tableName);
     String versionUpdate = CodeTableConstants.updateVersion();
     try (PreparedStatement stmt = conn.prepareStatement(insertQuery);
         PreparedStatement update = conn.prepareStatement(versionUpdate)) {
@@ -112,14 +137,17 @@ public class CodeDatabase extends DatabaseInterface {
           rowsVals.put(c.getId(), v.getSimpleValue().getValue());
         }
         int idx = 1;
-        Optional<List<String>> tc = CodeTableConstants.getTableColumns(tableName);
-        for (String colName : tc.orElse(List.of())) {
+        List<String> tc = CodeTableConstants.getTableColumns(tableName);
+        for (String colName : tc) {
           if (rowsVals.containsKey(colName)) {
             stmt.setString(idx, rowsVals.get(colName));
           } else {
             stmt.setString(idx, null);
           }
           idx += 1;
+        }
+        if (CodeTableConstants.isCourtTable(tableName)) {
+          stmt.setString(idx, courtName);
         }
         stmt.addBatch();
       }
@@ -344,6 +372,13 @@ public class CodeDatabase extends DatabaseInterface {
       }
     });
     
+  }
+  
+  public void vacuumAll() throws SQLException {
+    String vacuum = CodeTableConstants.vacuumAnalyzeAll();
+    PreparedStatement vacuumSt = conn.prepareStatement(vacuum);
+    log.info("Full vacuum statement: " + vacuumSt.toString());
+    vacuumSt.executeUpdate();
   }
 
 
@@ -684,7 +719,7 @@ public class CodeDatabase extends DatabaseInterface {
     Statement st = conn.createStatement();
     for (String table : tablesToDrop) {
       // Not how to check for things that don't work, eh
-      String dropIfPresent = CodeTableConstants.dropTable(table);
+      String dropIfPresent = CodeTableConstants.getDrop(table);
       if (!dropIfPresent.isEmpty()) {
         st.executeUpdate(dropIfPresent);
       }
@@ -696,7 +731,7 @@ public class CodeDatabase extends DatabaseInterface {
     if (conn == null) {
       throw new SQLException();
     }
-    String deleteFromTable = CodeTableConstants.deleteFromTable(tableName);
+    String deleteFromTable = CodeTableConstants.getDeleteFrom(tableName);
     if (deleteFromTable.isEmpty()) {
       if (courtLocation.equals("0")) {
         log.warn("Why are we removing location=0 entries from " + tableName + "?");

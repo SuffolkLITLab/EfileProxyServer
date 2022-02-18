@@ -4,24 +4,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CodeTableConstants {
-  private static Logger log = 
-      LoggerFactory.getLogger(CodeTableConstants.class); 
+  /*
+   * a list of CREAT INDEX queries you should run for on creation of these tables.
+   */
+  private static final Map<String, List<String>> tableIndices = new HashMap<>();
+  private static final Map<String, TableColumns> tableColumns;
+  private static final Map<String, String> createQueries = new HashMap<>();
+  private static final Map<String, String> insertQueries = new HashMap<>();
+  private static final Map<String, String> deleteFromQueries = new HashMap<>();
+  private static final Map<String, String> dropQueries = new HashMap<>();
 
-  private static final Map<String, List<Pair<String, String>>> systemTableColumns = new HashMap<>();
-  private static final Map<String, List<Pair<String, String>>> bothTableColumns = new HashMap<>();
-  private static final Map<String, List<Pair<String, String>>> courtTableColumns = new HashMap<>();
-  
-  private static final Map<String, List<String>> tablePrimaryKeys = new HashMap<>();
-
-  // TODO(brycew-later): the types are confusing here: some are only ever ints, but
+  // TODO(brycew-later): the types are confusing here: some are only ever ints,
+  // but
   // are coded as normalizedStrings in the XML. Unclear what to make ints in the
   // DB.
   static {
@@ -69,306 +68,276 @@ public class CodeTableConstants {
     locationColumns.add(new ImmutablePair<String, String>("allowwaiveronredaction", "text"));
     locationColumns.add(new ImmutablePair<String, String>("disallowelectronicserviceonnewcontacts", "text"));
     locationColumns.add(new ImmutablePair<String, String>("allowindividualregistration", "text"));
-    systemTableColumns.put("location", locationColumns);
-
-    systemTableColumns.put("error", List.of(
-        new ImmutablePair<String, String>("code", "text"), 
-        new ImmutablePair<String, String>("name", "text")));
-
-    systemTableColumns.put("version", List.of(
-        new ImmutablePair<String, String>("location", "text"),
-        new ImmutablePair<String, String>("codelist", "text"), 
-        new ImmutablePair<String, String>("version", "text")
-    ));
-
-    // custom table, the version that's currently installed
-    // Custom table so we can just drop the existing version table when updating.
-    systemTableColumns.put("installedversion", List.of(
-        new ImmutablePair<String, String>("location", "text"),
-        new ImmutablePair<String, String>("codelist", "text"), 
-        new ImmutablePair<String, String>("installedversion", "text") 
-    ));
-    
-    tablePrimaryKeys.put("installedversion", List.of("location", "codelist"));
-
-    //////////// Tables that are both system wide, and court specific
-
-    bothTableColumns.put("country", List.of(
-        new ImmutablePair<String, String>("code", "text"), 
-        new ImmutablePair<String, String>("name", "text")));
-
-    bothTableColumns.put("state", List.of(new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"),
-        new ImmutablePair<String, String>("countrycode", "text")));
-
-    bothTableColumns.put("filingstatus",
-        List.of(new ImmutablePair<String, String>("code", "text"),
-            new ImmutablePair<String, String>("name", "text")));
-
-    bothTableColumns.put("datafieldconfig", List.of(new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"), 
-        new ImmutablePair<String, String>("isvisible", "text"),
-        new ImmutablePair<String, String>("isrequired", "text"), 
-        new ImmutablePair<String, String>("helptext", "text"),
-        new ImmutablePair<String, String>("ghosttext", "text"),
-        new ImmutablePair<String, String>("contextualhelpdata", "text"),
-        new ImmutablePair<String, String>("validationmessage", "text"),
-        new ImmutablePair<String, String>("regularexpression", "text"),
-        new ImmutablePair<String, String>("defaultvalueexpression", "text"),
-        new ImmutablePair<String, String>("isreadonly", "text")));
-
-    ///////// Tables for courts specifically
-    courtTableColumns.put("answer",
-        List.of(new ImmutablePair<String, String>("code", "text"),
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("answertext", "text"),
-            new ImmutablePair<String, String>("questionid", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("arrestlocation", List.of(
-        new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"),
-        new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("bond", List.of(
-        new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"),
-        new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("casecategory",
-        List.of(new ImmutablePair<String, String>("code", "text"),
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("ecfcasetype", "text"),
-            new ImmutablePair<String, String>("procedureremedyinitial", "text"),
-            new ImmutablePair<String, String>("procedureremedysubsequent", "text"),
-            new ImmutablePair<String, String>("damageamountinitial", "text"),
-            new ImmutablePair<String, String>("damageamountsubsequent", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("casesubtype",
-        List.of(new ImmutablePair<String, String>("code", "text"),
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("casetypeid", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("casetype",
-        List.of(new ImmutablePair<String, String>("code", "text"),
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("casecategory", "text"),
-            new ImmutablePair<String, String>("initial", "text"),
-            new ImmutablePair<String, String>("fee", "text"),
-            new ImmutablePair<String, String>("willfileddate", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("casetype",
-        List.of(new ImmutablePair<String, String>("code", "text"),
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("casecategory", "text"),
-            new ImmutablePair<String, String>("initial", "text"),
-            new ImmutablePair<String, String>("fee", "text"),
-            new ImmutablePair<String, String>("willfileddate", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("chargephase", List.of(new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"),
-        new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("citationjurisdiction", List.of(
-        new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"),
-        new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("crossreference", List.of(
-        new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"),
-        new ImmutablePair<String, String>("casetypeid", "text"),
-        new ImmutablePair<String, String>("isdefault", "text"),
-        new ImmutablePair<String, String>("isrequired", "text"),
-        new ImmutablePair<String, String>("validationregex", "text"),
-        new ImmutablePair<String, String>("customvalidationfailuremessage", "text"),
-        new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("damageamount",
-        List.of(new ImmutablePair<String, String>("code", "text"),
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("casecategory", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("degree",
-        List.of(new ImmutablePair<String, String>("code", "text"), 
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("statuecodeid", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("disclaimerrequirement",
-        List.of(new ImmutablePair<String, String>("code", "text"), 
+    TableColumns locationTc = makeTableColumnInfo(false, locationColumns);
+    tableColumns = Map.ofEntries(
+        Map.entry("location", locationTc),
+        Map.entry("error", makeSystemColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"), 
+          new ImmutablePair<String, String>("name", "text")))),
+        Map.entry("version", makeSystemColumnInfo(List.of(
+          new ImmutablePair<String, String>("location", "text"),
+          new ImmutablePair<String, String>("codelist", "text"), 
+          new ImmutablePair<String, String>("version", "text")))),
+        // custom table, the version that's currently installed
+        // Custom table so we can just drop the existing version table when updating.
+        Map.entry("installedversion", makeTableColumnInfo(false, List.of(
+          new ImmutablePair<String, String>("location", "text"),
+          new ImmutablePair<String, String>("codelist", "text"), 
+          new ImmutablePair<String, String>("installedversion", "text")),
+          List.of("location", "codelist"))),
+        //////////// Tables that are both system wide, and court specific
+        Map.entry("country", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"), 
+          new ImmutablePair<String, String>("name", "text")))),
+        Map.entry("state", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("countrycode", "text")))),
+        Map.entry("filingstatus", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text")))),
+        Map.entry("datafieldconfig", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"), 
+          new ImmutablePair<String, String>("isvisible", "text"),
+          new ImmutablePair<String, String>("isrequired", "text"), 
+          new ImmutablePair<String, String>("helptext", "text"),
+          new ImmutablePair<String, String>("ghosttext", "text"),
+          new ImmutablePair<String, String>("contextualhelpdata", "text"),
+          new ImmutablePair<String, String>("validationmessage", "text"),
+          new ImmutablePair<String, String>("regularexpression", "text"),
+          new ImmutablePair<String, String>("defaultvalueexpression", "text"),
+          new ImmutablePair<String, String>("isreadonly", "text")))),
+        ///////// Tables for courts specifically
+        Map.entry("answer", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("answertext", "text"),
+          new ImmutablePair<String, String>("questionid", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("arrestlocation", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("bond", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("casecategory", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("ecfcasetype", "text"),
+          new ImmutablePair<String, String>("procedureremedyinitial", "text"),
+          new ImmutablePair<String, String>("procedureremedysubsequent", "text"),
+          new ImmutablePair<String, String>("damageamountinitial", "text"),
+          new ImmutablePair<String, String>("damageamountsubsequent", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("casesubtype", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("casetypeid", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("casetype", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("casecategory", "text"),
+          new ImmutablePair<String, String>("initial", "text"),
+          new ImmutablePair<String, String>("fee", "text"),
+          new ImmutablePair<String, String>("willfileddate", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("chargephase", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("citationjurisdiction", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("crossreference", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("casetypeid", "text"),
+          new ImmutablePair<String, String>("isdefault", "text"),
+          new ImmutablePair<String, String>("isrequired", "text"),
+          new ImmutablePair<String, String>("validationregex", "text"),
+          new ImmutablePair<String, String>("customvalidationfailuremessage", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("damageamount", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("casecategory", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("degree", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"), 
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("statuecodeid", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("disclaimerrequirement", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"), 
             new ImmutablePair<String, String>("name", "text"),
             new ImmutablePair<String, String>("listorder", "text"),
             new ImmutablePair<String, String>("requirementtext", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
+            new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("driverlicensetype", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("documenttype", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"), 
+          new ImmutablePair<String, String>("filingcodeid", "text"),
+          new ImmutablePair<String, String>("iscourtuseonly", "text"),
+          new ImmutablePair<String, String>("isdefault", "text"), 
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("ethnicity", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"), 
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("eyecolor", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"), 
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("filertype", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"), 
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("default", "text"), 
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("filetype", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"), 
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("extension", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("filing", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"), 
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("fee", "text"), 
+          new ImmutablePair<String, String>("casecategory", "text"),
+          new ImmutablePair<String, String>("casetypeid", "text"),
+          new ImmutablePair<String, String>("filingtype", "text"),
+          new ImmutablePair<String, String>("iscourtuseonly", "text"),
+          new ImmutablePair<String, String>("civilclaimamount", "text"),
+          new ImmutablePair<String, String>("probateestateamount", "text"),
+          new ImmutablePair<String, String>("amountincontroversy", "text"),
+          new ImmutablePair<String, String>("useduedate", "text"),
+          new ImmutablePair<String, String>("isproposedorder", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("filingcomponent", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"), 
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("filingcodeid", "text"),
+          new ImmutablePair<String, String>("required", "text"),
+          new ImmutablePair<String, String>("allowmultiple", "text"),
+          new ImmutablePair<String, String>("displayorder", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("generaloffense", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"), 
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("statutecodeid", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("haircolor", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"), 
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("language", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"), 
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("lawenforcementunit", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"), 
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("motiontype", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"), 
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("filingcodeid", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("namesuffix", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"), 
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("optionalservices", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"), 
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("displayorder", "text"), 
+          new ImmutablePair<String, String>("fee", "text"),
+          new ImmutablePair<String, String>("filingcodeid", "text"),
+          new ImmutablePair<String, String>("multiplier", "text"),
+          new ImmutablePair<String, String>("altfeedesc", "text"),
+          new ImmutablePair<String, String>("hasfeeprompt", "text"),
+          new ImmutablePair<String, String>("feeprompttext", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("partytype", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"), 
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("isavailablefornewparties", "text"),
+          new ImmutablePair<String, String>("casetypeid", "text"),
+          new ImmutablePair<String, String>("isrequired", "text"),
+          new ImmutablePair<String, String>("amount", "text"),
+          new ImmutablePair<String, String>("numberofpartiestoignore", "text"),
+          new ImmutablePair<String, String>("sendforredaction", "text"),
+          new ImmutablePair<String, String>("dateofdeath", "text"),
+          new ImmutablePair<String, String>("displayorder", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("physicalfeature", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"), 
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("procedureremedy",makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"), 
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("casecategory", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("question", makeCourtColumnInfo(List.of(
+          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"), 
+          new ImmutablePair<String, String>("questiontext", "text"),
+          new ImmutablePair<String, String>("helptext", "text"), 
+          new ImmutablePair<String, String>("isrequired", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("race", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("servicetype", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"), 
+          new ImmutablePair<String, String>("servicemethod", "text"),
+          new ImmutablePair<String, String>("fee", "text"), 
+          new ImmutablePair<String, String>("disclaimertext", "text")))),
+        Map.entry("statute", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"), 
+          new ImmutablePair<String, String>("name", "text"),
+          new ImmutablePair<String, String>("word", "text"), 
+          new ImmutablePair<String, String>("referenceid", "text"),
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("statutetype", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"), 
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("vehiclecolor", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"), 
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("vehiclemake", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"), 
+          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("vehicletype", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("name", "text"), 
+          new ImmutablePair<String, String>("efspcode", "text"))))
+    );
+    for (Map.Entry<String, TableColumns> table : tableColumns.entrySet()) {
+      createQueries.put(table.getKey(), createTableQuery(table.getKey(), table.getValue()));
+      insertQueries.put(table.getKey(), createInsertQuery(table.getKey(), table.getValue()));
+      dropQueries.put(table.getKey(), "DROP TABLE IF EXISTS " + table.getKey());
+      if (table.getValue().needsExtraLocCol) {
+        deleteFromQueries.put(table.getKey(), "DELETE FROM " + table.getKey() + " WHERE location=?");
+      }
+    }
+
     
-    courtTableColumns.put("driverlicensetype", List.of(
-        new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"),
-        new ImmutablePair<String, String>("efspcode", "text")
-    )); 
-
-    courtTableColumns.put("documenttype", List.of(
-        new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"), 
-        new ImmutablePair<String, String>("filingcodeid", "text"),
-        new ImmutablePair<String, String>("iscourtuseonly", "text"),
-        new ImmutablePair<String, String>("isdefault", "text"), 
-        new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("ethnicity", List.of(
-        new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"), 
-        new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("eyecolor", List.of(
-        new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"), 
-        new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("filertype",
-        List.of(new ImmutablePair<String, String>("code", "text"), 
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("default", "text"), 
-            new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("filetype",
-        List.of(new ImmutablePair<String, String>("code", "text"), 
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("extension", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("filing",
-        List.of(new ImmutablePair<String, String>("code", "text"), 
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("fee", "text"), 
-            new ImmutablePair<String, String>("casecategory", "text"),
-            new ImmutablePair<String, String>("casetypeid", "text"),
-            new ImmutablePair<String, String>("filingtype", "text"),
-            new ImmutablePair<String, String>("iscourtuseonly", "text"),
-            new ImmutablePair<String, String>("civilclaimamount", "text"),
-            new ImmutablePair<String, String>("probateestateamount", "text"),
-            new ImmutablePair<String, String>("amountincontroversy", "text"),
-            new ImmutablePair<String, String>("useduedate", "text"),
-            new ImmutablePair<String, String>("isproposedorder", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("filingcomponent",
-        List.of(new ImmutablePair<String, String>("code", "text"), 
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("filingcodeid", "text"),
-            new ImmutablePair<String, String>("required", "text"),
-            new ImmutablePair<String, String>("allowmultiple", "text"),
-            new ImmutablePair<String, String>("displayorder", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("generaloffense",
-        List.of(new ImmutablePair<String, String>("code", "text"), 
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("statutecodeid", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("haircolor", List.of(new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"), 
-        new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("haircolor", List.of(new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"), 
-        new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("language", List.of(
-        new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"), 
-        new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("lawenforcementunit", List.of(
-        new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"), 
-        new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("motiontype",
-        List.of(new ImmutablePair<String, String>("code", "text"), 
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("filingcodeid", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("namesuffix", List.of(new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"), 
-        new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("optionalservices",
-        List.of(new ImmutablePair<String, String>("code", "text"), 
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("displayorder", "text"), 
-            new ImmutablePair<String, String>("fee", "text"),
-            new ImmutablePair<String, String>("filingcodeid", "text"),
-            new ImmutablePair<String, String>("multiplier", "text"),
-            new ImmutablePair<String, String>("altfeedesc", "text"),
-            new ImmutablePair<String, String>("hasfeeprompt", "text"),
-            new ImmutablePair<String, String>("feeprompttext", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("partytype",
-        List.of(new ImmutablePair<String, String>("code", "text"), 
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("isavailablefornewparties", "text"),
-            new ImmutablePair<String, String>("casetypeid", "text"),
-            new ImmutablePair<String, String>("isrequired", "text"),
-            new ImmutablePair<String, String>("amount", "text"),
-            new ImmutablePair<String, String>("numberofpartiestoignore", "text"),
-            new ImmutablePair<String, String>("sendforredaction", "text"),
-            new ImmutablePair<String, String>("dateofdeath", "text"),
-            new ImmutablePair<String, String>("displayorder", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("physicalfeature", List.of(
-        new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"), 
-        new ImmutablePair<String, String>("efspcode", "text")));
-
-    courtTableColumns.put("procedureremedy",
-        List.of(new ImmutablePair<String, String>("code", "text"), 
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("casecategory", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")));
-    courtTableColumns.put("question", List.of(new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"), 
-        new ImmutablePair<String, String>("questiontext", "text"),
-        new ImmutablePair<String, String>("helptext", "text"), 
-        new ImmutablePair<String, String>("isrequired", "text"),
-        new ImmutablePair<String, String>("efspcode", "text")));
-    courtTableColumns.put("race", List.of(new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"),
-        new ImmutablePair<String, String>("efspcode", "text")));
-    courtTableColumns.put("servicetype", List.of(new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"), 
-        new ImmutablePair<String, String>("servicemethod", "text"),
-        new ImmutablePair<String, String>("fee", "text"), 
-        new ImmutablePair<String, String>("disclaimertext", "text")));
-    courtTableColumns.put("statute", List.of(new ImmutablePair<String, String>("code", "text"), 
-        new ImmutablePair<String, String>("name", "text"),
-        new ImmutablePair<String, String>("word", "text"), 
-        new ImmutablePair<String, String>("referenceid", "text"),
-        new ImmutablePair<String, String>("efspcode", "text")));
-    courtTableColumns.put("statutetype", List.of(new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"), 
-        new ImmutablePair<String, String>("efspcode", "text")));
-    courtTableColumns.put("vehiclecolor", List.of(new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"), 
-        new ImmutablePair<String, String>("efspcode", "text")));
-    courtTableColumns.put("vehiclemake", List.of(new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"), 
-        new ImmutablePair<String, String>("efspcode", "text")));
-    courtTableColumns.put("vehicletype", List.of(new ImmutablePair<String, String>("code", "text"),
-        new ImmutablePair<String, String>("name", "text"), 
-        new ImmutablePair<String, String>("efspcode", "text")));
+    tableIndices.put("optionalservices", List.of(
+        "CREATE INDEX ON optionalservices (location)",
+        "CREATE INDEX ON optionalservices (filingcodeid)"));
+    tableIndices.put("filing", List.of(
+        "CREATE INDEX ON filing (location)",
+        "CREATE INDEX ON filing (casecategory)",
+        "CREATE INDEX ON filing (casetypeid)")); 
+    tableIndices.put("filingcomponent", List.of(
+        "CREATE INDEX ON filingcomponent (location)", 
+        "CREATE INDEX ON filingcomponent (filingcodeid)")); 
   }
-  
+
   public static String getZipNameFromTable(String tableName) {
     if (tableName.equalsIgnoreCase("location")) {
       return "locations.zip";
@@ -378,52 +347,62 @@ public class CodeTableConstants {
   }
 
   private static class TableColumns {
-    public List<Pair<String, String>> mainList;
-    public List<String> primaryKeys;
+    public List<Pair<String, String>> mainList = List.of();
+    public List<String> primaryKeys = List.of();
     public boolean needsExtraLocCol = false;
   }
 
-  private static Optional<TableColumns> getTableColumnInfo(String tableName) {
+  private static TableColumns makeCourtColumnInfo(List<Pair<String, String>> mainList) {
+    return makeTableColumnInfo(true, mainList, List.of());
+  }
+
+  private static TableColumns makeSystemColumnInfo(List<Pair<String, String>> mainList) {
+    return makeTableColumnInfo(false, mainList, List.of());
+  }
+
+  private static TableColumns makeTableColumnInfo(boolean needsExtraLocCol,
+      List<Pair<String, String>> mainList) {
+    return makeTableColumnInfo(needsExtraLocCol, mainList, List.of());
+  }
+
+  private static TableColumns makeTableColumnInfo(boolean needsExtraLocCol,
+      List<Pair<String, String>> mainList, List<String> primaryKeys) {
     TableColumns tableCols = new TableColumns();
-    if (systemTableColumns.containsKey(tableName)) {
-      tableCols.mainList = systemTableColumns.get(tableName);
-    } else {
-      tableCols.needsExtraLocCol = true;
-      if (bothTableColumns.containsKey(tableName)) {
-        tableCols.mainList = bothTableColumns.get(tableName);
-      } else if (courtTableColumns.containsKey(tableName)) {
-        tableCols.mainList = courtTableColumns.get(tableName);
-      } else {
-        return Optional.empty();
-      }
-    }
-    if (tablePrimaryKeys.containsKey(tableName)) {
-      tableCols.primaryKeys = tablePrimaryKeys.get(tableName);
-    } else {
-      tableCols.primaryKeys = List.of();
-    }
-    return Optional.of(tableCols);
+    tableCols.mainList = mainList;
+    tableCols.primaryKeys = primaryKeys;
+    tableCols.needsExtraLocCol = needsExtraLocCol;
+    return tableCols;
+  }
+
+  public static List<String> getTableColumns(String tableName) {
+    // Drops the type in the column name + type pairs.
+    return tableColumns.getOrDefault(tableName, new TableColumns())
+        .mainList.stream().map((e) -> e.getLeft()).collect(Collectors.toList());
   }
   
-  public static Optional<List<String>> getTableColumns(String tableName) {
-    Optional<TableColumns> tableCols = getTableColumnInfo(tableName);
-    return tableCols.map(
-        // Drops the type in the column name + type pairs. 
-        (tc) -> tc.mainList.stream().map((e) -> e.getLeft()).collect(Collectors.toList()));
+  public static boolean isCourtTable(String tableName) {
+    return tableColumns.getOrDefault(tableName, new TableColumns()).needsExtraLocCol;
+    
   }
 
   public static String getTableExists() {
-    return """ 
+    return """
         SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'
         AND table_name = ? LIMIT 1;""";
   }
-  
+
+  public static String getIndicesExist() {
+    return """
+        SELECT COUNT(*) FROM pg_catalog.pg_indexes where schemaname='public'
+        AND tablename = ? LIMIT 1;""";
+  }
+
   public static String updateVersion() {
     return """
         INSERT INTO installedversion (location, codelist, installedversion) VALUES(?, ?, ?)
-        ON CONFLICT (location, codelist) DO UPDATE SET installedversion=?"""; 
+        ON CONFLICT (location, codelist) DO UPDATE SET installedversion=?""";
   }
-  
+
   public static String needToUpdateVersion() {
     return """
         SELECT v.location, v.codelist, iv.installedversion, v.version
@@ -431,17 +410,17 @@ public class CodeTableConstants {
         ON (v.location=iv.location AND v.codelist=iv.codelist)
         WHERE (iv.installedversion IS NULL) OR (v.version != iv.installedversion)""";
   }
-  
+
   public static String getCaseSubtypesFor() {
-    return "SELECT code, name "
-        + "FROM casesubtype WHERE location=? AND casetypeid=?";
+    return """
+        SELECT code, name
+        FROM casesubtype WHERE location=? AND casetypeid=?""";
   }
 
-  
-  
-  /** Gets all columns from datafieldconfig table
-   * Need to provide the location (1) and the code (2) of the field.
-   * For example, 'adams' and 'FilingEventCaseParties'
+  /**
+   * Gets all columns from datafieldconfig table Need to provide the location (1)
+   * and the code (2) of the field. For example, 'adams' and
+   * 'FilingEventCaseParties'
    *
    * @return the String to make a SQL PreparedStatement from
    */
@@ -456,7 +435,7 @@ public class CodeTableConstants {
         + "validationmessage, regularexpression, defaultvalueexpression, isreadonly, location "
         + "FROM datafieldconfig WHERE location=?";
   }
-  
+
   public static String getProcedureOrRemedy() {
     return "SELECT name, code FROM procedureremedy WHERE location=? AND casecategory=?";
   }
@@ -469,11 +448,11 @@ public class CodeTableConstants {
     return "SELECT code, name, countrycode, location "
         + " FROM state WHERE location=? and countrycode=?";
   }
-  
+
   public static String getFilingStatuses() {
     return "SELECT name, code FROM filingstatus WHERE location=?";
   }
-  
+
   public static String getLanguages() {
     return "SELECT code, name, efspcode, location FROM languages WHERE location=?";
   }
@@ -485,75 +464,59 @@ public class CodeTableConstants {
   public static String getNameSuffixes() {
     return "SELECT name, code FROM namesuffix WHERE location=?";
   }
-
   
-  /** Will only delete from non-system tables. */
-  public static String deleteFromTable(String tableName) {
-    Optional<TableColumns> tableCols = getTableColumnInfo(tableName);
-    if (tableCols.isEmpty() || !tableCols.get().needsExtraLocCol) {
-      return "";
-    }
-    return "DELETE FROM " + tableName + " WHERE location=?";
+  public static String vacuumAnalyzeAll() {
+    return "VACUUM ANALYZE";
   }
   
-  /** Gets the statement that will drop the specified table, but only if it pre-specified. */
-  public static String dropTable(String tableName) {
-    Optional<TableColumns> tableCols = getTableColumnInfo(tableName);
-    if (tableCols.isEmpty()) {
-      return "";
-    }
-    return "DROP TABLE IF EXISTS " + tableName;
-  }
-
   public static String getCreateTable(String tableName) {
-    Optional<TableColumns> tableCols = getTableColumnInfo(tableName);
-    if (tableCols.isEmpty()) {
+    if (createQueries.containsKey(tableName)) {
+      return createQueries.get(tableName);
+    }
+    return "";
+  }
+
+  public static List<String> getCreateIndex(String tableName) {
+    if (!tableIndices.containsKey(tableName)) {
+      return List.of();
+    }
+    return tableIndices.get(tableName);
+  }
+  
+  public static String getInsertInto(String tableName) {
+    if (!insertQueries.containsKey(tableName)) {
       return "";
     }
-    StringBuilder createLocation = new StringBuilder();
-    createLocation.append("CREATE TABLE " + tableName + "(");
-    boolean isFirst = true;
-    for (Pair<String, String> col : tableCols.get().mainList) {
-      if (isFirst) {
-        isFirst = false;
-      } else {
-        createLocation.append(", ");
-      }
-      createLocation.append("\"" + col.getLeft() + "\" " + col.getRight());
+    return insertQueries.get(tableName);
+  }
+  
+  public static String getDeleteFrom(String tableName) {
+    if (!deleteFromQueries.containsKey(tableName)) {
+      return "";
     }
-    if (tableCols.get().needsExtraLocCol) {
-      createLocation.append(", \"location\" text");
+    return deleteFromQueries.get(tableName);
+  }
+
+  public static String getDrop(String tableName) {
+    if (!dropQueries.containsKey(tableName)) {
+      return "";
     }
-    if (!tableCols.get().primaryKeys.isEmpty()) {
-      createLocation.append(", PRIMARY KEY(" 
-          + tableCols.get().primaryKeys.stream().collect(Collectors.joining(",")) 
-          + ")");
-    }
-    createLocation.append(")");
-    return createLocation.toString();
+    return dropQueries.get(tableName);
   }
 
   /**
-   * Returns an INSERT statement for the given table + court.
-   * The statement includes a ON CONFLICT (all columns...) DO NOTHING clause.
+   * Returns an INSERT statement for the given table + court. The statement
+   * includes a ON CONFLICT (all columns...) DO NOTHING clause.
    *
    * @param tableName The name of the DB table (i.e. code list) to insert into
    * @param courtName The Court Location ID to add codes for
    */
-  public static String getInsertInto(String tableName, String courtName) {
-    Optional<TableColumns> tableCols = getTableColumnInfo(tableName);
-    if (tableCols.isEmpty()) {
-      return "";
-    }
-    if (tableCols.get().needsExtraLocCol && courtName.isEmpty()) {
-      log.warn("court name can't be empty");
-      return "";
-    }
+  private static String createInsertQuery(String tableName, TableColumns tc) {
     StringBuilder insertLocation = new StringBuilder();
     insertLocation.append("INSERT INTO \"" + tableName + "\" (");
     StringBuilder colNames = new StringBuilder();
     boolean isFirst = true;
-    for (Pair<String, String> col : tableCols.get().mainList) {
+    for (Pair<String, String> col : tc.mainList) {
       if (isFirst) {
         isFirst = false;
       } else {
@@ -561,22 +524,44 @@ public class CodeTableConstants {
       }
       colNames.append("\"" + col.getLeft() + "\"");
     }
-    if (tableCols.get().needsExtraLocCol) {
+    if (tc.needsExtraLocCol) {
       colNames.append(", location");
     }
     insertLocation.append(colNames.toString());
     insertLocation.append(") VALUES (");
-    for (int i = 0; i < tableCols.get().mainList.size(); i++) {
+    for (int i = 0; i < tc.mainList.size(); i++) {
       if (i > 0) {
         insertLocation.append(", ");
       }
       insertLocation.append("?");
     }
-    if (tableCols.get().needsExtraLocCol) {
-      insertLocation.append(", '" + courtName + "'");
+    if (tc.needsExtraLocCol) {
+      insertLocation.append(", ?"); 
     }
     insertLocation.append(")");
     return insertLocation.toString();
   }
 
+  private static String createTableQuery(String tableName, TableColumns tc) {
+    StringBuilder createLocation = new StringBuilder();
+    createLocation.append("CREATE TABLE " + tableName + "(");
+    boolean isFirst = true;
+    for (Pair<String, String> col : tc.mainList) {
+      if (isFirst) {
+        isFirst = false;
+      } else {
+        createLocation.append(", ");
+      }
+      createLocation.append("\"" + col.getLeft() + "\" " + col.getRight());
+    }
+    if (tc.needsExtraLocCol) {
+      createLocation.append(", \"location\" text");
+    }
+    if (!tc.primaryKeys.isEmpty()) {
+      createLocation.append(
+          ", PRIMARY KEY(" + tc.primaryKeys.stream().collect(Collectors.joining(",")) + ")");
+    }
+    createLocation.append(")");
+    return createLocation.toString();
+  }
 }
