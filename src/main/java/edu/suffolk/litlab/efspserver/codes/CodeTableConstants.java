@@ -93,7 +93,7 @@ public class CodeTableConstants {
           new ImmutablePair<String, String>("code", "text"),
           new ImmutablePair<String, String>("name", "text"),
           new ImmutablePair<String, String>("countrycode", "text")))),
-        Map.entry("filingStatus", makeCourtColumnInfo(List.of(
+        Map.entry("filingstatus", makeCourtColumnInfo(List.of(
           new ImmutablePair<String, String>("code", "text"),
           new ImmutablePair<String, String>("name", "text")))),
         Map.entry("datafieldconfig", makeCourtColumnInfo(List.of(
@@ -136,14 +136,6 @@ public class CodeTableConstants {
           new ImmutablePair<String, String>("code", "text"),
           new ImmutablePair<String, String>("name", "text"),
           new ImmutablePair<String, String>("casetypeid", "text"),
-          new ImmutablePair<String, String>("efspcode", "text")))),
-        Map.entry("casetype", makeCourtColumnInfo(List.of(
-          new ImmutablePair<String, String>("code", "text"),
-          new ImmutablePair<String, String>("name", "text"),
-          new ImmutablePair<String, String>("casecategory", "text"),
-          new ImmutablePair<String, String>("initial", "text"),
-          new ImmutablePair<String, String>("fee", "text"),
-          new ImmutablePair<String, String>("willfileddate", "text"),
           new ImmutablePair<String, String>("efspcode", "text")))),
         Map.entry("casetype", makeCourtColumnInfo(List.of(
           new ImmutablePair<String, String>("code", "text"),
@@ -238,9 +230,6 @@ public class CodeTableConstants {
         Map.entry("generaloffense", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"), 
           new ImmutablePair<String, String>("name", "text"),
           new ImmutablePair<String, String>("statutecodeid", "text"),
-          new ImmutablePair<String, String>("efspcode", "text")))),
-        Map.entry("haircolor", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"),
-          new ImmutablePair<String, String>("name", "text"), 
           new ImmutablePair<String, String>("efspcode", "text")))),
         Map.entry("haircolor", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"),
           new ImmutablePair<String, String>("name", "text"), 
@@ -358,8 +347,8 @@ public class CodeTableConstants {
   }
 
   private static class TableColumns {
-    public List<Pair<String, String>> mainList;
-    public List<String> primaryKeys;
+    public List<Pair<String, String>> mainList = List.of();
+    public List<String> primaryKeys = List.of();
     public boolean needsExtraLocCol = false;
   }
 
@@ -405,7 +394,7 @@ public class CodeTableConstants {
   public static String getIndicesExist() {
     return """
         SELECT COUNT(*) FROM pg_catalog.pg_indexes where schemaname='public'
-        AND table_name = ? LIMIT 1;""";
+        AND tablename = ? LIMIT 1;""";
   }
 
   public static String updateVersion() {
