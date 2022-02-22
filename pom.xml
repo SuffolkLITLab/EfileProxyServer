@@ -32,6 +32,7 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
+            <!-- Version with internal log4j patched exists, but is unreleased 2/22/22 -->
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -220,6 +221,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>3.11.2</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.twilio.sdk</groupId>

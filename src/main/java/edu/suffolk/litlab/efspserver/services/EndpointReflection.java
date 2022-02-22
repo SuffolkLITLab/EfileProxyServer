@@ -38,23 +38,35 @@ public class EndpointReflection {
           if (annotation != null) {
               String basePath = getRESTEndpointPath(clazz);                    
               Method[] methods = clazz.getMethods();
-              for (Method method : methods) {
-                  if (method.isAnnotationPresent(GET.class)){
-                      endpoints.add(createEndpoint(method, MethodEnum.GET, clazz, basePath));
-                  }
-                  else if (method.isAnnotationPresent(PUT.class)){
-                      endpoints.add(createEndpoint(method, MethodEnum.PUT, clazz, basePath));                          
-                  }
-                  else if (method.isAnnotationPresent(POST.class)){
-                      endpoints.add(createEndpoint(method, MethodEnum.POST, clazz, basePath));                           
-                  }
-                  else if (method.isAnnotationPresent(DELETE.class)){
-                      endpoints.add(createEndpoint(method, MethodEnum.DELETE, clazz, basePath));
-                  }
-              }
+              endpoints.addAll(makeRestEndpoints(methods, clazz, basePath));
           }
       }
       return endpoints;
+  }
+  
+  public List<Endpoint> makeRestEndpoints(List<Method> methods, Class<?> clazz) {
+    String basePath = getRESTEndpointPath(clazz);                    
+    List<Endpoint> endpoints = makeRestEndpoints(methods.toArray(new Method[0]), clazz, basePath);
+    return endpoints;
+  }
+  
+  private List<Endpoint> makeRestEndpoints(Method[] methods, Class<?> clazz, String basePath) {
+    List<Endpoint> endpoints = new ArrayList<Endpoint>();
+    for (Method method : methods) {
+      if (method.isAnnotationPresent(GET.class)){
+        endpoints.add(createEndpoint(method, MethodEnum.GET, clazz, basePath));
+      }
+      else if (method.isAnnotationPresent(PUT.class)){
+        endpoints.add(createEndpoint(method, MethodEnum.PUT, clazz, basePath));                          
+      }
+      else if (method.isAnnotationPresent(POST.class)){
+        endpoints.add(createEndpoint(method, MethodEnum.POST, clazz, basePath));                           
+      }
+      else if (method.isAnnotationPresent(DELETE.class)){
+        endpoints.add(createEndpoint(method, MethodEnum.DELETE, clazz, basePath));
+      }
+    }
+    return endpoints;
   }
   
   @SuppressWarnings("rawtypes")
@@ -65,6 +77,17 @@ public class EndpointReflection {
       toDisplay.put(clazz.getSimpleName(), baseUrl + annotation.value());
     }
     return toDisplay;
+  }
+  
+  
+  public static List<Endpoint> replacePathParam(List<Endpoint> endpoints, Map<String, String> paramVals) {
+    for (Endpoint endpoint : endpoints) {
+      for (Map.Entry<String, String> paramVal : paramVals.entrySet()) {
+        endpoint.uri = endpoint.uri.replace("{" + paramVal.getKey() + "}", paramVal.getValue());
+        endpoint.pathParameters.removeIf(ep -> ep.name.equals(paramVal.getKey()));
+      }
+    }
+    return endpoints;
   }
   
   
