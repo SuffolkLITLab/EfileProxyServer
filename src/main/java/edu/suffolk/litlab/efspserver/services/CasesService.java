@@ -42,6 +42,7 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.Cas
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistresponsemessage_4.CaseListResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
@@ -116,6 +117,15 @@ public class CasesService {
       }
     }
 
+    boolean internalTestTrigger = docketId != null && docketId.equals("abc123SecretTrigger");
+    if (internalTestTrigger) {
+      firstName = "John";
+      middleName = "";
+      lastName = "Brown";
+      businessName = null;
+      docketId = null;
+    }
+
     CaseListQueryMessageType query = new CaseListQueryMessageType();
     EntityType typ = new EntityType();
     JAXBElement<PersonType> elem2 = ecfOf.createEntityPerson(new PersonType());
@@ -124,27 +134,13 @@ public class CasesService {
     query.setCaseCourt(XmlHelper.convertCourtType(courtId));
     query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
-    if (docketId != null && docketId.equals("abc123SecretTrigger")) {
-      Name maybeName = new Name("John", "", "Brown");
-      PersonType pt = ecfOf.createPersonType();
-      pt.setPersonName(maybeName.getNameType());
-
-      var commonCpt = ecfOf.createCaseParticipantType();
-      commonCpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
-      commonCpt.setCaseParticipantRoleCode(XmlHelper.convertText(""));
-      
-      CaseParticipantType cpt = listObjFac.createCaseParticipantType();
-      cpt.setCaseParticipant(ecfOf.createCaseParticipant(commonCpt));
-      query.getCaseListQueryCaseParticipant().add(cpt);
-      CaseListResponseMessageType resp = maybePort.get().getCaseList(query);
-      return Response.status(203).entity(resp.getCase()).build();
-    }
 
     if (docketId != null) {
       CaseType ct = new CaseType();
       ct.setCaseDocketID(XmlHelper.convertString(docketId));
       query.getCaseListQueryCase().add(ct);
     }
+
     if (firstName != null && lastName != null) {
       Name maybeName = new Name(firstName, middleName, lastName);
       PersonType pt = ecfOf.createPersonType();
@@ -168,8 +164,16 @@ public class CasesService {
       cpt.setCaseParticipant(ecfOf.createCaseParticipant(commonCpt));
       query.getCaseListQueryCaseParticipant().add(cpt);
     }
-    log.info(XmlHelper.objectToXmlStrOrError(query, CaseListQueryMessageType.class));
+
     CaseListResponseMessageType resp = maybePort.get().getCaseList(query);
+    if (internalTestTrigger) {
+      ErrorType et = new ErrorType();
+      et.setErrorCode(XmlHelper.convertText("-10"));
+      et.setErrorText(XmlHelper.convertText("Haha, secret code activated"));
+      resp.getError().add(et);
+    }
+    log.info(XmlHelper.objectToXmlStrOrError(resp, CaseListResponseMessageType.class));
+
     if (hasError(resp)) {
       // If the response has issues connecting with the CMS, we are still supposed to allow
       // for case search / e-filing. So, we'll return an error with the error code, but also any
