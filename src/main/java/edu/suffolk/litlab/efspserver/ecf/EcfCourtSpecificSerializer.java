@@ -232,11 +232,15 @@ public class EcfCourtSpecificSerializer {
     for (Map.Entry<String, Person> party : existingParties.entrySet()) {
       if (codeToPartyType.containsKey(party.getValue().getRole())) {
         partyInfo.put(party.getKey(), Pair.of(codeToPartyType.get(party.getValue().getRole()), party.getValue().isOrg()));
+      } else {
+        log.warn("Existing party " + party.getKey() + "'s role (" + party.getValue().getRole() + ") isn't a code?");
       }
     }
     for (Map.Entry<String, Person> party : newParties.entrySet()) {
       if (codeToPartyType.containsKey(party.getValue().getRole())) {
         partyInfo.put(party.getKey(), Pair.of(codeToPartyType.get(party.getValue().getRole()), party.getValue().isOrg()));
+      } else {
+        log.warn("New party " + party.getKey() + "'s role (" + party.getValue().getRole() + ") isn't a code?");
       }
     }
     // TODO(brycew): move more detailed vetting to be here: stuff in EcfCaseTypeFactory.java:263

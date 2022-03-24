@@ -308,7 +308,7 @@ public class FilingInformationDocassembleJacksonDeserializer
           if (varToId.containsKey(partyAssoc.asText())) {
             realId = Optional.of(PartyId.CurrentFiling(varToId.get(partyAssoc.asText())));
           } else {
-            log.info("Exisiting filing party id for service party assoc");
+            log.info("Exisiting filing party id (" + partyAssoc.asText() + ") for service party assoc ("+ servObj.get("contact_id").asText() + ")");
             realId = Optional.of(PartyId.Already(partyAssoc.asText()));
           }
         } else if (partyAssoc != null && !partyAssoc.isNull()) {
