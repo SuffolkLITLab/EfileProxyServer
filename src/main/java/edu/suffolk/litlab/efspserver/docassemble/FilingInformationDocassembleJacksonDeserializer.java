@@ -329,6 +329,7 @@ public class FilingInformationDocassembleJacksonDeserializer
             servObj.get("service_type").asText(), realId);
         contacts.add(contact);
         servIdx++;
+        collector.popAttributeStack(); 
       }
       return contacts;
     } else {
