@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -42,7 +43,7 @@ public class FilingDocDocassembleJacksonDeserializer {
 
   /** Parses a filing from the DA Json Object. Used by Deserializers that include filings. */
   public static Optional<FilingDoc> fromNode(JsonNode node, Map<String, String> varToId,
-      int sequenceNum, InfoCollector collector) throws FilingError {
+      boolean isLeadDoc, InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
       FilingError err = FilingError.malformedInterview(
               "Refusing to parse filing doc that isn't a Json Object: " + node.toPrettyString());
@@ -50,79 +51,77 @@ public class FilingDocDocassembleJacksonDeserializer {
     }
 
     // Get: filename
+    if (!node.has("filename") || !node.get("filename").isTextual()) {
+      FilingError err = FilingError.malformedInterview(
+          "Refusing to parse filing without filename");
+      collector.error(err);
+    }
     JsonNode filenameNode = node.get("filename");
+    if (filenameNode == null || !filenameNode.isTextual()) {
+      InterviewVariable nameVar = collector.requestVar("filename", "The file name of the filing document", "text");
+      collector.addRequired(nameVar);
+    }
+
     String fileName = filenameNode.asText("") + ".pdf";
     if (!node.has("proxy_enabled") || !node.get("proxy_enabled").asBoolean(false)) {
       log.info(fileName + " isn't proxy enabled");
       return Optional.empty();
     }
 
-    if (filenameNode == null || !filenameNode.isTextual()) {
-      InterviewVariable nameVar = collector.requestVar("filename", "The file name of the filing document", "text");
-      collector.addRequired(nameVar);
-    }
-
-    InterviewVariable filingVar = collector.requestVar("tyler_filing_type", "What filing type is this?", "text"); 
     JsonNode filingJson = node.get("tyler_filing_type");
     Optional<String> filingType = Optional.empty(); 
     if (filingJson != null && filingJson.isTextual()) {
       filingType = Optional.of(filingJson.asText());
     } else {
+      InterviewVariable filingVar = collector.requestVar("tyler_filing_type", "What filing type is this?", "text"); 
       log.warn("tyler_filing_type not present in the info!: " + node);
       // Optional for non-tyler ones. Will be enforced at the tyler level
       collector.addOptional(filingVar.appendDesc((node.has("instanceName")) ? node.get("instanceName").asText("?") : "?"));
     }
+    Optional<String> motionName = Optional.empty();
+    if (node.has("motion_type") && node.get("motion_type").isTextual()) {
+      motionName = Optional.of(node.get("motion_type").asText());
+    } else {
+      InterviewVariable var = collector.requestVar("motion",
+          "The Type of Motion that this interview is", "text");
+      collector.addOptional(var);
+    }
+    String documentTypeFormatName = getStringDefault(node, "document_type", "");
 
-    try {
-      if (!node.has("data_url") || !node.get("data_url").isTextual()) {
-        FilingError err = FilingError.malformedInterview(
-            "Refusing to parse filing without data_url");
-        collector.error(err);
-      }
-      if (!node.has("filename") || !node.get("filename").isTextual()) {
-        FilingError err = FilingError.malformedInterview(
-            "Refusing to parse filing without filename");
-        collector.error(err);
-      }
-
-      URL inUrl = new URL(node.get("data_url").asText().replace("localhost", "docassemble"));
-      Optional<String> motionName = Optional.empty();
-      if (node.has("motion_type") && node.get("motion_type").isTextual()) {
-        motionName = Optional.of(node.get("motion_type").asText());
-      } else {
-        InterviewVariable var = collector.requestVar("motion",
-            "The Type of Motion that this interview is", "text");
-        collector.addOptional(var);
-      }
-      String documentTypeFormatName = getStringDefault(node, "document_type", "");
-
-      List<OptionalService> optServices = new ArrayList<OptionalService>();
-      Optional<JsonNode> maybeOptServs = JsonHelpers.unwrapDAList(node.get("optional_services"));
-      maybeOptServs.ifPresent(optServs -> {
-        optServs.elements().forEachRemaining(optServ -> {
-          String code = optServ.get("code").asText();
-          Optional<Integer> mult = getIntMember(optServ, "multiplier"); 
-          Optional<BigDecimal> fee = getNumberMember(optServ, "fee_amount"); 
-          optServices.add(new OptionalService(code, mult, fee));
-        });
+    List<OptionalService> optServices = new ArrayList<OptionalService>();
+    Optional<JsonNode> maybeOptServs = JsonHelpers.unwrapDAList(node.get("optional_services"));
+    maybeOptServs.ifPresent(optServs -> {
+      optServs.elements().forEachRemaining(optServ -> {
+        String code = optServ.get("code").asText();
+        Optional<Integer> mult = getIntMember(optServ, "multiplier"); 
+        Optional<BigDecimal> fee = getNumberMember(optServ, "fee_amount"); 
+        optServices.add(new OptionalService(code, mult, fee));
       });
-      JsonNode jsonDueDate = node.get("due_date");
-      Optional<LocalDate> maybeDueDate = Optional.empty();
-      if (jsonDueDate != null && jsonDueDate.isTextual()) {
-        maybeDueDate = Optional.of(LocalDate.ofInstant(Instant.parse(jsonDueDate.asText()), ZoneId.of("America/Chicago")));
-      }
-
-      String filingComponentCode = getStringDefault(node, "filing_component", "");
+    });
+    JsonNode jsonDueDate = node.get("due_date");
+    Optional<LocalDate> maybeDueDate = Optional.empty();
+    if (jsonDueDate != null && jsonDueDate.isTextual()) {
+      maybeDueDate = Optional.of(LocalDate.ofInstant(Instant.parse(jsonDueDate.asText()), ZoneId.of("America/Chicago")));
+    }
+    String filingComponentCode = getStringDefault(node, "filing_component", "");
       
-      Optional<String> userDescription = getStringMember(node, "filing_description");
-      Optional<String> filingRefNum = getStringMember(node, "reference_number");
-      Optional<String> filingAttorney = getStringMember(node, "filing_attorney");
-      String filingComment = getStringDefault(node, "filing_comment", "");
+    Optional<String> userDescription = getStringMember(node, "filing_description");
+    Optional<String> filingRefNum = getStringMember(node, "reference_number");
+    Optional<String> filingAttorney = getStringMember(node, "filing_attorney");
+    String filingComment = getStringDefault(node, "filing_comment", "");
       
-      List<String> courtesyCopies = getMemberList(node, "courtesy_copies");
-      List<String> preliminaryCopies = getMemberList(node, "preliminary_copies");
-      List<String> filingParties = getMemberList(node, "filing_parties");
-      
+    List<String> courtesyCopies = getMemberList(node, "courtesy_copies");
+    List<String> preliminaryCopies = getMemberList(node, "preliminary_copies");
+    List<String> filingParties = getMemberList(node, "filing_parties");
+    
+    if (!node.has("data_url") || !node.get("data_url").isTextual()) {
+      FilingError err = FilingError.malformedInterview(
+          "Refusing to parse filing without data_url");
+      collector.error(err);
+    }
+    String dataUrl = node.get("data_url").asText();
+    try {
+      URL inUrl = new URL(dataUrl); 
       Pattern usersPattern = Pattern.compile("users\\[[0-9]+\\]");
       Pattern otherPattern = Pattern.compile("other_parties\\[[0-9]+\\]");
       List<PartyId> fullParties = filingParties.stream().map(fp -> {
@@ -172,16 +171,21 @@ public class FilingDocDocassembleJacksonDeserializer {
               maybeDueDate,
               fullParties,
               filingAttorney,
-              documentTypeFormatName, filingComponentCode,
+              documentTypeFormatName, 
+              filingComponentCode,
               filingComment,
               motionName,
               optServices,
               courtesyCopies,
               preliminaryCopies,
               action,
-              sequenceNum == 0));
+              isLeadDoc));
+    } catch (MalformedURLException ex) {
+      FilingError err = FilingError.serverError("MalformedURLException trying to parse the data_url (" + dataUrl + "): " + ex);
+      collector.error(err);
+      throw err;
     } catch (IOException ex)  {
-      FilingError err = FilingError.serverError("IOException trying to parse data_url: " + ex);
+      FilingError err = FilingError.serverError("IOException trying to connect to data_url (" + dataUrl + "):" + ex);
       collector.error(err);
       throw err;
     }

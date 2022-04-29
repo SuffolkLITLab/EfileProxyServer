@@ -361,7 +361,8 @@ public class FilingInformationDocassembleJacksonDeserializer
       try {
         collector.pushAttributeStack("al_court_bundle.elements[" + i + "]");
         Optional<FilingDoc> maybeDoc = FilingDocDocassembleJacksonDeserializer.fromNode(
-            elems.get(i), varToId, i, collector); 
+            elems.get(i), varToId, i == 0,  // the 0th doc is the Lead doc by default
+            collector); 
         collector.popAttributeStack();
         maybeDoc.ifPresent(doc -> {
           filingDocs.add(doc);

@@ -58,7 +58,10 @@ public class FilingError extends Exception {
   
   @Override
   public String toString() {
-    return type.toString() + " " + description + " " + missingVariable;
+    if (missingVariable.isEmpty()) {
+      return type.toString() + " " + description; 
+    }
+    return type.toString() + " " +description + " " + missingVariable;
   }
   
   public String toJson() {
