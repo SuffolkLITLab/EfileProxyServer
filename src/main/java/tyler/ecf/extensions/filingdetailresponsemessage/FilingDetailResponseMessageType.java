@@ -54,7 +54,7 @@ import tyler.ecf.extensions.common.ProcedureRemedyType;
  *         &lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}ServiceRecipientDetail" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:extensions:FilingDetailResponseMessage}FilingFees" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:extensions:Common}FilingLeadDocument" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{urn:tyler:ecf:extensions:Common}FilingAssociationParty" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}FilingAssociationParty" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -111,7 +111,7 @@ public class FilingDetailResponseMessageType
     @XmlElement(name = "FilingLeadDocument", namespace = "urn:tyler:ecf:extensions:Common")
     protected List<DocumentType> filingLeadDocument;
     @XmlElement(name = "FilingAssociationParty", namespace = "urn:tyler:ecf:extensions:Common")
-    protected IdentificationType filingAssociationParty;
+    protected List<IdentificationType> filingAssociationParty;
 
     /**
      * Gets the value of the filingSubmissionDate property.
@@ -467,25 +467,30 @@ public class FilingDetailResponseMessageType
     /**
      * Gets the value of the filingAssociationParty property.
      * 
-     * @return
-     *     possible object is
-     *     {@link IdentificationType }
-     *     
-     */
-    public IdentificationType getFilingAssociationParty() {
-        return filingAssociationParty;
-    }
-
-    /**
-     * Sets the value of the filingAssociationParty property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the filingAssociationParty property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link IdentificationType }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getFilingAssociationParty().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link IdentificationType }
+     * 
+     * 
      */
-    public void setFilingAssociationParty(IdentificationType value) {
-        this.filingAssociationParty = value;
+    public List<IdentificationType> getFilingAssociationParty() {
+        if (filingAssociationParty == null) {
+            filingAssociationParty = new ArrayList<IdentificationType>();
+        }
+        return this.filingAssociationParty;
     }
 
     /**

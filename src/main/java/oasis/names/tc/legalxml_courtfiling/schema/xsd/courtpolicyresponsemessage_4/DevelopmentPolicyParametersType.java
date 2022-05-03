@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlType;
 import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.MeasureType;
 import gov.niem.niem.niem_core._2.TextType;
+import gov.niem.niem.proxy.xsd._2.AnyURI;
 import gov.niem.niem.proxy.xsd._2.Boolean;
 import gov.niem.niem.structures._2.ComplexObjectType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -33,6 +34,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}AcceptDocumentsRequiringFeesIndicator"/&gt;
  *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}AcceptConfidentialFilingsIndicator"/&gt;
  *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}AcceptMultipleLeadDocumentsIndicator"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}LocationSpecificUrl" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}MaximumAllowedAttachmentSize" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}MaximumAllowedMessageSize" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}SupportedMessageProfileCode" maxOccurs="unbounded"/&gt;
@@ -57,6 +59,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "acceptDocumentsRequiringFeesIndicator",
     "acceptConfidentialFilingsIndicator",
     "acceptMultipleLeadDocumentsIndicator",
+    "locationSpecificUrl",
     "maximumAllowedAttachmentSize",
     "maximumAllowedMessageSize",
     "supportedMessageProfileCode",
@@ -83,6 +86,8 @@ public class DevelopmentPolicyParametersType
     protected Boolean acceptConfidentialFilingsIndicator;
     @XmlElement(name = "AcceptMultipleLeadDocumentsIndicator", required = true)
     protected Boolean acceptMultipleLeadDocumentsIndicator;
+    @XmlElement(name = "LocationSpecificUrl")
+    protected AnyURI locationSpecificUrl;
     @XmlElement(name = "MaximumAllowedAttachmentSize")
     protected MeasureType maximumAllowedAttachmentSize;
     @XmlElement(name = "MaximumAllowedMessageSize")
@@ -198,6 +203,30 @@ public class DevelopmentPolicyParametersType
      */
     public void setAcceptMultipleLeadDocumentsIndicator(Boolean value) {
         this.acceptMultipleLeadDocumentsIndicator = value;
+    }
+
+    /**
+     * Gets the value of the locationSpecificUrl property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link AnyURI }
+     *     
+     */
+    public AnyURI getLocationSpecificUrl() {
+        return locationSpecificUrl;
+    }
+
+    /**
+     * Sets the value of the locationSpecificUrl property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link AnyURI }
+     *     
+     */
+    public void setLocationSpecificUrl(AnyURI value) {
+        this.locationSpecificUrl = value;
     }
 
     /**

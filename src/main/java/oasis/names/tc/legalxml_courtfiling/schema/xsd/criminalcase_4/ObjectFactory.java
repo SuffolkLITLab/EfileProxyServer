@@ -34,9 +34,9 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.Organization
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _CaseCharge_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CriminalCase-4.0", "CaseCharge");
     private final static QName _ArrestAgency_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CriminalCase-4.0", "ArrestAgency");
     private final static QName _CaseArrest_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CriminalCase-4.0", "CaseArrest");
+    private final static QName _CaseCharge_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CriminalCase-4.0", "CaseCharge");
     private final static QName _ChargeAmendedIndicator_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CriminalCase-4.0", "ChargeAmendedIndicator");
     private final static QName _ChargeChargingAgencyJurisdictionStatute_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CriminalCase-4.0", "ChargeChargingAgencyJurisdictionStatute");
     private final static QName _ChargeOffense_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CriminalCase-4.0", "ChargeOffense");
@@ -100,19 +100,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ChargeType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link ChargeType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CriminalCase-4.0", name = "CaseCharge")
-    public JAXBElement<ChargeType> createCaseCharge(ChargeType value) {
-        return new JAXBElement<ChargeType>(_CaseCharge_QNAME, ChargeType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link OrganizationType }{@code >}
      * 
      * @param value
@@ -136,6 +123,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CriminalCase-4.0", name = "CaseArrest")
     public JAXBElement<ArrestType> createCaseArrest(ArrestType value) {
         return new JAXBElement<ArrestType>(_CaseArrest_QNAME, ArrestType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ChargeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ChargeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CriminalCase-4.0", name = "CaseCharge")
+    public JAXBElement<ChargeType> createCaseCharge(ChargeType value) {
+        return new JAXBElement<ChargeType>(_CaseCharge_QNAME, ChargeType.class, null, value);
     }
 
     /**

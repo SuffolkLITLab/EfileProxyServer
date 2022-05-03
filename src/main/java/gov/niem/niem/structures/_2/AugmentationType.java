@@ -50,14 +50,14 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AugmentationType")
 @XmlSeeAlso({
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationAugmentationType.class,
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonAugmentationType.class,
+    MarriageAssociationAugmentationType.class,
     CaseAugmentationType.class,
     IncidentAugmentationType.class,
     gov.niem.niem.domains.jxdm._4.OrganizationAugmentationType.class,
     gov.niem.niem.domains.jxdm._4.PersonAugmentationType.class,
-    PropertyAugmentationType.class,
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationAugmentationType.class,
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonAugmentationType.class,
-    MarriageAssociationAugmentationType.class
+    PropertyAugmentationType.class
 })
 public abstract class AugmentationType {
 

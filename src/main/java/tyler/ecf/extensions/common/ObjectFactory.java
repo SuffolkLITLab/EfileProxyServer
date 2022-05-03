@@ -43,6 +43,10 @@ public class ObjectFactory {
     private final static QName _DevelopmentPolicyParameters_QNAME = new QName("urn:tyler:ecf:extensions:Common", "DevelopmentPolicyParameters");
     private final static QName _PersonCapability_QNAME = new QName("urn:tyler:ecf:extensions:Common", "PersonCapability");
     private final static QName _IAmThisUserIndicator_QNAME = new QName("urn:tyler:ecf:extensions:Common", "IAmThisUserIndicator");
+    private final static QName _CourtSplitAmount_QNAME = new QName("urn:tyler:ecf:extensions:Common", "CourtSplitAmount");
+    private final static QName _NonCourtSplitAmount_QNAME = new QName("urn:tyler:ecf:extensions:Common", "NonCourtSplitAmount");
+    private final static QName _FeeSplit_QNAME = new QName("urn:tyler:ecf:extensions:Common", "FeeSplit");
+    private final static QName _PaymentInstructionID_QNAME = new QName("urn:tyler:ecf:extensions:Common", "PaymentInstructionID");
     private final static QName _PartyService_QNAME = new QName("urn:tyler:ecf:extensions:Common", "PartyService");
     private final static QName _FilingAssociation_QNAME = new QName("urn:tyler:ecf:extensions:Common", "FilingAssociation");
     private final static QName _PartyReference_QNAME = new QName("urn:tyler:ecf:extensions:Common", "PartyReference");
@@ -142,6 +146,7 @@ public class ObjectFactory {
     private final static QName _OrganizationIdentificationID_QNAME = new QName("urn:tyler:ecf:extensions:Common", "OrganizationIdentificationID");
     private final static QName _CaseCategoryCode_QNAME = new QName("urn:tyler:ecf:extensions:Common", "CaseCategoryCode");
     private final static QName _CaseTypeCode_QNAME = new QName("urn:tyler:ecf:extensions:Common", "CaseTypeCode");
+    private final static QName _CaseJudge_QNAME = new QName("urn:tyler:ecf:extensions:Common", "CaseJudge");
     private final static QName _Payment_QNAME = new QName("urn:tyler:ecf:extensions:Common", "Payment");
     private final static QName _AccountName_QNAME = new QName("urn:tyler:ecf:extensions:Common", "AccountName");
     private final static QName _CardType_QNAME = new QName("urn:tyler:ecf:extensions:Common", "CardType");
@@ -193,6 +198,22 @@ public class ObjectFactory {
      */
     public CapabilityType createCapabilityType() {
         return new CapabilityType();
+    }
+
+    /**
+     * Create an instance of {@link SplitAmountType }
+     * 
+     */
+    public SplitAmountType createSplitAmountType() {
+        return new SplitAmountType();
+    }
+
+    /**
+     * Create an instance of {@link FeeSplitType }
+     * 
+     */
+    public FeeSplitType createFeeSplitType() {
+        return new FeeSplitType();
     }
 
     /**
@@ -506,6 +527,58 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "IAmThisUserIndicator")
     public JAXBElement<Boolean> createIAmThisUserIndicator(Boolean value) {
         return new JAXBElement<Boolean>(_IAmThisUserIndicator_QNAME, Boolean.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SplitAmountType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link SplitAmountType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "CourtSplitAmount")
+    public JAXBElement<SplitAmountType> createCourtSplitAmount(SplitAmountType value) {
+        return new JAXBElement<SplitAmountType>(_CourtSplitAmount_QNAME, SplitAmountType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SplitAmountType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link SplitAmountType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "NonCourtSplitAmount")
+    public JAXBElement<SplitAmountType> createNonCourtSplitAmount(SplitAmountType value) {
+        return new JAXBElement<SplitAmountType>(_NonCourtSplitAmount_QNAME, SplitAmountType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FeeSplitType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link FeeSplitType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "FeeSplit")
+    public JAXBElement<FeeSplitType> createFeeSplit(FeeSplitType value) {
+        return new JAXBElement<FeeSplitType>(_FeeSplit_QNAME, FeeSplitType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "PaymentInstructionID")
+    public JAXBElement<TextType> createPaymentInstructionID(TextType value) {
+        return new JAXBElement<TextType>(_PaymentInstructionID_QNAME, TextType.class, null, value);
     }
 
     /**
@@ -1793,6 +1866,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "CaseTypeCode", substitutionHeadNamespace = "http://niem.gov/niem/niem-core/2.0", substitutionHeadName = "DocumentCategoryText")
     public JAXBElement<TextType> createCaseTypeCode(TextType value) {
         return new JAXBElement<TextType>(_CaseTypeCode_QNAME, TextType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "CaseJudge", substitutionHeadNamespace = "http://niem.gov/niem/niem-core/2.0", substitutionHeadName = "DocumentCategoryText")
+    public JAXBElement<TextType> createCaseJudge(TextType value) {
+        return new JAXBElement<TextType>(_CaseJudge_QNAME, TextType.class, null, value);
     }
 
     /**

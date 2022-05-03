@@ -118,19 +118,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link InsuranceType }
+     * Create an instance of {@link OrganizationType }
      * 
      */
-    public InsuranceType createInsuranceType() {
-        return new InsuranceType();
-    }
-
-    /**
-     * Create an instance of {@link PersonType }
-     * 
-     */
-    public PersonType createPersonType() {
-        return new PersonType();
+    public OrganizationType createOrganizationType() {
+        return new OrganizationType();
     }
 
     /**
@@ -254,11 +246,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link OrganizationType }
+     * Create an instance of {@link PersonType }
      * 
      */
-    public OrganizationType createOrganizationType() {
-        return new OrganizationType();
+    public PersonType createPersonType() {
+        return new PersonType();
     }
 
     /**
@@ -307,6 +299,14 @@ public class ObjectFactory {
      */
     public PersonAugmentationType createPersonAugmentationType() {
         return new PersonAugmentationType();
+    }
+
+    /**
+     * Create an instance of {@link InsuranceType }
+     * 
+     */
+    public InsuranceType createInsuranceType() {
+        return new InsuranceType();
     }
 
     /**

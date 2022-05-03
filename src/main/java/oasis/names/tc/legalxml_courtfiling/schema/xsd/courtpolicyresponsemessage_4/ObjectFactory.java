@@ -9,6 +9,7 @@ import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.MeasureType;
 import gov.niem.niem.niem_core._2.TextType;
+import gov.niem.niem.proxy.xsd._2.AnyURI;
 import gov.niem.niem.proxy.xsd._2.Boolean;
 
 
@@ -44,6 +45,7 @@ public class ObjectFactory {
     private final static QName _FilingFeesMayBeApplicableIndicator_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0", "FilingFeesMayBeApplicableIndicator");
     private final static QName _GetFeesCalculationSupportedIndicator_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0", "GetFeesCalculationSupportedIndicator");
     private final static QName _GetCaseListSupportedIndicator_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0", "GetCaseListSupportedIndicator");
+    private final static QName _LocationSpecificUrl_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0", "LocationSpecificUrl");
     private final static QName _MajorDesignElementNameCode_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0", "MajorDesignElementNameCode");
     private final static QName _MaximumAllowedAttachmentSize_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0", "MaximumAllowedAttachmentSize");
     private final static QName _MaximumAllowedMessageSize_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0", "MaximumAllowedMessageSize");
@@ -337,6 +339,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0", name = "GetCaseListSupportedIndicator")
     public JAXBElement<Boolean> createGetCaseListSupportedIndicator(Boolean value) {
         return new JAXBElement<Boolean>(_GetCaseListSupportedIndicator_QNAME, Boolean.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AnyURI }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link AnyURI }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0", name = "LocationSpecificUrl")
+    public JAXBElement<AnyURI> createLocationSpecificUrl(AnyURI value) {
+        return new JAXBElement<AnyURI>(_LocationSpecificUrl_QNAME, AnyURI.class, null, value);
     }
 
     /**

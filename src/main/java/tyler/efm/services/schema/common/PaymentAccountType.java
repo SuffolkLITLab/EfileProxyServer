@@ -1,6 +1,8 @@
 
 package tyler.efm.services.schema.common;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -8,52 +10,64 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * &lt;p&gt;Java class for PaymentAccountType complex type.
+ * <p>Java class for PaymentAccountType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="PaymentAccountType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element name="AccountName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&amp;gt;
- *         &amp;lt;element name="AccountToken" type="{http://www.w3.org/2001/XMLSchema}string"/&amp;gt;
- *         &amp;lt;element name="CardType" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&amp;gt;
- *         &amp;lt;element name="CardLast4" type="{http://www.w3.org/2001/XMLSchema}string"/&amp;gt;
- *         &amp;lt;element name="CardMonth" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&amp;gt;
- *         &amp;lt;element name="CardYear" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&amp;gt;
- *         &amp;lt;element name="CardHolderName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&amp;gt;
- *         &amp;lt;element name="Active" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *       &amp;lt;attribute name="PaymentAccountID" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
- *       &amp;lt;attribute name="FirmID" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
- *       &amp;lt;attribute name="PaymentAccountTypeCode" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
- *     &amp;lt;/restriction&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="PaymentAccountType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="AccountName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="PaymentAccountTypeCodeId" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&gt;
+ *         &lt;element name="AccountToken" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="CardType" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="CardLast4" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="CardMonth" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&gt;
+ *         &lt;element name="CardYear" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&gt;
+ *         &lt;element name="CardHolderName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="Active" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
+ *         &lt;element name="IsAvailableAtAllLocations" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
+ *         &lt;element name="CourtIdentifier" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="PaymentAccountLocationDetails" type="{urn:tyler:efm:services:schema:Common}PaymentAccountLocationDetails" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="PaymentAccountID" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="FirmID" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="PaymentAccountTypeCode" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PaymentAccountType", propOrder = {
     "accountName",
+    "paymentAccountTypeCodeId",
     "accountToken",
     "cardType",
     "cardLast4",
     "cardMonth",
     "cardYear",
     "cardHolderName",
-    "active"
+    "active",
+    "isAvailableAtAllLocations",
+    "courtIdentifier",
+    "paymentAccountLocationDetails"
 })
 public class PaymentAccountType {
 
     @XmlElement(name = "AccountName")
     protected String accountName;
+    @XmlElementRef(name = "PaymentAccountTypeCodeId", namespace = "urn:tyler:efm:services:schema:Common", type = JAXBElement.class, required = false)
+    protected JAXBElement<Integer> paymentAccountTypeCodeId;
     @XmlElement(name = "AccountToken", required = true, nillable = true)
     protected String accountToken;
     @XmlElementRef(name = "CardType", namespace = "urn:tyler:efm:services:schema:Common", type = JAXBElement.class, required = false)
@@ -68,6 +82,12 @@ public class PaymentAccountType {
     protected JAXBElement<String> cardHolderName;
     @XmlElementRef(name = "Active", namespace = "urn:tyler:efm:services:schema:Common", type = JAXBElement.class, required = false)
     protected JAXBElement<Boolean> active;
+    @XmlElementRef(name = "IsAvailableAtAllLocations", namespace = "urn:tyler:efm:services:schema:Common", type = JAXBElement.class, required = false)
+    protected JAXBElement<Boolean> isAvailableAtAllLocations;
+    @XmlElement(name = "CourtIdentifier", nillable = true)
+    protected List<String> courtIdentifier;
+    @XmlElement(name = "PaymentAccountLocationDetails")
+    protected PaymentAccountLocationDetails paymentAccountLocationDetails;
     @XmlAttribute(name = "PaymentAccountID")
     protected String paymentAccountID;
     @XmlAttribute(name = "FirmID")
@@ -97,6 +117,30 @@ public class PaymentAccountType {
      */
     public void setAccountName(String value) {
         this.accountName = value;
+    }
+
+    /**
+     * Gets the value of the paymentAccountTypeCodeId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link Integer }{@code >}
+     *     
+     */
+    public JAXBElement<Integer> getPaymentAccountTypeCodeId() {
+        return paymentAccountTypeCodeId;
+    }
+
+    /**
+     * Sets the value of the paymentAccountTypeCodeId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link Integer }{@code >}
+     *     
+     */
+    public void setPaymentAccountTypeCodeId(JAXBElement<Integer> value) {
+        this.paymentAccountTypeCodeId = value;
     }
 
     /**
@@ -268,6 +312,83 @@ public class PaymentAccountType {
     }
 
     /**
+     * Gets the value of the isAvailableAtAllLocations property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     *     
+     */
+    public JAXBElement<Boolean> getIsAvailableAtAllLocations() {
+        return isAvailableAtAllLocations;
+    }
+
+    /**
+     * Sets the value of the isAvailableAtAllLocations property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     *     
+     */
+    public void setIsAvailableAtAllLocations(JAXBElement<Boolean> value) {
+        this.isAvailableAtAllLocations = value;
+    }
+
+    /**
+     * Gets the value of the courtIdentifier property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the courtIdentifier property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getCourtIdentifier().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link String }
+     * 
+     * 
+     */
+    public List<String> getCourtIdentifier() {
+        if (courtIdentifier == null) {
+            courtIdentifier = new ArrayList<String>();
+        }
+        return this.courtIdentifier;
+    }
+
+    /**
+     * Gets the value of the paymentAccountLocationDetails property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link PaymentAccountLocationDetails }
+     *     
+     */
+    public PaymentAccountLocationDetails getPaymentAccountLocationDetails() {
+        return paymentAccountLocationDetails;
+    }
+
+    /**
+     * Sets the value of the paymentAccountLocationDetails property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link PaymentAccountLocationDetails }
+     *     
+     */
+    public void setPaymentAccountLocationDetails(PaymentAccountLocationDetails value) {
+        this.paymentAccountLocationDetails = value;
+    }
+
+    /**
      * Gets the value of the paymentAccountID property.
      * 
      * @return
@@ -337,6 +458,16 @@ public class PaymentAccountType {
      */
     public void setPaymentAccountTypeCode(String value) {
         this.paymentAccountTypeCode = value;
+    }
+
+    /**
+     * Generates a String representation of the contents of this type.
+     * This is an extension method, produced by the 'ts' xjc plugin
+     * 
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
     }
 
 }

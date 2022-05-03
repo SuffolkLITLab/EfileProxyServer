@@ -11,7 +11,7 @@ import javax.xml.namespace.QName;
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
  * generated in the tyler.efm.services.schema.common package. 
- * &lt;p&gt;An ObjectFactory allows you to programatically 
+ * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
  * content can consist of schema derived interfaces 
@@ -30,13 +30,16 @@ public class ObjectFactory {
     private final static QName _Firm_QNAME = new QName("urn:tyler:efm:services:schema:Common", "Firm");
     private final static QName _Attorney_QNAME = new QName("urn:tyler:efm:services:schema:Common", "Attorney");
     private final static QName _Role_QNAME = new QName("urn:tyler:efm:services:schema:Common", "Role");
+    private final static QName _PaymentAccountLocationDetails_QNAME = new QName("urn:tyler:efm:services:schema:Common", "PaymentAccountLocationDetails");
     private final static QName _Notification_QNAME = new QName("urn:tyler:efm:services:schema:Common", "Notification");
-    private final static QName _NotificationListItem_QNAME = new QName("urn:tyler:efm:services:schema:Common", "NotificationListItem");
+    private final static QName _PaymentAccountTypeTypeCodeId_QNAME = new QName("urn:tyler:efm:services:schema:Common", "CodeId");
+    private final static QName _PaymentAccountTypePaymentAccountTypeCodeId_QNAME = new QName("urn:tyler:efm:services:schema:Common", "PaymentAccountTypeCodeId");
     private final static QName _PaymentAccountTypeCardType_QNAME = new QName("urn:tyler:efm:services:schema:Common", "CardType");
     private final static QName _PaymentAccountTypeCardMonth_QNAME = new QName("urn:tyler:efm:services:schema:Common", "CardMonth");
     private final static QName _PaymentAccountTypeCardYear_QNAME = new QName("urn:tyler:efm:services:schema:Common", "CardYear");
     private final static QName _PaymentAccountTypeCardHolderName_QNAME = new QName("urn:tyler:efm:services:schema:Common", "CardHolderName");
     private final static QName _PaymentAccountTypeActive_QNAME = new QName("urn:tyler:efm:services:schema:Common", "Active");
+    private final static QName _PaymentAccountTypeIsAvailableAtAllLocations_QNAME = new QName("urn:tyler:efm:services:schema:Common", "IsAvailableAtAllLocations");
     private final static QName _ServiceContactTypeIsPublic_QNAME = new QName("urn:tyler:efm:services:schema:Common", "IsPublic");
     private final static QName _ServiceContactTypeIsInFirmMasterList_QNAME = new QName("urn:tyler:efm:services:schema:Common", "IsInFirmMasterList");
     private final static QName _ServiceContactTypeIsUndeliverable_QNAME = new QName("urn:tyler:efm:services:schema:Common", "IsUndeliverable");
@@ -89,19 +92,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link PaymentAccountLocationDetails }
+     * 
+     */
+    public PaymentAccountLocationDetails createPaymentAccountLocationDetails() {
+        return new PaymentAccountLocationDetails();
+    }
+
+    /**
      * Create an instance of {@link NotificationType }
      * 
      */
     public NotificationType createNotificationType() {
         return new NotificationType();
-    }
-
-    /**
-     * Create an instance of {@link NotificationListItemType }
-     * 
-     */
-    public NotificationListItemType createNotificationListItemType() {
-        return new NotificationListItemType();
     }
 
     /**
@@ -118,6 +121,14 @@ public class ObjectFactory {
      */
     public AddressType createAddressType() {
         return new AddressType();
+    }
+
+    /**
+     * Create an instance of {@link PaymentAccountLocation }
+     * 
+     */
+    public PaymentAccountLocation createPaymentAccountLocation() {
+        return new PaymentAccountLocation();
     }
 
     /**
@@ -215,16 +226,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link NotificationListItemType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link PaymentAccountLocationDetails }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link NotificationListItemType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link PaymentAccountLocationDetails }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:tyler:efm:services:schema:Common", name = "NotificationListItem")
-    public JAXBElement<NotificationListItemType> createNotificationListItem(NotificationListItemType value) {
-        return new JAXBElement<NotificationListItemType>(_NotificationListItem_QNAME, NotificationListItemType.class, null, value);
+    @XmlElementDecl(namespace = "urn:tyler:efm:services:schema:Common", name = "PaymentAccountLocationDetails")
+    public JAXBElement<PaymentAccountLocationDetails> createPaymentAccountLocationDetails(PaymentAccountLocationDetails value) {
+        return new JAXBElement<PaymentAccountLocationDetails>(_PaymentAccountLocationDetails_QNAME, PaymentAccountLocationDetails.class, null, value);
     }
 
     /**
@@ -238,6 +249,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:tyler:efm:services:schema:Common", name = "Notification")
     public JAXBElement<NotificationType> createNotification(NotificationType value) {
         return new JAXBElement<NotificationType>(_Notification_QNAME, NotificationType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Integer }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Integer }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:efm:services:schema:Common", name = "CodeId", scope = PaymentAccountTypeType.class)
+    public JAXBElement<Integer> createPaymentAccountTypeTypeCodeId(Integer value) {
+        return new JAXBElement<Integer>(_PaymentAccountTypeTypeCodeId_QNAME, Integer.class, PaymentAccountTypeType.class, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Integer }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Integer }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:efm:services:schema:Common", name = "PaymentAccountTypeCodeId", scope = PaymentAccountType.class)
+    public JAXBElement<Integer> createPaymentAccountTypePaymentAccountTypeCodeId(Integer value) {
+        return new JAXBElement<Integer>(_PaymentAccountTypePaymentAccountTypeCodeId_QNAME, Integer.class, PaymentAccountType.class, value);
     }
 
     /**
@@ -303,6 +340,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:tyler:efm:services:schema:Common", name = "Active", scope = PaymentAccountType.class)
     public JAXBElement<Boolean> createPaymentAccountTypeActive(Boolean value) {
         return new JAXBElement<Boolean>(_PaymentAccountTypeActive_QNAME, Boolean.class, PaymentAccountType.class, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:efm:services:schema:Common", name = "IsAvailableAtAllLocations", scope = PaymentAccountType.class)
+    public JAXBElement<Boolean> createPaymentAccountTypeIsAvailableAtAllLocations(Boolean value) {
+        return new JAXBElement<Boolean>(_PaymentAccountTypeIsAvailableAtAllLocations_QNAME, Boolean.class, PaymentAccountType.class, value);
     }
 
     /**

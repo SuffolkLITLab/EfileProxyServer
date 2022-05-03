@@ -5,8 +5,36 @@ SOAP describes the procedure calls that can be made to the server using XML. The
 that we use, CXF, converts these procedure calls, their arguments, and connections to the EFM,
 into generated Java classes that the proxy can use and call.
 
-It's possible (abiet unlikely) for Tyler to update some of these procedure calls or the arguments
-that they take, meaning our generated java classes will be out of date, and we'll need to update
+It's possible for Tyler to update some of these procedure calls or the arguments
+that they take. For example, the following error (manually formatted) appeared when Tyler updated the GetPolicy API
+call to add a new "LocationSpecificURL" parameter to the returned object:
+
+```
+efspjava_1  | javax.xml.ws.soap.SOAPFaultException: Unmarshalling Error: unexpected element (uri:"urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0", local:"LocationSpecificUrl"). 
+    Expected elements are 
+        <{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}AcceptMultipleLeadDocumentsIndicator>,
+        <{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}EffectiveDate>,
+        <{urn:tyler:ecf:extensions:Common}TimeoutResetHour>,
+        <{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}SupportedCaseType>,
+        <{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}MaximumAllowedAttachmentSize>,
+        <{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}FilingFeesMayBeApplicableIndicator>,
+        <{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}SupportedSignatureProfileCode>,
+        <{urn:tyler:ecf:extensions:Common}TimeoutMinutes>,
+        <{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}ExpirationDate>,
+        <{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}MaximumAllowedMessageSize>,
+        <{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}CourtExtension>,
+        <{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}URLAttachmentSupportedIndicator>,
+        <{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}AcceptConfidentialFilingsIndicator>,
+        <{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}AcceptDocumentsRequiringFeesIndicator>,
+        <{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}SupportedOperationName>,
+        <{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CourtPolicyResponseMessage-4.0}SupportedMessageProfileCode> 
+efspjava_1  | 	at org.apache.cxf.jaxws.JaxWsClientProxy.mapException(JaxWsClientProxy.java:195)
+efspjava_1  | 	at org.apache.cxf.jaxws.JaxWsClientProxy.invoke(JaxWsClientProxy.java:145)
+efspjava_1  | 	at jdk.proxy2/jdk.proxy2.$Proxy92.getPolicy(Unknown Source)
+efspjava_1  | 	at edu.suffolk.litlab.efspserver.ecf.OasisEcfFiler.prepareFiling(OasisEcfFiler.java:163)
+```
+
+This means our generated java classes are out of date, and we'll need to update
 them. This document tries to capture the steps needed to update those generated classes.
 
 Tbh, this is a mess. The rough steps are below.
@@ -17,12 +45,23 @@ the subdomain (the `example` part) with your subdomain, which depends on what ju
 working in. For us it's mostly `illinois-stage`.
 
 1. Get your hands on `wsdl2java` from the [CXF project](https://cxf.apache.org/). 
-   Personally, I built it directly from source, using [the instructions](https://github.com/apache/cxf/blob/master/BUILDING.txt).
-   The instructions were to 
+   
+   You can download the latest CXF `wsdl2java` pre-built binary from 
+   [the official website](https://cxf.apache.org/download.html). Download the zip (verifying
+   it as well), and then extract it.
+   
+   You can confirm things are working because you should be able to run `bin/wsdl2java -help` 
+   successfully.
+   
+   If the pre-built binary doesn't work (might happen if you switch to a new version of Java)
+   you can build things from source using [the build instructions](https://github.com/apache/cxf/blob/master/BUILDING.txt).
+   (though I don't recommend it, maven dosen't give user-friendly errors when things go wrong).
+
+   The instructions are to 
    ```bash
-   git clone git@github.com:apache/cxf.git
+   git clone https://github.com/apache/cxf.git
    cd cxf
-   export 
+   export MAVEN_OPTS="-Xmx2048M"
    mvn -Pfastinstall,everything`
    ```
    If it fails, run the `mvn -Pfastinstall,everything` a few times (because downloading certain dependencies might time out),
@@ -54,7 +93,7 @@ working in. For us it's mostly `illinois-stage`.
       So you should just download [that file](https://example.tylerhost.net/EFM/EFMUserService.svc?singleWsdl)
       for all of the services that you are using.
    
-   1. The ECF services: XsdDownloader. These services are externally defined outside of Tyler, so there isn't
+   2. The ECF services: XsdDownloader. These services are externally defined outside of Tyler, so there isn't
       some nice "get me a single WSDL file" endpoint out there, and the definition of the ECF services uses a
       lot of XML schema documents (XSDs). Thus the solution is to locally download all of those XSD files, and
       make them reference the locally downloaded versions and not the server specific files they originally used.
@@ -88,10 +127,10 @@ working in. For us it's mostly `illinois-stage`.
       Don't forget to rename `ecf-v5` to `CourtSchedulingMDE.wsdl`
    
 
-1. Run wsdl2java on a download Operation / Service wsdls that you have downloaded. For example:
+2. Run wsdl2java on a download Operation / Service wsdls that you have downloaded. For example:
 
    ```
-   ./wsdl2java -client -b ~/bindings.xjb -xjc-Xts -d ~/tmp_wsdls/ -verbose ECF-4.0-FilingReviewMDEService.wsdl
+   ./wsdl2java -client -b $HOME/bindings.xjb -xjc-Xts -d $HOME/tmp_wsdls/ -verbose ECF-4.0-FilingReviewMDEService.wsdl
    ```
    
    The list of things to this on is:
@@ -104,10 +143,11 @@ working in. For us it's mostly `illinois-stage`.
    
 
    These options are documented on the [main CXF site](http://cxf.apache.org/docs/wsdl-to-java.html),
-   but to break it down simply:
+   but to break it down:
 
-   * `-b` passes a JAXB binding xml file directly to JAXB. 
-      (NOTE(brycew): this doesn't work perfectly , but you can specify at lesat one file to expand the Enum members on. :/)
+   * `-b` passes a JAXB binding xml file directly to JAXB. You shouldn't pass it to the EFMFirmServiceSingle.svc.wsdl 
+       and EFMUserServiceSingle.svc.wsdl files.
+      (NOTE(brycew): this doesn't work perfectly , but you can specify at least one file to expand the Enum members on. :/)
       The file looks like this:
       ```xml
       <?xml version="1.0" ?>

@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 import tyler.efm.services.schema.attorneylistresponse.AttorneyListResponseType;
 import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
 import tyler.efm.services.schema.changepasswordresponse.ChangePasswordResponseType;
@@ -19,8 +21,6 @@ import tyler.efm.services.schema.getpaymentaccountresponse.GetPaymentAccountResp
 import tyler.efm.services.schema.getservicecontactresponse.GetServiceContactResponseType;
 import tyler.efm.services.schema.getuserresponse.GetUserResponseType;
 import tyler.efm.services.schema.notificationpreferencesresponse.NotificationPreferencesResponseType;
-import tyler.efm.services.schema.getvitalchekpaymentaccountidresponse.GetVitalChekPaymentAccountIdResponseType;
-import tyler.efm.services.schema.notificationpreferenceslistresponse.NotificationPreferencesListResponseType;
 import tyler.efm.services.schema.passwordquestionresponse.PasswordQuestionResponseType;
 import tyler.efm.services.schema.paymentaccountlistresponse.PaymentAccountListResponseType;
 import tyler.efm.services.schema.paymentaccounttypelistresponse.PaymentAccountTypeListResponseType;
@@ -35,21 +35,21 @@ import tyler.efm.services.schema.userlistresponse.UserListResponseType;
 
 
 /**
- * &lt;p&gt;Java class for BaseResponseType complex type.
+ * <p>Java class for BaseResponseType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
- * &lt;pre&gt;
- * &amp;lt;complexType name="BaseResponseType"&amp;gt;
- *   &amp;lt;complexContent&amp;gt;
- *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
- *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element name="Error" type="{urn:tyler:efm:services:schema:Common}ErrorType" minOccurs="0"/&amp;gt;
- *       &amp;lt;/sequence&amp;gt;
- *     &amp;lt;/restriction&amp;gt;
- *   &amp;lt;/complexContent&amp;gt;
- * &amp;lt;/complexType&amp;gt;
- * &lt;/pre&gt;
+ * <pre>
+ * &lt;complexType name="BaseResponseType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="Error" type="{urn:tyler:efm:services:schema:Common}ErrorType" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
  * 
  * 
  */
@@ -58,46 +58,29 @@ import tyler.efm.services.schema.userlistresponse.UserListResponseType;
     "error"
 })
 @XmlSeeAlso({
-    RegistrationResponseType.class,
-    UserListResponseType.class,
-    GetAttorneyResponseType.class,
-    ChangePasswordResponseType.class,
     ResetPasswordResponseType.class,
-    GetUserResponseType.class,
-    UpdateUserResponseType.class,
-    GetFirmResponseType.class,
-    AttorneyListResponseType.class,
-    GetAttorneyResponseType.class,
-    UpdateAttorneyResponseType.class,
-    CreateAttorneyResponseType.class,
-    PaymentAccountTypeListResponseType.class,
-    PaymentAccountListResponseType.class,
-    GetPaymentAccountResponseType.class,
-    GetVitalChekPaymentAccountIdResponseType.class,
-    UpdatePaymentAccountResponseType.class,
-    CreatePaymentAccountResponseType.class,
-    ServiceContactListResponseType.class,
-    GetServiceContactResponseType.class,
-    CreatePaymentAccountResponseType.class,
-    UpdateAttorneyResponseType.class,
-    UpdateServiceContactResponseType.class,
-    CreateServiceContactResponseType.class,
-    GetUserResponseType.class,
-    GetFirmResponseType.class,
-    PaymentAccountTypeListResponseType.class,
-    ResetPasswordResponseType.class,
-    NotificationPreferencesListResponseType.class,
     PasswordQuestionResponseType.class,
-    CreateAttorneyResponseType.class,
-    GetPaymentAccountResponseType.class,
-    PaymentAccountListResponseType.class,
-    RegistrationResponseType.class,
-    UpdateServiceContactResponseType.class,
+    ChangePasswordResponseType.class,
     AuthenticateResponseType.class,
+    GetUserResponseType.class,
     UpdateUserResponseType.class,
     NotificationPreferencesResponseType.class,
-    ChangePasswordResponseType.class,
-    AuthenticateResponseType.class
+    UserListResponseType.class,
+    UpdateServiceContactResponseType.class,
+    UpdatePaymentAccountResponseType.class,
+    UpdateAttorneyResponseType.class,
+    ServiceContactListResponseType.class,
+    RegistrationResponseType.class,
+    PaymentAccountTypeListResponseType.class,
+    PaymentAccountListResponseType.class,
+    GetServiceContactResponseType.class,
+    GetPaymentAccountResponseType.class,
+    GetFirmResponseType.class,
+    GetAttorneyResponseType.class,
+    CreateServiceContactResponseType.class,
+    CreatePaymentAccountResponseType.class,
+    CreateAttorneyResponseType.class,
+    AttorneyListResponseType.class
 })
 public class BaseResponseType {
 
@@ -126,6 +109,16 @@ public class BaseResponseType {
      */
     public void setError(ErrorType value) {
         this.error = value;
+    }
+
+    /**
+     * Generates a String representation of the contents of this type.
+     * This is an extension method, produced by the 'ts' xjc plugin
+     * 
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
     }
 
 }

@@ -46,6 +46,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link String }
+     * 
+     */
+    public String createString() {
+        return new String();
+    }
+
+    /**
      * Create an instance of {@link AnyURI }
      * 
      */
@@ -78,14 +86,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Decimal }
-     * 
-     */
-    public Decimal createDecimal() {
-        return new Decimal();
-    }
-
-    /**
      * Create an instance of {@link GYear }
      * 
      */
@@ -94,19 +94,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link String }
-     * 
-     */
-    public String createString() {
-        return new String();
-    }
-
-    /**
      * Create an instance of {@link Time }
      * 
      */
     public Time createTime() {
         return new Time();
+    }
+
+    /**
+     * Create an instance of {@link Decimal }
+     * 
+     */
+    public Decimal createDecimal() {
+        return new Decimal();
     }
 
 }

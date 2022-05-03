@@ -54,8 +54,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "binaryCategoryText"
 })
 @XmlSeeAlso({
-    DocumentAttachmentType.class,
-    ImageType.class
+    ImageType.class,
+    DocumentAttachmentType.class
 })
 public class BinaryType
     extends ComplexObjectType

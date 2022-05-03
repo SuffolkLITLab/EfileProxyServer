@@ -38,10 +38,10 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "incidentLocation"
 })
 @XmlSeeAlso({
-    ParkingViolationType.class,
-    DrivingIncidentType.class,
     DelinquentActType.class,
-    StatusOffenseActType.class
+    StatusOffenseActType.class,
+    ParkingViolationType.class,
+    DrivingIncidentType.class
 })
 public class IncidentType
     extends ActivityType

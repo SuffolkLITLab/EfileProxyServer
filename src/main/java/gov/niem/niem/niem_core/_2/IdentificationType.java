@@ -47,11 +47,11 @@ import tyler.ecf.extensions.common.OrganizationIdentificationType;
     "identificationSourceText"
 })
 @XmlSeeAlso({
+    tyler.ecf.extensions.filingserviceresponsemessage.ServiceContactIdentificationType.class,
+    tyler.ecf.extensions.filingservicequerymessage.ServiceContactIdentificationType.class,
     OrganizationIdentificationType.class,
     DocumentOptionalServiceType.class,
-    tyler.ecf.extensions.common.ServiceContactIdentificationType.class,
-    tyler.ecf.extensions.filingserviceresponsemessage.ServiceContactIdentificationType.class,
-    tyler.ecf.extensions.filingservicequerymessage.ServiceContactIdentificationType.class
+    tyler.ecf.extensions.common.ServiceContactIdentificationType.class
 })
 public class IdentificationType
     extends ComplexObjectType

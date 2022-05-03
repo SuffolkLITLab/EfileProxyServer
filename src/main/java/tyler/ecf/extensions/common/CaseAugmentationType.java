@@ -56,6 +56,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *         &lt;element ref="{urn:tyler:ecf:extensions:Common}Agency" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:extensions:Common}LowerCourtCaseTypeText" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:extensions:Common}CaseAddress" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}FeeSplit" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -92,7 +93,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "questionAnswer",
     "agency",
     "lowerCourtCaseTypeText",
-    "caseAddress"
+    "caseAddress",
+    "feeSplit"
 })
 public class CaseAugmentationType
     extends oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseAugmentationType
@@ -153,6 +155,8 @@ public class CaseAugmentationType
     protected TextType lowerCourtCaseTypeText;
     @XmlElement(name = "CaseAddress")
     protected StructuredAddressType caseAddress;
+    @XmlElement(name = "FeeSplit")
+    protected List<FeeSplitType> feeSplit;
 
     /**
      * Gets the value of the caseTypeText property.
@@ -847,6 +851,35 @@ public class CaseAugmentationType
      */
     public void setCaseAddress(StructuredAddressType value) {
         this.caseAddress = value;
+    }
+
+    /**
+     * Gets the value of the feeSplit property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the feeSplit property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getFeeSplit().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link FeeSplitType }
+     * 
+     * 
+     */
+    public List<FeeSplitType> getFeeSplit() {
+        if (feeSplit == null) {
+            feeSplit = new ArrayList<FeeSplitType>();
+        }
+        return this.feeSplit;
     }
 
     /**

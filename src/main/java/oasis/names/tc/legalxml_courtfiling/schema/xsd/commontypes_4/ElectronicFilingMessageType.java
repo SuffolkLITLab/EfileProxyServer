@@ -44,9 +44,9 @@ import tyler.ecf.extensions.createcasemessage.CreateCaseMessageType;
     "electronicServiceInformation"
 })
 @XmlSeeAlso({
-    CreateCaseMessageType.class,
     RecordDocketingMessageType.class,
     CoreFilingMessageType.class,
+    CreateCaseMessageType.class,
     NotifyFilingReviewCompleteRequestMessageType.class,
     RecordFilingRequestMessageType.class,
     ReviewFilingRequestMessageType.class

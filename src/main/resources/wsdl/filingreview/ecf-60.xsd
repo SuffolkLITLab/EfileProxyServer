@@ -69,6 +69,22 @@
 			<xsd:element minOccurs="0" ref="SubmitterFirmName"/>
 		</xsd:sequence>
 	</xsd:complexType>
+	<xsd:complexType name="FeeSplitType">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" ref="PaymentInstructionID"/>
+			<xsd:element maxOccurs="1" ref="CourtSplitAmount"/>
+			<xsd:element maxOccurs="1" ref="NonCourtSplitAmount"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="SplitAmountType">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" ref="FeeAmount"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="CourtSplitAmount" type="SplitAmountType"/>
+	<xsd:element name="NonCourtSplitAmount" type="SplitAmountType"/>
+	<xsd:element name="FeeSplit" type="FeeSplitType"/>
+	<xsd:element name="PaymentInstructionID" type="nc:TextType"/>
 	<xsd:element name="PartyService" type="PartyServiceType"/>
 	<xsd:element name="FilingAssociation" type="FilingAssociationType"/>
 	<xsd:element name="PartyReference" type="s:ReferenceType"/>
@@ -83,7 +99,7 @@
 	<xsd:element name="RecipientFirmName" type="nc:TextType"/>
 	<xsd:element name="SubmitterName" type="nc:TextType"/>
 	<xsd:element name="SubmitterFirmName" type="nc:TextType"/>
-  <xsd:element name="CaseAddress" type="nc:StructuredAddressType"/>
+	<xsd:element name="CaseAddress" type="nc:StructuredAddressType"/>
 	<xsd:complexType name="CaseAugmentationType">
 		<xsd:complexContent>
 			<xsd:extension base="ecf:CaseAugmentationType">
@@ -114,7 +130,8 @@
 					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="QuestionAnswer"/>
 					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="Agency"/>
 					<xsd:element minOccurs="0" ref="LowerCourtCaseTypeText"/>
-          <xsd:element minOccurs="0" ref="CaseAddress"/>
+					<xsd:element minOccurs="0" ref="CaseAddress"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="FeeSplit"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -434,6 +451,7 @@
 	<xsd:element name="OrganizationIdentificationID" substitutionGroup="nc:DocumentCategoryText" type="nc:TextType"/>
 	<xsd:element name="CaseCategoryCode" substitutionGroup="nc:DocumentCategoryText" type="nc:TextType"/>
 	<xsd:element name="CaseTypeCode" substitutionGroup="nc:DocumentCategoryText" type="nc:TextType"/>
+	<xsd:element name="CaseJudge" substitutionGroup="nc:DocumentCategoryText" type="nc:TextType"/>
 	<xsd:complexType name="PaymentType">
 		<xsd:sequence>
 			<xsd:element ref="AccountName"/>

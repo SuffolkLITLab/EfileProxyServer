@@ -69,8 +69,8 @@ public class JuvenileCaseType
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "CaseAugmentation" is used by two different parts of a schema. See: 
-     * line 79 of file:/home/litlab/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/filingreview/ecf-26.xsd
-     * line 78 of file:/home/litlab/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/filingreview/ecf-26.xsd
+     * line 79 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/filingreview/ecf-26.xsd
+     * line 78 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/filingreview/ecf-26.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 

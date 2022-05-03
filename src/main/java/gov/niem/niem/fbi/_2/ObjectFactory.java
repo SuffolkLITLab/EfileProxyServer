@@ -30,30 +30,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link OFFCodeType }
-     * 
-     */
-    public OFFCodeType createOFFCodeType() {
-        return new OFFCodeType();
-    }
-
-    /**
-     * Create an instance of {@link LSTACodeType }
-     * 
-     */
-    public LSTACodeType createLSTACodeType() {
-        return new LSTACodeType();
-    }
-
-    /**
-     * Create an instance of {@link LISCodeType }
-     * 
-     */
-    public LISCodeType createLISCodeType() {
-        return new LISCodeType();
-    }
-
-    /**
      * Create an instance of {@link EXLCodeType }
      * 
      */
@@ -83,6 +59,30 @@ public class ObjectFactory {
      */
     public HAICodeType createHAICodeType() {
         return new HAICodeType();
+    }
+
+    /**
+     * Create an instance of {@link LISCodeType }
+     * 
+     */
+    public LISCodeType createLISCodeType() {
+        return new LISCodeType();
+    }
+
+    /**
+     * Create an instance of {@link LSTACodeType }
+     * 
+     */
+    public LSTACodeType createLSTACodeType() {
+        return new LSTACodeType();
+    }
+
+    /**
+     * Create an instance of {@link OFFCodeType }
+     * 
+     */
+    public OFFCodeType createOFFCodeType() {
+        return new OFFCodeType();
     }
 
     /**

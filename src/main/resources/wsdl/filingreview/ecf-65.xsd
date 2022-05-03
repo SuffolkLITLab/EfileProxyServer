@@ -32,7 +32,7 @@
 					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="ServiceRecipientDetail"/>
 					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="FilingFees"/>
 					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="tyler:FilingLeadDocument"/>
-					<xsd:element minOccurs="0" ref="tyler:FilingAssociationParty"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="tyler:FilingAssociationParty"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

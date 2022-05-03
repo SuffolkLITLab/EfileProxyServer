@@ -141,6 +141,7 @@ This document and the information contained herein is provided on an "AS IS" bas
 					<xsd:element ref="AcceptDocumentsRequiringFeesIndicator"/>
 					<xsd:element ref="AcceptConfidentialFilingsIndicator"/>
 					<xsd:element ref="AcceptMultipleLeadDocumentsIndicator"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="LocationSpecificUrl"/>
 					<xsd:element minOccurs="0" ref="MaximumAllowedAttachmentSize"/>
 					<xsd:element minOccurs="0" ref="MaximumAllowedMessageSize"/>
 					<xsd:element maxOccurs="unbounded" ref="SupportedMessageProfileCode"/>
@@ -372,6 +373,11 @@ This document and the information contained herein is provided on an "AS IS" bas
 	<xsd:element name="GetCaseListSupportedIndicator" type="niem-xsd:boolean">
 		<xsd:annotation>
 			<xsd:documentation>Indicates whether the e-filing system supports the GetCaseList query.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LocationSpecificUrl" type="niem-xsd:anyURI">
+		<xsd:annotation>
+			<xsd:documentation>The court's location-specific site uri.</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 	<xsd:element name="MajorDesignElementNameCode" type="MajorDesignElementNameCodeType">

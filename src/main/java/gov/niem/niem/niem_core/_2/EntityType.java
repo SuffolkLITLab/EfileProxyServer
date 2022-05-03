@@ -39,9 +39,9 @@ import tyler.ecf.extensions.common.PersonFilerType;
     "entityRepresentation"
 })
 @XmlSeeAlso({
-    CaseParticipantType.class,
+    tyler.ecf.extensions.serviceinformationhistoryresponsemessage.ServiceRecipientType.class,
     tyler.ecf.extensions.notifyservicemessage.ServiceRecipientType.class,
-    tyler.ecf.extensions.serviceinformationhistoryresponsemessage.ServiceRecipientType.class
+    CaseParticipantType.class
 })
 public class EntityType
     extends ComplexObjectType

@@ -47,11 +47,11 @@ import tyler.ecf.extensions.servicecallbackmessage.ServiceCallbackMessageType;
     "sendingMDEProfileCode"
 })
 @XmlSeeAlso({
-    CourtPolicyQueryMessageType.class,
-    NotifyServiceMessageType.class,
-    MessageReceiptMessageType.class,
     ServiceCallbackMessageType.class,
+    CourtPolicyQueryMessageType.class,
     ElectronicFilingCallbackMessageType.class,
+    MessageReceiptMessageType.class,
+    NotifyServiceMessageType.class,
     ElectronicFilingMessageType.class
 })
 public abstract class CaseFilingType

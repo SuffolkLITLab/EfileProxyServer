@@ -7,20 +7,20 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * &lt;p&gt;Java class for RoleType.
+ * <p>Java class for RoleType.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
- * &lt;pre&gt;
- * &amp;lt;simpleType name="RoleType"&amp;gt;
- *   &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&amp;gt;
- *     &amp;lt;enumeration value="FirmAdmin"/&amp;gt;
- *     &amp;lt;enumeration value="Filer"/&amp;gt;
- *     &amp;lt;enumeration value="CriminalFilingFirmAdmin"/&amp;gt;
- *     &amp;lt;enumeration value="CriminalFilingFiler"/&amp;gt;
- *     &amp;lt;enumeration value="SiteAdmin"/&amp;gt;
- *   &amp;lt;/restriction&amp;gt;
- * &amp;lt;/simpleType&amp;gt;
- * &lt;/pre&gt;
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * <pre>
+ * &lt;simpleType name="RoleType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
+ *     &lt;enumeration value="FirmAdmin"/&gt;
+ *     &lt;enumeration value="Filer"/&gt;
+ *     &lt;enumeration value="CriminalFilingFirmAdmin"/&gt;
+ *     &lt;enumeration value="CriminalFilingFiler"/&gt;
+ *     &lt;enumeration value="SiteAdmin"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
+ * </pre>
  * 
  */
 @XmlType(name = "RoleType")
