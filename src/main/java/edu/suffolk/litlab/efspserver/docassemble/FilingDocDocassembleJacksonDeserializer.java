@@ -142,6 +142,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       
       HttpURLConnection conn = (HttpURLConnection) inUrl.openConnection();
       conn.setRequestMethod("GET");
+      conn.setConnectTimeout(15000); // set connection timeout (not read timeout) in milliseconds
       InputStream inStream = conn.getInputStream();
       if (inStream == null) {
         FilingError err = FilingError.serverError("Couldn't connect to " + inUrl.toString());
