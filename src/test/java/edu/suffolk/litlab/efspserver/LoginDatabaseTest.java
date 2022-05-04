@@ -45,15 +45,15 @@ public class LoginDatabaseTest {
         "jeffnet", (info) -> Optional.of(Map.of("jeffnet_token", "jeffNetToken123")));
 
     assertTrue(ld.login("fakeKey", "", okFunctions).isEmpty());
-    
-    Optional<NewTokens> activeCantDoAnything = ld.login(cantDoAnything, "{}", okFunctions);
-    assertTrue(activeCantDoAnything.isPresent());
-    Optional<NewTokens> repeatLogin = ld.login(cantDoAnything, "{}", okFunctions);
-    assertTrue(repeatLogin.isPresent());
-    assertEquals(activeCantDoAnything.get(), repeatLogin.get());
+    // If nothing can login, it will fail. Not if it should be a failure, but it is confusing from the user perspective.
+    // Will keep it like this until we actively are hiding most of our functionality behind the API
+    assertTrue(ld.login(cantDoAnything, "{}", okFunctions).isEmpty());
     
     Optional<NewTokens> activeTyler = ld.login(tylerOnly, "{\"tyler\": {}}", okFunctions);
     assertTrue(activeTyler.isPresent());
+    Optional<NewTokens> repeatLogin = ld.login(tylerOnly, "{\"tyler\": {}}", okFunctions);
+    assertTrue(repeatLogin.isPresent());
+    assertEquals(activeTyler.get(), repeatLogin.get());
     
     Optional<NewTokens> activeEverything = ld.login(everything, "{\"tyler\": {}, \"jeffnet\": {}}", okFunctions);
     assertTrue(activeEverything.isPresent());
