@@ -14,9 +14,11 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 public class NewTokens {
 
   @JsonUnwrapped
-  private Map<String, String> tokens = new HashMap<>();
+  private final Map<String, String> tokens; 
   
-  public NewTokens() {}
+  public NewTokens() {
+    this.tokens = new HashMap<>();
+  }
   public NewTokens(Map<String, String> tokens) {
     this.tokens = tokens;
   }
@@ -25,10 +27,6 @@ public class NewTokens {
       return tokens;
   }
  
-  public void setEmployeeMap(Map<String, String> tokens) {
-      this.tokens = tokens;
-  }
-  
   @Override
   public boolean equals(Object other) {
     if (other == null) {

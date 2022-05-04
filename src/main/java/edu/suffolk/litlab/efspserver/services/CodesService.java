@@ -43,7 +43,7 @@ import edu.suffolk.litlab.efspserver.codes.ServiceCodeType;
 public class CodesService {
   private static Logger log = LoggerFactory.getLogger(CodesService.class);
 
-  private CodeDatabase cd;
+  private final CodeDatabase cd;
   public CodesService(CodeDatabase cd) {
     this.cd = cd;
   }

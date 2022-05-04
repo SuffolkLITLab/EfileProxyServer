@@ -5,6 +5,7 @@ import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.function.Supplier;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
@@ -21,6 +23,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -43,14 +46,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.RandomString;
 import edu.suffolk.litlab.efspserver.XmlHelper;
+import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 
 import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.schema.baseresponse.BaseResponseType;
+import tyler.efm.services.schema.common.PaymentAccountLocationDetails;
 import tyler.efm.services.schema.common.PaymentAccountType;
 import tyler.efm.services.schema.common.PaymentAccountTypeType;
 import tyler.efm.services.schema.createpaymentaccountrequest.CreatePaymentAccountRequestType;
 import tyler.efm.services.schema.createpaymentaccountresponse.CreatePaymentAccountResponseType;
+import tyler.efm.services.schema.getpaymentaccountlistrequest.GetPaymentAccountListRequestType;
 import tyler.efm.services.schema.getpaymentaccountrequest.GetPaymentAccountRequestType;
 import tyler.efm.services.schema.getpaymentaccountresponse.GetPaymentAccountResponseType;
 import tyler.efm.services.schema.paymentaccountlistresponse.PaymentAccountListResponseType;
@@ -68,7 +74,7 @@ import tyler.efm.services.schema.updatepaymentaccountresponse.UpdatePaymentAccou
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class PaymentsService {
 
-  public PaymentsService(SecurityHub security, String togaKey, String togaUrl, EfmFirmService firmFactory) {
+  public PaymentsService(SecurityHub security, String togaKey, String togaUrl, EfmFirmService firmFactory, CodeDatabase cd) {
     this.security = security;
     // Will generated 21 character long transaction ids, the max length.
     this.transactionIdGen = new RandomString(21);
@@ -76,6 +82,7 @@ public class PaymentsService {
     this.togaUrl = togaUrl;
     this.tempAccounts = new HashMap<String, TempAccount>();
     this.firmFactory = firmFactory;
+    this.cd = cd;
   }
 
   @GET
@@ -151,18 +158,6 @@ public class PaymentsService {
   }
 
   @GET
-  @Path("/payment-accounts")
-  public Response getPaymentAccountList(@Context HttpHeaders httpHeaders) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
-    if (firmPort.isEmpty()) {
-      return Response.status(403).build();
-    }
-
-    PaymentAccountListResponseType list = firmPort.get().getPaymentAccountList();
-    return makeResponse(list, () -> Response.ok(list.getPaymentAccount()).build());
-  }
-
-  @GET
   @Path("/payment-accounts/{account_id}")
   public Response getPaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId) {
@@ -192,6 +187,27 @@ public class PaymentsService {
     BaseResponseType resp = firmPort.get().removePaymentAccount(req);
     return makeResponse(resp, () -> Response.ok().build());
   }
+  
+  @GET
+  @Path("/payment-accounts")
+  public Response getPaymentAccountList(@Context HttpHeaders httpHeaders,
+    @DefaultValue("") @QueryParam("court_id") String courtId) throws SQLException {
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    if (firmPort.isEmpty()) {
+      return Response.status(403).build();
+    }
+    GetPaymentAccountListRequestType req = new tyler.efm.services.schema.getpaymentaccountlistrequest.ObjectFactory().createGetPaymentAccountListRequestType();
+    if (courtId != null && !courtId.isBlank()) {
+      if (!cd.getAllLocations().contains(courtId)) {
+        return Response.status(404).entity("Court does not exist " + courtId).build();
+      }
+      req.setCourtIdentifier(courtId);
+    }
+
+    PaymentAccountListResponseType list = firmPort.get().getPaymentAccountList(req);
+    return makeResponse(list, () -> Response.ok(list.getPaymentAccount()).build());
+  }
+
 
   @POST
   @Path("/payment-accounts")
@@ -417,7 +433,19 @@ public class PaymentsService {
   private static Response createWaiverAccount(boolean global, String accountName, IEfmFirmService firmPort) {
     CreatePaymentAccountRequestType createAccount = new CreatePaymentAccountRequestType();
     PaymentAccountType newAccount = new PaymentAccountType();
-    newAccount.setPaymentAccountTypeCode("WV");
+    List<PaymentAccountTypeType> types = firmPort.getPaymentAccountTypeList().getPaymentAccountType();
+    Optional<PaymentAccountTypeType> maybeWaiver = types.stream()
+        .filter((type) -> type.getCode().equalsIgnoreCase("WV"))
+        .findFirst();
+    if (maybeWaiver.isEmpty()) {
+      return Response.status(500).entity("No WV (waiver) account type available? " + types).build();
+    }
+    var waiverType = maybeWaiver.get();
+    firmPort.getPaymentAccountTypeList();
+    newAccount.setPaymentAccountTypeCode(waiverType.getCode());
+    newAccount.setPaymentAccountTypeCodeId(waiverType.getCodeId());
+    PaymentAccountLocationDetails locationDetails = tylerCommonObjFac.createPaymentAccountLocationDetails();
+    newAccount.setPaymentAccountLocationDetails(locationDetails);
     newAccount.setAccountName(accountName);
     createAccount.setPaymentAccount(newAccount);
     CreatePaymentAccountResponseType resp;
@@ -435,7 +463,7 @@ public class PaymentsService {
 
 
   /** Fluid interface, but modifies the input. */
-  private Response updateAccountType(String updateInfoStr, 
+  private static Response updateAccountType(String updateInfoStr, 
       Supplier<GetPaymentAccountResponseType> accountSupplier, 
       Function<UpdatePaymentAccountRequestType, UpdatePaymentAccountResponseType> updateAccount) { 
     ObjectMapper mapper = new ObjectMapper();
@@ -469,7 +497,7 @@ public class PaymentsService {
 
   private static Logger log = LoggerFactory.getLogger(PaymentsService.class);
 
-  private tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac =
+  private static tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac =
       new tyler.efm.services.schema.common.ObjectFactory();
 
   private static class TempAccount {
@@ -493,5 +521,6 @@ public class PaymentsService {
   private final String callbackToUsUrl = ServiceHelpers.BASE_URL + "/payments/toga-account"; 
   private final String togaUrl;
   private final EfmFirmService firmFactory;
+  private final CodeDatabase cd;
 
 }

@@ -126,7 +126,7 @@ public class EfspServer {
           new SingletonResourceProvider(new PaymentsService(security, 
               GetEnv("TOGA_CLIENT_KEY").get(), 
               GetEnv("TOGA_URL").get(),
-              firmFactory.get())));
+              firmFactory.get(), cd)));
     }
     services.put(CasesService.class,
         new SingletonResourceProvider(new CasesService(security, cd, jurisdiction)));

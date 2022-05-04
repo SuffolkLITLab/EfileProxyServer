@@ -140,16 +140,16 @@ public class LoginDatabase extends DatabaseInterface {
     try {
       loginInfo = mapper.readTree(jsonLoginInfo);
     } catch (JsonProcessingException e) {
-      log.error(e.toString());
+      log.error("Error processing login json:" + e.toString());
       return Optional.empty();
     }
 
     // TODO(brycew-later): the only hacky part, how can this be modulized?
-    Map<String, String> newTokens = new HashMap<String, String>();
     if (!loginInfo.isObject()) {
       log.error("Can't login with a json that's not an object: " + loginInfo.toPrettyString());
       return Optional.empty();
     }
+    Map<String, String> newTokens = new HashMap<String, String>();
     Iterable<String> orgs = loginInfo::fieldNames;
     for (String orgName : orgs) {
       orgName = orgName.toLowerCase(); 
@@ -170,8 +170,11 @@ public class LoginDatabase extends DatabaseInterface {
       log.info("New tokens: " + maybeNewTokens.get());
       newTokens.putAll(maybeNewTokens.get());
     }
-    NewTokens tokensObj = new NewTokens(newTokens);
-    return Optional.of(tokensObj);
+    if (newTokens.isEmpty()) {
+      log.error("No successful logins occurred: returning nothing");
+      return Optional.empty();
+    }
+    return Optional.of(new NewTokens(newTokens));
   }
   
   /** Example on how to trigger: mvn exec:java@LoginDatabase -Dexec.args="localhostServer true true" */
