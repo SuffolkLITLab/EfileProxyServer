@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPointsToMap;
 import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.isNull;
 
 import java.sql.SQLException;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -106,6 +108,14 @@ public class CourtSchedulingService {
       throw new RuntimeException("Cannot find " + jurisdiction + " for court record factory");
     }
     this.recordFactory = maybeCourt.get();
+  }
+  
+  
+  @GET
+  @Path("/")
+  public Response getAll() {
+    EndpointReflection ef = new EndpointReflection();
+    return Response.ok(endPointsToMap(ef.findRESTEndpoints(List.of(PaymentsService.class)))).build();
   }
 
   /**
