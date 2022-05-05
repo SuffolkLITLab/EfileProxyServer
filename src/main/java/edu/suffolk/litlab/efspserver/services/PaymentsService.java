@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -265,8 +266,9 @@ public class PaymentsService {
   @Produces("text/html")
   public Response redirectToToga(@Context HttpHeaders httpHeaders,
       @FormParam("account_name") String name, @FormParam("global") boolean global,
-      @FormParam("type_code") String typeCode, @FormParam("tyler_info") String tylerInfo,
-      @FormParam("original_url") String originalUrl, @FormParam("error_url") String errorUrl) {
+      @FormParam("type_code") String typeCode, @FormParam("type_code_id") int typeCodeId,
+      @FormParam("tyler_info") String tylerInfo, @FormParam("original_url") String originalUrl,
+      @FormParam("error_url") String errorUrl) {
     String errorHtml = """
     <html>
       <head>
@@ -299,7 +301,7 @@ public class PaymentsService {
       log.error(err);
       return Response.status(422).entity(errorHtml.formatted(err)).build();
     }
-    account.typeCode = typeCode;
+    account.typeCodeId = typeCodeId;
     account.loginInfo = tylerInfo;
     account.originalUrl = originalUrl;
     account.errorUrl = errorUrl;
@@ -379,7 +381,6 @@ public class PaymentsService {
       if (firmPort.isEmpty()) {
         return Response.status(403).build();
       }
-      List<PaymentAccountTypeType> types = firmPort.get().getPaymentAccountTypeList().getPaymentAccountType();
 
       // Since users can change their minds and enter a credit card on the TOGA site while telling
       // us they wanted a bank account, we default to the TOGA response. There are several cases: 
@@ -389,27 +390,26 @@ public class PaymentsService {
       // * it's a bank account, but not accepted: fallback
       // * can't tell what it is: fallback
       String[] tenderDesc = resp.tenderDescription.split(" ");
-      String cardType = tenderDesc[0];
-      newAccount.setCardType(tylerCommonObjFac.createPaymentAccountTypeCardType(cardType));
-      log.info("Card Type: " + cardType);
-      if (cardType.equalsIgnoreCase("MASTERCARD") || cardType.equalsIgnoreCase("DISCOVER") || cardType.equalsIgnoreCase("VISA") 
-          || cardType.equalsIgnoreCase("AMEX")) {
-        if (types.stream().anyMatch(type -> type.getCode().equalsIgnoreCase("CC"))) {
-          newAccount.setPaymentAccountTypeCode("CC");
+      String cardTypeName = tenderDesc[0];
+      newAccount.setCardType(tylerCommonObjFac.createPaymentAccountTypeCardType(cardTypeName));
+      log.info("Card Type: " + cardTypeName);
+      List<PaymentAccountTypeType> paymentTypes = firmPort.get().getPaymentAccountTypeList().getPaymentAccountType();
+      BiFunction<String, List<PaymentAccountTypeType>, Integer> getCode = (cardType, types) -> {
+        if (cardType.equalsIgnoreCase("MASTERCARD") || cardType.equalsIgnoreCase("DISCOVER") || cardType.equalsIgnoreCase("VISA") 
+            || cardType.equalsIgnoreCase("AMEX")) {
+          Optional<PaymentAccountTypeType> ccType= types.stream().filter(type -> type.getCode().equalsIgnoreCase("CC")).findFirst();
+          return ccType.map(t -> t.getCodeId().getValue()).orElse(tempInfo.typeCodeId);
+        } else if (cardType.equalsIgnoreCase("Checking") || cardType.equalsIgnoreCase("Savings")) {
+          Optional<PaymentAccountTypeType> bankType= types.stream().filter(type -> type.getCode().equalsIgnoreCase("BankAccount")).findFirst();
+          return bankType.map(t -> t.getCodeId().getValue()).orElse(tempInfo.typeCodeId);
         } else {
-          // Fallback to the given type code
-          newAccount.setPaymentAccountTypeCode(tempInfo.typeCode);
+          // We don't know what this account type is! Fallback to what we were given initially
+          return tempInfo.typeCodeId;
         }
-      } else if (cardType.equalsIgnoreCase("Checking") || cardType.equalsIgnoreCase("Savings")) {
-        if (types.stream().anyMatch(type -> type.getCode().equalsIgnoreCase("BankAccount"))) {
-          newAccount.setPaymentAccountTypeCode("BankAccount");
-        } else {
-          newAccount.setPaymentAccountTypeCode(tempInfo.typeCode);
-        }
-      } else {
-        // We don't know what this account type is! Fallback to what we were given initially
-        newAccount.setPaymentAccountTypeCode(tempInfo.typeCode);
-      }
+      };
+      int codeId = getCode.apply(cardTypeName, paymentTypes);
+      newAccount.setPaymentAccountTypeCode(Integer.toString(codeId));
+      newAccount.setPaymentAccountTypeCodeId(tylerCommonObjFac.createPaymentAccountTypePaymentAccountTypeCodeId(codeId));
       newAccount.setAccountName(tempInfo.name);
       newAccount.setAccountToken(resp.payorToken);
       newAccount.setCardHolderName(tylerCommonObjFac.createPaymentAccountTypeCardHolderName(resp.payorName));
@@ -450,8 +450,8 @@ public class PaymentsService {
     }
     var waiverType = maybeWaiver.get();
     firmPort.getPaymentAccountTypeList();
-    newAccount.setPaymentAccountTypeCode(waiverType.getCode());
-    newAccount.setPaymentAccountTypeCodeId(waiverType.getCodeId());
+    newAccount.setPaymentAccountTypeCode(Integer.toString(waiverType.getCodeId().getValue()));
+    newAccount.setPaymentAccountTypeCodeId(tylerCommonObjFac.createPaymentAccountTypePaymentAccountTypeCodeId(waiverType.getCodeId().getValue()));
     PaymentAccountLocationDetails locationDetails = tylerCommonObjFac.createPaymentAccountLocationDetails();
     newAccount.setPaymentAccountLocationDetails(locationDetails);
     newAccount.setAccountName(accountName);
@@ -512,7 +512,7 @@ public class PaymentsService {
     String name;
     String loginInfo;
     boolean global;
-    String typeCode;
+    int typeCodeId;
     String originalUrl;
     String errorUrl;
   }
