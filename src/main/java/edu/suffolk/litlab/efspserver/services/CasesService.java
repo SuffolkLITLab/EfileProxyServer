@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPointsToMap;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,6 +36,7 @@ import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.ecf.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
+
 import gov.niem.niem.niem_core._2.CaseType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.TextType;
@@ -56,8 +59,8 @@ import tyler.ecf.extensions.serviceinformationhistoryquerymessage.ServiceInforma
 import tyler.ecf.extensions.serviceinformationhistoryresponsemessage.ServiceInformationHistoryResponseMessageType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 
-@Path("/cases/")
-@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@Path("/cases")
+@Produces(MediaType.APPLICATION_JSON)
 public class CasesService {
 
   private static Logger log = LoggerFactory.getLogger(CasesService.class);
@@ -79,6 +82,13 @@ public class CasesService {
     this.recordFactory = maybeRecords.get();
   }
 
+  @GET
+  @Path("/")
+  public Response getAll() {
+    EndpointReflection ef = new EndpointReflection();
+    return Response.ok(endPointsToMap(ef.findRESTEndpoints(List.of(CasesService.class)))).build();
+  }
+  
   /**
    * 
    * @param httpHeaders

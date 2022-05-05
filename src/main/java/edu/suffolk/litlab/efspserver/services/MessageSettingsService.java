@@ -1,6 +1,9 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPointsToMap;
+
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 import javax.ws.rs.GET;
@@ -23,8 +26,8 @@ import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.MessageInfo;
 import edu.suffolk.litlab.efspserver.db.MessageSettingsDatabase;
 
-@Path("/messages/")
-@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@Path("/messages")
+@Produces({MediaType.APPLICATION_JSON})
 public class MessageSettingsService {
   private static Logger log = 
       LoggerFactory.getLogger(MessageSettingsService.class); 
@@ -36,6 +39,14 @@ public class MessageSettingsService {
       MessageSettingsDatabase md) {
     this.security = security;
     this.md = md;
+  }
+
+  @GET
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getAll() {
+    EndpointReflection ef = new EndpointReflection();
+    return Response.ok(endPointsToMap(ef.findRESTEndpoints(List.of(MessageSettingsService.class)))).build();
   }
   
   @GET

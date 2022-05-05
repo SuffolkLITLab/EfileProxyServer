@@ -136,20 +136,19 @@ public class EfspServer {
         new SingletonResourceProvider(new CourtSchedulingService(converterMap, security, cd, jurisdiction)));
     services.put(MessageSettingsService.class,
         new SingletonResourceProvider(new MessageSettingsService(security, md)));
+    services.put(RootService.class, new SingletonResourceProvider(new RootService()));
 
     sf = new JAXRSServerFactoryBean();
     sf.setResourceClasses(new ArrayList<Class<?>>(services.keySet()));
     for (Map.Entry<Class<?>, SingletonResourceProvider> prov : services.entrySet()) {
       sf.setResourceProvider(prov.getKey(), prov.getValue());
     }
-    Map<Object, Object> extensionMappings = new HashMap<Object, Object>();
-    extensionMappings.put("xml", MediaType.APPLICATION_XML);
-    extensionMappings.put("json", MediaType.APPLICATION_JSON);
-    sf.setExtensionMappings(extensionMappings);
-    List<Object> providers = List.of(
+    sf.setExtensionMappings(Map.of(
+        "xml", MediaType.APPLICATION_XML,
+        "json", MediaType.APPLICATION_JSON));
+    sf.setProviders(List.of(
         new JAXBElementProvider<Object>(),
-        new JacksonJsonProvider());
-    sf.setProviders(providers);
+        new JacksonJsonProvider()));
     sf.setAddress(baseLocalUrl);
     server = sf.create();
   }

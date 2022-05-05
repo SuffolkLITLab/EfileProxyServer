@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPointsToMap;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 
 import java.util.List;
@@ -47,12 +48,10 @@ import tyler.efm.services.schema.common.NotificationType;
 import tyler.efm.services.schema.common.RegistrationType;
 import tyler.efm.services.schema.common.RoleLocationType;
 import tyler.efm.services.schema.common.UserType;
-import tyler.efm.services.schema.getpasswordquestionrequest.GetPasswordQuestionRequestType;
 import tyler.efm.services.schema.getuserrequest.GetUserRequestType;
 import tyler.efm.services.schema.getuserresponse.GetUserResponseType;
 import tyler.efm.services.schema.notificationpreferenceslistresponse.NotificationPreferencesListResponseType;
 import tyler.efm.services.schema.notificationpreferencesresponse.NotificationPreferencesResponseType;
-import tyler.efm.services.schema.passwordquestionresponse.PasswordQuestionResponseType;
 import tyler.efm.services.schema.registrationrequest.RegistrationRequestType;
 import tyler.efm.services.schema.registrationresponse.RegistrationResponseType;
 import tyler.efm.services.schema.removeuserrequest.RemoveUserRequestType;
@@ -72,7 +71,6 @@ import tyler.efm.services.schema.userlistresponse.UserListResponseType;
  * * User Service
  *   * AuthenticateUser
  *   * ChangePassword
- *   * ~GetPasswordQuestion~ (is deprecated by Tyler)
  *   * ResetPassword
  *   * GetUser (User Service)
  *   * UpdateUser (User Service)
@@ -95,7 +93,7 @@ import tyler.efm.services.schema.userlistresponse.UserListResponseType;
  *
  */
 @Path("/adminusers/")
-@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+@Produces(MediaType.APPLICATION_JSON)
 public class AdminUserService {
 
   private static Logger log =
@@ -119,6 +117,13 @@ public class AdminUserService {
       throw new RuntimeException("Can't find " + jurisdiction + " in the SoapClientChooser for EfmFirm factory"); 
     }
     this.firmFactory = maybeFirmFactory.get();;
+  }
+
+  @GET
+  @Path("/")
+  public Response getAll() {
+    EndpointReflection ef = new EndpointReflection();
+    return Response.ok(endPointsToMap(ef.findRESTEndpoints(List.of(AdminUserService.class)))).build();
   }
 
   @POST
@@ -180,20 +185,6 @@ public class AdminUserService {
 
     return ServiceHelpers.mapTylerCodesToHttp(notifResp.getError(),
         () -> Response.ok(notifResp.getNotification()).build());
-  }
-
-  @GET
-  @Path("/user/password-question")
-  public Response getPasswordQuestion(@Context HttpHeaders httpHeaders, String email) {
-    Optional<IEfmUserService> port = setupUserPort(httpHeaders, false);
-    if (port.isEmpty()) {
-      return Response.status(401).build();
-    }
-
-    GetPasswordQuestionRequestType req = new GetPasswordQuestionRequestType();
-    req.setEmail(email);
-    PasswordQuestionResponseType resp = port.get().getPasswordQuestion(req);
-    return ServiceHelpers.makeResponse(resp, () -> Response.ok("\"" + resp.getPasswordQuestion() + "\"").build());
   }
 
   @PATCH
@@ -530,6 +521,7 @@ public class AdminUserService {
    * @param req
    * @return
    */
+  // TODO(#2): is this really idempotent? I'm not sure
   @PUT
   @Path("/users")
   public Response registerUser(@Context HttpHeaders httpHeaders,
@@ -554,6 +546,7 @@ public class AdminUserService {
       return Response.status(400).entity(globalPasswordRow.validationmessage).build();
     }
     RegistrationResponseType regResp = port.get().registerUser(req);
+    // TODO(#2): need to return `created` here, with a URI for the user.
     return makeResponse(regResp, () -> Response.ok(regResp).build());
   }
 

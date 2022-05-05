@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPointsToMap;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 
 import java.io.ByteArrayInputStream;
@@ -70,8 +71,8 @@ import tyler.efm.services.schema.updatepaymentaccountresponse.UpdatePaymentAccou
  *
  * @author brycew 
  */
-@Path("/payments/")
-@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@Path("/payments")
+@Produces(MediaType.APPLICATION_JSON)
 public class PaymentsService {
 
   public PaymentsService(SecurityHub security, String togaKey, String togaUrl, EfmFirmService firmFactory, CodeDatabase cd) {
@@ -83,6 +84,13 @@ public class PaymentsService {
     this.tempAccounts = new HashMap<String, TempAccount>();
     this.firmFactory = firmFactory;
     this.cd = cd;
+  }
+
+  @GET
+  @Path("/")
+  public Response getAll() {
+    EndpointReflection ef = new EndpointReflection();
+    return Response.ok(endPointsToMap(ef.findRESTEndpoints(List.of(PaymentsService.class)))).build();
   }
 
   @GET

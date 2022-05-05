@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPointsToMap;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getStringMember;
 
@@ -61,8 +62,8 @@ import tyler.efm.services.schema.updateservicecontactresponse.UpdateServiceConta
  * @author litlab
  *
  */
-@Path("/firmattorneyservice/")
-@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+@Path("/firmattorneyservice")
+@Produces(MediaType.APPLICATION_JSON)
 public class FirmAttorneyAndServiceService {
 
   private final SecurityHub security;
@@ -76,6 +77,13 @@ public class FirmAttorneyAndServiceService {
     this.security = security;
     this.cd = cd;
     this.firmFactory = firmFactory;
+  }
+
+  @GET
+  @Path("/")
+  public Response getAll() {
+    EndpointReflection ef = new EndpointReflection();
+    return Response.ok(endPointsToMap(ef.findRESTEndpoints(List.of(FirmAttorneyAndServiceService.class)))).build();
   }
 
   @GET
@@ -318,6 +326,8 @@ public class FirmAttorneyAndServiceService {
       req.setCasePartyID(node.get("casePartyId").asText());
     }
     BaseResponseType resp = firmPort.get().attachServiceContact(req);
+    // TODO(#2): should be idempotent, and should also return `created` on successful.
+    // Need to make a URL that we can get more info at though
     return makeResponse(resp, () -> Response.ok().build());
   }
 
