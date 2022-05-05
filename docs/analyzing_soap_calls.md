@@ -20,7 +20,7 @@ Rough outline:
 * Add the java agent to the start up command (for extract-tls-secrets, it's `-javaagent:extract-tls-scecrets-4.0.0.jar=/tmp/secrets.log -jar ...`)
 * Start wireshark by pointing it to the secrets log, i.e. `wireshark -o tls.keylog_file:/tmp/secrets.log`.
 * Wireshark should then be able to decode the TLS packets into raw HTTP.
-  * Sometimes, I've seen issues where wireshark still decodes the packets correctly, but doesn't properly show it in the GUI. Check out (https://wiki.wireshark.org/Development/Tips#Printing_to_a_console for ideas on how to possibly fix). 
+  * Sometimes, I've seen issues where wireshark still decodes the packets correctly, but doesn't properly show it in the GUI. Check out (https://wiki.wireshark.org/Development/Tips#printing_to_a_console for ideas on how to possibly fix). 
 
 Some misc links that I used while researching:
 * https://sequentialread.com/how-to-get-a-decrypted-wireshark-packet-capture-from-a-java-application-that-is-talking-https/

@@ -12,7 +12,9 @@ FROM build_${EFM_SUPPORT}
 RUN mvn -f /usr/src/app/pom.xml -DskipTests clean dependency:resolve dependency:go-offline package && mvn -f /usr/src/app/pom.xml test
 COPY src /usr/src/app/src
 RUN mvn -f /usr/src/app/pom.xml -DskipTests package dependency:build-classpath -Dmdep.outputFile=cp.txt -PnoDockerTests
-COPY docker_run_script.sh /usr/src/app
+COPY docker_run_script.sh /usr/src/app/
+# Use if you need to debug the exact SOAP messages being sent
+# COPY extract-tls-secrets-4.0.0.jar /usr/src/app/
 
 EXPOSE 9000
 
