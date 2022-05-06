@@ -15,8 +15,6 @@ public class MessageSettingsDatabase extends DatabaseInterface {
   private static Logger log = 
       LoggerFactory.getLogger(MessageSettingsDatabase.class); 
   
-  private static final String tableName = "message_settings";
-
   public MessageSettingsDatabase(String pgUrl, int pgPort, String pgDb) {
     super(pgUrl, pgPort, pgDb);
   }
@@ -34,18 +32,18 @@ public class MessageSettingsDatabase extends DatabaseInterface {
     
     String tableExistsQuery = CodeTableConstants.getTableExists();
     PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery);
-    existsSt.setString(1, tableName);
+    existsSt.setString(1, "message_settings");
     
     ResultSet rs = existsSt.executeQuery();
     if (!rs.next() || rs.getInt(1) <= 0) {
       String createQuery = """
-          CREATE TABLE %s (
+          CREATE TABLE message_settings (
           "server_id" uuid PRIMARY KEY, "from_email" text, "subject_line" text,
-          "email_template" text, "email_confirmation" text)""".formatted(tableName);
+          "email_template" text, "email_confirmation" text)"""; 
       PreparedStatement createSt = conn.prepareStatement(createQuery);
       int retVal = createSt.executeUpdate();
       if (retVal < 0) {
-        log.warn("Issue when creating " + tableName + ": retVal == " + retVal);
+        log.warn("Issue when creating \"message_settings\" table: retVal == " + retVal);
       }
     }
   }
@@ -63,12 +61,12 @@ public class MessageSettingsDatabase extends DatabaseInterface {
     }
     
     String insertIntoTable = """
-        INSERT INTO %s (
+        INSERT INTO message_settings (
             "server_id", "from_email", "subject_line", "email_template", "email_confirmation"
         ) VALUES (
           ?, ?, ?, ?, ?) ON CONFLICT (server_id) DO UPDATE SET from_email=?, subject_line=?, 
               email_template=?, email_confirmation=?
-        """.formatted(tableName);
+        """; 
     
     PreparedStatement insertSt = conn.prepareStatement(insertIntoTable);
     insertSt.setObject(1, serverId);
@@ -89,7 +87,10 @@ public class MessageSettingsDatabase extends DatabaseInterface {
       return Optional.empty();
     }
     
-    String query = "SELECT server_id, from_email, subject_line, email_template, email_confirmation FROM message_settings WHERE server_id=?";
+    String query = """
+        SELECT server_id, from_email, subject_line, email_template, email_confirmation 
+        FROM message_settings 
+        WHERE server_id=?""";
     PreparedStatement st;
     try {
       st = conn.prepareStatement(query);

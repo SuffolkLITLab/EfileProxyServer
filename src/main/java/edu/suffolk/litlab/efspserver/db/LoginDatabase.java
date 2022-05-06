@@ -25,13 +25,19 @@ public class LoginDatabase extends DatabaseInterface {
   private static Logger log = 
       LoggerFactory.getLogger(LoginDatabase.class); 
   
-  private static final String atRestTable = "at_rest_keys";
-  
   private static final String atRestCreate = """
-           CREATE TABLE %s (
+           CREATE TABLE at_rest_keys (
            "server_id" uuid PRIMARY KEY, "server_name" text, "api_key" text NOT NULL,
            "tyler_enabled" boolean, "jeffnet_enabled" boolean, 
-           "created" timestamp)""".formatted(atRestTable);
+           "created" timestamp)"""; 
+  
+  private static final String atRestInsert = """
+           INSERT INTO at_rest_keys (
+               "server_id", "server_name", "api_key", "tyler_enabled",
+               "jeffnet_enabled", "created"
+           ) VALUES (
+               ?, ?, ?, ?,
+               ?, ?)"""; 
 
   private RandomString tokenGenerator;
 
@@ -50,7 +56,7 @@ public class LoginDatabase extends DatabaseInterface {
       throw new SQLException();
     }
     
-    List<String> tableNames = List.of(atRestTable);
+    List<String> tableNames = List.of("at_rest_table");
     List<String> creates = List.of(atRestCreate); 
     String tableExistsQuery = CodeTableConstants.getTableExists();
     for (int i = 0; i < tableNames.size(); i++) {
@@ -77,14 +83,7 @@ public class LoginDatabase extends DatabaseInterface {
     UUID serverId = UUID.randomUUID();
     String apiKey = tokenGenerator.nextString();
     Timestamp ts = new Timestamp(System.currentTimeMillis());
-    String insertIntoTable = """
-                    INSERT INTO %s (
-                        "server_id", "server_name", "api_key", "tyler_enabled",
-                        "jeffnet_enabled", "created"
-                    ) VALUES (
-                      ?, ?, ?, ?,
-                      ?, ?)""".formatted(atRestTable);
-    PreparedStatement insertSt = conn.prepareStatement(insertIntoTable);
+    PreparedStatement insertSt = conn.prepareStatement(atRestInsert);
     insertSt.setObject(1, serverId);
     insertSt.setString(2, serverName);
     insertSt.setString(3, apiKey);
@@ -96,10 +95,11 @@ public class LoginDatabase extends DatabaseInterface {
   }
   
   public Optional<AtRest> getAtRestInfo(String apiKey) throws SQLException {
-    String query = "SELECT server_id, server_name, api_key, tyler_enabled, "
-        + " jeffnet_enabled, created"
-        + " FROM " + atRestTable
-        + " WHERE api_key = ?";
+    String query = """
+        SELECT server_id, server_name, api_key, tyler_enabled,
+            jeffnet_enabled, created
+        FROM at_rest_keys 
+        WHERE api_key = ?""";
 
     PreparedStatement st = conn.prepareStatement(query);
     st.setString(1, apiKey);

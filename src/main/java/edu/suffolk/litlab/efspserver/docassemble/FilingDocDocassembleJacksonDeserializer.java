@@ -5,6 +5,8 @@ import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getNumberMem
 import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getStringDefault;
 import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getStringMember;
 import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getMemberList;
+import static edu.suffolk.litlab.efspserver.services.FilingError.malformedInterview;
+import static edu.suffolk.litlab.efspserver.services.FilingError.serverError;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -43,14 +45,14 @@ public class FilingDocDocassembleJacksonDeserializer {
   public static Optional<FilingDoc> fromNode(JsonNode node, Map<String, PartyId> varToPartyId,
       boolean isLeadDoc, InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
-      FilingError err = FilingError.malformedInterview(
+      FilingError err = malformedInterview(
               "Refusing to parse filing doc that isn't a Json Object: " + node.toPrettyString());
       collector.error(err);
     }
 
     // Get: filename
     if (!node.has("filename") || !node.get("filename").isTextual()) {
-      FilingError err = FilingError.malformedInterview(
+      FilingError err = malformedInterview(
           "Refusing to parse filing without filename");
       collector.error(err);
     }
@@ -112,12 +114,16 @@ public class FilingDocDocassembleJacksonDeserializer {
     List<String> preliminaryCopies = getMemberList(node, "preliminary_copies");
     List<String> filingParties = getMemberList(node, "filing_parties");
     
-    if (!node.has("data_url") || !node.get("data_url").isTextual()) {
-      FilingError err = FilingError.malformedInterview(
-          "Refusing to parse filing without data_url");
-      collector.error(err);
+    if (!node.has("data_url") || !node.get("data_url").isTextual() || node.get("data_url").asText("").isBlank()) {
+      collector.error(FilingError.malformedInterview("Refusing to parse filing without data_url"));
     }
     String dataUrl = node.get("data_url").asText();
+    if (!(dataUrl.startsWith("http://") || dataUrl.startsWith("https://"))) {
+      collector.error(malformedInterview(
+          "Refusing non-HTTP schemas (needs to start with 'http://' or 'https://', was actually " + dataUrl + ")"));
+    }
+    // Difficult to hardcode more SSRF solutions, since deployment can be varied. Can't block local network / 
+    // localhost, since things could be on the same server / network. TODO: inject an allow-list into here somehow
     try {
       URL inUrl = new URL(dataUrl); 
       List<PartyId> fullParties = filingParties.stream().map(fp -> {
@@ -135,7 +141,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       conn.setConnectTimeout(15000); // set connection timeout (not read timeout) in milliseconds
       InputStream inStream = conn.getInputStream();
       if (inStream == null) {
-        FilingError err = FilingError.serverError("Couldn't connect to " + inUrl.toString());
+        FilingError err = serverError("Couldn't connect to " + inUrl.toString());
         collector.error(err);
       }
       
@@ -172,11 +178,11 @@ public class FilingDocDocassembleJacksonDeserializer {
               action,
               isLeadDoc));
     } catch (MalformedURLException ex) {
-      FilingError err = FilingError.serverError("MalformedURLException trying to parse the data_url (" + dataUrl + "): " + ex);
+      FilingError err = serverError("MalformedURLException trying to parse the data_url (" + dataUrl + "): " + ex);
       collector.error(err);
       throw err;
     } catch (IOException ex)  {
-      FilingError err = FilingError.serverError("IOException trying to connect to data_url (" + dataUrl + "):" + ex);
+      FilingError err = serverError("IOException trying to connect to data_url (" + dataUrl + "):" + ex);
       collector.error(err);
       throw err;
     }

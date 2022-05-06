@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver.ecf;
 
+import static edu.suffolk.litlab.efspserver.StdLib.strFromException;
+
 import com.hubspot.algebra.Result;
 
 import edu.suffolk.litlab.efspserver.CaseServiceContact;
@@ -33,8 +35,6 @@ import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.proxy.xsd._2.Date;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -316,10 +316,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       log.info("Full cfm: " + XmlHelper.objectToXmlStrOrError(cfm, CoreFilingMessageType.class));
       return cfm;
     } catch (IOException | SQLException ex ) { 
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter(sw);
-      ex.printStackTrace(pw);
-      log.error("IO Error when making filing! " + ex.toString() + " " + sw.toString());
+      log.error("IO Error when making filing! " + strFromException(ex));
       throw FilingError.serverError("Got Exception assembling the filing: " + ex);
     }
   }

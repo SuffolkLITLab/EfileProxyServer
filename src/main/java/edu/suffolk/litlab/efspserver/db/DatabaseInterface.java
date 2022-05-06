@@ -55,18 +55,17 @@ public abstract class DatabaseInterface {
       conn.setAutoCommit(false);
     } catch (SQLException ex) {
       log.error("Error code is: " + ex.getErrorCode());
-      createGivenDatabase(pgUser, pgPassword, this.pgDb);
+      createNewDatabase(pgUser, pgPassword); 
       conn = DriverManager.getConnection(url, props);
       conn.setAutoCommit(false);
     }
   }
   
   /** Creates the database if it doesn't already exist. */
-  protected boolean createGivenDatabase(String pgUser, String pgPassword, 
-      String newDb) throws SQLException {
-    if (!newDb.matches("[a-zA-Z_]+")) {
+  private boolean createNewDatabase(String pgUser, String pgPassword) throws SQLException {
+    if (!this.pgDb.matches("[a-zA-Z_]+")) {
       throw new SQLException(
-          "Won't make a database named " + newDb + ": only alpha and _ allowed");
+          "Won't make a database named " + this.pgDb + ": only alpha and _ allowed");
     }
 
     long startTime = System.currentTimeMillis();
@@ -86,15 +85,15 @@ public abstract class DatabaseInterface {
         boolean needToMakeDb = true;
         while (rs.next()) {
           log.debug("Database: " + rs.getString(1));
-          if (rs.getString(1).equals(newDb)) {
+          if (rs.getString(1).equals(this.pgDb)) {
             needToMakeDb = false;
           }
         }
         log.debug("Need to make DB: " + needToMakeDb);
         if (needToMakeDb) {
-          log.info("Making a database named " + newDb);
+          log.info("Making a database named " + this.pgDb);
           Statement st = tempConn.createStatement();
-          st.executeUpdate("CREATE DATABASE " + newDb);
+          st.executeUpdate("CREATE DATABASE " + this.pgDb);
           st.close();
         }
         return true;

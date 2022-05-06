@@ -87,7 +87,7 @@ public class Ecfv5CaseTypeFactory {
     
     info.getPreviousCaseId().ifPresent(id -> ct.setCaseTrackingID(convertString(id)));
     
-    // TODO(brycew): Time Zones
+    // TODO(#47): Time Zones
     DateType currentDate = convertDateTime(Instant.now(), 1); 
     CourtEventType event = jxObjFac.createCourtEventType();
     int i = 0;
