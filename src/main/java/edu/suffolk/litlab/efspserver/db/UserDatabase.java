@@ -43,11 +43,11 @@ public class UserDatabase extends DatabaseInterface {
     ResultSet rs = existsSt.executeQuery();
     if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
       String createQuery = """ 
-           CREATE TABLE %s (
+           CREATE TABLE submitted_filings (
            "user_id" uuid, "name" text, "phone_number" text,
            "email" text, "transaction_id" uuid PRIMARY KEY, "server_id" uuid, "api_key_used" text, 
            "court_id" text, "casetype" text, 
-           "submitted" date)""".formatted("submitted_filings");
+           "submitted" date)"""; 
       PreparedStatement createSt = conn.prepareStatement(createQuery);
       log.info("Full statement: " + createSt.toString());
       int retVal = createSt.executeUpdate();
@@ -108,10 +108,11 @@ public class UserDatabase extends DatabaseInterface {
       log.error("Connection in findTransaction wasn't open yet!");
       throw new SQLException();
     }
-    String query = "SELECT name, user_id, phone_number, email, transaction_id, server_id,"
-        + " api_key_used, casetype, court_id, submitted"
-        + " FROM submitted_filings "
-        + " WHERE transaction_id = ?";
+    String query = """
+        SELECT name, user_id, phone_number, email, transaction_id, server_id,
+            api_key_used, casetype, court_id, submitted"
+        FROM submitted_filings
+        WHERE transaction_id = ?""";
     
     PreparedStatement st = conn.prepareStatement(query);
     st.setObject(1, transactionToFind);
