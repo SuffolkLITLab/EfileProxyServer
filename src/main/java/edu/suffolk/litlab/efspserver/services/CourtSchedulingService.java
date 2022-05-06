@@ -88,13 +88,13 @@ public class CourtSchedulingService {
   private ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ObjectFactory reserveDateObjFac;
   private final ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory niemObjFac;
   private final ecfv5.gov.niem.release.niem.proxy.xsd._4.ObjectFactory proxyObjFac;
-  private final Map<String, InterviewToFilingEntityConverter> converterMap;
+  private final Map<String, InterviewToFilingInformationConverter> converterMap;
   private final SecurityHub security;
   private final CodeDatabase cd;
   private final CourtRecordMDEService recordFactory; 
 
   
-  public CourtSchedulingService(Map<String, InterviewToFilingEntityConverter> converterMap, 
+  public CourtSchedulingService(Map<String, InterviewToFilingInformationConverter> converterMap, 
       SecurityHub security, CodeDatabase cd, String jurisdiction) {
     this.cd = cd;
     this.security = security;

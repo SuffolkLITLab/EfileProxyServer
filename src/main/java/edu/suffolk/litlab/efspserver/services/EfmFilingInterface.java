@@ -16,7 +16,7 @@ public interface EfmFilingInterface {
   
   /**
    * Actually sends the filing information to the EFM if it can.
-   * @param info All of the information, parsed from an InterviewToFilingEntityConverter
+   * @param info All of the information, parsed from an InterviewToFilingInformationConverter
    * @return Either a list of UUIDs for each filing actually made to the
    *   EFM, or an error if it couldn't make the filing.
    *   The list is because a single filing can include child envelopes or child

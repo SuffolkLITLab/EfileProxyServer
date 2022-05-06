@@ -41,7 +41,7 @@ public class FilingReviewService {
       LoggerFactory.getLogger(FilingReviewService.class);
 
   private UserDatabase ud;
-  private Map<String, InterviewToFilingEntityConverter> converterMap;
+  private Map<String, InterviewToFilingInformationConverter> converterMap;
   private Map<String, Map<String, EfmFilingInterface>> filingInterfaces;
   private Map<String, Map<String, EfmRestCallbackInterface>> callbackInterfaces;
   private SecurityHub security;
@@ -49,7 +49,7 @@ public class FilingReviewService {
 
   public FilingReviewService(
       UserDatabase ud,
-      Map<String, InterviewToFilingEntityConverter> converterMap,
+      Map<String, InterviewToFilingInformationConverter> converterMap,
       Map<String, Map<String, EfmFilingInterface>> filingInterfaces,
       Map<String, Map<String, EfmRestCallbackInterface>> callbackInterfaces,
       SecurityHub security,
@@ -382,7 +382,7 @@ public class FilingReviewService {
       return Result.err(Response.status(415).entity("We only support " + converterMap.keySet()).build());
     }
     Result<FilingInformation, FilingError> maybeInfo =
-        converterMap.get(mediaType.toString()).extractEntities(allVars);
+        converterMap.get(mediaType.toString()).extractInformation(allVars);
     if (maybeInfo.isErr()) {
       return Result.err(Response.status(400).entity(maybeInfo.unwrapErrOrElseThrow().toJson()).build());
     }

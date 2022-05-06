@@ -11,7 +11,7 @@ import com.opencsv.exceptions.CsvValidationException;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Person;
-import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingEntityConverter;
+import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingInformationConverter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,13 +20,13 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class DocassembleToFilingEntityConverterTest {
+public class DocassembleToFilingInformationConverterTest {
   
-  InterviewToFilingEntityConverter converter;
+  InterviewToFilingInformationConverter converter;
   
   @BeforeEach
   public void setUp() throws CsvValidationException, IOException {
-    converter = new DocassembleToFilingEntityConverter(
+    converter = new DocassembleToFilingInformationConverter(
         this.getClass().getResourceAsStream("/taxonomy.csv"));
   }
   
@@ -45,12 +45,12 @@ public class DocassembleToFilingEntityConverterTest {
   @Test
   public void testEmptyOnInvalidJson() throws IOException {
     String contents1 = getFileContents("/invalid_1.json");
-    Result<FilingInformation, FilingError> result = converter.extractEntities(contents1);
+    Result<FilingInformation, FilingError> result = converter.extractInformation(contents1);
     assertThat(result).isErr();
     assertEquals(result.unwrapErrOrElseThrow().getType(), FilingError.Type.MalformedInterview);
 
     String contents2 = getFileContents("/invalid_2.json");
-    Result<FilingInformation, FilingError> result2 = converter.extractEntities(contents2);
+    Result<FilingInformation, FilingError> result2 = converter.extractInformation(contents2);
     assertThat(result2).isErr();
     assertEquals(result2.unwrapErrOrElseThrow().getType(), FilingError.Type.MalformedInterview);
   }
@@ -58,12 +58,12 @@ public class DocassembleToFilingEntityConverterTest {
   @Test
   public void testEmptyOnUnsupportedJson() throws IOException {
     String justStr = getFileContents("/just_str.json");
-    Result<FilingInformation, FilingError> result = converter.extractEntities(justStr);
+    Result<FilingInformation, FilingError> result = converter.extractInformation(justStr);
     assertThat(result).isErr();
     assertEquals(result.unwrapErrOrElseThrow().getType(), FilingError.Type.MalformedInterview);
 
     String justNull = getFileContents("/just_null.json");
-    Result<FilingInformation, FilingError> result2 = converter.extractEntities(justNull);
+    Result<FilingInformation, FilingError> result2 = converter.extractInformation(justNull);
     assertThat(result2).isErr();
     assertEquals(result2.unwrapErrOrElseThrow().getType(), FilingError.Type.MalformedInterview);
   }
@@ -71,7 +71,7 @@ public class DocassembleToFilingEntityConverterTest {
   @Test
   public void testEnsureUserEmail() throws IOException {
     String contents = getFileContents("/housing_tro_2_plaintiff_business_def_no_email.json"); 
-    Result<FilingInformation, FilingError> result = converter.extractEntities(contents);
+    Result<FilingInformation, FilingError> result = converter.extractInformation(contents);
     System.out.println(result);
     assertThat(result).isErr()
         .containsErr(FilingError.missingRequired(new InterviewVariable(
@@ -82,7 +82,7 @@ public class DocassembleToFilingEntityConverterTest {
   public void testGetsUserInformation() throws IOException {
     String interviewContents = getFileContents("/housing_tro_2_plaintiff_business_def.json");
     Result<FilingInformation, FilingError> maybeEntities = 
-        converter.extractEntities(interviewContents);
+        converter.extractInformation(interviewContents);
     assertThat(maybeEntities).isOk(); 
     FilingInformation entities = maybeEntities.unwrapOrElseThrow();
     assertEquals(2, entities.getNewPlaintiffs().size(), 
@@ -116,7 +116,7 @@ public class DocassembleToFilingEntityConverterTest {
   @Test
   public void testGetFilingInformation() throws IOException {
     String contents = getFileContents("/housing_tro_2_plaintiff_business_def.json");
-    Result<FilingInformation, FilingError> maybeEntities = converter.extractEntities(contents);
+    Result<FilingInformation, FilingError> maybeEntities = converter.extractInformation(contents);
     assertThat(maybeEntities).isOk();
     FilingInformation entities = maybeEntities.unwrapOrElseThrow();
     assertNotNull(entities.getCaseCategoryCode());
@@ -131,7 +131,7 @@ public class DocassembleToFilingEntityConverterTest {
   @Test
   public void testHasIsFormFiller() throws IOException {
     String contents = getFileContents("/existing_is_form_filler.json");
-    Result<FilingInformation, FilingError> maybeInfo = converter.extractEntities(contents);
+    Result<FilingInformation, FilingError> maybeInfo = converter.extractInformation(contents);
     assertThat(maybeInfo).isOk();
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     assertEquals(info.getPartyAttorneyMap().size(), 1);
@@ -146,7 +146,7 @@ public class DocassembleToFilingEntityConverterTest {
   @Test
   public void testfilteredOutNotNew() throws IOException {
     String contents = getFileContents("/checking_filtered_users.json");
-    Result<FilingInformation, FilingError> maybeInfo = converter.extractEntities(contents);
+    Result<FilingInformation, FilingError> maybeInfo = converter.extractInformation(contents);
     assertThat(maybeInfo).isOk();
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     assertEquals(2, info.getNewPlaintiffs().size(), "Should have only been 2 plaintiffs, but were " + info.getNewPlaintiffs().size());

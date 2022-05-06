@@ -7,17 +7,17 @@ import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
-import edu.suffolk.litlab.efspserver.services.InterviewToFilingEntityConverter;
+import edu.suffolk.litlab.efspserver.services.InterviewToFilingInformationConverter;
 import edu.suffolk.litlab.efspserver.services.JsonExtractException;
 import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DocassembleToFilingEntityConverter extends InterviewToFilingEntityConverter {
+public class DocassembleToFilingInformationConverter extends InterviewToFilingInformationConverter {
 
-  private static Logger log = LoggerFactory.getLogger(DocassembleToFilingEntityConverter.class); 
+  private static Logger log = LoggerFactory.getLogger(DocassembleToFilingInformationConverter.class); 
   
-  public DocassembleToFilingEntityConverter(InputStream taxonomyCsv) {}
+  public DocassembleToFilingInformationConverter(InputStream taxonomyCsv) {}
 
   @Override
   public Result<FilingInformation, FilingError> traverseInterview(String interviewContents,

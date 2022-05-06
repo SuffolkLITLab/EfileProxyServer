@@ -39,11 +39,11 @@ import edu.suffolk.litlab.efspserver.codes.CrossReference;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.codes.FilingCode;
 import edu.suffolk.litlab.efspserver.codes.PartyType;
-import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingEntityConverter;
+import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingInformationConverter;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
-import edu.suffolk.litlab.efspserver.services.InterviewToFilingEntityConverter;
+import edu.suffolk.litlab.efspserver.services.InterviewToFilingInformationConverter;
 
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
 
@@ -104,8 +104,8 @@ public class EcfCaseTypeFactoryTest {
   public void shouldMatchExistingPartyPersonOrOrgXmlWrappers() throws Exception {
     gov.niem.niem.niem_core._2.CaseType myCase = readFromFile(this.getClass().getResourceAsStream("/case_resp.xml")).getCase().getValue();
     EcfCaseTypeFactory caseFactory = new EcfCaseTypeFactory(cd);
-    InterviewToFilingEntityConverter converter = new DocassembleToFilingEntityConverter(null);
-    Result<FilingInformation, FilingError> infoRes = converter.extractEntities(""); 
+    InterviewToFilingInformationConverter converter = new DocassembleToFilingInformationConverter(null);
+    Result<FilingInformation, FilingError> infoRes = converter.extractInformation(""); 
     return;
     
     

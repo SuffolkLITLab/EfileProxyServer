@@ -8,7 +8,7 @@ import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.db.MessageSettingsDatabase;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
-import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingEntityConverter;
+import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingInformationConverter;
 import edu.suffolk.litlab.efspserver.ecf.TylerModuleSetup;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetModuleSetup;
 import tyler.efm.services.EfmFirmService;
@@ -61,7 +61,7 @@ public class EfspServer {
       String userDatabaseName, // always
       List<EfmModuleSetup> modules,
       CodeDatabase cd, // Tyler specific (?)
-      Map<String, InterviewToFilingEntityConverter> converterMap
+      Map<String, InterviewToFilingInformationConverter> converterMap
       ) throws SQLException {
     try {
       cd.createDbConnection(dbUser, dbPassword);
@@ -183,10 +183,10 @@ public class EfspServer {
     }
     String dbPassword = maybeDbPassword.get();
 
-    InterviewToFilingEntityConverter daJsonConverter =
-        new DocassembleToFilingEntityConverter(
+    InterviewToFilingInformationConverter daJsonConverter =
+        new DocassembleToFilingInformationConverter(
             EfspServer.class.getResourceAsStream("/taxonomy.csv"));
-    Map<String, InterviewToFilingEntityConverter> converterMap =
+    Map<String, InterviewToFilingInformationConverter> converterMap =
         Map.of("application/json", daJsonConverter,
                "text/json", daJsonConverter);
 
