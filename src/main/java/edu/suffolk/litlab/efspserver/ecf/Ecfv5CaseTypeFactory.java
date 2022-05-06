@@ -130,7 +130,7 @@ public class Ecfv5CaseTypeFactory {
         i++;
       }
       for (Map.Entry<PartyId, List<String>> partyAndAtt : info.getPartyAttorneyMap().entrySet()) {
-        if (!partyAndAtt.getValue().isEmpty() && !partyAndAtt.getKey().isInCurrentFiling()) {
+        if (!partyAndAtt.getValue().isEmpty() && partyAndAtt.getKey().isAlreadyInCase()) {
           if (existingParties.isEmpty()) {
             collector.error(FilingError.serverError("PartyAttorney maps references parties not in "
                 + "current filing, but we don't have that datastructure.")); 
@@ -138,7 +138,7 @@ public class Ecfv5CaseTypeFactory {
           if (!existingParties.get().containsKey(partyAndAtt.getKey())) {
             collector.addWrong(collector.requestVar("party_to_attorneys", "Can't find the existing party ID in the existing parties", "text"));
           }
-          EntityType ent = serializeExistingParticipant("id-" + partyAndAtt.getKey().id, existingParties.get().get(partyAndAtt.getKey()));
+          EntityType ent = serializeExistingParticipant(partyAndAtt.getKey().getIdString(), existingParties.get().get(partyAndAtt.getKey()));
           idToCaseParty.put(partyAndAtt.getKey(), ent);
           ecfAug.getRest().add(oasisObjFac.createCaseParty(ent));
         }
@@ -197,7 +197,7 @@ public class Ecfv5CaseTypeFactory {
     Optional<PartyId> firstFiler = (partyIds.isEmpty()) ? Optional.empty() : Optional.of(partyIds.get(0));
     firstFiler.ifPresent(fil -> {
       FilingPartyEntityType fpet = tylerObjFac.createFilingPartyEntityType();
-      if (fil.isInCurrentFiling()) {
+      if (fil.isNewInCurrentFiling()) {
         FilingReferenceType frt = tylerObjFac.createFilingReferenceType();
         frt.setRef(idToCaseParty.get(fil));
         fpet.setPartyReference(frt);
@@ -260,7 +260,7 @@ public class Ecfv5CaseTypeFactory {
     EntityType ent = niemObjFac.createEntityType();
     ent.setId(per.getIdString());
 
-    PartyId key = PartyId.CurrentFiling(per.getIdString());
+    PartyId key = per.getPartyId(); 
     if (per.isOrg()) {
       OrganizationType orgType = niemObjFac.createOrganizationType();
       OrganizationAugmentationType orgAug = oasisObjFac.createOrganizationAugmentationType();

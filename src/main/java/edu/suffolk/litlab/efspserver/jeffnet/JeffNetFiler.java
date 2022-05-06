@@ -84,7 +84,7 @@ public class JeffNetFiler implements EfmFilingInterface {
       return Result.err(FilingError.serverError("Error: cannot file with no filings"));
     }
     List<PartyId> newFilers = info.getFilers().stream()
-        .filter(f -> f.isInCurrentFiling())
+        .filter(f -> f.isNewInCurrentFiling())
         .collect(Collectors.toList());
     if (newFilers.size() != info.getFilers().size()) {
       return Result.err(FilingError.malformedInterview("Error: JeffNet cannot reference alredy existing filing parties"));

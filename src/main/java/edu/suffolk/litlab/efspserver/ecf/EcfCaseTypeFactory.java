@@ -334,14 +334,19 @@ public class EcfCaseTypeFactory {
     }
 
     
-    // Add all of the existing parties that are referenced somehow (either adding new attorney
-    // or service contact) to the XML
+    // Add all of the existing parties that are referenced somehow (either adding new attorney, 
+    // service contact, or filing party) to the XML
     var stream = Stream.concat(
-        info.getServiceContacts().stream().filter(c -> c.partyAssociated.isPresent()).map(c -> c.partyAssociated.get()),
-        info.getPartyAttorneyMap().entrySet().stream().map(pa -> pa.getKey()));
+        Stream.concat(
+            info.getServiceContacts().stream().filter(c -> c.partyAssociated.isPresent()).map(c -> c.partyAssociated.get()),
+            info.getPartyAttorneyMap().entrySet().stream().map(pa -> pa.getKey())
+         ),
+        info.getFilings().stream().flatMap(filing -> filing.getFilingPartyIds().stream())
+        ).distinct();
     Iterable<PartyId> iterator = stream::iterator;
     for (PartyId partyId : iterator) {
-      if (!partyId.isInCurrentFiling()){
+      log.info("Referenced PartyId (" + partyId + ")");
+      if (partyId.isAlreadyInCase()){
         if (partyId.id.contains(" ")) {
           FilingError err = FilingError.serverError("Party ID " + partyId.id + " should be a GUID but isn't");
           collector.error(err);
@@ -355,12 +360,12 @@ public class EcfCaseTypeFactory {
           orgId.getIdentification().add(id);
           OrganizationType ot = ecfCommonObjFac.createOrganizationType();
           ot.setOrganizationIdentification(tylerObjFac.createOrganizationOtherIdentification(orgId));
-          ot.setId("id-" + partyId.id);
+          ot.setId(partyId.getIdString());
           cpt.setEntityRepresentation(ecfCommonObjFac.createEntityOrganization(ot));
           partyIdToRefObj.put(partyId.id, ot);
         } else {
           PersonType pt = ecfCommonObjFac.createPersonType();
-          pt.setId("id-" + partyId.id);
+          pt.setId(partyId.getIdString());
           pt.getPersonOtherIdentification().add(id);
           cpt.setEntityRepresentation(ecfCommonObjFac.createEntityPerson(pt));
           partyIdToRefObj.put(partyId.id, pt);

@@ -569,7 +569,7 @@ public class EcfCourtSpecificSerializer {
     }
 
     for (PartyId filingPartyId : doc.getFilingPartyIds()) {
-      if (filingPartyId.isInCurrentFiling()) {
+      if (filingPartyId.isNewInCurrentFiling()) {
         metadata.getFilingPartyID().add(XmlHelper.convertId(filingPartyId.id, "REFERENCE"));
       } else {
         metadata.getFilingPartyID().add(XmlHelper.convertId(filingPartyId.id, "IDENTIFICATION"));

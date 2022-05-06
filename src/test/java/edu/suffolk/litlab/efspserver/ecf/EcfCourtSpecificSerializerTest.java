@@ -75,7 +75,7 @@ public class EcfCourtSpecificSerializerTest {
     EcfCourtSpecificSerializer courtSer = new EcfCourtSpecificSerializer(cd, loc);
     List<PartyType> okPartyTypes = List.of(PartyType.TestObj("1234", "Special", "not_real"));
 
-    Person user = new Person(new Name("Bob", "", "Zombie"), info, Optional.of("Male"), Optional.of("Spanish"), Optional.empty(), false, true, "1234");
+    Person user = Person.FromInput(new Name("Bob", "", "Zombie"), info, Optional.of("Male"), Optional.of("Spanish"), Optional.empty(), false, true, "1234", Optional.empty());
     CaseParticipantType cpt = courtSer.serializeEcfCaseParticipant(user, collector, okPartyTypes);
     assertEquals(cpt.getCaseParticipantRoleCode().getValue(), "1234");
     assertTrue(cpt.getEntityRepresentation().getValue() instanceof gov.niem.niem.niem_core._2.PersonType);
@@ -89,7 +89,7 @@ public class EcfCourtSpecificSerializerTest {
     XmlHelper.objectToXmlStr(cpt, CaseParticipantType.class);
     
     
-    Person org = new Person(new Name("Business Org", "", ""), info, Optional.empty(), Optional.empty(), Optional.empty(), true, true, "1234");
+    Person org = Person.FromInput(new Name("Business Org", "", ""), info, Optional.empty(), Optional.empty(), Optional.empty(), true, true, "1234", Optional.empty());
     CaseParticipantType cptOrg = courtSer.serializeEcfCaseParticipant(org, collector, okPartyTypes);
     assertEquals(cptOrg.getCaseParticipantRoleCode().getValue(), "1234");
     assertTrue(cptOrg.getEntityRepresentation().getValue() instanceof OrganizationType);
@@ -97,7 +97,7 @@ public class EcfCourtSpecificSerializerTest {
     assertTrue(orgPt.getRest().size() > 0); 
     XmlHelper.objectToXmlStr(cptOrg, CaseParticipantType.class);
     
-    Person per= new Person(new Name("Bob", "", "Zombie"), info, Optional.of("Male"), Optional.of("Spanish"), Optional.empty(), false, false, "1234");
+    Person per = Person.FromInput(new Name("Bob", "", "Zombie"), info, Optional.of("Male"), Optional.of("Spanish"), Optional.empty(), false, false, "1234", Optional.empty());
     CaseParticipantType cptPer = courtSer.serializeEcfCaseParticipant(per, collector, okPartyTypes);
     System.out.println(XmlHelper.objectToXmlStr(cpt, CaseParticipantType.class));
     assertEquals(cptPer.getCaseParticipantRoleCode().getValue(), "1234");

@@ -14,6 +14,7 @@ public class FilingInformation {
   /** Plaintiffs that are new to the case; not in the case info before this filing */
   private List<Person> newPlaintiffs = List.of();
   private List<Person> newDefendants = List.of();
+  private Map<String, PartyId> varToPartyId = Map.of();
   
   /** A list of attorney UIDs. 
    * 
@@ -87,6 +88,10 @@ public class FilingInformation {
     return newDefendants;
   }
   
+  public Map<String, PartyId> getVarToPartyId() {
+    return varToPartyId;
+  }
+  
   public List<String> getAttorneyIds() {
     return attorneyIds;
   }
@@ -150,13 +155,17 @@ public class FilingInformation {
   public void setCourtLocation(String courtLocationId) {
     this.courtLocationId = courtLocationId;
   }
-  
+
   public void setNewPlaintiffs(List<Person> plaintiffs) {
     this.newPlaintiffs = plaintiffs;
   }
   
   public void setNewDefendants(List<Person> defendants) {
     this.newDefendants = defendants;
+  }
+  
+  public void setVarToPartyId(Map<String, PartyId> varToPartyId) {
+    this.varToPartyId = Map.copyOf(varToPartyId);
   }
   
   public void setAttorneyIds(List<String> attorneyIds) {

@@ -21,6 +21,11 @@ public class Person {
   // If true, this is actually a business or organization, i.e. a legal person, not an individual.
   private final boolean isOrg;
 
+  /** the identifier that might be used reference back here from other parts on the input filing.
+   * From the service contacts, attorney assignment, etc.
+   */
+  private final PartyId partyId;
+ /** A random identifier for this specific object */
   private final UUID id;
   private String role;
   /** Is true if the person who's Tyler id is being used to file the form is this user. */
@@ -28,27 +33,33 @@ public class Person {
 
   /** Minimal constructor, empty lists and empty optionals. Should only be used in tests. */
   public static Person TestPerson(Name name, String email, boolean isOrg) {
-    return new Person(name, new ContactInformation(email),
-        Optional.empty(), Optional.empty(), Optional.empty(), isOrg, false, "");
+    return Person.FromInput(name, new ContactInformation(email),
+        Optional.empty(), Optional.empty(), Optional.empty(), isOrg, false, "", Optional.empty()); 
   }
   
   public static Person FromEfm(Name name, ContactInformation contactInfo, 
       Optional<String> gender, Optional<String> language, Optional<LocalDate> birthdate, boolean isOrg,
       String role, UUID efmId) {
-    return new Person(name, contactInfo, gender, language, birthdate, isOrg, false, role, efmId);
+    PartyId partyId = PartyId.Already(efmId.toString());
+    return new Person(name, contactInfo, gender, language, birthdate, isOrg, false, role, partyId, efmId);
   }
 
   /** Default constructor. */
-  public Person(Name name,
+  public static Person FromInput(Name name,
       ContactInformation contactInfo,
       Optional<String> gender,
       Optional<String> language,
       Optional<LocalDate> birthdate,
       boolean isOrg,
       boolean isFormFiller,
-      String role) {
-    this(name, contactInfo, gender, language, birthdate, 
-        isOrg, isFormFiller, role, UUID.randomUUID());
+      String role,
+      Optional<String> efmIdIfAlreadyIn) {
+    UUID uuid = UUID.randomUUID();
+    PartyId partyId = efmIdIfAlreadyIn
+        .map(efmId -> PartyId.Already(efmId))
+        .orElse(PartyId.CurrentFilingNew(uuid.toString()));
+    return new Person(name, contactInfo, gender, language, birthdate, 
+        isOrg, isFormFiller, role, partyId, uuid); 
   }
   
   private Person(Name name,
@@ -59,6 +70,7 @@ public class Person {
       boolean isOrg,
       boolean isFormFiller,
       String role,
+      PartyId partyId,
       UUID id) {
     this.name = name;
     this.contactInfo = contactInfo;
@@ -67,6 +79,7 @@ public class Person {
     this.birthdate = birthdate;
     this.isOrg = isOrg;
     this.isFormFiller = isFormFiller;
+    this.partyId = partyId;
     this.id = id;
     this.role = role;
   }
@@ -115,6 +128,11 @@ public class Person {
     this.role = role;
   }
 
+  public PartyId getPartyId() {
+    return partyId;
+  }
+
+  /** In order to be an XML referfence ID, it needs to start with a letter, not a number. */
   public String getIdString() {
     return "id-" + id.toString();
   }

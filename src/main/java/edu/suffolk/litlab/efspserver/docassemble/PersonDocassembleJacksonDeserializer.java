@@ -107,7 +107,24 @@ public class PersonDocassembleJacksonDeserializer {
     Name name = NameDocassembleDeserializer.fromNode(node.get("name"), collector);
     collector.popAttributeStack();
     boolean isPer = !name.getMiddleName().isBlank() || !name.getLastName().isBlank();
-    Person per = new Person(name, info, gender, language, birthdate, !isPer, isFormFiller, partyType);
+    
+    Optional<String> efmId = getStringMember(node, "tyler_id"); 
+    if (node.has("is_new")) {
+      if (!node.get("is_new").isBoolean()) {
+        collector.addWrong(collector.requestVar("is_new", "if the party is new to the the case", "bool"));
+      }
+      if (node.get("is_new").asBoolean() && efmId.isPresent()) {
+        collector.addWrong(collector.requestVar("is_new", "Can't have an EFM (tyler) ID on a "
+            + "brand new party to the case: their tyler id shouldn't exist yet", "bool"));
+      }
+      if (!node.get("is_new").asBoolean() && efmId.isEmpty()) {
+        collector.addWrong(collector.requestVar("tyler_id", "Can't be marked as not new, but not have an EFM ID", "text"));
+      }
+      // if marked as is_new and no EFM id, that's fine! They're brand new to the case
+    } 
+    // if not marked as new, completely depend on the presence of "tyler_id"
+    
+    Person per = Person.FromInput(name, info, gender, language, birthdate, !isPer, isFormFiller, partyType, efmId);
     log.debug("Read in a new person: " + per.getName().getFullName());
     return Result.ok(per);
   }

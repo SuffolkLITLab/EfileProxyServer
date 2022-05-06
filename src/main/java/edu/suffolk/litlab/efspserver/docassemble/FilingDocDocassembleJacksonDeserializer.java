@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +40,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       FilingInformationDocassembleJacksonDeserializer.class);
 
   /** Parses a filing from the DA Json Object. Used by Deserializers that include filings. */
-  public static Optional<FilingDoc> fromNode(JsonNode node, Map<String, String> varToId,
+  public static Optional<FilingDoc> fromNode(JsonNode node, Map<String, PartyId> varToPartyId,
       boolean isLeadDoc, InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
       FilingError err = FilingError.malformedInterview(
@@ -122,21 +120,13 @@ public class FilingDocDocassembleJacksonDeserializer {
     String dataUrl = node.get("data_url").asText();
     try {
       URL inUrl = new URL(dataUrl); 
-      Pattern usersPattern = Pattern.compile("users\\[[0-9]+\\]");
-      Pattern otherPattern = Pattern.compile("other_parties\\[[0-9]+\\]");
       List<PartyId> fullParties = filingParties.stream().map(fp -> {
-        Matcher matcher = usersPattern.matcher(fp);
-        if (matcher.find()) {
-          return PartyId.CurrentFiling(varToId.get(fp)); 
-        } else {
-          Matcher otherMatcher = otherPattern.matcher(fp);
-          if (otherMatcher.find()) {
-            return PartyId.CurrentFiling(varToId.get(fp)); 
-          } else {
-            log.info("Existing filing party id in doc: " + fp);
-            return PartyId.Already(fp); 
-          }
-        }
+        if (varToPartyId.containsKey(fp)) {
+          log.info("Filing party id in doc: " + fp + ": " + varToPartyId.get(fp));
+          return varToPartyId.get(fp);
+        } 
+        log.info("Existing filing party id in doc: " + fp);
+        return PartyId.Already(fp);
       }).collect(Collectors.toList());
       
       

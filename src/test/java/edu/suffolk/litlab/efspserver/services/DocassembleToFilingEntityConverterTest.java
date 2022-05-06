@@ -136,7 +136,7 @@ public class DocassembleToFilingEntityConverterTest {
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     assertEquals(info.getPartyAttorneyMap().size(), 1);
     info.getPartyAttorneyMap().entrySet().forEach(x -> {
-      assertTrue(x.getKey().isInCurrentFiling(), "User " + x.getKey().id + " should be in current filing");
+      assertTrue(x.getKey().isNewInCurrentFiling(), "User " + x.getKey().id + " should be in current filing");
       assertTrue(x.getValue().isEmpty(), "User " + x.getKey().id + " shouldn't have any attorneys");
     });
     assertEquals(info.getNewPlaintiffs().size(), 1);
@@ -149,7 +149,7 @@ public class DocassembleToFilingEntityConverterTest {
     Result<FilingInformation, FilingError> maybeInfo = converter.extractEntities(contents);
     assertThat(maybeInfo).isOk();
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
-    assertEquals(1, info.getNewPlaintiffs().size(), "Should have only been 1 plaintiff, but were " + info.getNewPlaintiffs().size());
+    assertEquals(2, info.getNewPlaintiffs().size(), "Should have only been 2 plaintiffs, but were " + info.getNewPlaintiffs().size());
     assertTrue(info.getNewPlaintiffs().get(0).isFormFiller());
   }
 }

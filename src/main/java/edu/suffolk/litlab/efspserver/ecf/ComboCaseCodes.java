@@ -17,7 +17,7 @@ public class ComboCaseCodes {
   public final List<FilingCode> filings;
   // String: either UUID for new parties, or Tyler PARTYID for existing parties
   // Pair is PartyType code / role code, and isOrg value
-  // isOrg is hacky, but Tyler expects us to create the exact some case participants in a reply
+  // isOrg is hacky, but Tyler expects us to create the exact same case participants in a reply
   public final Map<String, Pair<PartyType, Boolean>> partyInfo;
   
   public ComboCaseCodes(CaseCategory cat, CaseType type, List<FilingCode> filings, 

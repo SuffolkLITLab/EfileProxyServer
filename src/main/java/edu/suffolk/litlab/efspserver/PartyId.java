@@ -12,8 +12,8 @@ public class PartyId {
   public final Kind kind;
   
   /** Factory method where the ID refers to a newly added party in this filing. */
-  public static PartyId CurrentFiling(String id) {
-    return new PartyId(id, Kind.CURRENT_FILING);
+  public static PartyId CurrentFilingNew(String id) {
+    return new PartyId(id, Kind.CURRENT_FILING_NEW);
   }
     
   /** Factory method where the ID refers to an existing party in the EFM's system. */
@@ -27,12 +27,24 @@ public class PartyId {
     this.kind = kind;
   }
     
-  public boolean isInCurrentFiling() {
-    return kind.equals(Kind.CURRENT_FILING);
+  public boolean isNewInCurrentFiling() {
+    return kind.equals(Kind.CURRENT_FILING_NEW);
+  }
+  
+  public boolean isAlreadyInCase() {
+    return kind.equals(Kind.ALREADY_IN);
+  }
+  
+  public String getIdString() {
+    if (id.startsWith("id-")) {
+      return id;
+    } else {
+      return "id-" + id;
+    }
   }
 
   private enum Kind {
-    CURRENT_FILING,
+    CURRENT_FILING_NEW,
     ALREADY_IN
   }
   
