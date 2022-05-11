@@ -4,8 +4,10 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import edu.suffolk.litlab.efspserver.HttpsCallbackHandler;
 import edu.suffolk.litlab.efspserver.SendMessage;
 import edu.suffolk.litlab.efspserver.SoapClientChooser;
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
+import edu.suffolk.litlab.efspserver.db.DatabaseVersion;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.db.MessageSettingsDatabase;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
@@ -14,6 +16,7 @@ import edu.suffolk.litlab.efspserver.ecf.TylerModuleSetup;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetModuleSetup;
 import tyler.efm.services.EfmFirmService;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,8 +26,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
 
@@ -63,7 +64,7 @@ public class EfspServer {
       OrgMessageSender sender, // always
       List<EfmModuleSetup> modules,
       Map<String, InterviewToFilingInformationConverter> converterMap
-      ) throws SQLException {
+      ) throws SQLException, NoSuchAlgorithmException {
     try (CodeDatabase cd = new CodeDatabase(codeDs.getConnection())) {
       cd.createTablesIfAbsent();
     }
@@ -75,7 +76,7 @@ public class EfspServer {
       MessageSettingsDatabase md = new MessageSettingsDatabase(conn);
       md.createTablesIfAbsent();
     } catch (SQLException ex) {
-      log.error("SQLException: " + ex.toString());
+      log.error("SQLException: " + StdLib.strFromException(ex)); 
       System.exit(2);
     }
 
@@ -188,11 +189,18 @@ public class EfspServer {
         Map.of("application/json", daJsonConverter,
                "text/json", daJsonConverter);
     
-    Context ctx = new InitialContext();
     DataSource codeDs = DatabaseCreator.makeDataSource(dbUrl, dbPortInt, codeDatabaseName, dbUser, dbPassword, 7, 100);
     DataSource userDs = DatabaseCreator.makeDataSource(dbUrl, dbPortInt, userDatabaseName, dbUser, dbPassword, 7, 100);
-    ctx.bind(DatabaseCreator.TylerJNDIName, codeDs);
-    ctx.bind(DatabaseCreator.UserJNDIName, userDs);
+    
+    try (Connection codeConn = codeDs.getConnection(); 
+         Connection userConn = userDs.getConnection()) {
+      DatabaseVersion dv = new DatabaseVersion(codeConn, userConn);
+      dv.createTablesIfAbsent();
+      if (!dv.updateToLatest()) {
+        log.error("Couldn't update the database schemas: exiting now");
+        System.exit(3);
+      }
+    }
 
     Optional<SendMessage> sendMsg = SendMessage.create();
     if (sendMsg.isEmpty()) {

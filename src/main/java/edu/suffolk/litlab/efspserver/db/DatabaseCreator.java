@@ -6,12 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
-import java.util.Optional;
 import java.util.Properties;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS;
@@ -19,35 +15,9 @@ import org.apache.commons.dbcp2.datasources.SharedPoolDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.suffolk.litlab.efspserver.StdLib;
-
 public class DatabaseCreator {
-  public final static String TylerJNDIName = "jdbc/efiling-tylerCodesDB";
-  public final static String UserJNDIName = "jdbc/efiiling-userDB";
   private static Logger log = 
       LoggerFactory.getLogger(UserDatabase.class); 
-
-  /** Use TylerJNDIName or UserJNDIName. */
-  public static Optional<DataSource> getDataSource(String jndiName) {
-    Context ctx = null;
-    try {
-      ctx = new InitialContext();
-      DataSource ds = (DataSource) ctx.lookup(jndiName); 
-      return Optional.of(ds);
-    } catch (NamingException e) {
-      log.error("Couldn't make a database creator: " + StdLib.strFromException(e));
-    } finally {
-      try {
-        if (ctx != null) {
-          ctx.close();
-        }
-      } catch (NamingException e) {
-        log.error("Couldn't close JNDI context / conn: " + StdLib.strFromException(e));
-      }
-    }
-    return Optional.empty();
-  }
-  
 
   /**
    * @param  pgUser               The user of the PostgreSQL database

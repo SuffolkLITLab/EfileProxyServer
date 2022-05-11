@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.db.NewTokens;
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetLogin;
@@ -66,7 +68,10 @@ public class SecurityHub {
       LoginDatabase ld = new LoginDatabase(conn);
       return ld.login(apiKey,  jsonLoginInfo, loginFunctions);
     } catch (SQLException e) {
-      log.error(e.toString());
+      log.error(StdLib.strFromException(e)); 
+      return Optional.empty();
+    } catch (NoSuchAlgorithmException e) {
+      log.error(StdLib.strFromException(e)); 
       return Optional.empty();
     }
   }
@@ -79,7 +84,10 @@ public class SecurityHub {
       LoginDatabase ld = new LoginDatabase(conn);
       return ld.getAtRestInfo(apiKey); 
     } catch (SQLException e) {
-      log.error(e.toString());
+      log.error(StdLib.strFromException(e)); 
+      return Optional.empty();
+    } catch (NoSuchAlgorithmException e) {
+      log.error(StdLib.strFromException(e)); 
       return Optional.empty();
     }
   }

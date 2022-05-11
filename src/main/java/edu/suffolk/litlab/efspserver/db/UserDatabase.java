@@ -36,10 +36,6 @@ public class UserDatabase implements DatabaseInterface {
 
   /** Creates the userdatabase table if it doesn't exist yet. */
   public void createTablesIfAbsent() throws SQLException {
-    if (conn == null) {
-      log.error("Connection in createTablesIfAbsert wasn't open yet");
-      throw new SQLException();
-    }
     String tableExistsQuery = CodeTableConstants.getTableExists();
     PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery);
 
