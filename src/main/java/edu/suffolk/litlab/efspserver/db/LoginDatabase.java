@@ -69,16 +69,18 @@ public class LoginDatabase implements DatabaseInterface {
     List<String> creates = List.of(atRestCreate); 
     String tableExistsQuery = CodeTableConstants.getTableExists();
     for (int i = 0; i < tableNames.size(); i++) {
-      PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery);
-      existsSt.setString(1, tableNames.get(i));
-      ResultSet rs = existsSt.executeQuery();
-      if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
-        String createQuery = creates.get(i); 
-        PreparedStatement createSt = conn.prepareStatement(createQuery);
-        log.info("Full statement: " + createSt.toString());
-        int retVal = createSt.executeUpdate();
-        if (retVal < 0) {
-          log.warn("Issue when creating " + tableNames.get(i) + ": retVal == " + retVal);
+      try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
+        existsSt.setString(1, tableNames.get(i));
+        ResultSet rs = existsSt.executeQuery();
+        if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
+          String createQuery = creates.get(i); 
+          try (PreparedStatement createSt = conn.prepareStatement(createQuery)) {
+            log.info("Full statement: " + createSt.toString());
+            int retVal = createSt.executeUpdate();
+            if (retVal < 0) {
+              log.warn("Issue when creating " + tableNames.get(i) + ": retVal == " + retVal);
+            }
+          }
         }
       }
     }
@@ -93,14 +95,15 @@ public class LoginDatabase implements DatabaseInterface {
     String apiKey = tokenGenerator.nextString();
     String hash = makeHash(apiKey);
     Timestamp ts = new Timestamp(System.currentTimeMillis());
-    PreparedStatement insertSt = conn.prepareStatement(atRestInsert);
-    insertSt.setObject(1, serverId);
-    insertSt.setString(2, serverName);
-    insertSt.setString(3, hash);
-    insertSt.setBoolean(4, tylerEnabled);
-    insertSt.setBoolean(5, jeffNetEnabled);
-    insertSt.setTimestamp(6, ts);
-    insertSt.executeUpdate();
+    try (PreparedStatement insertSt = conn.prepareStatement(atRestInsert)) {
+      insertSt.setObject(1, serverId);
+      insertSt.setString(2, serverName);
+      insertSt.setString(3, hash);
+      insertSt.setBoolean(4, tylerEnabled);
+      insertSt.setBoolean(5, jeffNetEnabled);
+      insertSt.setTimestamp(6, ts);
+      insertSt.executeUpdate();
+    }
     return apiKey;
   }
   
@@ -112,19 +115,20 @@ public class LoginDatabase implements DatabaseInterface {
         FROM at_rest_keys 
         WHERE api_key = ?""";
 
-    PreparedStatement st = conn.prepareStatement(query);
-    st.setString(1, hash);
-    ResultSet rs = st.executeQuery();
-    if (!rs.next()) {
-      log.warn("API Key hash not present in at rest: " + hash);
-      return Optional.empty();
+    try (PreparedStatement st = conn.prepareStatement(query)) {
+      st.setString(1, hash);
+      ResultSet rs = st.executeQuery();
+      if (!rs.next()) {
+        log.warn("API Key hash not present in at rest: " + hash);
+        return Optional.empty();
+      }
+      AtRest atRest = new AtRest();
+      atRest.serverId = (UUID) rs.getObject(1);
+      atRest.enabled = Map.of("tyler", rs.getBoolean(4), "jeffnet", rs.getBoolean(5));
+      atRest.serverName = rs.getString(2);
+      atRest.created = rs.getTimestamp(6);
+      return Optional.of(atRest);
     }
-    AtRest atRest = new AtRest();
-    atRest.serverId = (UUID) rs.getObject(1);
-    atRest.enabled = Map.of("tyler", rs.getBoolean(4), "jeffnet", rs.getBoolean(5));
-    atRest.serverName = rs.getString(2);
-    atRest.created = rs.getTimestamp(6);
-    return Optional.of(atRest);
   }
   
   public String makeHash(String input) {

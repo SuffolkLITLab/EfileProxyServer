@@ -107,7 +107,7 @@ public class DatabaseVersion {
     if (onDiskVersion == 0) {
       // This version mistakenly had API keys directly stored in the db instead of their hashes.
       String query = "SELECT server_id, api_key FROM at_rest_keys";
-        Statement st = userConn.createStatement();
+      try (Statement st = userConn.createStatement()) {
         ResultSet rs = st.executeQuery(query);
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         String updateTable = """
@@ -118,15 +118,19 @@ public class DatabaseVersion {
           UUID serverId = (UUID) rs.getObject(1);
           String apiKey = rs.getString(2);
           String hashedKey = new String(Hex.encode(digest.digest(apiKey.getBytes(StandardCharsets.UTF_8))));
-          PreparedStatement insertSt = userConn.prepareStatement(updateTable);
-          insertSt.setObject(1, serverId);
-          insertSt.setObject(2, hashedKey);
-          insertSt.setObject(3, hashedKey);
-          insertSt.executeUpdate();
+          try (PreparedStatement insertSt = userConn.prepareStatement(updateTable)) {
+            insertSt.setObject(1, serverId);
+            insertSt.setObject(2, hashedKey);
+            insertSt.setObject(3, hashedKey);
+            insertSt.executeUpdate();
+          }
         }
       }
       setSchemaVersion(onDiskVersion + 1);
       userConn.commit();
-    return true;
+      return true;
+    } else {
+      return true;
+    }
   }
 }

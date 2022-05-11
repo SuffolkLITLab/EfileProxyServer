@@ -34,19 +34,20 @@ public class MessageSettingsDatabase implements DatabaseInterface {
     }
     
     String tableExistsQuery = CodeTableConstants.getTableExists();
-    PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery);
-    existsSt.setString(1, "message_settings");
-    
-    ResultSet rs = existsSt.executeQuery();
-    if (!rs.next() || rs.getInt(1) <= 0) {
-      String createQuery = """
-          CREATE TABLE message_settings (
-          "server_id" uuid PRIMARY KEY, "from_email" text, "subject_line" text,
-          "email_template" text, "email_confirmation" text)"""; 
-      PreparedStatement createSt = conn.prepareStatement(createQuery);
-      int retVal = createSt.executeUpdate();
-      if (retVal < 0) {
-        log.warn("Issue when creating \"message_settings\" table: retVal == " + retVal);
+    try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
+      existsSt.setString(1, "message_settings");
+      ResultSet rs = existsSt.executeQuery();
+      if (!rs.next() || rs.getInt(1) <= 0) {
+        String createQuery = """
+            CREATE TABLE message_settings (
+            "server_id" uuid PRIMARY KEY, "from_email" text, "subject_line" text,
+            "email_template" text, "email_confirmation" text)"""; 
+        try (PreparedStatement createSt = conn.prepareStatement(createQuery)) {
+          int retVal = createSt.executeUpdate();
+          if (retVal < 0) {
+            log.warn("Issue when creating \"message_settings\" table: retVal == " + retVal);
+          }
+        }
       }
     }
   }
@@ -71,17 +72,18 @@ public class MessageSettingsDatabase implements DatabaseInterface {
               email_template=?, email_confirmation=?
         """; 
     
-    PreparedStatement insertSt = conn.prepareStatement(insertIntoTable);
-    insertSt.setObject(1, serverId);
-    insertSt.setString(2, toEmail);
-    insertSt.setString(3, subjectLine);
-    insertSt.setString(4, emailTemplate);
-    insertSt.setString(5, emailConfirmation);
-    insertSt.setString(6, toEmail);
-    insertSt.setString(7, subjectLine);
-    insertSt.setString(8, emailTemplate);
-    insertSt.setString(9, emailConfirmation);
-    insertSt.executeUpdate();
+    try (PreparedStatement insertSt = conn.prepareStatement(insertIntoTable)) {
+      insertSt.setObject(1, serverId);
+      insertSt.setString(2, toEmail);
+      insertSt.setString(3, subjectLine);
+      insertSt.setString(4, emailTemplate);
+      insertSt.setString(5, emailConfirmation);
+      insertSt.setString(6, toEmail);
+      insertSt.setString(7, subjectLine);
+      insertSt.setString(8, emailTemplate);
+      insertSt.setString(9, emailConfirmation);
+      insertSt.executeUpdate();
+    }
   }
   
   public Optional<MessageInfo> findMessageInfo(UUID serverId) {
@@ -94,9 +96,7 @@ public class MessageSettingsDatabase implements DatabaseInterface {
         SELECT server_id, from_email, subject_line, email_template, email_confirmation 
         FROM message_settings 
         WHERE server_id=?""";
-    PreparedStatement st;
-    try {
-      st = conn.prepareStatement(query);
+    try (PreparedStatement st = conn.prepareStatement(query)) {
       st.setObject(1, serverId);
       ResultSet rs = st.executeQuery();
       if (rs.next()) {

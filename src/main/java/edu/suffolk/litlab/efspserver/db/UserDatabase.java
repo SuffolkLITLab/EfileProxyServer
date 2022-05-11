@@ -37,22 +37,24 @@ public class UserDatabase implements DatabaseInterface {
   /** Creates the userdatabase table if it doesn't exist yet. */
   public void createTablesIfAbsent() throws SQLException {
     String tableExistsQuery = CodeTableConstants.getTableExists();
-    PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery);
+    try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
 
-    existsSt.setString(1, "submitted_filings");
-    ResultSet rs = existsSt.executeQuery();
-    if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
-      String createQuery = """ 
-           CREATE TABLE submitted_filings (
-           "user_id" uuid, "name" text, "phone_number" text,
-           "email" text, "transaction_id" uuid PRIMARY KEY, "server_id" uuid, "api_key_used" text, 
-           "court_id" text, "casetype" text, 
-           "submitted" date)"""; 
-      PreparedStatement createSt = conn.prepareStatement(createQuery);
-      log.info("Full statement: " + createSt.toString());
-      int retVal = createSt.executeUpdate();
-      if (retVal < 0) {
-        log.warn("Issue when creating submitted_filings: retVal == " + retVal);
+      existsSt.setString(1, "submitted_filings");
+      ResultSet rs = existsSt.executeQuery();
+      if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
+        String createQuery = """ 
+             CREATE TABLE submitted_filings (
+             "user_id" uuid, "name" text, "phone_number" text,
+             "email" text, "transaction_id" uuid PRIMARY KEY, "server_id" uuid, "api_key_used" text, 
+             "court_id" text, "casetype" text, 
+             "submitted" date)"""; 
+        try (PreparedStatement createSt = conn.prepareStatement(createQuery)) {
+          log.info("Full statement: " + createSt.toString());
+          int retVal = createSt.executeUpdate();
+          if (retVal < 0) {
+            log.warn("Issue when creating submitted_filings: retVal == " + retVal);
+          }
+        }
       }
     }
   }
@@ -84,20 +86,21 @@ public class UserDatabase implements DatabaseInterface {
                         ?, ?, 
                         ?, ?, ?, ?,
                         ?, ?, ?, ?)"""; 
-    PreparedStatement insertSt = conn.prepareStatement(insertIntoTable);
-    insertSt.setObject(1, filingPartyId);
-    insertSt.setString(2, name);
-    String phone = phoneNumber.orElse(null); 
-    insertSt.setString(3, phone);
-    insertSt.setString(4, email);
-    insertSt.setObject(5, transactionId);
-    insertSt.setObject(6, serverId);
-    insertSt.setString(7, apiKeyUsed);
-    insertSt.setString(8, caseType);
-    insertSt.setString(9, courtId);
-    insertSt.setTimestamp(10, submitted);
+    try (PreparedStatement insertSt = conn.prepareStatement(insertIntoTable)) {
+      insertSt.setObject(1, filingPartyId);
+      insertSt.setString(2, name);
+      String phone = phoneNumber.orElse(null); 
+      insertSt.setString(3, phone);
+      insertSt.setString(4, email);
+      insertSt.setObject(5, transactionId);
+      insertSt.setObject(6, serverId);
+      insertSt.setString(7, apiKeyUsed);
+      insertSt.setString(8, caseType);
+      insertSt.setString(9, courtId);
+      insertSt.setTimestamp(10, submitted);
 
-    insertSt.executeUpdate();
+      insertSt.executeUpdate();
+    }
   }
   
   // TODO(brycew-later): consider having to lookup "callbacked" users: either in DB or just in Logs
@@ -114,28 +117,29 @@ public class UserDatabase implements DatabaseInterface {
         FROM submitted_filings
         WHERE transaction_id = ?""";
     
-    PreparedStatement st = conn.prepareStatement(query);
-    st.setObject(1, transactionToFind);
-    ResultSet rs = st.executeQuery();
-    if (!rs.next()) {
-      return Optional.empty();
+    try (PreparedStatement st = conn.prepareStatement(query)) {
+      st.setObject(1, transactionToFind);
+      ResultSet rs = st.executeQuery();
+      if (!rs.next()) {
+        return Optional.empty();
+      }
+      Transaction trans = new Transaction();
+      trans.name = rs.getString(1);
+      trans.filingPartyId = (UUID) rs.getObject(2);
+      if (rs.getString(3) == null) {
+        trans.phoneNumber = Optional.empty();
+      } else {
+        trans.phoneNumber = Optional.of(rs.getString(3));
+      }
+      trans.email = rs.getString(4);
+      trans.transactionId = (UUID) rs.getObject(5);
+      trans.serverId = (UUID) rs.getObject(6);
+      trans.apiKeyUsed = rs.getString(7);
+      trans.caseType = rs.getString(8);
+      trans.courtId = rs.getString(9);
+      trans.submitted = rs.getTimestamp(10);
+      return Optional.of(trans);
     }
-    Transaction trans = new Transaction();
-    trans.name = rs.getString(1);
-    trans.filingPartyId = (UUID) rs.getObject(2);
-    if (rs.getString(3) == null) {
-      trans.phoneNumber = Optional.empty();
-    } else {
-      trans.phoneNumber = Optional.of(rs.getString(3));
-    }
-    trans.email = rs.getString(4);
-    trans.transactionId = (UUID) rs.getObject(5);
-    trans.serverId = (UUID) rs.getObject(6);
-    trans.apiKeyUsed = rs.getString(7);
-    trans.caseType = rs.getString(8);
-    trans.courtId = rs.getString(9);
-    trans.submitted = rs.getTimestamp(10);
-    return Optional.of(trans);
   }
   
   public boolean removeFromTable(UUID transactionToRm) throws SQLException {
@@ -145,9 +149,10 @@ public class UserDatabase implements DatabaseInterface {
     }
     
     String rmUpdate = "DELETE FROM submitted_filings WHERE transaction_id = ?";
-    PreparedStatement st = conn.prepareStatement(rmUpdate);
-    st.setObject(1, transactionToRm);
-    int result = st.executeUpdate();
-    return (result >= 1);
+    try (PreparedStatement st = conn.prepareStatement(rmUpdate)) {
+      st.setObject(1, transactionToRm);
+      int result = st.executeUpdate();
+      return (result >= 1);
+    }
   }
 }
