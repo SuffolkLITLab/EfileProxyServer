@@ -10,6 +10,7 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.SoapClientChooser;
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
@@ -46,6 +47,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.sql.DataSource;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -96,7 +98,7 @@ import tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
 public class OasisEcfFiler extends EfmCheckableFilingInterface {
   private static Logger log =
       LoggerFactory.getLogger(OasisEcfFiler.class);
-  private CodeDatabase cd;
+  private DataSource ds;
   private final String headerKey;
   private final oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory
       statusObjFac;
@@ -113,8 +115,8 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   private final ServiceMDEService serviceFactory; 
 
 
-  public OasisEcfFiler(String jurisdiction, CodeDatabase cd) {
-    this.cd = cd;
+  public OasisEcfFiler(String jurisdiction, DataSource codesDs) {
+    this.ds = codesDs;
     TylerLogin login = new TylerLogin(jurisdiction);
     this.headerKey = login.getHeaderKey();
     statusObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory();
@@ -150,8 +152,8 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   private CoreFilingMessageType prepareFiling(FilingInformation info,
       InfoCollector collector, String apiToken, FilingReviewMDEPort filingPort, 
       CourtRecordMDEPort recordPort, String queryType) throws FilingError {
-    EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
-    try {
+    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())){
+      EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
       Optional<CourtLocationInfo> maybeLocationInfo = cd.getFullLocationInfo(info.getCourtLocation());
       if (maybeLocationInfo.isEmpty()) {
         collector.error(FilingError.serverError("Court setup wrong: can't find full location info for " + info.getCourtLocation()));
@@ -448,9 +450,24 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     return Result.ok(httpResponse);
   }
 
+  private Optional<CourtLocationInfo> getCourtInfo(FilingInformation info) {
+    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())){
+      return cd.getFullLocationInfo(info.getCourtLocation());
+    } catch (SQLException ex) {
+      log.error("IN EcfEfiler, can't get CodesDB: " + StdLib.strFromException(ex));
+      return Optional.empty();
+    }
+  }
+
+  private List<String> getAllLocations() throws SQLException {
+    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())){
+      return cd.getAllLocations(); 
+    }
+  }
+  
   @Override
   public Result<Response, FilingError> getServiceTypes(FilingInformation info, String apiToken) {
-    Optional<CourtLocationInfo> court = cd.getFullLocationInfo(info.getCourtLocation());
+    Optional<CourtLocationInfo> court = getCourtInfo(info); 
     if (court.isEmpty()) {
       return Result.ok(Response.status(404).entity("No court " + info.getCourtLocation()).build());
     }
@@ -458,6 +475,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       return Result.ok(Response.status(400).entity("Court " + info.getCourtLocation()
           + " doesn't have conditional service types. Check the code list instead").build());
     }
+
     FailFastCollector collector = new FailFastCollector();
     Optional<FilingReviewMDEPort> filingPort = setupFilingPort(apiToken);
     Optional<CourtRecordMDEPort> recordPort = setupRecordPort(apiToken);
@@ -485,7 +503,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   public Response getFilingList(String courtId, String userId, java.time.LocalDate startDate,
       java.time.LocalDate endDate, String apiToken) {
     try {
-      List<String> courtIds = cd.getAllLocations();
+      List<String> courtIds = getAllLocations();
       if (courtId != null && !courtId.equals("0") && !courtIds.contains(courtId)) {
         return Response.status(404).entity("Court " + courtId + " not in jurisdiction").build();
       }
@@ -557,7 +575,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   @Override
   public Response getFilingStatus(String courtId, String filingId, String apiToken) {
     try {
-      List<String> courtIds = cd.getAllLocations();
+      List<String> courtIds = getAllLocations();
       if (!courtIds.contains(courtId)) {
         return Response.status(404).entity("Court " + courtId + " not in jurisdiction").build();
       }
@@ -597,7 +615,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   @Override
   public Response getFilingDetails(String courtId, String filingId, String apiToken) {
     try {
-      List<String> courtIds = cd.getAllLocations();
+      List<String> courtIds = getAllLocations();
       if (!courtIds.contains(courtId)) {
         return Response.status(422).entity("Court " + courtId + " not in jurisdiction").build();
       }
@@ -619,7 +637,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   @Override
   public Response getPolicy(String courtId, String apiToken) {
     try {
-      List<String> courtIds = cd.getAllLocations();
+      List<String> courtIds = getAllLocations();
       if (!courtIds.contains(courtId)) {
         return Response.status(422).entity("Court " + courtId + " not in jurisdiction").build();
       }
@@ -640,7 +658,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   @Override
   public Response cancelFiling(String courtId, String filingId, String apiToken) {
     try {
-      List<String> courtIds = cd.getAllLocations();
+      List<String> courtIds = getAllLocations();
       if (!courtIds.contains(courtId)) {
         return Response.status(422).entity("Court " + courtId + " not in jurisdiction").build();
       }
@@ -661,8 +679,13 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
 
   @Override
   public Response disclaimers(String courtId) {
-    List<Disclaimer> disclaimers = cd.getDisclaimerRequirements(courtId);
-    return Response.status(200).entity(disclaimers).build();
+    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())) {
+      List<Disclaimer> disclaimers = cd.getDisclaimerRequirements(courtId);
+      return Response.status(200).entity(disclaimers).build();
+    } catch (SQLException ex) {
+      log.error("In disclaimer get, couldn't get codes db: " + StdLib.strFromException(ex));
+      return Response.status(500).build();
+    }
   }
 
   @Override

@@ -2,10 +2,13 @@ package edu.suffolk.litlab.efspserver.ecf;
 
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.CronScheduleBuilder;
+
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+
+import javax.sql.DataSource;
 
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.quartz.JobBuilder;
@@ -20,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CodeUpdater;
-import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.services.EfmFilingInterface;
 import edu.suffolk.litlab.efspserver.services.EfmModuleSetup;
 import edu.suffolk.litlab.efspserver.services.EfmRestCallbackInterface;
@@ -31,19 +33,17 @@ import edu.suffolk.litlab.efspserver.services.UpdateCodeVersions;
 public class TylerModuleSetup implements EfmModuleSetup {
   private static Logger log =
       LoggerFactory.getLogger(TylerModuleSetup.class);
-  private CodeDatabase cd;
-  private final String dbUser;
-  private final String dbPassword;
   private final String tylerEndpoint;
   private final String tylerJurisdiction;
   private final String x509Password;
+  private final DataSource codeDs;
+  private final DataSource userDs;
 
   // Payments Stuff
   // TODO(brycew-later): these params create the Payments service, but haven't hooked up ModulesSetup with
   // Providers yet
   private final String togaKey;
   private final String togaUrl;
-  private UserDatabase ud;
   private OrgMessageSender sender;
   private Scheduler scheduler;
   private String tylerJurisdictionEnv;
@@ -61,28 +61,26 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   /** Use this factory method instead of the class constructor. */
   public static Optional<TylerModuleSetup> create(
-      CodeDatabase cd, UserDatabase ud, OrgMessageSender sender) {
+      DataSource codeDs, DataSource userDs, OrgMessageSender sender) {
     Optional<CreationArgs> args = createFromEnvVars();
     if (args.isEmpty()) {
       return Optional.empty();
     }
 
-    return Optional.of(new TylerModuleSetup(args.get(), cd, ud, sender));
+    return Optional.of(new TylerModuleSetup(args.get(), codeDs, userDs, sender));
   }
 
   private TylerModuleSetup(
       CreationArgs args,
-      CodeDatabase cd, UserDatabase ud, OrgMessageSender sender) {
-    this.cd = cd;
-    this.dbUser = args.dbUser;
-    this.dbPassword = args.dbPassword;
+      DataSource codeDs, DataSource userDs, OrgMessageSender sender) {
+    this.codeDs = codeDs;
+    this.userDs = userDs;
     this.tylerEndpoint = args.tylerEndpoint;
     this.tylerJurisdiction = args.tylerJurisdiction;
     this.tylerJurisdictionEnv = args.tylerJurisdictionEnv;
     this.x509Password = args.x509Password;
     this.togaKey = args.togaKey;
     this.togaUrl = args.togaUrl;
-    this.ud = ud;
     this.sender = sender;
   }
 
@@ -147,15 +145,14 @@ public class TylerModuleSetup implements EfmModuleSetup {
     // I don't quite understand Spring yet
     SoapX509CallbackHandler.setX509Password(x509Password);
 
-    try {
-      cd.createDbConnection(this.dbUser, this.dbPassword);
+    try (CodeDatabase cd = new CodeDatabase(codeDs.getConnection())) {
       if (cd.getAllLocations().size() == 0) {
         // Code database is empty!
         downloadAll = true;
       }
       if (downloadAll) {
         log.info("Downloading all codes: please wait a bit");
-        CodeUpdater.executeCommand("downloadAll", this.tylerEndpoint, cd, this.x509Password);
+        CodeUpdater.executeCommand(cd, "downloadAll", this.tylerEndpoint, this.x509Password);
       }
       Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
       scheduler.start();
@@ -191,7 +188,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public Set<String> getCourts() {
-    try {
+    try (CodeDatabase cd = new CodeDatabase(codeDs.getConnection())) {
       Set<String> allCourts = new HashSet<String>(cd.getAllLocations());
       // 0 and 1 are special "system" courts that have defaults for all courts.
       // They aren't available for filing
@@ -208,7 +205,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public EfmFilingInterface getInterface() {
-    return new OasisEcfFiler(this.tylerJurisdictionEnv, cd);
+    return new OasisEcfFiler(this.tylerJurisdictionEnv, codeDs);
   }
 
   @Override
@@ -218,7 +215,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public void setupGlobals() {
-    OasisEcfWsCallback implementor = new OasisEcfWsCallback(ud, cd, sender);
+    OasisEcfWsCallback implementor = new OasisEcfWsCallback(codeDs, userDs, sender);
     String baseLocalUrl = System.getenv("BASE_LOCAL_URL");
     String address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT;
     log.info("Starting NFRC callback server at " + address);
@@ -228,7 +225,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     log.info("Bean name: " + jaxWsEndpoint.getBeanName());
     
     
-    OasisEcfv5WsCallback impl2 = new OasisEcfv5WsCallback(ud, cd, sender);
+    OasisEcfv5WsCallback impl2 = new OasisEcfv5WsCallback(codeDs, userDs, sender);
     String v5Address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT_V5;
     EndpointImpl jaxWsV5Endpoint = (EndpointImpl) javax.xml.ws.Endpoint.publish(v5Address, impl2);
     log.info("V5 Wsdl location: " + jaxWsV5Endpoint.getWsdlLocation());

@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.db;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,6 +12,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.suffolk.litlab.efspserver.RandomString;
 import edu.suffolk.litlab.efspserver.codes.CodeTableConstants;
 
-public class LoginDatabase extends DatabaseInterface {
+public class LoginDatabase implements DatabaseInterface {
   private static Logger log = 
       LoggerFactory.getLogger(LoginDatabase.class); 
   
@@ -39,18 +42,18 @@ public class LoginDatabase extends DatabaseInterface {
                ?, ?, ?, ?,
                ?, ?)"""; 
 
-  private RandomString tokenGenerator;
+  private static RandomString tokenGenerator = new RandomString();
+  private final Connection conn;
 
-  public LoginDatabase(String pgUrl, int pgPort, String pgDb) {
-    super(pgUrl, pgPort, pgDb);
-    this.tokenGenerator = new RandomString();
-  }
-
-  public LoginDatabase(String pgFullUrl, String pgDb) {
-    super(pgFullUrl, pgDb);
-    this.tokenGenerator = new RandomString();
+  public LoginDatabase(Connection conn) {
+    this.conn = conn;
   }
   
+  public Connection getConnection() {
+    return conn;
+  }
+
+  @Override
   public void createTablesIfAbsent() throws SQLException {
     if (conn == null) {
       throw new SQLException();
@@ -177,8 +180,10 @@ public class LoginDatabase extends DatabaseInterface {
     return Optional.of(new NewTokens(newTokens));
   }
   
-  /** Example on how to trigger: mvn exec:java@LoginDatabase -Dexec.args="localhostServer true true" */
-  public static void main(final String args[]) throws SQLException {
+  /** Example on how to trigger: mvn exec:java@LoginDatabase -Dexec.args="localhostServer true true" 
+   * @throws ClassNotFoundException 
+   * @throws NumberFormatException */
+  public static void main(final String args[]) throws SQLException, NumberFormatException, ClassNotFoundException {
     if (args.length != 3) {
       System.out.println("Only 3 params: server name, tyler enabled, jeffnet enabled");
     }
@@ -186,15 +191,18 @@ public class LoginDatabase extends DatabaseInterface {
     String tylerEnabled = args[1].strip();
     String jeffnetEnabled = args[2].strip();
     
-    LoginDatabase ld = new LoginDatabase(System.getenv("POSTGRES_URL"), 
-        Integer.parseInt(System.getenv("POSTGRES_PORT")), System.getenv("POSTGRES_USER_DB"));
-    ld.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
-    ld.setAutocommit(true);
-    boolean tylerBool = Boolean.parseBoolean(tylerEnabled);
-    boolean jeffnetBool = Boolean.parseBoolean(jeffnetEnabled);
-    String newApiKey = ld.addNewUser(serverName, tylerBool, jeffnetBool);
-    System.out.println("New Api Key for " + serverName + ": " + newApiKey);
-    System.out.println("Using tyler: " + tylerBool + " and using jeffnet: " + jeffnetBool);
+    DataSource ds = DatabaseCreator.makeDataSource(System.getenv("POSTGRES_URL"),
+        Integer.parseInt(System.getenv("POSTGRES_PORT")), System.getenv("POSTGRES_USER_DB"),
+        System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"), 2, 100);
+    try (Connection conn = ds.getConnection()) {
+      conn.setAutoCommit(true);
+      LoginDatabase ld = new LoginDatabase(conn); 
+      boolean tylerBool = Boolean.parseBoolean(tylerEnabled);
+      boolean jeffnetBool = Boolean.parseBoolean(jeffnetEnabled);
+      String newApiKey = ld.addNewUser(serverName, tylerBool, jeffnetBool);
+      System.out.println("New Api Key for " + serverName + ": " + newApiKey);
+      System.out.println("Using tyler: " + tylerBool + " and using jeffnet: " + jeffnetBool);
+    }
   }
 
 }

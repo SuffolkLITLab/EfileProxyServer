@@ -3,9 +3,12 @@ package edu.suffolk.litlab.efspserver.services;
 import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPointsToMap;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.sql.DataSource;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
@@ -29,6 +32,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.SoapClientChooser;
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
@@ -102,11 +106,10 @@ public class AdminUserService {
   private final EfmUserService userFactory;
   private final EfmFirmService firmFactory;
   private final SecurityHub security;
-  private final CodeDatabase cd;
+  private final DataSource ds;
 
-  public AdminUserService(String jurisdiction, SecurityHub security, CodeDatabase cd) {
+  public AdminUserService(String jurisdiction, SecurityHub security, DataSource ds) {
     this.security = security;
-    this.cd = cd;
     Optional<EfmUserService> maybeUserFactory = SoapClientChooser.getEfmUserFactory(jurisdiction);
     if (maybeUserFactory.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " in the SoapClientChooser for EfmUser"); 
@@ -117,6 +120,7 @@ public class AdminUserService {
       throw new RuntimeException("Can't find " + jurisdiction + " in the SoapClientChooser for EfmFirm factory"); 
     }
     this.firmFactory = maybeFirmFactory.get();;
+    this.ds = ds; 
   }
 
   @GET
@@ -254,7 +258,12 @@ public class AdminUserService {
     }
 
     // The "1" is the default for all courts. There's no way to enforce court specific passwords
-    DataFieldRow globalPasswordRow = cd.getDataField("1", "GlobalPassword");
+    DataFieldRow globalPasswordRow = DataFieldRow.MissingDataField("GlobalPassword");
+    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())) {
+      globalPasswordRow = cd.getDataField("1", "GlobalPassword");
+    } catch (SQLException e) {
+      log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
+    }
     if (!passwordOk(globalPasswordRow, params.newPassword)) {
       return Response.status(400).entity(globalPasswordRow.validationmessage).build();
     }
@@ -283,7 +292,13 @@ public class AdminUserService {
       return Response.status(401).build();
     }
     // The "1" is the default for all courts. There's no way to enforce court specific passwords
-    DataFieldRow globalPasswordRow = cd.getDataField("1", "GlobalPassword");
+    DataFieldRow globalPasswordRow = DataFieldRow.MissingDataField("GlobalPassword");
+    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())) {
+      globalPasswordRow = cd.getDataField("1", "GlobalPassword");
+    } catch (SQLException e) {
+      log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
+    }
+
     if (!passwordOk(globalPasswordRow, params.newPassword)) {
       return Response.status(400).entity(globalPasswordRow.validationmessage).build();
     }
@@ -532,19 +547,25 @@ public class AdminUserService {
       return Response.status(401).build();
     }
 
-    Optional<CourtLocationInfo> system = cd.getFullLocationInfo("0");
-    if (system.isPresent()) {
-      if (req.getRegistrationType().equals(RegistrationType.INDIVIDUAL)
-          && !system.get().allowindividualregistration) {
-        return Response.status(400).entity("System does not allow individual registration").build();
+    // The "1" is the default for all courts. There's no way to enforce court specific passwords
+    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())) {
+      Optional<CourtLocationInfo> system = cd.getFullLocationInfo("0");
+      if (system.isPresent()) {
+        if (req.getRegistrationType().equals(RegistrationType.INDIVIDUAL)
+            && !system.get().allowindividualregistration) {
+          return Response.status(400).entity("System does not allow individual registration").build();
+        }
       }
+      DataFieldRow globalPasswordRow = cd.getDataField("1", "GlobalPassword");
+      // The "1" is the default for all courts. There's no way to enforce court specific passwords
+      if (!passwordOk(globalPasswordRow, req.getPassword())) {
+        return Response.status(400).entity(globalPasswordRow.validationmessage).build();
+      }
+    } catch (SQLException e) {
+      log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
+      return Response.status(500).build();
     }
 
-    // The "1" is the default for all courts. There's no way to enforce court specific passwords
-    DataFieldRow globalPasswordRow = cd.getDataField("1", "GlobalPassword");
-    if (!passwordOk(globalPasswordRow, req.getPassword())) {
-      return Response.status(400).entity(globalPasswordRow.validationmessage).build();
-    }
     RegistrationResponseType regResp = port.get().registerUser(req);
     // TODO(#2): need to return `created` here, with a URI for the user.
     return makeResponse(regResp, () -> Response.ok(regResp).build());

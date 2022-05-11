@@ -10,6 +10,8 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.postgresql.ds.PGSimpleDataSource;
@@ -18,6 +20,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
+import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
 import edu.suffolk.litlab.efspserver.db.Transaction;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
 
@@ -36,8 +39,14 @@ public class UserDatabaseTest {
   @BeforeEach 
   public void setUp() throws SQLException {
     postgres.start();
-    ud = new UserDatabase(postgres.getJdbcUrl(), postgres.getDatabaseName());
-    ud.createDbConnection(postgres.getUsername(), postgres.getPassword());
+    Connection conn = DatabaseCreator.makeSingleConnection(
+        postgres.getDatabaseName(), postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+    ud = new UserDatabase(conn); 
+  }
+  
+  @AfterEach
+  public void tearDown() throws SQLException {
+    ud.getConnection().close();
   }
 
   @Test
@@ -68,7 +77,6 @@ public class UserDatabaseTest {
     ud.addToTable(name, userId, 
         Optional.empty(), email, transactionId, serverId, apiKey,
         "Motion to File", courtId, new Timestamp(System.currentTimeMillis()));
-    ud.commit();
     
     Optional<Transaction> transaction = ud.findTransaction(transactionId);
     assertTrue(transaction.isPresent());

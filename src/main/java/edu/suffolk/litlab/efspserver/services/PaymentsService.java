@@ -15,6 +15,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import javax.sql.DataSource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -76,7 +77,8 @@ import tyler.efm.services.schema.updatepaymentaccountresponse.UpdatePaymentAccou
 @Produces(MediaType.APPLICATION_JSON)
 public class PaymentsService {
 
-  public PaymentsService(SecurityHub security, String togaKey, String togaUrl, EfmFirmService firmFactory, CodeDatabase cd) {
+  public PaymentsService(SecurityHub security, String togaKey, String togaUrl, 
+      EfmFirmService firmFactory, DataSource ds) {
     this.security = security;
     // Will generated 21 character long transaction ids, the max length.
     this.transactionIdGen = new RandomString(21);
@@ -84,7 +86,7 @@ public class PaymentsService {
     this.togaUrl = togaUrl;
     this.tempAccounts = new HashMap<String, TempAccount>();
     this.firmFactory = firmFactory;
-    this.cd = cd;
+    this.ds = ds;
   }
 
   @GET
@@ -207,8 +209,10 @@ public class PaymentsService {
     }
     GetPaymentAccountListRequestType req = new tyler.efm.services.schema.getpaymentaccountlistrequest.ObjectFactory().createGetPaymentAccountListRequestType();
     if (courtId != null && !courtId.isBlank()) {
-      if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+      try (CodeDatabase cd = new CodeDatabase(ds.getConnection())) {
+        if (!cd.getAllLocations().contains(courtId)) {
+          return Response.status(404).entity("Court does not exist " + courtId).build();
+        }
       }
       req.setCourtIdentifier(courtId);
     }
@@ -529,6 +533,6 @@ public class PaymentsService {
   private final String callbackToUsUrl = ServiceHelpers.BASE_URL + "/payments/toga-account"; 
   private final String togaUrl;
   private final EfmFirmService firmFactory;
-  private final CodeDatabase cd;
+  private final DataSource ds;
 
 }

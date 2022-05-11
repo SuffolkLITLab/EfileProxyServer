@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efspserver.codes;
 
 import java.io.InputStream;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -24,6 +26,7 @@ import org.oasis_open.docs.codelist.ns.genericode._1.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.DatabaseInterface;
 
 /** The class that interfaces with the database tables that contain the Tyler case codes.
@@ -33,16 +36,36 @@ import edu.suffolk.litlab.efspserver.db.DatabaseInterface;
  *
  * @author brycew
  */
-public class CodeDatabase extends DatabaseInterface {
-  private static Logger log =
+public class CodeDatabase implements DatabaseInterface, AutoCloseable {
+  private final static Logger log =
       LoggerFactory.getLogger(CodeDatabase.class);
+  
+  private final Connection conn;
 
-  public CodeDatabase(String pgUrl, int pgPort, String pgDb) {
-    super(pgUrl, pgPort, pgDb);
+  public CodeDatabase(Connection conn) {
+    this.conn = conn;
+  }
+  
+  public CodeDatabase(DataSource ds) {
+    Connection the_conn;
+    try {
+      the_conn = ds.getConnection();
+    } catch (SQLException e) {
+      log.error("In CodeDatabase constructor, can't get connection: " + StdLib.strFromException(e));
+      the_conn = null;
+    }
+    this.conn = the_conn;
+  }
+  
+  public Connection getConnection() {
+    return conn;
   }
 
-  public CodeDatabase(String pgFullUrl, String pgDb) {
-    super(pgFullUrl, pgDb);
+  @Override
+  public void close() throws SQLException {
+    if (this.conn != null) {
+      this.conn.close();
+    }
   }
 
   @Override
@@ -136,19 +159,7 @@ public class CodeDatabase extends DatabaseInterface {
           Column c = (Column) v.getColumnRef();
           rowsVals.put(c.getId(), v.getSimpleValue().getValue());
         }
-        int idx = 1;
-        List<String> tc = CodeTableConstants.getTableColumns(tableName);
-        for (String colName : tc) {
-          if (rowsVals.containsKey(colName)) {
-            stmt.setString(idx, rowsVals.get(colName));
-          } else {
-            stmt.setString(idx, null);
-          }
-          idx += 1;
-        }
-        if (CodeTableConstants.isCourtTable(tableName)) {
-          stmt.setString(idx, courtName);
-        }
+        singleInsert(stmt, tableName, courtName, rowsVals);
         stmt.addBatch();
       }
       stmt.executeBatch();
@@ -166,6 +177,23 @@ public class CodeDatabase extends DatabaseInterface {
       throw ex;
     }
   }
+  
+  public PreparedStatement singleInsert(PreparedStatement stmt, String tableName, String courtName, Map<String, String> rowsVals) throws SQLException {
+    int idx = 1;
+    List<String> tc = CodeTableConstants.getTableColumns(tableName);
+    for (String colName : tc) {
+      if (rowsVals.containsKey(colName)) {
+        stmt.setString(idx, rowsVals.get(colName));
+      } else {
+        stmt.setString(idx, null);
+      }
+      idx += 1;
+    }
+    if (CodeTableConstants.isCourtTable(tableName)) {
+      stmt.setString(idx, courtName);
+    }
+    return stmt;
+  }
 
   public List<CaseCategory> getCaseCategoriesFor(String courtLocationId) {
     return safetyWrap(() -> {
@@ -177,6 +205,7 @@ public class CodeDatabase extends DatabaseInterface {
       while (rs.next()) {
         cats.add(new CaseCategory(rs)); 
       }
+      st.close();
       return cats;
     });
   }

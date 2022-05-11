@@ -1,6 +1,8 @@
 package edu.suffolk.litlab.efspserver.services;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,10 +10,13 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.suffolk.litlab.efspserver.SendMessage;
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.MessageInfo;
 import edu.suffolk.litlab.efspserver.db.MessageSettingsDatabase;
 import edu.suffolk.litlab.efspserver.db.Transaction;
@@ -27,8 +32,8 @@ public class OrgMessageSender {
   private static Logger log = 
       LoggerFactory.getLogger(OrgMessageSender.class); 
   
-  private final MessageSettingsDatabase md;
   private final SendMessage sendMsg;
+  private final DataSource ds;
 
   private String defaultFrom = "massaccess@suffolk.edu";
   private String defaultSubject = "An update on your filing";
@@ -70,14 +75,20 @@ public class OrgMessageSender {
       Court Forms Online
       """;
   
-  public OrgMessageSender(MessageSettingsDatabase md, SendMessage sendMsg) {
-    this.md = md;
+  public OrgMessageSender(DataSource ds, SendMessage sendMsg) {
+    this.ds = ds;
     this.sendMsg = sendMsg;
   }
   
   private MessageInfo getSettings(UUID serverId) {
-    Optional<MessageInfo> maybeInfo;
-    maybeInfo = md.findMessageInfo(serverId);
+    Optional<MessageInfo> maybeInfo = Optional.empty();
+    try (Connection conn = ds.getConnection()) {
+      var md = new MessageSettingsDatabase(conn);
+      maybeInfo = md.findMessageInfo(serverId);
+    } catch (SQLException ex) {
+      log.error("Couldn't connect to message db: using defaults: " + StdLib.strFromException(ex));
+    }
+
     if (maybeInfo.isPresent()) {
       MessageInfo info = maybeInfo.get();
       if (info.fromEmail == null) {

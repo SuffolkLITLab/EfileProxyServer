@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.ecf;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,9 +9,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
@@ -46,14 +50,14 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       LoggerFactory.getLogger(OasisEcfFiler.class);
 
   private ObjectFactory recepitFac;
-  private UserDatabase ud;
-  private CodeDatabase cd;
+  private DataSource codesDs;
+  private DataSource userDs;
   private OrgMessageSender msgSender;
 
-  public OasisEcfWsCallback(UserDatabase ud, CodeDatabase cd, OrgMessageSender msgSender) {
+  public OasisEcfWsCallback(DataSource codesDs, DataSource userDs, OrgMessageSender msgSender) {
     recepitFac = new ObjectFactory();
-    this.ud = ud;
-    this.cd = cd;
+    this.codesDs = codesDs;
+    this.userDs = userDs;
     this.msgSender = msgSender;
   }
   
@@ -132,7 +136,12 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   
   private Map<String, String> reviewedFilingToStr(ReviewFilingCallbackMessageType revFiling,
       Transaction trans) {
-    List<NameAndCode> names = cd.getFilingStatuses(trans.courtId);
+    List<NameAndCode> names = List.of(); 
+    try (CodeDatabase cd = new CodeDatabase(codesDs.getConnection())) {
+      names = cd.getFilingStatuses(trans.courtId);
+    } catch (SQLException ex) {
+      log.error("In ECF v4 callback, couldn't get codes db: " + StdLib.strFromException(ex));
+    }
 
     StringBuilder messageText = new StringBuilder();
     Map<String, String> statuses = new HashMap<>();
@@ -212,7 +221,8 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       log.error("Got back a review filing that has a blank / no FILINGID? " + revFiling.toString());
       return error(reply, "720", "Filing code not found in message");
     }
-    try {
+    try (Connection conn = userDs.getConnection()){
+      UserDatabase ud = new UserDatabase(conn);
       Optional<Transaction> trans = ud.findTransaction(UUID.fromString(filingId));
       if (trans.isEmpty()) {
         log.warn("No transaction on record for filingId: " + filingId + " no one to send to");

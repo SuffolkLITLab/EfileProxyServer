@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.db;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,18 +12,20 @@ import org.slf4j.LoggerFactory;
 
 import edu.suffolk.litlab.efspserver.codes.CodeTableConstants;
 
-public class MessageSettingsDatabase extends DatabaseInterface {
+public class MessageSettingsDatabase implements DatabaseInterface {
   private static Logger log = 
       LoggerFactory.getLogger(MessageSettingsDatabase.class); 
   
-  public MessageSettingsDatabase(String pgUrl, int pgPort, String pgDb) {
-    super(pgUrl, pgPort, pgDb);
+  private final Connection conn;
+  
+  public MessageSettingsDatabase(Connection conn) {
+    this.conn = conn;
   }
   
-  public MessageSettingsDatabase(String pgFullUrl, String pgDb) {
-    super(pgFullUrl, pgDb);
+  public Connection getConnection() {
+    return conn;
   }
-
+  
   @Override
   public void createTablesIfAbsent() throws SQLException {
     if (conn == null) {
