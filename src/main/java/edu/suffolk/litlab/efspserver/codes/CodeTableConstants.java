@@ -417,25 +417,6 @@ public class CodeTableConstants {
         FROM casesubtype WHERE location=? AND casetypeid=?""";
   }
 
-  /**
-   * Gets all columns from datafieldconfig table Need to provide the location (1)
-   * and the code (2) of the field. For example, 'adams' and
-   * 'FilingEventCaseParties'
-   *
-   * @return the String to make a SQL PreparedStatement from
-   */
-  public static String getAllFromDataFieldConfigForLoc() {
-    return "SELECT code, name, isvisible, isrequired, helptext, ghosttext, contextualhelpdata, "
-        + "validationmessage, regularexpression, defaultvalueexpression, isreadonly, location "
-        + "FROM datafieldconfig WHERE location=? AND code=?";
-  }
-
-  public static String getAllDataFieldConfigsForLoc() {
-    return "SELECT code, name, isvisible, isrequired, helptext, ghosttext, contextualhelpdata, "
-        + "validationmessage, regularexpression, defaultvalueexpression, isreadonly, location "
-        + "FROM datafieldconfig WHERE location=?";
-  }
-
   public static String getProcedureOrRemedy() {
     return "SELECT name, code FROM procedureremedy WHERE location=? AND casecategory=?";
   }

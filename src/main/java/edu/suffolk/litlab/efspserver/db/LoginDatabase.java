@@ -1,5 +1,8 @@
 package edu.suffolk.litlab.efspserver.db;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,6 +17,7 @@ import java.util.function.Function;
 
 import javax.sql.DataSource;
 
+import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +48,10 @@ public class LoginDatabase implements DatabaseInterface {
 
   private static RandomString tokenGenerator = new RandomString();
   private final Connection conn;
+  private final MessageDigest digest;
 
-  public LoginDatabase(Connection conn) {
+  public LoginDatabase(Connection conn) throws NoSuchAlgorithmException {
+    this.digest = MessageDigest.getInstance("SHA-256");
     this.conn = conn;
   }
   
@@ -59,7 +65,7 @@ public class LoginDatabase implements DatabaseInterface {
       throw new SQLException();
     }
     
-    List<String> tableNames = List.of("at_rest_table");
+    List<String> tableNames = List.of("at_rest_keys");
     List<String> creates = List.of(atRestCreate); 
     String tableExistsQuery = CodeTableConstants.getTableExists();
     for (int i = 0; i < tableNames.size(); i++) {
@@ -85,11 +91,12 @@ public class LoginDatabase implements DatabaseInterface {
     }
     UUID serverId = UUID.randomUUID();
     String apiKey = tokenGenerator.nextString();
+    String hash = makeHash(apiKey);
     Timestamp ts = new Timestamp(System.currentTimeMillis());
     PreparedStatement insertSt = conn.prepareStatement(atRestInsert);
     insertSt.setObject(1, serverId);
     insertSt.setString(2, serverName);
-    insertSt.setString(3, apiKey);
+    insertSt.setString(3, hash);
     insertSt.setBoolean(4, tylerEnabled);
     insertSt.setBoolean(5, jeffNetEnabled);
     insertSt.setTimestamp(6, ts);
@@ -98,6 +105,7 @@ public class LoginDatabase implements DatabaseInterface {
   }
   
   public Optional<AtRest> getAtRestInfo(String apiKey) throws SQLException {
+    String hash = makeHash(apiKey);
     String query = """
         SELECT server_id, server_name, api_key, tyler_enabled,
             jeffnet_enabled, created
@@ -105,10 +113,10 @@ public class LoginDatabase implements DatabaseInterface {
         WHERE api_key = ?""";
 
     PreparedStatement st = conn.prepareStatement(query);
-    st.setString(1, apiKey);
+    st.setString(1, hash);
     ResultSet rs = st.executeQuery();
     if (!rs.next()) {
-      log.warn("API Key not present in at rest: " + apiKey);
+      log.warn("API Key hash not present in at rest: " + hash);
       return Optional.empty();
     }
     AtRest atRest = new AtRest();
@@ -117,6 +125,10 @@ public class LoginDatabase implements DatabaseInterface {
     atRest.serverName = rs.getString(2);
     atRest.created = rs.getTimestamp(6);
     return Optional.of(atRest);
+  }
+  
+  public String makeHash(String input) {
+    return new String(Hex.encode(digest.digest(input.getBytes(StandardCharsets.UTF_8))));
   }
   
   /** 
@@ -182,8 +194,9 @@ public class LoginDatabase implements DatabaseInterface {
   
   /** Example on how to trigger: mvn exec:java@LoginDatabase -Dexec.args="localhostServer true true" 
    * @throws ClassNotFoundException 
-   * @throws NumberFormatException */
-  public static void main(final String args[]) throws SQLException, NumberFormatException, ClassNotFoundException {
+   * @throws NumberFormatException 
+   * @throws NoSuchAlgorithmException */
+  public static void main(final String args[]) throws SQLException, NumberFormatException, ClassNotFoundException, NoSuchAlgorithmException {
     if (args.length != 3) {
       System.out.println("Only 3 params: server name, tyler enabled, jeffnet enabled");
     }

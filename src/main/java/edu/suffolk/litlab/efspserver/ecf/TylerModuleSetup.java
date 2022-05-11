@@ -33,6 +33,10 @@ import edu.suffolk.litlab.efspserver.services.UpdateCodeVersions;
 public class TylerModuleSetup implements EfmModuleSetup {
   private static Logger log =
       LoggerFactory.getLogger(TylerModuleSetup.class);
+  private final String pgUrl;
+  private final String pgDb;
+  private final String pgUser;
+  private final String pgPassword;
   private final String tylerEndpoint;
   private final String tylerJurisdiction;
   private final String x509Password;
@@ -49,8 +53,10 @@ public class TylerModuleSetup implements EfmModuleSetup {
   private String tylerJurisdictionEnv;
 
   public static class CreationArgs {
-    public String dbUser;
-    public String dbPassword;
+    public String pgUrl;
+    public String pgDb;
+    public String pgUser;
+    public String pgPassword;
     public String tylerEndpoint;
     public String tylerJurisdictionEnv;
     public String tylerJurisdiction;
@@ -75,6 +81,10 @@ public class TylerModuleSetup implements EfmModuleSetup {
       DataSource codeDs, DataSource userDs, OrgMessageSender sender) {
     this.codeDs = codeDs;
     this.userDs = userDs;
+    this.pgUrl = args.pgUrl;
+    this.pgDb = args.pgDb;
+    this.pgUser = args.pgUser;
+    this.pgPassword = args.pgPassword;
     this.tylerEndpoint = args.tylerEndpoint;
     this.tylerJurisdiction = args.tylerJurisdiction;
     this.tylerJurisdictionEnv = args.tylerJurisdictionEnv;
@@ -115,13 +125,16 @@ public class TylerModuleSetup implements EfmModuleSetup {
       log.info("Not using any TYLER_ENV, maybe prod?");
     }
 
-    args.dbUser = EfmModuleSetup.GetEnv("POSTGRES_USER").orElse("postgres");
+    args.pgUser = EfmModuleSetup.GetEnv("POSTGRES_USER").orElse("postgres");
     Optional<String> maybeDbPassword = EfmModuleSetup.GetEnv("POSTGRES_PASSWORD");
     if (maybeDbPassword.isEmpty()) {
       log.warn("You need to define a POSTGRES_PASSWORD");
       return Optional.empty();
     }
-    args.dbPassword = maybeDbPassword.get();
+    args.pgPassword = maybeDbPassword.get();
+    args.pgDb = EfmModuleSetup.GetEnv("POSTGRES_CODES_DB").orElse("tyler_efm_codes");
+    args.pgUrl = "jdbc:postgresql://" + EfmModuleSetup.GetEnv("POSTGRES_URL").orElse("localhost")
+        + ":" + EfmModuleSetup.GetEnv("POSTGRES_PORT").orElse("5432");
 
     Optional<String> maybeTogaKey = EfmModuleSetup.GetEnv("TOGA_CLIENT_KEY");
     if (maybeTogaKey.isEmpty()) {
@@ -161,6 +174,10 @@ public class TylerModuleSetup implements EfmModuleSetup {
           .withIdentity("job1", "group1")
           .usingJobData("TYLER_ENDPOINT", tylerEndpoint)
           .usingJobData("X509_PASSWORD", x509Password)
+          .usingJobData("POSTGRES_URL", this.pgUrl)
+          .usingJobData("POSTGRES_DB", this.pgDb)
+          .usingJobData("POSTGRES_USERNAME", this.pgUser)
+          .usingJobData("POSTGRES_PASSWORD", this.pgPassword)
           .build();
       
       Trigger trigger = TriggerBuilder.newTrigger()

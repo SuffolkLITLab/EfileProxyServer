@@ -178,7 +178,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     }
   }
   
-  public PreparedStatement singleInsert(PreparedStatement stmt, String tableName, String courtName, Map<String, String> rowsVals) throws SQLException {
+  public static PreparedStatement singleInsert(PreparedStatement stmt, String tableName, String courtName, Map<String, String> rowsVals) throws SQLException {
     int idx = 1;
     List<String> tc = CodeTableConstants.getTableColumns(tableName);
     for (String colName : tc) {
@@ -301,7 +301,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     }
 
     try {
-      String query = CodeTableConstants.getAllFromDataFieldConfigForLoc();
+      String query = DataFieldRow.getAllFromDataFieldConfigForLoc();
       PreparedStatement st = conn.prepareStatement(query);
       st.setString(1, courtLocationId);
       st.setString(2, dataName);
@@ -327,7 +327,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     }
 
     try {
-      String query = CodeTableConstants.getAllDataFieldConfigsForLoc();
+      String query = DataFieldRow.getAllDataFieldConfigsForLoc();
       PreparedStatement st = conn.prepareStatement(query);
       st.setString(1, courtLocationId);
       ResultSet rs = st.executeQuery();

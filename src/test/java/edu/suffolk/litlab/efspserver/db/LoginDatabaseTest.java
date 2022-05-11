@@ -1,8 +1,9 @@
-package edu.suffolk.litlab.efspserver;
+package edu.suffolk.litlab.efspserver.db;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
@@ -10,6 +11,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -18,11 +21,9 @@ import org.testcontainers.utility.DockerImageName;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
-import edu.suffolk.litlab.efspserver.db.LoginDatabase;
-import edu.suffolk.litlab.efspserver.db.NewTokens;
-
 public class LoginDatabaseTest {
+  private final static Logger log = 
+      LoggerFactory.getLogger(LoginDatabaseTest.class); 
 
   private LoginDatabase ld;
   
@@ -31,7 +32,7 @@ public class LoginDatabaseTest {
       new PostgreSQLContainer<>(DockerImageName.parse("postgres:13.2"));
   
   @BeforeEach
-  public void setUp() throws SQLException {
+  public void setUp() throws SQLException, NoSuchAlgorithmException {
     postgres.start();
     Connection conn = DatabaseCreator.makeSingleConnection(
         postgres.getDatabaseName(), postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
@@ -58,6 +59,7 @@ public class LoginDatabaseTest {
     // Will keep it like this until we actively are hiding most of our functionality behind the API
     assertTrue(ld.login(cantDoAnything, "{}", okFunctions).isEmpty());
     
+    log.info("TylerOnly key: " + tylerOnly);
     Optional<NewTokens> activeTyler = ld.login(tylerOnly, "{\"tyler\": {}}", okFunctions);
     assertTrue(activeTyler.isPresent());
     Optional<NewTokens> repeatLogin = ld.login(tylerOnly, "{\"tyler\": {}}", okFunctions);

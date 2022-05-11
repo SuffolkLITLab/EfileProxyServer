@@ -1,9 +1,7 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Optional;
-
-import javax.sql.DataSource;
 
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -26,16 +24,19 @@ public class UpdateCodeVersions implements Job {
     JobDataMap dataMap = context.getJobDetail().getJobDataMap();
     String endpoint = dataMap.getString("TYLER_ENDPOINT");
     String x509Password = dataMap.getString("X509_PASSWORD");
+    
+    String pgFullUrl = dataMap.getString("POSTGRES_URL");
+    String pgDb = dataMap.getString("POSTGRES_DB");
+    String pgUser = dataMap.getString("POSTGRES_USERNAME");
+    String pgPassword = dataMap.getString("POSTGRES_PASSWORD");
 
-    Optional<DataSource> ds = DatabaseCreator.getDataSource(DatabaseCreator.TylerJNDIName); 
-    if (ds.isEmpty()) {
-      log.error("Couldn't make a database creator in the Job executor"); 
-      return;
-    }
-    try (CodeDatabase cd = new CodeDatabase(ds.get().getConnection())) {
+    try (
+        Connection conn = DatabaseCreator.makeSingleConnection(
+            pgDb, pgFullUrl, pgUser, pgPassword);
+        CodeDatabase cd = new CodeDatabase(conn)) {
       CodeUpdater.executeCommand(cd, "refresh", endpoint, x509Password);
     } catch (SQLException e) {
-      log.error("Couldn't make a database creator: " + StdLib.strFromException(e));
+      log.error("Couldn't connect to Codes db from Job Executor: " + StdLib.strFromException(e));
     }
   }
 
