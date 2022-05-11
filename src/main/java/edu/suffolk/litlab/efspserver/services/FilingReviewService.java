@@ -10,6 +10,7 @@ import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -19,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
+import javax.sql.DataSource;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -40,15 +43,15 @@ public class FilingReviewService {
   private static Logger log =
       LoggerFactory.getLogger(FilingReviewService.class);
 
-  private UserDatabase ud;
-  private Map<String, InterviewToFilingInformationConverter> converterMap;
-  private Map<String, Map<String, EfmFilingInterface>> filingInterfaces;
-  private Map<String, Map<String, EfmRestCallbackInterface>> callbackInterfaces;
-  private SecurityHub security;
-  private OrgMessageSender msgSender;
+  private final Map<String, InterviewToFilingInformationConverter> converterMap;
+  private final Map<String, Map<String, EfmFilingInterface>> filingInterfaces;
+  private final Map<String, Map<String, EfmRestCallbackInterface>> callbackInterfaces;
+  private final SecurityHub security;
+  private final OrgMessageSender msgSender;
+  private final DataSource ds;
 
   public FilingReviewService(
-      UserDatabase ud,
+      DataSource ds,
       Map<String, InterviewToFilingInformationConverter> converterMap,
       Map<String, Map<String, EfmFilingInterface>> filingInterfaces,
       Map<String, Map<String, EfmRestCallbackInterface>> callbackInterfaces,
@@ -57,7 +60,7 @@ public class FilingReviewService {
     this.converterMap = converterMap;
     this.filingInterfaces = filingInterfaces;
     this.callbackInterfaces = callbackInterfaces;
-    this.ud = ud;
+    this.ds = ds;
     this.security = security;
     this.msgSender = msgSender;
   }
@@ -347,11 +350,12 @@ public class FilingReviewService {
       phoneNumber = Optional.of(user.getContactInfo().getPhoneNumbers().get(0));
     }
     Timestamp ts = new Timestamp(System.currentTimeMillis());
-    try {
+    try (Connection conn = ds.getConnection()){
       // TODO(brycew): this is going to send case type code (i.e. random numbers to the user. 
       // Should avoid if possible, but would have to return the full info from the Filer object 
       // TODO(brycew): this also sends "the carroll has received", instead of "the Carrol County Court",
       // the filer Object should return the full name of the court if possible, not the id
+      UserDatabase ud = new UserDatabase(conn);
       ud.addToTable(user.getName().getFullName(), user.getId(),
           phoneNumber, user.getContactInfo().getEmail().orElse(""),
           filingIds, atRest.get().serverId, activeToken.get(),

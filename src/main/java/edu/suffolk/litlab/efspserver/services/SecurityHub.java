@@ -1,9 +1,12 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+
+import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,15 +34,15 @@ import edu.suffolk.litlab.efspserver.jeffnet.JeffNetLogin;
  *
  */
 public class SecurityHub {
-  private static Logger log = 
+  private final static Logger log = 
       LoggerFactory.getLogger(SecurityHub.class); 
   
-  private LoginDatabase ld;
-  private LoginInterface tylerLoginObj;
-  private LoginInterface jeffNetLoginObj;
+  private final LoginInterface tylerLoginObj;
+  private final LoginInterface jeffNetLoginObj;
+  private final DataSource ds;
   
-  public SecurityHub(LoginDatabase ld, String jurisdiction) {
-    this.ld = ld;
+  public SecurityHub(DataSource ds, String jurisdiction) {
+    this.ds = ds;
     this.tylerLoginObj = new TylerLogin(jurisdiction);
     this.jeffNetLoginObj = new JeffNetLogin();
   }
@@ -59,7 +62,8 @@ public class SecurityHub {
         "tyler", (info) -> tylerLoginObj.login(info),
         "jeffnet", (info) -> jeffNetLoginObj.login(info));
     
-    try {
+    try (Connection conn = ds.getConnection()) {
+      LoginDatabase ld = new LoginDatabase(conn);
       return ld.login(apiKey,  jsonLoginInfo, loginFunctions);
     } catch (SQLException e) {
       log.error(e.toString());
@@ -71,7 +75,8 @@ public class SecurityHub {
     if (apiKey == null || apiKey.isBlank()) {
       return Optional.empty();
     }
-    try {
+    try (Connection conn = ds.getConnection()) {
+      LoginDatabase ld = new LoginDatabase(conn);
       return ld.getAtRestInfo(apiKey); 
     } catch (SQLException e) {
       log.error(e.toString());

@@ -3,13 +3,13 @@ package edu.suffolk.litlab.efspserver.codes;
 import edu.suffolk.litlab.efspserver.HeaderSigner;
 import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
+import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.SQLException;
@@ -26,6 +26,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.BindingProvider;
@@ -161,7 +162,7 @@ public class CodeUpdater {
         // NOTE: the Tyler docs say this is available from `GetPolicy'. That is wrong.
         "error", "/CodeService/codes/error");
 
-    Savepoint sp = cd.setSavePoint("systemTables");
+    Savepoint sp = cd.getConnection().setSavepoint("systemTables");
     cd.dropTables(codeUrls.entrySet().stream().map((e) -> e.getKey()).collect(Collectors.toList()));
 
     // On first download, there won't be installed versions of things yet.
@@ -170,7 +171,7 @@ public class CodeUpdater {
     Optional<String> signedTime = signer.signedCurrentTime();
     if (signedTime.isEmpty()) {
       log.error("Couldn't sign the current time: rolling back");
-      cd.rollback(sp);
+      cd.getConnection().rollback(sp);
       return false;
     }
 
@@ -189,11 +190,11 @@ public class CodeUpdater {
       updateSuccess = downloadAndProcessZip(baseUrl + urlSuffix.getValue(), signedTime.get(),
           urlSuffix.getKey(), "", process);
       if (!updateSuccess) {
-        cd.rollback(sp);
+        cd.getConnection().rollback(sp);
         return false;
       }
     }
-    cd.commit();
+    cd.getConnection().commit();
     return true;
   }
 
@@ -248,7 +249,7 @@ public class CodeUpdater {
         log.error(ecfElem + " not in the nc map!");
       }
     }
-    cd.commit();
+    cd.getConnection().commit();
     log.info("Downloads took: " + downloads + ", and updates took: " + updates);
     return true;
   }
@@ -266,13 +267,13 @@ public class CodeUpdater {
     Map<String, List<String>> versionsToUpdate = cd.getVersionsToUpdate();
     for (Entry<String, List<String>> courtAndTables : versionsToUpdate.entrySet()) {
       String courtLocation = courtAndTables.getKey();
-      Savepoint sp = cd.setSavePoint("court" + courtLocation + "savepoint");
+      Savepoint sp = cd.getConnection().setSavepoint("court" + courtLocation + "savepoint");
       List<String> tables = courtAndTables.getValue();
       for (String table : tables) {
        Instant deleteFromTable = Instant.now(Clock.systemUTC());
         if (!cd.deleteFromTable(table, courtLocation)) {
           log.warn("Couldn't delete from " + table + " at " + courtLocation + ", aborting");
-          cd.rollback(sp);
+          cd.getConnection().rollback(sp);
           return;
         }
         updates = updates.plus(Duration.between(deleteFromTable, Instant.now(Clock.systemUTC())));
@@ -280,12 +281,12 @@ public class CodeUpdater {
       log.info("Removed entries for court " + courtLocation + " for tables: " + tables);
       if (!downloadCourtTables(courtLocation, Optional.of(tables), cd, signer, filingPort)) {
         log.warn("Failed updating court " + courtLocation + "'s tables " + tables);
-        cd.rollback(sp);
+        cd.getConnection().rollback(sp);
         return;
       }
     }
-    cd.commit();
-    cd.setAutocommit(true);
+    cd.getConnection().commit();
+    cd.getConnection().setAutoCommit(true);
     cd.vacuumAll();
   }
 
@@ -298,7 +299,7 @@ public class CodeUpdater {
     List<String> tablesToDrop = ncToTableName.entrySet().stream().map((e) -> e.getValue())
         .collect(Collectors.toUnmodifiableList());
     cd.dropTables(tablesToDrop);
-    cd.commit();
+    cd.getConnection().commit();
 
     downloads = Duration.ZERO;
     updates = Duration.ZERO;
@@ -308,8 +309,8 @@ public class CodeUpdater {
       downloadCourtTables(location, Optional.empty(), cd, signer, filingPort);
     }
     log.info("Downloads took: " + downloads + ", and updates took: " + updates);
-    cd.commit();
-    cd.setAutocommit(true);
+    cd.getConnection().commit();
+    cd.getConnection().setAutoCommit(true);
     cd.vacuumAll();
   }
   
@@ -336,10 +337,11 @@ public class CodeUpdater {
     return filingPort;
   }
   
-  public static void executeCommand(String command, String codesSite, CodeDatabase cd,
+  public static void executeCommand(CodeDatabase cd, String command, String codesSite, 
       String x509Password) {
     SoapX509CallbackHandler.setX509Password(x509Password);
     try {
+      cd.getConnection().setAutoCommit(false);
       // TODO(brycew): need to still handle a whole slate of jurisdiction things
       String jurisdiction = System.getenv("TYLER_JURISDICTION");
       String tylerEnv = System.getenv("TYLER_ENV");
@@ -349,30 +351,17 @@ public class CodeUpdater {
       FilingReviewMDEPort filingPort = loginWithTyler(
           jurisdiction, System.getenv("TYLER_USER_EMAIL"),
           System.getenv("TYLER_USER_PASSWORD")); 
-      CodeDatabase usingCd;
-      if (cd == null) {
-        usingCd = new CodeDatabase(System.getenv("POSTGRES_URL"),
-            Integer.parseInt(System.getenv("POSTGRES_PORT")),
-            System.getenv("POSTGRES_CODES_DB"));
-        usingCd.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
-      } else {
-        usingCd = cd;
-      }
-      usingCd.setAutocommit(false);
       CodeUpdater cu = new CodeUpdater(System.getenv("PATH_TO_KEYSTORE"), x509Password);
       if (command.equalsIgnoreCase("downloadall")) {
-        cu.downloadAll(codesSite, filingPort, usingCd);
+        cu.downloadAll(codesSite, filingPort, cd);
       } else if (command.equalsIgnoreCase("refresh")) {
-        cu.updateAll(codesSite, filingPort, usingCd);
+        cu.updateAll(codesSite, filingPort, cd);
       } else {
         log.error("Command " + command + " isn't a real command");
         return;
       }
     } catch (SQLException | IOException | JAXBException | XMLStreamException e) {
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter(sw);
-      e.printStackTrace(pw);
-      log.error("Exception when making doing code updating! " + e.toString() + " " + sw.toString());
+      log.error("Exception when making doing code updating! " + StdLib.strFromException(e));
       return;
     }
   }
@@ -382,11 +371,7 @@ public class CodeUpdater {
       log.error("Need to pass in args: downloadIndiv <table> <location or blank for system>");
       System.exit(1);
     }
-    CodeDatabase cd = new CodeDatabase(System.getenv("POSTGRES_URL"),
-        Integer.parseInt(System.getenv("POSTGRES_PORT")),
-        System.getenv("POSTGRES_CODES_DB"));
-    cd.createDbConnection(System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"));
-
+    
     String path = System.getenv("PATH_TO_KEYSTORE");
     String pass = System.getenv("X509_PASSWORD");
     CodeUpdater cu = new CodeUpdater(path, pass);
@@ -417,7 +402,12 @@ public class CodeUpdater {
     if (args[0].equalsIgnoreCase("downloadIndiv")) {
       downloadIndiv(args);
     } else {
-      executeCommand(args[0], System.getenv("TYLER_ENDPOINT"), null, System.getenv("X509_PASSWORD"));
+      DataSource ds = DatabaseCreator.makeDataSource(System.getenv("POSTGRES_URL"),
+          Integer.parseInt(System.getenv("POSTGRES_PORT")),
+          System.getenv("POSTGRES_CODES_DB"),
+          System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"), 2, 100);
+
+      executeCommand(new CodeDatabase(ds.getConnection()), args[0], System.getenv("TYLER_ENDPOINT"), System.getenv("X509_PASSWORD"));
     }
   }
 }

@@ -2,11 +2,13 @@ package edu.suffolk.litlab.efspserver.services;
 
 import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPointsToMap;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.sql.DataSource;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -28,6 +30,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.SoapClientChooser;
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
@@ -65,21 +68,21 @@ public class CasesService {
 
   private static Logger log = LoggerFactory.getLogger(CasesService.class);
   private final SecurityHub security;
-  private final CodeDatabase cd;
   private final CourtRecordMDEService recordFactory;  
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.ObjectFactory listObjFac
+  private final oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.ObjectFactory listObjFac
         = new oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.ObjectFactory();
-  private oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf =
+  private final oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf =
           new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+  private final DataSource ds;
 
-  public CasesService(SecurityHub security, CodeDatabase cd, String jurisdiction) {
+  public CasesService(SecurityHub security, DataSource ds, String jurisdiction) {
     this.security = security;
-    this.cd = cd;
     Optional<CourtRecordMDEService> maybeRecords = SoapClientChooser.getCourtRecordFactory(jurisdiction);
     if (maybeRecords.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " for court record factory");
     }
     this.recordFactory = maybeRecords.get();
+    this.ds = ds; 
   }
 
   @GET
@@ -111,22 +114,27 @@ public class CasesService {
       return Response.status(401).build();
     }
     
-    Optional<CourtLocationInfo> info = cd.getFullLocationInfo(courtId);
-    if (info.isEmpty()) {
-      return Response.status(404).entity(courtId + " not in available courts to search").build();
-    }
-    DataFieldRow legacyRow = cd.getDataField(courtId, "LegacyLocationCaseSearch");
-    if (!legacyRow.isvisible && info.get().initial) {
-      return Response.status(400).entity(courtId + " doesn't allow for case searches").build();
-    }
-
-    if (courtId.equals("1")) {
-      DataFieldRow row = cd.getDataField("1", "AdvancedSearchLocationAllLocations");
-      if (!row.isvisible) {
-        return Response.status(400).entity("Can't search all locations").build();
+    try (CodeDatabase cd = new CodeDatabase(ds)) {
+      Optional<CourtLocationInfo> info = cd.getFullLocationInfo(courtId);
+      if (info.isEmpty()) {
+        return Response.status(404).entity(courtId + " not in available courts to search").build();
       }
-    }
+      DataFieldRow legacyRow = cd.getDataField(courtId, "LegacyLocationCaseSearch");
+      if (!legacyRow.isvisible && info.get().initial) {
+        return Response.status(400).entity(courtId + " doesn't allow for case searches").build();
+      }
 
+      if (courtId.equals("1")) {
+        DataFieldRow row = cd.getDataField("1", "AdvancedSearchLocationAllLocations");
+        if (!row.isvisible) {
+          return Response.status(400).entity("Can't search all locations").build();
+        }
+      }
+    } catch (SQLException e) {
+      log.error("can't get connection: " + StdLib.strFromException(e));
+      return Response.status(500).build();
+    }
+    
     boolean internalTestTrigger = docketId != null && docketId.equals("abc123SecretTrigger");
     if (internalTestTrigger) {
       firstName = "John";
@@ -206,48 +214,52 @@ public class CasesService {
       return Response.status(401).build();
     }
 
-    Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId);
-    if (locationInfo.isEmpty()) {
-      log.warn("Can't find court location for " + courtId + " when getting case");
-      return Response.status(404).entity("No court " + courtId).build();
-    }
-
-    CaseQueryMessageType query = new CaseQueryMessageType();
-    EntityType typ = new EntityType();
-    JAXBElement<PersonType> elem2 = ecfOf.createEntityPerson(new PersonType());
-    typ.setEntityRepresentation(elem2);
-    query.setQuerySubmitter(typ);
-    query.setCaseCourt(XmlHelper.convertCourtType(courtId));
-    query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
-    query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
-    query.setCaseTrackingID(XmlHelper.convertString(caseId));
-    query.setCaseQueryCriteria(EcfCaseTypeFactory.getCriteria());
-    CaseResponseMessageType resp = maybePort.get().getCase(query);
-    int responseCode = 200;
-    if (hasError(resp)) {
-      // If the response has issues connecting with the CMS, we are still supposed to allow
-      // for case search / e-filing. So, we'll return an error with the error code, but also any
-      // cases that were still present.
-      Set<String> cmsConnectionErrors = Set.of("-11", "-15", "-10");
-      if (resp.getError().stream().anyMatch(err -> cmsConnectionErrors.contains(err.getErrorCode().getValue()))) {
-        responseCode = 203;
-      } else {
-        return Response.status(400).entity(resp.getError()).build();
+    try (CodeDatabase cd = new CodeDatabase(ds)) {
+      Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId);
+      if (locationInfo.isEmpty()) {
+        log.warn("Can't find court location for " + courtId + " when getting case");
+        return Response.status(404).entity("No court " + courtId).build();
       }
-    }
-
-    if (locationInfo.get().hasprotectedcasetypes) {
-      CaseType caseType = resp.getCase().getValue();
-      Optional<CaseAugmentationType> caseAug = EcfCaseTypeFactory.getCaseAugmentation(caseType);
-      caseAug.ifPresent(aug -> {
-        if (locationInfo.get().protectedcasetypes.contains(aug.getCaseTypeText().getValue())) {
-          TextType protectedText = XmlHelper.convertText(locationInfo.get().protectedcasereplacementstring);
-          aug.setCaseTypeText(protectedText);
-          caseType.setCaseCategoryText(protectedText);
+      CaseQueryMessageType query = new CaseQueryMessageType();
+      EntityType typ = new EntityType();
+      JAXBElement<PersonType> elem2 = ecfOf.createEntityPerson(new PersonType());
+      typ.setEntityRepresentation(elem2);
+      query.setQuerySubmitter(typ);
+      query.setCaseCourt(XmlHelper.convertCourtType(courtId));
+      query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
+      query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+      query.setCaseTrackingID(XmlHelper.convertString(caseId));
+      query.setCaseQueryCriteria(EcfCaseTypeFactory.getCriteria());
+      CaseResponseMessageType resp = maybePort.get().getCase(query);
+      int responseCode = 200;
+      if (hasError(resp)) {
+        // If the response has issues connecting with the CMS, we are still supposed to allow
+        // for case search / e-filing. So, we'll return an error with the error code, but also any
+        // cases that were still present.
+        Set<String> cmsConnectionErrors = Set.of("-11", "-15", "-10");
+        if (resp.getError().stream().anyMatch(err -> cmsConnectionErrors.contains(err.getErrorCode().getValue()))) {
+          responseCode = 203;
+        } else {
+          return Response.status(400).entity(resp.getError()).build();
         }
-      });
+      }
+
+      if (locationInfo.get().hasprotectedcasetypes) {
+        CaseType caseType = resp.getCase().getValue();
+        Optional<CaseAugmentationType> caseAug = EcfCaseTypeFactory.getCaseAugmentation(caseType);
+        caseAug.ifPresent(aug -> {
+          if (locationInfo.get().protectedcasetypes.contains(aug.getCaseTypeText().getValue())) {
+            TextType protectedText = XmlHelper.convertText(locationInfo.get().protectedcasereplacementstring);
+            aug.setCaseTypeText(protectedText);
+            caseType.setCaseCategoryText(protectedText);
+          }
+        });
+      }
+      return Response.status(responseCode).entity(resp.getCase()).build();
+    } catch (SQLException e) {
+      log.error("can't get connection: " + StdLib.strFromException(e));
+      return Response.status(500).build();
     }
-    return Response.status(responseCode).entity(resp.getCase()).build();
   }
   
   /**

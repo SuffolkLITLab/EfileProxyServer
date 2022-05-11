@@ -1,6 +1,8 @@
 package edu.suffolk.litlab.efspserver.db;
 
 import edu.suffolk.litlab.efspserver.codes.CodeTableConstants;
+
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,18 +20,20 @@ import org.slf4j.LoggerFactory;
  *
  * @author brycew
  */
-public class UserDatabase extends DatabaseInterface {
+public class UserDatabase implements DatabaseInterface {
   private static Logger log = 
       LoggerFactory.getLogger(UserDatabase.class); 
+  
+  private final Connection conn;
 
-  public UserDatabase(String pgUrl, int pgPort, String pgDb) {
-    super(pgUrl, pgPort, pgDb);
-  }
-
-  public UserDatabase(String pgFullUrl, String pgDb) {
-    super(pgFullUrl, pgDb);
+  public UserDatabase(Connection conn) {
+    this.conn = conn;
   }
   
+  public Connection getConnection() {
+    return conn;
+  }
+
   /** Creates the userdatabase table if it doesn't exist yet. */
   public void createTablesIfAbsent() throws SQLException {
     if (conn == null) {
@@ -110,7 +114,7 @@ public class UserDatabase extends DatabaseInterface {
     }
     String query = """
         SELECT name, user_id, phone_number, email, transaction_id, server_id,
-            api_key_used, casetype, court_id, submitted"
+            api_key_used, casetype, court_id, submitted
         FROM submitted_filings
         WHERE transaction_id = ?""";
     

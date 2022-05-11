@@ -7,13 +7,14 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.exceptions.CsvValidationException;
 
 import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
-import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.services.EfmFilingInterface;
 import edu.suffolk.litlab.efspserver.services.EfmModuleSetup;
 import edu.suffolk.litlab.efspserver.services.EfmRestCallbackInterface;
@@ -25,19 +26,19 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
       LoggerFactory.getLogger(JeffNetModuleSetup.class);
 
   private final URI jeffnetEndpoint;
-  private final UserDatabase ud;
+  private final DataSource ds;
   private final OrgMessageSender sender;
   private final LegalIssuesTaxonomyCodes taxonomyCodes;
 
   private JeffNetModuleSetup(URI jeffnetUri,
-      UserDatabase ud, OrgMessageSender sender, LegalIssuesTaxonomyCodes taxonomyCodes) {
+      DataSource ds, OrgMessageSender sender, LegalIssuesTaxonomyCodes taxonomyCodes) {
     this.jeffnetEndpoint = jeffnetUri;
-    this.ud = ud;
+    this.ds = ds;
     this.sender = sender;
     this.taxonomyCodes = taxonomyCodes;
   }
 
-  public static Optional<JeffNetModuleSetup> create(UserDatabase ud, OrgMessageSender sender) throws URISyntaxException {
+  public static Optional<JeffNetModuleSetup> create(DataSource ds, OrgMessageSender sender) throws URISyntaxException {
     Optional<String> maybeJeffersonEndpoint = EfmModuleSetup.GetEnv("JEFFERSON_ENDPOINT");
     if (maybeJeffersonEndpoint.isEmpty()) {
       throw new RuntimeException("JEFFERSON_ENDPOINT needs to be the "
@@ -50,7 +51,7 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
     LegalIssuesTaxonomyCodes taxonomyCodes;
     try {
       taxonomyCodes = new LegalIssuesTaxonomyCodes(taxonomyCsv);
-      return Optional.of(new JeffNetModuleSetup(jeffnetUri, ud, sender, taxonomyCodes));
+      return Optional.of(new JeffNetModuleSetup(jeffnetUri, ds, sender, taxonomyCodes));
     } catch (CsvValidationException | IOException e) {
       log.warn(e.toString());
       return Optional.empty();
@@ -79,7 +80,7 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
 
   @Override
   public Optional<EfmRestCallbackInterface> getCallback() {
-    return Optional.of(new JeffNetRestCallback(ud, sender));
+    return Optional.of(new JeffNetRestCallback(ds, sender));
   }
 
   @Override

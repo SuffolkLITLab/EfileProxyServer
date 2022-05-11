@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.sql.DataSource;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -90,13 +91,13 @@ public class CourtSchedulingService {
   private final ecfv5.gov.niem.release.niem.proxy.xsd._4.ObjectFactory proxyObjFac;
   private final Map<String, InterviewToFilingInformationConverter> converterMap;
   private final SecurityHub security;
-  private final CodeDatabase cd;
   private final CourtRecordMDEService recordFactory; 
 
+  private final DataSource ds;
   
   public CourtSchedulingService(Map<String, InterviewToFilingInformationConverter> converterMap, 
-      SecurityHub security, CodeDatabase cd, String jurisdiction) {
-    this.cd = cd;
+      SecurityHub security, DataSource ds, String jurisdiction) {
+    this.ds = ds;
     this.security = security;
     this.converterMap = converterMap;
     this.oasisWrapObjFac = new ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ObjectFactory();
@@ -200,6 +201,7 @@ public class CourtSchedulingService {
     if (maybeServ.isEmpty()) {
       return Response.status(401).build();
     }
+    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())) {
     Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId); 
     if (locationInfo.isEmpty()) {
       return Response.status(404).entity("No court: " + courtId).build(); 
@@ -328,17 +330,22 @@ public class CourtSchedulingService {
     } catch (FilingError err) {
       return Response.status(422).entity(collector.jsonSummary()).build();
     }
+    }
   }
   
   @POST
   @Path("/courts/{court_id}/reserve_date")
   public Response reserveCourtDateSync(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, String paramStr) throws JsonMappingException, JsonProcessingException, DatatypeConfigurationException {
+      @PathParam("court_id") String courtId, String paramStr) throws JsonMappingException, JsonProcessingException, DatatypeConfigurationException, SQLException {
     log.info("AllParams: " + paramStr);
     JsonMapper mapper = new JsonMapper();
     JsonNode params = mapper.readTree(paramStr); 
     
-    Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId); 
+    Optional<CourtLocationInfo> locationInfo = Optional.empty(); 
+    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())) {
+      locationInfo = cd.getFullLocationInfo(courtId); 
+    }
+
     if (locationInfo.isEmpty()) {
       return Response.status(404).entity("No court: " + courtId).build(); 
     }

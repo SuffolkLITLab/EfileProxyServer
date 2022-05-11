@@ -5,6 +5,7 @@ import edu.suffolk.litlab.efspserver.HttpsCallbackHandler;
 import edu.suffolk.litlab.efspserver.SendMessage;
 import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.db.MessageSettingsDatabase;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
@@ -13,6 +14,7 @@ import edu.suffolk.litlab.efspserver.ecf.TylerModuleSetup;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetModuleSetup;
 import tyler.efm.services.EfmFirmService;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +23,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.cxf.Bus;
@@ -53,24 +58,21 @@ public class EfspServer {
   }
 
   protected EfspServer(
-      String dbUser, String dbPassword, // always
-      UserDatabase ud, // always
-      MessageSettingsDatabase md, // always
-      LoginDatabase ld, // always
+      DataSource codeDs, // always 
+      DataSource userDs, // always 
       OrgMessageSender sender, // always
-      String userDatabaseName, // always
       List<EfmModuleSetup> modules,
-      CodeDatabase cd, // Tyler specific (?)
       Map<String, InterviewToFilingInformationConverter> converterMap
       ) throws SQLException {
-    try {
-      cd.createDbConnection(dbUser, dbPassword);
-      ud.createDbConnection(dbUser, dbPassword);
-      ld.createDbConnection(dbUser, dbPassword);
-      md.createDbConnection(dbUser, dbPassword);
+    try (CodeDatabase cd = new CodeDatabase(codeDs.getConnection())) {
       cd.createTablesIfAbsent();
+    }
+    try (Connection conn = userDs.getConnection()) {
+      UserDatabase ud = new UserDatabase(conn);
       ud.createTablesIfAbsent();
+      LoginDatabase ld = new LoginDatabase(conn);
       ld.createTablesIfAbsent();
+      MessageSettingsDatabase md = new MessageSettingsDatabase(conn);
       md.createTablesIfAbsent();
     } catch (SQLException ex) {
       log.error("SQLException: " + ex.toString());
@@ -107,35 +109,31 @@ public class EfspServer {
     }
     
     String baseLocalUrl = System.getenv("BASE_LOCAL_URL"); //"https://0.0.0.0:9000";
-    cd.setAutocommit(true);
-    ud.setAutocommit(true);
-    ld.setAutocommit(true);
-    md.setAutocommit(true);
-    SecurityHub security = new SecurityHub(ld, jurisdiction);
+    SecurityHub security = new SecurityHub(userDs, jurisdiction);
     
     Map<Class<?>, SingletonResourceProvider> services = new HashMap<Class<?>, SingletonResourceProvider>();
-    services.put(AdminUserService.class, new SingletonResourceProvider(new AdminUserService(jurisdiction, security, cd)));
+    services.put(AdminUserService.class, new SingletonResourceProvider(new AdminUserService(jurisdiction, security, codeDs)));
     services.put(FilingReviewService.class,
         new SingletonResourceProvider(new FilingReviewService(
-            ud, converterMap, filingMap, callbackMap, security, sender)));
+            userDs, converterMap, filingMap, callbackMap, security, sender)));
     services.put(FirmAttorneyAndServiceService.class,
-        new SingletonResourceProvider(new FirmAttorneyAndServiceService(security, cd, firmFactory.get())));
+        new SingletonResourceProvider(new FirmAttorneyAndServiceService(security, codeDs, firmFactory.get())));
     // TODO(brycew-later): refactor to reduce the number of services, or make just "Tyler services" and "JeffNet services" Providers
     if (GetEnv("TOGA_CLIENT_KEY").isPresent() && GetEnv("TOGA_URL").isPresent()) {
       services.put(PaymentsService.class,
           new SingletonResourceProvider(new PaymentsService(security, 
               GetEnv("TOGA_CLIENT_KEY").get(), 
               GetEnv("TOGA_URL").get(),
-              firmFactory.get(), cd)));
+              firmFactory.get(), codeDs)));
     }
     services.put(CasesService.class,
-        new SingletonResourceProvider(new CasesService(security, cd, jurisdiction)));
+        new SingletonResourceProvider(new CasesService(security, codeDs, jurisdiction)));
     services.put(CodesService.class,
-        new SingletonResourceProvider(new CodesService(cd)));
+        new SingletonResourceProvider(new CodesService(codeDs)));
     services.put(CourtSchedulingService.class,
-        new SingletonResourceProvider(new CourtSchedulingService(converterMap, security, cd, jurisdiction)));
+        new SingletonResourceProvider(new CourtSchedulingService(converterMap, security, codeDs, jurisdiction)));
     services.put(MessageSettingsService.class,
-        new SingletonResourceProvider(new MessageSettingsService(security, md)));
+        new SingletonResourceProvider(new MessageSettingsService(security, userDs)));
     services.put(RootService.class, new SingletonResourceProvider(new RootService()));
 
     sf = new JAXRSServerFactoryBean();
@@ -189,20 +187,22 @@ public class EfspServer {
     Map<String, InterviewToFilingInformationConverter> converterMap =
         Map.of("application/json", daJsonConverter,
                "text/json", daJsonConverter);
+    
+    Context ctx = new InitialContext();
+    DataSource codeDs = DatabaseCreator.makeDataSource(dbUrl, dbPortInt, codeDatabaseName, dbUser, dbPassword, 7, 100);
+    DataSource userDs = DatabaseCreator.makeDataSource(dbUrl, dbPortInt, userDatabaseName, dbUser, dbPassword, 7, 100);
+    ctx.bind(DatabaseCreator.TylerJNDIName, codeDs);
+    ctx.bind(DatabaseCreator.UserJNDIName, userDs);
 
-    CodeDatabase cd = new CodeDatabase(dbUrl, dbPortInt, codeDatabaseName);
-    UserDatabase ud = new UserDatabase(dbUrl, dbPortInt, userDatabaseName);
-    LoginDatabase ld = new LoginDatabase(dbUrl, dbPortInt, userDatabaseName);
-    MessageSettingsDatabase md = new MessageSettingsDatabase(dbUrl, dbPortInt, userDatabaseName);
     Optional<SendMessage> sendMsg = SendMessage.create();
     if (sendMsg.isEmpty()) {
       throw new RuntimeException("You didn't pass enough info to create the SendMessage class");
     }
-    OrgMessageSender sender = new OrgMessageSender(md, sendMsg.get());
+    OrgMessageSender sender = new OrgMessageSender(userDs, sendMsg.get());
 
     List<EfmModuleSetup> modules = new ArrayList<>();
-    TylerModuleSetup.create(cd, ud, sender).ifPresent(mod -> modules.add(mod));
-    JeffNetModuleSetup.create(ud, new OrgMessageSender(md, sendMsg.get())).ifPresent(mod -> modules.add(mod));
+    TylerModuleSetup.create(codeDs, userDs, sender).ifPresent(mod -> modules.add(mod));
+    JeffNetModuleSetup.create(userDs, sender).ifPresent(mod -> modules.add(mod));
     if (modules.isEmpty()) {
       log.error("Couldn't load enough parameters to start either the Tyler or JeffNet filer modules."
               + "Please check your environment variables and try again.");
@@ -211,7 +211,7 @@ public class EfspServer {
     log.info("Starting Server with the following Filers: " + modules);
 
     EfspServer server = new EfspServer(
-        dbUser, dbPassword, ud, md, ld, sender, userDatabaseName, modules, cd,
+        codeDs, userDs, sender, modules,
         converterMap);
     
     Runtime.getRuntime().addShutdownHook(new Thread() {

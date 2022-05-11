@@ -4,11 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -16,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
+
+import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
 
 public class CodeDatabaseTest {
   private static Logger log = 
@@ -28,11 +33,17 @@ public class CodeDatabaseTest {
     new PostgreSQLContainer<>(DockerImageName.parse("postgres:13.2"));
   
   @BeforeEach
-  public void setUp() throws Exception {
+  public void setUp() throws SQLException {
     postgres.start();
-    cd = new CodeDatabase(postgres.getJdbcUrl(), postgres.getDatabaseName());
-    cd.createDbConnection(postgres.getUsername(), postgres.getPassword());
+    Connection conn = DatabaseCreator.makeSingleConnection(
+        postgres.getDatabaseName(), postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+    cd = new CodeDatabase(conn); 
     cd.createTablesIfAbsent();
+  }
+  
+  @AfterEach
+  public void tearDown() throws SQLException {
+    cd.close();
   }
   
   @Test

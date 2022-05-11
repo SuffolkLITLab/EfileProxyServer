@@ -3,12 +3,14 @@ package edu.suffolk.litlab.efspserver;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -16,6 +18,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.db.NewTokens;
 
@@ -30,8 +33,14 @@ public class LoginDatabaseTest {
   @BeforeEach
   public void setUp() throws SQLException {
     postgres.start();
-    ld = new LoginDatabase(postgres.getJdbcUrl(), postgres.getDatabaseName());
-    ld.createDbConnection(postgres.getUsername(), postgres.getPassword());
+    Connection conn = DatabaseCreator.makeSingleConnection(
+        postgres.getDatabaseName(), postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+    ld = new LoginDatabase(conn); 
+  }
+  
+  @AfterEach
+  public void tearDown() throws SQLException {
+    ld.getConnection().close();
   }
   
   @Test

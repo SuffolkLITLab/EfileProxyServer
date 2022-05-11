@@ -4,9 +4,11 @@ import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPoint
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getStringMember;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+import javax.sql.DataSource;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
@@ -21,10 +23,14 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import tyler.efm.services.EfmFirmService;
@@ -65,18 +71,20 @@ import tyler.efm.services.schema.updateservicecontactresponse.UpdateServiceConta
 @Path("/firmattorneyservice")
 @Produces(MediaType.APPLICATION_JSON)
 public class FirmAttorneyAndServiceService {
+  private static Logger log = 
+      LoggerFactory.getLogger(FirmAttorneyAndServiceService.class); 
 
   private final SecurityHub security;
-  private final CodeDatabase cd;
   private final EfmFirmService firmFactory;
+  private final DataSource ds;
 
   private static final tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac =
       new tyler.efm.services.schema.common.ObjectFactory();
 
-  public FirmAttorneyAndServiceService(SecurityHub security, CodeDatabase cd, EfmFirmService firmFactory) {
+  public FirmAttorneyAndServiceService(SecurityHub security, DataSource ds, EfmFirmService firmFactory) {
     this.security = security;
-    this.cd = cd;
     this.firmFactory = firmFactory;
+    this.ds = ds;
   }
 
   @GET
@@ -173,12 +181,17 @@ public class FirmAttorneyAndServiceService {
     req.setAttorney(attorney);
     // TODO(brycew-later): what happens if a court has an additional requirement on the attorney number?
     // Won't in IL at least. If it does, this whole system is poorly defined
-    DataFieldRow row = cd.getDataField("1", "GlobalAttorneyNumber");
-    if (row.isrequired && attorney.getBarNumber().isBlank()) {
-      return Response.status(400).entity("Bar number required").build();
-    }
-    if (!row.matchRegex(attorney.getBarNumber())) {
-      return Response.status(400).entity("Bar number doesn't match regex: " + row.regularexpression).build();
+    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())) {
+      DataFieldRow row = cd.getDataField("1", "GlobalAttorneyNumber");
+      if (row.isrequired && attorney.getBarNumber().isBlank()) {
+        return Response.status(400).entity("Bar number required").build();
+      }
+      if (!row.matchRegex(attorney.getBarNumber())) {
+        return Response.status(400).entity("Bar number doesn't match regex: " + row.regularexpression).build();
+      }
+    } catch (SQLException ex) {
+      log.error("Couldn't connect to cd to handle codes query to create attorney");
+      return Response.status(500).build();
     }
 
     CreateAttorneyResponseType resp = firmPort.get().createAttorney(req);
@@ -408,12 +421,19 @@ public class FirmAttorneyAndServiceService {
       ServiceContactListResponseType resp = firmPort.get().getPublicList(msg);
       // For "PublicServiceContactShowEmail" Datafield, we force API keys: the restriction of 
       // "programmatic harvesting of emails" will have to be done on the DA side
+      boolean showFirmName = false;
+      try (CodeDatabase cd = new CodeDatabase(ds.getConnection())) {
+        DataFieldRow row = cd.getDataField("1", "PublicServiceContactShowFreeFormFirmName");
+        showFirmName = row.isvisible;
+      } catch (SQLException ex) {
+        log.error("getPublicList can't get CD: " + StdLib.strFromException(ex));
+      }
+      final boolean showFreeFormFirmName = showFirmName;
       return makeResponse(resp,
           () -> {
-            DataFieldRow row = cd.getDataField("1", "PublicServiceContactShowFreeFormFirmName");
             List<ServiceContactType> contacts = resp.getServiceContact();
             contacts.stream().forEach(con -> {
-              if (!row.isvisible) {
+              if (!showFreeFormFirmName) {
                 // Hide the FirmName, but leave the AddByFirmName alone
                 con.setFirmName(null);
               }

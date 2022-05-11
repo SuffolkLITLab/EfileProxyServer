@@ -3,11 +3,13 @@ package edu.suffolk.litlab.efspserver.jeffnet;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.sql.DataSource;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
@@ -35,11 +37,11 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
   private static Logger log =
       LoggerFactory.getLogger(JeffNetRestCallback.class);
 
-  private UserDatabase ud;
-  private OrgMessageSender msgSender;
+  private final DataSource ds;
+  private final OrgMessageSender msgSender;
 
-  public JeffNetRestCallback(UserDatabase ud, OrgMessageSender msgSender) {
-    this.ud = ud;
+  public JeffNetRestCallback(DataSource ds, OrgMessageSender msgSender) {
+    this.ds = ds;
     this.msgSender = msgSender;
   }
 
@@ -69,7 +71,8 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
         return Response.status(400).build();
       }
     }
-    try {
+    try (Connection conn = ds.getConnection()){
+      UserDatabase ud = new UserDatabase(conn);
       Optional<Transaction> maybeTrans = ud.findTransaction(UUID.fromString(resp.transactionId));
       if (maybeTrans.isEmpty()) {
         log.error("Transaction " + resp.transactionId + " isn't present in the database!");

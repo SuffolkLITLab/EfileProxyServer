@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.ecf;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBElement;
 
 import org.slf4j.Logger;
@@ -36,6 +38,8 @@ import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrapp
 import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.payment.PaymentMessageType;
 import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reviewfilingcallback.NotifyFilingReviewCompleteMessageType;
 import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.filingassemblymde.FilingAssemblyMDE;
+
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
@@ -56,13 +60,13 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
   private static Logger log =
       LoggerFactory.getLogger(OasisEcfFiler.class);
 
-  private UserDatabase ud;
-  private CodeDatabase cd;
+  private DataSource codeDs;
+  private DataSource userDs;
   private OrgMessageSender msgSender;
 
-  public OasisEcfv5WsCallback(UserDatabase ud, CodeDatabase cd, OrgMessageSender msgSender) {
-    this.ud = ud;
-    this.cd = cd;
+  public OasisEcfv5WsCallback(DataSource codeDs, DataSource userDs, OrgMessageSender msgSender) {
+    this.codeDs = codeDs;
+    this.userDs = userDs;
     this.msgSender = msgSender;
   }
   
@@ -133,9 +137,15 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
     return docText.toString();
   }
   
-  private Map<String, String> reviewedFilingToStr(NotifyFilingReviewCompleteMessageType revFiling,
+  private Map<String, String> reviewedFilingToStr(
+      NotifyFilingReviewCompleteMessageType revFiling,
       Transaction trans) {
-    List<NameAndCode> names = cd.getFilingStatuses(trans.courtId);
+    List<NameAndCode> names = List.of(); 
+    try (CodeDatabase cd = new CodeDatabase(codeDs.getConnection())){
+      names = cd.getFilingStatuses(trans.courtId);
+    } catch (SQLException ex) {
+      log.error("In ECF Callback, can't get Codes DB:" + StdLib.strFromException(ex));
+    }
 
     StringBuilder messageText = new StringBuilder();
     Map<String, String> statuses = new HashMap<>();
@@ -224,7 +234,8 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
       reply.setMessageStatus(error(MessageStatusCodeSimpleType.ACTIVITY_CODE_FAILURE, "720", "Filing code not found in message"));
       return reply;
     }
-    try {
+    try (Connection conn = userDs.getConnection()) {
+      UserDatabase ud = new UserDatabase(conn);
       Optional<Transaction> trans = ud.findTransaction(UUID.fromString(filingId));
       if (trans.isEmpty()) {
         log.warn("No transaction on record for filingId: " + filingId + " no one to send to");
