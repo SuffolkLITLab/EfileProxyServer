@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -24,7 +25,11 @@ import javax.ws.rs.core.Request;
  */
 public class EndpointReflection {
   
-  private static final String baseUrl = ServiceHelpers.BASE_URL;
+  private final String baseUrl; 
+  
+  public EndpointReflection(String startUrl) {
+    baseUrl = ServiceHelpers.BASE_URL + startUrl;
+  }
   
   /**
    * Returns REST endpoints defined in Java classes in the specified package.
@@ -91,8 +96,12 @@ public class EndpointReflection {
   }
   
   
-  public static Map<String, String> endPointsToMap(List<Endpoint> endpoints) {
+  public Map<String, String> endPointsToMap(List<Endpoint> endpoints) {
     return endpoints.stream().collect(Collectors.toMap(e -> e.javaMethodName, e -> baseUrl + e.uri));
+  }
+  
+  public Map<String, String> pathParamsToMap(Stream<String> params) {
+    return params.collect(Collectors.toMap(p -> p, p -> baseUrl + "/" + p));
   }
   
   /**

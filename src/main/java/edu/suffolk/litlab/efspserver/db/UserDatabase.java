@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +39,6 @@ public class UserDatabase implements DatabaseInterface {
   public void createTablesIfAbsent() throws SQLException {
     String tableExistsQuery = CodeTableConstants.getTableExists();
     try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
-
       existsSt.setString(1, "submitted_filings");
       ResultSet rs = existsSt.executeQuery();
       if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
@@ -48,14 +48,15 @@ public class UserDatabase implements DatabaseInterface {
              "email" text, "transaction_id" uuid PRIMARY KEY, "server_id" uuid, "api_key_used" text, 
              "court_id" text, "casetype" text, 
              "submitted" date)"""; 
-        try (PreparedStatement createSt = conn.prepareStatement(createQuery)) {
-          log.info("Full statement: " + createSt.toString());
-          int retVal = createSt.executeUpdate();
+        try (Statement createSt = conn.createStatement()) {
+          log.info("Full statement: " + createQuery); 
+          int retVal = createSt.executeUpdate(createQuery);
           if (retVal < 0) {
             log.warn("Issue when creating submitted_filings: retVal == " + retVal);
           }
         }
       }
+      rs.close();
     }
   }
   

@@ -24,5 +24,10 @@ public class JeffNetLogin implements LoginInterface {
   public String getHeaderKey() {
     return "JEFFNET-TOKEN";
   }
+  
+  @Override
+  public String getLoginName() {
+    return "jeffnet";
+  }
 
 }

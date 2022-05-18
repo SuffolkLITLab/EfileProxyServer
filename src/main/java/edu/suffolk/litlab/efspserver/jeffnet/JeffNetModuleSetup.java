@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -19,6 +21,9 @@ import edu.suffolk.litlab.efspserver.services.EfmFilingInterface;
 import edu.suffolk.litlab.efspserver.services.EfmModuleSetup;
 import edu.suffolk.litlab.efspserver.services.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efspserver.services.EfspServer;
+import edu.suffolk.litlab.efspserver.services.FilingReviewService;
+import edu.suffolk.litlab.efspserver.services.InterviewToFilingInformationConverter;
+import edu.suffolk.litlab.efspserver.services.JurisdictionServiceHandle;
 import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
 
 public class JeffNetModuleSetup implements EfmModuleSetup {
@@ -26,19 +31,24 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
       LoggerFactory.getLogger(JeffNetModuleSetup.class);
 
   private final URI jeffnetEndpoint;
-  private final DataSource ds;
+  private final DataSource userDs;
   private final OrgMessageSender sender;
   private final LegalIssuesTaxonomyCodes taxonomyCodes;
+  private final Map<String, InterviewToFilingInformationConverter> converterMap;
 
   private JeffNetModuleSetup(URI jeffnetUri,
-      DataSource ds, OrgMessageSender sender, LegalIssuesTaxonomyCodes taxonomyCodes) {
+      Map<String, InterviewToFilingInformationConverter> converterMap,
+      DataSource userDs, OrgMessageSender sender, LegalIssuesTaxonomyCodes taxonomyCodes) {
+    this.converterMap = converterMap;
     this.jeffnetEndpoint = jeffnetUri;
-    this.ds = ds;
+    this.userDs = userDs;
     this.sender = sender;
     this.taxonomyCodes = taxonomyCodes;
   }
 
-  public static Optional<JeffNetModuleSetup> create(DataSource ds, OrgMessageSender sender) throws URISyntaxException {
+  public static Optional<JeffNetModuleSetup> create(
+      Map<String, InterviewToFilingInformationConverter> converter, 
+      DataSource ds, OrgMessageSender sender) throws URISyntaxException {
     Optional<String> maybeJeffersonEndpoint = EfmModuleSetup.GetEnv("JEFFERSON_ENDPOINT");
     if (maybeJeffersonEndpoint.isEmpty()) {
       throw new RuntimeException("JEFFERSON_ENDPOINT needs to be the "
@@ -51,7 +61,7 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
     LegalIssuesTaxonomyCodes taxonomyCodes;
     try {
       taxonomyCodes = new LegalIssuesTaxonomyCodes(taxonomyCsv);
-      return Optional.of(new JeffNetModuleSetup(jeffnetUri, ds, sender, taxonomyCodes));
+      return Optional.of(new JeffNetModuleSetup(jeffnetUri, converter, ds, sender, taxonomyCodes));
     } catch (CsvValidationException | IOException e) {
       log.warn(e.toString());
       return Optional.empty();
@@ -74,13 +84,23 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
   }
 
   @Override
-  public EfmFilingInterface getInterface() {
-    return new JeffNetFiler(jeffnetEndpoint, taxonomyCodes);
+  public JurisdictionServiceHandle getServiceHandle() {
+    var filer = new JeffNetFiler(jeffnetEndpoint, taxonomyCodes);
+    var filingMap = new HashMap<String, EfmFilingInterface>();
+    var callbackMap = new HashMap<String, EfmRestCallbackInterface>();
+
+    for (String court: getCourts()) {
+      filingMap.put(court, filer);
+      getCallback().ifPresent(call -> callbackMap.put(court, call));
+    }
+
+    var filingReview = new FilingReviewService(getJurisdiction(), this.userDs, converterMap, filingMap, callbackMap, this.sender);
+    return new JurisdictionServiceHandle(getJurisdiction(), filingReview);
   }
 
   @Override
   public Optional<EfmRestCallbackInterface> getCallback() {
-    return Optional.of(new JeffNetRestCallback(ds, sender));
+    return Optional.of(new JeffNetRestCallback(userDs, sender));
   }
 
   @Override

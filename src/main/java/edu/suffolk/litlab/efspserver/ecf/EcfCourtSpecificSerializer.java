@@ -712,9 +712,9 @@ public class EcfCourtSpecificSerializer {
                 .findFirst();
         if (code.isEmpty()) {
           collector.addWrong(docTypeVar);
+        } else {
+          attachment.setBinaryFormatStandardName(XmlHelper.convertText(code.get().code));
         }
-
-        attachment.setBinaryFormatStandardName(XmlHelper.convertText(code.get().code));
       }
     }
 

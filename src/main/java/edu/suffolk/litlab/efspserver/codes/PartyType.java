@@ -56,7 +56,7 @@ public class PartyType {
                numberofpartiestoignore, sendforredaction, dateofdeath, displayorder, 
                efspcode, location 
         FROM partytype
-        WHERE location=? AND casetypeid=?
+        WHERE domain=? AND location=? AND casetypeid=?
         ORDER BY isrequired DESC, displayorder, casetypeid DESC""";
   }
   
@@ -66,7 +66,7 @@ public class PartyType {
                numberofpartiestoignore, sendforredaction, dateofdeath, displayorder, 
                efspcode, location 
         FROM partytype
-        WHERE location=? AND casetypeid=''
+        WHERE domain=? AND location=? AND casetypeid=''
         ORDER BY isrequired DESC, displayorder, casetypeid DESC""";
   }
   

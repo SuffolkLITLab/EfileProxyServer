@@ -1,7 +1,7 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPointsToMap;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
+import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -48,6 +48,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.RandomString;
+import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 
@@ -73,33 +74,39 @@ import tyler.efm.services.schema.updatepaymentaccountresponse.UpdatePaymentAccou
  *
  * @author brycew 
  */
-@Path("/payments")
 @Produces(MediaType.APPLICATION_JSON)
 public class PaymentsService {
 
-  public PaymentsService(SecurityHub security, String togaKey, String togaUrl, 
-      EfmFirmService firmFactory, DataSource ds) {
-    this.security = security;
+  public PaymentsService(String jurisdiction, String env, String togaKey, String togaUrl,
+      DataSource codeDs, DataSource userDs) {
+    this.jurisdiction = jurisdiction;
+    this.env = env;
     // Will generated 21 character long transaction ids, the max length.
     this.transactionIdGen = new RandomString(21);
     this.togaKey = togaKey;
     this.togaUrl = togaUrl;
     this.tempAccounts = new HashMap<String, TempAccount>();
-    this.firmFactory = firmFactory;
-    this.ds = ds;
+    var maybeFirmFactory = SoapClientChooser.getEfmFirmFactory(jurisdiction, env);
+    if (maybeFirmFactory.isPresent()) {
+      this.firmFactory = maybeFirmFactory.get();
+    } else {
+      throw new RuntimeException(jurisdiction + "-" + env + " not in SoapClientChooser for EFMFirm");
+    }
+    this.codeDs = codeDs;
+    this.userDs = userDs;
   }
 
   @GET
   @Path("/")
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection();
-    return Response.ok(endPointsToMap(ef.findRESTEndpoints(List.of(PaymentsService.class)))).build();
+    EndpointReflection ef = new EndpointReflection("/jurisdiction/" + jurisdiction);
+    return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(PaymentsService.class)))).build();
   }
 
   @GET
   @Path("/global-accounts")
   public Response getGlobalPaymentList(@Context HttpHeaders httpHeaders) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -112,7 +119,7 @@ public class PaymentsService {
   @Path("/global-accounts/{account_id}")
   public Response getGlobalPaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -127,7 +134,7 @@ public class PaymentsService {
   @Path("/global-accounts")
   public Response createGlobalWaiverAccount(@Context HttpHeaders httpHeaders,
       String accountName) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -139,7 +146,7 @@ public class PaymentsService {
   public Response updateGlobalPaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId, String json) {
 
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -157,7 +164,7 @@ public class PaymentsService {
   @Path("/global-accounts/{account_id}")
   public Response removeGlobalPaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -172,7 +179,7 @@ public class PaymentsService {
   @Path("/payment-accounts/{account_id}")
   public Response getPaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -188,7 +195,7 @@ public class PaymentsService {
   @Path("/payment-accounts/{account_id}")
   public Response removePaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -203,13 +210,13 @@ public class PaymentsService {
   @Path("/payment-accounts")
   public Response getPaymentAccountList(@Context HttpHeaders httpHeaders,
     @DefaultValue("") @QueryParam("court_id") String courtId) throws SQLException {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
     GetPaymentAccountListRequestType req = new tyler.efm.services.schema.getpaymentaccountlistrequest.ObjectFactory().createGetPaymentAccountListRequestType();
     if (courtId != null && !courtId.isBlank()) {
-      try (CodeDatabase cd = new CodeDatabase(ds.getConnection())) {
+      try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
         if (!cd.getAllLocations().contains(courtId)) {
           return Response.status(404).entity("Court does not exist " + courtId).build();
         }
@@ -226,7 +233,7 @@ public class PaymentsService {
   @Path("/payment-accounts")
   public Response createWaiverAccount(@Context HttpHeaders httpHeaders,
       String accountName) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -238,7 +245,7 @@ public class PaymentsService {
   public Response updatePaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId,
       String json) throws JsonMappingException, JsonProcessingException {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -255,7 +262,7 @@ public class PaymentsService {
   @GET
   @Path("/types")
   public Response getPaymentAccountTypeList(@Context HttpHeaders httpHeaders) {
-    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -527,12 +534,13 @@ public class PaymentsService {
   @Context
   UriInfo uri;
 
-  private final SecurityHub security;
   private final RandomString transactionIdGen;
   private final String togaKey;
   private final String callbackToUsUrl = ServiceHelpers.BASE_URL + "/payments/toga-account"; 
   private final String togaUrl;
   private final EfmFirmService firmFactory;
-  private final DataSource ds;
-
+  private final DataSource codeDs;
+  private final DataSource userDs;
+  private final String jurisdiction;
+  private final String env;
 }

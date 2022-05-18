@@ -1,7 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPointsToMap;
-
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +36,7 @@ import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.db.AtRest;
+import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.ecf.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 
@@ -67,29 +67,33 @@ import tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEServic
 public class CasesService {
 
   private static Logger log = LoggerFactory.getLogger(CasesService.class);
-  private final SecurityHub security;
   private final CourtRecordMDEService recordFactory;  
   private final oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.ObjectFactory listObjFac
         = new oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.ObjectFactory();
   private final oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf =
           new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-  private final DataSource ds;
+  private final DataSource codeDs;
+  private final DataSource userDs;
+  private final String jurisdiction;
+  private final String env;
 
-  public CasesService(SecurityHub security, DataSource ds, String jurisdiction) {
-    this.security = security;
-    Optional<CourtRecordMDEService> maybeRecords = SoapClientChooser.getCourtRecordFactory(jurisdiction);
+  public CasesService(String jurisdiction, String env, DataSource codeDs, DataSource userDs) {
+    this.jurisdiction = jurisdiction;
+    this.env = env;
+    Optional<CourtRecordMDEService> maybeRecords = SoapClientChooser.getCourtRecordFactory(jurisdiction, env);
     if (maybeRecords.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " for court record factory");
     }
     this.recordFactory = maybeRecords.get();
-    this.ds = ds; 
+    this.codeDs = codeDs; 
+    this.userDs = userDs;
   }
 
   @GET
   @Path("/")
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection();
-    return Response.ok(endPointsToMap(ef.findRESTEndpoints(List.of(CasesService.class)))).build();
+    EndpointReflection ef = new EndpointReflection("/jurisdictions/" + jurisdiction);
+    return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(CasesService.class)))).build();
   }
   
   /**
@@ -114,7 +118,7 @@ public class CasesService {
       return Response.status(401).build();
     }
     
-    try (CodeDatabase cd = new CodeDatabase(ds)) {
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs)) {
       Optional<CourtLocationInfo> info = cd.getFullLocationInfo(courtId);
       if (info.isEmpty()) {
         return Response.status(404).entity(courtId + " not in available courts to search").build();
@@ -214,7 +218,7 @@ public class CasesService {
       return Response.status(401).build();
     }
 
-    try (CodeDatabase cd = new CodeDatabase(ds)) {
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs)) {
       Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId);
       if (locationInfo.isEmpty()) {
         log.warn("Can't find court location for " + courtId + " when getting case");
@@ -360,12 +364,18 @@ public class CasesService {
 
   private Optional<CourtRecordMDEPort> setupRecordPort(HttpHeaders httpHeaders) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<AtRest> atRest = security.getAtRestInfo(apiKey);
-    if (atRest.isEmpty()) {
-      log.warn("Couldn't checkLogin");
+    try (Connection conn = userDs.getConnection()) {
+      LoginDatabase ld = new LoginDatabase(conn);
+      Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
+      if (atRest.isEmpty()) {
+        log.warn("Couldn't checkLogin");
+        return Optional.empty();
+      }
+    } catch (SQLException ex) {
+      log.error(StdLib.strFromException(ex));
       return Optional.empty();
     }
-    String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyStatic());
+    String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds?");

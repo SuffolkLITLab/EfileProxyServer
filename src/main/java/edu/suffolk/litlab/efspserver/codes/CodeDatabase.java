@@ -41,12 +41,16 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       LoggerFactory.getLogger(CodeDatabase.class);
   
   private final Connection conn;
+  /** The DNS domain (tyler jurisdiction + tyler environment, illinois-stage). */
+  private final String tylerDomain;
 
-  public CodeDatabase(Connection conn) {
+  public CodeDatabase(String jurisdiction, String env, Connection conn) {
+    this.tylerDomain = jurisdiction + "-" + env;
     this.conn = conn;
   }
   
-  public CodeDatabase(DataSource ds) {
+  public CodeDatabase(String jurisdiction, String env, DataSource ds) {
+    this.tylerDomain = jurisdiction + "-" + env;
     Connection the_conn;
     try {
       the_conn = ds.getConnection();
@@ -96,11 +100,12 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
           log.warn("Will not create table with name: " + tableName);
           return;
         }
-        try (PreparedStatement createSt = conn.prepareStatement(createQuery)) {
+        try (Statement createSt = conn.createStatement()) {
           log.info("Full statement: " + createSt.toString());
-          createSt.executeUpdate();
+          createSt.executeUpdate(createQuery);
         }
       }
+      rs.close();
     }
   }
   
@@ -181,7 +186,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     }
   }
   
-  public static PreparedStatement singleInsert(PreparedStatement stmt, String tableName, String courtName, Map<String, String> rowsVals) throws SQLException {
+  public PreparedStatement singleInsert(PreparedStatement stmt, String tableName, String courtName, Map<String, String> rowsVals) throws SQLException {
     int idx = 1;
     List<String> tc = CodeTableConstants.getTableColumns(tableName);
     for (String colName : tc) {
@@ -194,7 +199,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     }
     if (CodeTableConstants.isCourtTable(tableName)) {
       stmt.setString(idx, courtName);
+      idx += 1;
     }
+    stmt.setString(idx, this.tylerDomain);
     return stmt;
   }
 
@@ -203,7 +210,8 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       String query = CaseCategory.getCaseCategoriesForLoc();
       List<CaseCategory> cats = new ArrayList<>();
       try (PreparedStatement st = conn.prepareStatement(query)) {
-        st.setString(1, courtLocationId);
+        st.setString(1, tylerDomain);
+        st.setString(2, courtLocationId);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
           cats.add(new CaseCategory(rs)); 
@@ -217,9 +225,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     return safetyWrap(() -> {
       PreparedStatement st;
       if (initial.isPresent()) {
-        st = CaseCategory.prepFilableQueryTiming(conn, courtLocationId, initial.get());
+        st = CaseCategory.prepFilableQueryTiming(conn, this.tylerDomain ,courtLocationId, initial.get());
       } else {
-        st = CaseCategory.prepFileableQuery(conn, courtLocationId); 
+        st = CaseCategory.prepFileableQuery(conn, this.tylerDomain, courtLocationId); 
       }
       ResultSet rs = st.executeQuery();
       List<CaseCategory> cats = new ArrayList<>();
@@ -236,8 +244,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     return safetyWrapOpt(() -> {
       String query = CaseCategory.getCaseCategoryWithKey();
       try (PreparedStatement st = conn.prepareStatement(query)) {
-        st.setString(1, courtLocationId);
-        st.setString(2, caseCatCode);
+        st.setString(1, tylerDomain);
+        st.setString(2, courtLocationId);
+        st.setString(3, caseCatCode);
         ResultSet rs = st.executeQuery();
         if (rs.next()) {
           CaseCategory newCat = new CaseCategory(rs); 
@@ -255,9 +264,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     return safetyWrap(() -> {
       PreparedStatement st;
       if (initial.isPresent()) {
-        st = CaseType.prepQueryTiming(conn, courtLocationId, caseCategoryCode, initial);  
+        st = CaseType.prepQueryTiming(conn, tylerDomain, courtLocationId, caseCategoryCode, initial);  
       } else {
-        st = CaseType.prepQueryBroad(conn, courtLocationId, caseCategoryCode);
+        st = CaseType.prepQueryBroad(conn, tylerDomain, courtLocationId, caseCategoryCode);
       }
       ResultSet rs = st.executeQuery();
       List<CaseType> types = new ArrayList<>();
@@ -271,7 +280,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
   
   public Optional<CaseType> getCaseTypeWith(String courtLocationId, String caseTypeCode) {
     return safetyWrapOpt(() -> {
-      try (PreparedStatement st = CaseType.prepQueryWithCode(conn, courtLocationId, caseTypeCode)) {
+      try (PreparedStatement st = CaseType.prepQueryWithCode(conn, tylerDomain, courtLocationId, caseTypeCode)) {
         ResultSet rs = st.executeQuery();
         if (rs.next()) {
           return Optional.of(new CaseType(rs));
@@ -292,8 +301,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     String query = CodeTableConstants.getCaseSubtypesFor();
     List<NameAndCode> subtypes = new ArrayList<NameAndCode>();
     try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, courtLocationId);
-      st.setString(2, caseType);
+      st.setString(1, tylerDomain);
+      st.setString(2, courtLocationId);
+      st.setString(3, caseType);
       ResultSet rs = st.executeQuery();
       while (rs.next()) {
         subtypes.add(new NameAndCode(rs.getString(2), rs.getString(1)));
@@ -310,8 +320,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
 
     String query = DataFieldRow.getAllFromDataFieldConfigForLoc();
     try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, courtLocationId);
-      st.setString(2, dataName);
+      st.setString(1, tylerDomain);
+      st.setString(2, courtLocationId);
+      st.setString(3, dataName);
       ResultSet rs = st.executeQuery();
       if (!rs.next()) {
         return DataFieldRow.MissingDataField(dataName);
@@ -335,7 +346,8 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
 
     String query = DataFieldRow.getAllDataFieldConfigsForLoc();
     try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, courtLocationId);
+      st.setString(1, tylerDomain);
+      st.setString(2, courtLocationId);
       ResultSet rs = st.executeQuery();
       var dataFieldMap = new HashMap<String, DataFieldRow>();
       while (rs.next()) {
@@ -360,8 +372,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
 
     String query = CodeTableConstants.getProcedureOrRemedy();
     try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, courtLocationId);
-      st.setString(2, caseCategory);
+      st.setString(1, tylerDomain);
+      st.setString(2, courtLocationId);
+      st.setString(3, caseCategory);
       ResultSet rs = st.executeQuery();
       List<NameAndCode> names = new ArrayList<NameAndCode>();
       while (rs.next()) {
@@ -377,14 +390,14 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
   public List<FilingCode> getFilingType(String courtLocationId, String categoryCode, String typeCode, boolean initial) {
     return safetyWrap(() -> {
       List<FilingCode> filingTypes = new ArrayList<FilingCode>();
-      try (PreparedStatement specificSt = FilingCode.prepQueryWithCaseInfo(conn, initial, courtLocationId, categoryCode, typeCode)) {
+      try (PreparedStatement specificSt = FilingCode.prepQueryWithCaseInfo(conn, initial, tylerDomain, courtLocationId, categoryCode, typeCode)) {
         ResultSet rs = specificSt.executeQuery();
         while (rs.next()) {
           filingTypes.add(new FilingCode(rs));
         }
         // If there's nothing for the specific category and type, then get filing types without categories or types
         if (filingTypes.isEmpty()) {
-          try (PreparedStatement broadSt = FilingCode.prepQueryNoCaseInfo(conn, initial, courtLocationId)) {
+          try (PreparedStatement broadSt = FilingCode.prepQueryNoCaseInfo(conn, initial, tylerDomain, courtLocationId)) {
             broadSt.setString(1, courtLocationId);
             ResultSet broadRs = broadSt.executeQuery();
            while(broadRs.next()) {
@@ -399,7 +412,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
 
   public Optional<FilingCode> getFilingTypeWith(String courtLocationId, String filingCode) {
     return safetyWrapOpt(() -> {
-      try (PreparedStatement st = FilingCode.prepQueryWithKey(conn, courtLocationId, filingCode)) {
+      try (PreparedStatement st = FilingCode.prepQueryWithKey(conn, tylerDomain, courtLocationId, filingCode)) {
         ResultSet rs = st.executeQuery();
         if (rs.next()) {
           return Optional.of(new FilingCode(rs));
@@ -425,8 +438,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       String query = CodeTableConstants.getDamageAmount();
       List<NameAndCode> amounts = new ArrayList<NameAndCode>();
       try (PreparedStatement st = conn.prepareStatement(query)) {
-        st.setString(1, courtLocationId);
-        st.setString(2, caseCategory);
+        st.setString(1, tylerDomain);
+        st.setString(2, courtLocationId);
+        st.setString(3, caseCategory);
         try (ResultSet rs = st.executeQuery()) {
           while (rs.next()) {
             amounts.add(new NameAndCode(rs.getString(2), rs.getString(1)));
@@ -442,8 +456,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       String query = PartyType.getPartyTypeFromCaseType();
       List<PartyType> partyTypes = new ArrayList<>();
       try (PreparedStatement caseSt = conn.prepareStatement(query)) {
-        caseSt.setString(1, courtLocationId);
-        caseSt.setString(2, typeCode);
+        caseSt.setString(1, tylerDomain);
+        caseSt.setString(2, courtLocationId);
+        caseSt.setString(3, typeCode);
         try (ResultSet rs = caseSt.executeQuery()) {
           while (rs.next()) {
             partyTypes.add(new PartyType(rs));
@@ -468,8 +483,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
   public List<CrossReference> getCrossReference(String courtLocationId, String caseTypeId) {
     return safetyWrap(() -> {
       try (PreparedStatement st = conn.prepareStatement(CrossReference.query())) {
-        st.setString(1, courtLocationId);
-        st.setString(2, caseTypeId);
+        st.setString(1, tylerDomain);
+        st.setString(2, courtLocationId);
+        st.setString(3, caseTypeId);
         ResultSet rs = st.executeQuery();
         List<CrossReference> types = new ArrayList<>();
         while (rs.next()) {
@@ -485,7 +501,8 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       String query  = ServiceCodeType.query();
       List<ServiceCodeType> types = new ArrayList<>();
       try (PreparedStatement st = conn.prepareStatement(query)) {
-        st.setString(1, courtLocationId);
+        st.setString(1, tylerDomain);
+        st.setString(2, courtLocationId);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
           types.add(new ServiceCodeType(rs));
@@ -529,8 +546,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
 
     String specificQuery = DocumentTypeTableRow.getDocumentTypeWithFilingCode();
     try (PreparedStatement specificSt = conn.prepareStatement(specificQuery)) {
-      specificSt.setString(1, courtLocationId);
-      specificSt.setString(2, filingCodeId);
+      specificSt.setString(1, tylerDomain);
+      specificSt.setString(2, courtLocationId);
+      specificSt.setString(3, filingCodeId);
       ResultSet spefRs = specificSt.executeQuery();
       List<DocumentTypeTableRow> docTypes = new ArrayList<DocumentTypeTableRow>();
       while (spefRs.next()) {
@@ -539,7 +557,8 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       if (docTypes.isEmpty()) {
         String broadQuery = DocumentTypeTableRow.getDocumentTypeNoFiling();
         try (PreparedStatement broadSt = conn.prepareStatement(broadQuery)) {
-          broadSt.setString(1, courtLocationId);
+          broadSt.setString(1, tylerDomain);
+          broadSt.setString(2, courtLocationId);
           ResultSet broadRs = broadSt.executeQuery();
           while (broadRs.next()) {
            docTypes.add(new DocumentTypeTableRow(broadRs));
@@ -561,8 +580,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
 
     String query = CodeTableConstants.getMotionTypes();
     try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, courtLocationId);
-      st.setString(2, filingCodeId);
+      st.setString(1, tylerDomain);
+      st.setString(2, courtLocationId);
+      st.setString(3, filingCodeId);
       ResultSet rs = st.executeQuery();
       List<NameAndCode> motions = new ArrayList<NameAndCode>();
       while (rs.next()) {
@@ -583,7 +603,8 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
 
     String query = CodeTableConstants.getNameSuffixes();
     try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, courtLocationId);
+      st.setString(1, tylerDomain);
+      st.setString(2, courtLocationId);
       ResultSet rs = st.executeQuery();
       List<NameAndCode> motions = new ArrayList<NameAndCode>();
       while (rs.next()) {
@@ -604,8 +625,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
 
     String query = FilingComponent.getFilingComponents();
     try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, courtLocationId);
-      st.setString(2, filingCodeId);
+      st.setString(1, tylerDomain);
+      st.setString(2, courtLocationId);
+      st.setString(3, filingCodeId);
       ResultSet rs = st.executeQuery();
       List<FilingComponent> components = new ArrayList<FilingComponent>();
       while (rs.next()) {
@@ -628,8 +650,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     try (PreparedStatement st = conn.prepareStatement(query)) {
       // TODO(brycew-later): Tyler docs say state is a system table, but there's one per court?
       // Hardcoding the system "0" for now
-      st.setString(1, "0");
-      st.setString(2, country);
+      st.setString(1, tylerDomain);
+      st.setString(2, "0");
+      st.setString(3, country);
       ResultSet rs = st.executeQuery();
       List<String> stateCodes = new ArrayList<String>();
       while (rs.next()) {
@@ -646,7 +669,8 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     return safetyWrap(() -> {
       String query = FileType.fileTypeQueries();
       try (PreparedStatement st = conn.prepareStatement(query)) {
-        st.setString(1, courtId);
+        st.setString(1, tylerDomain);
+        st.setString(2, courtId);
         ResultSet rs = st.executeQuery();
         List<FileType> types = new ArrayList<FileType>();
         while (rs.next()) {
@@ -661,7 +685,8 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     return safetyWrap(() -> {
       String query = FilerType.query();
       try (PreparedStatement st = conn.prepareStatement(query)) {
-        st.setString(1, courtId);
+        st.setString(1, tylerDomain);
+        st.setString(2, courtId);
         ResultSet rs = st.executeQuery();
         List<FilerType> types = new ArrayList<FilerType>();
         while (rs.next()) {
@@ -680,7 +705,8 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
 
     String query = CodeTableConstants.getFilingStatuses();
     try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, courtId);
+      st.setString(1, tylerDomain);
+      st.setString(2, courtId);
       ResultSet rs = st.executeQuery();
       List<NameAndCode> names = new ArrayList<NameAndCode>();
       while (rs.next()) {
@@ -695,7 +721,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
 
   public List<OptionalServiceCode> getOptionalServices(String courtId, String filingCode) {
     return safetyWrap(() -> {
-      try (PreparedStatement st = OptionalServiceCode.prepQuery(conn, courtId, filingCode)) {
+      try (PreparedStatement st = OptionalServiceCode.prepQuery(conn, tylerDomain, courtId, filingCode)) {
         ResultSet rs = st.executeQuery();
         List<OptionalServiceCode> services = new ArrayList<OptionalServiceCode>();
         while (rs.next()) {
@@ -710,7 +736,8 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     return safetyWrap(() -> {
       String query = CodeTableConstants.getLanguages();
       try (PreparedStatement st = conn.prepareStatement(query)) {
-        st.setString(1, courtLocationId);
+        st.setString(1, tylerDomain);
+        st.setString(2, courtLocationId);
         ResultSet rs = st.executeQuery();
         List<String> languages = new ArrayList<String>();
         while (rs.next()) {
@@ -809,14 +836,14 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       log.error("SQL connection is null during getAllLocations");
       return List.of();
     }
-    try (Statement st = conn.createStatement()) {
-      String query = CourtLocationInfo.allOrderedQuery();
-      ResultSet rs = st.executeQuery(query);
+    try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.allOrderedQuery())) {
+      st.setString(1, tylerDomain);
+      ResultSet rs = st.executeQuery();
       List<String> locs = new ArrayList<String>();
       while (rs.next()) {
         locs.add(rs.getString(1));
       }
-
+      rs.close();
       return locs;
     } catch (SQLException ex) {
       log.error("SQLException: " + ex);
@@ -829,8 +856,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
 
   public List<NameAndCode> getLocationNames() {
     return safetyWrap(() -> {
-      try (Statement st = conn.createStatement();
-           ResultSet rs = st.executeQuery(CourtLocationInfo.allNames())) {
+      try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.allNames())) {
+        st.setString(1, tylerDomain);
+        ResultSet rs = st.executeQuery(); 
         List<NameAndCode> names = new ArrayList<NameAndCode>();
         while (rs.next()) {
           names.add(new NameAndCode(rs.getString(1), rs.getString(2)));
@@ -842,8 +870,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
 
   public List<String> getFileableLocations() {
     return safetyWrap(() -> {
-      try (Statement st = conn.createStatement();
-           ResultSet rs = st.executeQuery(CourtLocationInfo.fileableQuery())) {
+      try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.fileableQuery())) {
+        st.setString(1, tylerDomain);
+        ResultSet rs = st.executeQuery();
         List<String> codes = new ArrayList<String>();
         while (rs.next()) {
           codes.add(rs.getString(1));
@@ -855,8 +884,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
   
   public List<NameAndCode> getFileableLocationNames() {
     return safetyWrap(() -> {
-      try (Statement st = conn.createStatement();
-           ResultSet rs = st.executeQuery(CourtLocationInfo.fileableQuery())) {
+      try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.fileableQuery())) {
+        st.setString(1, tylerDomain);
+        ResultSet rs = st.executeQuery();
         List<NameAndCode> codes = new ArrayList<NameAndCode>();
         while (rs.next()) {
           codes.add(new NameAndCode(rs.getString(1), rs.getString(2)));
@@ -870,7 +900,8 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
   public Optional<CourtLocationInfo> getFullLocationInfo(String courtId) {
     return safetyWrapOpt(() -> {
       try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.fullSingleQuery())) {
-        st.setString(1, courtId);
+        st.setString(1, tylerDomain);
+        st.setString(2, courtId);
         ResultSet rs = st.executeQuery();
         if (rs.next()) {
           CourtLocationInfo info = new CourtLocationInfo(rs);
@@ -888,7 +919,8 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     return safetyWrap(() -> {
       String query = Disclaimer.getDisclaimerRequirements();
       try  (PreparedStatement st = conn.prepareStatement(query)) {
-        st.setString(1, courtLocation);
+        st.setString(1, tylerDomain);
+        st.setString(2, courtLocation);
         ResultSet rs = st.executeQuery();
         List<Disclaimer> disclaimers = new ArrayList<Disclaimer>();
         while (rs.next()) {

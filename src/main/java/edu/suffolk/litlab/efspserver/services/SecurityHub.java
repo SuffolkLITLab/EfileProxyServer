@@ -1,11 +1,13 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
@@ -17,7 +19,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.db.NewTokens;
 import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetLogin;
 
@@ -39,14 +40,31 @@ public class SecurityHub {
   private final static Logger log = 
       LoggerFactory.getLogger(SecurityHub.class); 
   
-  private final LoginInterface tylerLoginObj;
+  private final List<LoginInterface> tylerLoginObjs;
   private final LoginInterface jeffNetLoginObj;
-  private final DataSource ds;
+  private final Map<String, Function<JsonNode, Optional<Map<String, String>>>> loginFunctions;
+  private final DataSource userDs;
   
-  public SecurityHub(DataSource ds, String jurisdiction) {
-    this.ds = ds;
-    this.tylerLoginObj = new TylerLogin(jurisdiction);
+  /**
+   * 
+   * @param ds Gives connections to the user SQL table
+   * @param env the running environment, i.e. which Tyler instance to connect to, "stage" vs "prod"
+   * @param jurisdictions a list of Tyler jurisdictions to connect to. See SoapClientChooser.
+   */
+  public SecurityHub(DataSource userDs, Optional<String> env, List<String> jurisdictions) {
+    this.userDs = userDs;
+    if (env.isEmpty() || jurisdictions.isEmpty()) {
+      this.tylerLoginObjs = List.of();
+    } else {
+      this.tylerLoginObjs = jurisdictions.stream()
+          .map(j -> new TylerLogin(j, env.get()))
+          .collect(Collectors.toList());
+    }
     this.jeffNetLoginObj = new JeffNetLogin();
+
+    this.loginFunctions = 
+        Stream.concat(this.tylerLoginObjs.stream(), Stream.of(this.jeffNetLoginObj))
+          .collect(Collectors.toMap(lo -> lo.getLoginName(), lo -> (info) -> lo.login(info)));
   }
 
   /** 
@@ -60,38 +78,13 @@ public class SecurityHub {
    *   user. 
    */
   public Optional<NewTokens> login(String apiKey, String jsonLoginInfo) {
-    Map<String, Function<JsonNode, Optional<Map<String, String>>>> loginFunctions = Map.of(
-        "tyler", (info) -> tylerLoginObj.login(info),
-        "jeffnet", (info) -> jeffNetLoginObj.login(info));
-    
-    try (Connection conn = ds.getConnection()) {
+    try (Connection conn = userDs.getConnection()) {
       LoginDatabase ld = new LoginDatabase(conn);
       return ld.login(apiKey,  jsonLoginInfo, loginFunctions);
     } catch (SQLException e) {
       log.error(StdLib.strFromException(e)); 
       return Optional.empty();
-    } catch (NoSuchAlgorithmException e) {
-      log.error(StdLib.strFromException(e)); 
-      return Optional.empty();
     }
   }
-  
-  public Optional<AtRest> getAtRestInfo(String apiKey) {
-    if (apiKey == null || apiKey.isBlank()) {
-      return Optional.empty();
-    }
-    try (Connection conn = ds.getConnection()) {
-      LoginDatabase ld = new LoginDatabase(conn);
-      return ld.getAtRestInfo(apiKey); 
-    } catch (SQLException e) {
-      log.error(StdLib.strFromException(e)); 
-      return Optional.empty();
-    } catch (NoSuchAlgorithmException e) {
-      log.error(StdLib.strFromException(e)); 
-      return Optional.empty();
-    }
-  }
-  
-  
   
 }

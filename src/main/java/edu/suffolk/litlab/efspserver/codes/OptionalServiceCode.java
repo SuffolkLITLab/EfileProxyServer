@@ -45,11 +45,12 @@ public class OptionalServiceCode {
         rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9));
   }
   
-  public static PreparedStatement prepQuery(Connection conn, String courtId, 
-      String filingCodeId) throws SQLException {
+  public static PreparedStatement prepQuery(Connection conn, String domain, 
+      String courtId, String filingCodeId) throws SQLException {
     PreparedStatement st = conn.prepareStatement(query());
-    st.setString(1, courtId);
-    st.setString(2, filingCodeId);
+    st.setString(1, domain);
+    st.setString(2, courtId);
+    st.setString(3, filingCodeId);
     return st;
   }
   
@@ -58,7 +59,7 @@ public class OptionalServiceCode {
         SELECT code, name, displayorder, fee, filingcodeid, multiplier, altfeedesc, hasfeeprompt,
           feeprompttext
         FROM optionalservices
-        WHERE location=? AND filingcodeid=?
+        WHERE domain=? AND location=? AND filingcodeid=?
         """;
   }
   

@@ -60,11 +60,15 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
   private static Logger log =
       LoggerFactory.getLogger(OasisEcfFiler.class);
 
-  private DataSource codeDs;
-  private DataSource userDs;
-  private OrgMessageSender msgSender;
+  private final DataSource codeDs;
+  private final DataSource userDs;
+  private final OrgMessageSender msgSender;
+  private final String jurisdiction;
+  private final String env;
 
-  public OasisEcfv5WsCallback(DataSource codeDs, DataSource userDs, OrgMessageSender msgSender) {
+  public OasisEcfv5WsCallback(String jurisdiction, String env, DataSource codeDs, DataSource userDs, OrgMessageSender msgSender) {
+    this.jurisdiction = jurisdiction;
+    this.env = env;
     this.codeDs = codeDs;
     this.userDs = userDs;
     this.msgSender = msgSender;
@@ -141,7 +145,7 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
       NotifyFilingReviewCompleteMessageType revFiling,
       Transaction trans) {
     List<NameAndCode> names = List.of(); 
-    try (CodeDatabase cd = new CodeDatabase(codeDs.getConnection())){
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())){
       names = cd.getFilingStatuses(trans.courtId);
     } catch (SQLException ex) {
       log.error("In ECF Callback, can't get Codes DB:" + StdLib.strFromException(ex));

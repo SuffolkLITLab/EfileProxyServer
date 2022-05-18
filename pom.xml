@@ -14,11 +14,11 @@
     <!-- to quickly find dependencies that can be updated, run `mvn versions:display-dependency-updates` -->
 
     <properties>
-        <cxf.version>3.4.5</cxf.version>
+        <cxf.version>3.5.1</cxf.version>
         <junit.version>5.8.2</junit.version>
         <slf4j.version>1.7.32</slf4j.version>
         <bouncycastle.version>1.70</bouncycastle.version>
-        <testcontainers.version>1.16.2</testcontainers.version>
+        <testcontainers.version>1.17.1</testcontainers.version>
         <maven-surefire.version>3.0.0-M5</maven-surefire.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
@@ -177,7 +177,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.3.1</version>
+            <version>42.3.5</version>
         </dependency>
         <dependency>
             <groupId>com.hubspot</groupId>

@@ -9,6 +9,8 @@ public interface LoginInterface {
   
   Optional<Map<String, String>> login(JsonNode loginInfo);
   
+  String getLoginName();
+  
   String getHeaderKey();
 
 }

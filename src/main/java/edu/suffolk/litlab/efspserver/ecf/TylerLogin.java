@@ -24,18 +24,20 @@ public class TylerLogin implements LoginInterface {
 
   private final EfmUserService userServiceFactory;
   private static final String HEADER_KEY = "TYLER-TOKEN";
+  private final String jurisdiction;
 
-  public TylerLogin(String jurisdiction) {
-    Optional<EfmUserService> maybeUserFactory = SoapClientChooser.getEfmUserFactory(jurisdiction);
+  public TylerLogin(String jurisdiction, String env) {
+    this.jurisdiction =jurisdiction;
+    Optional<EfmUserService> maybeUserFactory = SoapClientChooser.getEfmUserFactory(jurisdiction, env);
     if (maybeUserFactory.isPresent()) {
       userServiceFactory = maybeUserFactory.get(); 
     } else {
-      throw new RuntimeException(jurisdiction + " not in SoapClientChooser for EFMUser");
+      throw new RuntimeException(jurisdiction + "-" + env + " not in SoapClientChooser for EFMUser");
     }
   }
   
-  public static String getHeaderKeyStatic() {
-    return HEADER_KEY;
+  public static String getHeaderKeyFromJurisdiction(String jurisdiction) {
+    return HEADER_KEY + "-" + jurisdiction.toUpperCase();
   }
 
   @Override
@@ -69,7 +71,7 @@ public class TylerLogin implements LoginInterface {
     } else {
       return Optional.of(Map.of(
           getHeaderKey(), authRes.getEmail() + ":" + authRes.getPasswordHash(),
-          getHeaderId(), authRes.getUserID()));
+          getHeaderId(jurisdiction), authRes.getUserID()));
     }
   }
 
@@ -87,11 +89,16 @@ public class TylerLogin implements LoginInterface {
 
   @Override
   public String getHeaderKey() {
-    return HEADER_KEY; 
+    return getHeaderKeyFromJurisdiction(this.jurisdiction); 
   }
   
-  public static String getHeaderId() {
-    return "TYLER-ID";
+  @Override
+  public String getLoginName() {
+    return "tyler-" + this.jurisdiction;
+  }
+  
+  public static String getHeaderId(String jurisdiction) {
+    return "TYLER-ID-" + jurisdiction;
   }
 
 }

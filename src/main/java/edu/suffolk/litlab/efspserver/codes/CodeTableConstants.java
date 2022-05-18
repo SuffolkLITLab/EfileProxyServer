@@ -10,7 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class CodeTableConstants {
   /*
-   * a list of CREAT INDEX queries you should run for on creation of these tables.
+   * a list of CREATE INDEX queries you should run for on creation of these tables.
    */
   private static final Map<String, List<String>> tableIndices = new HashMap<>();
   private static final Map<String, TableColumns> tableColumns;
@@ -20,9 +20,8 @@ public class CodeTableConstants {
   private static final Map<String, String> dropQueries = new HashMap<>();
 
   // TODO(brycew-later): the types are confusing here: some are only ever ints,
-  // but
-  // are coded as normalizedStrings in the XML. Unclear what to make ints in the
-  // DB.
+  // but are coded as normalizedStrings in the XML. Unclear what to make ints in
+  // the DB.
   static {
     List<Pair<String, String>> locationColumns = new ArrayList<Pair<String, String>>();
     locationColumns.add(new ImmutablePair<String, String>("code", "text"));
@@ -172,11 +171,12 @@ public class CodeTableConstants {
           new ImmutablePair<String, String>("name", "text"),
           new ImmutablePair<String, String>("statuecodeid", "text"),
           new ImmutablePair<String, String>("efspcode", "text")))),
-        Map.entry("disclaimerrequirement", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"), 
-            new ImmutablePair<String, String>("name", "text"),
-            new ImmutablePair<String, String>("listorder", "text"),
-            new ImmutablePair<String, String>("requirementtext", "text"),
-            new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("disclaimerrequirement", makeCourtColumnInfo(List.of(
+          new ImmutablePair<>("code", "text"), 
+          new ImmutablePair<>("name", "text"),
+          new ImmutablePair<>("listorder", "text"),
+          new ImmutablePair<>("requirementtext", "text"),
+          new ImmutablePair<>("efspcode", "text")))),
         Map.entry("driverlicensetype", makeCourtColumnInfo(List.of(
           new ImmutablePair<String, String>("code", "text"),
           new ImmutablePair<String, String>("name", "text"),
@@ -220,20 +220,23 @@ public class CodeTableConstants {
           new ImmutablePair<String, String>("useduedate", "text"),
           new ImmutablePair<String, String>("isproposedorder", "text"),
           new ImmutablePair<String, String>("efspcode", "text")))),
-        Map.entry("filingcomponent", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"), 
-          new ImmutablePair<String, String>("name", "text"),
-          new ImmutablePair<String, String>("filingcodeid", "text"),
-          new ImmutablePair<String, String>("required", "text"),
-          new ImmutablePair<String, String>("allowmultiple", "text"),
-          new ImmutablePair<String, String>("displayorder", "text"),
-          new ImmutablePair<String, String>("efspcode", "text")))),
-        Map.entry("generaloffense", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"), 
-          new ImmutablePair<String, String>("name", "text"),
-          new ImmutablePair<String, String>("statutecodeid", "text"),
-          new ImmutablePair<String, String>("efspcode", "text")))),
-        Map.entry("haircolor", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"),
-          new ImmutablePair<String, String>("name", "text"), 
-          new ImmutablePair<String, String>("efspcode", "text")))),
+        Map.entry("filingcomponent", makeCourtColumnInfo(List.of(
+          new ImmutablePair<>("code", "text"), 
+          new ImmutablePair<>("name", "text"),
+          new ImmutablePair<>("filingcodeid", "text"),
+          new ImmutablePair<>("required", "text"),
+          new ImmutablePair<>("allowmultiple", "text"),
+          new ImmutablePair<>("displayorder", "text"),
+          new ImmutablePair<>("efspcode", "text")))),
+        Map.entry("generaloffense", makeCourtColumnInfo(List.of(
+          new ImmutablePair<>("code", "text"), 
+          new ImmutablePair<>("name", "text"),
+          new ImmutablePair<>("statutecodeid", "text"),
+          new ImmutablePair<>("efspcode", "text")))),
+        Map.entry("haircolor", makeCourtColumnInfo(List.of(
+          new ImmutablePair<>("code", "text"),
+          new ImmutablePair<>("name", "text"), 
+          new ImmutablePair<>("efspcode", "text")))),
         Map.entry("language", makeCourtColumnInfo(List.of(
           new ImmutablePair<String, String>("code", "text"),
           new ImmutablePair<String, String>("name", "text"), 
@@ -290,31 +293,38 @@ public class CodeTableConstants {
           new ImmutablePair<String, String>("helptext", "text"), 
           new ImmutablePair<String, String>("isrequired", "text"),
           new ImmutablePair<String, String>("efspcode", "text")))),
-        Map.entry("race", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"),
-          new ImmutablePair<String, String>("name", "text"),
-          new ImmutablePair<String, String>("efspcode", "text")))),
-        Map.entry("servicetype", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"),
-          new ImmutablePair<String, String>("name", "text"), 
-          new ImmutablePair<String, String>("servicemethod", "text"),
-          new ImmutablePair<String, String>("fee", "text"), 
-          new ImmutablePair<String, String>("disclaimertext", "text")))),
-        Map.entry("statute", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"), 
-          new ImmutablePair<String, String>("name", "text"),
-          new ImmutablePair<String, String>("word", "text"), 
-          new ImmutablePair<String, String>("referenceid", "text"),
-          new ImmutablePair<String, String>("efspcode", "text")))),
-        Map.entry("statutetype", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"),
-          new ImmutablePair<String, String>("name", "text"), 
-          new ImmutablePair<String, String>("efspcode", "text")))),
-        Map.entry("vehiclecolor", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"),
-          new ImmutablePair<String, String>("name", "text"), 
-          new ImmutablePair<String, String>("efspcode", "text")))),
-        Map.entry("vehiclemake", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"),
-          new ImmutablePair<String, String>("name", "text"), 
-          new ImmutablePair<String, String>("efspcode", "text")))),
-        Map.entry("vehicletype", makeCourtColumnInfo(List.of(new ImmutablePair<String, String>("code", "text"),
-          new ImmutablePair<String, String>("name", "text"), 
-          new ImmutablePair<String, String>("efspcode", "text"))))
+        Map.entry("race", makeCourtColumnInfo(List.of(
+          new ImmutablePair<>("code", "text"),
+          new ImmutablePair<>("name", "text"),
+          new ImmutablePair<>("efspcode", "text")))),
+        Map.entry("servicetype", makeCourtColumnInfo(List.of(
+          new ImmutablePair<>("code", "text"),
+          new ImmutablePair<>("name", "text"), 
+          new ImmutablePair<>("servicemethod", "text"),
+          new ImmutablePair<>("fee", "text"), 
+          new ImmutablePair<>("disclaimertext", "text")))),
+        Map.entry("statute", makeCourtColumnInfo(List.of(
+          new ImmutablePair<>("code", "text"), 
+          new ImmutablePair<>("name", "text"),
+          new ImmutablePair<>("word", "text"), 
+          new ImmutablePair<>("referenceid", "text"),
+          new ImmutablePair<>("efspcode", "text")))),
+        Map.entry("statutetype", makeCourtColumnInfo(List.of(
+          new ImmutablePair<>("code", "text"),
+          new ImmutablePair<>("name", "text"), 
+          new ImmutablePair<>("efspcode", "text")))),
+        Map.entry("vehiclecolor", makeCourtColumnInfo(List.of(
+          new ImmutablePair<>("code", "text"),
+          new ImmutablePair<>("name", "text"), 
+          new ImmutablePair<>("efspcode", "text")))),
+        Map.entry("vehiclemake", makeCourtColumnInfo(List.of(
+          new ImmutablePair<>("code", "text"),
+          new ImmutablePair<>("name", "text"), 
+          new ImmutablePair<>("efspcode", "text")))),
+        Map.entry("vehicletype", makeCourtColumnInfo(List.of(
+          new ImmutablePair<>("code", "text"),
+          new ImmutablePair<>("name", "text"), 
+          new ImmutablePair<>("efspcode", "text"))))
     );
     for (Map.Entry<String, TableColumns> table : tableColumns.entrySet()) {
       createQueries.put(table.getKey(), createTableQuery(table.getKey(), table.getValue()));
@@ -324,7 +334,6 @@ public class CodeTableConstants {
         deleteFromQueries.put(table.getKey(), "DELETE FROM " + table.getKey() + " WHERE location=?");
       }
     }
-
     
     tableIndices.put("optionalservices", List.of(
         "CREATE INDEX ON optionalservices (location)",
@@ -382,7 +391,6 @@ public class CodeTableConstants {
   
   public static boolean isCourtTable(String tableName) {
     return tableColumns.getOrDefault(tableName, new TableColumns()).needsExtraLocCol;
-    
   }
 
   public static String getTableExists() {
@@ -414,36 +422,36 @@ public class CodeTableConstants {
   public static String getCaseSubtypesFor() {
     return """
         SELECT code, name
-        FROM casesubtype WHERE location=? AND casetypeid=?""";
+        FROM casesubtype WHERE domain=? AND location=? AND casetypeid=?""";
   }
 
   public static String getProcedureOrRemedy() {
-    return "SELECT name, code FROM procedureremedy WHERE location=? AND casecategory=?";
+    return "SELECT name, code FROM procedureremedy WHERE domain=? AND location=? AND casecategory=?";
   }
 
   public static String getMotionTypes() {
-    return "SELECT name, code FROM motiontype WHERE location=? AND filingcodeid=?";
+    return "SELECT name, code FROM motiontype WHERE domain=? AND location=? AND filingcodeid=?";
   }
 
   public static String getSpecificStatesForCountryForLoc() {
     return "SELECT code, name, countrycode, location "
-        + " FROM state WHERE location=? and countrycode=?";
+        + " FROM state WHERE domain=? AND location=? and countrycode=?";
   }
 
   public static String getFilingStatuses() {
-    return "SELECT name, code FROM filingstatus WHERE location=?";
+    return "SELECT name, code FROM filingstatus WHERE domain=? AND location=?";
   }
 
   public static String getLanguages() {
-    return "SELECT code, name, efspcode, location FROM languages WHERE location=?";
+    return "SELECT code, name, efspcode, location FROM languages WHERE domain=? AND location=?";
   }
 
   public static String getDamageAmount() {
-    return "SELECT code, name, efspcode, location FROM damageamount WHERE location=? AND casecategory=?";
+    return "SELECT code, name, efspcode, location FROM damageamount WHERE domain=? AND location=? AND casecategory=?";
   }
 
   public static String getNameSuffixes() {
-    return "SELECT name, code FROM namesuffix WHERE location=?";
+    return "SELECT name, code FROM namesuffix WHERE domain=? AND location=?";
   }
   
   public static String vacuumAnalyzeAll() {
@@ -508,6 +516,7 @@ public class CodeTableConstants {
     if (tc.needsExtraLocCol) {
       colNames.append(", location");
     }
+    colNames.append(", domain");
     insertLocation.append(colNames.toString());
     insertLocation.append(") VALUES (");
     for (int i = 0; i < tc.mainList.size(); i++) {
@@ -519,6 +528,7 @@ public class CodeTableConstants {
     if (tc.needsExtraLocCol) {
       insertLocation.append(", ?"); 
     }
+    insertLocation.append(", ?");
     insertLocation.append(")");
     return insertLocation.toString();
   }
@@ -538,6 +548,8 @@ public class CodeTableConstants {
     if (tc.needsExtraLocCol) {
       createLocation.append(", \"location\" text");
     }
+    createLocation.append(", \"domain\" text");
+
     if (!tc.primaryKeys.isEmpty()) {
       createLocation.append(
           ", PRIMARY KEY(" + tc.primaryKeys.stream().collect(Collectors.joining(",")) + ")");

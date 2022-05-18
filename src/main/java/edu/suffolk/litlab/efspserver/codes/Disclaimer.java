@@ -18,6 +18,6 @@ public class Disclaimer {
   }
 
   public static String getDisclaimerRequirements() {
-    return "SELECT code, name, listorder, requirementtext FROM disclaimerrequirement WHERE location=?";
+    return "SELECT code, name, listorder, requirementtext FROM disclaimerrequirement WHERE domain=? AND location=?";
   }
 }

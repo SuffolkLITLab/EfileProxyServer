@@ -1,7 +1,5 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPointsToMap;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -26,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.AtRest;
+import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.db.MessageInfo;
 import edu.suffolk.litlab.efspserver.db.MessageSettingsDatabase;
 
@@ -35,12 +34,9 @@ public class MessageSettingsService {
   private static Logger log = 
       LoggerFactory.getLogger(MessageSettingsService.class); 
   
-  private final SecurityHub security;
   private final DataSource ds; 
 
-  public MessageSettingsService(SecurityHub security,
-      DataSource ds) {
-    this.security = security;
+  public MessageSettingsService(DataSource ds) {
     this.ds = ds;
   }
 
@@ -48,18 +44,19 @@ public class MessageSettingsService {
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection();
-    return Response.ok(endPointsToMap(ef.findRESTEndpoints(List.of(MessageSettingsService.class)))).build();
+    EndpointReflection ef = new EndpointReflection("");
+    return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(MessageSettingsService.class)))).build();
   }
   
   @GET
   @Path("/settings")
   public Response getMsgSettings(@Context HttpHeaders httpHeaders) {
-    Optional<AtRest> atRest = security.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY")); 
-    if (atRest.isEmpty()) {
-      return Response.status(401).entity("Not logged in to efile").build();
-    }
     try (Connection conn = ds.getConnection()) {
+      LoginDatabase ld = new LoginDatabase(conn);
+      Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY")); 
+      if (atRest.isEmpty()) {
+        return Response.status(401).entity("Not logged in to efile").build();
+      }
       var md = new MessageSettingsDatabase(conn);
       Optional<MessageInfo> info = md.findMessageInfo(atRest.get().serverId);
       if (info.isEmpty()) {
@@ -76,26 +73,26 @@ public class MessageSettingsService {
   @PATCH
   @Path("/settings")
   public Response setMsgSettings(@Context HttpHeaders httpHeaders, String newInfoStr) {
-    Optional<AtRest> atRest = security.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY")); 
-    if (atRest.isEmpty()) {
-      return Response.status(401).entity("Not logged in to efile").build();
-    }
-
-    if (newInfoStr == null || newInfoStr.isBlank()) {
-      return Response.status(200).build();
-    }
-    ObjectMapper mapper = new ObjectMapper();
-    
-    JsonNode node;
-    try {
-      node = mapper.readTree(newInfoStr);
-    } catch (JsonProcessingException e) {
-      log.error("You need to pass a JSON string");
-      return Response.status(400).build();
-    }
-    MessageInfo newInfo = new MessageInfo(node);
-    
     try (Connection conn = ds.getConnection()) {
+      LoginDatabase ld = new LoginDatabase(conn);
+      Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY")); 
+      if (atRest.isEmpty()) {
+        return Response.status(401).entity("Not logged in to efile").build();
+      }
+      if (newInfoStr == null || newInfoStr.isBlank()) {
+        return Response.status(200).build();
+      }
+      ObjectMapper mapper = new ObjectMapper();
+    
+      JsonNode node;
+      try {
+        node = mapper.readTree(newInfoStr);
+      } catch (JsonProcessingException e) {
+        log.error("You need to pass a JSON string");
+        return Response.status(400).build();
+      }
+      MessageInfo newInfo = new MessageInfo(node);
+
       var md = new MessageSettingsDatabase(conn);
       MessageInfo existingInfo = md.findMessageInfo(atRest.get().serverId) 
           .orElse(new MessageInfo(atRest.get().serverId, null, null, null, null));

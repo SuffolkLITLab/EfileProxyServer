@@ -20,7 +20,7 @@ public interface EfmModuleSetup {
   void shutdown();
   
   Set<String> getCourts();
-  EfmFilingInterface getInterface();
+  JurisdictionServiceHandle getServiceHandle();
   Optional<EfmRestCallbackInterface> getCallback();
   String getJurisdiction();
   

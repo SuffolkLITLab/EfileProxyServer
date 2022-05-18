@@ -46,7 +46,7 @@ public class CodesServiceTest {
   
   private void startServer() throws Exception {
     DataSource ds = DatabaseCreator.makeDataSource(postgres.getJdbcUrl(), postgres.getDatabaseName(), postgres.getUsername(), postgres.getPassword(), 2, 100);
-    cd = new CodeDatabase(ds.getConnection());
+    cd = new CodeDatabase("illinois", "stage", ds.getConnection());
     cd.createTablesIfAbsent();
     Map<String, List<String>> tableToCourts = Map.of(
         "location", List.of("0"),
@@ -65,7 +65,7 @@ public class CodesServiceTest {
 
     JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
     sf.setResourceClasses(CodesService.class);
-    sf.setResourceProvider(CodesService.class, new SingletonResourceProvider(new CodesService(ds)));
+    sf.setResourceProvider(CodesService.class, new SingletonResourceProvider(new CodesService("illinois", "stage", ds)));
     sf.setAddress(ENDPOINT_ADDRESS);
     Map<Object, Object> extensionMappings = Map.of(
         "xml", MediaType.APPLICATION_XML,
@@ -152,8 +152,6 @@ public class CodesServiceTest {
     assertEquals(
         ServiceHelpers.BASE_URL + "/codes/courts/adams/filing_codes/1234/filing_components", 
         node.get("getFilingComponents").asText());
-    
   }
-  
   
 }

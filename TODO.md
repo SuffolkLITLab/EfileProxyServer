@@ -1,3 +1,8 @@
+5/16/22:
+
+Maybe eventually https://neilmadden.blog/2018/08/30/moving-away-from-uuids/
+
+
 6/17/21:
 
 Tried looking into Spring, but honestly it seems like a huge mess, and I can't quite wrap my head around how it

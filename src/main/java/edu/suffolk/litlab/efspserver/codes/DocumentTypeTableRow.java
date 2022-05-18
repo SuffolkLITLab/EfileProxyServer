@@ -30,14 +30,14 @@ public class DocumentTypeTableRow {
     return """
         SELECT code, name, filingcodeid, iscourtuseonly, isdefault, efspcode, location 
         FROM documenttype 
-        WHERE location=? AND iscourtuseonly='False' AND filingcodeid=?""";
+        WHERE domain=? AND location=? AND iscourtuseonly='False' AND filingcodeid=?""";
   }
 
   public static String getDocumentTypeNoFiling() {
     return """
         SELECT code, name, filingcodeid, iscourtuseonly, isdefault, efspcode, location 
         FROM documenttype 
-        WHERE location=? AND iscourtuseonly='False' AND filingcodeid=''""";
+        WHERE domain=? AND location=? AND iscourtuseonly='False' AND filingcodeid=''""";
   }
   
   

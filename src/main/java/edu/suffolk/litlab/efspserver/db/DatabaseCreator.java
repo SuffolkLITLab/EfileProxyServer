@@ -41,14 +41,15 @@ public class DatabaseCreator {
     cpds.setPassword(pgPassword);
     SharedPoolDataSource tds = new SharedPoolDataSource();
     tds.setConnectionPoolDataSource(cpds);
+    tds.setDefaultAutoCommit(true);
     tds.setMaxTotal(maxConnections);
     tds.setDefaultMaxWait(Duration.ofMillis(waitForConnMillis));
     try (Connection conn = tds.getConnection()) {
-      conn.setAutoCommit(false);
+      conn.setAutoCommit(true);
     } catch (SQLException ex) {
       createNewDatabase(pgDb, pgFullUrl, pgUser, pgPassword);
       Connection conn = tds.getConnection();
-      conn.setAutoCommit(false);
+      conn.setAutoCommit(true);
       conn.close();
     }
     return tds;

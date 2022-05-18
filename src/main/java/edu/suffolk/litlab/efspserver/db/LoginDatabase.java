@@ -7,9 +7,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.RandomString;
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.codes.CodeTableConstants;
 
 public class LoginDatabase implements DatabaseInterface {
@@ -50,8 +51,12 @@ public class LoginDatabase implements DatabaseInterface {
   private final Connection conn;
   private final MessageDigest digest;
 
-  public LoginDatabase(Connection conn) throws NoSuchAlgorithmException {
-    this.digest = MessageDigest.getInstance("SHA-256");
+  public LoginDatabase(Connection conn) {
+    try {
+      this.digest = MessageDigest.getInstance("SHA-256");
+    } catch (NoSuchAlgorithmException ex) {
+      throw new AssertionError(ex);
+    }
     this.conn = conn;
   }
   
@@ -65,24 +70,22 @@ public class LoginDatabase implements DatabaseInterface {
       throw new SQLException();
     }
     
-    List<String> tableNames = List.of("at_rest_keys");
-    List<String> creates = List.of(atRestCreate); 
+    String tableName = "at_rest_keys";
+    String createQuery = atRestCreate; 
     String tableExistsQuery = CodeTableConstants.getTableExists();
-    for (int i = 0; i < tableNames.size(); i++) {
-      try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
-        existsSt.setString(1, tableNames.get(i));
-        ResultSet rs = existsSt.executeQuery();
-        if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
-          String createQuery = creates.get(i); 
-          try (PreparedStatement createSt = conn.prepareStatement(createQuery)) {
-            log.info("Full statement: " + createSt.toString());
-            int retVal = createSt.executeUpdate();
-            if (retVal < 0) {
-              log.warn("Issue when creating " + tableNames.get(i) + ": retVal == " + retVal);
-            }
+    try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
+      existsSt.setString(1, tableName);
+      ResultSet rs = existsSt.executeQuery();
+      if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
+        try (Statement createSt = conn.createStatement()) {
+          log.info("Full statement: " + createSt.toString());
+          int retVal = createSt.executeUpdate(createQuery);
+          if (retVal < 0) {
+            log.warn("Issue when creating " + tableName + ": retVal == " + retVal);
           }
         }
       }
+      rs.close();
     }
   }
   
@@ -107,7 +110,10 @@ public class LoginDatabase implements DatabaseInterface {
     return apiKey;
   }
   
-  public Optional<AtRest> getAtRestInfo(String apiKey) throws SQLException {
+  public Optional<AtRest> getAtRestInfo(String apiKey) {
+    if (apiKey == null || apiKey.isBlank()) {
+      return Optional.empty();
+    }
     String hash = makeHash(apiKey);
     String query = """
         SELECT server_id, server_name, api_key, tyler_enabled,
@@ -128,6 +134,9 @@ public class LoginDatabase implements DatabaseInterface {
       atRest.serverName = rs.getString(2);
       atRest.created = rs.getTimestamp(6);
       return Optional.of(atRest);
+    } catch (SQLException ex) {
+      log.error(StdLib.strFromException(ex));
+      return Optional.empty();
     }
   }
   
@@ -175,10 +184,19 @@ public class LoginDatabase implements DatabaseInterface {
       if (orgName.equalsIgnoreCase("api_key")) {
         continue;
       }
-      if (!loginFunctions.containsKey(orgName) 
-          || !atRest.get().enabled.containsKey(orgName)
-          || !atRest.get().enabled.get(orgName)) {
-        log.error("There is no " + orgName + " to login to: enabled map: " + atRest.get().enabled); 
+      // TODO(brycew): feels hacky, but we don't want an additional column to the db for each new jurisdiction
+      String permissionsName = orgName;
+      if (orgName.contains("-")) {
+        permissionsName = orgName.split("-")[0];
+      }
+      if (!loginFunctions.containsKey(orgName)) {
+        log.error("There is no " + orgName + " to login to: loginFunctions: " + loginFunctions.keySet()); 
+        return Optional.empty();
+      }
+
+      if(!atRest.get().enabled.containsKey(permissionsName)
+          || !atRest.get().enabled.get(permissionsName)) {
+        log.error("There is no " + permissionsName + " to login to: enabled map: " + atRest.get().enabled); 
         return Optional.empty();
       }
       Optional<Map<String, String>> maybeNewTokens = loginFunctions.get(orgName).apply(loginInfo.get(orgName));
