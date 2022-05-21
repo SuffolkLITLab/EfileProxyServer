@@ -177,7 +177,8 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       update.setString(1, courtName);
       update.setString(2, zipName);
       update.setString(3, doc.getIdentification().getVersion());
-      update.setString(4, doc.getIdentification().getVersion());
+      update.setString(4, tylerDomain);
+      update.setString(5, doc.getIdentification().getVersion());
       update.executeUpdate();
     } catch (SQLException ex) {
       log.error("Tried to execute an insert, but failed! Exception: " + ex.toString());
@@ -397,10 +398,10 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
         }
         // If there's nothing for the specific category and type, then get filing types without categories or types
         if (filingTypes.isEmpty()) {
-          try (PreparedStatement broadSt = FilingCode.prepQueryNoCaseInfo(conn, initial, tylerDomain, courtLocationId)) {
-            broadSt.setString(1, courtLocationId);
+          try (PreparedStatement broadSt = FilingCode.prepQueryNoCaseInfo(
+              conn, initial, tylerDomain, courtLocationId)) {
             ResultSet broadRs = broadSt.executeQuery();
-           while(broadRs.next()) {
+            while(broadRs.next()) {
               filingTypes.add(new FilingCode(broadRs));
             }
           }
@@ -467,7 +468,8 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
         if (partyTypes.isEmpty()) {
           String broadQuery = PartyType.getPartyTypeNoCaseType();
           try (PreparedStatement broadSt = conn.prepareStatement(broadQuery)) {
-            broadSt.setString(1, courtLocationId);
+            broadSt.setString(1, tylerDomain);
+            broadSt.setString(2, courtLocationId);
             try (ResultSet broadRs = broadSt.executeQuery()) {
               while (broadRs.next()) {
                 partyTypes.add(new PartyType(broadRs));
@@ -831,7 +833,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
    * @throws SQLException if something goes wrong, or if the connection hasn't
    *                      been made yet
    */
-  public List<String> getAllLocations() throws SQLException {
+  public List<String> getAllLocations() {
     if (conn == null) {
       log.error("SQL connection is null during getAllLocations");
       return List.of();
@@ -846,10 +848,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       rs.close();
       return locs;
     } catch (SQLException ex) {
-      log.error("SQLException: " + ex);
-      if (!conn.getAutoCommit()) {
-        conn.commit();
-      }
+      log.error(StdLib.strFromException(ex));
       return List.of();
     }
   }

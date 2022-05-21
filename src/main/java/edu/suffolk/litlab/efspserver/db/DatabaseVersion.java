@@ -59,6 +59,7 @@ public class DatabaseVersion {
       if (retVal < 0) {
         log.warn("Issue when creating schema_version: retVal == " + retVal);
       }
+      setSchemaVersion(CURRENT_VERSION);
     }
     return; 
   }

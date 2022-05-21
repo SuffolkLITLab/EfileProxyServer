@@ -83,7 +83,7 @@ public class CodeTableConstants {
           new ImmutablePair<String, String>("location", "text"),
           new ImmutablePair<String, String>("codelist", "text"), 
           new ImmutablePair<String, String>("installedversion", "text")),
-          List.of("location", "codelist"))),
+          List.of("location", "codelist", "domain"))),
         //////////// Tables that are both system wide, and court specific
         Map.entry("country", makeCourtColumnInfo(List.of(
           new ImmutablePair<String, String>("code", "text"), 
@@ -407,15 +407,15 @@ public class CodeTableConstants {
 
   public static String updateVersion() {
     return """
-        INSERT INTO installedversion (location, codelist, installedversion) VALUES(?, ?, ?)
-        ON CONFLICT (location, codelist) DO UPDATE SET installedversion=?""";
+        INSERT INTO installedversion (location, codelist, installedversion, domain) VALUES(?, ?, ?, ?)
+        ON CONFLICT (domain, location, codelist) DO UPDATE SET installedversion=?""";
   }
 
   public static String needToUpdateVersion() {
     return """
         SELECT v.location, v.codelist, iv.installedversion, v.version
         FROM version AS v LEFT OUTER JOIN installedversion AS iv
-        ON (v.location=iv.location AND v.codelist=iv.codelist)
+        ON (v.domain=iv.domain AND v.location=iv.location AND v.codelist=iv.codelist)
         WHERE (iv.installedversion IS NULL) OR (v.version != iv.installedversion)""";
   }
 
