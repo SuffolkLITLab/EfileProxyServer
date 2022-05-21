@@ -161,6 +161,8 @@ public class DatabaseVersion {
       final String osIndex = "CREATE INDEX ON optionalservices (domain)";
       final String fIndex = "CREATE INDEX ON filing (domain)";
       final String fcIndex = "CREATE INDEX ON filingcomponent (domain)";
+      final String rmPkey = "ALTER TABLE installedversion DROP CONSTRAINT installedversion_pkey";
+      final String makePkey = "ALTER TABLE installedversion ADD PRIMARY KEY (location, codelist, domain)";
       
       try (Statement st = codeConn.createStatement()) {
         for (String tableName : tableNames) {
@@ -172,6 +174,9 @@ public class DatabaseVersion {
         st.executeUpdate(osIndex); 
         st.executeUpdate(fIndex);
         st.executeUpdate(fcIndex);
+        
+        st.executeUpdate(rmPkey);
+        st.executeUpdate(makePkey);
       }
       codeConn.commit();
     }
