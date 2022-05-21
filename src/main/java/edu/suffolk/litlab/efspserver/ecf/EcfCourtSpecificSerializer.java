@@ -90,11 +90,11 @@ public class EcfCourtSpecificSerializer {
   private final CodeDatabase cd;
   private final CourtLocationInfo court;
   public final DataFields allDataFields;
-  gov.niem.niem.niem_core._2.ObjectFactory niemObjFac =
+  static final gov.niem.niem.niem_core._2.ObjectFactory niemObjFac =
       new gov.niem.niem.niem_core._2.ObjectFactory();
-  gov.niem.niem.niem_core._2.ObjectFactory coreObjFac =
+  static final gov.niem.niem.niem_core._2.ObjectFactory coreObjFac =
       new gov.niem.niem.niem_core._2.ObjectFactory();
-  oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf =
+  static final oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf =
       new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
 
   public EcfCourtSpecificSerializer(CodeDatabase cd, CourtLocationInfo court) {

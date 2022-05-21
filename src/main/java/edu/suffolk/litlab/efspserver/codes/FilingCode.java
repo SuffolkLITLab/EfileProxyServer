@@ -7,20 +7,20 @@ import java.sql.SQLException;
 
 public class FilingCode {
 
-  public String code;
-  public String name;
-  public String fee;
-  public String casecategory;
-  public String casetypeid;
-  public String filingtype;
-  public boolean iscourtuseonly;
-  public String civilclaimamount;
-  public String probateestateamount;
-  public String amountincontroversy;
-  public boolean useduedate;
-  public boolean isproposedorder;
-  public String efspcode;
-  public String location;
+  public final String code;
+  public final String name;
+  public final String fee;
+  public final String casecategory;
+  public final String casetypeid;
+  public final String filingtype;
+  public final boolean iscourtuseonly;
+  public final String civilclaimamount;
+  public final String probateestateamount;
+  public final String amountincontroversy;
+  public final boolean useduedate;
+  public final boolean isproposedorder;
+  public final String efspcode;
+  public final String location;
   
   public FilingCode(String code, String name, String fee, String casecategory,
           String casetypeid, String filingtype, String iscourtuseonly, String civilclaimamount,

@@ -47,7 +47,7 @@ public class LoginDatabase implements DatabaseInterface {
                ?, ?, ?, ?,
                ?, ?)"""; 
 
-  private static RandomString tokenGenerator = new RandomString();
+  private static final RandomString tokenGenerator = new RandomString();
   private final Connection conn;
   private final MessageDigest digest;
 
