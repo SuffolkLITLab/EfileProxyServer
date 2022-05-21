@@ -187,7 +187,8 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     }
   }
   
-  public PreparedStatement singleInsert(PreparedStatement stmt, String tableName, String courtName, Map<String, String> rowsVals) throws SQLException {
+  public PreparedStatement singleInsert(PreparedStatement stmt, String tableName, String courtName, 
+      Map<String, String> rowsVals) throws SQLException {
     int idx = 1;
     List<String> tc = CodeTableConstants.getTableColumns(tableName);
     for (String colName : tc) {
@@ -388,10 +389,12 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     }
   }
 
-  public List<FilingCode> getFilingType(String courtLocationId, String categoryCode, String typeCode, boolean initial) {
+  public List<FilingCode> getFilingType(String courtLocationId, String categoryCode, String typeCode, 
+      boolean initial) {
     return safetyWrap(() -> {
       List<FilingCode> filingTypes = new ArrayList<FilingCode>();
-      try (PreparedStatement specificSt = FilingCode.prepQueryWithCaseInfo(conn, initial, tylerDomain, courtLocationId, categoryCode, typeCode)) {
+      try (PreparedStatement specificSt = 
+          FilingCode.prepQueryWithCaseInfo(conn, initial, tylerDomain, courtLocationId, categoryCode, typeCode)) {
         ResultSet rs = specificSt.executeQuery();
         while (rs.next()) {
           filingTypes.add(new FilingCode(rs));
@@ -489,7 +492,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
         st.setString(2, courtLocationId);
         st.setString(3, caseTypeId);
         ResultSet rs = st.executeQuery();
-        List<CrossReference> types = new ArrayList<>();
+        var types = new ArrayList<CrossReference>();
         while (rs.next()) {
           types.add(new CrossReference(rs));
         }
@@ -552,7 +555,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       specificSt.setString(2, courtLocationId);
       specificSt.setString(3, filingCodeId);
       ResultSet spefRs = specificSt.executeQuery();
-      List<DocumentTypeTableRow> docTypes = new ArrayList<DocumentTypeTableRow>();
+      var docTypes = new ArrayList<DocumentTypeTableRow>();
       while (spefRs.next()) {
         docTypes.add(new DocumentTypeTableRow(spefRs));
       }
@@ -569,7 +572,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       }
       return docTypes;
     } catch (SQLException ex) {
-      log.error("SQLException: " + ex.toString());
+      log.error(StdLib.strFromException(ex)); 
       return List.of();
     }
   }
@@ -586,13 +589,13 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       st.setString(2, courtLocationId);
       st.setString(3, filingCodeId);
       ResultSet rs = st.executeQuery();
-      List<NameAndCode> motions = new ArrayList<NameAndCode>();
+      var motions = new ArrayList<NameAndCode>();
       while (rs.next()) {
         motions.add(new NameAndCode(rs.getString(1), rs.getString(2)));
       }
       return motions;
     } catch (SQLException ex) {
-      log.error("SQLException: " + ex.toString());
+      log.error(StdLib.strFromException(ex)); 
       return List.of();
     }
   }
@@ -608,13 +611,13 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       st.setString(1, tylerDomain);
       st.setString(2, courtLocationId);
       ResultSet rs = st.executeQuery();
-      List<NameAndCode> motions = new ArrayList<NameAndCode>();
+      var motions = new ArrayList<NameAndCode>();
       while (rs.next()) {
         motions.add(new NameAndCode(rs.getString(1), rs.getString(2)));
       }
       return motions;
     } catch (SQLException ex) {
-      log.error("SQLException: " + ex.toString());
+      log.error(StdLib.strFromException(ex)); 
       return List.of();
     }
   }
@@ -841,7 +844,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.allOrderedQuery())) {
       st.setString(1, tylerDomain);
       ResultSet rs = st.executeQuery();
-      List<String> locs = new ArrayList<String>();
+      var locs = new ArrayList<String>();
       while (rs.next()) {
         locs.add(rs.getString(1));
       }
@@ -858,7 +861,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.allNames())) {
         st.setString(1, tylerDomain);
         ResultSet rs = st.executeQuery(); 
-        List<NameAndCode> names = new ArrayList<NameAndCode>();
+        var names = new ArrayList<NameAndCode>();
         while (rs.next()) {
           names.add(new NameAndCode(rs.getString(1), rs.getString(2)));
         }
@@ -872,7 +875,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.fileableQuery())) {
         st.setString(1, tylerDomain);
         ResultSet rs = st.executeQuery();
-        List<String> codes = new ArrayList<String>();
+        var codes = new ArrayList<String>();
         while (rs.next()) {
           codes.add(rs.getString(1));
         }
@@ -886,7 +889,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.fileableQuery())) {
         st.setString(1, tylerDomain);
         ResultSet rs = st.executeQuery();
-        List<NameAndCode> codes = new ArrayList<NameAndCode>();
+        var codes = new ArrayList<NameAndCode>();
         while (rs.next()) {
           codes.add(new NameAndCode(rs.getString(1), rs.getString(2)));
         }
