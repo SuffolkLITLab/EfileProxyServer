@@ -113,11 +113,14 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   private final CourtRecordMDEService recordFactory; 
   private final FilingReviewMDEService filingFactory;
   private final ServiceMDEService serviceFactory; 
+  private final String jurisdiction;
+  private final String env;
 
-
-  public OasisEcfFiler(String jurisdiction, DataSource codesDs) {
+  public OasisEcfFiler(String jurisdiction, String env, DataSource codesDs) {
     this.ds = codesDs;
-    TylerLogin login = new TylerLogin(jurisdiction);
+    this.jurisdiction = jurisdiction;
+    this.env = env;
+    TylerLogin login = new TylerLogin(jurisdiction, env);
     this.headerKey = login.getHeaderKey();
     statusObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.ObjectFactory();
     listObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.ObjectFactory();
@@ -126,22 +129,21 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     commonObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     niemObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
     proxyObjFac = new gov.niem.niem.proxy.xsd._2.ObjectFactory();
-    Optional<CourtRecordMDEService> maybeCourt = SoapClientChooser.getCourtRecordFactory(jurisdiction);
+    Optional<CourtRecordMDEService> maybeCourt = SoapClientChooser.getCourtRecordFactory(jurisdiction, env);
     if (maybeCourt.isEmpty()) {
       throw new RuntimeException("Cannot find " + jurisdiction + " for court record factory");
     }
     this.recordFactory = maybeCourt.get();
-    Optional<FilingReviewMDEService> maybeReview = SoapClientChooser.getFilingReviewFactory(jurisdiction);
+    Optional<FilingReviewMDEService> maybeReview = SoapClientChooser.getFilingReviewFactory(jurisdiction, env);
     if (maybeReview.isEmpty()) {
       throw new RuntimeException("Cannot find " + jurisdiction + " for filing review factory");
     }
     this.filingFactory = maybeReview.get();
-    Optional<ServiceMDEService> maybeServiceFac = SoapClientChooser.getServiceFactory(jurisdiction);
+    Optional<ServiceMDEService> maybeServiceFac = SoapClientChooser.getServiceFactory(jurisdiction, env);
     if (maybeServiceFac.isEmpty()) {
       throw new RuntimeException("Cannot find " + jurisdiction + " for service mde factory");
     }
     this.serviceFactory = maybeServiceFac.get();
-
   }
 
   @Override
@@ -152,7 +154,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   private CoreFilingMessageType prepareFiling(FilingInformation info,
       InfoCollector collector, String apiToken, FilingReviewMDEPort filingPort, 
       CourtRecordMDEPort recordPort, String queryType) throws FilingError {
-    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())){
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())){
       EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
       Optional<CourtLocationInfo> maybeLocationInfo = cd.getFullLocationInfo(info.getCourtLocation());
       if (maybeLocationInfo.isEmpty()) {
@@ -451,7 +453,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   }
 
   private Optional<CourtLocationInfo> getCourtInfo(FilingInformation info) {
-    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())){
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())){
       return cd.getFullLocationInfo(info.getCourtLocation());
     } catch (SQLException ex) {
       log.error("IN EcfEfiler, can't get CodesDB: " + StdLib.strFromException(ex));
@@ -460,7 +462,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   }
 
   private List<String> getAllLocations() throws SQLException {
-    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())){
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())){
       return cd.getAllLocations(); 
     }
   }
@@ -679,7 +681,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
 
   @Override
   public Response disclaimers(String courtId) {
-    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())) {
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       List<Disclaimer> disclaimers = cd.getDisclaimerRequirements(courtId);
       return Response.status(200).entity(disclaimers).build();
     } catch (SQLException ex) {

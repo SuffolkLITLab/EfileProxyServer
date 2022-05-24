@@ -4,7 +4,9 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.CronScheduleBuilder;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -21,12 +23,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CodeUpdater;
+import edu.suffolk.litlab.efspserver.services.AdminUserService;
+import edu.suffolk.litlab.efspserver.services.CasesService;
+import edu.suffolk.litlab.efspserver.services.CodesService;
+import edu.suffolk.litlab.efspserver.services.CourtSchedulingService;
 import edu.suffolk.litlab.efspserver.services.EfmFilingInterface;
 import edu.suffolk.litlab.efspserver.services.EfmModuleSetup;
 import edu.suffolk.litlab.efspserver.services.EfmRestCallbackInterface;
+import edu.suffolk.litlab.efspserver.services.FilingReviewService;
+import edu.suffolk.litlab.efspserver.services.FirmAttorneyAndServiceService;
+import edu.suffolk.litlab.efspserver.services.InterviewToFilingInformationConverter;
+import edu.suffolk.litlab.efspserver.services.JurisdictionServiceHandle;
 import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
+import edu.suffolk.litlab.efspserver.services.PaymentsService;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.services.UpdateCodeVersions;
 
@@ -37,29 +49,25 @@ public class TylerModuleSetup implements EfmModuleSetup {
   private final String pgDb;
   private final String pgUser;
   private final String pgPassword;
-  private final String tylerEndpoint;
   private final String tylerJurisdiction;
   private final String x509Password;
   private final DataSource codeDs;
   private final DataSource userDs;
+  private final Map<String, InterviewToFilingInformationConverter> converterMap;
 
   // Payments Stuff
-  // TODO(brycew-later): these params create the Payments service, but haven't hooked up ModulesSetup with
-  // Providers yet
   private final String togaKey;
   private final String togaUrl;
   private OrgMessageSender sender;
   private Scheduler scheduler;
-  private String tylerJurisdictionEnv;
+  private String tylerEnv;
 
   public static class CreationArgs {
     public String pgUrl;
     public String pgDb;
     public String pgUser;
     public String pgPassword;
-    public String tylerEndpoint;
-    public String tylerJurisdictionEnv;
-    public String tylerJurisdiction;
+    public String tylerEnv;
     public String x509Password;
     public String togaKey;
     public String togaUrl;
@@ -67,27 +75,30 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   /** Use this factory method instead of the class constructor. */
   public static Optional<TylerModuleSetup> create(
+      String jurisdiction, Map<String, InterviewToFilingInformationConverter> converterMap,
       DataSource codeDs, DataSource userDs, OrgMessageSender sender) {
     Optional<CreationArgs> args = createFromEnvVars();
     if (args.isEmpty()) {
       return Optional.empty();
     }
 
-    return Optional.of(new TylerModuleSetup(args.get(), codeDs, userDs, sender));
+    return Optional.of(new TylerModuleSetup(args.get(), jurisdiction, converterMap, codeDs, userDs, sender));
   }
 
   private TylerModuleSetup(
       CreationArgs args,
+      String jurisdiction,
+      Map<String, InterviewToFilingInformationConverter> converterMap,
       DataSource codeDs, DataSource userDs, OrgMessageSender sender) {
     this.codeDs = codeDs;
     this.userDs = userDs;
+    this.converterMap = converterMap;
     this.pgUrl = args.pgUrl;
     this.pgDb = args.pgDb;
     this.pgUser = args.pgUser;
     this.pgPassword = args.pgPassword;
-    this.tylerEndpoint = args.tylerEndpoint;
-    this.tylerJurisdiction = args.tylerJurisdiction;
-    this.tylerJurisdictionEnv = args.tylerJurisdictionEnv;
+    this.tylerJurisdiction = jurisdiction; 
+    this.tylerEnv = args.tylerEnv;
     this.x509Password = args.x509Password;
     this.togaKey = args.togaKey;
     this.togaUrl = args.togaUrl;
@@ -103,24 +114,10 @@ public class TylerModuleSetup implements EfmModuleSetup {
     CreationArgs args = new CreationArgs();
     args.x509Password = maybeX509Password.get();
 
-    Optional<String> maybeTylerEndpoint = EfmModuleSetup.GetEnv("TYLER_ENDPOINT");
-    if (maybeTylerEndpoint.isEmpty()) {
-      log.warn("If using Tyler, TYLER_ENDPOINT needs to be the defined. Did you forget to source .env?");
-      return Optional.empty();
-    }
-    args.tylerEndpoint = maybeTylerEndpoint.get();
-    
-    Optional<String> maybeTylerJurisdiction = EfmModuleSetup.GetEnv("TYLER_JURISDICTION");
-    if (maybeTylerJurisdiction.isEmpty()) {
-      log.warn("If using Tyler, TYLER_JURISDICTION needs to be the defined. Did you forget to source .env?");
-      return Optional.empty();
-    }
-    args.tylerJurisdiction = maybeTylerJurisdiction.get();
-    
     Optional<String> maybeTylerEnv = EfmModuleSetup.GetEnv("TYLER_ENV");
     if (maybeTylerEnv.isPresent()) {
       log.info("Using " + maybeTylerEnv.get() + " for TYLER_ENV"); 
-      args.tylerJurisdictionEnv = args.tylerJurisdiction + "-" + maybeTylerEnv.get();
+      args.tylerEnv = maybeTylerEnv.get();
     } else {
       log.info("Not using any TYLER_ENV, maybe prod?");
     }
@@ -153,35 +150,44 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public void preSetup() {
-    boolean downloadAll = false;
     // HACK(brycew): cheap DI. Should have something better, but
     // I don't quite understand Spring yet
     SoapX509CallbackHandler.setX509Password(x509Password);
 
-    try (CodeDatabase cd = new CodeDatabase(codeDs.getConnection())) {
-      if (cd.getAllLocations().size() == 0) {
-        // Code database is empty!
-        downloadAll = true;
-      }
+    log.info("Checking table if absent");
+    try (CodeDatabase cd = new CodeDatabase(tylerJurisdiction, tylerEnv, codeDs.getConnection())) {
+      cd.createTablesIfAbsent();
+      boolean downloadAll = (cd.getAllLocations().size() == 0);
       if (downloadAll) {
         log.info("Downloading all codes: please wait a bit");
-        CodeUpdater.executeCommand(cd, "downloadAll", this.tylerEndpoint, this.x509Password);
+        CodeUpdater.executeCommand(cd, tylerJurisdiction, tylerEnv, "downloadAll", this.x509Password);
       }
+    } catch (SQLException e) {
+      log.error("SQL Exception: " + StdLib.strFromException(e));
+      throw new RuntimeException(e);
+    }
+    log.info("Done checking table if absent");
+
+    try {
       Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
       scheduler.start();
       
+      String jobName = "job-" + this.tylerJurisdiction + "-" + this.tylerEnv;
+      
       JobDetail job = JobBuilder.newJob(UpdateCodeVersions.class)
-          .withIdentity("job1", "group1")
-          .usingJobData("TYLER_ENDPOINT", tylerEndpoint)
-          .usingJobData("X509_PASSWORD", x509Password)
+          .withIdentity(jobName, "codesdb-group")
+          .usingJobData("TYLER_JURISDICTION", this.tylerJurisdiction)
+          .usingJobData("TYLER_ENV", this.tylerEnv)
+          .usingJobData("X509_PASSWORD", this.x509Password)
           .usingJobData("POSTGRES_URL", this.pgUrl)
           .usingJobData("POSTGRES_DB", this.pgDb)
           .usingJobData("POSTGRES_USERNAME", this.pgUser)
           .usingJobData("POSTGRES_PASSWORD", this.pgPassword)
           .build();
       
+      String triggerName = "trigger-" + this.tylerJurisdiction + "-" + this.tylerEnv;
       Trigger trigger = TriggerBuilder.newTrigger()
-          .withIdentity("trigger1", "group1")
+          .withIdentity(triggerName, "codesdb-group")
           .startNow()
           .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(2, 15))
           // Testable version! Updates the codes 20 seconds after launch
@@ -190,11 +196,8 @@ public class TylerModuleSetup implements EfmModuleSetup {
       
       scheduler.scheduleJob(job, trigger);
     } catch (SchedulerException se) {
-      log.error("Scheduler Exception: " + se.toString());
+      log.error("Scheduler Exception: " + StdLib.strFromException(se));
       throw new RuntimeException(se);
-    } catch (SQLException e) {
-      log.error(e.toString());
-      throw new RuntimeException(e);
     }
   }
 
@@ -205,7 +208,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public Set<String> getCourts() {
-    try (CodeDatabase cd = new CodeDatabase(codeDs.getConnection())) {
+    try (CodeDatabase cd = new CodeDatabase(tylerJurisdiction, tylerEnv, codeDs.getConnection())) {
       Set<String> allCourts = new HashSet<String>(cd.getAllLocations());
       // 0 and 1 are special "system" courts that have defaults for all courts.
       // They aren't available for filing
@@ -221,8 +224,30 @@ public class TylerModuleSetup implements EfmModuleSetup {
   }
 
   @Override
-  public EfmFilingInterface getInterface() {
-    return new OasisEcfFiler(this.tylerJurisdictionEnv, codeDs);
+  public JurisdictionServiceHandle getServiceHandle() {
+    var filingMap = new HashMap<String, EfmFilingInterface>();
+    var callbackMap = new HashMap<String, EfmRestCallbackInterface>();
+
+    final String jurisdiction = getJurisdiction();
+    final String env = this.tylerEnv;
+    
+    EfmFilingInterface filer = new OasisEcfFiler(jurisdiction, env, codeDs);
+    
+    for (String court: getCourts()) {
+      filingMap.put(court, filer);
+      getCallback().ifPresent(call -> callbackMap.put(court, call));
+    }
+    
+    var adminUser = new AdminUserService(jurisdiction, env, this.codeDs, this.userDs);
+    var cases = new CasesService(jurisdiction, env, this.codeDs, this.userDs);
+    var codes = new CodesService(jurisdiction, env, this.codeDs);
+    var courtScheduler = new CourtSchedulingService(converterMap, jurisdiction, env, codeDs, userDs);
+    var filingReview = new FilingReviewService(getJurisdiction(), this.userDs, converterMap, filingMap, callbackMap, this.sender); 
+    var firmAttorney = new FirmAttorneyAndServiceService(jurisdiction, env, this.codeDs, this.userDs);
+    var payments = new PaymentsService(jurisdiction, env, this.togaKey, this.togaUrl, this.codeDs, this.userDs);
+    JurisdictionServiceHandle handle = new JurisdictionServiceHandle(getJurisdiction(),
+        adminUser, cases, codes, courtScheduler, filingReview, firmAttorney, payments);
+    return handle;
   }
 
   @Override
@@ -232,7 +257,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public void setupGlobals() {
-    OasisEcfWsCallback implementor = new OasisEcfWsCallback(codeDs, userDs, sender);
+    OasisEcfWsCallback implementor = new OasisEcfWsCallback(tylerJurisdiction, tylerEnv, codeDs, userDs, sender);
     String baseLocalUrl = System.getenv("BASE_LOCAL_URL");
     String address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT;
     log.info("Starting NFRC callback server at " + address);
@@ -242,7 +267,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     log.info("Bean name: " + jaxWsEndpoint.getBeanName());
     
     
-    OasisEcfv5WsCallback impl2 = new OasisEcfv5WsCallback(codeDs, userDs, sender);
+    OasisEcfv5WsCallback impl2 = new OasisEcfv5WsCallback(tylerJurisdiction, tylerEnv, codeDs, userDs, sender);
     String v5Address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT_V5;
     EndpointImpl jaxWsV5Endpoint = (EndpointImpl) javax.xml.ws.Endpoint.publish(v5Address, impl2);
     log.info("V5 Wsdl location: " + jaxWsV5Endpoint.getWsdlLocation());

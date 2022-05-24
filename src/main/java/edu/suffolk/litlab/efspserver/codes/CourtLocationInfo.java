@@ -198,23 +198,23 @@ public class CourtLocationInfo {
             allowwaiveronredaction, disallowelectronicserviceonnewcontacts,
             allowindividualregistration, redactiontargetconfig, allowhearing
         FROM location
-        WHERE code=?
+        WHERE domain=? AND code=?
         """;
   }
   
   public static String allOrderedQuery() {
-    return "SELECT DISTINCT code FROM location ORDER BY code";
+    return "SELECT DISTINCT code FROM location WHERE domain=? ORDER BY code";
   }
   
   public static String allNames() {
-    return "SELECT name, code FROM location ORDER BY code";
+    return "SELECT name, code FROM location WHERE domain=? ORDER BY code";
   }
   
   public static String fileableQuery() {
     return """
         SELECT name, code
         FROM location
-        WHERE initial ILIKE 'true' OR subsequent ILIKE 'true'
+        WHERE domain=? AND (initial ILIKE 'true' OR subsequent ILIKE 'true')
         """;
   }
 

@@ -11,29 +11,42 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.util.List;
 import java.util.UUID;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.suffolk.litlab.efspserver.codes.CodeTableConstants;
-
+/** Updates all of the collective tables for a consistent "schema".
+ * Since this class should work going back to extremely old versions of the 
+ * code, this class should be completely self contained, only using SQL queries
+ * from here.
+ *
+ * @author brycew
+ *
+ */
 public class DatabaseVersion {
   
-  private static int CURRENT_VERSION = 1;
+  final static int CURRENT_VERSION = 2;
   private static Logger log = 
       LoggerFactory.getLogger(DatabaseVersion.class);
   private final Connection codeConn;
   private final Connection userConn;
+  
+  // Copied from CodeTableConstants
+  private final static String TABLE_EXISTS = """
+        SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'
+        AND table_name = ? LIMIT 1;
+      """;
   
   public DatabaseVersion(Connection codeConn, Connection userConn) {
     this.codeConn = codeConn;
     this.userConn = userConn;
   }
   
-  public void createTablesIfAbsent() throws SQLException {
-    String tableExistsQuery = CodeTableConstants.getTableExists();
+  public void createTablesIfAbsent(boolean brandNew) throws SQLException {
+    String tableExistsQuery = TABLE_EXISTS; 
     PreparedStatement existsSt  = userConn.prepareStatement(tableExistsQuery);
     existsSt.setString(1, "schema_version");
     ResultSet rs = existsSt.executeQuery();
@@ -45,6 +58,11 @@ public class DatabaseVersion {
       int retVal = pst.executeUpdate();
       if (retVal < 0) {
         log.warn("Issue when creating schema_version: retVal == " + retVal);
+      }
+      if (brandNew) {
+        setSchemaVersion(CURRENT_VERSION);
+      } else {
+        setSchemaVersion(0);
       }
     }
     return; 
@@ -126,11 +144,48 @@ public class DatabaseVersion {
           }
         }
       }
-      setSchemaVersion(onDiskVersion + 1);
-      userConn.commit();
-      return true;
-    } else {
-      return true;
+    } else if (onDiskVersion == 1) {
+      // Conincides with the "jurisdiction" refactor: all codes need to also note which jurisdiction / domain they came from.
+      // Need to add the "domain text" column to every code table, with the value "illinois-stage" as the value.
+      final String alterCodes = "ALTER TABLE %s ADD COLUMN domain text";
+      final String updateCodes = "UPDATE %s SET domain='illinois-stage'";
+      final String alterNotNull = "ALTER TABLE %s ALTER COLUMN domain SET NOT NULL";
+      
+      final List<String> tableNames = List.of("location", "error", "version", "installedversion",
+          "country", "state", "filingstatus", "datafieldconfig", "answer", "arrestlocation",
+          "bond", "casecategory", "casesubtype", "casetype", "chargephase", "citationjurisdiction",
+          "crossreference", "damageamount", "degree", "disclaimerrequirement", "driverlicensetype",
+          "documenttype", "ethnicity", "eyecolor", "filertype", "filetype", "filing", 
+          "filingcomponent", "generaloffense", "haircolor", "language", "lawenforcementunit",
+          "motiontype", "namesuffix", "optionalservices", "partytype", "physicalfeature",
+          "procedureremedy", "question", "race", "servicetype", "statute", "statutetype",
+          "vehiclecolor", "vehiclemake", "vehicletype");
+
+      // Also need to make the indices on domain + location for the bigger tables.
+      final String osIndex = "CREATE INDEX ON optionalservices (domain)";
+      final String fIndex = "CREATE INDEX ON filing (domain)";
+      final String fcIndex = "CREATE INDEX ON filingcomponent (domain)";
+      final String rmPkey = "ALTER TABLE installedversion DROP CONSTRAINT installedversion_pkey";
+      final String makePkey = "ALTER TABLE installedversion ADD PRIMARY KEY (location, codelist, domain)";
+      
+      try (Statement st = codeConn.createStatement()) {
+        for (String tableName : tableNames) {
+          st.executeUpdate(alterCodes.formatted(tableName));
+          st.executeUpdate(updateCodes.formatted(tableName));
+          st.executeUpdate(alterNotNull.formatted(tableName));
+        }
+        
+        st.executeUpdate(osIndex); 
+        st.executeUpdate(fIndex);
+        st.executeUpdate(fcIndex);
+        
+        st.executeUpdate(rmPkey);
+        st.executeUpdate(makePkey);
+      }
+      codeConn.commit();
     }
+    setSchemaVersion(onDiskVersion + 1);
+    userConn.commit();
+    return true;
   }
 }

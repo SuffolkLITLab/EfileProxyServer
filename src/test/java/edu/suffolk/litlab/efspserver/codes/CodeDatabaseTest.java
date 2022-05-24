@@ -37,7 +37,7 @@ public class CodeDatabaseTest {
     postgres.start();
     Connection conn = DatabaseCreator.makeSingleConnection(
         postgres.getDatabaseName(), postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
-    cd = new CodeDatabase(conn); 
+    cd = new CodeDatabase("illinois", "stage", conn); 
     cd.createTablesIfAbsent();
   }
   

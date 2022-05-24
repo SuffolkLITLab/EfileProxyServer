@@ -5,19 +5,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PartyType {
-  public String code;
-  public String name;
+  public final String code;
+  public final String name;
   // NOTE: "Indicates whether a case can have more than one party with this party type." NOT that it's only for new parties. Jesus
-  public boolean isAvailableForNewParties;
-  public String casetypeid;
-  public boolean isrequired;
-  public BigDecimal amount;
-  public String numberofpartiestoignore;
-  public String sendforredaction;
-  public String dateofdeath;
-  public int displayorder;
-  public String efspcode;
-  public String location;
+  public final boolean isAvailableForNewParties;
+  public final String casetypeid;
+  public final boolean isrequired;
+  public final BigDecimal amount;
+  public final String numberofpartiestoignore;
+  public final String sendforredaction;
+  public final String dateofdeath;
+  public final int displayorder;
+  public final String efspcode;
+  public final String location;
   
   public static PartyType TestObj(String code, String name, String location) {
     return new PartyType(code, name, "True", "123", "True", "386.53", "0", "", "", "", "", location);
@@ -56,7 +56,7 @@ public class PartyType {
                numberofpartiestoignore, sendforredaction, dateofdeath, displayorder, 
                efspcode, location 
         FROM partytype
-        WHERE location=? AND casetypeid=?
+        WHERE domain=? AND location=? AND casetypeid=?
         ORDER BY isrequired DESC, displayorder, casetypeid DESC""";
   }
   
@@ -66,7 +66,7 @@ public class PartyType {
                numberofpartiestoignore, sendforredaction, dateofdeath, displayorder, 
                efspcode, location 
         FROM partytype
-        WHERE location=? AND casetypeid=''
+        WHERE domain=? AND location=? AND casetypeid=''
         ORDER BY isrequired DESC, displayorder, casetypeid DESC""";
   }
   

@@ -3,9 +3,7 @@ package edu.suffolk.litlab.efspserver.services;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import edu.suffolk.litlab.efspserver.HttpsCallbackHandler;
 import edu.suffolk.litlab.efspserver.SendMessage;
-import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
 import edu.suffolk.litlab.efspserver.db.DatabaseVersion;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
@@ -14,7 +12,6 @@ import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingInformationConverter;
 import edu.suffolk.litlab.efspserver.ecf.TylerModuleSetup;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetModuleSetup;
-import tyler.efm.services.EfmFirmService;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -24,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
@@ -59,15 +55,13 @@ public class EfspServer {
   }
 
   protected EfspServer(
-      DataSource codeDs, // always 
-      DataSource userDs, // always 
-      OrgMessageSender sender, // always
+      DataSource codeDs,
+      DataSource userDs,
+      OrgMessageSender sender,
       List<EfmModuleSetup> modules,
+      SecurityHub security,
       Map<String, InterviewToFilingInformationConverter> converterMap
       ) throws SQLException, NoSuchAlgorithmException {
-    try (CodeDatabase cd = new CodeDatabase(codeDs.getConnection())) {
-      cd.createTablesIfAbsent();
-    }
     try (Connection conn = userDs.getConnection()) {
       UserDatabase ud = new UserDatabase(conn);
       ud.createTablesIfAbsent();
@@ -79,63 +73,25 @@ public class EfspServer {
       log.error("SQLException: " + StdLib.strFromException(ex)); 
       System.exit(2);
     }
-
-    Map<String, Map<String, EfmFilingInterface>> filingMap = new HashMap<String, Map<String, EfmFilingInterface>>();
-    Map<String, Map<String, EfmRestCallbackInterface>> callbackMap = new HashMap<String, Map<String, EfmRestCallbackInterface>>();
+    
+    var jurisdictionMap = new HashMap<String, JurisdictionServiceHandle>();
+    var callbackMap = new HashMap<String, Optional<EfmRestCallbackInterface>>();
     for (EfmModuleSetup mod : modules) {
       mod.preSetup();
       mod.setupGlobals();
-      Set<String> courts = mod.getCourts();
-      EfmFilingInterface filer = mod.getInterface();
+      JurisdictionServiceHandle handle = mod.getServiceHandle();
       Optional<EfmRestCallbackInterface> maybeCallback = mod.getCallback();
-      Map<String, EfmFilingInterface> courtToFiler = new HashMap<String, EfmFilingInterface>();
-      Map<String, EfmRestCallbackInterface> courtToCallback = new HashMap<String, EfmRestCallbackInterface>();
-      for (String court : courts) {
-        courtToFiler.put(court, filer);
-        maybeCallback.ifPresent(call -> courtToCallback.put(court, call));
-      }
-      callbackMap.put(mod.getJurisdiction(), courtToCallback);
-      filingMap.put(mod.getJurisdiction(), courtToFiler);
+      jurisdictionMap.put(mod.getJurisdiction(), handle);
+      callbackMap.put(mod.getJurisdiction(), maybeCallback);
     }
-
-    Optional<String> tylerJurisdiction = GetEnv("TYLER_JURISDICTION");
-    Optional<String> tylerEnv = GetEnv("TYLER_ENV");
-    String jurisdiction = tylerJurisdiction.get();
-    if (tylerEnv.isPresent()) {
-      jurisdiction += "-" + tylerEnv.get();
-    }
-    Optional<EfmFirmService> firmFactory = SoapClientChooser.getEfmFirmFactory(jurisdiction); 
-    if (firmFactory.isEmpty()) {
-      throw new RuntimeException("Cannot find jurisdiction " + jurisdiction + " at start for EfmFirm");
-    }
-    
-    String baseLocalUrl = System.getenv("BASE_LOCAL_URL"); //"https://0.0.0.0:9000";
-    SecurityHub security = new SecurityHub(userDs, jurisdiction);
     
     Map<Class<?>, SingletonResourceProvider> services = new HashMap<Class<?>, SingletonResourceProvider>();
-    services.put(AdminUserService.class, new SingletonResourceProvider(new AdminUserService(jurisdiction, security, codeDs)));
-    services.put(FilingReviewService.class,
-        new SingletonResourceProvider(new FilingReviewService(
-            userDs, converterMap, filingMap, callbackMap, security, sender)));
-    services.put(FirmAttorneyAndServiceService.class,
-        new SingletonResourceProvider(new FirmAttorneyAndServiceService(security, codeDs, firmFactory.get())));
-    // TODO(brycew-later): refactor to reduce the number of services, or make just "Tyler services" and "JeffNet services" Providers
-    if (GetEnv("TOGA_CLIENT_KEY").isPresent() && GetEnv("TOGA_URL").isPresent()) {
-      services.put(PaymentsService.class,
-          new SingletonResourceProvider(new PaymentsService(security, 
-              GetEnv("TOGA_CLIENT_KEY").get(), 
-              GetEnv("TOGA_URL").get(),
-              firmFactory.get(), codeDs)));
-    }
-    services.put(CasesService.class,
-        new SingletonResourceProvider(new CasesService(security, codeDs, jurisdiction)));
-    services.put(CodesService.class,
-        new SingletonResourceProvider(new CodesService(codeDs)));
-    services.put(CourtSchedulingService.class,
-        new SingletonResourceProvider(new CourtSchedulingService(converterMap, security, codeDs, jurisdiction)));
-    services.put(MessageSettingsService.class,
-        new SingletonResourceProvider(new MessageSettingsService(security, userDs)));
     services.put(RootService.class, new SingletonResourceProvider(new RootService()));
+    services.put(MessageSettingsService.class,
+        new SingletonResourceProvider(new MessageSettingsService(userDs)));
+    services.put(AuthenticationService.class,
+        new SingletonResourceProvider(new AuthenticationService(security)));
+    services.put(JurisdictionSwitch.class, new SingletonResourceProvider(new JurisdictionSwitch(jurisdictionMap)));
 
     sf = new JAXRSServerFactoryBean();
     sf.setResourceClasses(new ArrayList<Class<?>>(services.keySet()));
@@ -148,6 +104,8 @@ public class EfspServer {
     sf.setProviders(List.of(
         new JAXBElementProvider<Object>(),
         new JacksonJsonProvider()));
+
+    String baseLocalUrl = System.getenv("BASE_LOCAL_URL"); //"https://0.0.0.0:9000";
     sf.setAddress(baseLocalUrl);
     server = sf.create();
   }
@@ -195,11 +153,15 @@ public class EfspServer {
     try (Connection codeConn = codeDs.getConnection(); 
          Connection userConn = userDs.getConnection()) {
       DatabaseVersion dv = new DatabaseVersion(codeConn, userConn);
-      dv.createTablesIfAbsent();
+      LoginDatabase ld = new LoginDatabase(userConn);
+      boolean brandNew = !ld.tablesExist();
+      dv.createTablesIfAbsent(brandNew);
       if (!dv.updateToLatest()) {
         log.error("Couldn't update the database schemas: exiting now");
         System.exit(3);
       }
+      userConn.setAutoCommit(true);
+      codeConn.setAutoCommit(true);
     }
 
     Optional<SendMessage> sendMsg = SendMessage.create();
@@ -209,8 +171,17 @@ public class EfspServer {
     OrgMessageSender sender = new OrgMessageSender(userDs, sendMsg.get());
 
     List<EfmModuleSetup> modules = new ArrayList<>();
-    TylerModuleSetup.create(codeDs, userDs, sender).ifPresent(mod -> modules.add(mod));
-    JeffNetModuleSetup.create(userDs, sender).ifPresent(mod -> modules.add(mod));
+
+    Optional<String> tylerJurisdictions = GetEnv("TYLER_JURISDICTIONS");
+    Optional<String> tylerEnv = GetEnv("TYLER_ENV");
+    List<String> jurisdictions = List.of(tylerJurisdictions.orElse("").split(" "));
+    for (String jurisdiction : jurisdictions) {
+      if (jurisdiction.isBlank()) {
+        continue;
+      }
+      TylerModuleSetup.create(jurisdiction, converterMap, codeDs, userDs, sender).ifPresent(mod -> modules.add(mod));
+    }
+    JeffNetModuleSetup.create(converterMap, userDs, sender).ifPresent(mod -> modules.add(mod));
     if (modules.isEmpty()) {
       log.error("Couldn't load enough parameters to start either the Tyler or JeffNet filer modules."
               + "Please check your environment variables and try again.");
@@ -218,8 +189,10 @@ public class EfspServer {
     }
     log.info("Starting Server with the following Filers: " + modules);
 
+    SecurityHub security = new SecurityHub(userDs, tylerEnv, jurisdictions);
+
     EfspServer server = new EfspServer(
-        codeDs, userDs, sender, modules,
+        codeDs, userDs, sender, modules, security,
         converterMap);
     
     Runtime.getRuntime().addShutdownHook(new Thread() {

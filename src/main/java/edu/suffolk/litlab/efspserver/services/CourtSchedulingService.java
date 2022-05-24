@@ -1,8 +1,8 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPointsToMap;
 import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.isNull;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -52,11 +52,13 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.SoapClientChooser;
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.db.AtRest;
+import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.ecf.ComboCaseCodes;
 import edu.suffolk.litlab.efspserver.ecf.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efspserver.ecf.EcfCourtSpecificSerializer;
@@ -79,32 +81,36 @@ import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFili
 import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
 
 @Path("/scheduling/")
-@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@Produces({MediaType.APPLICATION_JSON})
 public class CourtSchedulingService {
 
-  private static Logger log = LoggerFactory.getLogger(CourtSchedulingService.class);
-  private static CourtSchedulingMDE_Service schedFactory = new CourtSchedulingMDE_Service();
+  private final static Logger log = LoggerFactory.getLogger(CourtSchedulingService.class);
+  private final static CourtSchedulingMDE_Service schedFactory = new CourtSchedulingMDE_Service();
 
-  private ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ObjectFactory oasisWrapObjFac;
-  private ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ObjectFactory reserveDateObjFac;
+  private final ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ObjectFactory oasisWrapObjFac;
+  private final ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ObjectFactory reserveDateObjFac;
   private final ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory niemObjFac;
   private final ecfv5.gov.niem.release.niem.proxy.xsd._4.ObjectFactory proxyObjFac;
   private final Map<String, InterviewToFilingInformationConverter> converterMap;
-  private final SecurityHub security;
   private final CourtRecordMDEService recordFactory; 
+  private final String jurisdiction;
+  private final String env;
 
-  private final DataSource ds;
+  private final DataSource codeDs;
+  private final DataSource userDs;
   
   public CourtSchedulingService(Map<String, InterviewToFilingInformationConverter> converterMap, 
-      SecurityHub security, DataSource ds, String jurisdiction) {
-    this.ds = ds;
-    this.security = security;
+      String jurisdiction, String env, DataSource codeDs, DataSource userDs) {
+    this.jurisdiction = jurisdiction;
+    this.env = env;
+    this.codeDs = codeDs;
+    this.userDs = userDs;
     this.converterMap = converterMap;
     this.oasisWrapObjFac = new ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ObjectFactory();
     this.reserveDateObjFac = new ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ObjectFactory();
     this.niemObjFac = new ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory();
     this.proxyObjFac = new ecfv5.gov.niem.release.niem.proxy.xsd._4.ObjectFactory();
-    Optional<CourtRecordMDEService> maybeCourt = SoapClientChooser.getCourtRecordFactory(jurisdiction);
+    Optional<CourtRecordMDEService> maybeCourt = SoapClientChooser.getCourtRecordFactory(jurisdiction, env);
     if (maybeCourt.isEmpty()) {
       throw new RuntimeException("Cannot find " + jurisdiction + " for court record factory");
     }
@@ -115,8 +121,8 @@ public class CourtSchedulingService {
   @GET
   @Path("/")
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection();
-    return Response.ok(endPointsToMap(ef.findRESTEndpoints(List.of(PaymentsService.class)))).build();
+    EndpointReflection ef = new EndpointReflection("/jurisdiction/" + jurisdiction);
+    return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(PaymentsService.class)))).build();
   }
 
   /**
@@ -201,7 +207,7 @@ public class CourtSchedulingService {
     if (maybeServ.isEmpty()) {
       return Response.status(401).build();
     }
-    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())) {
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
     Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId); 
     if (locationInfo.isEmpty()) {
       return Response.status(404).entity("No court: " + courtId).build(); 
@@ -342,7 +348,7 @@ public class CourtSchedulingService {
     JsonNode params = mapper.readTree(paramStr); 
     
     Optional<CourtLocationInfo> locationInfo = Optional.empty(); 
-    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())) {
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
       locationInfo = cd.getFullLocationInfo(courtId); 
     }
 
@@ -422,12 +428,18 @@ public class CourtSchedulingService {
     
   private Optional<CourtSchedulingMDE> setupSchedulingPort(HttpHeaders httpHeaders) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<AtRest> atRest = security.getAtRestInfo(apiKey);
-    if (atRest.isEmpty()) {
-      log.warn("Couldn't checkLogin");
+    try (Connection conn = userDs.getConnection()) {
+      LoginDatabase ld = new LoginDatabase(conn);
+      Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
+      if (atRest.isEmpty()) {
+        log.warn("Couldn't checkLogin");
+        return Optional.empty();
+      }
+    } catch (SQLException ex) {
+      log.error(StdLib.strFromException(ex));
       return Optional.empty();
     }
-    String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyStatic()); 
+    String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction)); 
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds?");
@@ -447,7 +459,7 @@ public class CourtSchedulingService {
   }
 
   private Optional<CourtRecordMDEPort> setupRecordPort(HttpHeaders httpHeaders) {
-    String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyStatic()); 
+    String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction)); 
 
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {

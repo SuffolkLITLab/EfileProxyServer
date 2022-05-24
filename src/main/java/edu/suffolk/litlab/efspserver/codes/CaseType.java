@@ -46,36 +46,40 @@ public class CaseType {
         "Bad date", "Bade code", "Bad loc");
   }
   
-  public static PreparedStatement prepQueryBroad(Connection conn, String courtLocationId,
+  public static PreparedStatement prepQueryBroad(Connection conn, String domain, String courtLocationId,
       String caseCategoryCode) throws SQLException {
     PreparedStatement st = conn.prepareStatement(getCaseTypesForCategory());
-    st.setString(1, courtLocationId);
-    st.setString(2, caseCategoryCode);
+    st.setString(1, domain);
+    st.setString(2, courtLocationId);
+    st.setString(3, caseCategoryCode);
     return st;
   }
   
-  public static PreparedStatement prepQueryTiming(Connection conn, String courtLocationId,
+  public static PreparedStatement prepQueryTiming(Connection conn, String domain, String courtLocationId,
       String caseCategoryCode, Optional<Boolean> isInitial) throws SQLException {
     boolean specifiedInitial = isInitial.orElse(false);
     if (specifiedInitial) {
       PreparedStatement st = conn.prepareStatement(getCaseTypesForTiming());
-      st.setString(1, courtLocationId);
-      st.setString(2, caseCategoryCode);
-      st.setString(3, Boolean.toString(specifiedInitial));
+      st.setString(1, domain);
+      st.setString(2, courtLocationId);
+      st.setString(3, caseCategoryCode);
+      st.setString(4, Boolean.toString(specifiedInitial));
       return st;
     }
     
     PreparedStatement st = conn.prepareStatement(getCaseTypesForCategory());
-    st.setString(1, courtLocationId);
-    st.setString(2, caseCategoryCode);
+    st.setString(1, domain);
+    st.setString(2, courtLocationId);
+    st.setString(3, caseCategoryCode);
     return st;
   }
 
-  public static PreparedStatement prepQueryWithCode(Connection conn, String courtLocationId,
+  public static PreparedStatement prepQueryWithCode(Connection conn, String domain, String courtLocationId,
       String caseTypeCode) throws SQLException {
     PreparedStatement st = conn.prepareStatement(getCaseTypesWithCode());
-    st.setString(1, courtLocationId);
-    st.setString(2, caseTypeCode);
+    st.setString(1, domain);
+    st.setString(2, courtLocationId);
+    st.setString(3, caseTypeCode);
     return st;
   }
 
@@ -104,7 +108,7 @@ public class CaseType {
     return """
         SELECT code, name, casecategory, initial,
         fee, willfileddate, efspcode, location
-        FROM casetype WHERE location=? AND casecategory=?""";
+        FROM casetype WHERE domain=? AND location=? AND casecategory=?""";
   }
   
   private static String getCaseTypesForTiming() {
@@ -115,7 +119,7 @@ public class CaseType {
     return """
         SELECT code, name, casecategory, initial,
           fee, willfileddate, efspcode, location
-        FROM casetype WHERE location=? AND code=?
+        FROM casetype WHERE domain=? AND location=? AND code=?
         """;
   }
 }

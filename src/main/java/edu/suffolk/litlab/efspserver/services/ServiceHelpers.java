@@ -1,11 +1,14 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import javax.sql.DataSource;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
@@ -17,9 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.db.AtRest;
+import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import gov.niem.niem.niem_core._2.EntityType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
@@ -202,25 +207,30 @@ public class ServiceHelpers {
     return newMsg;
   }
 
-  public static Optional<IEfmFirmService> setupFirmPort(EfmFirmService firmFactory, HttpHeaders httpHeaders, SecurityHub security) {
-    return setupFirmPort(firmFactory, httpHeaders, security, true);
+  public static Optional<IEfmFirmService> setupFirmPort(EfmFirmService firmFactory, HttpHeaders httpHeaders, DataSource userDs, String jurisdiction) {
+    return setupFirmPort(firmFactory, httpHeaders, userDs, true, jurisdiction);
   }
   
   public static Optional<IEfmFirmService> setupFirmPort(EfmFirmService firmFactory, HttpHeaders httpHeaders, 
-      SecurityHub security, boolean needsSoapHeader) {
+      DataSource userDs, boolean needsSoapHeader, String jurisdiction) {
     String activeToken = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<AtRest> atRest= security.getAtRestInfo(activeToken); 
-    if (atRest.isEmpty()) {
-      log.warn("Couldn't find server api key");
+    try (Connection conn = userDs.getConnection()) {
+      LoginDatabase ld = new LoginDatabase(conn);
+      Optional<AtRest> atRest= ld.getAtRestInfo(activeToken); 
+      if (atRest.isEmpty()) {
+        log.warn("Couldn't find server api key");
+        return Optional.empty();
+      }
+    } catch (SQLException ex) {
+      log.error(StdLib.strFromException(ex));
       return Optional.empty();
     }
-
     if (needsSoapHeader) {
-      String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyStatic());
+      String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
       return setupFirmPort(firmFactory, tylerToken);
     }
     IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
-    ServiceHelpers.setupServicePort((BindingProvider) port);
+    setupServicePort((BindingProvider) port);
     return Optional.of(port);
   }
     
@@ -232,7 +242,7 @@ public class ServiceHelpers {
     }
 
     IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
-    ServiceHelpers.setupServicePort((BindingProvider) port);
+    setupServicePort((BindingProvider) port);
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
     try {
       List<Header> headersList = List.of(creds.get().toHeader());

@@ -40,7 +40,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       FilingInformationDocassembleJacksonDeserializer.class);
 
   private static final long serialVersionUID = 1L;
-  private InfoCollector classCollector;
+  private final InfoCollector classCollector;
 
   public FilingInformationDocassembleJacksonDeserializer(Class<FilingInformation> t, InfoCollector collector) {
     super(t);

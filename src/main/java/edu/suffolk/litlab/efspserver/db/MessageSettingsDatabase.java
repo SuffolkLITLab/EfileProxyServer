@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,13 +43,14 @@ public class MessageSettingsDatabase implements DatabaseInterface {
             CREATE TABLE message_settings (
             "server_id" uuid PRIMARY KEY, "from_email" text, "subject_line" text,
             "email_template" text, "email_confirmation" text)"""; 
-        try (PreparedStatement createSt = conn.prepareStatement(createQuery)) {
-          int retVal = createSt.executeUpdate();
+        try (Statement createSt = conn.createStatement()) {
+          int retVal = createSt.executeUpdate(createQuery);
           if (retVal < 0) {
             log.warn("Issue when creating \"message_settings\" table: retVal == " + retVal);
           }
         }
       }
+      rs.close();
     }
   }
   

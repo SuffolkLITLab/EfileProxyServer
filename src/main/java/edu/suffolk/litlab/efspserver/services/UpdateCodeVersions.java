@@ -19,10 +19,14 @@ public class UpdateCodeVersions implements Job {
   private static Logger log = 
       LoggerFactory.getLogger(UpdateCodeVersions.class);
   
-  /** A very light wrapper around the CLI CodeUpdater tool. */
+  /** A very light wrapper around the CLI CodeUpdater tool. 
+   * A separate Job is started for each jurisdiciton, so only jurisdiciton
+   * and Tyler env is passed through.
+   */
   public void execute(JobExecutionContext context) throws JobExecutionException {
     JobDataMap dataMap = context.getJobDetail().getJobDataMap();
-    String endpoint = dataMap.getString("TYLER_ENDPOINT");
+    String jurisdiction = dataMap.getString("TYLER_JURISDICTION");
+    String env = dataMap.getString("TYLER_ENV");
     String x509Password = dataMap.getString("X509_PASSWORD");
     
     String pgFullUrl = dataMap.getString("POSTGRES_URL");
@@ -30,11 +34,9 @@ public class UpdateCodeVersions implements Job {
     String pgUser = dataMap.getString("POSTGRES_USERNAME");
     String pgPassword = dataMap.getString("POSTGRES_PASSWORD");
 
-    try (
-        Connection conn = DatabaseCreator.makeSingleConnection(
-            pgDb, pgFullUrl, pgUser, pgPassword);
-        CodeDatabase cd = new CodeDatabase(conn)) {
-      CodeUpdater.executeCommand(cd, "refresh", endpoint, x509Password);
+    try (Connection conn = DatabaseCreator.makeSingleConnection(pgDb, pgFullUrl, pgUser, pgPassword);
+         CodeDatabase cd = new CodeDatabase(jurisdiction, env, conn)) {
+      CodeUpdater.executeCommand(cd, jurisdiction, env, "refresh", x509Password);
     } catch (SQLException e) {
       log.error("Couldn't connect to Codes db from Job Executor: " + StdLib.strFromException(e));
     }

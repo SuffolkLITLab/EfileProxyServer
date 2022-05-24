@@ -67,13 +67,13 @@ public class DataFieldRow {
   public static String getAllFromDataFieldConfigForLoc() {
     return "SELECT code, name, isvisible, isrequired, helptext, ghosttext, contextualhelpdata, "
         + "validationmessage, regularexpression, defaultvalueexpression, isreadonly, location "
-        + "FROM datafieldconfig WHERE location=? AND code=?";
+        + "FROM datafieldconfig WHERE domain=? AND location=? AND code=?";
   }
 
   public static String getAllDataFieldConfigsForLoc() {
     return "SELECT code, name, isvisible, isrequired, helptext, ghosttext, contextualhelpdata, "
         + "validationmessage, regularexpression, defaultvalueexpression, isreadonly, location "
-        + "FROM datafieldconfig WHERE location=?";
+        + "FROM datafieldconfig WHERE domain=? AND location=?";
   }
 
 }

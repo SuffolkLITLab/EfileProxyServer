@@ -314,12 +314,12 @@ public class CodeUpdater {
     cd.vacuumAll();
   }
   
-  public static FilingReviewMDEPort loginWithTyler(String jurisdiction, String userEmail, String userPassword) throws JAXBException {
-    Optional<EfmUserService> userService = SoapClientChooser.getEfmUserFactory(jurisdiction);
+  public static FilingReviewMDEPort loginWithTyler(String jurisdiction, String env, String userEmail, String userPassword) throws JAXBException {
+    Optional<EfmUserService> userService = SoapClientChooser.getEfmUserFactory(jurisdiction, env);
     if (userService.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " in Soap chooser for EFMUser");
     }
-    Optional<FilingReviewMDEService> filingFactory = SoapClientChooser.getFilingReviewFactory(jurisdiction); 
+    Optional<FilingReviewMDEService> filingFactory = SoapClientChooser.getFilingReviewFactory(jurisdiction, env); 
     if (filingFactory.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " in Soap Chooser for filing review factory");
     }
@@ -337,19 +337,14 @@ public class CodeUpdater {
     return filingPort;
   }
   
-  public static void executeCommand(CodeDatabase cd, String command, String codesSite, 
+  public static void executeCommand(CodeDatabase cd, String jurisdiction, String env, String command, 
       String x509Password) {
     SoapX509CallbackHandler.setX509Password(x509Password);
     try {
       cd.getConnection().setAutoCommit(false);
-      // TODO(brycew): need to still handle a whole slate of jurisdiction things
-      String jurisdiction = System.getenv("TYLER_JURISDICTION");
-      String tylerEnv = System.getenv("TYLER_ENV");
-      if (tylerEnv != null) {
-        jurisdiction += "-" + tylerEnv;
-      }
+      String codesSite = SoapClientChooser.getEndpointRootUrl(jurisdiction, env);
       FilingReviewMDEPort filingPort = loginWithTyler(
-          jurisdiction, System.getenv("TYLER_USER_EMAIL"),
+          jurisdiction, env, System.getenv("TYLER_USER_EMAIL"),
           System.getenv("TYLER_USER_PASSWORD")); 
       CodeUpdater cu = new CodeUpdater(System.getenv("PATH_TO_KEYSTORE"), x509Password);
       if (command.equalsIgnoreCase("downloadall")) {
@@ -368,17 +363,20 @@ public class CodeUpdater {
 
   public static void downloadIndiv(String[] args) throws Exception {
     if (args.length < 2) {
-      log.error("Need to pass in args: downloadIndiv <table> <location or blank for system>");
+      log.error("Need to pass in args: downloadIndiv <jurisdiction> <table> <location or blank for system>");
       System.exit(1);
     }
     
     String path = System.getenv("PATH_TO_KEYSTORE");
     String pass = System.getenv("X509_PASSWORD");
+    String env = System.getenv("TYLER_ENV");
     CodeUpdater cu = new CodeUpdater(path, pass);
     HeaderSigner hs = new HeaderSigner(path, pass);
-    String location = (args.length == 3) ? args[2] : "";
-    String table = args[1];
-    cu.downloadAndProcessZip(System.getenv("TYLER_ENDPOINT") + "CodeService/codes/" + table + "/" + location, hs.signedCurrentTime().get(),
+    String location = (args.length == 4) ? args[3] : "";
+    String table = args[2];
+    String jurisdiction = args[1];
+    String endpoint = SoapClientChooser.getEndpointRootUrl(jurisdiction, env);
+    cu.downloadAndProcessZip(endpoint + "CodeService/codes/" + table + "/" + location, hs.signedCurrentTime().get(),
           table, location, (in) -> {
             String newFile = location.replace(':', '_') + "_" + table + "_test.xml";
             try {
@@ -407,7 +405,12 @@ public class CodeUpdater {
           System.getenv("POSTGRES_CODES_DB"),
           System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"), 2, 100);
 
-      executeCommand(new CodeDatabase(ds.getConnection()), args[0], System.getenv("TYLER_ENDPOINT"), System.getenv("X509_PASSWORD"));
+      List<String> jurisdictions = List.of(System.getenv("TYLER_JURISDICTIONS").split(" "));
+      String env = System.getenv("TYLER_ENV");
+      for (String jurisdiction: jurisdictions) {
+        executeCommand(new CodeDatabase(jurisdiction, env, ds.getConnection()), jurisdiction, env, 
+            args[0], System.getenv("X509_PASSWORD"));
+      }
     }
   }
 }

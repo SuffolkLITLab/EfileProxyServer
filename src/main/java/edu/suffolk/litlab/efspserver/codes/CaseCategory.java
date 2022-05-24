@@ -52,20 +52,22 @@ public class CaseCategory {
     return code;
   }
   
-  public static PreparedStatement prepFilableQueryTiming(Connection conn, String courtLocationId, 
+  public static PreparedStatement prepFilableQueryTiming(Connection conn, String domain, String courtLocationId, 
       Boolean isInitial) throws SQLException {
     if (isInitial) {
       PreparedStatement st = conn.prepareStatement(getFileableCaseCategoryForTiming());
-      st.setString(1, courtLocationId);
-      st.setString(2, Boolean.toString(isInitial));
+      st.setString(1, domain);
+      st.setString(2, courtLocationId);
+      st.setString(3, Boolean.toString(isInitial));
       return st;
     }
-    return prepFileableQuery(conn, courtLocationId); 
+    return prepFileableQuery(conn, domain, courtLocationId); 
   }
 
-  public static PreparedStatement prepFileableQuery(Connection conn, String courtLocationId) throws SQLException {
+  public static PreparedStatement prepFileableQuery(Connection conn, String domain, String courtLocationId) throws SQLException {
     PreparedStatement st = conn.prepareStatement(getFileableCaseCategoryForLoc());
-    st.setString(1, courtLocationId);
+    st.setString(1, domain);
+    st.setString(2, courtLocationId);
     return st;
   }
 
@@ -74,7 +76,7 @@ public class CaseCategory {
     return """
         SELECT code, name, ecfcasetype, procedureremedyinitial,
           procedureremedysubsequent, damageamountinitial, damageamountsubsequent
-        FROM casecategory WHERE location=? AND ecfcasetype !='CriminalCase' """;
+        FROM casecategory WHERE domain=? AND location=? AND ecfcasetype !='CriminalCase' """;
   }
 
   public static String getFileableCaseCategoryForLoc() {
@@ -90,7 +92,7 @@ public class CaseCategory {
                 FROM casecategory as cate
                   INNER JOIN casetype AS type
                   ON cate.code = type.casecategory AND cate.location = type.location
-                WHERE cate.location=? AND cate.ecfcasetype != 'CriminalCase'
+                WHERE cate.domain=? AND cate.location=? AND cate.ecfcasetype != 'CriminalCase'
             ) cat
         WHERE cat.RN = 1
         """;
@@ -109,7 +111,7 @@ public class CaseCategory {
                 FROM casecategory as cate
                   INNER JOIN casetype AS type
                   ON cate.code = type.casecategory AND cate.location = type.location
-                WHERE cate.location=? AND cate.ecfcasetype != 'CriminalCase' AND type.initial ILIKE ?
+                WHERE cate.domain=? AND cate.location=? AND cate.ecfcasetype != 'CriminalCase' AND type.initial ILIKE ?
             ) cat
         WHERE cat.RN = 1
         """;
@@ -119,7 +121,7 @@ public class CaseCategory {
     return """
         SELECT code, name, ecfcasetype, procedureremedyinitial,
           procedureremedysubsequent, damageamountinitial, damageamountsubsequent
-        FROM casecategory WHERE location=? AND code=?
+        FROM casecategory WHERE domain=? AND location=? AND code=?
         """;
   }
 

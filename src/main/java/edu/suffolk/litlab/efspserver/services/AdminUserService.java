@@ -1,8 +1,9 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import static edu.suffolk.litlab.efspserver.services.EndpointReflection.endPointsToMap;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
+import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -27,10 +28,6 @@ import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
@@ -38,7 +35,7 @@ import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.db.AtRest;
-import edu.suffolk.litlab.efspserver.db.NewTokens;
+import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.EfmUserService;
@@ -100,62 +97,38 @@ import tyler.efm.services.schema.userlistresponse.UserListResponseType;
 @Produces(MediaType.APPLICATION_JSON)
 public class AdminUserService {
 
-  private static Logger log =
+  private final static Logger log =
       LoggerFactory.getLogger(AdminUserService.class);
 
   private final EfmUserService userFactory;
   private final EfmFirmService firmFactory;
-  private final SecurityHub security;
-  private final DataSource ds;
+  private final DataSource codeDs;
+  private final DataSource userDs;
+  private final String jurisdiction;
+  private final String env;
 
-  public AdminUserService(String jurisdiction, SecurityHub security, DataSource ds) {
-    this.security = security;
-    Optional<EfmUserService> maybeUserFactory = SoapClientChooser.getEfmUserFactory(jurisdiction);
+  public AdminUserService(String jurisdiction, String env, DataSource codeDs, DataSource userDs) {
+    this.jurisdiction = jurisdiction;
+    this.env = env;
+    Optional<EfmUserService> maybeUserFactory = SoapClientChooser.getEfmUserFactory(jurisdiction, env);
     if (maybeUserFactory.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " in the SoapClientChooser for EfmUser"); 
     }
     this.userFactory = maybeUserFactory.get();;
-    Optional<EfmFirmService> maybeFirmFactory = SoapClientChooser.getEfmFirmFactory(jurisdiction);
+    Optional<EfmFirmService> maybeFirmFactory = SoapClientChooser.getEfmFirmFactory(jurisdiction, env);
     if (maybeFirmFactory.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " in the SoapClientChooser for EfmFirm factory"); 
     }
-    this.firmFactory = maybeFirmFactory.get();;
-    this.ds = ds; 
+    this.firmFactory = maybeFirmFactory.get();
+    this.codeDs = codeDs; 
+    this.userDs = userDs;
   }
 
   @GET
   @Path("/")
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection();
-    return Response.ok(endPointsToMap(ef.findRESTEndpoints(List.of(AdminUserService.class)))).build();
-  }
-
-  @POST
-  @Path("/authenticate")
-  public Response authenticateUser(@Context HttpHeaders httpHeaders,
-      String loginInfo) {
-    ObjectMapper mapper = new ObjectMapper();
-    String apiKey;
-    try {
-      JsonNode node = mapper.readTree(loginInfo);
-      if (!node.isObject() || !node.has("api_key") || !node.get("api_key").isTextual()) {
-        log.error("Call didn't pass in an api_key in the auth call");
-        return Response.status(401).build();
-      }
-      apiKey = node.get("api_key").asText();
-    } catch (JsonProcessingException e) {
-      log.error(e.toString());
-      return Response.status(401).build();
-    }
-    if (apiKey == null || apiKey.isBlank()) {
-      log.error("Call passed in a null / blank api_key");
-      return Response.status(401).build();
-    }
-    log.info("Invoking User Auth for an apiKey");
-    Optional<NewTokens> activeToken = security.login(apiKey, loginInfo);
-    return activeToken
-        .map((toks) -> Response.ok(toks).build())
-        .orElse(Response.status(403).build());
+    EndpointReflection ef = new EndpointReflection("/jurisdiction/" + jurisdiction);
+    return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(AdminUserService.class)))).build();
   }
 
   @GET
@@ -165,7 +138,7 @@ public class AdminUserService {
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    String tylerId = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyStatic()); 
+    String tylerId = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction)); 
     if (tylerId == null || tylerId.isBlank()) {
       return Response.status(500).entity(
           "Server does not have a Tyler UUID for the current account. Can you give it to me?").build();
@@ -231,7 +204,7 @@ public class AdminUserService {
   @Path("/users/{id}/resend-activation-email")
   public Response resendActivationEmail(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -252,14 +225,14 @@ public class AdminUserService {
   @Path("/users/{id}/password")
   public Response resetPassword(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, ResetPasswordParams params) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
 
     // The "1" is the default for all courts. There's no way to enforce court specific passwords
     DataFieldRow globalPasswordRow = DataFieldRow.MissingDataField("GlobalPassword");
-    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())) {
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
       globalPasswordRow = cd.getDataField("1", "GlobalPassword");
     } catch (SQLException e) {
       log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
@@ -293,7 +266,7 @@ public class AdminUserService {
     }
     // The "1" is the default for all courts. There's no way to enforce court specific passwords
     DataFieldRow globalPasswordRow = DataFieldRow.MissingDataField("GlobalPassword");
-    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())) {
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
       globalPasswordRow = cd.getDataField("1", "GlobalPassword");
     } catch (SQLException e) {
       log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
@@ -343,7 +316,7 @@ public class AdminUserService {
   @Path("/users/{id}")
   public Response getUser(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -359,7 +332,7 @@ public class AdminUserService {
   @GET
   @Path("/users")
   public Response getUserList(@Context HttpHeaders httpHeaders) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -379,7 +352,7 @@ public class AdminUserService {
     }
     // Ensure the user exists already.
     GetUserRequestType getUserReq = new GetUserRequestType();
-    getUserReq.setUserID(httpHeaders.getHeaderString(TylerLogin.getHeaderId()));
+    getUserReq.setUserID(httpHeaders.getHeaderString(TylerLogin.getHeaderId(jurisdiction)));
     GetUserResponseType userRes = port.get().getUser(getUserReq);
     if (ServiceHelpers.checkErrors(userRes.getError())) {
       return Response.status(401, userRes.getError().getErrorText()).build();
@@ -404,7 +377,7 @@ public class AdminUserService {
   @Path("/users/{id}")
   public Response updateUser(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, UserType updatedUser) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -453,7 +426,7 @@ public class AdminUserService {
   @Path("/users/{id}/roles")
   public Response getRoles(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -476,7 +449,7 @@ public class AdminUserService {
   @Path("/users/{id}/roles")
   public Response addRoles(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, List<RoleLocationType> toAdd) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -507,7 +480,7 @@ public class AdminUserService {
   @Path("/users/{id}/roles")
   public Response removeRoles(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, List<RoleLocationType> toRm) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -542,13 +515,13 @@ public class AdminUserService {
   public Response registerUser(@Context HttpHeaders httpHeaders,
       RegistrationRequestType req) {
     boolean needsAuth = req.getRegistrationType().equals(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security, needsAuth);
+    Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, needsAuth, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
 
     // The "1" is the default for all courts. There's no way to enforce court specific passwords
-    try (CodeDatabase cd = new CodeDatabase(ds.getConnection())) {
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
       Optional<CourtLocationInfo> system = cd.getFullLocationInfo("0");
       if (system.isPresent()) {
         if (req.getRegistrationType().equals(RegistrationType.INDIVIDUAL)
@@ -581,7 +554,7 @@ public class AdminUserService {
   @Path("/users/{id}")
   public Response removeUser(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -596,7 +569,7 @@ public class AdminUserService {
   @GET
   @Path("/notification-options")
   public Response getNotificationPreferenceList(@Context HttpHeaders httpHeaders) {
-    Optional<IEfmFirmService> port = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, security);
+    Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(407).build();
     }
@@ -627,14 +600,20 @@ public class AdminUserService {
    */
   private Optional<IEfmUserService> setupUserPort(HttpHeaders httpHeaders, boolean needsSoapHeader) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<AtRest> atRest = security.getAtRestInfo(apiKey);
-    if (atRest.isEmpty()) {
+    try (Connection conn = userDs.getConnection()) {
+      LoginDatabase ld = new LoginDatabase(conn);
+      Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
+      if (atRest.isEmpty()) {
+        return Optional.empty();
+      }
+    } catch (SQLException ex) {
+      log.error(StdLib.strFromException(ex));
       return Optional.empty();
     }
     IEfmUserService port = makeUserPort(userFactory);
     if (needsSoapHeader) {
       Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(
-          httpHeaders.getHeaderString(TylerLogin.getHeaderKeyStatic())); 
+          httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction))); 
       if (creds.isEmpty()) {
         return Optional.empty();
       }

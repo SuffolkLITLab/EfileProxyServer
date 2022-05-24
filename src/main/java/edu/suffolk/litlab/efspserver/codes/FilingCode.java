@@ -7,20 +7,20 @@ import java.sql.SQLException;
 
 public class FilingCode {
 
-  public String code;
-  public String name;
-  public String fee;
-  public String casecategory;
-  public String casetypeid;
-  public String filingtype;
-  public boolean iscourtuseonly;
-  public String civilclaimamount;
-  public String probateestateamount;
-  public String amountincontroversy;
-  public boolean useduedate;
-  public boolean isproposedorder;
-  public String efspcode;
-  public String location;
+  public final String code;
+  public final String name;
+  public final String fee;
+  public final String casecategory;
+  public final String casetypeid;
+  public final String filingtype;
+  public final boolean iscourtuseonly;
+  public final String civilclaimamount;
+  public final String probateestateamount;
+  public final String amountincontroversy;
+  public final boolean useduedate;
+  public final boolean isproposedorder;
+  public final String efspcode;
+  public final String location;
   
   public FilingCode(String code, String name, String fee, String casecategory,
           String casetypeid, String filingtype, String iscourtuseonly, String civilclaimamount,
@@ -61,25 +61,29 @@ public class FilingCode {
   }
   
   public static PreparedStatement prepQueryWithCaseInfo(Connection conn, 
-      boolean initial, String courtLocationId, String categoryId, String caseTypeId) throws SQLException {
+      boolean initial, String domain, String courtLocationId, String categoryId, String caseTypeId) throws SQLException {
     PreparedStatement st = conn.prepareStatement(getFilingWithCaseInfo(initial));
-    st.setString(1, courtLocationId);
-    st.setString(2, categoryId);
-    st.setString(3, caseTypeId);
+    st.setString(1, domain);
+    st.setString(2, courtLocationId);
+    st.setString(3, categoryId);
+    st.setString(4, caseTypeId);
     return st;
   }
 
   public static PreparedStatement prepQueryNoCaseInfo(Connection conn, 
-      boolean initial, String courtLocationId) throws SQLException {
+      boolean initial, String domain, String courtLocationId) throws SQLException {
     PreparedStatement st = conn.prepareStatement(getFilingNoCaseInfo(initial));
-    st.setString(1, courtLocationId);
+    st.setString(1, domain);
+    st.setString(2, courtLocationId);
     return st;
   }
   
-  public static PreparedStatement prepQueryWithKey(Connection conn, String courtId, String typeCode) throws SQLException {
+  // TODO(brycew): test this one in particular, it was wrong
+  public static PreparedStatement prepQueryWithKey(Connection conn, String domain, String courtId, String typeCode) throws SQLException {
     PreparedStatement st = conn.prepareStatement(getFilingWithKey());
-    st.setString(1, courtId);
-    st.setString(1, typeCode);
+    st.setString(1, domain);
+    st.setString(2, courtId);
+    st.setString(3, typeCode);
     return st;
   }
   
@@ -90,7 +94,7 @@ public class FilingCode {
                  civilclaimamount, probateestateamount, amountincontroversy, useduedate, 
                  isproposedorder, efspcode, location
           FROM filing 
-          WHERE location=? AND iscourtuseonly='False' AND ((casecategory=? AND casetypeid='') OR casetypeid=?) """;
+          WHERE domain=? AND location=? AND iscourtuseonly='False' AND ((casecategory=? AND casetypeid='') OR casetypeid=?) """;
     if (initial) {
       return mainQuery + "AND (filingtype='Initial' OR filingtype='Both')";
     } else {
@@ -104,7 +108,7 @@ public class FilingCode {
                  civilclaimamount, probateestateamount, amountincontroversy, useduedate, 
                  isproposedorder, efspcode, location
           FROM filing 
-          WHERE location=? AND iscourtuseonly='False' AND 
+          WHERE domain=? AND location=? AND iscourtuseonly='False' AND 
             ((casecategory='' OR casecategory=null) AND (casetypeid='' OR casetypeid=null)) """;
     if (initial) {
       return mainQuery + "AND (filingtype='Initial' OR filingtype='Both')";
@@ -119,7 +123,7 @@ public class FilingCode {
                civilclaimamount, probateestateamount, amountincontroversy, useduedate,
                isproposedorder, efspcode, location
         FROM filing
-        WHERE location=? AND code=?
+        WHERE domain=? AND location=? AND code=?
         """;
   }
   

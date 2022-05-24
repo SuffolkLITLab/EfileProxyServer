@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>groupId</groupId>
     <artifactId>assemblyline-efsp</artifactId>
-    <version>0.3.5</version>
+    <version>0.5.0</version>
     <name>Suffolk LITLab AssemblyLine EFSP Proxy Server</name>
     <url>https://suffolklitlab.org</url>
     <description>an EFSP client for the Assembly Line Project</description>
@@ -14,11 +14,11 @@
     <!-- to quickly find dependencies that can be updated, run `mvn versions:display-dependency-updates` -->
 
     <properties>
-        <cxf.version>3.4.5</cxf.version>
+        <cxf.version>3.5.1</cxf.version>
         <junit.version>5.8.2</junit.version>
         <slf4j.version>1.7.32</slf4j.version>
         <bouncycastle.version>1.70</bouncycastle.version>
-        <testcontainers.version>1.16.2</testcontainers.version>
+        <testcontainers.version>1.17.1</testcontainers.version>
         <maven-surefire.version>3.0.0-M5</maven-surefire.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
@@ -44,6 +44,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
             <version>2.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.12</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
@@ -177,7 +182,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.3.1</version>
+            <version>42.3.5</version>
         </dependency>
         <dependency>
             <groupId>com.hubspot</groupId>

@@ -15,16 +15,10 @@ public class RootService {
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection();
+    EndpointReflection ef = new EndpointReflection("");
     return Response.ok(ef.getClassPaths(List.of(
-        CasesService.class,
-        AdminUserService.class,
-        FilingReviewService.class,
-        FirmAttorneyAndServiceService.class,
-        PaymentsService.class,
-        CasesService.class,
-        CodesService.class,
-        CourtSchedulingService.class,
+        AuthenticationService.class,
+        JurisdictionSwitch.class,
         MessageSettingsService.class
     ))).build();
   }
