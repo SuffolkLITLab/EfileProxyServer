@@ -153,7 +153,9 @@ public class EfspServer {
     try (Connection codeConn = codeDs.getConnection(); 
          Connection userConn = userDs.getConnection()) {
       DatabaseVersion dv = new DatabaseVersion(codeConn, userConn);
-      dv.createTablesIfAbsent();
+      LoginDatabase ld = new LoginDatabase(userConn);
+      boolean brandNew = !ld.tablesExist();
+      dv.createTablesIfAbsent(brandNew);
       if (!dv.updateToLatest()) {
         log.error("Couldn't update the database schemas: exiting now");
         System.exit(3);

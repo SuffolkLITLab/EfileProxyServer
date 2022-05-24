@@ -89,6 +89,16 @@ public class LoginDatabase implements DatabaseInterface {
     }
   }
   
+  public boolean tablesExist() throws SQLException {
+    String tableName = "at_rest_keys";
+    String tableExistsQuery = CodeTableConstants.getTableExists();
+    try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
+      existsSt.setString(1, tableName);
+      ResultSet rs = existsSt.executeQuery();
+      return rs.next() && rs.getInt(1) > 0;
+    }
+  }
+  
   public String addNewUser(String serverName, boolean tylerEnabled, boolean jeffNetEnabled) throws SQLException {
     if (conn == null) {
       log.error("Connection in addNewUser wasn't open yet!");

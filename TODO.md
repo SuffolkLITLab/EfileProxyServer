@@ -1,3 +1,19 @@
+5/20/2022:
+
+Full auto integration test:
+
+* docker-compose-test file:
+  * starts up docassmble, postgres, and EFSP
+    * db init for PG: https://stackoverflow.com/questions/36781984/load-postgres-dump-after-docker-compose-up
+      * tyler_efm_codes_v0_1_truncated.tar.xz
+  * start docker-compose
+  * from an npm container
+    * wait til DA is up
+    * add the EFSP server API key (maybe hard coded from the user_transaction.sql) to DA config
+    * install & playground install IL, Jeffnet & EFSPIntegration
+    * run feature files for all 3 packages
+
+
 5/16/22:
 
 Maybe eventually https://neilmadden.blog/2018/08/30/moving-away-from-uuids/
@@ -17,3 +33,4 @@ Open questions we should answer before using Spring:
 2. Is our own config file format going to implement too much of Spring? Specifically, the mapping of
    jurisdictions to URLs and the Filing Classes to use
 3. Alternatively, is Spring too complicated for our use case?
+

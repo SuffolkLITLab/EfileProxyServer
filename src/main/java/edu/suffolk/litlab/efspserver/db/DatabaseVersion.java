@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DatabaseVersion {
   
-  private final static int CURRENT_VERSION = 2;
+  final static int CURRENT_VERSION = 2;
   private static Logger log = 
       LoggerFactory.getLogger(DatabaseVersion.class);
   private final Connection codeConn;
@@ -45,7 +45,7 @@ public class DatabaseVersion {
     this.userConn = userConn;
   }
   
-  public void createTablesIfAbsent() throws SQLException {
+  public void createTablesIfAbsent(boolean brandNew) throws SQLException {
     String tableExistsQuery = TABLE_EXISTS; 
     PreparedStatement existsSt  = userConn.prepareStatement(tableExistsQuery);
     existsSt.setString(1, "schema_version");
@@ -59,7 +59,11 @@ public class DatabaseVersion {
       if (retVal < 0) {
         log.warn("Issue when creating schema_version: retVal == " + retVal);
       }
-      setSchemaVersion(CURRENT_VERSION);
+      if (brandNew) {
+        setSchemaVersion(CURRENT_VERSION);
+      } else {
+        setSchemaVersion(0);
+      }
     }
     return; 
   }
