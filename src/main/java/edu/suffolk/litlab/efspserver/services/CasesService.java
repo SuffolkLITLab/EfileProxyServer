@@ -1,7 +1,11 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import static edu.suffolk.litlab.efspserver.services.EndpointReflection.replacePathParam;
+
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -62,7 +66,6 @@ import tyler.ecf.extensions.serviceinformationhistoryquerymessage.ServiceInforma
 import tyler.ecf.extensions.serviceinformationhistoryresponsemessage.ServiceInformationHistoryResponseMessageType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 
-@Path("/cases")
 @Produces(MediaType.APPLICATION_JSON)
 public class CasesService {
 
@@ -76,6 +79,7 @@ public class CasesService {
   private final DataSource userDs;
   private final String jurisdiction;
   private final String env;
+  private final EndpointReflection ef;
 
   public CasesService(String jurisdiction, String env, DataSource codeDs, DataSource userDs) {
     this.jurisdiction = jurisdiction;
@@ -87,13 +91,39 @@ public class CasesService {
     this.recordFactory = maybeRecords.get();
     this.codeDs = codeDs; 
     this.userDs = userDs;
+    this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/cases");
   }
 
   @GET
   @Path("/")
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection("/jurisdictions/" + jurisdiction);
     return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(CasesService.class)))).build();
+  }
+  
+  @GET
+  @Path("/courts")
+  public Response getCourts() {
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
+      return ServiceHelpers.getCourts(cd, false, false);
+    } catch (SQLException ex) {
+      return Response.status(500).entity("database error retrieving all courts!").build();
+    }
+  }
+  
+  @GET
+  @Path("/courts/{court_id}")
+  public Response getEndpointsUnderCourt(@PathParam("court_id") String courtId) {
+    Class<?> clazz = this.getClass();
+    Method[] methods = clazz.getMethods();
+    List<Method> subCourtMethods = new ArrayList<>();
+    for (Method method : methods) {
+      if (!method.getName().equals("getCourts") && !method.getName().equals("getAll")) {
+        subCourtMethods.add(method);
+      }
+    }
+    var retMap = ef.endPointsToMap(replacePathParam(ef.makeRestEndpoints(subCourtMethods, clazz),
+        Map.of("court_id", courtId)));
+    return Response.ok(retMap).build();
   }
   
   /**

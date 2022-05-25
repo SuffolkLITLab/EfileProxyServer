@@ -36,27 +36,27 @@ public class EndpointReflection {
    */
   @SuppressWarnings("rawtypes")
   public List<Endpoint> findRESTEndpoints(List<Class> classes) {
-      List<Endpoint> endpoints = new ArrayList<Endpoint>();
+      var endpoints = new ArrayList<Endpoint>();
       
       for (Class<?> clazz : classes) {
           Path annotation = clazz.getAnnotation(Path.class);
+          String basePath = "/";
           if (annotation != null) {
-              String basePath = getRESTEndpointPath(clazz);                    
-              Method[] methods = clazz.getMethods();
-              endpoints.addAll(makeRestEndpoints(methods, clazz, basePath));
+              basePath = getRESTEndpointPath(clazz);                    
           }
+          Method[] methods = clazz.getMethods();
+          endpoints.addAll(makeRestEndpoints(methods, clazz, basePath));
       }
       return endpoints;
   }
   
   public List<Endpoint> makeRestEndpoints(List<Method> methods, Class<?> clazz) {
     String basePath = getRESTEndpointPath(clazz);                    
-    List<Endpoint> endpoints = makeRestEndpoints(methods.toArray(new Method[0]), clazz, basePath);
-    return endpoints;
+    return makeRestEndpoints(methods.toArray(new Method[0]), clazz, basePath);
   }
   
   private List<Endpoint> makeRestEndpoints(Method[] methods, Class<?> clazz, String basePath) {
-    List<Endpoint> endpoints = new ArrayList<Endpoint>();
+    var endpoints = new ArrayList<Endpoint>();
     for (Method method : methods) {
       if (method.isAnnotationPresent(GET.class)){
         endpoints.add(createEndpoint(method, MethodEnum.GET, clazz, basePath));
@@ -69,6 +69,10 @@ public class EndpointReflection {
       }
       else if (method.isAnnotationPresent(DELETE.class)){
         endpoints.add(createEndpoint(method, MethodEnum.DELETE, clazz, basePath));
+      } 
+      else if (method.isAnnotationPresent(Path.class)) { 
+        // This happens when we return a whole object to handle that endpoint. Sholud have a root GET on each of those.
+        endpoints.add(createEndpoint(method, MethodEnum.GET, clazz, basePath));
       }
     }
     return endpoints;
@@ -213,6 +217,11 @@ public class EndpointReflection {
       List<EndpointParameter> queryParameters = new ArrayList<>();
       List<EndpointParameter> pathParameters = new ArrayList<>();
       List<EndpointParameter> payloadParameters = new ArrayList<>();        
+      
+      @Override
+      public String toString() {
+        return method + " " + uri + ", triggering " + javaMethodName;
+      }
   }
 
   public class EndpointParameter {

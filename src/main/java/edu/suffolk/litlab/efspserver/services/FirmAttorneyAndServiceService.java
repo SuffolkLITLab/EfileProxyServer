@@ -69,7 +69,6 @@ import tyler.efm.services.schema.updateservicecontactresponse.UpdateServiceConta
  * @author litlab
  *
  */
-@Path("/firmattorneyservice")
 @Produces(MediaType.APPLICATION_JSON)
 public class FirmAttorneyAndServiceService {
   private static Logger log = 
@@ -100,7 +99,7 @@ public class FirmAttorneyAndServiceService {
   @GET
   @Path("/")
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection("/jurisdiction/" + jurisdiction);
+    EndpointReflection ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/firmattorneyservice");
     return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(FirmAttorneyAndServiceService.class)))).build();
   }
 

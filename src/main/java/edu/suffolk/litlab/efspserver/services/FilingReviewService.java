@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import static edu.suffolk.litlab.efspserver.services.EndpointReflection.replacePathParam;
+
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 
@@ -10,12 +12,14 @@ import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
 
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,7 +53,7 @@ public class FilingReviewService {
   private final Map<String, EfmRestCallbackInterface> callbackInterfaces;
   private final OrgMessageSender msgSender;
   private final DataSource ds;
-  private final String jurisdiction;
+  private final EndpointReflection ef;
 
   public FilingReviewService(
       String jurisdiction,
@@ -58,18 +62,17 @@ public class FilingReviewService {
       Map<String, EfmFilingInterface> filingInterfaces,
       Map<String, EfmRestCallbackInterface> callbackInterfaces,
       OrgMessageSender msgSender) {
-    this.jurisdiction = jurisdiction;
     this.converterMap = converterMap;
     this.filingInterfaces = filingInterfaces;
     this.callbackInterfaces = callbackInterfaces;
     this.ds = ds;
     this.msgSender = msgSender;
+    this.ef = new EndpointReflection("/jurisdicitons/" + jurisdiction + "/filingreview");
   }
 
   @GET
   @Path("/")
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection("/jurisdiciton/" + jurisdiction);
     return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(FilingReviewService.class)))).build();
   }
 
@@ -78,6 +81,23 @@ public class FilingReviewService {
   public Response getCourts(@Context HttpHeaders httpHeaders) throws SQLException {
     return Response.ok(filingInterfaces.keySet().stream().sorted().collect(Collectors.toList())).build();
   }
+  
+  @GET
+  @Path("/courts/{court_id}")
+  public Response getEndpointsUnderCourt(@PathParam("court_id") String courtId) {
+    Class<?> clazz = this.getClass();
+    Method[] methods = clazz.getMethods();
+    List<Method> subCourtMethods = new ArrayList<>();
+    for (Method method : methods) {
+      if (!method.getName().equals("getCourts") && !method.getName().equals("getAll")) {
+        subCourtMethods.add(method);
+      }
+    }
+    var retMap = ef.endPointsToMap(replacePathParam(ef.makeRestEndpoints(subCourtMethods, clazz),
+        Map.of("court_id", courtId)));
+    return Response.ok(retMap).build();
+  }
+  
   
   @GET
   @Path("/courts/{court_id}/filings/{filing_id}/status")
@@ -267,9 +287,8 @@ public class FilingReviewService {
   // ReviewFiling. Just to be ECF compliant? Unclear, but consider removing this code
   /* 
   @POST
-  @Path("/jurisdictions/{jurisdiction}/courts/{court_id}/filing/serve")
+  @Path("/courts/{court_id}/filing/serve")
   public Response serveFiling(@Context HttpHeaders httpHeaders,
-      @PathParam("jurisdiction") String jurisdiction,
       @PathParam("court_id") String courtId, 
       String allVars) {
     return fileOrServe(httpHeaders, jurisdiction, courtId, allVars, EfmFilingInterface.ApiChoice.ServiceApi);

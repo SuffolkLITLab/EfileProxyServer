@@ -9,8 +9,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class JurisdictionServiceHandle {
-  
+  private static Logger log = 
+      LoggerFactory.getLogger(JurisdictionServiceHandle.class); 
+
   private final Optional<AdminUserService> adminUser;
   private final Optional<CasesService> cases;
   private final Optional<CodesService> codes;
@@ -48,7 +53,11 @@ public class JurisdictionServiceHandle {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAll() {
     EndpointReflection ef = new EndpointReflection("/jurisdictions/" + jurisdiction);
-    return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(JurisdictionServiceHandle.class)))).build();
+    var x = ef.findRESTEndpoints(List.of(JurisdictionServiceHandle.class));
+    log.info("All endpoints for servicehandle: " + x);
+    var map = ef.endPointsToMap(x);
+    log.info("Hitting HATEOS endpoint for " + jurisdiction + ": map: " + map);
+    return Response.ok(map).build();
   }
   
   @Path("/adminusers")

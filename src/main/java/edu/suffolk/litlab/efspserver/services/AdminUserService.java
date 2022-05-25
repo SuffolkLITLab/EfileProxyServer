@@ -93,7 +93,6 @@ import tyler.efm.services.schema.userlistresponse.UserListResponseType;
  * @author brycew
  *
  */
-@Path("/adminusers/")
 @Produces(MediaType.APPLICATION_JSON)
 public class AdminUserService {
 
@@ -127,7 +126,7 @@ public class AdminUserService {
   @GET
   @Path("/")
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection("/jurisdiction/" + jurisdiction);
+    EndpointReflection ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/adminusers/");
     return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(AdminUserService.class)))).build();
   }
 
@@ -375,7 +374,7 @@ public class AdminUserService {
    */
   @PATCH
   @Path("/users/{id}")
-  public Response updateUser(@Context HttpHeaders httpHeaders,
+  public Response updateUserById(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, UserType updatedUser) {
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {

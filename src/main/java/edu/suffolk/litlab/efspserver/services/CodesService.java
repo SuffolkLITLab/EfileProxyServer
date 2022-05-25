@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 import javax.ws.rs.DefaultValue;
@@ -42,7 +41,6 @@ import edu.suffolk.litlab.efspserver.codes.OptionalServiceCode;
 import edu.suffolk.litlab.efspserver.codes.PartyType;
 import edu.suffolk.litlab.efspserver.codes.ServiceCodeType;
 
-@Path("/codes")
 @Produces({MediaType.APPLICATION_JSON})
 public class CodesService {
   private static Logger log = LoggerFactory.getLogger(CodesService.class);
@@ -67,18 +65,19 @@ public class CodesService {
   private final DataSource ds;
   private final String jurisdiction;
   private final String env;
+  private final EndpointReflection ef;
   
   public CodesService(String jurisdiction, String env, DataSource ds) {
     this.jurisdiction = jurisdiction;
     this.env = env;
     this.ds = ds;
+    this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/codes");
   }
 
   @GET
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection("/jurisdictions/" + jurisdiction);
     var retMap = ef.endPointsToMap(ef.findRESTEndpoints(List.of(this.getClass())));
     return Response.ok(retMap).build();
   }
@@ -89,32 +88,13 @@ public class CodesService {
       @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly,
       @DefaultValue("false") @QueryParam("with_names") boolean withNames) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
-      if (fileableOnly) {
-        // 0 and 1 are special "system" courts that have defaults for all courts.
-        // They aren't available for filing, so filter out of either query here
-        if (withNames) {
-          return Response.ok(cd.getFileableLocationNames().stream()
-              .filter(c -> !c.getCode().equals("0") && !c.getCode().equals("1")).sorted()
-              .collect(Collectors.toList())).build();
-        } else {
-          return Response.ok(cd.getFileableLocations().stream()
-              .filter(c -> !c.equals("0") && !c.equals("1")).sorted().collect(Collectors.toList()))
-              .build();
-        }
-      } else {
-        if (withNames) {
-          return Response.ok(cd.getLocationNames()).build();
-        } else {
-          return Response.ok(cd.getAllLocations()).build();
-        }
-      }
+      return ServiceHelpers.getCourts(cd, fileableOnly, withNames);
     }
   }
   
   @GET
   @Path("/courts/{court_id}")
   public Response getCodesUnderCourt(@PathParam("court_id") String courtId) {
-    EndpointReflection ef = new EndpointReflection("/jurisdiction/" + jurisdiction);
     Class<?> clazz = this.getClass();
     Method[] methods = clazz.getMethods();
     List<Method> subCourtMethods = new ArrayList<>();
@@ -144,7 +124,6 @@ public class CodesService {
   @Path("/courts/{court_id}/case_types/{case_type_id}")
   public Response getCodesUnderCaseType(@PathParam("court_id") String courtId,
       @PathParam("case_type_id") String caseTypeId) {
-    EndpointReflection ef = new EndpointReflection("/jurisdiction/" + jurisdiction);
     Class<?> clazz = this.getClass();
     Method[] methods = clazz.getMethods();
     List<Method> subCaseMethods = new ArrayList<>();
@@ -162,7 +141,6 @@ public class CodesService {
   @Path("/courts/{court_id}/filing_codes/{filing_code_id}")
   public Response getCodesUnderFilingCode(@PathParam("court_id") String courtId,
       @PathParam("filing_code_id") String filingCode) {
-    EndpointReflection ef = new EndpointReflection("/jurisdiction/" + jurisdiction);
     Class<?> clazz = this.getClass();
     Method[] methods = clazz.getMethods();
     List<Method> subCaseMethods = new ArrayList<>();
@@ -212,6 +190,10 @@ public class CodesService {
   public Response getCaseTypes(@PathParam("court_id") String courtId,
       @QueryParam("category_id") String categoryId, @QueryParam("timing") String timing)
       throws SQLException {
+    
+    if (categoryId == null || categoryId.isBlank()) {
+      return Response.status(400).entity("You need to limit the number of case types by providing a category_id: see /categories").build();
+    }
 
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {

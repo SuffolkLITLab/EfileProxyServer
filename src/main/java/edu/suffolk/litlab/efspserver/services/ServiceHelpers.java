@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 import javax.ws.rs.core.HttpHeaders;
@@ -23,6 +24,7 @@ import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
+import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
@@ -253,5 +255,34 @@ public class ServiceHelpers {
     }
 
     return Optional.of(port);
+  }
+  
+  /** Helper for getting all of the valid courts that can be passed to a particular endpoint,
+   * 
+   * @param cd
+   * @param fileableOnly
+   * @param withNames
+   * @return
+   */
+  public static Response getCourts(CodeDatabase cd, boolean fileableOnly, boolean withNames) {
+    if (fileableOnly) {
+      // 0 and 1 are special "system" courts that have defaults for all courts.
+      // They aren't available for filing, so filter out of either query here
+      if (withNames) {
+        return Response.ok(cd.getFileableLocationNames().stream()
+            .filter(c -> !c.getCode().equals("0") && !c.getCode().equals("1")).sorted()
+            .collect(Collectors.toList())).build();
+      } else {
+        return Response.ok(cd.getFileableLocations().stream()
+            .filter(c -> !c.equals("0") && !c.equals("1")).sorted().collect(Collectors.toList()))
+            .build();
+      }
+    } else {
+      if (withNames) {
+        return Response.ok(cd.getLocationNames()).build();
+      } else {
+        return Response.ok(cd.getAllLocations()).build();
+      }
+    }
   }
 }

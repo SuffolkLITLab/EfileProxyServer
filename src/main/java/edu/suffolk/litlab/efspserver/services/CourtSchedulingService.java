@@ -121,7 +121,7 @@ public class CourtSchedulingService {
   @GET
   @Path("/")
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection("/jurisdiction/" + jurisdiction);
+    EndpointReflection ef = new EndpointReflection("/jurisdictions/" + jurisdiction);
     return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(PaymentsService.class)))).build();
   }
 
