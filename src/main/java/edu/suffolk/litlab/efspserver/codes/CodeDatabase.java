@@ -77,6 +77,10 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     createTableIfAbsent("installedversion");
   }
 
+  public String getDomain() {
+    return tylerDomain;
+  }
+
   public void createTableIfAbsent(String tableName) throws SQLException {
     if (conn == null) {
       throw new SQLException();
@@ -101,7 +105,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
           return;
         }
         try (Statement createSt = conn.createStatement()) {
-          log.info("Full statement: " + createSt.toString());
+          log.info("Full statement: " + createQuery);
           createSt.executeUpdate(createQuery);
         }
       }
@@ -181,7 +185,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       update.setString(5, doc.getIdentification().getVersion());
       update.executeUpdate();
     } catch (SQLException ex) {
-      log.error("Tried to execute an insert, but failed! Exception: " + ex.toString());
+      log.error("Tried to execute an insert, but failed! Exception: " + StdLib.strFromException(ex)); 
       log.error("Going to rollback updates to this table");
       throw ex;
     }
@@ -759,7 +763,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       throw new SQLException();
     }
     String query = CodeTableConstants.needToUpdateVersion();
-    Map<String, List<String>> courtTables = new HashMap<String, List<String>>();
+    Map<String, List<String>> courtTables = new HashMap<>();
     log.info("Query was " + query);
     try (Statement st = conn.createStatement()) {
       ResultSet rs = st.executeQuery(query);
@@ -790,18 +794,16 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     return courtTables;
   }
 
-  public boolean dropTables(Iterable<String> tablesToDrop) throws SQLException {
+  public boolean deleteFromTable(String tableName) throws SQLException {
     if (conn == null) {
       throw new SQLException();
     }
-    try (Statement st = conn.createStatement()) {
-      for (String table : tablesToDrop) {
-        // Not how to check for things that don't work, eh
-        String dropIfPresent = CodeTableConstants.getDrop(table);
-        if (!dropIfPresent.isEmpty()) {
-          st.executeUpdate(dropIfPresent);
-        }
-      }
+    String deleteFromTable = CodeTableConstants.getDeleteAllJurisdictionFrom(tableName);
+    // TODO(brycew): make variant that deletes everything with a specific jurisdiction
+    try (PreparedStatement st = conn.prepareStatement(deleteFromTable)) {
+      st.setString(1, tylerDomain);
+      log.debug(st.toString());
+      st.executeUpdate();
     }
     return true;
   }
@@ -811,18 +813,20 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       throw new SQLException();
     }
     String deleteFromTable = CodeTableConstants.getDeleteFrom(tableName);
-    if (deleteFromTable.isEmpty()) {
-      if (courtLocation.equals("0")) {
-        log.warn("Why are we removing location=0 entries from " + tableName + "?");
-        return false;
-      } else {
-        log.warn("Table " + tableName + " cannot be deleted from");
-        return false;
-      }
+    if (courtLocation == null || courtLocation.isBlank() || courtLocation.equals("0")) {
+      log.warn("Don't call this without a valid court: just don't use the var");
+      return false;
+    }
+    // TODO(brycew): make variant that deletes everything with a specific jurisdiction
+    boolean tableHasCourt = !deleteFromTable.isBlank();
+    if (!tableHasCourt) {
+      log.warn("Cannot remove the " + courtLocation + " from " + tableName + ", a table with no court locations");
+      return false;
     }
     try (PreparedStatement st = conn.prepareStatement(deleteFromTable)) {
-      st.setString(1, courtLocation);
-      log.debug(st.toString());
+      st.setString(1, tylerDomain);
+      st.setString(2, courtLocation);
+      log.info(st.toString());
       st.executeUpdate();
     }
     return true;

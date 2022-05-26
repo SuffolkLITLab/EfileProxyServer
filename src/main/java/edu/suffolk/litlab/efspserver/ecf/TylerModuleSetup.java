@@ -6,6 +6,7 @@ import org.quartz.CronScheduleBuilder;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -157,9 +158,11 @@ public class TylerModuleSetup implements EfmModuleSetup {
     log.info("Checking table if absent");
     try (CodeDatabase cd = new CodeDatabase(tylerJurisdiction, tylerEnv, codeDs.getConnection())) {
       cd.createTablesIfAbsent();
+      List<String> locations = cd.getAllLocations();
+      log.info("All locations for " + this.tylerJurisdiction + "-" + this.tylerEnv + ": " + locations);
       boolean downloadAll = (cd.getAllLocations().size() == 0);
       if (downloadAll) {
-        log.info("Downloading all codes: please wait a bit");
+        log.info("Downloading all codes for " + tylerJurisdiction + ": please wait a bit");
         CodeUpdater.executeCommand(cd, tylerJurisdiction, tylerEnv, "downloadAll", this.x509Password);
       }
     } catch (SQLException e) {

@@ -17,7 +17,7 @@ public class CodeTableConstants {
   private static final Map<String, String> createQueries = new HashMap<>();
   private static final Map<String, String> insertQueries = new HashMap<>();
   private static final Map<String, String> deleteFromQueries = new HashMap<>();
-  private static final Map<String, String> dropQueries = new HashMap<>();
+  private static final Map<String, String> deleteAllJurisdictionFromQueries = new HashMap<>();
 
   // TODO(brycew-later): the types are confusing here: some are only ever ints,
   // but are coded as normalizedStrings in the XML. Unclear what to make ints in
@@ -329,9 +329,9 @@ public class CodeTableConstants {
     for (Map.Entry<String, TableColumns> table : tableColumns.entrySet()) {
       createQueries.put(table.getKey(), createTableQuery(table.getKey(), table.getValue()));
       insertQueries.put(table.getKey(), createInsertQuery(table.getKey(), table.getValue()));
-      dropQueries.put(table.getKey(), "DROP TABLE IF EXISTS " + table.getKey());
+      deleteAllJurisdictionFromQueries.put(table.getKey(), "DELETE FROM " + table.getKey() + " WHERE domain=?");
       if (table.getValue().needsExtraLocCol) {
-        deleteFromQueries.put(table.getKey(), "DELETE FROM " + table.getKey() + " WHERE location=?");
+        deleteFromQueries.put(table.getKey(), "DELETE FROM " + table.getKey() + " WHERE domain=? AND location=?");
       }
     }
     
@@ -453,11 +453,15 @@ public class CodeTableConstants {
   public static String getNameSuffixes() {
     return "SELECT name, code FROM namesuffix WHERE domain=? AND location=?";
   }
-  
+
   public static String vacuumAnalyzeAll() {
     return "VACUUM ANALYZE";
   }
-  
+
+  public static boolean tableHasLocation(String tableName) {
+    return tableColumns.containsKey(tableName) && tableColumns.get(tableName).needsExtraLocCol;
+  }
+
   public static String getCreateTable(String tableName) {
     if (createQueries.containsKey(tableName)) {
       return createQueries.get(tableName);
@@ -486,11 +490,11 @@ public class CodeTableConstants {
     return deleteFromQueries.get(tableName);
   }
 
-  public static String getDrop(String tableName) {
-    if (!dropQueries.containsKey(tableName)) {
+  public static String getDeleteAllJurisdictionFrom(String tableName) {
+    if (!deleteAllJurisdictionFromQueries.containsKey(tableName)) {
       return "";
     }
-    return dropQueries.get(tableName);
+    return deleteAllJurisdictionFromQueries.get(tableName);
   }
 
   /**

@@ -46,8 +46,7 @@ import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 
 public class CodeUpdater {
-  private static Logger log =
-      LoggerFactory.getLogger(CodeUpdater.class);
+  private static Logger log = LoggerFactory.getLogger(CodeUpdater.class);
 
   public static final Map<String, String> ncToTableName = new HashMap<String, String>();
 
@@ -157,16 +156,15 @@ public class CodeUpdater {
 
   private boolean downloadSystemTables(String baseUrl, CodeDatabase cd, HeaderSigner signer)
       throws SQLException, IOException, JAXBException, XMLStreamException {
-    Map<String, String> codeUrls = Map.of("version", "/CodeService/codes/version/",
-        "location", "/CodeService/codes/location/",
+    Map<String, String> codeUrls = Map.of("version", "/CodeService/codes/version/", "location",
+        "/CodeService/codes/location/",
         // NOTE: the Tyler docs say this is available from `GetPolicy'. That is wrong.
         "error", "/CodeService/codes/error");
 
-    Savepoint sp = cd.getConnection().setSavepoint("systemTables");
-    cd.dropTables(codeUrls.entrySet().stream().map((e) -> e.getKey()).collect(Collectors.toList()));
-
     // On first download, there won't be installed versions of things yet.
     cd.createTableIfAbsent("installedversion");
+
+    Savepoint sp = cd.getConnection().setSavepoint("systemTables");
 
     Optional<String> signedTime = signer.signedCurrentTime();
     if (signedTime.isEmpty()) {
@@ -176,6 +174,8 @@ public class CodeUpdater {
     }
 
     for (Map.Entry<String, String> urlSuffix : codeUrls.entrySet()) {
+      cd.createTableIfAbsent(urlSuffix.getKey());
+      cd.deleteFromTable(urlSuffix.getKey());
       boolean updateSuccess = false;
       Function<InputStream, Boolean> process = (is) -> {
         try {
@@ -183,7 +183,7 @@ public class CodeUpdater {
           cd.updateTable(urlSuffix.getKey(), "0", is);
           return true;
         } catch (Exception e1) {
-          log.error(e1.toString());
+          log.error(StdLib.strFromException(e1));
           return false;
         }
       };
@@ -201,16 +201,17 @@ public class CodeUpdater {
   /**
    *
    * @param location
-   * @param codes If empty, all versions will be downloaded
+   * @param codes    If empty, all versions will be downloaded
    * @param cd
    * @param signer
    * @param conn
    */
-  private boolean downloadCourtTables(String location, Optional<List<String>> codes, CodeDatabase cd,
-      HeaderSigner signer, FilingReviewMDEPort filingPort)
+  private boolean downloadCourtTables(String location, Optional<List<String>> codes,
+      CodeDatabase cd, HeaderSigner signer, FilingReviewMDEPort filingPort)
       throws JAXBException, IOException, SQLException {
     log.debug("Location: " + location);
-    CourtPolicyQueryMessageType m = ServiceHelpers.prep(new CourtPolicyQueryMessageType(), location);
+    CourtPolicyQueryMessageType m = ServiceHelpers.prep(new CourtPolicyQueryMessageType(),
+        location);
     CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
 
     for (CourtCodelistType ccl : p.getRuntimePolicyParameters().getCourtCodelist()) {
@@ -236,7 +237,7 @@ public class CodeUpdater {
               cd.updateTable(tableName, location, is);
               return true;
             } catch (Exception e1) {
-              log.error(e1.toString());
+              log.error(StdLib.strFromException(e1));
               return false;
             }
           };
@@ -270,7 +271,7 @@ public class CodeUpdater {
       Savepoint sp = cd.getConnection().setSavepoint("court" + courtLocation + "savepoint");
       List<String> tables = courtAndTables.getValue();
       for (String table : tables) {
-       Instant deleteFromTable = Instant.now(Clock.systemUTC());
+        Instant deleteFromTable = Instant.now(Clock.systemUTC());
         if (!cd.deleteFromTable(table, courtLocation)) {
           log.warn("Couldn't delete from " + table + " at " + courtLocation + ", aborting");
           cd.getConnection().rollback(sp);
@@ -293,12 +294,15 @@ public class CodeUpdater {
   public void downloadAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
       throws SQLException, IOException, JAXBException, XMLStreamException {
     HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
-    log.info("Downloading system tables");
+    log.info("Downloading system tables for " + cd.getDomain());
     downloadSystemTables(baseUrl, cd, signer);
 
-    List<String> tablesToDrop = ncToTableName.entrySet().stream().map((e) -> e.getValue())
+    List<String> tablesToDeleteDomain = ncToTableName.entrySet().stream().map((e) -> e.getValue())
         .collect(Collectors.toUnmodifiableList());
-    cd.dropTables(tablesToDrop);
+    for (String table : tablesToDeleteDomain) {
+      cd.createTableIfAbsent(table);
+      cd.deleteFromTable(table);
+    }
     cd.getConnection().commit();
 
     downloads = Duration.ZERO;
@@ -313,7 +317,6 @@ public class CodeUpdater {
     cd.getConnection().setAutoCommit(true);
     cd.vacuumAll();
   }
-  
   public static FilingReviewMDEPort loginWithTyler(String jurisdiction, String env, String userEmail, String userPassword) throws JAXBException {
     Optional<EfmUserService> userService = SoapClientChooser.getEfmUserFactory(jurisdiction, env);
     if (userService.isEmpty()) {
@@ -321,22 +324,22 @@ public class CodeUpdater {
     }
     Optional<FilingReviewMDEService> filingFactory = SoapClientChooser.getFilingReviewFactory(jurisdiction, env); 
     if (filingFactory.isEmpty()) {
-      throw new RuntimeException("Can't find " + jurisdiction + " in Soap Chooser for filing review factory");
+      throw new RuntimeException(
+          "Can't find " + jurisdiction + " in Soap Chooser for filing review factory");
     }
     IEfmUserService userPort = userService.get().getBasicHttpBindingIEfmUserService();
     ServiceHelpers.setupServicePort((BindingProvider) userPort);
     AuthenticateRequestType authReq = new AuthenticateRequestType();
-    authReq.setEmail(userEmail); 
-    authReq.setPassword(userPassword); 
+    authReq.setEmail(userEmail);
+    authReq.setPassword(userPassword);
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
     List<Header> headersList = TylerUserNamePassword.makeHeaderList(authRes);
-    FilingReviewMDEPort filingPort = filingFactory.get().getFilingReviewMDEPort(); 
+    FilingReviewMDEPort filingPort = filingFactory.get().getFilingReviewMDEPort();
     ServiceHelpers.setupServicePort((BindingProvider) filingPort);
-    Map<String, Object> ctx = ((BindingProvider)filingPort).getRequestContext();
+    Map<String, Object> ctx = ((BindingProvider) filingPort).getRequestContext();
     ctx.put(Header.HEADER_LIST, headersList);
     return filingPort;
   }
-  
   public static void executeCommand(CodeDatabase cd, String jurisdiction, String env, String command, 
       String x509Password) {
     SoapX509CallbackHandler.setX509Password(x509Password);
@@ -356,7 +359,7 @@ public class CodeUpdater {
         return;
       }
     } catch (SQLException | IOException | JAXBException | XMLStreamException e) {
-      log.error("Exception when making doing code updating! " + StdLib.strFromException(e));
+      log.error("Exception when doing code updating! " + StdLib.strFromException(e));
       return;
     }
   }
@@ -366,7 +369,7 @@ public class CodeUpdater {
       log.error("Need to pass in args: downloadIndiv <jurisdiction> <table> <location or blank for system>");
       System.exit(1);
     }
-    
+
     String path = System.getenv("PATH_TO_KEYSTORE");
     String pass = System.getenv("X509_PASSWORD");
     String env = System.getenv("TYLER_ENV");
