@@ -105,7 +105,7 @@ public class CodesServiceTest {
   @Test
   public void testGetAll() throws JsonMappingException, JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
-    JsonNode node = mapper.readTree(getServerResponseAt("/codes/")); 
+    JsonNode node = mapper.readTree(getServerResponseAt("/"));
     assertTrue(node.has("getCodesUnderCourt"), "didn't have codes post court: " + node);
     assertTrue(node.has("getCourtLocationCodes"), "didn't have court location codes: " + node);
     assertTrue(node.has("getCaseTypes"));
@@ -116,42 +116,42 @@ public class CodesServiceTest {
   @Test
   public void testGetSubCourt() throws JsonMappingException, JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
-    JsonNode node = mapper.readTree(getServerResponseAt("/codes/courts/adams")); 
+    JsonNode node = mapper.readTree(getServerResponseAt("/courts/adams"));
     assertTrue(node.has("getCourtLocationCodes"), "didn't have court location codes: " + node);
     assertEquals(
-        ServiceHelpers.BASE_URL + "/jurisdiction/illinois/codes/courts/adams/codes",
+        ServiceHelpers.BASE_URL + "/jurisdictions/illinois/codes/courts/adams/codes",
         node.get("getCourtLocationCodes").asText());
     assertTrue(node.has("getCaseTypes"));
     assertEquals(
-        ServiceHelpers.BASE_URL + "/jurisdiction/illinois/codes/courts/adams/case_types",
+        ServiceHelpers.BASE_URL + "/jurisdictions/illinois/codes/courts/adams/case_types",
         node.get("getCaseTypes").asText());
   }
   
   @Test
   public void testGetCase() throws JsonMappingException, JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
-    JsonNode node = mapper.readTree(getServerResponseAt("/codes/courts/adams/case_types/1234")); 
+    JsonNode node = mapper.readTree(getServerResponseAt("/courts/adams/case_types/1234"));
     assertTrue(node.has("getCaseSubtypes"), "didn't have case sub types: " + node);
     assertEquals(
-        ServiceHelpers.BASE_URL + "/jurisdiction/illinois/codes/courts/adams/case_types/1234/case_subtypes",
+        ServiceHelpers.BASE_URL + "/jurisdictions/illinois/codes/courts/adams/case_types/1234/case_subtypes",
         node.get("getCaseSubtypes").asText());
     assertTrue(node.has("getPartyTypes"));
     assertEquals(
-        ServiceHelpers.BASE_URL + "/jurisdiction/illinois/codes/courts/adams/case_types/1234/party_types", 
+        ServiceHelpers.BASE_URL + "/jurisdictions/illinois/codes/courts/adams/case_types/1234/party_types", 
         node.get("getPartyTypes").asText());
   }
   
   @Test
   public void testGetUnderFilingCode() throws Exception {
     ObjectMapper mapper = new ObjectMapper();
-    JsonNode node = mapper.readTree(getServerResponseAt("/codes/courts/adams/filing_codes/1234")); 
+    JsonNode node = mapper.readTree(getServerResponseAt("/courts/adams/filing_types/1234"));
     assertTrue(node.has("getOptionalServices"), "didn't have optionalServices: " + node);
     assertEquals(
-        ServiceHelpers.BASE_URL + "/jurisdiction/illinois/codes/courts/adams/filing_codes/1234/optional_services",
+        ServiceHelpers.BASE_URL + "/jurisdictions/illinois/codes/courts/adams/filing_types/1234/optional_services",
         node.get("getOptionalServices").asText());
     assertTrue(node.has("getFilingComponents"));
     assertEquals(
-        ServiceHelpers.BASE_URL + "/jurisdiction/illinois/codes/courts/adams/filing_codes/1234/filing_components", 
+        ServiceHelpers.BASE_URL + "/jurisdictions/illinois/codes/courts/adams/filing_types/1234/filing_components",
         node.get("getFilingComponents").asText());
   }
   

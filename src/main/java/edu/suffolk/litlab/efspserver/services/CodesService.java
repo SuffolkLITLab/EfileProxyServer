@@ -138,8 +138,8 @@ public class CodesService {
   }
 
   @GET
-  @Path("/courts/{court_id}/filing_codes/{filing_code_id}")
-  public Response getCodesUnderFilingCode(@PathParam("court_id") String courtId,
+  @Path("/courts/{court_id}/filing_types/{filing_code_id}")
+  public Response getCodesUnderFilingTypes(@PathParam("court_id") String courtId,
       @PathParam("filing_code_id") String filingCode) {
     Class<?> clazz = this.getClass();
     Method[] methods = clazz.getMethods();
@@ -330,7 +330,7 @@ public class CodesService {
   }
 
   @GET
-  @Path("/courts/{court_id}/filing_codes/{filing_code_id}/document_types")
+  @Path("/courts/{court_id}/filing_types/{filing_code_id}/document_types")
   public Response getDocumentTypes(@PathParam("court_id") String courtId,
       @PathParam("filing_code_id") String filingCodeId) throws SQLException {
 
@@ -345,7 +345,7 @@ public class CodesService {
   }
 
   @GET
-  @Path("/courts/{court_id}/filing_codes/{filing_code_id}/motion_types")
+  @Path("/courts/{court_id}/filing_types/{filing_code_id}/motion_types")
   public Response getMotionTypes(@PathParam("court_id") String courtId,
       @PathParam("filing_code_id") String filingCodeId) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
@@ -385,7 +385,7 @@ public class CodesService {
   }
 
   @GET
-  @Path("/courts/{court_id}/filing_codes/{filing_code_id}/filing_components")
+  @Path("/courts/{court_id}/filing_types/{filing_code_id}/filing_components")
   public Response getFilingComponents(@PathParam("court_id") String courtId,
       @PathParam("filing_code_id") String filingCodeId) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
@@ -399,7 +399,7 @@ public class CodesService {
   }
 
   @GET
-  @Path("/courts/{court_id}/filing_codes/{filing_code_id}/optional_services")
+  @Path("/courts/{court_id}/filing_types/{filing_code_id}/optional_services")
   public Response getOptionalServices(@PathParam("court_id") String courtId,
       @PathParam("filing_code_id") String filingCodeId) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
