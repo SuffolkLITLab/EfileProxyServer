@@ -35,7 +35,7 @@ public class FilingDoc {
   // So, we can just say yes?
   private String documentTypeFormatStandardName;
   final private boolean sendInBase64 = true;
-  final private String filingComponentName;
+  final private String filingComponentCode;
 
   // From filer, about this filing
   private String filingComments;
@@ -52,10 +52,10 @@ public class FilingDoc {
   public FilingDoc(Optional<String> filingCode, String fileName, InputStream fileStream,
       List<PartyId> filingPartyIds,
       String documentTypeFormatStandardName,
-      String filingComponentName, boolean isLeadDoc) throws IOException {
+      String filingComponentCode, boolean isLeadDoc) throws IOException {
     this(filingCode, fileName, fileStream.readAllBytes(), Optional.empty(), Optional.empty(), Optional.empty(),
         filingPartyIds, Optional.empty(), documentTypeFormatStandardName,
-        filingComponentName, "", Optional.empty(), List.of(), List.of(), List.of(),
+        filingComponentCode, "", Optional.empty(), List.of(), List.of(), List.of(),
         Optional.empty(),
         isLeadDoc);
   }
@@ -66,7 +66,7 @@ public class FilingDoc {
       Optional<String> userProvidedDescription,
       Optional<String> filingReferenceNum, Optional<LocalDate> dueDate, 
       List<PartyId> filingPartyIds, Optional<String> filingAttorney,
-      String documentTypeFormatStandardName, String filingComponentName,
+      String documentTypeFormatStandardName, String filingComponentCode,
       String filingComments, Optional<String> motionType, List<OptionalService> optionalServices,
       List<String> courtesyCopies, List<String> preliminaryCopies, 
       Optional<FilingTypeType> filingAction,
@@ -81,7 +81,7 @@ public class FilingDoc {
     this.filingPartyIds = filingPartyIds;
     this.filingAttorney = filingAttorney;
     this.documentTypeFormatStandardName = documentTypeFormatStandardName;
-    this.filingComponentName = filingComponentName;
+    this.filingComponentCode = filingComponentCode;
 
     this.filingComments = filingComments;
     this.optServices = optionalServices;
@@ -144,8 +144,8 @@ public class FilingDoc {
     return sendInBase64;
   }
 
-  public String getFilingComponentName() {
-    return filingComponentName;
+  public String getFilingComponent() {
+    return filingComponentCode;
   }
 
   public String getDocumentTypeFormatStandardName() {

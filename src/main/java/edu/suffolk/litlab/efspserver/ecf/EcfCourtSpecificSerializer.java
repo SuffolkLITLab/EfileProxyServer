@@ -646,15 +646,16 @@ public class EcfCourtSpecificSerializer {
       collector.addRequired(var);
     }
 
-    Optional<FilingComponent> filtered = components.stream().filter(c -> c.code.equalsIgnoreCase(doc.getFilingComponentName())).findFirst();
+    Optional<FilingComponent> filtered = components.stream().filter(c -> c.code.equalsIgnoreCase(doc.getFilingComponent())).findFirst();
     if (filtered.isEmpty()) {
-      log.error("Filing Components (" + components + ") don't match " + doc.getFilingComponentName());
+      log.error("Filing Components (" + components + ") don't match \"" + doc.getFilingComponent() + "\".");
       collector.addRequired(var);
     }
 
-    attachment.setBinaryCategoryText(XmlHelper.convertText(filtered.get().code));
+    FilingComponent filt = filtered.orElse(new FilingComponent("NO CODE", "NOT PRESENT", "", false, false, 0, "", ""));    
+    attachment.setBinaryCategoryText(XmlHelper.convertText(filt.code));
     if (!filtered.get().allowmultiple) {
-      components.remove(filtered.get());
+      components.remove(filt);
     }
 
     if (!doc.getOptionalServices().isEmpty()) {
