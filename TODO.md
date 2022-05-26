@@ -1,9 +1,12 @@
 
 5/23/2022:
 
-Filter / authentication for all of the endpoint calls
-https://dennis-xlc.gitbooks.io/restful-java-with-jax-rs-2-0-2rd-edition/content/en/part1/chapter12/server_side_filters.html
-
+* Filter / authentication for all of the endpoint calls
+  https://dennis-xlc.gitbooks.io/restful-java-with-jax-rs-2-0-2rd-edition/content/en/part1/chapter12/server_side_filters.html
+* VisualVM to check for memory usage when running and making filings
+  https://stackoverflow.com/questions/35108868/how-do-i-attach-visualvm-to-a-simple-java-process-running-in-a-docker-container
+  https://visualvm.github.io/gettingstarted.html?VisualVM_2.1.3
+  
 
 5/20/2022:
 

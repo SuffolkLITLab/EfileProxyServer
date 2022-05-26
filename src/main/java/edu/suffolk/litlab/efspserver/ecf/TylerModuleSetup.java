@@ -262,7 +262,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
   public void setupGlobals() {
     OasisEcfWsCallback implementor = new OasisEcfWsCallback(tylerJurisdiction, tylerEnv, codeDs, userDs, sender);
     String baseLocalUrl = System.getenv("BASE_LOCAL_URL");
-    String address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT;
+    String address = baseLocalUrl + "/" + tylerJurisdiction + ServiceHelpers.ASSEMBLY_PORT;
     log.info("Starting NFRC callback server at " + address);
     EndpointImpl jaxWsEndpoint = (EndpointImpl) javax.xml.ws.Endpoint.publish(address,  implementor);
     log.info("Wsdl location: " + jaxWsEndpoint.getWsdlLocation());
@@ -271,7 +271,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     
     
     OasisEcfv5WsCallback impl2 = new OasisEcfv5WsCallback(tylerJurisdiction, tylerEnv, codeDs, userDs, sender);
-    String v5Address = baseLocalUrl + ServiceHelpers.ASSEMBLY_PORT_V5;
+    String v5Address = baseLocalUrl + "/" + tylerJurisdiction + ServiceHelpers.ASSEMBLY_PORT_V5;
     EndpointImpl jaxWsV5Endpoint = (EndpointImpl) javax.xml.ws.Endpoint.publish(v5Address, impl2);
     log.info("V5 Wsdl location: " + jaxWsV5Endpoint.getWsdlLocation());
     log.info("V5 Address : " + jaxWsV5Endpoint.getAddress());
@@ -305,5 +305,10 @@ public class TylerModuleSetup implements EfmModuleSetup {
         log.error("SchedulerException on shutdown: " + e.toString());
       }
     }
+  }
+  
+  @Override
+  public String toString() {
+    return "TylerModuleSetup[jurisdiction=" + tylerJurisdiction + ",env=" + tylerEnv +"]"; 
   }
 }
