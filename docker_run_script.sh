@@ -5,7 +5,7 @@ cd /usr/src/app
 # Add this before the `-cp` line if needed to get exact SOAP envelopes being sent
 #-javaagent:extract-tls-secrets-4.0.0.jar=/tmp/secrets/secrets.log \
 java \
-    -cp $(cat cp.txt):target/assemblyline-efsp-0.5.0.jar \
+    -cp $(cat cp.txt):target/assemblyline-efsp-0.6.0.jar \
 	edu.suffolk.litlab.efspserver.services.EfspServer \
 	-Djava.util.logging.config.file=logging.properties \
     -Dlog4j2.formatMsgNoLookups=true
