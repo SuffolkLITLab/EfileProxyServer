@@ -374,6 +374,9 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       filingPort = maybeFilingPort.get();
       String queryType = (choice.equals(ApiChoice.ServiceApi))? "service" : "review";
       cfm = prepareFiling(info, collector, apiToken, filingPort, recordPort.get(), queryType);
+      if (!choice.equals(ApiChoice.ServiceApi) && (info.getPaymentId() == null || info.getPaymentId().isBlank())) {
+        collector.addRequired(collector.requestVar("tyler_payment_id", "The ID of the payment method", "text"));
+      }
     } catch (FilingError err) {
       return Result.err(err);
     }
