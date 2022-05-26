@@ -19,18 +19,8 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
                   targetNamespace = "urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0")
 public class CourtRecordMDEService extends Service {
 
-    public final static URL WSDL_LOCATION;
-
     public final static QName SERVICE = new QName("urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0", "CourtRecordMDEService");
     public final static QName CourtRecordMDEPort = new QName("urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0", "CourtRecordMDEPort");
-    static {
-        URL url = CourtRecordMDEService.class.getClassLoader().getResource("wsdl/filingreview/ECF-4.0-CourtRecordMDEService.wsdl");
-        if (url == null) {
-          org.slf4j.LoggerFactory.getLogger(CourtRecordMDEService.class.getName()).info(
-                     "Can not initialize the default wsdl from {0}", "classpath:wsdl/filingreview/ECF-4.0-CourtRecordMDEService.wsdl");
-        }
-        WSDL_LOCATION = url;
-    }
 
     public CourtRecordMDEService(URL wsdlLocation) {
         super(wsdlLocation, SERVICE);
@@ -38,14 +28,6 @@ public class CourtRecordMDEService extends Service {
 
     public CourtRecordMDEService(URL wsdlLocation, QName serviceName) {
         super(wsdlLocation, serviceName);
-    }
-
-    public CourtRecordMDEService() {
-        super(WSDL_LOCATION, SERVICE);
-    }
-
-    public CourtRecordMDEService(WebServiceFeature ... features) {
-        super(WSDL_LOCATION, SERVICE, features);
     }
 
     public CourtRecordMDEService(URL wsdlLocation, WebServiceFeature ... features) {

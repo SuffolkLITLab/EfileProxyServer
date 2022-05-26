@@ -14,7 +14,7 @@ import javax.xml.ws.Service;
  *
  */
 @WebServiceClient(name = "CourtSchedulingMDE",
-                  wsdlLocation = "file:EfileProxyServer/src/main/resources/wsdl/v5/CourtSchedulingMDE.wsdl",
+                  wsdlLocation = "file:EfileProxyServer/src/main/resources/wsdl/illinois/v5/CourtSchedulingMDE.wsdl",
                   targetNamespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE")
 public class CourtSchedulingMDE_Service extends Service {
 

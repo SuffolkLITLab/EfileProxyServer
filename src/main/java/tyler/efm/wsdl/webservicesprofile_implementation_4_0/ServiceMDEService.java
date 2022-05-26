@@ -19,19 +19,8 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
                   targetNamespace = "urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0")
 public class ServiceMDEService extends Service {
 
-    public final static URL WSDL_LOCATION;
-
     public final static QName SERVICE = new QName("urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0", "ServiceMDEService");
     public final static QName ServiceMDEPort = new QName("urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0", "ServiceMDEPort");
-    static {
-        URL url = ServiceMDEService.class.getClassLoader().getResource("wsdl/filingreview/ECF-4.0-ServiceMDEService.wsdl");
-        if (url == null) {
-            java.util.logging.Logger.getLogger(ServiceMDEService.class.getName())
-                .log(java.util.logging.Level.INFO,
-                     "Can not initialize the default wsdl from {0}", "classpath:wsdl/filingreview/ECF-4.0-ServiceMDEService.wsdl");
-        }
-        WSDL_LOCATION = url;
-    }
 
     public ServiceMDEService(URL wsdlLocation) {
         super(wsdlLocation, SERVICE);
@@ -39,14 +28,6 @@ public class ServiceMDEService extends Service {
 
     public ServiceMDEService(URL wsdlLocation, QName serviceName) {
         super(wsdlLocation, serviceName);
-    }
-
-    public ServiceMDEService() {
-        super(WSDL_LOCATION, SERVICE);
-    }
-
-    public ServiceMDEService(WebServiceFeature ... features) {
-        super(WSDL_LOCATION, SERVICE, features);
     }
 
     public ServiceMDEService(URL wsdlLocation, WebServiceFeature ... features) {

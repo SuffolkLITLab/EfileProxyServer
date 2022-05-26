@@ -47,13 +47,13 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "caseDocketID"
 })
 @XmlSeeAlso({
-    BankruptcyCaseType.class,
-    CriminalCaseType.class,
-    JuvenileCaseType.class,
-    CitationCaseType.class,
     CivilCaseType.class,
+    CriminalCaseType.class,
     DomesticCaseType.class,
-    AppellateCaseType.class
+    AppellateCaseType.class,
+    JuvenileCaseType.class,
+    BankruptcyCaseType.class,
+    CitationCaseType.class
 })
 public class CaseType
     extends ActivityType

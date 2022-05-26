@@ -75,11 +75,11 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "documentSubmitter"
 })
 @XmlSeeAlso({
+    MatchingFilingType.class,
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType.class,
     DocumentRenditionMetadataType.class,
     DocumentRenditionType.class,
     AppellateCaseNoticeType.class,
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType.class,
-    MatchingFilingType.class,
     CaseFilingType.class
 })
 public class DocumentType
@@ -185,7 +185,6 @@ public class DocumentType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link TextType }{@code >}
      * {@link JAXBElement }{@code <}{@link TextType }{@code >}
      * {@link JAXBElement }{@code <}{@link TextType }{@code >}
      * {@link JAXBElement }{@code <}{@link TextType }{@code >}

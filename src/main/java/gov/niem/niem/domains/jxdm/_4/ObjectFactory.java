@@ -52,7 +52,6 @@ public class ObjectFactory {
     private final static QName _ArrestAgency_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ArrestAgency");
     private final static QName _ArrestSubject_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ArrestSubject");
     private final static QName _CaseCourtEvent_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "CaseCourtEvent");
-    private final static QName _ChargeStatute_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ChargeStatute");
     private final static QName _ActivityLocationAssociation_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ActivityLocationAssociation");
     private final static QName _AppellateCase_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "AppellateCase");
     private final static QName _AppellateCaseNotice_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "AppellateCaseNotice");
@@ -96,6 +95,7 @@ public class ObjectFactory {
     private final static QName _ChargeSequenceID_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ChargeSequenceID");
     private final static QName _ChargeSeverityLevel_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ChargeSeverityLevel");
     private final static QName _ChargeSpecialAllegationText_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ChargeSpecialAllegationText");
+    private final static QName _ChargeStatute_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ChargeStatute");
     private final static QName _Citation_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "Citation");
     private final static QName _CitationAgency_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "CitationAgency");
     private final static QName _CitationDismissalConditionIndicator_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "CitationDismissalConditionIndicator");
@@ -183,19 +183,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link StatuteType }
-     * 
-     */
-    public StatuteType createStatuteType() {
-        return new StatuteType();
-    }
-
-    /**
      * Create an instance of {@link ArrestType }
      * 
      */
     public ArrestType createArrestType() {
         return new ArrestType();
+    }
+
+    /**
+     * Create an instance of {@link StatuteType }
+     * 
+     */
+    public StatuteType createStatuteType() {
+        return new StatuteType();
     }
 
     /**
@@ -491,19 +491,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://niem.gov/niem/domains/jxdm/4.0", name = "CaseCourtEvent")
     public JAXBElement<CourtEventType> createCaseCourtEvent(CourtEventType value) {
         return new JAXBElement<CourtEventType>(_CaseCourtEvent_QNAME, CourtEventType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link StatuteType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link StatuteType }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://niem.gov/niem/domains/jxdm/4.0", name = "ChargeStatute")
-    public JAXBElement<StatuteType> createChargeStatute(StatuteType value) {
-        return new JAXBElement<StatuteType>(_ChargeStatute_QNAME, StatuteType.class, null, value);
     }
 
     /**
@@ -1063,6 +1050,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://niem.gov/niem/domains/jxdm/4.0", name = "ChargeSpecialAllegationText")
     public JAXBElement<TextType> createChargeSpecialAllegationText(TextType value) {
         return new JAXBElement<TextType>(_ChargeSpecialAllegationText_QNAME, TextType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link StatuteType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link StatuteType }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://niem.gov/niem/domains/jxdm/4.0", name = "ChargeStatute")
+    public JAXBElement<StatuteType> createChargeStatute(StatuteType value) {
+        return new JAXBElement<StatuteType>(_ChargeStatute_QNAME, StatuteType.class, null, value);
     }
 
     /**

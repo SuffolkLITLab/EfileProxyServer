@@ -54,7 +54,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.Card
     serviceName="FilingAssemblyMDEService",
     portName="FilingAssemblyMDEPort",
     targetNamespace="urn:tyler:efm:wsdl:WebServicesProfile-Implementation-5.0",
-    wsdlLocation="file:src/main/resources/wsdl/v5/FilingAssemblyMDE.wsdl",
+    wsdlLocation="file:src/main/resources/wsdl/illinois/v5/FilingAssemblyMDE.wsdl",
     endpointInterface="ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.filingassemblymde.FilingAssemblyMDE")
 public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
   private static Logger log =

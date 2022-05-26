@@ -15,23 +15,12 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
  *
  */
 @WebServiceClient(name = "FilingReviewMDEService",
-                  wsdlLocation = "classpath:wsdl/filingreview/ECF-4.0-FilingReviewMDEService.wsdl",
+                  wsdlLocation = "classpath:wsdl/illinois/stage/ECF-4.0-FilingReviewMDEService.wsdl",
                   targetNamespace = "urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0")
 public class FilingReviewMDEService extends Service {
 
-    public final static URL WSDL_LOCATION;
-
     public final static QName SERVICE = new QName("urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0", "FilingReviewMDEService");
     public final static QName FilingReviewMDEPort = new QName("urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0", "FilingReviewMDEPort");
-    static {
-        URL url = FilingReviewMDEService.class.getClassLoader().getResource("wsdl/filingreview/ECF-4.0-FilingReviewMDEService.wsdl");
-        if (url == null) {
-            java.util.logging.Logger.getLogger(FilingReviewMDEService.class.getName())
-                .log(java.util.logging.Level.INFO,
-                     "Can not initialize the default wsdl from {0}", "classpath:wsdl/filingreview/ECF-4.0-FilingReviewMDEService.wsdl");
-        }
-        WSDL_LOCATION = url;
-    }
 
     public FilingReviewMDEService(URL wsdlLocation) {
         super(wsdlLocation, SERVICE);
@@ -39,14 +28,6 @@ public class FilingReviewMDEService extends Service {
 
     public FilingReviewMDEService(URL wsdlLocation, QName serviceName) {
         super(wsdlLocation, serviceName);
-    }
-
-    public FilingReviewMDEService() {
-        super(WSDL_LOCATION, SERVICE);
-    }
-
-    public FilingReviewMDEService(WebServiceFeature ... features) {
-        super(WSDL_LOCATION, SERVICE, features);
     }
 
     public FilingReviewMDEService(URL wsdlLocation, WebServiceFeature ... features) {

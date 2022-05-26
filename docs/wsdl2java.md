@@ -40,8 +40,8 @@ them. This document tries to capture the steps needed to update those generated 
 Tbh, this is a mess. The rough steps are below.
 
 NOTE: the exact links to the SOAP services in this doc aren't really exact: they're examples.
-So if a link says `https://example.tylerhost.net/efm/EFMUserService.svc`, feel free to replace
-the subdomain (the `example` part) with your subdomain, which depends on what jurisdiction your
+So if a link says `https://jurisdiction-env.tylerhost.net/efm/EFMUserService.svc`, feel free to replace
+the subdomain (the `jurisdiction-env` part) with your subdomain, which depends on what jurisdiction your
 working in. For us it's mostly `illinois-stage`.
 
 1. Get your hands on `wsdl2java` from the [CXF project](https://cxf.apache.org/). 
@@ -81,16 +81,16 @@ working in. For us it's mostly `illinois-stage`.
    because you should be able to run `cxf/distribution/src/main/release/bin/wsdl2java -help`
    successfully.
 
-1. Download the Services:
+2. Download the Services:
    CXF works by first ingesting and parsing the entire XSD that a SOAP service uses before
    being able to start the server. This slows down things a little bit, for about 15 seconds to several
    minutes depending on the service. There are two different ways to download the services that Tyler uses:
    1. The Tyler specific services. These are EfmUserService and EfmFirmService: just download them as a single WSDL!
-      The [main page](https://example.tylerhost.net/efm/EFMUserService.svc) is kind enough to tell us that:
+      The main page (<https://jurisdiction-env.tylerhost.net/efm/EFMUserService.svc>) is kind enough to tell us that:
       
       > You can also access the service description as a single file
       
-      So you should just download [that file](https://example.tylerhost.net/EFM/EFMUserService.svc?singleWsdl)
+      So you should just download that file at <https://jurisdiction-env.tylerhost.net/EFM/EFMUserService.svc?singleWsdl>.
       for all of the services that you are using.
    
    2. The ECF services: XsdDownloader. These services are externally defined outside of Tyler, so there isn't
@@ -100,18 +100,18 @@ working in. For us it's mostly `illinois-stage`.
       That's what `edu.suffolk.litlab.efspserver.XsdDownloader` does! It should be setup through 
       the pom file's exec-maven-plugin, and just runs the `main` function. The command is below:
       ```bash
-      mvn exec:java@XsdDownloader -Dexec.args="https://example.tylerhost.net/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf"
+      mvn exec:java@XsdDownloader -Dexec.args="https://jurisdiction-env.tylerhost.net/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf"
       ```
       
       This will download all of the ECF files, giving them a single specific prefix. You'll need to move them
-      to the `src/main/resources/wsdl/ecf/` folder. You'll want to give the `ecf.xsd` file a better name too, 
+      to the `src/main/resources/wsdl/jurisdiction/env/` folder. You'll want to give the `ecf.xsd` file a better name too, 
       probably the specific service that was downloaded.
       
       Once you have downloaded one, the good news is that the XSD for all the rest is exactly the same!
       So instead of running XsdDownloader again, you can just directly visit it's URL and save the file
-      to `src/main/resources/wsdl/ecf` with a good name. Nice.
+      to `src/main/resources/wsdl/jurisdiction/env` with a good name. Nice.
       
-      The base url of these urls are: https://example.tylerhost.net/EFM/Schema/
+      The base url of these urls are: https://jurisdiction-env.tylerhost.net/EFM/Schema/
       The full list of these services are:
       * ECF-4.0-FilingReviewMDEService.wsdl
       * ECF-4.0-FilingAssemblyMDEService.wsdl
@@ -120,16 +120,16 @@ working in. For us it's mostly `illinois-stage`.
       
       The last one is v5/CourtSchedulingMDE.wsdl. It _doesn't_ have the same XSDs as the rest, as it's based on 
       ECF v5, not ECF v4. So just run 
+      ```bash
+      mvn exec:java@XsdDownloader -Dexec.args="https://jurisdiction-env.tylerhost.net/EFM/Schema/v5/CourtScheduling.wsdl ecf-v5"
       ```
-      mvn exec:java@XsdDownloader -Dexec.args="https://example.tylerhost.net/EFM/Schema/v5/CourtScheduling.wsdl ecf-v5"
-      ```
-      and move all the files to a different resource directory, this time `src/main/resources/wsdl/v5`.
+      and move all the files to a different resource directory, this time `src/main/resources/wsdl/jurisdiction/v5`.
       Don't forget to rename `ecf-v5` to `CourtSchedulingMDE.wsdl`
    
 
-2. Run wsdl2java on a download Operation / Service wsdls that you have downloaded. For example:
+3. Run wsdl2java on a download Operation / Service wsdls that you have downloaded. For example:
 
-   ```
+   ```bash
    ./wsdl2java -client -b $HOME/bindings.xjb -xjc-Xts -d $HOME/tmp_wsdls/ -verbose ECF-4.0-FilingReviewMDEService.wsdl
    ```
    

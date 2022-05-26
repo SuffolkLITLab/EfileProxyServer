@@ -19,18 +19,8 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
                   targetNamespace = "urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0")
 public class FilingAssemblyMDEService extends Service {
 
-    public final static URL WSDL_LOCATION;
-
     public final static QName SERVICE = new QName("urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0", "FilingAssemblyMDEService");
     public final static QName FilingAssemblyMDEPort = new QName("urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0", "FilingAssemblyMDEPort");
-    static {
-        URL url = FilingAssemblyMDEService.class.getClassLoader().getResource("wsdl/filingreview/ECF-4.0-FilingAssemblyMDEService.wsdl");
-        if (url == null) {
-          org.slf4j.LoggerFactory.getLogger(FilingAssemblyMDEService.class.getName()).info(
-             "Can not initialize the default wsdl from {0}", "classpath:wsdl/filingreview/ECF-4.0-FilingAssemblyMDEService.wsdl");
-        }
-        WSDL_LOCATION = url;
-    }
 
     public FilingAssemblyMDEService(URL wsdlLocation) {
         super(wsdlLocation, SERVICE);
@@ -38,14 +28,6 @@ public class FilingAssemblyMDEService extends Service {
 
     public FilingAssemblyMDEService(URL wsdlLocation, QName serviceName) {
         super(wsdlLocation, serviceName);
-    }
-
-    public FilingAssemblyMDEService() {
-        super(WSDL_LOCATION, SERVICE);
-    }
-
-    public FilingAssemblyMDEService(WebServiceFeature ... features) {
-        super(WSDL_LOCATION, SERVICE, features);
     }
 
     public FilingAssemblyMDEService(URL wsdlLocation, WebServiceFeature ... features) {

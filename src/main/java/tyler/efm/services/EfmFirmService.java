@@ -18,20 +18,9 @@ import javax.xml.ws.Service;
                   targetNamespace = "urn:tyler:efm:services")
 public class EfmFirmService extends Service {
 
-    public final static URL WSDL_LOCATION;
-
     public final static QName SERVICE = new QName("urn:tyler:efm:services", "EfmFirmService");
     public final static QName BasicHttpBindingIEfmFirmService = new QName("urn:tyler:efm:services", "BasicHttpBinding_IEfmFirmService");
     public final static QName BasicHttpBindingIEfmFirmService1 = new QName("urn:tyler:efm:services", "BasicHttpBinding_IEfmFirmService1");
-    static {
-        URL url = EfmFirmService.class.getClassLoader().getResource("wsdl/EFMFirmServiceSingle.svc.wsdl");
-        if (url == null) {
-            org.slf4j.LoggerFactory.getLogger(EfmFirmService.class.getName())
-                .info(
-                     "Can not initialize the default wsdl from {0}", "classpath:wsdl/EFMFirmServiceSingle.svc.wsdl");
-        }
-        WSDL_LOCATION = url;
-    }
 
     public EfmFirmService(URL wsdlLocation) {
         super(wsdlLocation, SERVICE);
@@ -39,14 +28,6 @@ public class EfmFirmService extends Service {
 
     public EfmFirmService(URL wsdlLocation, QName serviceName) {
         super(wsdlLocation, serviceName);
-    }
-
-    public EfmFirmService() {
-        super(WSDL_LOCATION, SERVICE);
-    }
-
-    public EfmFirmService(WebServiceFeature ... features) {
-        super(WSDL_LOCATION, SERVICE, features);
     }
 
     public EfmFirmService(URL wsdlLocation, WebServiceFeature ... features) {

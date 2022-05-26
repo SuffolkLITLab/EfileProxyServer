@@ -26,7 +26,7 @@ public final class FilingReviewMDEPort_FilingReviewMDEPort_Client {
     }
 
     public static void main(String args[]) throws java.lang.Exception {
-        URL wsdlURL = FilingReviewMDEService.WSDL_LOCATION;
+        URL wsdlURL = null; //FilingReviewMDEService.WSDL_LOCATION;
         if (args.length > 0 && args[0] != null && !"".equals(args[0])) {
             File wsdlFile = new File(args[0]);
             try {

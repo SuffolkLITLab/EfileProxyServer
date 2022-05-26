@@ -32,7 +32,7 @@ public class FilingAssemblyMDEPort_FilingAssemblyMDEPort_Client {
 
     /** mvn exec:java@filingassemblyclient */
     public static void main(String args[]) throws java.lang.Exception {
-        URL wsdlURL = FilingAssemblyMDEService.WSDL_LOCATION;
+        URL wsdlURL = null; //FilingAssemblyMDEService.WSDL_LOCATION;
         if (args.length > 0 && args[0] != null && !"".equals(args[0])) {
             File wsdlFile = new File(args[0]);
             try {

@@ -17,29 +17,34 @@ import tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
 public class SoapClientChooser {
 
   static Map<String, String> efmUserWsdls = Map.of(
-      "illinois-stage", "wsdl/EFMUserServiceSingle.svc.wsdl", 
-      "illinois-test", "wsdl/test/EFMUserServiceSingle.svc.wsdl");
+      "illinois-stage", "wsdl/illinois/stage/EFMUserServiceSingle.svc.wsdl",
+      "illinois-test",  "wsdl/illinois/test/EFMUserServiceSingle.svc.wsdl",
+      "massachusetts-stage", "wsdl/massachusetts/stage/EFMUserServiceSingle.svc.wsdl");
 
   static Map<String, String> efmFirmWsdls = Map.of(
-      "illinois-stage", "wsdl/EFMFirmServiceSingle.svc.wsdl", 
-      "illinois-test", "wsdl/test/EFMFirmServiceSingle.svc.wsdl"); 
+      "illinois-stage", "wsdl/illinois/stage/EFMFirmServiceSingle.svc.wsdl",
+      "illinois-test",  "wsdl/illinois/test/EFMFirmServiceSingle.svc.wsdl",
+      "massachusetts-stage", "wsdl/massachusetts/stage/EFMFirmServiceSingle.svc.wsdl");
 
   static Map<String, String> serviceMDEWsdls = Map.of(
-      "illinois-stage", "wsdl/filingreview/ECF-4.0-ServiceMDEService.wsdl",
-      "illinois-test", "wsdl/test/ECF-4.0-ServiceMDEService.wsdl");
-  
+      "illinois-stage", "wsdl/illinois/stage/ECF-4.0-ServiceMDEService.wsdl",
+      "illinois-test",  "wsdl/illinois/test/ECF-4.0-ServiceMDEService.wsdl",
+      "massachusetts-stage", "wsdl/massachusetts/stage/ECF-4.0-ServiceMDEService.wsdl");
+
   static Map<String, String> filingReviewMDEWsdls = Map.of(
-      "illinois-stage", "wsdl/filingreview/ECF-4.0-FilingReviewMDEService.wsdl",
-      "illinois-test", "wsdl/test/ECF-4.0-FilingReviewMDEService.wsdl");
-  
+      "illinois-stage", "wsdl/illinois/stage/ECF-4.0-FilingReviewMDEService.wsdl",
+      "illinois-test",  "wsdl/illinois/test/ECF-4.0-FilingReviewMDEService.wsdl",
+      "massachusetts-stage", "wsdl/massachusetts/stage/ECF-4.0-FilingReviewMDEService.wsdl");
+
   static Map<String, String> courtRecordMDEWsdls = Map.of(
-      "illinois-stage", "wsdl/filingreview/ECF-4.0-CourtRecordMDEService.wsdl",
-      "illinois-test", "wsdl/test/ECF-4.0-CourtRecordMDEService.wsdl");
-  
+      "illinois-stage", "wsdl/illinois/stage/ECF-4.0-CourtRecordMDEService.wsdl",
+      "illinois-test",  "wsdl/illinois/test/ECF-4.0-CourtRecordMDEService.wsdl",
+      "massachusetts-stage", "wsdl/massachusetts/stage/ECF-4.0-CourtRecordMDEService.wsdl");
+
   public static String getEndpointRootUrl(String jurisdiction, String env) {
     return "https://" + jurisdiction + "-" + env + ".tylerhost.net/";
   }
-  
+
   /** 
    * Gets the EfmUserService if the provided domain is present and correct.
    * 

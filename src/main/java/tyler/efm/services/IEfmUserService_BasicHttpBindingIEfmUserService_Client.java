@@ -25,7 +25,7 @@ public final class IEfmUserService_BasicHttpBindingIEfmUserService_Client {
     }
 
     public static void main(String args[]) throws java.lang.Exception {
-        URL wsdlURL = EfmUserService.WSDL_LOCATION;
+        URL wsdlURL = null; //EfmUserService.WSDL_LOCATION;
         if (args.length > 0 && args[0] != null && !"".equals(args[0])) {
             File wsdlFile = new File(args[0]);
             try {

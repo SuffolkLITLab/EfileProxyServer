@@ -54,15 +54,15 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "activityDisposition"
 })
 @XmlSeeAlso({
+    DriverLicenseWithdrawalType.class,
     ArrestType.class,
     CourtEventType.class,
-    CaseType.class,
     BookingType.class,
     CitationType.class,
     CourtOrderType.class,
     SentenceType.class,
     TermType.class,
-    DriverLicenseWithdrawalType.class,
+    CaseType.class,
     IncidentType.class
 })
 public class ActivityType
