@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import edu.suffolk.litlab.efspserver.codes.CaseType;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
@@ -95,6 +96,10 @@ public class CodesService {
   @GET
   @Path("/courts/{court_id}")
   public Response getCodesUnderCourt(@PathParam("court_id") String courtId) {
+    var errResp = okayCourt(courtId);
+    if (errResp.isPresent()) {
+      return errResp.get();
+    }
     Class<?> clazz = this.getClass();
     Method[] methods = clazz.getMethods();
     List<Method> subCourtMethods = new ArrayList<>();
@@ -114,7 +119,7 @@ public class CodesService {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       Optional<CourtLocationInfo> info = cd.getFullLocationInfo(courtId);
       if (info.isEmpty()) {
-        return Response.status(404).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
       return Response.ok(info.get()).build();
     }
@@ -124,6 +129,10 @@ public class CodesService {
   @Path("/courts/{court_id}/case_types/{case_type_id}")
   public Response getCodesUnderCaseType(@PathParam("court_id") String courtId,
       @PathParam("case_type_id") String caseTypeId) {
+    var errResp = okayCourt(courtId);
+    if (errResp.isPresent()) {
+      return errResp.get();
+    }
     Class<?> clazz = this.getClass();
     Method[] methods = clazz.getMethods();
     List<Method> subCaseMethods = new ArrayList<>();
@@ -141,6 +150,10 @@ public class CodesService {
   @Path("/courts/{court_id}/filing_types/{filing_code_id}")
   public Response getCodesUnderFilingTypes(@PathParam("court_id") String courtId,
       @PathParam("filing_code_id") String filingCode) {
+    var errResp = okayCourt(courtId);
+    if (errResp.isPresent()) {
+      return errResp.get();
+    }
     Class<?> clazz = this.getClass();
     Method[] methods = clazz.getMethods();
     List<Method> subCaseMethods = new ArrayList<>();
@@ -160,8 +173,9 @@ public class CodesService {
       @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly,
       @QueryParam("timing") String timing) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
-      if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+      var errResp = okayCourt(cd, courtId);
+      if (errResp.isPresent()) {
+        return errResp.get();
       }
       if (!fileableOnly) {
         List<CaseCategory> categories = cd.getCaseCategoriesFor(courtId);
@@ -192,12 +206,12 @@ public class CodesService {
       throws SQLException {
     
     if (categoryId == null || categoryId.isBlank()) {
-      return Response.status(400).entity("You need to limit the number of case types by providing a category_id: see /categories").build();
+      return Response.status(400).entity("\"You need to limit the number of case types by providing a category_id: see /categories\"").build();
     }
 
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
       Optional<Boolean> isInitial = Optional.empty();
       if (timing == null || timing.isBlank()) {
@@ -220,7 +234,7 @@ public class CodesService {
   public Response getNameSuffixes(@PathParam("court_id") String courtId) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
 
       List<NameAndCode> suffixes = cd.getNameSuffixes(courtId);
@@ -235,7 +249,7 @@ public class CodesService {
 
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
       List<NameAndCode> caseSubtypes = cd.getCaseSubtypesFor(courtId, caseTypeId);
 
@@ -248,7 +262,7 @@ public class CodesService {
   public Response getServiceTypes(@PathParam("court_id") String courtId) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist: " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
       List<ServiceCodeType> types = cd.getServiceTypes(courtId);
       return Response.ok(types).build();
@@ -262,7 +276,7 @@ public class CodesService {
 
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
       List<NameAndCode> procedureRemedies = cd.getProcedureOrRemedy(courtId, categoryId);
 
@@ -278,7 +292,7 @@ public class CodesService {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
 
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
       List<FilingCode> filingTypes = cd.getFilingType(courtId, categoryId, typeId, initial);
 
@@ -293,7 +307,7 @@ public class CodesService {
 
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
       List<NameAndCode> damageAmounts = cd.getDamageAmount(courtId, categoryId);
 
@@ -307,7 +321,7 @@ public class CodesService {
       @PathParam("case_type_id") String caseTypeId) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
       List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, caseTypeId);
 
@@ -321,7 +335,7 @@ public class CodesService {
       @PathParam("case_type_id") String caseTypeId) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
 
       List<CrossReference> refs = cd.getCrossReference(courtId, caseTypeId);
@@ -336,7 +350,7 @@ public class CodesService {
 
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
       List<DocumentTypeTableRow> documentTypes = cd.getDocumentTypes(courtId, filingCodeId);
 
@@ -351,7 +365,7 @@ public class CodesService {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
 
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
       List<NameAndCode> motionTypes = cd.getMotionTypes(courtId, filingCodeId);
 
@@ -364,7 +378,7 @@ public class CodesService {
   public Response getAllowedFileTypes(@PathParam("court_id") String courtId) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
       List<FileType> fileTypes = cd.getAllowedFileTypes(courtId);
 
@@ -377,7 +391,7 @@ public class CodesService {
   public Response getFilingStatuses(@PathParam("court_id") String courtId) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court " + courtId + " does not exist").build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
       List<NameAndCode> statuses = cd.getFilingStatuses(courtId);
       return Response.ok(statuses).build();
@@ -390,7 +404,7 @@ public class CodesService {
       @PathParam("filing_code_id") String filingCodeId) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
       List<FilingComponent> filingComponents = cd.getFilingComponents(courtId, filingCodeId);
 
@@ -404,7 +418,7 @@ public class CodesService {
       @PathParam("filing_code_id") String filingCodeId) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(400).entity("Court does not exist " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
 
       List<OptionalServiceCode> optionalServiceCode = cd.getOptionalServices(courtId, filingCodeId);
@@ -427,7 +441,7 @@ public class CodesService {
   public Response getLanguages(@PathParam("court_id") String courtId) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
       List<String> languages = cd.getLanguages(courtId);
 
@@ -443,7 +457,7 @@ public class CodesService {
       @PathParam("field_name") String fieldName) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
       DataFieldRow datafieldrow = cd.getDataField(courtId, fieldName);
 
@@ -457,12 +471,28 @@ public class CodesService {
       throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("Court does not exist " + courtId).build();
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
       List<Disclaimer> disclaimers = cd.getDisclaimerRequirements(courtId);
 
       return Response.ok(disclaimers).build();
     }
+  }
+  
+  private Optional<Response> okayCourt(String courtId) {
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
+      return okayCourt(cd, courtId);
+    } catch (SQLException ex) {
+      log.error(StdLib.strFromException(ex));
+      return Optional.of(Response.status(500).entity("Error in server database").build());
+    }
+  }
+
+  private static Optional<Response> okayCourt(CodeDatabase cd, String courtId) {
+    if (!cd.getAllLocations().contains(courtId)) {
+      return Optional.of(Response.status(404).entity("\"Court " + courtId + " does not exist\"").build());
+    }
+    return Optional.empty();
   }
 
 }
