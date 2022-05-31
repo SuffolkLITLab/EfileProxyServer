@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
@@ -48,19 +49,20 @@ public class CodesServiceTest {
     DataSource ds = DatabaseCreator.makeDataSource(postgres.getJdbcUrl(), postgres.getDatabaseName(), postgres.getUsername(), postgres.getPassword(), 2, 100);
     cd = new CodeDatabase("illinois", "stage", ds.getConnection());
     cd.createTablesIfAbsent();
-    Map<String, List<String>> tableToCourts = Map.of(
-        "location", List.of("0"),
-        "languages", List.of("adams"),
-        "crossreference", List.of("adams", "cook:cd1"),
-        "optionalservices", List.of("adams"),
-        "casecategory", List.of("adams"),
-        "casetype", List.of("adams"),
-        "casesubtype", List.of("adams"),
-        "servicetype", List.of("adams"),
-        "filingstatus", List.of("adams"));
-    for (Map.Entry<String, List<String>> entry : tableToCourts.entrySet()) {
-      String table = entry.getKey();
+    Set<String> tables = Set.of(
+        "casecategory", 
+        "casesubtype", 
+        "casetype", 
+        "filingstatus",
+        "servicetype", 
+        "optionalservices"); 
+    cd.createTableIfAbsent("location");
+    cd.updateTable("location", "0", this.getClass().getResourceAsStream("/0_location_test.xml"));
+    for (String table: tables) {
       cd.createTableIfAbsent(table);
+      String filename = "/" + "adams" + "_" + table + "_test.xml";
+      log.info("Updating from file: " + filename);
+      cd.updateTable(table, "adams", this.getClass().getResourceAsStream(filename)); 
     }
 
     JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();

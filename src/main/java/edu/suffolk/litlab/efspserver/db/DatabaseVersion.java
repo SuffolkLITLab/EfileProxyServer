@@ -97,6 +97,7 @@ public class DatabaseVersion {
       codeConn.setAutoCommit(false);
       while (onDiskVersion < CURRENT_VERSION) {
         Savepoint savepoint = userConn.setSavepoint("beginning_update");
+        log.info("Updating database from version " + onDiskVersion + " to " + (onDiskVersion + 1));
         try {
           boolean successful = updateDatabase(onDiskVersion);
           if (!successful) {
