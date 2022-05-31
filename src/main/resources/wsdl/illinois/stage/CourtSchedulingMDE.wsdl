@@ -124,7 +124,7 @@
 	<service name="CourtSchedulingMDE">
 		<port name="CourtSchedulingMDEPort" binding="tns:CourtSchedulingMDESoap">
 		    <!-- NOTE(brycew): manually added location here, the given URL was bad. -->
-			<soap:address location="https://Illinois-stage.tylerhost.net/efm/CourtSchedulingMDE.svc"/>
+			<soap:address location="https://Illinois-stage.tylertech.cloud/efm/CourtSchedulingMDE.svc"/>
 		</port>
 	</service>
 	<wsp:UsingPolicy wsdl:required="true"/>

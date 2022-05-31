@@ -42,6 +42,9 @@ public class SoapClientChooser {
       "massachusetts-stage", "wsdl/massachusetts/stage/ECF-4.0-CourtRecordMDEService.wsdl");
 
   public static String getEndpointRootUrl(String jurisdiction, String env) {
+    if (jurisdiction.equalsIgnoreCase("illinois") && env.equalsIgnoreCase("stage")) {
+      return "https://" + jurisdiction + "-" + env + ".tylertech.cloud/";
+    }
     return "https://" + jurisdiction + "-" + env + ".tylerhost.net/";
   }
 

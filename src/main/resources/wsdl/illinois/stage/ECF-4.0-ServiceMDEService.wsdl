@@ -2,6 +2,6 @@
     <import namespace="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0" location="ecf-1.xsd"/>
     <service name="ServiceMDEService">
 		<port name="ServiceMDEPort" binding="wsmp:ServiceMDEPortSOAPBinding">
-		    <soap:address location="https://Illinois-stage.tylerhost.net/efm/ServiceMDEPort.svc"/>
+		    <soap:address location="https://Illinois-stage.tylertech.cloud/efm/ServiceMDEPort.svc"/>
 		</port>
 	</service></definitions>

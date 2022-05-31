@@ -4,7 +4,7 @@
  xmlns="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/civil"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:civil="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/civil" xmlns:ecf="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" xmlns:hs="http://release.niem.gov/niem/domains/humanServices/4.0/" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" xmlns:niem-xs="http://release.niem.gov/niem/proxy/xsd/4.0/" xmlns:structures="http://release.niem.gov/niem/structures/4.0/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:clsa="http://reference.niem.gov/niem/specification/code-lists/1.0/code-lists-schema-appinfo/" xmlns:ct="http://release.niem.gov/niem/conformanceTargets/3.0/" xmlns:term="http://release.niem.gov/niem/localTerminology/3.0/" ct:conformanceTargets="http://reference.niem.gov/niem/specification/naming-and-design-rules/3.0/#ExtensionSchemaDocument http://reference.niem.gov/niem/specification/code-lists/1.0/#SchemaDocument" elementFormDefault="qualified" attributeFormDefault="unqualified" version="5.0">
 <xs:annotation>
-	<!-- NOTE(brycew): Manual Addition: CourtScheduling requires civil.xsd (from https://illinois-stage.tylerhost.net/EFM/Schema/v5/civil.xsd), but links to it no where.
+	<!-- NOTE(brycew): Manual Addition: CourtScheduling requires civil.xsd (from https://illinois-stage.tylertech.cloud/EFM/Schema/v5/civil.xsd), but links to it no where.
 	     Manually adjusted the xsd files pointed to-->
 <xs:documentation> Schema for namespace https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/civil</xs:documentation>
 </xs:annotation>

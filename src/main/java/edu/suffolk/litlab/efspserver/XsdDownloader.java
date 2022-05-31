@@ -28,7 +28,7 @@ import org.xml.sax.SAXException;
  * relative paths on the server.
  * Runs like:
  * ```
- * mvn exec:java@XsdDownloader -Dexec.args="https://example.tylerhost.net/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf"
+ * mvn exec:java@XsdDownloader -Dexec.args="https://example.tylertech.cloud/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf"
  * ```
  * Then move all of the ecf files into src/main/resources/wsdl/, and point the FilingReviewMDE 
  * URL to it.
