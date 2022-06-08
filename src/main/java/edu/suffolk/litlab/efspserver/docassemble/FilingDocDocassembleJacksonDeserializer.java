@@ -62,7 +62,10 @@ public class FilingDocDocassembleJacksonDeserializer {
       collector.addRequired(nameVar);
     }
 
-    String fileName = filenameNode.asText("") + ".pdf";
+    String fileName = filenameNode.asText("");
+    if (fileName.endsWith(".pdf")) {
+      fileName += ".pdf";
+    }
     if (!node.has("proxy_enabled") || !node.get("proxy_enabled").asBoolean(false)) {
       log.info(fileName + " isn't proxy enabled");
       return Optional.empty();

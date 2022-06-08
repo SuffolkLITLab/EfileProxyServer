@@ -23,8 +23,6 @@ Full auto integration test:
     * install & playground install IL, Jeffnet & EFSPIntegration
     * run feature files for all 3 packages
 
-
-
 5/16/22:
 
 Maybe eventually https://neilmadden.blog/2018/08/30/moving-away-from-uuids/
@@ -44,4 +42,3 @@ Open questions we should answer before using Spring:
 2. Is our own config file format going to implement too much of Spring? Specifically, the mapping of
    jurisdictions to URLs and the Filing Classes to use
 3. Alternatively, is Spring too complicated for our use case?
-

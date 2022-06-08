@@ -178,7 +178,7 @@ public class FilingReviewService {
     Result<NullValue, FilingError> resEfm = filer.checkFiling(info, activeToken.get(), collector);
     if (resEfm.isErr()) {
       log.warn(resEfm.toString());
-      return Response.status(422).entity(collector.jsonSummary()).build();
+      return Response.ok(collector.jsonSummary()).build();
     }
     return Response.ok(collector.jsonSummary()).build();
   }

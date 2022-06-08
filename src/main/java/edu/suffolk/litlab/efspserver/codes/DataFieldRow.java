@@ -75,5 +75,9 @@ public class DataFieldRow {
         + "validationmessage, regularexpression, defaultvalueexpression, isreadonly, location "
         + "FROM datafieldconfig WHERE domain=? AND location=?";
   }
+  
+  public static String getAllDataFieldNames() {
+    return "SELECT code, name FROM datafieldconfig WHERE domain=? AND location=?";
+  }
 
 }

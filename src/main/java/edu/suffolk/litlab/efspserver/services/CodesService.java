@@ -427,10 +427,11 @@ public class CodesService {
   }
 
   @GET
-  @Path("/countries/{country}/states")
-  public Response getStates(@PathParam("country") String country) throws SQLException {
+  @Path("/courts/{court_id}/countries/{country}/states")
+  public Response getStates(@PathParam("court_id") String courtId, 
+      @PathParam("country") String country) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
-      List<String> stateCodes = cd.getStateCodes(country);
+      List<String> stateCodes = cd.getStateCodes(courtId, country);
 
       return Response.ok(stateCodes).build();
     }
@@ -446,6 +447,19 @@ public class CodesService {
       List<String> languages = cd.getLanguages(courtId);
 
       return Response.ok(languages).build();
+    }
+  }
+  
+  @GET
+  @Path("/courts/{court_id}/datafields")
+  public Response getDataFields(@PathParam("court_id") String courtId) throws SQLException {
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
+      if (!cd.getAllLocations().contains(courtId)) {
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+      }
+      var datafields = cd.getDataFieldNames(courtId);
+
+      return Response.ok(datafields).build();
     }
   }
 

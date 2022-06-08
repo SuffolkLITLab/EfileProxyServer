@@ -343,6 +343,28 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     }
   }
   
+  public List<NameAndCode> getDataFieldNames(String courtLocationId) {
+    if (conn == null) {
+      log.error("SQL connection not created in DataField yet");
+      return List.of();
+    }
+
+    String query = DataFieldRow.getAllDataFieldNames();
+    try (PreparedStatement st = conn.prepareStatement(query)) {
+      st.setString(1, tylerDomain);
+      st.setString(2, courtLocationId);
+      ResultSet rs = st.executeQuery();
+      var dataFields = new ArrayList<NameAndCode>(); 
+      while (rs.next()) {
+        dataFields.add(new NameAndCode(rs.getString(2), rs.getString(1))); 
+      }
+      return dataFields; 
+    } catch (SQLException ex) {
+      log.error("SQLException: " + ex.toString());
+      return List.of(); 
+    }
+  }
+  
   /** gets all data fields if dataNames is empty, otherwise just those that match the code. */
   public DataFields getDataFields(String courtLocationId) {
     if (conn == null) {
@@ -367,7 +389,6 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       log.error("SQLException: " + ex.toString());
       return new DataFields(Map.of()); 
     }
-    
   }
 
   public List<NameAndCode> getProcedureOrRemedy(String courtLocationId, String caseCategory) {
@@ -649,7 +670,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     }
   }
 
-  public List<String> getStateCodes(String country) {
+  public List<String> getStateCodes(String courtId, String country) {
     if (conn == null) {
       log.error("Connection not started in state codes?");
       return List.of();
@@ -658,12 +679,21 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     String query = CodeTableConstants.getSpecificStatesForCountryForLoc();
     try (PreparedStatement st = conn.prepareStatement(query)) {
       // TODO(brycew-later): Tyler docs say state is a system table, but there's one per court?
-      // Hardcoding the system "0" for now
       st.setString(1, tylerDomain);
-      st.setString(2, "0");
+      st.setString(2, courtId);
       st.setString(3, country);
       ResultSet rs = st.executeQuery();
       List<String> stateCodes = new ArrayList<String>();
+      while (rs.next()) {
+        stateCodes.add(rs.getString(1));
+      }
+      if (!stateCodes.isEmpty()) {
+        return stateCodes;
+      }
+      // If the court table doesn't have the states, then dropdown to the "system" court (0).
+      // TODO(brycew): should drop down to the parent court first?
+      st.setString(2, "0");
+      rs = st.executeQuery();
       while (rs.next()) {
         stateCodes.add(rs.getString(1));
       }
@@ -813,7 +843,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       throw new SQLException();
     }
     String deleteFromTable = CodeTableConstants.getDeleteFrom(tableName);
-    if (courtLocation == null || courtLocation.isBlank() || courtLocation.equals("0")) {
+    if (courtLocation == null || courtLocation.isBlank()) {
       log.warn("Don't call this without a valid court: just don't use the var");
       return false;
     }

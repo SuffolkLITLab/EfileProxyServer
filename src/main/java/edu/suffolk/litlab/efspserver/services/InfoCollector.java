@@ -122,7 +122,7 @@ public abstract class InfoCollector {
 
   public String jsonSummary() {
     if (err.isPresent()) {
-      return "{\"error\": {" + err.get().toJson() + "}}";
+      return "{\"error\": " + err.get().toJson() + "}";
     }
     StringBuilder sb = new StringBuilder();
     sb.append("{\"required_vars\": ["); 

@@ -136,12 +136,17 @@ public class EcfCourtSpecificSerializer {
       collector.error(err);
     }
     
-    List<Optional<String>> maybeFilingCodes = info.getFilings().stream().map(f -> f.getFilingCode()).collect(Collectors.toList());
-    if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
-      InterviewVariable filingVar = collector.requestVar("al_court_bundle[i].tyler_filing_type", "What filing type is this?", "text"); 
-      collector.addRequired(filingVar);
+    int idx = 0;
+    for (var filing : info.getFilings()) {
+      collector.pushAttributeStack("al_court_bundle[" + idx + "]");
+      if (filing.getFilingCode().isEmpty()) {
+        InterviewVariable filingVar = collector.requestVar("tyler_filing_type", "What filing type is this?", "text"); 
+        collector.addRequired(filingVar);
+      }
+      idx += 1;
+      collector.popAttributeStack();
     }
-    List<String> filingCodeStrs = maybeFilingCodes.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
+    List<String> filingCodeStrs = info.getFilings().stream().map(f -> f.getFilingCode().orElse("")).collect(Collectors.toList());
     List<FilingCode> filingCodes = vetFilingTypes(filingCodeStrs, caseCategory, type, collector, isInitialFiling);
     Map<String, Person> partyInfo = Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
         .collect(Collectors.toMap(per -> per.getIdString(), per -> per));
@@ -200,21 +205,25 @@ public class EcfCourtSpecificSerializer {
           .findFirst();
     }).collect(Collectors.toList()); 
     
+    collector.pushAttributeStack("al_court_bundle[i]");
     if (filingOptions.isEmpty()) {
       log.error("Need a filing type! FilingTypes are empty, so " + caseCategory + " and " + type + " are restricted");
       InterviewVariable var = collector.requestVar("tyler_filing_type", "What type of filing is this?", "text");
       collector.addWrong(var);
+      collector.popAttributeStack(); 
       // Is foundational, so returning now
       throw FilingError.wrongValue(var);
     }
 
-    InterviewVariable filingVar = collector.requestVar("tyler_filing_type", "What filing type is this?", "text", filingOptions.stream().map(f -> f.name).collect(Collectors.toList()));
     if (maybeCodes.stream().anyMatch(f -> f.isEmpty())) {
       log.error("Nothing matches filing in the info!");
+      var filingVar = collector.requestVar("tyler_filing_type", "What filing type is this?", "text", filingOptions.stream().map(f -> f.code).collect(Collectors.toList()));
       collector.addWrong(filingVar);
+      collector.popAttributeStack(); 
       throw FilingError.missingRequired(filingVar);
     }
     
+    collector.popAttributeStack();
     return maybeCodes.stream().map(f -> f.get()).collect(Collectors.toList());
   }
   
@@ -438,10 +447,10 @@ public class EcfCourtSpecificSerializer {
     sat.setLocationCountry(niemObjFac.createLocationCountryFIPS104Code(cct.get()));
     if (!fillStateCode(address.getState(), cct.get(), sat)) {
       String countryString = cct.get().getValue().value();
-      List<String> stateCodes = cd.getStateCodes(countryString);
+      List<String> stateCodes = cd.getStateCodes(this.court.code, countryString); 
       InterviewVariable var = collector.requestVar("state", "State in a country", "choices", stateCodes);
       if (stateCodes.isEmpty()) {
-        FilingError err = FilingError.malformedInterview("There are no allowed states for " + countryString);
+        FilingError err = FilingError.malformedInterview("There are no allowed states for " + countryString + " in " + cd.getDomain());
         collector.error(err);
       }
       collector.addWrong(var);
@@ -844,7 +853,7 @@ public class EcfCourtSpecificSerializer {
   private boolean fillStateCode(String state, CountryCodeType country,
       StructuredAddressType sat) {
     String countryString = country.getValue().toString();
-    List<String> stateCodes = cd.getStateCodes(countryString);
+    List<String> stateCodes = cd.getStateCodes(this.court.code, countryString); 
 
     if (!stateCodes.contains(state)) {
       return false;

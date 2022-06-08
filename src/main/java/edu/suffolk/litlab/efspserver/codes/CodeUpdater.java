@@ -156,8 +156,8 @@ public class CodeUpdater {
 
   private boolean downloadSystemTables(String baseUrl, CodeDatabase cd, HeaderSigner signer)
       throws SQLException, IOException, JAXBException, XMLStreamException {
-    Map<String, String> codeUrls = Map.of("version", "/CodeService/codes/version/", "location",
-        "/CodeService/codes/location/",
+    Map<String, String> codeUrls = Map.of("version", "/CodeService/codes/version/", 
+        "location", "/CodeService/codes/location/",
         // NOTE: the Tyler docs say this is available from `GetPolicy'. That is wrong.
         "error", "/CodeService/codes/error");
 
@@ -272,6 +272,7 @@ public class CodeUpdater {
       List<String> tables = courtAndTables.getValue();
       for (String table : tables) {
         Instant deleteFromTable = Instant.now(Clock.systemUTC());
+        cd.createTableIfAbsent(table);
         if (!cd.deleteFromTable(table, courtLocation)) {
           log.warn("Couldn't delete from " + table + " at " + courtLocation + ", aborting");
           cd.getConnection().rollback(sp);
