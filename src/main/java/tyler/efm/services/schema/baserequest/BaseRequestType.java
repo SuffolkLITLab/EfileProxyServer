@@ -19,6 +19,7 @@ import tyler.efm.services.schema.getattorneyrequest.GetAttorneyRequestType;
 import tyler.efm.services.schema.getpasswordquestionrequest.GetPasswordQuestionRequestType;
 import tyler.efm.services.schema.getpaymentaccountlistrequest.GetPaymentAccountListRequestType;
 import tyler.efm.services.schema.getpaymentaccountrequest.GetPaymentAccountRequestType;
+import tyler.efm.services.schema.getpubliclistrequest.GetPublicListRequestType;
 import tyler.efm.services.schema.getservicecontactrequest.GetServiceContactRequestType;
 import tyler.efm.services.schema.getuserrequest.GetUserRequestType;
 import tyler.efm.services.schema.registrationrequest.RegistrationRequestType;
@@ -30,10 +31,8 @@ import tyler.efm.services.schema.removeuserrolerequest.RemoveUserRoleRequestType
 import tyler.efm.services.schema.resendactivationemailrequest.ResendActivationEmailRequestType;
 import tyler.efm.services.schema.resetpasswordrequest.ResetPasswordRequestType;
 import tyler.efm.services.schema.resetuserpasswordrequest.ResetUserPasswordRequestType;
-import tyler.efm.services.schema.selfresendactivationemailrequest.SelfResendActivationEmailRequestType;
 import tyler.efm.services.schema.updateattorneyrequest.UpdateAttorneyRequestType;
 import tyler.efm.services.schema.updatefirmrequest.UpdateFirmRequestType;
-import tyler.efm.services.schema.updatenotificationpreferencesrequest.UpdateNotificationPreferencesRequestType;
 import tyler.efm.services.schema.updatepaymentaccountrequest.UpdatePaymentAccountRequestType;
 import tyler.efm.services.schema.updateservicecontactrequest.UpdateServiceContactRequestType;
 import tyler.efm.services.schema.updateuserrequest.UpdateUserRequestType;
@@ -58,36 +57,35 @@ import tyler.efm.services.schema.updateuserrequest.UpdateUserRequestType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "BaseRequestType")
 @XmlSeeAlso({
-    ResetPasswordRequestType.class,
-    GetPasswordQuestionRequestType.class,
-    ChangePasswordRequestType.class,
-    AuthenticateRequestType.class,
+    RegistrationRequestType.class,
     GetUserRequestType.class,
-    UpdateUserRequestType.class,
-    UpdateNotificationPreferencesRequestType.class,
-    SelfResendActivationEmailRequestType.class,
-    UpdateServiceContactRequestType.class,
-    UpdatePaymentAccountRequestType.class,
-    UpdateFirmRequestType.class,
-    UpdateAttorneyRequestType.class,
-    ResetUserPasswordRequestType.class,
-    ResendActivationEmailRequestType.class,
+    AddUserRoleRequestType.class,
     RemoveUserRoleRequestType.class,
+    UpdateUserRequestType.class,
     RemoveUserRequestType.class,
-    RemoveServiceContactRequestType.class,
-    RemovePaymentAccountRequestType.class,
+    UpdateFirmRequestType.class,
+    GetAttorneyRequestType.class,
+    UpdateAttorneyRequestType.class,
+    CreateAttorneyRequestType.class,
     RemoveAttorneyRequestType.class,
-    GetServiceContactRequestType.class,
     GetPaymentAccountListRequestType.class,
     GetPaymentAccountRequestType.class,
-    GetAttorneyRequestType.class,
-    DetachServiceContactRequestType.class,
-    CreateServiceContactRequestType.class,
+    UpdatePaymentAccountRequestType.class,
     CreatePaymentAccountRequestType.class,
-    CreateAttorneyRequestType.class,
+    RemovePaymentAccountRequestType.class,
+    GetServiceContactRequestType.class,
+    UpdateServiceContactRequestType.class,
+    CreateServiceContactRequestType.class,
+    RemoveServiceContactRequestType.class,
     AttachServiceContactRequestType.class,
-    AddUserRoleRequestType.class,
-    RegistrationRequestType.class
+    DetachServiceContactRequestType.class,
+    ResetUserPasswordRequestType.class,
+    ResendActivationEmailRequestType.class,
+    GetPublicListRequestType.class,
+    AuthenticateRequestType.class,
+    ResetPasswordRequestType.class,
+    GetPasswordQuestionRequestType.class,
+    ChangePasswordRequestType.class
 })
 public class BaseRequestType {
 

@@ -194,6 +194,7 @@ public class DocumentType
      * {@link JAXBElement }{@code <}{@link TextType }{@code >}
      * {@link JAXBElement }{@code <}{@link TextType }{@code >}
      * {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     * {@link JAXBElement }{@code <}{@link TextType }{@code >}
      * 
      * 
      */

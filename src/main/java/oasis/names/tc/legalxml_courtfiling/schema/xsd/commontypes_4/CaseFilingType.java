@@ -48,10 +48,10 @@ import tyler.ecf.extensions.servicecallbackmessage.ServiceCallbackMessageType;
 })
 @XmlSeeAlso({
     ServiceCallbackMessageType.class,
-    CourtPolicyQueryMessageType.class,
-    ElectronicFilingCallbackMessageType.class,
-    MessageReceiptMessageType.class,
     NotifyServiceMessageType.class,
+    CourtPolicyQueryMessageType.class,
+    MessageReceiptMessageType.class,
+    ElectronicFilingCallbackMessageType.class,
     ElectronicFilingMessageType.class
 })
 public abstract class CaseFilingType

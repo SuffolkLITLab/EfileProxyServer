@@ -31,7 +31,7 @@ public class ObjectFactory {
     private final static QName _Attorney_QNAME = new QName("urn:tyler:efm:services:schema:Common", "Attorney");
     private final static QName _Role_QNAME = new QName("urn:tyler:efm:services:schema:Common", "Role");
     private final static QName _PaymentAccountLocationDetails_QNAME = new QName("urn:tyler:efm:services:schema:Common", "PaymentAccountLocationDetails");
-    private final static QName _Notification_QNAME = new QName("urn:tyler:efm:services:schema:Common", "Notification");
+    private final static QName _NotificationListItem_QNAME = new QName("urn:tyler:efm:services:schema:Common", "NotificationListItem");
     private final static QName _PaymentAccountTypeTypeCodeId_QNAME = new QName("urn:tyler:efm:services:schema:Common", "CodeId");
     private final static QName _PaymentAccountTypePaymentAccountTypeCodeId_QNAME = new QName("urn:tyler:efm:services:schema:Common", "PaymentAccountTypeCodeId");
     private final static QName _PaymentAccountTypeCardType_QNAME = new QName("urn:tyler:efm:services:schema:Common", "CardType");
@@ -100,11 +100,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link NotificationType }
+     * Create an instance of {@link NotificationListItemType }
      * 
      */
-    public NotificationType createNotificationType() {
-        return new NotificationType();
+    public NotificationListItemType createNotificationListItemType() {
+        return new NotificationListItemType();
     }
 
     /**
@@ -239,16 +239,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link NotificationType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link NotificationListItemType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link NotificationType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link NotificationListItemType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:tyler:efm:services:schema:Common", name = "Notification")
-    public JAXBElement<NotificationType> createNotification(NotificationType value) {
-        return new JAXBElement<NotificationType>(_Notification_QNAME, NotificationType.class, null, value);
+    @XmlElementDecl(namespace = "urn:tyler:efm:services:schema:Common", name = "NotificationListItem")
+    public JAXBElement<NotificationListItemType> createNotificationListItem(NotificationListItemType value) {
+        return new JAXBElement<NotificationListItemType>(_NotificationListItem_QNAME, NotificationListItemType.class, null, value);
     }
 
     /**

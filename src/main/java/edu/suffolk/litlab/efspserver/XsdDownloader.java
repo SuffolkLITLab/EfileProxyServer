@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -138,9 +141,17 @@ public class XsdDownloader {
 
   /** Main method, pass in the URL to find the WSDL, and the xsd prefix 
    * that everything is changed to. */
-  public static void main(final String[] args) {
+  public static void main(final String[] in_args) {
+    String[] args;
+    if (in_args.length == 1) {
+      String only = in_args[0];
+      args = only.split(" ");
+    } else {
+      args = in_args;
+    }
     if (args.length != 2) {
       System.out.println("Only two parameters: 1--wsdl-url 2--xsds-prefix");
+      System.out.println("You passed " + List.of(args).stream().collect(Collectors.joining(", ")));
       return;
     }
     String xsdUrl = args[0];
