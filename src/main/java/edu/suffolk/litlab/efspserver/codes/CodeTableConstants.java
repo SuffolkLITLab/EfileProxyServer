@@ -416,7 +416,7 @@ public class CodeTableConstants {
         SELECT v.location, v.codelist, iv.installedversion, v.version
         FROM version AS v LEFT OUTER JOIN installedversion AS iv
         ON (v.domain=iv.domain AND v.location=iv.location AND v.codelist=iv.codelist)
-        WHERE (iv.installedversion IS NULL) OR (v.version != iv.installedversion)""";
+        WHERE (iv.installedversion IS NULL) OR (v.version != iv.installedversion) AND  v.domain=?""";
   }
 
   public static String getCaseSubtypesFor() {

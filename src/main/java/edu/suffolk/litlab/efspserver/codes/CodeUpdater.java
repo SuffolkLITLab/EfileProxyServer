@@ -30,6 +30,7 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.soap.SOAPFaultException;
 
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtCodelistType;
@@ -209,10 +210,15 @@ public class CodeUpdater {
   private boolean downloadCourtTables(String location, Optional<List<String>> codes,
       CodeDatabase cd, HeaderSigner signer, FilingReviewMDEPort filingPort)
       throws JAXBException, IOException, SQLException {
-    log.debug("Location: " + location);
     CourtPolicyQueryMessageType m = ServiceHelpers.prep(new CourtPolicyQueryMessageType(),
         location);
-    CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
+    CourtPolicyResponseMessageType p;
+    try {
+      p = filingPort.getPolicy(m);
+    } catch (SOAPFaultException ex) {
+      log.warn("Got a SOAP Fault excption when getting the policy for " + location +": " + StdLib.strFromException(ex));
+      return false;
+    }
 
     for (CourtCodelistType ccl : p.getRuntimePolicyParameters().getCourtCodelist()) {
       String ecfElem = ccl.getECFElementName().getValue();
@@ -323,6 +329,7 @@ public class CodeUpdater {
     if (userService.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " in Soap chooser for EFMUser");
     }
+    log.info("Getting filing factory for " + jurisdiction + " " + env);
     Optional<FilingReviewMDEService> filingFactory = SoapClientChooser.getFilingReviewFactory(jurisdiction, env); 
     if (filingFactory.isEmpty()) {
       throw new RuntimeException(
@@ -341,6 +348,7 @@ public class CodeUpdater {
     ctx.put(Header.HEADER_LIST, headersList);
     return filingPort;
   }
+
   public static void executeCommand(CodeDatabase cd, String jurisdiction, String env, String command, 
       String x509Password) {
     SoapX509CallbackHandler.setX509Password(x509Password);

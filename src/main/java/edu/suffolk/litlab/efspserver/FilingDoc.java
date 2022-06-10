@@ -12,7 +12,6 @@ import tyler.ecf.extensions.common.FilingTypeType;
 // TODO(brycew-later): this class is a mess. Refactor, considering the same pattern that's in
 // FilingInformation: add a JsonNode / generic container for EFM specific settings
 public class FilingDoc {
-  // Provides Document Type code / BinaryFormatStandardName
   final private String fileName;
   final private byte[] fileContents;
   final private Optional<String> userProvidedDescription;
@@ -33,6 +32,7 @@ public class FilingDoc {
 
   // This is, "determined via configuration within the EFM for each EFSP"?
   // So, we can just say yes?
+  // Provides Document Type code / BinaryFormatStandardName
   private String documentTypeFormatStandardName;
   final private boolean sendInBase64 = true;
   final private String filingComponentCode;

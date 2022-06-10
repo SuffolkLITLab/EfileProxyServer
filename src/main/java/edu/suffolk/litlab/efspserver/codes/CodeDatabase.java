@@ -795,8 +795,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     String query = CodeTableConstants.needToUpdateVersion();
     Map<String, List<String>> courtTables = new HashMap<>();
     log.info("Query was " + query);
-    try (Statement st = conn.createStatement()) {
-      ResultSet rs = st.executeQuery(query);
+    try (PreparedStatement st = conn.prepareStatement(query)) {
+      st.setString(1, tylerDomain);
+      ResultSet rs = st.executeQuery();
       while (rs.next()) {
         if (rs.getString(3) != null) {
           log.info("Updating for location: " + rs.getString(1) + ", codelist: " + rs.getString(2)
