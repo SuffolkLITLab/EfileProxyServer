@@ -37,7 +37,7 @@ hs_err_pid*
 # Contains key info
 client_sign.properties
 *.pfx
-.env
+.env*
 .da_env
 .devenv
 .bash_env

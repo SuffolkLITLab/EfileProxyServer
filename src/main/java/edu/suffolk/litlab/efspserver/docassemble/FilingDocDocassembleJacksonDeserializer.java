@@ -63,7 +63,7 @@ public class FilingDocDocassembleJacksonDeserializer {
     }
 
     String fileName = filenameNode.asText("");
-    if (fileName.endsWith(".pdf")) {
+    if (!fileName.endsWith(".pdf")) {
       fileName += ".pdf";
     }
     if (!node.has("proxy_enabled") || !node.get("proxy_enabled").asBoolean(false)) {
