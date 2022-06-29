@@ -347,31 +347,31 @@ public class EcfCaseTypeFactory {
     Iterable<PartyId> iterator = stream::iterator;
     for (PartyId partyId : iterator) {
       log.info("Referenced PartyId (" + partyId + ")");
-      if (partyId.isAlreadyInCase()){
-        if (partyId.id.contains(" ")) {
-          FilingError err = FilingError.serverError("Party ID " + partyId.id + " should be a GUID but isn't");
+      if (partyId.isAlreadyInCase()) {
+        if (partyId.getIdentificationString().contains(" ")) {
+          FilingError err = FilingError.serverError("Party ID " + partyId.getIdentificationString() + " should be a GUID but isn't");
           collector.error(err);
         }
         CaseParticipantType cpt = ecfCommonObjFac.createCaseParticipantType();
         IdentificationType id = of.createIdentificationType();
         id.setIdentificationCategory(of.createIdentificationCategoryText(XmlHelper.convertText("CASEPARTYID")));
-        id.setIdentificationID(XmlHelper.convertString(partyId.id));
-        if (comboCodes.partyInfo.get(partyId.id).getRight()) {
+        id.setIdentificationID(XmlHelper.convertString(partyId.getIdentificationString()));
+        if (comboCodes.partyInfo.get(partyId.getIdentificationString()).getRight()) {
           OrganizationIdentificationType orgId = tylerObjFac.createOrganizationIdentificationType();
           orgId.getIdentification().add(id);
           OrganizationType ot = ecfCommonObjFac.createOrganizationType();
           ot.setOrganizationIdentification(tylerObjFac.createOrganizationOtherIdentification(orgId));
           ot.setId(partyId.getIdString());
           cpt.setEntityRepresentation(ecfCommonObjFac.createEntityOrganization(ot));
-          partyIdToRefObj.put(partyId.id, ot);
+          partyIdToRefObj.put(partyId.getIdString(), ot);
         } else {
           PersonType pt = ecfCommonObjFac.createPersonType();
           pt.setId(partyId.getIdString());
           pt.getPersonOtherIdentification().add(id);
           cpt.setEntityRepresentation(ecfCommonObjFac.createEntityPerson(pt));
-          partyIdToRefObj.put(partyId.id, pt);
+          partyIdToRefObj.put(partyId.getIdString(), pt);
         }
-        cpt.setCaseParticipantRoleCode(XmlHelper.convertText(comboCodes.partyInfo.get(partyId.id).getLeft().code));
+        cpt.setCaseParticipantRoleCode(XmlHelper.convertText(comboCodes.partyInfo.get(partyId.getIdentificationString()).getLeft().code));
         ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cpt));
       }
     }
@@ -380,13 +380,13 @@ public class EcfCaseTypeFactory {
     for (Map.Entry<PartyId, List<String>> partyAttys : info.getPartyAttorneyMap().entrySet()) {
       log.info("Setting Attorneys for : " + partyAttys.getKey());
       Object partyObj;
-      if (partyIdToRefObj.containsKey(partyAttys.getKey().id)) {
-        partyObj = partyIdToRefObj.get(partyAttys.getKey().id);
+      if (partyIdToRefObj.containsKey(partyAttys.getKey().getIdString())) {
+        partyObj = partyIdToRefObj.get(partyAttys.getKey().getIdString());
       } else if (partyIdToRefObj.isEmpty()) {
-        log.warn("No current filing parties, but " + partyAttys.getKey().id + " is in the current filing?");
+        log.warn("No current filing parties, but " + partyAttys.getKey().getIdString() + " is in the current filing?");
         continue;
       } else {
-        log.warn("Can't handle current filing participant (" + partyAttys.getKey().id + ") not already added?!");
+        log.warn("Can't handle current filing participant (" + partyAttys.getKey().getIdString() + ") not already added?!");
         continue;
       }
       ReferenceType repdRef = structObjFac.createReferenceType();
@@ -432,9 +432,9 @@ public class EcfCaseTypeFactory {
       servRef.setRef(serviceContactXmlObjs.get(attachedContact.refId));
       ref.setServiceReference(servRef);
       attachedContact.partyAssociated.ifPresent(partyId -> {
-        if (partyIdToRefObj.containsKey(partyId.id)) {
+        if (partyIdToRefObj.containsKey(partyId.getIdString())) {
           ReferenceType partyRef = structObjFac.createReferenceType();
-          partyRef.setRef(partyIdToRefObj.get(partyId.id));
+          partyRef.setRef(partyIdToRefObj.get(partyId.getIdString()));
           ref.setPartyReference(partyRef);
         } else {
           log.warn("Couldn't find partyId: " + partyId + ", not in " + partyIdToRefObj.keySet());

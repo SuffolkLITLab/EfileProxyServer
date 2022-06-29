@@ -109,17 +109,13 @@ public class FilingInformationDocassembleJacksonDeserializer
     int perIdx = 0;
     for (Person user : users) {
       varToPartyId.put("users[" + perIdx + "]", user.getPartyId()); 
-      if (user.getPartyId().isAlreadyInCase()) {
-        varToPartyId.put(user.getPartyId().id, user.getPartyId());
-      }
+      varToPartyId.put(user.getPartyId().getIdentificationString(), user.getPartyId());
       perIdx++;
     }
     perIdx = 0;
     for (Person party : otherParties) {
       varToPartyId.put("other_parties[" + perIdx + "]", party.getPartyId()); 
-      if (party.getPartyId().isAlreadyInCase()) {
-        varToPartyId.put(party.getPartyId().id, party.getPartyId());
-      }
+      varToPartyId.put(party.getPartyId().getIdentificationString(), party.getPartyId());
       perIdx++;
     }
     users = users.stream()

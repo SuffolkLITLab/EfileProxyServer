@@ -197,7 +197,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         List<String> filingCodeStrs = maybeFilingCodes.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
         Map<String, Person> newPartyCodes = Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
             .collect(Collectors.toMap(per -> per.getIdString(), per -> per));
-        Map<String, Person> existingPartyCodes = exisitingPartips.entrySet().stream().collect(Collectors.toMap(ent -> ent.getKey().id, ent -> ent.getValue()));
+        Map<String, Person> existingPartyCodes = exisitingPartips.entrySet().stream().collect(Collectors.toMap(ent -> ent.getKey().getIdentificationString(), ent -> ent.getValue()));
         log.info("Existing cat, type, and filings: " + catCode + "," + typeCode + "," + filingCodeStrs);
         allCodes = serializer.serializeCaseCodesIndexed(catCode, typeCode, filingCodeStrs, existingPartyCodes, newPartyCodes, collector);
       } else {

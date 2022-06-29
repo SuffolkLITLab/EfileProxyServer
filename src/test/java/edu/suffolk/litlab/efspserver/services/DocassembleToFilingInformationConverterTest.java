@@ -136,8 +136,8 @@ public class DocassembleToFilingInformationConverterTest {
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     assertEquals(info.getPartyAttorneyMap().size(), 1);
     info.getPartyAttorneyMap().entrySet().forEach(x -> {
-      assertTrue(x.getKey().isNewInCurrentFiling(), "User " + x.getKey().id + " should be in current filing");
-      assertTrue(x.getValue().isEmpty(), "User " + x.getKey().id + " shouldn't have any attorneys");
+      assertTrue(x.getKey().isNewInCurrentFiling(), "User " + x.getKey().getIdentificationString() + " should be in current filing");
+      assertTrue(x.getValue().isEmpty(), "User " + x.getKey().getIdentificationString() + " shouldn't have any attorneys");
     });
     assertEquals(info.getNewPlaintiffs().size(), 1);
     assertTrue(info.getNewPlaintiffs().get(0).isFormFiller());

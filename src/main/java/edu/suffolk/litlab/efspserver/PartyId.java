@@ -8,8 +8,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * @author brycew 
  */
 public class PartyId {
-  public final String id;
-  public final Kind kind;
+  private final String id;
+  private final Kind kind;
   
   /** Factory method where the ID refers to a newly added party in this filing. */
   public static PartyId CurrentFilingNew(String id) {
@@ -20,7 +20,7 @@ public class PartyId {
   public static PartyId Already(String id) {
     return new PartyId(id, Kind.ALREADY_IN);
   }
-    
+
   /** Private constructor, use {@link Already} and {@link CurrentFiling} instead. */
   private PartyId(String id, Kind kind) {
     this.id = id;
@@ -35,12 +35,21 @@ public class PartyId {
     return kind.equals(Kind.ALREADY_IN);
   }
   
+  /* ID string required by XML (needs to start with "id-"). */
   public String getIdString() {
     if (id.startsWith("id-")) {
       return id;
     } else {
       return "id-" + id;
     }
+  }
+
+  /** If we got the ID from Tyler, without the  `id-` prefix. Otherwise our same thing. */
+  public String getIdentificationString() {
+    if (isNewInCurrentFiling()) {
+      return getIdString();
+    }
+    return id;
   }
 
   private enum Kind {

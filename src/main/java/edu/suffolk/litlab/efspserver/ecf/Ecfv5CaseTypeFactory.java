@@ -202,7 +202,7 @@ public class Ecfv5CaseTypeFactory {
         frt.setRef(idToCaseParty.get(fil));
         fpet.setPartyReference(frt);
       } else {
-        fpet.setPartyIdentification(convertId(fil.id)); 
+        fpet.setPartyIdentification(convertId(fil.getIdentificationString()));
       }
       tylerAug.setFilingParty(fpet);
     });

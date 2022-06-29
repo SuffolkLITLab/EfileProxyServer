@@ -568,21 +568,21 @@ public class EcfCourtSpecificSerializer {
     if (attorneyRow.isvisible) {
       if (doc.getFilingAttorney().isPresent()) {
         metadata.setFilingAttorneyID(XmlHelper.convertId(doc.getFilingAttorney().get(), "REFERENCE"));
-      } else if (!attorneyRow.isrequired){
+      } else if (!attorneyRow.isrequired) {
         // "This field should contain empty values for Individual filers"
         metadata.setFilingAttorneyID(XmlHelper.convertId("", ""));
       } else {
         InterviewVariable attVar = collector.requestVar("filing_attorney", "The Attorney that is filing this document", "text");
         collector.addRequired(attVar);
       }
+    } else {
+      // It's required, even if it's not visible. So keep it empty.
+      metadata.setFilingAttorneyID(XmlHelper.convertId("", ""));
     }
 
     for (PartyId filingPartyId : doc.getFilingPartyIds()) {
-      if (filingPartyId.isNewInCurrentFiling()) {
-        metadata.getFilingPartyID().add(XmlHelper.convertId(filingPartyId.getIdString(), "REFERENCE"));
-      } else {
-        metadata.getFilingPartyID().add(XmlHelper.convertId(filingPartyId.id, "IDENTIFICATION"));
-      }
+      metadata.getFilingPartyID().add(XmlHelper.convertId(filingPartyId.getIdentificationString(),
+          (filingPartyId.isNewInCurrentFiling()) ? "REFERENCE" : "IDENTIFICATION"));
     }
     // TODO(brycew): needs to handle when we can avoid using filing party ids
     if (doc.getFilingPartyIds().isEmpty()) {

@@ -28,7 +28,7 @@ public class FilingJeffNetJacksonSerializer extends StdSerializer<FilingDoc> {
     gen.writeStartObject();
     for (PartyId filingPartyId : filingDoc.getFilingPartyIds()) {
       FilingParty p = new FilingParty();
-      p.id = filingPartyId.id;
+      p.id = filingPartyId.getIdentificationString();
       if (filingPartyId.isNewInCurrentFiling()) {
         p.idCategoryText = "REFERENCE";
       } else {

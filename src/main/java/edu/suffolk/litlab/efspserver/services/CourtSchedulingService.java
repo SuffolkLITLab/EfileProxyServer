@@ -261,7 +261,7 @@ public class CourtSchedulingService {
       List<String> filingCodeStrs = maybeFilingCodes.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
       Map<String, Person> newPartyMap = Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
           .collect(Collectors.toMap(per -> per.getIdString(), per -> per));
-      Map<String, Person> existingPartyMap = existingParties.get().entrySet().stream().collect(Collectors.toMap(ent -> ent.getKey().id, ent -> ent.getValue()));
+      Map<String, Person> existingPartyMap = existingParties.get().entrySet().stream().collect(Collectors.toMap(ent -> ent.getKey().getIdentificationString(), ent -> ent.getValue()));
       log.info("Existing cat, type, and filings: " + catCode + "," + typeCode + "," + filingCodeStrs);
       allCodes = serializer.serializeCaseCodesIndexed(catCode, typeCode, filingCodeStrs, newPartyMap, existingPartyMap, collector);
     } else {
