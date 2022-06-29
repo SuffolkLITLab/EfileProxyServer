@@ -5,8 +5,8 @@ import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertNorma
 import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertDateTime;
 import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertText;
 import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertId;
+import static edu.suffolk.litlab.efspserver.JsonHelpers.isNull;
 import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertBool;
-import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.isNull;
 
 import java.math.BigDecimal;
 import java.time.Instant;

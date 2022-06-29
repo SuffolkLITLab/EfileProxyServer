@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efspserver.docassemble;
+package edu.suffolk.litlab.efspserver;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

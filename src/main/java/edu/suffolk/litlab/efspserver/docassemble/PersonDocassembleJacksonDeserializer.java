@@ -1,8 +1,5 @@
 package edu.suffolk.litlab.efspserver.docassemble;
 
-import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getStringMember;
-import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getBoolMember;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.hubspot.algebra.Result;
@@ -14,6 +11,9 @@ import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
+
+import static edu.suffolk.litlab.efspserver.JsonHelpers.getBoolMember;
+import static edu.suffolk.litlab.efspserver.JsonHelpers.getStringMember;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;

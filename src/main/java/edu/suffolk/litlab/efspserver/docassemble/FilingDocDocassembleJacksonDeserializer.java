@@ -1,16 +1,17 @@
 package edu.suffolk.litlab.efspserver.docassemble;
 
-import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getIntMember;
-import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getNumberMember;
-import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getStringDefault;
-import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getStringMember;
-import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getMemberList;
+import static edu.suffolk.litlab.efspserver.JsonHelpers.getIntMember;
+import static edu.suffolk.litlab.efspserver.JsonHelpers.getMemberList;
+import static edu.suffolk.litlab.efspserver.JsonHelpers.getNumberMember;
+import static edu.suffolk.litlab.efspserver.JsonHelpers.getStringDefault;
+import static edu.suffolk.litlab.efspserver.JsonHelpers.getStringMember;
 import static edu.suffolk.litlab.efspserver.services.FilingError.malformedInterview;
 import static edu.suffolk.litlab.efspserver.services.FilingError.serverError;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.suffolk.litlab.efspserver.FilingDoc;
+import edu.suffolk.litlab.efspserver.JsonHelpers;
 import edu.suffolk.litlab.efspserver.OptionalService;
 import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.services.FilingError;

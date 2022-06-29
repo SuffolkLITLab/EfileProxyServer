@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.isNull;
+import static edu.suffolk.litlab.efspserver.JsonHelpers.isNull;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -1,8 +1,8 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import static edu.suffolk.litlab.efspserver.JsonHelpers.getStringMember;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
-import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getStringMember;
 
 import java.sql.SQLException;
 import java.util.List;

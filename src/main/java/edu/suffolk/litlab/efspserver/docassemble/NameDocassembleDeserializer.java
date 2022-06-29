@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efspserver.docassemble;
 
-import static edu.suffolk.litlab.efspserver.docassemble.JsonHelpers.getStringMember;
+import static edu.suffolk.litlab.efspserver.JsonHelpers.getStringMember;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
