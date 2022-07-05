@@ -487,10 +487,12 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       try (PreparedStatement caseSt = conn.prepareStatement(query)) {
         caseSt.setString(1, tylerDomain);
         caseSt.setString(2, courtLocationId);
-        caseSt.setString(3, typeCode);
-        try (ResultSet rs = caseSt.executeQuery()) {
-          while (rs.next()) {
-            partyTypes.add(new PartyType(rs));
+        if (typeCode != null) {
+          caseSt.setString(3, typeCode);
+          try (ResultSet rs = caseSt.executeQuery()) {
+            while (rs.next()) {
+              partyTypes.add(new PartyType(rs));
+            }
           }
         }
         if (partyTypes.isEmpty()) {
@@ -794,20 +796,13 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     }
     String query = CodeTableConstants.needToUpdateVersion();
     Map<String, List<String>> courtTables = new HashMap<>();
-    log.info("Query was " + query);
     try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, tylerDomain);
+      st.setString(1, this.tylerDomain);
       ResultSet rs = st.executeQuery();
+      log.info("Query was " + st.toString());
       while (rs.next()) {
-        if (rs.getString(3) != null) {
-          log.info("Updating for location: " + rs.getString(1) + ", codelist: " + rs.getString(2)
-              + ", current version is " + rs.getString(3) + ", " + rs.getString(4) + " is available");
-        } else {
-          log.info("Updating for location: " + rs.getString(1) + ", codelist: " + rs.getString(2)
-              + ", no current version");
-        }
         if (!courtTables.containsKey(rs.getString(1))) {
-          courtTables.put(rs.getString(1), new ArrayList<String>());
+          courtTables.put(rs.getString(1), new ArrayList<>());
         }
         String tableName = rs.getString(2);
         if (tableName.endsWith(".zip")) {
@@ -857,7 +852,6 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     try (PreparedStatement st = conn.prepareStatement(deleteFromTable)) {
       st.setString(1, tylerDomain);
       st.setString(2, courtLocation);
-      log.info(st.toString());
       st.executeUpdate();
     }
     return true;

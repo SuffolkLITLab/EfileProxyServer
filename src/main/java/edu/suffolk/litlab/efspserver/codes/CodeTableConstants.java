@@ -416,7 +416,7 @@ public class CodeTableConstants {
         SELECT v.location, v.codelist, iv.installedversion, v.version
         FROM version AS v LEFT OUTER JOIN installedversion AS iv
         ON (v.domain=iv.domain AND v.location=iv.location AND v.codelist=iv.codelist)
-        WHERE (iv.installedversion IS NULL) OR (v.version != iv.installedversion) AND  v.domain=?""";
+        WHERE v.domain=? AND ((iv.installedversion IS NULL) OR (v.version != iv.installedversion))""";
   }
 
   public static String getCaseSubtypesFor() {
@@ -443,7 +443,7 @@ public class CodeTableConstants {
   }
 
   public static String getLanguages() {
-    return "SELECT code, name, efspcode, location FROM languages WHERE domain=? AND location=?";
+    return "SELECT code, name, efspcode, location FROM language WHERE domain=? AND location=?";
   }
 
   public static String getDamageAmount() {

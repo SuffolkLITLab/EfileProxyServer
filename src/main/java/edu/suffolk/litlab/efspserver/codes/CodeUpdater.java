@@ -216,7 +216,7 @@ public class CodeUpdater {
     try {
       p = filingPort.getPolicy(m);
     } catch (SOAPFaultException ex) {
-      log.warn("Got a SOAP Fault excption when getting the policy for " + location +": " + StdLib.strFromException(ex));
+      log.warn("Got a SOAP Fault excption when getting the policy for " + location + " in " + cd.getDomain() + ": " + StdLib.strFromException(ex));
       return false;
     }
 
@@ -273,9 +273,10 @@ public class CodeUpdater {
     // Drop each of tables that need to be updated
     Map<String, List<String>> versionsToUpdate = cd.getVersionsToUpdate();
     for (Entry<String, List<String>> courtAndTables : versionsToUpdate.entrySet()) {
-      String courtLocation = courtAndTables.getKey();
+      final String courtLocation = courtAndTables.getKey();
       Savepoint sp = cd.getConnection().setSavepoint("court" + courtLocation + "savepoint");
       List<String> tables = courtAndTables.getValue();
+      log.info("In " + cd.getDomain() + " entries for court " + courtLocation + " for tables: " + tables);
       for (String table : tables) {
         Instant deleteFromTable = Instant.now(Clock.systemUTC());
         cd.createTableIfAbsent(table);
@@ -286,7 +287,6 @@ public class CodeUpdater {
         }
         updates = updates.plus(Duration.between(deleteFromTable, Instant.now(Clock.systemUTC())));
       }
-      log.info("Removed entries for court " + courtLocation + " for tables: " + tables);
       if (!downloadCourtTables(courtLocation, Optional.of(tables), cd, signer, filingPort)) {
         log.warn("Failed updating court " + courtLocation + "'s tables " + tables);
         cd.getConnection().rollback(sp);

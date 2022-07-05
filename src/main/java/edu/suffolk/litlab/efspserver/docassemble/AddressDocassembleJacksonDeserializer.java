@@ -37,13 +37,13 @@ public class AddressDocassembleJacksonDeserializer {
     }
 
     List<InterviewVariable> potentiallyReq = new ArrayList<InterviewVariable>();
-    boolean onePresent = false;
+    boolean oneMissing = false;
     for (String member : List.of("address", "unit", "city", "state", "zip")) {
       if (!node.has(member)) {
+        oneMissing = true;
         potentiallyReq.add(collector.requestVar(member, "part of the address", "text"));
         continue;
       }
-      onePresent = true;
       if (node.has(member) && !node.get(member).isTextual()) {
         FilingError err = FilingError.malformedInterview(
             "Refusing to parse an address where the " + member + " isn't text: "
@@ -52,11 +52,11 @@ public class AddressDocassembleJacksonDeserializer {
         throw err;
       }
     }
-    if (!onePresent) {
+    if (oneMissing) {
       log.info("None of the address parts are present, won't try to build address");
       return Optional.empty();
     }
-    if (onePresent && !potentiallyReq.isEmpty()) {
+    if (!potentiallyReq.isEmpty()) {
       for (InterviewVariable memberVar : potentiallyReq) {
         collector.addRequired(memberVar);
       }

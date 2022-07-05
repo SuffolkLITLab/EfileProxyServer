@@ -502,6 +502,10 @@ public class AdminUserService {
     return Response.ok().build();
   }
 
+  private static boolean nullOrBlank(String str) {
+    return str == null || str.isBlank();
+  }
+
   /**
    * For RegisterUser.
    *
@@ -512,18 +516,37 @@ public class AdminUserService {
   @PUT
   @Path("/users")
   public Response registerUser(@Context HttpHeaders httpHeaders,
-      RegistrationRequestType req) {
-    boolean needsAuth = req.getRegistrationType().equals(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
+      final RegistrationRequestType req) {
+    final var regType = req.getRegistrationType();
+    boolean needsAuth = regType.equals(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, needsAuth, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
+    }
+
+    if (regType.equals(RegistrationType.FIRM_ADMINISTRATOR) || regType.equals(RegistrationType.INDIVIDUAL)) {
+      for (var entry: Map.of(
+              "streetAddressLine1", req.getStreetAddressLine1(),
+              "city", req.getCity(),
+              "stateCode", req.getStateCode(),
+              "zipCode", req.getZipCode(),
+              "countryCode", req.getCountryCode(),
+              "phoneNumber", req.getPhoneNumber()
+          ).entrySet()) {
+        if (nullOrBlank(entry.getValue())) {
+          return Response.status(422).entity("You are missing " + entry.getKey() + ", which is required").build();
+        }
+      }
+    }
+    if (regType.equals(RegistrationType.FIRM_ADMINISTRATOR) && nullOrBlank(req.getFirmName())) {
+      return Response.status(422).entity("You are missing firmName, which is required").build();
     }
 
     // The "1" is the default for all courts. There's no way to enforce court specific passwords
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
       Optional<CourtLocationInfo> system = cd.getFullLocationInfo("0");
       if (system.isPresent()) {
-        if (req.getRegistrationType().equals(RegistrationType.INDIVIDUAL)
+        if (regType.equals(RegistrationType.INDIVIDUAL)
             && !system.get().allowindividualregistration) {
           return Response.status(400).entity("System does not allow individual registration").build();
         }
@@ -539,6 +562,7 @@ public class AdminUserService {
     }
 
     RegistrationResponseType regResp = port.get().registerUser(req);
+    log.info("Created new user with requested " + req.getRegistrationType() + ", firm id: " + regResp.getFirmID() + " and user id: " + regResp.getUserID());
     // TODO(#2): need to return `created` here, with a URI for the user.
     return makeResponse(regResp, () -> Response.ok(regResp).build());
   }

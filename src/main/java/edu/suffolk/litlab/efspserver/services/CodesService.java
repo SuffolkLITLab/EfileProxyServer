@@ -50,7 +50,10 @@ public class CodesService {
       "getNameSuffixes", "getServiceTypes",
       "getProcedureOrRemedies", "getFilingTypes", "getDamageAmounts",
       "getDataField", "getDisclaimerRequirements", "getLanguages",
-      "getStates", "getFilingStatuses", "getAllowedFileTypes"
+      "getStates", "getFilingStatuses", "getAllowedFileTypes",
+      "getPartyTypes", "getCaseSubtypes", "getCrossReferences",
+      "getOptionalServices", "getFilingComponents", "getDocumentTypes",
+      "getMotionTypes"
       );
   
   private static final Set<String> underCaseTypeMethodNames = Set.of(
@@ -312,6 +315,26 @@ public class CodesService {
       List<NameAndCode> damageAmounts = cd.getDamageAmount(courtId, categoryId);
 
       return Response.ok(damageAmounts).build();
+    }
+  }
+
+  /**
+   * Used for when you need to populate the party types names for
+   * a case search or something similar
+   * @param courtId
+   * @return
+   * @throws SQLException
+   */
+  @GET
+  @Path("/courts/{court_id}/party_types")
+  public Response getAllPartyTypes(@PathParam("court_id") String courtId) throws SQLException {
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
+      if (!cd.getAllLocations().contains(courtId)) {
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+      }
+      List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, null);
+
+      return Response.ok(partyTypes).build();
     }
   }
 

@@ -127,14 +127,14 @@ public class FilingInformationDocassembleJacksonDeserializer
     if (isFirstIndexedFiling) {
       if (users.isEmpty()) {
         InterviewVariable varExpected = new InterviewVariable("users",
-            "the side of the matter that current person answering this interview is on",
+            "the side of the matter that current person answering this interview is on (must have is_new=True)",
             "ALPeopleList", List.of());
         collector.addRequired(varExpected);
         throw FilingError.missingRequired(varExpected);
       }
       if (otherParties.isEmpty()) {
         InterviewVariable othersExpected = new InterviewVariable("other_parties",
-            "the side of the matter that current person answering this interview is on",
+            "the side of the matter that current person answering this interview is on (must have is_new=True)",
             "ALPeopleList", List.of());
         collector.addOptional(othersExpected);
       }
