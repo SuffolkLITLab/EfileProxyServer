@@ -235,15 +235,11 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       }
 
       log.info("Assembling case");
-      JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> assembledCase =
-          ecfCaseFactory.makeCaseTypeFromTylerCategory(
+      var pair = ecfCaseFactory.makeCaseTypeFromTylerCategory(
               locationInfo, allCodes,
               info, isInitialFiling, isFirstIndexedFiling,
-              info.getFilings()
-                  .stream()
-                  .map(f -> f.getIdString())
-                  .collect(Collectors.toList()),
               queryType, info.getMiscInfo(), serializer, collector, serviceContactXmlObjs);
+      JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> assembledCase = pair.getLeft();
       log.info("Assembled case");
 
       Map<String, String> crossReferences = serializer.getCrossRefIds(info.getMiscInfo(), collector, allCodes.type.code);
@@ -279,6 +275,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       MeasureType maxIndivDocSize = policy.getDevelopmentPolicyParameters().getValue().getMaximumAllowedAttachmentSize();
       long maxSize = XmlHelper.sizeMeasureAsBytes(maxIndivDocSize);
       long cumulativeBytes = 0;
+      Map<String, Object> filingIdToObj = new HashMap<>();
       for (FilingDoc filingDoc : info.getFilings()) {
         log.info("Adding a document to the XML");
         long bytes = filingDoc.getFileContents().length;
@@ -302,6 +299,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         JAXBElement<DocumentType> result =
                 serializer.filingDocToXml(filingDoc, seqNum, isInitialFiling, allCodes.cat, allCodes.type,
                     fc, components, info.getMiscInfo(), collector);
+        filingIdToObj.put(filingDoc.getIdString(), result.getValue());
         if (filingDoc.isLead()) {
           cfm.getFilingLeadDocument().add(result);
         } else {
@@ -317,7 +315,14 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
             + maxSize + ", are " + cumulativeBytes);
         collector.error(err);
       }
-      log.info("Full cfm: " + XmlHelper.objectToXmlStrOrError(cfm, CoreFilingMessageType.class));
+      EcfCaseTypeFactory.getCaseAugmentation(assembledCase.getValue()).ifPresent(aug -> {
+        Map<String, List<PartyId>> filingAssociations = info.getFilings().stream()
+                  .collect(Collectors.toMap(f -> f.getIdString(), f -> f.getFilingPartyIds()));
+        for (var association : ecfCaseFactory.lateStageFilingAssociationAdd(serializer, filingIdToObj, filingAssociations, pair.getRight())) {
+          aug.getFilingAssociation().add(association);
+        }
+      });
+      log.info("Full cfm: " + XmlHelper.objectToXmlStrOrError(cfm, CoreFilingMessageType.class).replaceAll("<ns2:BinaryBase64Object>[^<]+<\\/ns2:BinaryBase64Object>", ""));
       return cfm;
     } catch (IOException | SQLException ex ) { 
       log.error("IO Error when making filing! " + strFromException(ex));

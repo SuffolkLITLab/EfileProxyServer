@@ -327,12 +327,16 @@ public class EcfCourtSpecificSerializer {
           log.info("Can't have language: " + lang);
           collector.addWrong(collector.requestVar("language", "The primary language of this person", "choice", langs));
         }
-        final var lctOf = new gov.niem.niem.iso_639_3._2.ObjectFactory();
-        LanguageCodeType lct = lctOf.createLanguageCodeType();
-        lct.setValue(lang);
-        PersonLanguageType plt = niemObjFac.createPersonLanguageType();
-        plt.getLanguage().add(niemObjFac.createLanguageCode(lct));
-        pt.setPersonPrimaryLanguage(plt);
+        if (!langs.isEmpty()) {
+          // TODO(brycew): currently taking the safer option: if no languages are specified, don't add one
+          // TODO(brycew): need to have an ISO 639_2 (language codes) converter, from general language name
+          ///https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes
+          final var lctOf = new gov.niem.niem.iso_639_3._2.ObjectFactory();
+          LanguageCodeType lct = lctOf.createLanguageCodeType();
+          PersonLanguageType plt = niemObjFac.createPersonLanguageType();
+          plt.getLanguage().add(niemObjFac.createLanguageCode(lct));
+          pt.setPersonPrimaryLanguage(plt);
+        }
       };
 
       per.getBirthdate().ifPresent((bd) -> {
@@ -377,7 +381,13 @@ public class EcfCourtSpecificSerializer {
       }
       for (String phoneNumber : contactInfo.getPhoneNumbers()) {
         if (!phoneRow.matchRegex(phoneNumber)) {
-          collector.addWrong(var);
+          if (phoneNumber.contains("-")) {
+            // HACK(brycew): Massachusetts doesn't like dashes in the number, just numbers
+            phoneNumber = phoneNumber.replace("-", "").replace("(", "").replace(")", "");
+          }
+          if (!phoneRow.matchRegex(phoneNumber)) {
+            collector.addWrong(var);
+          }
         }
 
         TelephoneNumberType tnt = niemObjFac.createTelephoneNumberType();
@@ -759,6 +769,7 @@ public class EcfCourtSpecificSerializer {
     DocumentRenditionType rendition = ecfOf.createDocumentRenditionType();
     rendition.setDocumentRenditionMetadata(renditionMetadata);
     docType.getDocumentRendition().add(rendition);
+    docType.setId(doc.getIdString());
 
     if (doc.isLead()) {
       return tylerObjFac.createFilingLeadDocument(docType);

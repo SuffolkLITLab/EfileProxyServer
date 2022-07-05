@@ -460,13 +460,18 @@ public class PaymentsService {
       return Response.status(500).entity("No WV (waiver) account type available? " + types).build();
     }
     var waiverType = maybeWaiver.get();
-    firmPort.getPaymentAccountTypeList();
-    newAccount.setPaymentAccountTypeCode(Integer.toString(waiverType.getCodeId().getValue()));
-    newAccount.setPaymentAccountTypeCodeId(tylerCommonObjFac.createPaymentAccountTypePaymentAccountTypeCodeId(waiverType.getCodeId().getValue()));
+    if (waiverType.getCodeId() != null) {
+      newAccount.setPaymentAccountTypeCode(Integer.toString(waiverType.getCodeId().getValue()));
+      newAccount.setPaymentAccountTypeCodeId(tylerCommonObjFac.createPaymentAccountTypePaymentAccountTypeCodeId(waiverType.getCodeId().getValue()));
+    } else {
+      newAccount.setPaymentAccountTypeCode(waiverType.getCode());
+    }
     PaymentAccountLocationDetails locationDetails = tylerCommonObjFac.createPaymentAccountLocationDetails();
     newAccount.setPaymentAccountLocationDetails(locationDetails);
     newAccount.setAccountName(accountName);
+    log.info("newAccount: " + newAccount);
     createAccount.setPaymentAccount(newAccount);
+    log.info("createAccount: " + createAccount);
     CreatePaymentAccountResponseType resp;
     if (global) {
       resp = firmPort.createGlobalPaymentAccount(createAccount);

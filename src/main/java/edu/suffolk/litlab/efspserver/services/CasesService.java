@@ -154,8 +154,8 @@ public class CasesService {
         return Response.status(404).entity(courtId + " not in available courts to search").build();
       }
       DataFieldRow legacyRow = cd.getDataField(courtId, "LegacyLocationCaseSearch");
-      if (!legacyRow.isvisible && info.get().initial) {
-        return Response.status(400).entity(courtId + " doesn't allow for case searches").build();
+      if (legacyRow.isvisible && !info.get().initial) {
+        return Response.status(400).entity(courtId + " doesn't allow for subsequent case searches").build();
       }
 
       if (courtId.equals("1")) {
@@ -217,6 +217,7 @@ public class CasesService {
       query.getCaseListQueryCaseParticipant().add(cpt);
     }
 
+    log.info("Before the case list query");
     CaseListResponseMessageType resp = maybePort.get().getCaseList(query);
     if (internalTestTrigger) {
       ErrorType et = new ErrorType();

@@ -17,11 +17,13 @@ import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.codes.FilerType;
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.codes.PartyType;
+import edu.suffolk.litlab.efspserver.docassemble.NameDocassembleDeserializer;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import gov.niem.niem.iso_4217._2.CurrencyCodeSimpleType;
 import gov.niem.niem.niem_core._2.AmountType;
+import gov.niem.niem.niem_core._2.CaseType;
 import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.PersonNameType;
 import gov.niem.niem.niem_core._2.TextType;
@@ -29,6 +31,7 @@ import gov.niem.niem.structures._2.ReferenceType;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +44,7 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBElement;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +57,6 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.Organization
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.CriminalCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.DomesticCaseType;
-import tyler.ecf.extensions.common.CaseAugmentationType;
 import tyler.ecf.extensions.common.FilingAssociationType;
 import tyler.ecf.extensions.common.OrganizationIdentificationType;
 import tyler.ecf.extensions.common.ProcedureRemedyType;
@@ -63,13 +66,21 @@ public class EcfCaseTypeFactory {
   private static Logger log =
       LoggerFactory.getLogger(EcfCaseTypeFactory.class);
 
-  private CodeDatabase cd;
+  private final CodeDatabase cd;
+  private final tyler.ecf.extensions.common.ObjectFactory tylerObjFac;
+  private final oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfCommonObjFac;
+  private final gov.niem.niem.niem_core._2.ObjectFactory of;
+  private final gov.niem.niem.structures._2.ObjectFactory structObjFac;
 
   public EcfCaseTypeFactory(CodeDatabase cd) {
     this.cd = cd;
+    this.tylerObjFac = new tyler.ecf.extensions.common.ObjectFactory();
+    this.ecfCommonObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+    this.of = new gov.niem.niem.niem_core._2.ObjectFactory();
+    this.structObjFac = new gov.niem.niem.structures._2.ObjectFactory();
   }
 
-  public static Optional<CaseAugmentationType> getCaseAugmentation(
+  public static Optional<tyler.ecf.extensions.common.CaseAugmentationType> getCaseAugmentation(
       gov.niem.niem.niem_core._2.CaseType filedCase) {
     List<JAXBElement<?>> restList = List.of();
     if (filedCase instanceof CivilCaseType civilCase) {
@@ -82,7 +93,7 @@ public class EcfCaseTypeFactory {
       restList = appellate.getRest();
     }
     for (JAXBElement<?> elem : restList) {
-      if (elem.getValue() instanceof CaseAugmentationType aug) {
+      if (elem.getValue() instanceof tyler.ecf.extensions.common.CaseAugmentationType aug) {
         return Optional.of(aug);
       }
     }
@@ -94,7 +105,7 @@ public class EcfCaseTypeFactory {
   public static Optional<Map<PartyId, Person>> getCaseParticipants(
       gov.niem.niem.niem_core._2.CaseType filedCase) {
     Map<PartyId, Person> existingParticipants = new HashMap<>();
-    Optional<CaseAugmentationType> maybeAug = getCaseAugmentation(filedCase);
+    Optional<tyler.ecf.extensions.common.CaseAugmentationType> maybeAug = getCaseAugmentation(filedCase);
     if (maybeAug.isEmpty()) {
       return Optional.empty();
     }
@@ -162,6 +173,37 @@ public class EcfCaseTypeFactory {
     return crit;
   }
 
+  /** Dumb XML requires you to have the Object itself before you can reference it, you can't just 
+   * use the ID. But we don't have the filing document objects when making the case. */
+  public List<FilingAssociationType> lateStageFilingAssociationAdd(EcfCourtSpecificSerializer serializer,
+      Map<String, Object> filingIdToObj, Map<String, List<PartyId>> filingAssociations, Map<String, Object> partyIdToRefObj) {
+
+    DataFieldRow filingcaseparties = serializer.allDataFields.getFieldRow("FilingEventCaseParties");
+    var toReturn = new ArrayList<FilingAssociationType>();
+    var structOf = new gov.niem.niem.structures._2.ObjectFactory();
+    if (filingcaseparties.isrequired) {
+      for (Map.Entry<String, Object> filingObj: filingIdToObj.entrySet()) {
+        gov.niem.niem.structures._2.ReferenceType filingRt = structOf.createReferenceType();
+        filingRt.setRef(filingObj.getValue());
+        var filingAssociation = filingAssociations.get(filingObj.getKey());
+        for (PartyId partyId: filingAssociation) {
+          if (partyIdToRefObj.containsKey(partyId.getIdString())) {
+            ReferenceType partyRef = structObjFac.createReferenceType();
+            partyRef.setRef(partyIdToRefObj.get(partyId.getIdString()));
+            FilingAssociationType association = tylerObjFac.createFilingAssociationType();
+            association.setPartyReference(partyRef);
+            association.setFilingReference(filingRt);
+            toReturn.add(association);
+          } else {
+            log.warn("When adding filing associations, Party " + partyId + " isn't an object?");
+            log.warn("Parties that do exist: " + List.of(partyIdToRefObj.keySet().toArray()));
+          }
+        }
+      }
+    }
+    return toReturn;
+  }
+
   /**
    * Makes a case from specific info + unorganized JSON dumps.
    *
@@ -176,14 +218,13 @@ public class EcfCaseTypeFactory {
    * @return
    * @throws FilingError
    */
-  public JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>
+  public Pair<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>, Map<String, Object>>
       makeCaseTypeFromTylerCategory(
       CourtLocationInfo courtLocation,
       ComboCaseCodes comboCodes, 
       FilingInformation info,
       boolean isInitialFiling,
       boolean isFirstIndexedFiling,
-      List<String> filingIds,
       // HACK(brycew): hacky: needed because "fees" querys and "service" put the payment stuff in the tyler Aug
       String queryType,
       JsonNode miscInfo, // TODO(brycew-later): if we get XML Answer files, this isn't generic
@@ -193,10 +234,10 @@ public class EcfCaseTypeFactory {
   ) throws SQLException, FilingError {
     JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug =
         makeNiemCaseAug(courtLocation.code, info.getPreviousCaseId());
-    JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug =
-              makeTylerCaseAug(courtLocation, comboCodes,
+    var pair = makeTylerCaseAug(courtLocation, comboCodes,
                   info, isInitialFiling, isFirstIndexedFiling,
-                  filingIds, queryType, miscInfo, serializer, collector, serviceContactToXmlObjs);
+                  queryType, miscInfo, serializer, collector, serviceContactToXmlObjs);
+    JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug = pair.getLeft();
     JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase;
     if (comboCodes.cat.ecfcasetype.equals("CivilCase")) {
       Optional<BigDecimal> amountInControversy = Optional.empty();
@@ -233,6 +274,7 @@ public class EcfCaseTypeFactory {
     }
     myCase.getValue().setCaseCategoryText(XmlHelper.convertText(comboCodes.cat.code));
     return myCase;
+    return Pair.of(myCase, pair.getRight());
   }
 
   private static JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType>
@@ -249,24 +291,19 @@ public class EcfCaseTypeFactory {
     return jof.createCaseAugmentation(caseAug);
   }
 
-  private JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType>
+  private Pair<JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType>, Map<String, Object>>
       makeTylerCaseAug(
           CourtLocationInfo courtLocation,
           ComboCaseCodes comboCodes,
           FilingInformation info,
           boolean isInitialFiling,
           boolean isFirstIndexedFiling,
-          List<String> filingIds,
           String queryType,
           JsonNode miscInfo,
           EcfCourtSpecificSerializer serializer,
           InfoCollector collector,
           Map<String, Object> serviceContactXmlObjs
   ) throws SQLException, FilingError {
-    var tylerObjFac = new tyler.ecf.extensions.common.ObjectFactory();
-    var ecfCommonObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-    var of = new gov.niem.niem.niem_core._2.ObjectFactory();
-    var structObjFac = new gov.niem.niem.structures._2.ObjectFactory();
     var ecfAug = tylerObjFac.createCaseAugmentationType();
 
     if (comboCodes.type.code.isEmpty()){
@@ -495,17 +532,6 @@ public class EcfCaseTypeFactory {
       ecfAug.setReturnDate(XmlHelper.convertDate(info.getReturnDate().get()));
     }
 
-    DataFieldRow filingcaseparties = serializer.allDataFields.getFieldRow("FilingEventCaseParties");
-    var structOf = new gov.niem.niem.structures._2.ObjectFactory();
-    if (filingcaseparties.isrequired) {
-      for (String filingId : filingIds) {
-        gov.niem.niem.structures._2.ReferenceType rt = structOf.createReferenceType();
-        rt.setId(filingId);
-        FilingAssociationType association = tylerObjFac.createFilingAssociationType();
-        association.setPartyReference(rt);
-        ecfAug.getFilingAssociation().add(association);
-      }
-    }
 
     if (queryType.equalsIgnoreCase("fees") || queryType.equalsIgnoreCase("service")) {
       if (info.getPaymentId() == null || info.getPaymentId().isBlank()) {
@@ -528,7 +554,7 @@ public class EcfCaseTypeFactory {
     }
 
     log.info("Full ecfAug: " + ecfAug);
-    return tylerObjFac.createCaseAugmentation(ecfAug);
+    return Pair.of(tylerObjFac.createCaseAugmentation(ecfAug), partyIdToRefObj);
   }
   
   private Optional<ProcedureRemedyType> makeProcedureRemedyType(
