@@ -273,7 +273,6 @@ public class EcfCaseTypeFactory {
       throw err;
     }
     myCase.getValue().setCaseCategoryText(XmlHelper.convertText(comboCodes.cat.code));
-    return myCase;
     return Pair.of(myCase, pair.getRight());
   }
 
