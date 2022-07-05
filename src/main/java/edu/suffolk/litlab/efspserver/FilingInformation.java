@@ -52,6 +52,9 @@ public class FilingInformation {
   private List<FilingDoc> filingDocs = List.of();
   private Optional<LocalDate> returnDate = Optional.empty();
   
+  /** Information about the original case if this is an appeals court case. */
+  private Optional<LowerCourtInfo> lowerCourtInfo = Optional.empty();
+
   private Person leadContact;
   
   private JsonNode miscInfo;
@@ -152,6 +155,10 @@ public class FilingInformation {
     return miscInfo;
   }
   
+  public Optional<LowerCourtInfo> getLowerCourtInfo() {
+    return lowerCourtInfo;
+  }
+
   public void setCourtLocation(String courtLocationId) {
     this.courtLocationId = courtLocationId;
   }
@@ -220,4 +227,8 @@ public class FilingInformation {
     this.miscInfo = node; 
   }
   
+  public void setLowerCourtInfo(LowerCourtInfo info) {
+    this.lowerCourtInfo = Optional.ofNullable(info);
+  }
+
 }

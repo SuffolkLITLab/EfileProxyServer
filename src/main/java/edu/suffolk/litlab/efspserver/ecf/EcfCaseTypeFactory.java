@@ -44,6 +44,7 @@ import javax.xml.bind.JAXBElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.appellatecase_4.AppellateCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryCriteriaType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.CivilCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseOfficialType;
@@ -77,6 +78,8 @@ public class EcfCaseTypeFactory {
       restList = domesCase.getRest();
     } else if (filedCase instanceof CriminalCaseType criminalCase) {
       restList = criminalCase.getRest();
+    } else if (filedCase instanceof AppellateCaseType appellate) {
+      restList = appellate.getRest();
     }
     for (JAXBElement<?> elem : restList) {
       if (elem.getValue() instanceof CaseAugmentationType aug) {
@@ -194,6 +197,7 @@ public class EcfCaseTypeFactory {
               makeTylerCaseAug(courtLocation, comboCodes,
                   info, isInitialFiling, isFirstIndexedFiling,
                   filingIds, queryType, miscInfo, serializer, collector, serviceContactToXmlObjs);
+    JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase;
     if (comboCodes.cat.ecfcasetype.equals("CivilCase")) {
       Optional<BigDecimal> amountInControversy = Optional.empty();
       boolean anyAmountInControversy = comboCodes.filings.stream().anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"));
@@ -205,22 +209,30 @@ public class EcfCaseTypeFactory {
           collector.addRequired(collector.requestVar("amount_in_controversy", "ad danum amount", "currency"));
         }
       }
-      JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase =
-          makeCivilCaseType(caseAug, tylerAug, info.getCaseDocketNumber(), info.getPreviousCaseId(), amountInControversy);
-      myCase.getValue().setCaseCategoryText(XmlHelper.convertText(comboCodes.cat.code));
-      return myCase;
+      myCase = makeCivilCaseType(caseAug, tylerAug, info.getCaseDocketNumber(), info.getPreviousCaseId(), amountInControversy);
     } else if (comboCodes.cat.ecfcasetype.equals("DomesticCase")) {
-      JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase =
-          makeDomesticCaseType(caseAug, tylerAug, info.getCaseDocketNumber(), info.getPreviousCaseId(), miscInfo);
-      myCase.getValue().setCaseCategoryText(XmlHelper.convertText(comboCodes.cat.code));
-      return myCase;
-    } else {
-      InterviewVariable var = collector.requestVar("tyler_case_category", "The " + comboCodes.cat.name 
-          + " Case category requires an ECF case type that we don't support", "text");
+      myCase = makeDomesticCaseType(caseAug, tylerAug, info.getCaseDocketNumber(), info.getPreviousCaseId(), miscInfo);
+    } else if (comboCodes.cat.ecfcasetype.equals("AppellateCase")) {
+      myCase = makeAppellateCaseType(caseAug, tylerAug, info.getCaseDocketNumber(), info.getPreviousCaseId(), miscInfo, collector);
+    } else if (comboCodes.cat.ecfcasetype.equals("BankruptcyCase")
+        || comboCodes.cat.ecfcasetype.equals("CitationCase")
+        || comboCodes.cat.ecfcasetype.equals("JuvenileCase")
+        || comboCodes.cat.ecfcasetype.equals("CriminalCase")) {
+      // TODO(brycew): handle these
+      InterviewVariable var = collector.requestVar("tyler_case_category", "The " + comboCodes.cat.name
+          + " Case category requires an ECF case type that we know about but don't yet support (" + comboCodes.cat.ecfcasetype + ")", "text");
       collector.addWrong(var);
-      FilingError err = FilingError.wrongValue(var); 
+      FilingError err = FilingError.wrongValue(var);
+      throw err;
+    } else {
+      InterviewVariable var = collector.requestVar("tyler_case_category", "The " + comboCodes.cat.name
+          + " Case category requires an ECF case type that we don't know about or support (" + comboCodes.cat.ecfcasetype + ")", "text");
+      collector.addWrong(var);
+      FilingError err = FilingError.wrongValue(var);
       throw err;
     }
+    myCase.getValue().setCaseCategoryText(XmlHelper.convertText(comboCodes.cat.code));
+    return myCase;
   }
 
   private static JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType>
@@ -652,6 +664,71 @@ public class EcfCaseTypeFactory {
     JAXBElement<TextType> relief = ecfCivilObjFac.createReliefTypeCode(new TextType());
     c.getRest().add(relief);
     return ecfCivilObjFac.createCivilCase(c);
+  }
+
+  /** Required JSON info from DA interview:
+   * - lower_court_case.title
+   * - lower_court_case.docket_number
+   * - lower_court_case.judge
+   * - trial_court.name (specifically lower_court_case.court.name)
+   */
+  private static JAXBElement<AppellateCaseType> makeAppellateCaseType(
+      JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
+      JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
+      Optional<String> caseDocketId,
+      Optional<String> caseTrackingId,
+      JsonNode node,
+      InfoCollector collector) throws FilingError {
+    var ecfAppellateObjFac =
+        new oasis.names.tc.legalxml_courtfiling.schema.xsd.appellatecase_4.ObjectFactory();
+    var niemObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
+    AppellateCaseType appl = ecfAppellateObjFac.createAppellateCaseType();
+    caseDocketId.ifPresent(docket -> {
+      appl.setCaseDocketID(XmlHelper.convertString(docket));
+    });
+    caseTrackingId.ifPresent(trackingId -> {
+      appl.setCaseTrackingID(XmlHelper.convertString(trackingId));
+    });
+    // Unclear if this needs to be the code
+    tylerAug.getValue().setLowerCourtText(XmlHelper.convertText(node.get("trial_court").get("name").asText()));
+    String judgeName = "";
+    JsonNode lowerCase = node.get("lower_court_case");
+    if (lowerCase == null || lowerCase.isNull()) {
+      InterviewVariable var = collector.requestVar("lower_court_case", "An object with information about the lower court desicion, including 'judge', 'title', and 'docket_number'", "DAObject");
+      collector.addRequired(var);
+    }
+    collector.pushAttributeStack("lower_court_case");
+
+    if (lowerCase.get("judge").isTextual()) {
+      judgeName = lowerCase.get("judge").asText();
+    } else if (lowerCase.get("judge").isObject()) {
+      collector.pushAttributeStack("judge");
+      judgeName = NameDocassembleDeserializer.fromNode(lowerCase.get("judge"), collector).getFullName();
+      collector.popAttributeStack();
+    } else {
+      InterviewVariable var = collector.requestVar("judge", "The name of the Judge who gave the lower court decision", "text");
+      collector.addRequired(var);
+    }
+    tylerAug.getValue().setLowerCourtJudgeText(XmlHelper.convertText(judgeName));
+    appl.getRest().add(caseAug);
+    appl.getRest().add(tylerAug);
+    CaseType ct = niemObjFac.createCaseType();
+    Optional<String> title = JsonHelpers.getStringMember(lowerCase, "title");
+    if (title.isEmpty()) {
+      InterviewVariable var = collector.requestVar("title", "The name of the lower court case", "text");
+      collector.addRequired(var);
+    }
+    ct.setCaseTitleText(XmlHelper.convertText(title.orElse("")));
+    Optional<String> docketNumber = JsonHelpers.getStringMember(lowerCase, "docket_number");
+    if (docketNumber.isEmpty()) {
+      InterviewVariable var = collector.requestVar("docket_number", "The docket number of the lower court case", "text");
+      collector.addRequired(var);
+    }
+    ct.setCaseDocketID(XmlHelper.convertString(docketNumber.orElse("")));
+
+    appl.getAppellateCaseOriginalCase().add(ct);
+    collector.popAttributeStack();
+    return ecfAppellateObjFac.createAppellateCase(appl);
   }
 
   private static JAXBElement<DomesticCaseType> makeDomesticCaseType(
