@@ -10,6 +10,7 @@ import static edu.suffolk.litlab.efspserver.services.FilingError.serverError;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import edu.suffolk.litlab.efspserver.FilingAttachment;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.JsonHelpers;
 import edu.suffolk.litlab.efspserver.OptionalService;
@@ -17,6 +18,9 @@ import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
+
+import fj.data.NonEmptyList;
+import fj.data.Option;
 import tyler.ecf.extensions.common.FilingTypeType;
 
 import java.io.IOException;
@@ -51,33 +55,12 @@ public class FilingDocDocassembleJacksonDeserializer {
       collector.error(err);
     }
 
-    // Get: filename
-    if (!node.has("filename") || !node.get("filename").isTextual()) {
-      FilingError err = malformedInterview(
-          "Refusing to parse filing without filename");
-      collector.error(err);
-    }
-    JsonNode filenameNode = node.get("filename");
-    if (filenameNode == null || !filenameNode.isTextual()) {
-      InterviewVariable nameVar = collector.requestVar("filename", "The file name of the filing document", "text");
-      collector.addRequired(nameVar);
-    }
-
-    String fileName = filenameNode.asText("");
-    if (!fileName.endsWith(".pdf")) {
-      fileName += ".pdf";
-    }
-    if (!node.has("proxy_enabled") || !node.get("proxy_enabled").asBoolean(false)) {
-      log.info(fileName + " isn't proxy enabled");
-      return Optional.empty();
-    }
-
-    JsonNode filingJson = node.get("tyler_filing_type");
+    JsonNode filingJson = node.get("filing_type");
     Optional<String> filingType = Optional.empty(); 
     if (filingJson != null && filingJson.isTextual()) {
       filingType = Optional.of(filingJson.asText());
     } else {
-      InterviewVariable filingVar = collector.requestVar("tyler_filing_type", "What filing type is this?", "text"); 
+      InterviewVariable filingVar = collector.requestVar("filing_type", "What filing type is this?", "text"); 
       log.warn("tyler_filing_type not present in the info!: " + node);
       // Optional for non-tyler ones. Will be enforced at the tyler level
       collector.addOptional(filingVar.appendDesc((node.has("instanceName")) ? node.get("instanceName").asText("?") : "?"));
@@ -90,7 +73,6 @@ public class FilingDocDocassembleJacksonDeserializer {
           "The Type of Motion that this interview is", "text");
       collector.addOptional(var);
     }
-    String documentTypeFormatName = getStringDefault(node, "document_type", "");
 
     List<OptionalService> optServices = new ArrayList<OptionalService>();
     Optional<JsonNode> maybeOptServs = JsonHelpers.unwrapDAList(node.get("optional_services"));
@@ -107,8 +89,6 @@ public class FilingDocDocassembleJacksonDeserializer {
     if (jsonDueDate != null && jsonDueDate.isTextual()) {
       maybeDueDate = Optional.of(LocalDate.ofInstant(Instant.parse(jsonDueDate.asText()), ZoneId.of("America/Chicago")));
     }
-    String filingComponentCode = getStringDefault(node, "filing_component", "");
-      
     Optional<String> userDescription = getStringMember(node, "filing_description");
     Optional<String> filingRefNum = getStringMember(node, "reference_number");
     Optional<String> filingAttorney = getStringMember(node, "filing_attorney");
@@ -117,6 +97,91 @@ public class FilingDocDocassembleJacksonDeserializer {
     List<String> courtesyCopies = getMemberList(node, "courtesy_copies");
     List<String> preliminaryCopies = getMemberList(node, "preliminary_copies");
     List<String> filingParties = getMemberList(node, "filing_parties");
+
+    Optional<String> actionStr = getStringMember(node, "filing_action");
+    Optional<FilingTypeType> action = Optional.empty(); 
+    if (actionStr.isPresent()) {
+      String s = actionStr.get();
+      if (s.equalsIgnoreCase("e_file") || s.equalsIgnoreCase("efile")) {
+        action = Optional.of(FilingTypeType.E_FILE);
+      } else if (s.equalsIgnoreCase("efile_and_serve") || s.equalsIgnoreCase("e_file_and_serve")) {
+        action = Optional.of(FilingTypeType.E_FILE_AND_SERVE);
+      } else if (s.equalsIgnoreCase("serve")) {
+        action = Optional.of(FilingTypeType.SERVE);
+      } else {
+        log.warn("Filing Action " + s + " isn't an allowed action, defaulting to default action for the operation");
+      }
+    }
+    List<PartyId> fullParties = filingParties.stream().map(fp -> {
+      if (varToPartyId.containsKey(fp)) {
+        log.info("Filing party id in doc: " + fp + ": " + varToPartyId.get(fp));
+        return varToPartyId.get(fp);
+      } 
+      log.info("Existing filing party id in doc: " + fp);
+      return PartyId.Already(fp);
+    }).collect(Collectors.toList());
+      
+      
+    fj.data.List<FilingAttachment> attachments = fj.data.List.nil();
+    if (node.has("tyler_merge_attachments") && node.get("tyler_merge_attachments").asBoolean(false)) {
+      log.info(userDescription.orElse(filingComment) + " indicated that we should only use the parent document; skipping parsing child elements");
+    } else {
+      if (node.has("elements") && node.get("elements").isArray()) {
+        Iterable<JsonNode> nodes = node.get("elements")::elements;
+        System.out.println("In multi attachments");
+        for (var attachNode : nodes) {
+          var maybeAttachment = getAttachment(attachNode, collector);
+          if (maybeAttachment.isPresent()) {
+            attachments = attachments.snoc(maybeAttachment.get());
+          }
+        }
+      }
+    }
+    if (attachments.isEmpty()) {
+      System.out.println("In no attachments");
+      Optional<FilingAttachment> attachment = getAttachment(node, collector);
+      if (attachment.isPresent()) {
+        attachments = fj.data.List.single(attachment.get());
+      }
+    }
+    Option<NonEmptyList<FilingAttachment>> goodAttachments = NonEmptyList.<FilingAttachment>fromList(attachments);
+    if (goodAttachments.isNone()) {
+      FilingError err = FilingError.malformedInterview("the document needs to be a bundle and have sub documents, each with a PDF URL, or needs to have that info itself");
+      collector.error(err);
+    }
+    return Optional.of(
+        new FilingDoc(filingType, 
+            userDescription,
+            filingRefNum,
+            maybeDueDate,
+            fullParties,
+            filingAttorney,
+            goodAttachments.some(),
+            filingComment,
+            motionName,
+            optServices,
+            courtesyCopies,
+            preliminaryCopies,
+            action,
+            isLeadDoc));
+  }
+  
+  private static Optional<FilingAttachment> getAttachment(JsonNode node, InfoCollector collector) throws FilingError {
+    String documentTypeFormatName = getStringDefault(node, "document_type", "");
+    String filingComponentCode = getStringDefault(node, "filing_component", "");
+    JsonNode filenameNode = node.get("filename");
+    if (filenameNode == null || !filenameNode.isTextual()) {
+      InterviewVariable nameVar = collector.requestVar("filename", "The file name of the filing document", "text");
+      collector.addRequired(nameVar);
+    }
+    String fileName = filenameNode.asText("");
+    if (!fileName.endsWith(".pdf")) {
+      fileName += ".pdf";
+    }
+    if (!node.has("proxy_enabled") || !node.get("proxy_enabled").asBoolean(false)) {
+      log.info(fileName + " isn't proxy enabled");
+      return Optional.empty();
+    }
     
     if (!node.has("data_url") || !node.get("data_url").isTextual() || node.get("data_url").asText("").isBlank()) {
       collector.error(FilingError.malformedInterview("Refusing to parse filing without data_url"));
@@ -130,15 +195,6 @@ public class FilingDocDocassembleJacksonDeserializer {
     // localhost, since things could be on the same server / network. TODO: inject an allow-list into here somehow
     try {
       URL inUrl = new URL(dataUrl); 
-      List<PartyId> fullParties = filingParties.stream().map(fp -> {
-        if (varToPartyId.containsKey(fp)) {
-          log.info("Filing party id in doc: " + fp + ": " + varToPartyId.get(fp));
-          return varToPartyId.get(fp);
-        } 
-        log.info("Existing filing party id in doc: " + fp);
-        return PartyId.Already(fp);
-      }).collect(Collectors.toList());
-      
       
       HttpURLConnection conn = (HttpURLConnection) inUrl.openConnection();
       conn.setRequestMethod("GET");
@@ -149,38 +205,11 @@ public class FilingDocDocassembleJacksonDeserializer {
         collector.error(err);
       }
       
-      Optional<String> actionStr = getStringMember(node, "filing_action");
-      Optional<FilingTypeType> action = Optional.empty(); 
-      if (actionStr.isPresent()) {
-        String s = actionStr.get();
-        if (s.equalsIgnoreCase("e_file") || s.equalsIgnoreCase("efile")) {
-          action = Optional.of(FilingTypeType.E_FILE);
-        } else if (s.equalsIgnoreCase("efile_and_serve") || s.equalsIgnoreCase("e_file_and_serve")) {
-          action = Optional.of(FilingTypeType.E_FILE_AND_SERVE);
-        } else if (s.equalsIgnoreCase("serve")) {
-          action = Optional.of(FilingTypeType.SERVE);
-        } else {
-          log.warn("Filing Action " + s + " isn't an allowed action, defaulting to default action for the operation");
-        }
-      }
-      
       return Optional.of(
-          new FilingDoc(filingType, fileName,
+          new FilingAttachment(fileName,
               inStream.readAllBytes(),
-              userDescription,
-              filingRefNum,
-              maybeDueDate,
-              fullParties,
-              filingAttorney,
-              documentTypeFormatName, 
-              filingComponentCode,
-              filingComment,
-              motionName,
-              optServices,
-              courtesyCopies,
-              preliminaryCopies,
-              action,
-              isLeadDoc));
+              documentTypeFormatName,
+              filingComponentCode)); 
     } catch (MalformedURLException ex) {
       FilingError err = serverError("MalformedURLException trying to parse the data_url (" + dataUrl + "): " + ex);
       collector.error(err);

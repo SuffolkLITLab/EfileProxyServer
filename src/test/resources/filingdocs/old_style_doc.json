@@ -1,0 +1,22 @@
+{
+        "title": "Motion To Stay (Eviction)",
+        "filename": "motion_to_stay_eviction",
+        "always_enabled": false,
+        "document_type_code": "6586",
+        "has_courtesy_copies": false,
+        "filing_type": "6553",
+        "filing_description": "The completed Motion to Stay Eviction for Bob Ma",
+        "reference_number": null,
+        "filing_parties": ["users[0]"],
+        "filing_action": "efile",
+        "document_type": "6586",
+        "motion_type": null,
+        "filing_component_code": "332",
+        "filing_component": "332",
+        "optional_services": {
+          "elements": []
+        },
+        "proxy_enabled": true,
+        "data_url": "http://africau.edu/images/default/sample.pdf",
+        "page_count": 5
+}

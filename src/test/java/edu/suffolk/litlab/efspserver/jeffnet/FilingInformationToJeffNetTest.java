@@ -10,12 +10,16 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.opencsv.exceptions.CsvValidationException;
 
 import edu.suffolk.litlab.efspserver.ContactInformation;
+import edu.suffolk.litlab.efspserver.FilingAttachment;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
+
+import fj.data.NonEmptyList;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -52,10 +56,10 @@ public class FilingInformationToJeffNetTest {
     String componentCode = "332";
     String fileName = "quality_check_overlay.pdf";
     InputStream x = this.getClass().getResourceAsStream("/" + fileName); 
-    FilingDoc filingDoc = new FilingDoc(Optional.empty(), fileName, x,
+    FilingAttachment fa = new FilingAttachment(fileName, x, "5766", componentCode);
+    FilingDoc filingDoc = new FilingDoc(Optional.empty(),
         info.getNewPlaintiffs().stream().map(p -> PartyId.CurrentFilingNew(p.getIdString())).collect(
-            Collectors.toList()), "5766",
-        componentCode, true);
+            Collectors.toList()), NonEmptyList.fromList(fj.data.List.list(fa)).some(), true);
     info.setFilings(List.of(filingDoc));
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node = mapper.readTree("{\"tyler_filing_type\": \"27967\"}"); 

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.suffolk.litlab.efspserver.Address;
 import edu.suffolk.litlab.efspserver.ContactInformation;
+import edu.suffolk.litlab.efspserver.FilingAttachment;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Name;
@@ -90,10 +91,12 @@ public class EcfCourtSpecificSerializer {
   private final CodeDatabase cd;
   private final CourtLocationInfo court;
   public final DataFields allDataFields;
-  static final gov.niem.niem.niem_core._2.ObjectFactory niemObjFac =
+  private static final gov.niem.niem.niem_core._2.ObjectFactory niemObjFac =
       new gov.niem.niem.niem_core._2.ObjectFactory();
-  static final gov.niem.niem.niem_core._2.ObjectFactory coreObjFac =
+  private static final gov.niem.niem.niem_core._2.ObjectFactory coreObjFac =
       new gov.niem.niem.niem_core._2.ObjectFactory();
+  private static final tyler.ecf.extensions.common.ObjectFactory tylerObjFac =
+      new tyler.ecf.extensions.common.ObjectFactory();
   static final oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf =
       new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
 
@@ -131,8 +134,8 @@ public class EcfCourtSpecificSerializer {
         .findFirst();
     CaseType type = vetCaseType(maybeType, caseTypes, caseCategory, collector, isInitialFiling);
 
-    if (type.initial && info.getCaseDocketNumber().isPresent()) {
-      FilingError err = FilingError.malformedInterview("Initial filing case type can't have docket number");
+    if (!type.initial && info.getCaseDocketNumber().isEmpty()) {
+      FilingError err = FilingError.malformedInterview("Subsequent filing case type (" + type.code + ") needs docket number, but not present");
       collector.error(err);
     }
     
@@ -140,7 +143,7 @@ public class EcfCourtSpecificSerializer {
     for (var filing : info.getFilings()) {
       collector.pushAttributeStack("al_court_bundle[" + idx + "]");
       if (filing.getFilingCode().isEmpty()) {
-        InterviewVariable filingVar = collector.requestVar("tyler_filing_type", "What filing type is this?", "text"); 
+        InterviewVariable filingVar = collector.requestVar("filing_type", "What filing type is this?", "text"); 
         collector.addRequired(filingVar);
       }
       idx += 1;
@@ -208,7 +211,7 @@ public class EcfCourtSpecificSerializer {
     collector.pushAttributeStack("al_court_bundle[i]");
     if (filingOptions.isEmpty()) {
       log.error("Need a filing type! FilingTypes are empty, so " + caseCategory + " and " + type + " are restricted");
-      InterviewVariable var = collector.requestVar("tyler_filing_type", "What type of filing is this?", "text");
+      InterviewVariable var = collector.requestVar("filing_type", "What type of filing is this?", "text");
       collector.addWrong(var);
       collector.popAttributeStack(); 
       // Is foundational, so returning now
@@ -217,7 +220,7 @@ public class EcfCourtSpecificSerializer {
 
     if (maybeCodes.stream().anyMatch(f -> f.isEmpty())) {
       log.error("Nothing matches filing in the info!");
-      var filingVar = collector.requestVar("tyler_filing_type", "What filing type is this?", "text", filingOptions.stream().map(f -> f.code).collect(Collectors.toList()));
+      var filingVar = collector.requestVar("filing_type", "What filing type is this?", "text", filingOptions.stream().map(f -> f.code).collect(Collectors.toList()));
       collector.addWrong(filingVar);
       collector.popAttributeStack(); 
       throw FilingError.missingRequired(filingVar);
@@ -532,10 +535,7 @@ public class EcfCourtSpecificSerializer {
   
   public JAXBElement<DocumentType> filingDocToXml(FilingDoc doc,
           int sequenceNum, boolean isInitialFiling, CaseCategory caseCategory, CaseType motionType, FilingCode filing,
-          List<FilingComponent> components,
           JsonNode miscInfo, InfoCollector collector) throws IOException, FilingError {
-    var tylerObjFac = new tyler.ecf.extensions.common.ObjectFactory();
-    var niemObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
     DocumentType docType = tylerObjFac.createDocumentType();
     DataFieldRow row = allDataFields.getFieldRow("DocumentDescription");
     if (row.isvisible) {
@@ -543,10 +543,12 @@ public class EcfCourtSpecificSerializer {
           findDocumentDescription(doc.getDescription(), row, doc, filing, collector)));
     }
     List<FileType> allowedFileTypes = cd.getAllowedFileTypes(this.court.code);
-    boolean correctExtension = allowedFileTypes.stream().anyMatch(t -> t.matchesFile(doc.getFileName())); 
-    if (!correctExtension) {
-      FilingError err = FilingError.malformedInterview("Extension of " + doc.getFileName() + " not allowed! Try these instead: " + allowedFileTypes);
-      collector.error(err);
+    for (var attachment : doc.getFilingAttachments()) {
+      boolean correctExtension = allowedFileTypes.stream().anyMatch(t -> t.matchesFile(attachment.getFileName())); 
+      if (!correctExtension) {
+        FilingError err = FilingError.malformedInterview("Extension of " + attachment.getFileName() + " not allowed! Try these instead: " + allowedFileTypes);
+        collector.error(err);
+      }
     }
 
     DataFieldRow fileRefRow = allDataFields.getFieldRow("FilingReferenceNumber");
@@ -655,28 +657,6 @@ public class EcfCourtSpecificSerializer {
       docType.setFilingAction(act);
     }
 
-    // TODO(brycew-later): what should this actually be? Very unclear
-    DocumentAttachmentType attachment = ecfOf.createDocumentAttachmentType();
-    attachment.setBinaryDescriptionText(XmlHelper.convertText(doc.getFileName()));
-
-    InterviewVariable var = collector.requestVar("filing_component", "Filing component: Lead or attachment", "text");
-    if (components.isEmpty()) {
-      log.error("Filing Components List is empty! There are no other documents that can be added! Stopping at " + doc.getFileName());
-      collector.addRequired(var);
-    }
-
-    Optional<FilingComponent> filtered = components.stream().filter(c -> c.code.equalsIgnoreCase(doc.getFilingComponent())).findFirst();
-    if (filtered.isEmpty()) {
-      log.error("Filing Components (" + components + ") don't match \"" + doc.getFilingComponent() + "\".");
-      collector.addRequired(var);
-    }
-
-    FilingComponent filt = filtered.orElse(new FilingComponent("NO CODE", "NOT PRESENT", "", false, false, 0, "", ""));    
-    attachment.setBinaryCategoryText(XmlHelper.convertText(filt.code));
-    if (!filtered.get().allowmultiple) {
-      components.remove(filt);
-    }
-
     if (!doc.getOptionalServices().isEmpty()) {
       List<OptionalServiceCode> codes = cd.getOptionalServices(this.court.code, filing.code);
       var codeMap = new HashMap<String, OptionalServiceCode>();
@@ -714,6 +694,60 @@ public class EcfCourtSpecificSerializer {
       }
     }
 
+    // The document itself
+    DocumentRenditionMetadataType renditionMetadata = ecfOf.createDocumentRenditionMetadataType();
+    int seqNum = 0;
+    List<FilingComponent> components = cd.getFilingComponents(this.court.code, filing.code);
+    if (components.isEmpty()) {
+      InterviewVariable filingComponentVar = collector.requestVar("filing_component", 
+          "The filing component: Lead or Attachment (nothing there with filing " + filing.code + ")", "text");
+      collector.addRequired(filingComponentVar);
+      if (collector.finished()) {
+        throw FilingError.missingRequired(filingComponentVar);
+      }
+    }
+    for (var attachment : doc.getFilingAttachments()) {
+      renditionMetadata.getDocumentAttachment().add(attachmentToXml(attachment, filing, components,
+          miscInfo, collector, seqNum));
+    }
+
+    DocumentRenditionType rendition = ecfOf.createDocumentRenditionType();
+    rendition.setDocumentRenditionMetadata(renditionMetadata);
+    docType.getDocumentRendition().add(rendition);
+    docType.setId(doc.getIdString());
+
+    if (doc.isLead()) {
+      return tylerObjFac.createFilingLeadDocument(docType);
+    } else {
+      return tylerObjFac.createFilingConnectedDocument(docType);
+    }
+  }
+  
+  private DocumentAttachmentType attachmentToXml(FilingAttachment fa,
+          FilingCode filing, List<FilingComponent> components,
+          JsonNode miscInfo, InfoCollector collector, int seqNum) throws IOException, FilingError {
+    // TODO(brycew-later): what should this actually be? Very unclear
+    DocumentAttachmentType attachment = ecfOf.createDocumentAttachmentType();
+    attachment.setBinaryDescriptionText(XmlHelper.convertText(fa.getFileName()));
+
+    InterviewVariable var = collector.requestVar("filing_component", "Filing component: Lead or attachment", "text");
+    if (components.isEmpty()) {
+      log.error("Filing Components List is empty! There are no other documents that can be added! Stopping at " + fa.getFileName());
+      collector.addRequired(var);
+    }
+
+    Optional<FilingComponent> filtered = components.stream().filter(c -> c.code.equalsIgnoreCase(fa.getFilingComponent())).findFirst();
+    if (filtered.isEmpty()) {
+      log.error("Filing Components (" + components + ") don't match \"" + fa.getFilingComponent() + "\".");
+      collector.addRequired(var);
+    }
+
+    FilingComponent filt = filtered.orElse(new FilingComponent("NO CODE", "NOT PRESENT", "", false, false, 0, "", ""));    
+    attachment.setBinaryCategoryText(XmlHelper.convertText(filt.code));
+    if (!filt.allowmultiple) {
+      components.remove(filt);
+    }
+
     // Literally should just be if it's confidential or not. (or "Hot fix" or public).
     // Search options in "documenttype" table with location
     DataFieldRow documentType = allDataFields.getFieldRow("DocumentType");
@@ -721,7 +755,7 @@ public class EcfCourtSpecificSerializer {
       List<DocumentTypeTableRow> docTypes = cd.getDocumentTypes(court.code, filing.code);
       InterviewVariable docTypeVar = collector.requestVar("document_type",
           documentType.helptext +  " " + documentType.validationmessage, "choices", docTypes.stream().map(dt -> dt.code).collect(Collectors.toList()));
-      String docTypeStr = doc.getDocumentTypeFormatStandardName();
+      String docTypeStr = fa.getDocumentTypeFormatStandardName();
       if (documentType.isrequired) {
         if (docTypeStr.isBlank()) {
           collector.addRequired(docTypeVar);
@@ -738,45 +772,29 @@ public class EcfCourtSpecificSerializer {
       }
     }
 
-    log.info("Filing code: " + filing.code + " " + filing.name + ": " + docType + "///////" + attachment);
-    if (doc.getInBase64()) {
-      DataFieldRow originalName = allDataFields.getFieldRow("OriginalFileName");
-      if (originalName.matchRegex(doc.getFileName()) && doc.getFileName().length() < 50) {
-        attachment.setBinaryLocationURI(XmlHelper.convertUri(doc.getFileName()));
-      } else {
-        InterviewVariable oriNameVar = collector.requestVar("file_name", "file name of document: regex: " + originalName.regularexpression.toString(), "text"); 
-        collector.addWrong(oriNameVar);
-      }
-      JAXBElement<Base64Binary> n =
-          niemObjFac.createBinaryBase64Object(XmlHelper.convertBase64(doc.getFileContents()));
-      //System.err.println(XmlHelper.objectToXmlStrOrError(n.getValue(), Base64Binary.class));
-      attachment.setBinaryObject(n);
-      // TODO(brycew): depends on some DA code, should read in the PDF if possible here. Might be risky though.
-      // https://stackoverflow.com/questions/6026971/page-count-of-pdf-with-java
-      if (miscInfo.has("page_count")) {
-        int count = miscInfo.get("page_count").asInt(1);
-        NonNegativeDecimalType nndt = new NonNegativeDecimalType();
-        nndt.setValue(new BigDecimal(count));
-        attachment.setBinarySizeValue(tylerObjFac.createPageCount(nndt));
-      }
+    //log.info("Filing code: " + filing.code + " " + filing.name + ": " + docType + "///////" + attachment);
+    // TODO(#62): DO this: make the file downloadable from the Proxy server
+    DataFieldRow originalName = allDataFields.getFieldRow("OriginalFileName");
+    if (originalName.matchRegex(fa.getFileName()) && fa.getFileName().length() < 50) {
+      attachment.setBinaryLocationURI(XmlHelper.convertUri(fa.getFileName()));
     } else {
-      // TODO(#62): DO this: make the file downloadable from the Proxy server
+      InterviewVariable oriNameVar = collector.requestVar("file_name", "file name of document: regex: " + originalName.regularexpression.toString(), "text"); 
+      collector.addWrong(oriNameVar);
     }
-    // The document itself
-    DocumentRenditionMetadataType renditionMetadata = ecfOf.createDocumentRenditionMetadataType();
-    renditionMetadata.getDocumentAttachment().add(attachment);
-
-    DocumentRenditionType rendition = ecfOf.createDocumentRenditionType();
-    rendition.setDocumentRenditionMetadata(renditionMetadata);
-    docType.getDocumentRendition().add(rendition);
-    docType.setId(doc.getIdString());
-
-    if (doc.isLead()) {
-      return tylerObjFac.createFilingLeadDocument(docType);
-    } else {
-      return tylerObjFac.createFilingConnectedDocument(docType);
+    JAXBElement<Base64Binary> n =
+        niemObjFac.createBinaryBase64Object(XmlHelper.convertBase64(fa.getFileContents()));
+    //System.err.println(XmlHelper.objectToXmlStrOrError(n.getValue(), Base64Binary.class));
+    attachment.setBinaryObject(n);
+    // TODO(brycew): depends on some DA code, should read in the PDF if possible here. Might be risky though.
+    // https://stackoverflow.com/questions/6026971/page-count-of-pdf-with-java
+    if (miscInfo.has("page_count")) {
+      int count = miscInfo.get("page_count").asInt(1);
+      NonNegativeDecimalType nndt = new NonNegativeDecimalType();
+      nndt.setValue(new BigDecimal(count));
+      attachment.setBinarySizeValue(tylerObjFac.createPageCount(nndt));
     }
-
+    attachment.setAttachmentSequenceID(XmlHelper.convertString(Integer.toString(seqNum)));
+    return attachment;
   }
 
   public Map<String, String> getCrossRefIds(JsonNode miscInfo, InfoCollector collector, 
@@ -833,11 +851,11 @@ public class EcfCourtSpecificSerializer {
         if (this.court.defaultdocumentdescription.equals("1")) {
           return filing.name;
         } else if (this.court.defaultdocumentdescription.equals("2")) {
-          return doc.getFileName();
+          return doc.getFilingAttachments().head().getFileName();
         } else if (descriptionRow.defaultvalueexpression.equals("{{FilingCodeDescription}}")) {
           return filing.name;
         } else if (descriptionRow.defaultvalueexpression.equals("{{FileName}}")) {
-          return doc.getFileName();
+          return doc.getFilingAttachments().head().getFileName();
         } else if (descriptionRow.isrequired) {
           InterviewVariable var = collector.requestVar("description", "A human understandable description of this filing document", "text");
           collector.addRequired(var);

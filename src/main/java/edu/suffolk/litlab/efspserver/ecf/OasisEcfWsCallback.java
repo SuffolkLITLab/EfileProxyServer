@@ -22,6 +22,7 @@ import edu.suffolk.litlab.efspserver.db.Transaction;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
+import edu.suffolk.litlab.efspserver.services.UpdateMessageStatus;
 import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.TextType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
@@ -140,17 +141,9 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     return docText.toString();
   }
   
-  private Map<String, String> reviewedFilingToStr(ReviewFilingCallbackMessageType revFiling,
+  private String reviewedFilingMessageText(ReviewFilingCallbackMessageType revFiling,
       Transaction trans) {
-    List<NameAndCode> names = List.of(); 
-    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codesDs.getConnection())) {
-      names = cd.getFilingStatuses(trans.courtId);
-    } catch (SQLException ex) {
-      log.error("In ECF v4 callback, couldn't get codes db: " + StdLib.strFromException(ex));
-    }
-
     StringBuilder messageText = new StringBuilder();
-    Map<String, String> statuses = new HashMap<>();
     if (revFiling.getReviewedLeadDocument() != null 
         && revFiling.getReviewedLeadDocument().getValue() != null) {
       ReviewedDocumentType leadDoc = revFiling.getReviewedLeadDocument().getValue();
@@ -168,7 +161,21 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       messageText.append(' ').append(revFiling.getFilingStatus().getStatusDescriptionText().stream()
                           .reduce("", (des, tt) -> des + ((tt != null) ? tt.getValue() : ""), 
                               (des1, des2) -> des1 + des2));
-      
+    }
+    return messageText.toString();
+  }
+
+  private String reviewedFilingStatusText(ReviewFilingCallbackMessageType revFiling,
+      Transaction trans) {
+    List<NameAndCode> names = List.of();
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codesDs.getConnection())) {
+      names = cd.getFilingStatuses(trans.courtId);
+    } catch (SQLException ex) {
+      log.error("In ECF v4 callback, couldn't get codes db: " + StdLib.strFromException(ex));
+    }
+
+    FilingStatusType filingStat = revFiling.getFilingStatus();
+    if (filingStat != null) {
       final String replyCode = filingStat.getFilingStatusCode();
       Optional<String> statusText = names.stream()
           .filter(nac -> nac.getCode().equalsIgnoreCase(replyCode))
@@ -182,10 +189,20 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
           statusCode = "";
         }
       }
-      statuses.put("status", statusText.orElse(statusCode));
+      return statusText.orElse(statusCode);
+    } else {
+      return "unknown";
     }
-    statuses.put("message_text", messageText.toString());
-    return statuses;
+  }
+
+  private UpdateMessageStatus reviewedFilingStatusCode(ReviewFilingCallbackMessageType revFiling) {
+    FilingStatusType filingStat = revFiling.getFilingStatus();
+    if (filingStat != null) {
+      final String replyCode = filingStat.getFilingStatusCode();
+      return UpdateMessageStatus.fromStr(replyCode);
+    } else {
+      return UpdateMessageStatus.NEUTRAL;
+    }
   }
 
   @Override
@@ -235,8 +252,10 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
         return error(reply, "724", "Filing ID " + filingId + " not found");
       }
       reply.setCaseCourt(XmlHelper.convertCourtType(trans.get().courtId));
-      Map<String, String> statuses = reviewedFilingToStr(revFiling, trans.get());
-      boolean success = msgSender.sendMessage(trans.get(), statuses);
+      String statusText = reviewedFilingStatusText(revFiling, trans.get());
+      String messageText = reviewedFilingMessageText(revFiling, trans.get());
+      UpdateMessageStatus status = reviewedFilingStatusCode(revFiling);
+      boolean success = msgSender.sendMessage(trans.get(), status, statusText, messageText, null);
       if (!success) {
         log.error("Couldn't properly send message to " + trans.get().name + "!");
       }

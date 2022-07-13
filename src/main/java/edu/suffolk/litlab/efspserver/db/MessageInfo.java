@@ -8,15 +8,15 @@ public class MessageInfo {
     public UUID serverId;
     public String fromEmail;
     public String subjectLine;
-    public String emailTemplate;
+    public String emailResponseTemplate;
     public String emailConfirmation;
     
     public MessageInfo(UUID serverId, String fromEmail, String subjectLine, 
-        String emailTemplate, String emailConfirmation) {
+        String emailResponseTemplate, String emailConfirmation) {
       this.serverId = serverId;
       this.fromEmail = fromEmail;
       this.subjectLine = subjectLine;
-      this.emailTemplate = emailTemplate;
+      this.emailResponseTemplate = emailResponseTemplate;
       this.emailConfirmation = emailConfirmation;
     }
     

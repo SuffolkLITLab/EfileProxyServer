@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efspserver.services;
+package edu.suffolk.litlab.efspserver.docassemble;
 
 import static com.hubspot.assertj.algebra.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,7 +11,10 @@ import com.opencsv.exceptions.CsvValidationException;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Person;
-import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingInformationConverter;
+import edu.suffolk.litlab.efspserver.services.FilingError;
+import edu.suffolk.litlab.efspserver.services.InterviewToFilingInformationConverter;
+import edu.suffolk.litlab.efspserver.services.InterviewVariable;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;

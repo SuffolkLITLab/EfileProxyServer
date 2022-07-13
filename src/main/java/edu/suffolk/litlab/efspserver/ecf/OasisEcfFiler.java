@@ -278,27 +278,19 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       Map<String, Object> filingIdToObj = new HashMap<>();
       for (FilingDoc filingDoc : info.getFilings()) {
         log.info("Adding a document to the XML");
-        long bytes = filingDoc.getFileContents().length;
+        long bytes = filingDoc.allAttachmentsLength();
         if (bytes > maxSize) {
-          FilingError err = FilingError.malformedInterview("Document " + filingDoc.getFileName() 
+          FilingError err = FilingError.malformedInterview("Document " + filingDoc.getDescription().orElse(filingDoc.getFilingComments())
               + " is too big! Must be max " + maxSize + ", is " + bytes);
           collector.error(err);
         }
         cumulativeBytes += bytes;
 
         FilingCode fc = allCodes.filings.get(seqNum);
-        List<FilingComponent> components = cd.getFilingComponents(info.getCourtLocation(), fc.code);
-        if (components.isEmpty()) {
-          InterviewVariable filingComponentVar = collector.requestVar("filing_component", "The filing component: Lead or Attachment", "text");
-          collector.addRequired(filingComponentVar);
-          if (collector.finished()) {
-            throw FilingError.missingRequired(filingComponentVar);
-          }
-        }
 
         JAXBElement<DocumentType> result =
                 serializer.filingDocToXml(filingDoc, seqNum, isInitialFiling, allCodes.cat, allCodes.type,
-                    fc, components, info.getMiscInfo(), collector);
+                    fc, info.getMiscInfo(), collector);
         filingIdToObj.put(filingDoc.getIdString(), result.getValue());
         if (filingDoc.isLead()) {
           cfm.getFilingLeadDocument().add(result);

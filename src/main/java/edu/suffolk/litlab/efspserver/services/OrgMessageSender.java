@@ -38,7 +38,7 @@ public class OrgMessageSender {
   private String defaultFrom = "massaccess@suffolk.edu";
   private String defaultSubject = "An update on your filing";
   // TODO(brycew): consider better HTML styling on these emails if possible
-  private String defaultTemplate = 
+  private String defaultResponseTemplate =
       """
       Dear {{ name }},
       
@@ -97,8 +97,8 @@ public class OrgMessageSender {
       if (info.subjectLine == null) {
         info.subjectLine = defaultSubject;
       }
-      if (info.emailTemplate == null) {
-        info.emailTemplate = defaultTemplate;
+      if (info.emailResponseTemplate == null) {
+        info.emailResponseTemplate = defaultResponseTemplate;
       }
       if (info.emailConfirmation == null) {
         info.emailConfirmation = defaultConfirmation;
@@ -106,38 +106,59 @@ public class OrgMessageSender {
       return info;
     } else {
       log.warn("Couldn't get message settings, using defaults");
-      return new MessageInfo(serverId, defaultFrom, defaultSubject, defaultTemplate, defaultConfirmation); 
+      return new MessageInfo(serverId, defaultFrom, defaultSubject, defaultResponseTemplate, defaultConfirmation); 
     }
   }
   
-  public boolean sendMessage(Transaction transaction, Map<String, String> statuses) {
-    MessageInfo msgSettings = getSettings(transaction.serverId);
+  public boolean sendMessage(Transaction trans, UpdateMessageStatus status, 
+  String statusText, String messageText, String messageUrl) {
+    MessageInfo msgSettings = getSettings(trans.serverId);
     Map<String, Object> templateVars = new HashMap<String, Object>();
-    templateVars.put("name", transaction.name);
-    templateVars.put("court_name", transaction.courtId);
-    templateVars.put("case_type", transaction.caseType);
-    templateVars.putAll(statuses);
-    templateVars.put("transaction_id", transaction.transactionId.toString());
-    boolean canEmail = transaction.email != null && SendMessage.isValidEmail(transaction.email);
+    String template = msgSettings.emailResponseTemplate;
+    if (status.equals(UpdateMessageStatus.ACCEPTED)
+        && trans.acceptedMsgTemplate!= null && !trans.acceptedMsgTemplate.isBlank()) {
+      template = trans.acceptedMsgTemplate;
+    }
+    if (status.equals(UpdateMessageStatus.REJECTED)
+        && trans.rejectedMsgTemplate != null && !trans.rejectedMsgTemplate.isBlank()) {
+      template = trans.rejectedMsgTemplate;
+    }
+    if (status.equals(UpdateMessageStatus.NEUTRAL)
+        && trans.neutralMsgTemplate != null && !trans.neutralMsgTemplate.isBlank()) {
+      template = trans.neutralMsgTemplate;
+    }
+    templateVars.put("name", trans.name);
+    templateVars.put("court_name", trans.courtId);
+    templateVars.put("case_type", trans.caseType);
+    templateVars.put("status", statusText);
+    templateVars.put("message_text", messageText);
+    if (messageUrl != null && !messageUrl.isBlank()) {
+      templateVars.put("message_url", messageUrl);
+    }
+    templateVars.put("transaction_id", trans.transactionId.toString());
+    boolean canEmail = trans.email != null && SendMessage.isValidEmail(trans.email);
     if (canEmail) {
       int result;
       try {
-        result = sendMsg.sendEmail(msgSettings.fromEmail, msgSettings.subjectLine, transaction.email, msgSettings.emailTemplate, templateVars);
+        result = sendMsg.sendEmail(msgSettings.fromEmail, msgSettings.subjectLine, trans.email, template, templateVars);
         return (result == 200 || result == 202 || result == 204);
       } catch (IOException e) {
         log.error(e.toString());
         return false;
       }
     } 
-      
+
     // TODO(brycew-later): handle sending SMS as well
-    log.warn("Can't send to this email: " + transaction.email);
+    log.warn("Can't send to this email: " + trans.email);
     return false;
   }
   
-  public boolean sendConfirmation(String email, UUID serverId, String name, 
+  public boolean sendConfirmation(String email, String emailTemplate, UUID serverId, String name, 
       List<UUID> transactionIds, String courtId, String caseType) {
     MessageInfo msgSettings = getSettings(serverId);
+    if (emailTemplate == null || emailTemplate.isBlank()) {
+      emailTemplate = msgSettings.emailConfirmation;
+    }
     String ids = transactionIds.stream().map(t -> t.toString()).collect(Collectors.joining(", "));
     Map<String, Object> templateVars = new HashMap<String, Object>();
     templateVars.put("name", name);

@@ -55,7 +55,7 @@ public class MessageSettingsDatabase implements DatabaseInterface {
   }
   
   public void updateTable(MessageInfo info) throws SQLException {
-    updateTable(info.serverId, info.fromEmail, info.subjectLine, info.emailTemplate,
+    updateTable(info.serverId, info.fromEmail, info.subjectLine, info.emailResponseTemplate,
         info.emailConfirmation);
   }
   

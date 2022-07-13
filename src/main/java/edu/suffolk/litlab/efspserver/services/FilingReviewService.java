@@ -1,7 +1,9 @@
 package edu.suffolk.litlab.efspserver.services;
 
 import static edu.suffolk.litlab.efspserver.services.EndpointReflection.replacePathParam;
+import static edu.suffolk.litlab.efspserver.JsonHelpers.getStringDefault;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 
@@ -67,7 +69,7 @@ public class FilingReviewService {
     this.callbackInterfaces = callbackInterfaces;
     this.ds = ds;
     this.msgSender = msgSender;
-    this.ef = new EndpointReflection("/jurisdicitons/" + jurisdiction + "/filingreview");
+    this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/filingreview");
   }
 
   @GET
@@ -348,6 +350,13 @@ public class FilingReviewService {
       phoneNumber = Optional.of(user.getContactInfo().getPhoneNumbers().get(0));
     }
     Timestamp ts = new Timestamp(System.currentTimeMillis());
+    JsonNode miscInfo = info.getMiscInfo();
+
+    String confirmationTemplate = getStringDefault(miscInfo, "email_confirmation_contents", "");
+    String acceptedTemplate = getStringDefault(miscInfo, "acceptance_contents", "");
+    String rejectedTemplate = getStringDefault(miscInfo, "rejected_contents", "");
+    String neutralTemplate = getStringDefault(miscInfo, "neutral_contents", "");
+
     try (Connection conn = ds.getConnection()){
       // TODO(brycew): this is going to send case type code (i.e. random numbers to the user. 
       // Should avoid if possible, but would have to return the full info from the Filer object 
@@ -357,9 +366,10 @@ public class FilingReviewService {
       ud.addToTable(user.getName().getFullName(), user.getId(),
           phoneNumber, user.getContactInfo().getEmail().orElse(""),
           filingIds, atRest.get().serverId, activeToken.get(),
-          info.getCaseTypeCode(), courtId, ts);
+          info.getCaseTypeCode(), courtId, ts, acceptedTemplate, rejectedTemplate, neutralTemplate);
 
       msgSender.sendConfirmation(user.getContactInfo().getEmail().orElse(""),
+          confirmationTemplate,
           atRest.get().serverId, user.getName().getFullName(), filingIds, 
           courtId, info.getCaseTypeCode());
     } catch (SQLException ex) {

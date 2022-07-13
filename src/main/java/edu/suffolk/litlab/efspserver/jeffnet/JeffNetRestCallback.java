@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,6 +31,7 @@ import edu.suffolk.litlab.efspserver.db.Transaction;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.services.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
+import edu.suffolk.litlab.efspserver.services.UpdateMessageStatus;
 
 public class JeffNetRestCallback implements EfmRestCallbackInterface {
   private static Logger log =
@@ -84,11 +84,8 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
         return Response.status(401).build();
       }
       // Done all the checks: now sending the message to the user
-      Map<String, String> statuses = Map.of(
-          "status", resp.status,
-          "message_text", resp.messageText,
-          "message_url", resp.messageUrl);
-      boolean success = msgSender.sendMessage(transaction, statuses);
+      UpdateMessageStatus status = UpdateMessageStatus.fromStr(resp.status);
+      boolean success = msgSender.sendMessage(transaction, status, resp.status, resp.messageText, resp.messageUrl);
       if (success) {
         return Response.status(204).build();
       } else {

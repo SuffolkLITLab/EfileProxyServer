@@ -1,19 +1,18 @@
 package edu.suffolk.litlab.efspserver;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import fj.data.NonEmptyList;
 import tyler.ecf.extensions.common.FilingTypeType;
 
 // TODO(brycew-later): this class is a mess. Refactor, considering the same pattern that's in
 // FilingInformation: add a JsonNode / generic container for EFM specific settings
 public class FilingDoc {
-  final private String fileName;
-  final private byte[] fileContents;
   final private Optional<String> userProvidedDescription;
   // TODO(#57): what is this? Might be able to be a dup of the GUID,
   // it's returned with Get FilingList
@@ -25,17 +24,11 @@ public class FilingDoc {
   final private Optional<String> filingCode;
   final private UUID id;
 
-  
   // Required to at least have one
   private List<PartyId> filingPartyIds;
   private Optional<String> filingAttorney;
 
-  // This is, "determined via configuration within the EFM for each EFSP"?
-  // So, we can just say yes?
-  // Provides Document Type code / BinaryFormatStandardName
-  private String documentTypeFormatStandardName;
-  final private boolean sendInBase64 = true;
-  final private String filingComponentCode;
+  final private NonEmptyList<FilingAttachment> filingAttachments;
 
   // From filer, about this filing
   private String filingComments;
@@ -49,39 +42,35 @@ public class FilingDoc {
 
   final private boolean isLeadDoc;
 
-  public FilingDoc(Optional<String> filingCode, String fileName, InputStream fileStream,
+  public FilingDoc(Optional<String> filingCode,
       List<PartyId> filingPartyIds,
-      String documentTypeFormatStandardName,
-      String filingComponentCode, boolean isLeadDoc) throws IOException {
-    this(filingCode, fileName, fileStream.readAllBytes(), Optional.empty(), Optional.empty(), Optional.empty(),
-        filingPartyIds, Optional.empty(), documentTypeFormatStandardName,
-        filingComponentCode, "", Optional.empty(), List.of(), List.of(), List.of(),
+      NonEmptyList<FilingAttachment> filingAttachments,
+      boolean isLeadDoc) {
+    this(filingCode, Optional.empty(), Optional.empty(), Optional.empty(),
+        filingPartyIds, Optional.empty(), filingAttachments, 
+        "", Optional.empty(), List.of(), List.of(), List.of(),
         Optional.empty(),
         isLeadDoc);
   }
 
   /** Full constructor, in all it's mess. */
-  public FilingDoc(Optional<String> filingCode, String fileName, 
-      byte[] fileContents, 
+  public FilingDoc(Optional<String> filingCode,
       Optional<String> userProvidedDescription,
       Optional<String> filingReferenceNum, Optional<LocalDate> dueDate, 
       List<PartyId> filingPartyIds, Optional<String> filingAttorney,
-      String documentTypeFormatStandardName, String filingComponentCode,
+      NonEmptyList<FilingAttachment> filingAttachments,
       String filingComments, Optional<String> motionType, List<OptionalService> optionalServices,
       List<String> courtesyCopies, List<String> preliminaryCopies, 
       Optional<FilingTypeType> filingAction,
       boolean isLeadDoc) {
     this.filingCode = filingCode;
-    this.fileName = fileName;
-    this.fileContents = fileContents;
     this.userProvidedDescription = userProvidedDescription;
     this.filingReferenceNum= filingReferenceNum;
     this.dueDate = dueDate;
     this.id = UUID.randomUUID();
     this.filingPartyIds = filingPartyIds;
     this.filingAttorney = filingAttorney;
-    this.documentTypeFormatStandardName = documentTypeFormatStandardName;
-    this.filingComponentCode = filingComponentCode;
+    this.filingAttachments = filingAttachments;
 
     this.filingComments = filingComments;
     this.optServices = optionalServices;
@@ -91,9 +80,24 @@ public class FilingDoc {
     this.filingAction = filingAction;
     this.isLeadDoc = isLeadDoc;
   }
+  
+  /**
+   * Returns the sum of all of the attachment files lengths.
+   */
+  public int allAttachmentsLength() {
+    int length = 0;
+    for (var attachment : filingAttachments) {
+      length += attachment.getFileContents().length;
+    }
+    return length;
+  }
 
   public String getIdString() {
     return "id-" + id.toString();
+  }
+  
+  public NonEmptyList<FilingAttachment> getFilingAttachments() {
+    return filingAttachments;
   }
 
   public UUID getId() {
@@ -112,20 +116,12 @@ public class FilingDoc {
     return userProvidedDescription;
   }
 
-  public byte[] getFileContents() {
-    return fileContents;
-  }
-
   public String getFilingComments() {
     return filingComments;
   }
 
   public void setFilingComments(String comments) {
     this.filingComments = comments;
-  }
-
-  public String getFileName() {
-    return fileName;
   }
 
   public Optional<String> getFilingReferenceNum() {
@@ -138,18 +134,6 @@ public class FilingDoc {
 
   public Optional<LocalDate> getDueDate() {
     return dueDate;
-  }
-
-  public boolean getInBase64() {
-    return sendInBase64;
-  }
-
-  public String getFilingComponent() {
-    return filingComponentCode;
-  }
-
-  public String getDocumentTypeFormatStandardName() {
-    return documentTypeFormatStandardName;
   }
 
   public List<String> getCourtesyCopies() {
@@ -174,5 +158,10 @@ public class FilingDoc {
   
   public Optional<FilingTypeType> getFilingAction() {
     return filingAction;
+  }
+  
+  @Override
+  public String toString() {
+    return ToStringBuilder.reflectionToString(this);
   }
 }

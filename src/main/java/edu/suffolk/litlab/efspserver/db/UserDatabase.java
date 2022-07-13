@@ -47,7 +47,8 @@ public class UserDatabase implements DatabaseInterface {
              "user_id" uuid, "name" text, "phone_number" text,
              "email" text, "transaction_id" uuid PRIMARY KEY, "server_id" uuid, "api_key_used" text, 
              "court_id" text, "casetype" text, 
-             "submitted" date)"""; 
+             "submitted" date, "accepted_msg_template" text, "rejected_msg_template" text,
+             "neutral_msg_template" text)""";
         try (Statement createSt = conn.createStatement()) {
           log.info("Full statement: " + createQuery); 
           int retVal = createSt.executeUpdate(createQuery);
@@ -62,9 +63,11 @@ public class UserDatabase implements DatabaseInterface {
   
   public void addToTable(String name,
       UUID filingPartyId, Optional<String> phoneNumber, String email,
-      List<UUID> transactionIds, UUID serverId, String apiKeyUsed, String caseType, String courtId, Timestamp submitted) throws SQLException {
+      List<UUID> transactionIds, UUID serverId, String apiKeyUsed, String caseType, String courtId, Timestamp submitted,
+      String acceptedTmpl, String rejectedTmpl, String neutralTmpl) throws SQLException {
     for (UUID id : transactionIds) {
-      addToTable(name, filingPartyId, phoneNumber, email, id, serverId, apiKeyUsed, caseType, courtId, submitted);
+      addToTable(name, filingPartyId, phoneNumber, email, id, serverId, apiKeyUsed, caseType, courtId, submitted,
+        acceptedTmpl, rejectedTmpl, neutralTmpl);
     }
   }
   
@@ -73,7 +76,9 @@ public class UserDatabase implements DatabaseInterface {
   /** Adds the given values as a row in the submitted table. */
   public void addToTable(String name,
       UUID filingPartyId, Optional<String> phoneNumber, String email, 
-      UUID transactionId, UUID serverId, String apiKeyUsed, String caseType, String courtId, Timestamp submitted) throws SQLException {
+      UUID transactionId, UUID serverId, String apiKeyUsed, String caseType, 
+      String courtId, Timestamp submitted, String acceptedTmpl, String rejectedTmpl,
+      String neutralTmpl) throws SQLException {
     if (conn == null) {
       log.error("Connection in addToTable wasn't open yet!");
       throw new SQLException();
@@ -82,11 +87,13 @@ public class UserDatabase implements DatabaseInterface {
                     INSERT INTO submitted_filings (
                         "user_id", "name", 
                         "phone_number", "email", "transaction_id", "server_id",
-                        "api_key_used", "casetype", "court_id", "submitted" 
+                        "api_key_used", "casetype", "court_id", "submitted", 
+                        "accepted_msg_template", "rejected_msg_template", 
+                        "neutral_msg_template"
                     ) VALUES (
                         ?, ?, 
                         ?, ?, ?, ?,
-                        ?, ?, ?, ?)"""; 
+                        ?, ?, ?, ?, ?, ?, ?)""";
     try (PreparedStatement insertSt = conn.prepareStatement(insertIntoTable)) {
       insertSt.setObject(1, filingPartyId);
       insertSt.setString(2, name);
@@ -99,7 +106,9 @@ public class UserDatabase implements DatabaseInterface {
       insertSt.setString(8, caseType);
       insertSt.setString(9, courtId);
       insertSt.setTimestamp(10, submitted);
-
+      insertSt.setString(11, acceptedTmpl);
+      insertSt.setString(12, rejectedTmpl);
+      insertSt.setString(13, neutralTmpl);
       insertSt.executeUpdate();
     }
   }
@@ -114,7 +123,8 @@ public class UserDatabase implements DatabaseInterface {
     }
     String query = """
         SELECT name, user_id, phone_number, email, transaction_id, server_id,
-            api_key_used, casetype, court_id, submitted
+            api_key_used, casetype, court_id, submitted, accepted_msg_template, 
+            rejected_msg_template, neutral_msg_template
         FROM submitted_filings
         WHERE transaction_id = ?""";
     
@@ -124,21 +134,7 @@ public class UserDatabase implements DatabaseInterface {
       if (!rs.next()) {
         return Optional.empty();
       }
-      Transaction trans = new Transaction();
-      trans.name = rs.getString(1);
-      trans.filingPartyId = (UUID) rs.getObject(2);
-      if (rs.getString(3) == null) {
-        trans.phoneNumber = Optional.empty();
-      } else {
-        trans.phoneNumber = Optional.of(rs.getString(3));
-      }
-      trans.email = rs.getString(4);
-      trans.transactionId = (UUID) rs.getObject(5);
-      trans.serverId = (UUID) rs.getObject(6);
-      trans.apiKeyUsed = rs.getString(7);
-      trans.caseType = rs.getString(8);
-      trans.courtId = rs.getString(9);
-      trans.submitted = rs.getTimestamp(10);
+      Transaction trans = Transaction.fromResults(rs);
       return Optional.of(trans);
     }
   }

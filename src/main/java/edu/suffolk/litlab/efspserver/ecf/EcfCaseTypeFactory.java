@@ -715,6 +715,17 @@ public class EcfCaseTypeFactory {
       appl.setCaseTrackingID(XmlHelper.convertString(trackingId));
     });
     // Unclear if this needs to be the code
+    InterviewVariable lowerNameVar = collector.requestVar("trial_court.name", "The lower court name", "text");
+    if (node.has("trial_court") && node.get("trial_court").isObject()) {
+      var maybeName = JsonHelpers.getStringMember(node.get("trial_court"), "name");
+      if (maybeName.isPresent()) {
+        tylerAug.getValue().setLowerCourtText(XmlHelper.convertText(maybeName.get()));
+      } else {
+        collector.addRequired(lowerNameVar);
+      }
+    } else {
+      collector.addRequired(lowerNameVar);
+    }
     tylerAug.getValue().setLowerCourtText(XmlHelper.convertText(node.get("trial_court").get("name").asText()));
     String judgeName = "";
     JsonNode lowerCase = node.get("lower_court_case");

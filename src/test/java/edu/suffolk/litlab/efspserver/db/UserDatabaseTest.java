@@ -33,7 +33,7 @@ public class UserDatabaseTest {
     postgres.start();
     Connection conn = DatabaseCreator.makeSingleConnection(
         postgres.getDatabaseName(), postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
-    ud = new UserDatabase(conn); 
+    ud = new UserDatabase(conn);
   }
   
   @AfterEach
@@ -53,7 +53,8 @@ public class UserDatabaseTest {
     ud.createTablesIfAbsent();
     ud.addToTable(name, userId, 
         Optional.empty(), email, transactionId, serverId, apiKey,
-        "Motion to File", courtId, new Timestamp(System.currentTimeMillis()));
+        "Motion to File", courtId, new Timestamp(System.currentTimeMillis()),
+        "", "", "");
     
     Optional<Transaction> transaction = ud.findTransaction(transactionId);
     assertTrue(transaction.isPresent());

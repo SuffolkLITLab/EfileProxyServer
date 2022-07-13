@@ -2007,11 +2007,10 @@
       "gathered": true,
       "revisit": true
     },
-    "filing_type": "177236",
     "filing_description": "",
     "reference_number": "",
     "has_courtesy_copies": false,
-    "tyler_filing_type": "177236",
+    "filing_type": "177236",
     "document_type_options": [
       ["5766", "Non-Confidential"],
       ["5767", "Confidential"]
@@ -2304,7 +2303,6 @@
         "filing_description": "",
         "reference_number": "",
         "has_courtesy_copies": false,
-        "tyler_filing_type": "177236",
         "document_type_options": [
           ["5766", "Non-Confidential"],
           ["5767", "Confidential"]

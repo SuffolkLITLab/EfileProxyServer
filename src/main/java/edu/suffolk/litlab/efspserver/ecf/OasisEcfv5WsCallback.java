@@ -4,9 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,6 +45,7 @@ import edu.suffolk.litlab.efspserver.db.Transaction;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper;
 import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
+import edu.suffolk.litlab.efspserver.services.UpdateMessageStatus;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.CardAccountType;
 
@@ -141,18 +140,9 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
     return docText.toString();
   }
   
-  private Map<String, String> reviewedFilingToStr(
-      NotifyFilingReviewCompleteMessageType revFiling,
+  private String reviewedFilingMessageText(NotifyFilingReviewCompleteMessageType revFiling,
       Transaction trans) {
-    List<NameAndCode> names = List.of(); 
-    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())){
-      names = cd.getFilingStatuses(trans.courtId);
-    } catch (SQLException ex) {
-      log.error("In ECF Callback, can't get Codes DB:" + StdLib.strFromException(ex));
-    }
-
     StringBuilder messageText = new StringBuilder();
-    Map<String, String> statuses = new HashMap<>();
     if (revFiling.getReviewedLeadDocument() != null 
         && !revFiling.getReviewedLeadDocument().isEmpty()) {
       for (ReviewedDocumentType leadDoc : revFiling.getReviewedLeadDocument()) {
@@ -169,6 +159,21 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
     FilingStatusType filingStat = revFiling.getFilingStatus();
     if (filingStat != null) {
       messageText.append(' ').append(revFiling.getFilingStatus().getStatusDescriptionText());
+    }
+    return messageText.toString();
+  }
+
+  private String reviewedFilingStatusText(NotifyFilingReviewCompleteMessageType revFiling,
+      Transaction trans) {
+    List<NameAndCode> names = List.of(); 
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())){
+      names = cd.getFilingStatuses(trans.courtId);
+    } catch (SQLException ex) {
+      log.error("In ECF v4 callback, couldn't get codes db: " + StdLib.strFromException(ex));
+    }
+
+    FilingStatusType filingStat = revFiling.getFilingStatus();
+    if (filingStat != null) {
       
       final String replyCode = filingStat.getFilingStatusCode().getValue();
       Optional<String> statusText = names.stream()
@@ -183,10 +188,19 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
           statusCode = "";
         }
       }
-      statuses.put("status", statusText.orElse(statusCode));
+      return statusText.orElse(statusCode);
     }
-    statuses.put("message_text", messageText.toString());
-    return statuses;
+    return "unknown";
+  }
+
+  private UpdateMessageStatus reviewedFilingStatusCode(NotifyFilingReviewCompleteMessageType revFiling) {
+    FilingStatusType filingStat = revFiling.getFilingStatus();
+    if (filingStat != null) {
+      final String replyCode = filingStat.getFilingStatusCode().getValue();
+      return UpdateMessageStatus.fromStr(replyCode);
+    } else {
+      return UpdateMessageStatus.NEUTRAL;
+    }
   }
 
   @Override
@@ -246,8 +260,10 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
         reply.setMessageStatus(error(MessageStatusCodeSimpleType.ACTIVITY_CODE_FAILURE, "724", "Filing ID " + filingId + " not found"));
         return reply;
       }
-      Map<String, String> statuses = reviewedFilingToStr(revFiling, trans.get());
-      boolean success = msgSender.sendMessage(trans.get(), statuses);
+      String statusText = reviewedFilingStatusText(revFiling, trans.get());
+      String messageText = reviewedFilingMessageText(revFiling, trans.get());
+      UpdateMessageStatus status = reviewedFilingStatusCode(revFiling);
+      boolean success = msgSender.sendMessage(trans.get(), status, statusText, messageText, null); 
       if (!success) {
         log.error("Couldn't properly send message to " + trans.get().name + "!");
       }

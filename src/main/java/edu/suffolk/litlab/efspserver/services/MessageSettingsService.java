@@ -96,7 +96,7 @@ public class MessageSettingsService {
       var md = new MessageSettingsDatabase(conn);
       MessageInfo existingInfo = md.findMessageInfo(atRest.get().serverId) 
           .orElse(new MessageInfo(atRest.get().serverId, null, null, null, null));
-      existingInfo.emailTemplate = newInfo.emailTemplate;
+      existingInfo.emailResponseTemplate = newInfo.emailResponseTemplate;
       existingInfo.subjectLine = newInfo.subjectLine;
       existingInfo.fromEmail = newInfo.fromEmail;
       md.updateTable(existingInfo); 

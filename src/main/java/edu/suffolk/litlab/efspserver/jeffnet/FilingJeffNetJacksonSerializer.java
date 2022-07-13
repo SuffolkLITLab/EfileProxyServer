@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+
+import edu.suffolk.litlab.efspserver.FilingAttachment;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.PartyId;
 
@@ -43,11 +45,16 @@ public class FilingJeffNetJacksonSerializer extends StdSerializer<FilingDoc> {
     });
     gen.writeObjectField("DocumentMetadata", metadata);
 
+    if (filingDoc.getFilingAttachments().length() > 1) {
+      // TODO(brycew): make not Runtime exception
+      throw new RuntimeException("JeffNet can't accept more than one file at a time!");
+    }
+    FilingAttachment attachment = filingDoc.getFilingAttachments().head();
     DocAttachment docAttachment = new DocAttachment();
-    byte[] data = filingDoc.getFileContents();
+    byte[] data = attachment.getFileContents();
     String encodedDoc = new String(Base64.getEncoder().encode(data));
     docAttachment.encodedDoc = encodedDoc;
-    docAttachment.documentName = filingDoc.getFileName();
+    docAttachment.documentName = attachment.getFileName();
 
     gen.writeObjectField("DocumentAttachment", docAttachment);
     gen.writeStringField("FilingCommentsText", filingDoc.getFilingComments());
