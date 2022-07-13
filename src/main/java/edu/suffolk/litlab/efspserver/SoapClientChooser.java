@@ -41,11 +41,17 @@ public class SoapClientChooser {
       "illinois-test",  "wsdl/illinois/test/ECF-4.0-CourtRecordMDEService.wsdl",
       "massachusetts-stage", "wsdl/massachusetts/stage/ECF-4.0-CourtRecordMDEService.wsdl");
 
-  public static String getEndpointRootUrl(String jurisdiction, String env) {
-    if (jurisdiction.equalsIgnoreCase("illinois") && env.equalsIgnoreCase("stage")) {
-      return "https://" + jurisdiction + "-" + env + ".tylertech.cloud/";
+  public static String getCodeEndpointRootUrl(String jurisdiction, String env) {
+    if (jurisdiction.equalsIgnoreCase("massachusetts")) {
+      if (env.equalsIgnoreCase("prod")) {
+        return "https://" + jurisdiction + ".tylerhost.net/";
+      }
+      return "https://" + jurisdiction + "-" + env + ".tylerhost.net/";
     }
-    return "https://" + jurisdiction + "-" + env + ".tylerhost.net/";
+    if (env.equalsIgnoreCase("prod")) {
+      return "https://" + jurisdiction + ".tylertech.cloud/";
+    }
+    return "https://" + jurisdiction + "-" + env + ".tylertech.cloud/";
   }
 
   /** 

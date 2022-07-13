@@ -354,7 +354,7 @@ public class CodeUpdater {
     SoapX509CallbackHandler.setX509Password(x509Password);
     try {
       cd.getConnection().setAutoCommit(false);
-      String codesSite = SoapClientChooser.getEndpointRootUrl(jurisdiction, env);
+      String codesSite = SoapClientChooser.getCodeEndpointRootUrl(jurisdiction, env);
       FilingReviewMDEPort filingPort = loginWithTyler(
           jurisdiction, env, System.getenv("TYLER_USER_EMAIL"),
           System.getenv("TYLER_USER_PASSWORD")); 
@@ -387,7 +387,7 @@ public class CodeUpdater {
     String location = (args.length == 4) ? args[3] : "";
     String table = args[2];
     String jurisdiction = args[1];
-    String endpoint = SoapClientChooser.getEndpointRootUrl(jurisdiction, env);
+    String endpoint = SoapClientChooser.getCodeEndpointRootUrl(jurisdiction, env);
     cu.downloadAndProcessZip(endpoint + "CodeService/codes/" + table + "/" + location, hs.signedCurrentTime().get(),
           table, location, (in) -> {
             String newFile = location.replace(':', '_') + "_" + table + "_test.xml";
