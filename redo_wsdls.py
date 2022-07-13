@@ -18,7 +18,6 @@ supported_jurisdictions = [v.strip() for v in os.getenv('TYLER_JURISDICTIONS', '
 tyler_env = os.getenv('TYLER_ENV', 'stage')
 
 for juris in supported_jurisdictions:
-  continue
   mkdir['-p', f"{juris}/{tyler_env}"] & FG
   os.chdir(f"{juris}/{tyler_env}")
   r = requests.get(f"https://{juris}-{tyler_env}.tylertech.cloud/EFM/EFMUserService.svc?singleWsdl")
@@ -33,7 +32,7 @@ for juris in supported_jurisdictions:
   for ecf_wsdl in ['ECF-4.0-FilingReviewMDEService.wsdl', 'ECF-4.0-FilingAssemblyMDEService.wsdl', 'ECF-4.0-CourtRecordMDEService.wsdl', 'ECF-4.0-ServiceMDEService.wsdl']:
     args = f'-Dexec.args="https://{juris}-{tyler_env}.tylertech.cloud/EFM/Schema/{ecf_wsdl} ecf"'
     print(args)
-    mvn['-f', '../../../pom.xml', 'exec:java@XsdDownloader', args] & FG
+    mvn['-f', '../../../../../../pom.xml', 'exec:java@XsdDownloader', args] & FG
     local.get('mv')['ecf.xsd', ecf_wsdl] & FG
     print(f'downloaded {ecf_wsdl}')
   os.chdir('../../')
