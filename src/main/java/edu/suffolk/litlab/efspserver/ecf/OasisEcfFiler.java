@@ -191,7 +191,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         Map<PartyId, Person> exisitingPartips = EcfCaseTypeFactory.getCaseParticipants(resp.getCase().getValue()).get(); 
         List<Optional<String>> maybeFilingCodes = info.getFilings().stream().map(f -> f.getFilingCode()).collect(Collectors.toList()); 
         if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
-          InterviewVariable filingVar = collector.requestVar("court_bundle[i].tyler_filing_type", "What filing type is this?", "text"); 
+          InterviewVariable filingVar = collector.requestVar("court_bundle[i].filing_type", "What filing type is this?", "text"); 
           collector.addRequired(filingVar);
         }
         List<String> filingCodeStrs = maybeFilingCodes.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());

@@ -192,7 +192,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       metadata = metadataElems.get(key).get("elements");
     }
 
-    JsonNode category = node.get("tyler_case_category"); 
+    JsonNode category = node.get("efile_case_category"); 
     if (category != null && !category.isNull() && category.isTextual()) {
       entities.setCaseCategoryCode(category.asText());
     } else if (metadata.has("categories") && metadata.get("categories").isArray()) {
@@ -201,25 +201,25 @@ public class FilingInformationDocassembleJacksonDeserializer
       entities.setCaseCategoryCode(String.join(", ", categories)); 
       log.info("Categories: " + categories.toString());
     } else if (isFirstIndexedFiling) {
-      InterviewVariable var = collector.requestVar("tyler_case_category", "", "text");
+      InterviewVariable var = collector.requestVar("efile_case_category", "", "text");
       collector.addRequired(var);
     }
 
-    JsonNode type = node.get("tyler_case_type");
+    JsonNode type = node.get("efile_case_type");
     if (type != null && type.isTextual()) {
       entities.setCaseTypeCode(type.asText());
     } else if (metadata.has("title") && metadata.get("title").isTextual()) {
       entities.setCaseTypeCode(metadata.get("title").asText());
     } else if (isFirstIndexedFiling) {
-      InterviewVariable var = collector.requestVar("tyler_case_type",  "", "text");
+      InterviewVariable var = collector.requestVar("efile_case_type", "", "text");
       collector.addRequired(var);
     }
 
-    JsonNode subtype = node.get("tyler_case_subtype");
+    JsonNode subtype = node.get("efile_case_subtype");
     if (subtype != null && subtype.isTextual()) {
       entities.setCaseSubtypeCode(subtype.asText());
     } else if (isFirstIndexedFiling) {
-      InterviewVariable var = collector.requestVar("tyler_case_subtype", "subtype (not always present)", "text");
+      InterviewVariable var = collector.requestVar("efile_case_subtype", "subtype (not always present)", "text");
       collector.addOptional(var);
       entities.setCaseSubtypeCode("");
     }

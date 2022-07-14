@@ -260,13 +260,13 @@ public class EcfCaseTypeFactory {
         || comboCodes.cat.ecfcasetype.equals("JuvenileCase")
         || comboCodes.cat.ecfcasetype.equals("CriminalCase")) {
       // TODO(brycew): handle these
-      InterviewVariable var = collector.requestVar("tyler_case_category", "The " + comboCodes.cat.name
+      InterviewVariable var = collector.requestVar("efile_case_category", "The " + comboCodes.cat.name
           + " Case category requires an ECF case type that we know about but don't yet support (" + comboCodes.cat.ecfcasetype + ")", "text");
       collector.addWrong(var);
       FilingError err = FilingError.wrongValue(var);
       throw err;
     } else {
-      InterviewVariable var = collector.requestVar("tyler_case_category", "The " + comboCodes.cat.name
+      InterviewVariable var = collector.requestVar("efile_case_category", "The " + comboCodes.cat.name
           + " Case category requires an ECF case type that we don't know about or support (" + comboCodes.cat.ecfcasetype + ")", "text");
       collector.addWrong(var);
       FilingError err = FilingError.wrongValue(var);
@@ -322,7 +322,7 @@ public class EcfCaseTypeFactory {
       if (maybeSubtype.isPresent()) {
         ecfAug.setCaseSubTypeText(XmlHelper.convertText(maybeSubtype.get().getCode()));
       } else if (subTypeConfig.isrequired) {
-        InterviewVariable subTypeVar = collector.requestVar("tyler_case_subtype", "Sub type of the case", "choices",
+        InterviewVariable subTypeVar = collector.requestVar("efile_case_subtype", "Sub type of the case", "choices",
             subTypes.stream().map(nac -> nac.getName()).collect(Collectors.toList()));
         collector.addWrong(subTypeVar);
       }

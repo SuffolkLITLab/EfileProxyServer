@@ -61,7 +61,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       filingType = Optional.of(filingJson.asText());
     } else {
       InterviewVariable filingVar = collector.requestVar("filing_type", "What filing type is this?", "text"); 
-      log.warn("tyler_filing_type not present in the info!: " + node);
+      log.warn("filing_type not present in the info!: " + node);
       // Optional for non-tyler ones. Will be enforced at the tyler level
       collector.addOptional(filingVar.appendDesc((node.has("instanceName")) ? node.get("instanceName").asText("?") : "?"));
     }

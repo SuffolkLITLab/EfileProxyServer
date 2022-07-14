@@ -1666,8 +1666,6 @@
   ],
   "plantiff": "20646",
   "petitioner": "20646",
-  "tyler_filing_attorney_options": [],
-  "tyler_filing_attorney_map": {},
   "other_parties": {
     "_class": "docassemble.AssemblyLine.al_general.ALPeopleList",
     "instanceName": "other_parties",

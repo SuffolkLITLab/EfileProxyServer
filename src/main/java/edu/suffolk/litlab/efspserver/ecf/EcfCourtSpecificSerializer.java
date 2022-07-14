@@ -161,7 +161,7 @@ public class EcfCourtSpecificSerializer {
     if (caseCat.isEmpty()) {
       List<CaseCategory> categories = cd.getCaseCategoriesFor(court.code); 
       // TODO(brycew-later): handle that these variables could be different from different deserializers
-      InterviewVariable var = collector.requestVar("tyler_case_category", "", "choice",
+      InterviewVariable var = collector.requestVar("efile_case_category", "", "choice",
           categories.stream().map(cat -> cat.code).collect(Collectors.toList()));
       collector.addWrong(var);
       // Foundational error: Category is sorely needed
@@ -178,7 +178,7 @@ public class EcfCourtSpecificSerializer {
       collector.error(err);
     }
     if (maybeType.isEmpty()) {
-      InterviewVariable var = collector.requestVar("tyler_case_type",  "",  "choice",
+      InterviewVariable var = collector.requestVar("efile_case_type", "", "choice",
           caseTypes.stream().map(type -> type.name).collect(Collectors.toList()));
       collector.addWrong(var);
       throw FilingError.wrongValue(var);
