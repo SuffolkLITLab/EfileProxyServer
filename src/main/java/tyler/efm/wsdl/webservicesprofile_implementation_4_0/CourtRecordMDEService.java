@@ -39,8 +39,6 @@ public class CourtRecordMDEService extends Service {
     }
 
 
-
-
     /**
      *
      * @return

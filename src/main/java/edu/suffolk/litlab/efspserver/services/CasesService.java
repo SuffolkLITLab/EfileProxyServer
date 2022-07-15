@@ -43,7 +43,6 @@ import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.ecf.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
-
 import gov.niem.niem.niem_core._2.CaseType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.TextType;
@@ -138,7 +137,7 @@ public class CasesService {
   @Path("/courts/{court_id}/cases")
   public Response getCaseList(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
-      @QueryParam("docket_id") String docketId,
+      @QueryParam("docket_number") String docketId,
       @QueryParam("business_name") String businessName,
       @QueryParam("first_name") String firstName,
       @QueryParam("middle_name") String middleName,
@@ -414,6 +413,10 @@ public class CasesService {
     }
 
     CourtRecordMDEPort port = recordFactory.getCourtRecordMDEPort();
+    // Sometimes, getCases takes an incredibly long time. Bump timeout to 90s
+    // https://stackoverflow.com/a/7512962/11416267
+    ((BindingProvider) port).getRequestContext().put("com.sun.xml.internal.ws.connect.timeout", 90000);
+    ((BindingProvider) port).getRequestContext().put("com.sun.xml.internal.ws.request.timeout", 90000);
     ServiceHelpers.setupServicePort((BindingProvider) port);
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
     try {

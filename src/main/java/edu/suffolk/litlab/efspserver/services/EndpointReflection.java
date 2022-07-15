@@ -100,8 +100,13 @@ public class EndpointReflection {
   }
   
   
-  public Map<String, String> endPointsToMap(List<Endpoint> endpoints) {
-    return endpoints.stream().collect(Collectors.toMap(e -> e.javaMethodName, e -> baseUrl + e.uri));
+  public Map<String, Map<String, String>> endPointsToMap(List<Endpoint> endpoints) {
+    return endpoints.stream().collect(Collectors.toMap(e -> e.javaMethodName, e -> {
+      return Map.of(
+        "url", baseUrl + e.uri,
+        "method", e.method.name(),
+        "query_params", e.queryParameters.stream().map(qp -> qp.name).collect(Collectors.toList()).toString());
+    }));
   }
   
   public Map<String, String> pathParamsToMap(Stream<String> params) {

@@ -339,6 +339,25 @@ public class CodesService {
   }
 
   @GET
+  @Path("/courts/{court_id}/party_types/{party_type_id}")
+  public Response getPartyTypeFromAll(@PathParam("court_id") String courtId, 
+      @PathParam("party_type_id") String partyTypeId) throws SQLException {
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
+      if (!cd.getAllLocations().contains(courtId)) {
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+      }
+      List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, null);
+      for (PartyType pt : partyTypes) {
+        if (pt.code.equals(partyTypeId)) {
+          return Response.ok(pt).build();
+        }
+      }
+
+      return Response.status(404).entity("\"No such party type: " + partyTypeId + "\"").build();
+    }
+  }
+
+  @GET
   @Path("/courts/{court_id}/case_types/{case_type_id}/party_types")
   public Response getPartyTypes(@PathParam("court_id") String courtId,
       @PathParam("case_type_id") String caseTypeId) throws SQLException {
@@ -349,6 +368,27 @@ public class CodesService {
       List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, caseTypeId);
 
       return Response.ok(partyTypes).build();
+    }
+  }
+
+  @GET
+  @Path("/courts/{court_id}/case_types/{case_type_id}/party_types/{party_type_id}")
+  public Response getPartyType(@PathParam("court_id") String courtId,
+      @PathParam("case_type_id") String caseTypeId, 
+      @PathParam("party_type_id") String partyTypeId) throws SQLException {
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
+      if (!cd.getAllLocations().contains(courtId)) {
+        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+      }
+
+      List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, caseTypeId);
+      for (PartyType pt : partyTypes) {
+        if (pt.code.equals(partyTypeId)) {
+          return Response.ok(pt).build();
+        }
+      }
+
+      return Response.status(404).entity("\"No such party type: " + partyTypeId + "\"").build();
     }
   }
 

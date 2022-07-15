@@ -93,7 +93,7 @@
     "_class": "docassemble.base.util.DALazyTemplate",
     "instanceName": "case_number_format_template"
   },
-  "docket_id_from_user": "2022EV12",
+  "docket_number_from_user": "2022EV12",
   "docket_case_response": {
     "_class": "docassemble.playground116EFSPIntegration.efm_client.ApiResponse",
     "response_code": 200,
@@ -549,7 +549,7 @@
     },
     "court_id": "coles",
     "tracking_id": "a08f60c4-832c-48b9-8ce0-7563a6613aaa",
-    "docket_id": "2022EV12",
+    "docket_number": "2022EV12",
     "category": "190921",
     "case_details": {
       "name": "{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CivilCase-4.0}CivilCase",

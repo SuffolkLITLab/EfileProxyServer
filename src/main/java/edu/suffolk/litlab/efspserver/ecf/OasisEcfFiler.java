@@ -18,7 +18,6 @@ import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.codes.Disclaimer;
 import edu.suffolk.litlab.efspserver.codes.FilingCode;
-import edu.suffolk.litlab.efspserver.codes.FilingComponent;
 import edu.suffolk.litlab.efspserver.codes.ServiceCodeType;
 import edu.suffolk.litlab.efspserver.services.EfmCheckableFilingInterface;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
@@ -115,6 +114,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   private final ServiceMDEService serviceFactory; 
   private final String jurisdiction;
   private final String env;
+  private static final PolicyCacher policyCacher = new PolicyCacher();
 
   public OasisEcfFiler(String jurisdiction, String env, DataSource codesDs) {
     this.ds = codesDs;
@@ -163,8 +163,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       
       CourtLocationInfo locationInfo = maybeLocationInfo.orElse(new CourtLocationInfo());
       
-      CourtPolicyQueryMessageType policyQuery = prep(new CourtPolicyQueryMessageType(), info.getCourtLocation());
-      CourtPolicyResponseMessageType policy = filingPort.getPolicy(policyQuery);
+      CourtPolicyResponseMessageType policy = policyCacher.getPolicyFor(filingPort, info.getCourtLocation()); 
 
       if (!locationInfo.allowfilingintononindexedcase && info.getCaseDocketNumber().isPresent()
           && info.getPreviousCaseId().isEmpty()) {
@@ -651,9 +650,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       return Response.status(403).build();
     }
 
-    CourtPolicyQueryMessageType query = prep(new CourtPolicyQueryMessageType(), courtId);
-    CourtPolicyResponseMessageType resp = port.get().getPolicy(query);
-
+    CourtPolicyResponseMessageType resp = policyCacher.getPolicyFor(port.get(), courtId);
     return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), () -> Response.ok(resp).build());
   }
 
