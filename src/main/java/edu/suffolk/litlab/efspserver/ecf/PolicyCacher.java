@@ -12,6 +12,7 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
 public class PolicyCacher {
   public PolicyCacher() {
     this.policyInMemoryCache = new HashMap<String, CourtPolicyResponseMessageType>();
+    this.lastFlushed = LocalDateTime.now();
   }
 
   public CourtPolicyResponseMessageType getPolicyFor(FilingReviewMDEPort filingPort, String courtId) {
