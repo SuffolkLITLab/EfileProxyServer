@@ -21,6 +21,7 @@ import edu.suffolk.litlab.efspserver.docassemble.NameDocassembleDeserializer;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
+import gov.niem.niem.domains.jxdm._4.CaseAugmentationType;
 import gov.niem.niem.iso_4217._2.CurrencyCodeSimpleType;
 import gov.niem.niem.niem_core._2.AmountType;
 import gov.niem.niem.niem_core._2.CaseType;
@@ -97,7 +98,26 @@ public class EcfCaseTypeFactory {
         return Optional.of(aug);
       }
     }
+    return Optional.empty();
+  }
 
+  public static Optional<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> getJCaseAugmentation(
+    gov.niem.niem.niem_core._2.CaseType filedCase) {
+    List<JAXBElement<?>> restList = List.of();
+    if (filedCase instanceof CivilCaseType civilCase) {
+      restList = civilCase.getRest();
+    } else if (filedCase instanceof DomesticCaseType domesCase) {
+      restList = domesCase.getRest();
+    } else if (filedCase instanceof CriminalCaseType criminalCase) {
+      restList = criminalCase.getRest();
+    } else if (filedCase instanceof AppellateCaseType appellate) {
+      restList = appellate.getRest();
+    }
+    for (JAXBElement<?> elem : restList) {
+      if (elem.getValue() instanceof gov.niem.niem.domains.jxdm._4.CaseAugmentationType aug) {
+        return Optional.of(aug);
+      }
+    }
     return Optional.empty();
   }
   

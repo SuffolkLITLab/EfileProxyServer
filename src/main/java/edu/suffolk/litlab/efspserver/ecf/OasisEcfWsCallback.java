@@ -15,12 +15,14 @@ import org.slf4j.LoggerFactory;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.db.Transaction;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.services.UpdateMessageStatus;
+import gov.niem.niem.domains.jxdm._4.CaseAugmentationType;
 import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.TextType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
@@ -92,7 +94,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     return chargeReason.toString();
   }
   
-  private static String documentToStr(ReviewedDocumentType doc) {
+  private static String documentToStr(ReviewedDocumentType doc, CourtLocationInfo courtInfo) {
     StringBuilder docText = new StringBuilder();
     if (doc instanceof tyler.ecf.extensions.common.ReviewedDocumentType tylerDoc) {
       if (tylerDoc.getDocumentDescriptionText() != null
@@ -123,8 +125,12 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       }
         
       if (tylerDoc.getRejectReasonText() != null) {
-        docText.append(", was rejected for the following reason: ")
-                   .append(tylerDoc.getRejectReasonText().getValue());
+        if (courtInfo.showreturnonreject) {
+          docText.append(", was returned for the following reason: ");
+        } else {
+          docText.append(", was rejected for the following reason: ");
+        }
+        docText.append(tylerDoc.getRejectReasonText().getValue());
       }
     } else {
       docText.append("The review was about the document ");
@@ -139,18 +145,18 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     return docText.toString();
   }
   
-  private String reviewedFilingMessageText(ReviewFilingCallbackMessageType revFiling,
-      Transaction trans) {
+  private static String reviewedFilingMessageText(ReviewFilingCallbackMessageType revFiling,
+      Transaction trans, CourtLocationInfo courtInfo) {
     StringBuilder messageText = new StringBuilder();
     if (revFiling.getReviewedLeadDocument() != null 
         && revFiling.getReviewedLeadDocument().getValue() != null) {
       ReviewedDocumentType leadDoc = revFiling.getReviewedLeadDocument().getValue();
-      messageText.append(documentToStr(leadDoc));
+      messageText.append(documentToStr(leadDoc, courtInfo));
     }
     if (revFiling.getReviewedConnectedDocument() != null) {
       for (var doc : revFiling.getReviewedConnectedDocument()) {
         if (doc != null && doc.getValue() != null) {
-          messageText.append(documentToStr(doc.getValue())); 
+          messageText.append(documentToStr(doc.getValue(), courtInfo)); 
         }
       }
     }
@@ -193,7 +199,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     }
   }
 
-  private UpdateMessageStatus reviewedFilingStatusCode(ReviewFilingCallbackMessageType revFiling) {
+  private static UpdateMessageStatus reviewedFilingStatusCode(ReviewFilingCallbackMessageType revFiling) {
     FilingStatusType filingStat = revFiling.getFilingStatus();
     if (filingStat != null) {
       final String replyCode = filingStat.getFilingStatusCode();
@@ -242,6 +248,11 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       log.error("Got back a review filing that has a blank / no FILINGID? " + revFiling.toString());
       return error(reply, "720", "Filing code not found in message");
     }
+    Optional<CaseAugmentationType> jAug = EcfCaseTypeFactory.getJCaseAugmentation(revFiling.getCase().getValue());
+    String courtIdFromMsg = "";
+    if (jAug.isPresent()) {
+      courtIdFromMsg = jAug.get().getCaseCourt().getOrganizationIdentification().getValue().getIdentificationID().getValue();
+    }
     try (Connection conn = userDs.getConnection()){
       UserDatabase ud = new UserDatabase(conn);
       Optional<Transaction> trans = ud.findTransaction(UUID.fromString(filingId));
@@ -249,9 +260,27 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
         log.warn("No transaction on record for filingId: " + filingId + " no one to send to");
         return error(reply, "724", "Filing ID " + filingId + " not found");
       }
+      // Trust in Tyler's courtId over ours, maybe location can change on their side
+      String courtId = (courtIdFromMsg.isBlank()) ? trans.get().courtId : courtIdFromMsg;
+      List<NameAndCode> names = List.of();
+      Optional<CourtLocationInfo> courtInfo = Optional.empty();
+      try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codesDs.getConnection())) {
+        names = cd.getFilingStatuses(courtId);
+        courtInfo = cd.getFullLocationInfo(courtId);
+        if (courtInfo.isEmpty()) {
+          log.warn("Court " + courtId + " no longer exists in codes? ("
+              + courtIdFromMsg + " from msg, " + trans.get().courtId + " from db)");
+          return error(reply, "70", "Location " + courtId + " not found");
+        }
+      } catch (SQLException ex) {
+        log.error("In ECF v4 callback, couldn't get codes db: " + StdLib.strFromException(ex));
+        courtInfo = Optional.of(new CourtLocationInfo());
+        courtInfo.get().name = courtId;
+      }
+
       reply.setCaseCourt(XmlHelper.convertCourtType(trans.get().courtId));
       String statusText = reviewedFilingStatusText(revFiling, trans.get());
-      String messageText = reviewedFilingMessageText(revFiling, trans.get());
+      String messageText = reviewedFilingMessageText(revFiling, trans.get(), courtInfo.get());
       UpdateMessageStatus status = reviewedFilingStatusCode(revFiling);
       boolean success = msgSender.sendMessage(trans.get(), status, statusText, messageText, null);
       if (!success) {
