@@ -122,11 +122,11 @@ public class CodesServiceTest {
     assertTrue(node.has("getCourtLocationCodes"), "didn't have court location codes: " + node);
     assertEquals(
         ServiceHelpers.BASE_URL + "/jurisdictions/illinois/codes/courts/adams/codes",
-        node.get("getCourtLocationCodes").asText());
+        node.get("getCourtLocationCodes").get("url").asText());
     assertTrue(node.has("getCaseTypes"));
     assertEquals(
         ServiceHelpers.BASE_URL + "/jurisdictions/illinois/codes/courts/adams/case_types",
-        node.get("getCaseTypes").asText());
+        node.get("getCaseTypes").get("url").asText());
   }
   
   @Test
@@ -136,11 +136,11 @@ public class CodesServiceTest {
     assertTrue(node.has("getCaseSubtypes"), "didn't have case sub types: " + node);
     assertEquals(
         ServiceHelpers.BASE_URL + "/jurisdictions/illinois/codes/courts/adams/case_types/1234/case_subtypes",
-        node.get("getCaseSubtypes").asText());
+        node.get("getCaseSubtypes").get("url").asText());
     assertTrue(node.has("getPartyTypes"));
     assertEquals(
         ServiceHelpers.BASE_URL + "/jurisdictions/illinois/codes/courts/adams/case_types/1234/party_types", 
-        node.get("getPartyTypes").asText());
+        node.get("getPartyTypes").get("url").asText());
   }
   
   @Test
@@ -150,11 +150,11 @@ public class CodesServiceTest {
     assertTrue(node.has("getOptionalServices"), "didn't have optionalServices: " + node);
     assertEquals(
         ServiceHelpers.BASE_URL + "/jurisdictions/illinois/codes/courts/adams/filing_types/1234/optional_services",
-        node.get("getOptionalServices").asText());
+        node.get("getOptionalServices").get("url").asText());
     assertTrue(node.has("getFilingComponents"));
     assertEquals(
         ServiceHelpers.BASE_URL + "/jurisdictions/illinois/codes/courts/adams/filing_types/1234/filing_components",
-        node.get("getFilingComponents").asText());
+        node.get("getFilingComponents").get("url").asText());
   }
   
 }
