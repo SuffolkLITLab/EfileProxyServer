@@ -54,7 +54,7 @@ public class UserDatabaseTest {
     ud.addToTable(name, userId, 
         Optional.empty(), email, transactionId, serverId, apiKey,
         "Motion to File", courtId, new Timestamp(System.currentTimeMillis()),
-        "", "", "");
+        "", "", "", "my title");
     
     Optional<Transaction> transaction = ud.findTransaction(transactionId);
     assertTrue(transaction.isPresent());
@@ -63,6 +63,7 @@ public class UserDatabaseTest {
     assertEquals(transaction.get().name, name);
     assertEquals(transaction.get().serverId, serverId);
     assertEquals(transaction.get().courtId, courtId);
+    assertEquals(transaction.get().caseTitle, "my title");
     
     ud.removeFromTable(transactionId);
     transaction = ud.findTransaction(transactionId);

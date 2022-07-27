@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DatabaseVersion {
   
-  final static int CURRENT_VERSION = 3;
+  final static int CURRENT_VERSION = 4;
   private static Logger log = 
       LoggerFactory.getLogger(DatabaseVersion.class);
   private final Connection codeConn;
@@ -129,6 +129,8 @@ public class DatabaseVersion {
       update1To2();
     } else if (onDiskVersion == 2) {
       update2To3();
+    } else if (onDiskVersion == 3) {
+      update3To4();
     }
     setSchemaVersion(onDiskVersion + 1);
     userConn.commit();
@@ -211,5 +213,15 @@ public class DatabaseVersion {
       st.executeUpdate(alterMsgTmpls);
     }
     userConn.commit();
+  }
+
+  // Adds the case_title column to new transactions
+  private void update3To4() throws SQLException {
+    final String alterTransactionWithCaseTitle = """
+      ALTER TABLE submitted_filings
+        ADD COLUMN case_title text""";
+    try (Statement st = userConn.createStatement()) {
+      st.executeUpdate(alterTransactionWithCaseTitle);
+    }
   }
 }

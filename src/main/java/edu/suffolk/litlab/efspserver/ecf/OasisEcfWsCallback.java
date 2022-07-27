@@ -278,11 +278,11 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
         courtInfo.get().name = courtId;
       }
 
-      reply.setCaseCourt(XmlHelper.convertCourtType(trans.get().courtId));
+      reply.setCaseCourt(XmlHelper.convertCourtType(courtId));
       String statusText = reviewedFilingStatusText(revFiling, trans.get());
       String messageText = reviewedFilingMessageText(revFiling, trans.get(), courtInfo.get());
       UpdateMessageStatus status = reviewedFilingStatusCode(revFiling);
-      boolean success = msgSender.sendMessage(trans.get(), status, statusText, messageText, null);
+      boolean success = msgSender.sendMessage(trans.get(), status, statusText, messageText, null, courtInfo.get().name);
       if (!success) {
         log.error("Couldn't properly send message to " + trans.get().name + "!");
       }

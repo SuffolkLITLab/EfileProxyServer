@@ -48,7 +48,7 @@ public class UserDatabase implements DatabaseInterface {
              "email" text, "transaction_id" uuid PRIMARY KEY, "server_id" uuid, "api_key_used" text, 
              "court_id" text, "casetype" text, 
              "submitted" date, "accepted_msg_template" text, "rejected_msg_template" text,
-             "neutral_msg_template" text)""";
+             "neutral_msg_template" text, "case_title" text)""";
         try (Statement createSt = conn.createStatement()) {
           log.info("Full statement: " + createQuery); 
           int retVal = createSt.executeUpdate(createQuery);
@@ -64,21 +64,19 @@ public class UserDatabase implements DatabaseInterface {
   public void addToTable(String name,
       UUID filingPartyId, Optional<String> phoneNumber, String email,
       List<UUID> transactionIds, UUID serverId, String apiKeyUsed, String caseType, String courtId, Timestamp submitted,
-      String acceptedTmpl, String rejectedTmpl, String neutralTmpl) throws SQLException {
+      String acceptedTmpl, String rejectedTmpl, String neutralTmpl, String caseTitle) throws SQLException {
     for (UUID id : transactionIds) {
       addToTable(name, filingPartyId, phoneNumber, email, id, serverId, apiKeyUsed, caseType, courtId, submitted,
-        acceptedTmpl, rejectedTmpl, neutralTmpl);
+        acceptedTmpl, rejectedTmpl, neutralTmpl, caseTitle);
     }
   }
   
-  // TODO(#54): add the title of the case ("John vs Jones")
-  // Can generate it from the Plaintiff vs Defendant (in the matter of Respondant)
   /** Adds the given values as a row in the submitted table. */
   public void addToTable(String name,
       UUID filingPartyId, Optional<String> phoneNumber, String email, 
       UUID transactionId, UUID serverId, String apiKeyUsed, String caseType, 
       String courtId, Timestamp submitted, String acceptedTmpl, String rejectedTmpl,
-      String neutralTmpl) throws SQLException {
+      String neutralTmpl, String caseTitle) throws SQLException {
     if (conn == null) {
       log.error("Connection in addToTable wasn't open yet!");
       throw new SQLException();
@@ -89,11 +87,11 @@ public class UserDatabase implements DatabaseInterface {
                         "phone_number", "email", "transaction_id", "server_id",
                         "api_key_used", "casetype", "court_id", "submitted", 
                         "accepted_msg_template", "rejected_msg_template", 
-                        "neutral_msg_template"
+                        "neutral_msg_template", "case_title"
                     ) VALUES (
                         ?, ?, 
                         ?, ?, ?, ?,
-                        ?, ?, ?, ?, ?, ?, ?)""";
+                        ?, ?, ?, ?, ?, ?, ?, ?)""";
     try (PreparedStatement insertSt = conn.prepareStatement(insertIntoTable)) {
       insertSt.setObject(1, filingPartyId);
       insertSt.setString(2, name);
@@ -109,6 +107,7 @@ public class UserDatabase implements DatabaseInterface {
       insertSt.setString(11, acceptedTmpl);
       insertSt.setString(12, rejectedTmpl);
       insertSt.setString(13, neutralTmpl);
+      insertSt.setString(14, caseTitle);
       insertSt.executeUpdate();
     }
   }
@@ -124,7 +123,7 @@ public class UserDatabase implements DatabaseInterface {
     String query = """
         SELECT name, user_id, phone_number, email, transaction_id, server_id,
             api_key_used, casetype, court_id, submitted, accepted_msg_template, 
-            rejected_msg_template, neutral_msg_template
+            rejected_msg_template, neutral_msg_template, case_title
         FROM submitted_filings
         WHERE transaction_id = ?""";
     

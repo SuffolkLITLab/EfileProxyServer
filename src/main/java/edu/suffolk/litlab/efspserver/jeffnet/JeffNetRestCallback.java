@@ -85,7 +85,7 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
       }
       // Done all the checks: now sending the message to the user
       UpdateMessageStatus status = UpdateMessageStatus.fromStr(resp.status);
-      boolean success = msgSender.sendMessage(transaction, status, resp.status, resp.messageText, resp.messageUrl);
+      boolean success = msgSender.sendMessage(transaction, status, resp.status, resp.messageText, resp.messageUrl, "Jefferson Parish court");
       if (success) {
         return Response.status(204).build();
       } else {

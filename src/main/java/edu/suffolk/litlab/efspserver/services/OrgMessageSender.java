@@ -37,12 +37,12 @@ public class OrgMessageSender {
 
   private String defaultFrom = "massaccess@suffolk.edu";
   private String defaultSubject = "An update on your filing";
-  // TODO(brycew): consider better HTML styling on these emails if possible
+  // TODO(#36): consider better HTML styling on these emails if possible
   private String defaultResponseTemplate =
       """
       Dear {{ name }},
       
-      The {{ court_name }} has sent a response to your filing in {{ case_type }} 
+      The {{ court_name }} has sent a response to your filing in {{ case_title }} ({{ case_type }})
       (transaction ID is {{ transaction_id }}):
       
       "{{ status }}"
@@ -62,7 +62,7 @@ public class OrgMessageSender {
       """
       Dear {{ name }},
       
-      The {{ court_name }} has received your filing in {{ case_type }}!
+      The {{ court_name }} has received your filing in {{ case_title }} ({{ case_type }})!
       
       Its transaction ID is {{ transaction_id }}. You should keep track of this; the court might
       need it in your interactions with them.
@@ -109,9 +109,14 @@ public class OrgMessageSender {
       return new MessageInfo(serverId, defaultFrom, defaultSubject, defaultResponseTemplate, defaultConfirmation); 
     }
   }
+
+  public boolean sendMessage(Transaction trans, UpdateMessageStatus status,
+  String statusText, String messageText, String messageUrl, String courtName) {
+    return sendMessage(trans, status, statusText, messageText, messageUrl, courtName, null);
+  }
   
   public boolean sendMessage(Transaction trans, UpdateMessageStatus status, 
-  String statusText, String messageText, String messageUrl) {
+  String statusText, String messageText, String messageUrl, String courtName, String theirCaseTitle) {
     MessageInfo msgSettings = getSettings(trans.serverId);
     Map<String, Object> templateVars = new HashMap<String, Object>();
     String template = msgSettings.emailResponseTemplate;
@@ -128,8 +133,13 @@ public class OrgMessageSender {
       template = trans.neutralMsgTemplate;
     }
     templateVars.put("name", trans.name);
-    templateVars.put("court_name", trans.courtId);
-    templateVars.put("case_type", trans.caseType);
+    templateVars.put("court_name", courtName);
+    templateVars.put("case_type", trans.caseTypeName);
+    if (theirCaseTitle != null && !theirCaseTitle.isBlank()) {
+      templateVars.put("case_title", theirCaseTitle);
+    } else {
+      templateVars.put("case_title", trans.caseTitle);
+    }
     templateVars.put("status", statusText);
     templateVars.put("message_text", messageText);
     if (messageUrl != null && !messageUrl.isBlank()) {
@@ -154,7 +164,7 @@ public class OrgMessageSender {
   }
   
   public boolean sendConfirmation(String email, String emailTemplate, UUID serverId, String name, 
-      List<UUID> transactionIds, String courtId, String caseType) {
+      String courtName, List<UUID> transactionIds, String caseType, String caseTitle) {
     MessageInfo msgSettings = getSettings(serverId);
     if (emailTemplate == null || emailTemplate.isBlank()) {
       emailTemplate = msgSettings.emailConfirmation;
@@ -162,9 +172,10 @@ public class OrgMessageSender {
     String ids = transactionIds.stream().map(t -> t.toString()).collect(Collectors.joining(", "));
     Map<String, Object> templateVars = new HashMap<String, Object>();
     templateVars.put("name", name);
-    templateVars.put("court_name", courtId);
+    templateVars.put("court_name", courtName);
     templateVars.put("case_type", caseType);
     templateVars.put("transaction_id", ids);
+    templateVars.put("case_title", caseTitle);
     boolean canEmail = email != null && SendMessage.isValidEmail(email);
     if (canEmail) {
       int result;
