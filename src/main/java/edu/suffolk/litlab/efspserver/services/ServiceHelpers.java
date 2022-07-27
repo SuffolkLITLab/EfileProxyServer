@@ -84,8 +84,10 @@ public class ServiceHelpers {
     tylerToHttp.put("0", 200); 
     tylerToHttp.put("77", 400); // IncludeParticipants is empty, this is a required query element
     tylerToHttp.put("78", 428);  // User has already been activated
+    tylerToHttp.put("85", 428);  // Service Contact already attached to party
+    tylerToHttp.put("86", 428);  // Service Contact not attached to party
     tylerToHttp.put("87", 428);  // Service Contact already attached to case
-    tylerToHttp.put("88", 428);  // Service Contact already attached to case
+    tylerToHttp.put("88", 428);  // Service Contact already attached to party
     tylerToHttp.put("90", 400); // Invalid QuerySubmitterID
     tylerToHttp.put("91", 400); // Invalid DocumentSubmitterID 
     tylerToHttp.put("92", 400); // Invalid CaseTrackingID 

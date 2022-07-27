@@ -4,6 +4,7 @@ import static edu.suffolk.litlab.efspserver.JsonHelpers.getStringMember;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
 
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -348,8 +349,12 @@ public class FirmAttorneyAndServiceService {
       req.setCasePartyID(node.get("casePartyId").asText());
     }
     BaseResponseType resp = firmPort.get().attachServiceContact(req);
-    // TODO(#2): should be idempotent, and should also return `created` on successful.
-    // Need to make a URL that we can get more info at though
+    String errorCode = resp.getError().getErrorCode();
+    if (errorCode.equals("85") || errorCode.equals("87") || errorCode.equals("88")) { // already attached to case, so send back a 204 (no content)
+      return Response.status(204).build();
+    } else if (errorCode.equals("0")) {
+      return Response.created(URI.create(req.getCaseID())).build();
+    }
     return makeResponse(resp, () -> Response.ok().build());
   }
 
