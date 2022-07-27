@@ -150,9 +150,12 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     return this.headerKey;
   }
 
-  private CoreFilingMessageType prepareFiling(FilingInformation info,
+  private CoreMessageAndNames prepareFiling(FilingInformation info,
       InfoCollector collector, String apiToken, FilingReviewMDEPort filingPort, 
       CourtRecordMDEPort recordPort, String queryType) throws FilingError {
+    String existingCaseTitle = null;
+    String caseCategoryName = "";
+    String courtName = "";
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())){
       EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
       Optional<CourtLocationInfo> maybeLocationInfo = cd.getFullLocationInfo(info.getCourtLocation());
@@ -161,6 +164,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       }
       
       CourtLocationInfo locationInfo = maybeLocationInfo.orElse(new CourtLocationInfo());
+      courtName = locationInfo.name;
       
       CourtPolicyResponseMessageType policy = policyCacher.getPolicyFor(filingPort, info.getCourtLocation()); 
 
@@ -183,7 +187,15 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         query.setCaseTrackingID(XmlHelper.convertString(info.getPreviousCaseId().get()));
         query.setCaseQueryCriteria(EcfCaseTypeFactory.getCriteria());
         CaseResponseMessageType resp = recordPort.getCase(query);
-        resp.getCase().getValue().getCaseTrackingID();
+        if (resp.getCase() != null && resp.getCase().getValue() != null) {
+          if (resp.getCase().getValue().getCaseTitleText() != null) {
+            existingCaseTitle = resp.getCase().getValue().getCaseTitleText().getValue();
+          }
+        } else {
+          var filingVar = collector.requestVar("previous_case_id", "Could not find the given case id (" + info.getPreviousCaseId().get() + ")", "text");
+          collector.addWrong(filingVar);
+        }
+
         String catCode = resp.getCase().getValue().getCaseCategoryText().getValue();
         String typeCode = EcfCaseTypeFactory.getCaseAugmentation(resp.getCase().getValue()).get().getCaseTypeText().getValue(); 
         Map<PartyId, Person> exisitingPartips = EcfCaseTypeFactory.getCaseParticipants(resp.getCase().getValue()).get(); 
@@ -201,6 +213,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       } else {
         allCodes = serializer.serializeCaseCodes(info, collector, isInitialFiling);
       }
+      caseCategoryName = allCodes.cat.name;
       log.info("have all codes");
 
       var coreObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory();
@@ -313,7 +326,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         }
       });
       log.info("Full cfm: " + XmlHelper.objectToXmlStrOrError(cfm, CoreFilingMessageType.class).replaceAll("<ns2:BinaryBase64Object>[^<]+<\\/ns2:BinaryBase64Object>", ""));
-      return cfm;
+      return new CoreMessageAndNames(cfm, existingCaseTitle, caseCategoryName, courtName) ;
     } catch (IOException | SQLException ex ) { 
       log.error("IO Error when making filing! " + strFromException(ex));
       throw FilingError.serverError("Got Exception assembling the filing: " + ex);
@@ -358,6 +371,9 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     InfoCollector collector, String apiToken, ApiChoice choice) {
     FilingReviewMDEPort filingPort;
     CoreFilingMessageType cfm;
+    String existingCaseTitle = null;
+    String caseCategoryName = null;
+    String courtName = null;
     try {
       Optional<FilingReviewMDEPort> maybeFilingPort = setupFilingPort(apiToken);
       Optional<CourtRecordMDEPort> recordPort = setupRecordPort(apiToken);
@@ -368,7 +384,11 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       }
       filingPort = maybeFilingPort.get();
       String queryType = (choice.equals(ApiChoice.ServiceApi))? "service" : "review";
-      cfm = prepareFiling(info, collector, apiToken, filingPort, recordPort.get(), queryType);
+      var coreAndExisting = prepareFiling(info, collector, apiToken, filingPort, recordPort.get(), queryType);
+      cfm = coreAndExisting.cfm;
+      caseCategoryName = coreAndExisting.caseCategoryName;
+      courtName = coreAndExisting.courtName;
+      existingCaseTitle = coreAndExisting.existingCaseTitle;
       if (!choice.equals(ApiChoice.ServiceApi) && (info.getPaymentId() == null || info.getPaymentId().isBlank())) {
         collector.addRequired(collector.requestVar("tyler_payment_id", "The ID of the payment method", "text"));
       }
@@ -419,10 +439,26 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
               return str + ", " + err.getErrorText();
             }, (str, str2) -> str + str2))); 
     }
+    String caseTitle = "";
+    if (existingCaseTitle != null && !existingCaseTitle.isBlank()) {
+      caseTitle = existingCaseTitle;
+    } else {
+      if (info.getNewPlaintiffs().size() > 0 && info.getNewDefendants().size() > 0) {
+        caseTitle = info.getNewPlaintiffs().get(0).getName().getTitleName() + " v. " + info.getNewDefendants().get(0).getName().getTitleName();
+      } else if (info.getNewPlaintiffs().size() > 0) {
+        caseTitle = "In the matter of " + info.getNewPlaintiffs().get(0).getName().getTitleName();
+      } else if (info.getNewDefendants().size() > 0) {
+        caseTitle = "In the matter of " + info.getNewDefendants().get(0).getName().getTitleName();
+      } else {
+        log.warn("Cannot guess title of the case (not existing case, no plaintiffs or defendants) (filing "
+            + info.getFilings().get(0).getFilingComments() + ")\nUsing backup of lead contact");
+        caseTitle = "On Behalf of " + info.getLeadContact().getName().getFullName();
+      }
+    }
     log.info(XmlHelper.objectToXmlStrOrError(mrmt, MessageReceiptMessageType.class));
     return Result.ok(new FilingResult(
         caseId.get(), envelopeId.get(), filingIdStrs.stream().map(str -> UUID.fromString(str)).collect(Collectors.toList()), 
-        info.getLeadContact()));
+        info.getLeadContact(), caseTitle, caseCategoryName, courtName));
   }
 
   @Override
@@ -437,7 +473,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       return Result.err(err);
     }
     try {
-      cfm = prepareFiling(info, collector, apiToken, filingPort.get(), recordPort.get(), "fees");
+      cfm = prepareFiling(info, collector, apiToken, filingPort.get(), recordPort.get(), "fees").cfm;
     } catch (FilingError err) {
       return Result.err(err);
     }
@@ -486,7 +522,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     }
     CoreFilingMessageType cfm;
     try {
-      cfm = prepareFiling(info, collector, apiToken, filingPort.get(), recordPort.get(), "review");
+      cfm = prepareFiling(info, collector, apiToken, filingPort.get(), recordPort.get(), "review").cfm;
     } catch (FilingError err) {
       return Result.err(err);
     }

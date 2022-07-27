@@ -18,9 +18,10 @@ public class Transaction {
   public UUID transactionId;
   public UUID serverId;
   public String apiKeyUsed;
-  public String caseType;
+  public String caseTypeName;
   public String courtId;
   public Timestamp submitted;
+  public String caseTitle;
 
   public static Transaction fromResults(ResultSet rs) throws SQLException {
     Transaction trans = new Transaction();
@@ -35,12 +36,13 @@ public class Transaction {
     trans.transactionId = (UUID) rs.getObject(5);
     trans.serverId = (UUID) rs.getObject(6);
     trans.apiKeyUsed = rs.getString(7);
-    trans.caseType = rs.getString(8);
+    trans.caseTypeName = rs.getString(8);
     trans.courtId = rs.getString(9);
     trans.submitted = rs.getTimestamp(10);
     trans.acceptedMsgTemplate = rs.getString(11);
     trans.rejectedMsgTemplate = rs.getString(12);
     trans.neutralMsgTemplate = rs.getString(13);
+    trans.caseTitle = rs.getString(14);
     return trans;
   }
 }

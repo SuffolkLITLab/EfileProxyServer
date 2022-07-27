@@ -58,6 +58,15 @@ public class Name {
     return lastName;
   }
 
+  /** If there's only a first name, then us it, otherwise take only the last name */
+  public String getTitleName() {
+    if (lastName == null || lastName.isBlank()) {
+      return firstName;
+    } else {
+      return lastName;
+    }
+  }
+
   public String getSuffix() {
     return suffix;
   }

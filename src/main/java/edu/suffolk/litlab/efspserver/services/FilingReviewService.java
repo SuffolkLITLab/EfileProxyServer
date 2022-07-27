@@ -367,12 +367,12 @@ public class FilingReviewService {
       ud.addToTable(user.getName().getFullName(), user.getId(),
           phoneNumber, user.getContactInfo().getEmail().orElse(""),
           filingIds, atRest.get().serverId, activeToken.get(),
-          info.getCaseTypeCode(), courtId, ts, acceptedTemplate, rejectedTemplate, neutralTemplate);
+          info.getCaseTypeCode(), courtId, ts, acceptedTemplate, rejectedTemplate, neutralTemplate, filingResult.caseTitle);
 
       msgSender.sendConfirmation(user.getContactInfo().getEmail().orElse(""),
           confirmationTemplate,
-          atRest.get().serverId, user.getName().getFullName(), filingIds, 
-          courtId, info.getCaseTypeCode());
+          atRest.get().serverId, user.getName().getFullName(), filingResult.courtName, filingIds,
+          filingResult.caseCategoryName, filingResult.caseTitle);
     } catch (SQLException ex) {
       log.error("Couldn't add info to the database! Logging here for posterity: "
                 + "%s %s %s %s %s".formatted(user.getName().getFullName(), user.getId(),

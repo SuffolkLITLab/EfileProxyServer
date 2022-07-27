@@ -263,7 +263,13 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
       String statusText = reviewedFilingStatusText(revFiling, trans.get());
       String messageText = reviewedFilingMessageText(revFiling, trans.get());
       UpdateMessageStatus status = reviewedFilingStatusCode(revFiling);
-      boolean success = msgSender.sendMessage(trans.get(), status, statusText, messageText, null); 
+      String courtName = trans.get().courtId.substring(0, 1).toUpperCase() + trans.get().courtId.substring(1);
+      try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())){
+        courtName = cd.getFullLocationInfo(trans.get().courtId).map(li -> li.name).orElse(courtName);
+      } catch (SQLException ex) {
+        log.error("In ECF v4 callback, couldn't get codes db: " + StdLib.strFromException(ex));
+      }
+      boolean success = msgSender.sendMessage(trans.get(), status, statusText, messageText, null, courtName); 
       if (!success) {
         log.error("Couldn't properly send message to " + trans.get().name + "!");
       }
