@@ -45,7 +45,7 @@ public class FilingInformationJeffNetSerializer extends StdSerializer<FilingInfo
     caseInfo.participants.addAll(info.getNewPlaintiffs());
 
     SendingMde mde = new SendingMde();
-    mde.ourUrl = ServiceHelpers.BASE_URL;
+    mde.ourUrl = ServiceHelpers.EXTERNAL_URL;
 
     Callback callbackObj = new Callback();
     String filingUid = UUID.randomUUID().toString();

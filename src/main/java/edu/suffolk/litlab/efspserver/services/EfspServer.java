@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.GetEnv;
+
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import edu.suffolk.litlab.efspserver.HttpsCallbackHandler;
 import edu.suffolk.litlab.efspserver.SendMessage;
@@ -109,7 +111,7 @@ public class EfspServer {
         new JAXBElementProvider<Object>(),
         new JacksonJsonProvider()));
 
-    String baseLocalUrl = System.getenv("BASE_LOCAL_URL"); //"https://0.0.0.0:9000";
+    String baseLocalUrl = ServiceHelpers.BASE_LOCAL_URL;
     sf.setAddress(baseLocalUrl);
     server = sf.create();
   }
@@ -120,16 +122,6 @@ public class EfspServer {
       server.destroy();
     }
   }
-
-  /** Quick wrapper to get an env var as an optional. */
-  public static Optional<String> GetEnv(String envVarName) {
-    String val = System.getenv(envVarName);
-    if (val == null || val.isBlank()) {
-      return Optional.empty();
-    }
-    return Optional.of(val);
-  }
-
 
   public static void main(String[] args) throws Exception {
     String dbUrl = GetEnv("POSTGRES_URL").orElse("localhost");

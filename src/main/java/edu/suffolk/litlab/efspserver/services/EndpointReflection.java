@@ -28,7 +28,7 @@ public class EndpointReflection {
   private final String baseUrl; 
   
   public EndpointReflection(String startUrl) {
-    baseUrl = ServiceHelpers.BASE_URL + startUrl;
+    baseUrl = ServiceHelpers.EXTERNAL_URL + startUrl;
   }
   
   /**

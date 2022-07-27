@@ -541,7 +541,7 @@ public class PaymentsService {
 
   private final RandomString transactionIdGen;
   private final String togaKey;
-  private final String callbackToUsUrl = ServiceHelpers.BASE_URL + "/payments/toga-account"; 
+  private final String callbackToUsUrl = ServiceHelpers.EXTERNAL_URL + "/payments/toga-account"; 
   private final String togaUrl;
   private final EfmFirmService firmFactory;
   private final DataSource codeDs;
