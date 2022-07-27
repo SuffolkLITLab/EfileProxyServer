@@ -17,15 +17,11 @@ The first of two steps to using HTTPS is actually getting a signed TLS certifica
 
 You can also do this with Let's Encrypt, but unfortunately since we're running on a custom server
 software (not nginx or Apache), then it would take a bit more effort to integrate it.
-TODO(brycew-later): eventually we should. Look into the below for resources 
-
-* [Lets Encrypt Java Clients](https://letsencrypt.org/docs/client-options/#clients-java)
-* [Porunov Java ACME Client](https://github.com/porunov/acme_client) (ACME is the protocol that Let's Encrypt uses)
-* [Shred acme4j](https://github.com/shred/acme4j)
+TODO(brycew-later): eventually we should. Going to use https://github.com/shred/acme4j
 
 ## Using that Certificate in the CXF Server
 
-First, turning the certificate into something that Java can consume, namely, a Java Key Store (jks). 
+First, turning the certificate into something that Java can consume, namely, a Java Key Store (jks).
 
 * https://stackoverflow.com/questions/41416050/installing-an-intermediate-chain-certificate-using-java-key-tool
 * https://www.tbs-certificates.co.uk/FAQ/en/ajouter-certificat-intermediaire-keystore-java.html
@@ -44,26 +40,28 @@ java utils.ImportPrivateKey keystore storepass storetype keypass alias certfile 
 openssl pkcs12 -export -in efile_suffolklitlab_org.crt -inkey efile.suffolklitlab.org.key  -out efile.suffolklitlab.org.p12
 keytool -importkeystore -srckeystore efile.suffolklitlab.org.p12 -srcstoretype PKCS12 -destkeystore efile.suffolklitlab.org.jks -deststoretype JKS
 
-keytool -printcert -v -file efile.suffolklitlab.org.jks 
-keytool -list -v -file efile.suffolklitlab.org.jks 
-keytool -list -v -keystore efile.suffolklitlab.org.jks 
-keytool -exportcert -rfc -alias mykey -keystore efile.suffolklitlab.org.jks > cert.pem
-openssl verify cert.pem
-keytool -exportcert -rfc -keystore efile.suffolklitlab.org.jks > cert.pem
-keytool -exportcert -rfc -keystore efile.suffolklitlab.org.jks
-keytool -list -v -keystore efile.suffolklitlab.org.jks | grep Alias
+#keytool -printcert -v -file efile.suffolklitlab.org.jks
+#keytool -list -v -file efile.suffolklitlab.org.jks 
+#keytool -list -v -keystore efile.suffolklitlab.org.jks 
+## Wrong?
+##keytool -exportcert -rfc -alias mykey -keystore efile.suffolklitlab.org.jks > cert.pem
+#openssl verify cert.pem
+## Wrong?
+##keytool -exportcert -rfc -keystore efile.suffolklitlab.org.jks > cert.pem
+##keytool -exportcert -rfc -keystore efile.suffolklitlab.org.jks
+#keytool -list -v -keystore efile.suffolklitlab.org.jks | grep Alias
 keytool -exportcert -rfc -Alias 1 -keystore efile.suffolklitlab.org.jks > cert.pem
-openssl verify cert.pem
-openssl verify efile_suffolklitlab_org.ca-bundle 
+#openssl verify cert.pem
+#openssl verify efile_suffolklitlab_org.ca-bundle 
 vim sectigo.intermediate.crt
 cat efile_suffolklitlab_org.ca-bundle efile_suffolklitlab_org.crt > efile_suffolklitlab_org_combined.crt
 openssl pkcs12 -export -in efile_suffolklitlab_org_combined.crt -inkey efile.suffolklitlab.org.key -out efile.suffolklitlab.org.combined.p12
 keytool -importkeystore -srckeystore efile.suffolklitlab.org.combined.p12 -srcstoretype PKCS12 -destkeystore efile.suffolklitlab.org.combined.jks -deststoretype JKS
 keytool -exportcert -rfc -alias 1 -keystore efile.suffolklitlab.org.combined.jks > cert.pem
-openssl verify cert.pem 
-openssl verify -CAfile sectigo.root.crt -untrusted sectigo.intermediate.crt cert.pem 
-keytool -list -v -keystore efile.suffolklitlab.org.combined.jks
-keytool -list -v -keystore efile.suffolklitlab.org.combined.jks | grep Alias
+#openssl verify cert.pem 
+#openssl verify -CAfile sectigo.root.crt -untrusted sectigo.intermediate.crt cert.pem 
+#keytool -list -v -keystore efile.suffolklitlab.org.combined.jks
+#keytool -list -v -keystore efile.suffolklitlab.org.combined.jks | grep Alias
 cp efile.suffolklitlab.org.combined.jks EFileProxyServer/src/main/config/
 ```
 

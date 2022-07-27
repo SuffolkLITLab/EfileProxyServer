@@ -133,8 +133,7 @@ And for [twilio](https://www.twilio.com/docs/libraries/java):
 [This REST/JAX book is extremely helpful](https://dennis-xlc.gitbooks.io/restful-java-with-jax-rs-2-0-2rd-edition/content/en/part1/chapter3/developing_a_jax_rs_restful_service.html).
 
 Note: 
-* Docassemble will run on port 80
-* Maven/proxy efsp will run on port 9000
+* proxy efsp will run on port 80/443
 
 # TODO: we should set up a root endpoint for the proxy server which has a little bit of information about the server
 

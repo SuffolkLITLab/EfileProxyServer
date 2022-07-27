@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.GetEnv;
+
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import edu.suffolk.litlab.efspserver.HttpsCallbackHandler;
 import edu.suffolk.litlab.efspserver.SendMessage;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
 
@@ -60,7 +63,8 @@ public class EfspServer {
       OrgMessageSender sender,
       List<EfmModuleSetup> modules,
       SecurityHub security,
-      Map<String, InterviewToFilingInformationConverter> converterMap
+      Map<String, InterviewToFilingInformationConverter> converterMap,
+      @Nullable AcmeChallengeService challengeService
       ) throws SQLException, NoSuchAlgorithmException {
     try (Connection conn = userDs.getConnection()) {
       UserDatabase ud = new UserDatabase(conn);
@@ -92,6 +96,9 @@ public class EfspServer {
     services.put(AuthenticationService.class,
         new SingletonResourceProvider(new AuthenticationService(security)));
     services.put(JurisdictionSwitch.class, new SingletonResourceProvider(new JurisdictionSwitch(jurisdictionMap)));
+    if (challengeService != null) {
+      services.put(AcmeChallengeService.class, new SingletonResourceProvider(challengeService));
+    }
 
     sf = new JAXRSServerFactoryBean();
     sf.setResourceClasses(new ArrayList<Class<?>>(services.keySet()));
@@ -105,7 +112,7 @@ public class EfspServer {
         new JAXBElementProvider<Object>(),
         new JacksonJsonProvider()));
 
-    String baseLocalUrl = System.getenv("BASE_LOCAL_URL"); //"https://0.0.0.0:9000";
+    String baseLocalUrl = ServiceHelpers.BASE_LOCAL_URL;
     sf.setAddress(baseLocalUrl);
     server = sf.create();
   }
@@ -116,16 +123,6 @@ public class EfspServer {
       server.destroy();
     }
   }
-
-  /** Quick wrapper to get an env var as an optional. */
-  public static Optional<String> GetEnv(String envVarName) {
-    String val = System.getenv(envVarName);
-    if (val == null || val.isBlank()) {
-      return Optional.empty();
-    }
-    return Optional.of(val);
-  }
-
 
   public static void main(String[] args) throws Exception {
     String dbUrl = GetEnv("POSTGRES_URL").orElse("localhost");
@@ -190,10 +187,15 @@ public class EfspServer {
     log.info("Starting Server with the following Filers: " + modules);
 
     SecurityHub security = new SecurityHub(userDs, tylerEnv, jurisdictions);
-
+    AcmeChallengeService challengeService = null;
+    boolean useLetsEncrypt = GetEnv("USE_LETSENCRYPT").map(str -> Boolean.parseBoolean(str)).orElse(false);
+    if (useLetsEncrypt) {
+      log.info("Using lets encrypt!");
+      challengeService = new AcmeChallengeService();
+    }
     EfspServer server = new EfspServer(
         codeDs, userDs, sender, modules, security,
-        converterMap);
+        converterMap, challengeService);
     
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override

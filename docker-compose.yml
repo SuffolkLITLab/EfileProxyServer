@@ -7,7 +7,10 @@ services:
         EFM_SUPPORT: tyler
     # Necessary b/c docassemble is external to the docker network
     ports:
-      - "9000:9000"
+      - target: 9000
+        published: 80
+      - target: 9000
+        published: 443
     env_file: .env
     depends_on:
       - "db"

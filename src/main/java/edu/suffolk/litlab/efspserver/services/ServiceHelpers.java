@@ -49,24 +49,25 @@ public class ServiceHelpers {
       "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0";
   public static final String MDE_PROFILE_CODE_5 =
       "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-5.0";
-      
 
   public static String ASSEMBLY_PORT = "/filingassembly/callbacks/FilingAssemblyMDEPort";
   public static String ASSEMBLY_PORT_V5 = "/filingassembly/callbacks/FilingAssemblyMDEPortEcfv5";
-  public static String BASE_URL;
-  public static String SERVICE_URL; 
-  public static String REST_CALLBACK_URL;
-  static Map<String, Integer> tylerToHttp;
+  public static String BASE_LOCAL_URL;
+  public static final String EXTERNAL_URL = GetEnv("EXTERNAL_URL").orElse("filingassemblymde.com:9000");
+  public static final String SERVICE_URL = EXTERNAL_URL + ASSEMBLY_PORT;
+  public static final String REST_CALLBACK_URL = EXTERNAL_URL + "/filingreview/jurisdictions/%s/courts/%s/filing/status"; 
+  static Map<String, Integer> tylerToHttp = new HashMap<>();
   static {
-    String env_url = System.getenv("CURRENT_URL");
-    if (env_url == null || env_url.isBlank()) {
-      env_url = "filingassemblymde.com:9001";
+    Optional<String> certPassword = GetEnv("CERT_PASSWORD");
+    // The 9000 is hard coded (we'll always be running on 9000 inside the docker container,
+    // but might be mapped to other things outside of it)
+    if (certPassword.isPresent()) {
+      BASE_LOCAL_URL = "https://0.0.0.0:9000";
+    } else {
+      BASE_LOCAL_URL = "http://0.0.0.0:9000";
     }
-    BASE_URL = env_url;
-    SERVICE_URL = BASE_URL + ASSEMBLY_PORT;
-    REST_CALLBACK_URL = BASE_URL + "/filingreview/jurisdictions/%s/courts/%s/filing/status"; 
 
-    tylerToHttp = new HashMap<String, Integer>();
+    tylerToHttp.clear();
     // First three are ones that the proxy should handle well. If we don't then it's our fault.
     // Message received in substitution message format but extended message format expected.
     tylerToHttp.put("-1000", 500);  
@@ -287,4 +288,15 @@ public class ServiceHelpers {
       }
     }
   }
+
+  /** Quick wrapper to get an env var as an optional. */
+  public static Optional<String> GetEnv(String envVarName) {
+    String val = System.getenv(envVarName);
+    if (val == null || val.isBlank()) {
+      return Optional.empty();
+    }
+    return Optional.of(val);
+  }
+
+
 }

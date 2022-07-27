@@ -261,7 +261,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
   @Override
   public void setupGlobals() {
     OasisEcfWsCallback implementor = new OasisEcfWsCallback(tylerJurisdiction, tylerEnv, codeDs, userDs, sender);
-    String baseLocalUrl = System.getenv("BASE_LOCAL_URL");
+    String baseLocalUrl = ServiceHelpers.BASE_LOCAL_URL;
     String address = baseLocalUrl + "/" + tylerJurisdiction + ServiceHelpers.ASSEMBLY_PORT;
     log.info("Starting NFRC callback server at " + address);
     EndpointImpl jaxWsEndpoint = (EndpointImpl) javax.xml.ws.Endpoint.publish(address,  implementor);

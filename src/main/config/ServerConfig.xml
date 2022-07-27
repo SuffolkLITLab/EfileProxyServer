@@ -27,13 +27,16 @@
     xmlns:httpj="http://cxf.apache.org/transports/http-jetty/configuration"
     xsi:schemaLocation="http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd http://cxf.apache.org/transports/http-jetty/configuration http://cxf.apache.org/schemas/configuration/http-jetty.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
     <httpj:engine-factory bus="cxf">
-        <httpj:engine port="9000">
+        <httpj:identifiedTLSServerParameters id="secure">
             <httpj:tlsServerParameters>
                 <sec:keyManagers keyPasswordCallbackHandler="edu.suffolk.litlab.efspserver.HttpsCallbackHandler">
                     <sec:keyStore file="src/main/config/efile.suffolklitlab.org.combined.jks" type="JKS"/>
                 </sec:keyManagers>
-	        <sec:certAlias>1</sec:certAlias>
+	              <sec:certAlias>1</sec:certAlias>
             </httpj:tlsServerParameters>
+        </httpj:identifiedTLSServerParameters>
+        <httpj:engine port="9000">
+            <httpj:tlsServerParametersRef id="secure"/>
         </httpj:engine>
     </httpj:engine-factory>
 </beans>
