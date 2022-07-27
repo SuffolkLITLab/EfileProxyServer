@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efspserver.services;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
 
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -512,8 +513,7 @@ public class AdminUserService {
    * @param req
    * @return
    */
-  // TODO(#2): is this really idempotent? I'm not sure
-  @PUT
+  @POST
   @Path("/users")
   public Response registerUser(@Context HttpHeaders httpHeaders,
       final RegistrationRequestType req) {
@@ -563,7 +563,9 @@ public class AdminUserService {
 
     RegistrationResponseType regResp = port.get().registerUser(req);
     log.info("Created new user with requested " + req.getRegistrationType() + ", firm id: " + regResp.getFirmID() + " and user id: " + regResp.getUserID());
-    // TODO(#2): need to return `created` here, with a URI for the user.
+    if (!ServiceHelpers.checkErrors(regResp.getError())) {
+      return Response.created(URI.create(regResp.getUserID())).entity(regResp).build();
+    }
     return makeResponse(regResp, () -> Response.ok(regResp).build());
   }
 
