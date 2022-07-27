@@ -1,8 +1,8 @@
 package edu.suffolk.litlab.efspserver.ecf;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
@@ -11,7 +11,7 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
 
 public class PolicyCacher {
   public PolicyCacher() {
-    this.policyInMemoryCache = new HashMap<String, CourtPolicyResponseMessageType>();
+    this.policyInMemoryCache = new ConcurrentHashMap<String, CourtPolicyResponseMessageType>();
     this.lastFlushed = LocalDateTime.now();
   }
 

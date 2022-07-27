@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
 
@@ -186,7 +187,6 @@ public class EfspServer {
     log.info("Starting Server with the following Filers: " + modules);
 
     SecurityHub security = new SecurityHub(userDs, tylerEnv, jurisdictions);
-
     AcmeChallengeService challengeService = null;
     boolean useLetsEncrypt = GetEnv("USE_LETSENCRYPT").map(str -> Boolean.parseBoolean(str)).orElse(false);
     if (useLetsEncrypt) {
