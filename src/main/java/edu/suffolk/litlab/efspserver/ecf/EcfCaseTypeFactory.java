@@ -21,7 +21,6 @@ import edu.suffolk.litlab.efspserver.docassemble.NameDocassembleDeserializer;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
-import gov.niem.niem.domains.jxdm._4.CaseAugmentationType;
 import gov.niem.niem.iso_4217._2.CurrencyCodeSimpleType;
 import gov.niem.niem.niem_core._2.AmountType;
 import gov.niem.niem.niem_core._2.CaseType;

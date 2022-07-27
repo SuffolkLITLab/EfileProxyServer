@@ -152,7 +152,7 @@ public class JeffNetFiler implements EfmFilingInterface {
   }
 
   @Override
-  public Response getFilingList(String courtId, String userId, LocalDate startDate, LocalDate endDate, String apiToken) {
+  public Response getFilingList(String courtId, String userId, LocalDate startDate, LocalDate beforeDate, String apiToken) {
     // TODO Auto-generated method stub
     return Response.status(500).build();
   }
