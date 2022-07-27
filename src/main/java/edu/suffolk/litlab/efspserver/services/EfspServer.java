@@ -60,7 +60,8 @@ public class EfspServer {
       OrgMessageSender sender,
       List<EfmModuleSetup> modules,
       SecurityHub security,
-      Map<String, InterviewToFilingInformationConverter> converterMap
+      Map<String, InterviewToFilingInformationConverter> converterMap,
+      @Nullable AcmeChallengeService challengeService
       ) throws SQLException, NoSuchAlgorithmException {
     try (Connection conn = userDs.getConnection()) {
       UserDatabase ud = new UserDatabase(conn);
@@ -92,6 +93,9 @@ public class EfspServer {
     services.put(AuthenticationService.class,
         new SingletonResourceProvider(new AuthenticationService(security)));
     services.put(JurisdictionSwitch.class, new SingletonResourceProvider(new JurisdictionSwitch(jurisdictionMap)));
+    if (challengeService != null) {
+      services.put(AcmeChallengeService.class, new SingletonResourceProvider(challengeService));
+    }
 
     sf = new JAXRSServerFactoryBean();
     sf.setResourceClasses(new ArrayList<Class<?>>(services.keySet()));
@@ -191,9 +195,15 @@ public class EfspServer {
 
     SecurityHub security = new SecurityHub(userDs, tylerEnv, jurisdictions);
 
+    AcmeChallengeService challengeService = null;
+    boolean useLetsEncrypt = GetEnv("USE_LETSENCRYPT").map(str -> Boolean.parseBoolean(str)).orElse(false);
+    if (useLetsEncrypt) {
+      log.info("Using lets encrypt!");
+      challengeService = new AcmeChallengeService();
+    }
     EfspServer server = new EfspServer(
         codeDs, userDs, sender, modules, security,
-        converterMap);
+        converterMap, challengeService);
     
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
