@@ -59,7 +59,6 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.Case
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ElectronicServiceInformationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.CoreFilingMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtPolicyResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.feescalculationquerymessage_4.FeesCalculationQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.feescalculationresponsemessage_4.FeesCalculationResponseMessageType;
@@ -502,7 +501,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
 
   @Override
   public Response getFilingList(String courtId, String userId, java.time.LocalDate startDate,
-      java.time.LocalDate endDate, String apiToken) {
+      java.time.LocalDate beforeDate, String apiToken) {
     try {
       List<String> courtIds = getAllLocations();
       if (courtId != null && !courtId.equals("0") && !courtIds.contains(courtId)) {
@@ -512,7 +511,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       log.error("Couldn't connect to database?" + ex);
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
     }
-    log.info("Getting filing list with these params: " + courtId + ", " + userId + ", " + startDate + ", " + endDate + ", " + apiToken);
+    log.info("Getting filing list with these params: " + courtId + ", " + userId + ", " + startDate + ", " + beforeDate + ", " + apiToken);
 
     Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
     if (port.isEmpty()) {
@@ -534,7 +533,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     } else {
       m.setDocumentSubmitter(null);
     }
-    if (startDate != null && endDate != null) {
+    if (startDate != null && beforeDate != null) {
       try {
         GregorianCalendar startCal = new GregorianCalendar();
         startCal.set(startDate.getYear(), startDate.getMonthValue(), startDate.getDayOfMonth());
@@ -544,8 +543,9 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         DateType niemStart = niemObjFac.createDateType();
         niemStart.setDateRepresentation(niemObjFac.createDate(actualStart));
 
+        // endCal is exclusive!
         GregorianCalendar endCal = new GregorianCalendar();
-        endCal.set(endDate.getYear(), endDate.getMonthValue(), endDate.getDayOfMonth());
+        endCal.set(beforeDate.getYear(), beforeDate.getMonthValue(), beforeDate.getDayOfMonth());
         Date actualEnd = proxyObjFac.createDate();
         actualEnd.setValue(fac.newXMLGregorianCalendar(endCal));
         DateType niemEnd = niemObjFac.createDateType();

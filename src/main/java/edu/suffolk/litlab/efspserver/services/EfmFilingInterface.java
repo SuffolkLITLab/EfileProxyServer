@@ -33,8 +33,8 @@ public interface EfmFilingInterface {
   public Result<Response, FilingError> getServiceTypes(FilingInformation info, String apiToken);
   
   // TODO(brycew-later): make this a little more independent of HTTP
-  public Response getFilingList(String courtId, String submitterId, LocalDate startDate, 
-      LocalDate endDate, String apiToken); 
+  public Response getFilingList(String courtId, String submitterId, LocalDate startDate,
+      LocalDate beforeDate, String apiToken);
   
   public Response getFilingStatus(String courtId, String filingId, String apiToken);
   
