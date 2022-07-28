@@ -27,6 +27,10 @@ First, turning the certificate into something that Java can consume, namely, a J
 * https://www.tbs-certificates.co.uk/FAQ/en/ajouter-certificat-intermediaire-keystore-java.html
 * https://community.datarobot.com/t5/data-prep/how-to-convert-crt-and-key-to-jks-file/td-p/6342
 
+CSR stands for Certificate signing request, the thing you use to ask
+lets encrypt to sign your cert.
+CRT stands for 
+
 The commands below are how we did it
 
 ```bash
@@ -36,7 +40,7 @@ The commands below are how we did it
 # * efile.suffolklitlab.org.key
 # * efile.suffolklitlab.org.p12
    
-java utils.ImportPrivateKey keystore storepass storetype keypass alias certfile keyfile keyfilepass 
+# java utils.ImportPrivateKey keystore storepass storetype keypass alias certfile keyfile keyfilepass 
 openssl pkcs12 -export -in efile_suffolklitlab_org.crt -inkey efile.suffolklitlab.org.key  -out efile.suffolklitlab.org.p12
 keytool -importkeystore -srckeystore efile.suffolklitlab.org.p12 -srcstoretype PKCS12 -destkeystore efile.suffolklitlab.org.jks -deststoretype JKS
 
@@ -84,3 +88,26 @@ You also need to set the address to be `https://`, not `http://`.
 
 The ServerConfig.xml shouldn't use the `clientAuthentication` elem, as it expects clients connecting to also have a
 TLS cert.
+
+
+
+### Take 2
+
+`openssl pkcs12 -export -in acme_domain-chain.crt  -inkey acme_domain.key -out acme_domain.combined.p12`
+asks for an export password (probably the cert password)
+
+
+Did `keytool -importkeystore -srckeystore acme_domain.combined.p12 -srcstoretype PKCS12 -destkeystore efile.suffolklitlab.org.combined.jks -deststoretype JKS`, but got:
+
+```
+Entry for alias 1 successfully imported.
+Import command completed:  1 entries successfully imported, 0 entries failed or cancelled
+
+Warning:
+The JKS keystore uses a proprietary format. It is recommended to migrate to PKCS12 which is an industry standard format using "keytool -importkeystore -srckeystore efile.suffolklitlab.org.combined.jks -destkeystore efile.suffolklitlab.org.combined.jks -deststoretype pkcs12".
+```
+So I think we can change the server config...
+
+Tried it and it didn't work well. Eh.
+
+Problem: how to get the file outside of docker for safekeeping as well?

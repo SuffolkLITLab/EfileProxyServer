@@ -1,18 +1,37 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URI;
+import java.security.KeyFactory;
 import java.security.KeyPair;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.Security;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Scanner;
 
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.PEMKeyPair;
+import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.shredzone.acme4j.Account;
 import org.shredzone.acme4j.AccountBuilder;
 import org.shredzone.acme4j.Authorization;
@@ -26,6 +45,8 @@ import org.shredzone.acme4j.util.CSRBuilder;
 import org.shredzone.acme4j.util.KeyPairUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import edu.suffolk.litlab.efspserver.StdLib;
 
 public class AcmeRenewal {
 
@@ -156,7 +177,12 @@ public class AcmeRenewal {
     }
   }
 
-  private void authorize(Authorization auth, AcmeChallengePublisher publisher) throws AcmeException {
+  private void authorize(Authorization auth, AcmeChallengePublisher publisher) throws AcmeException, IOException {
+    String password = System.getenv("CERT_PASSWORD");
+    if (password == null || password.isBlank()) {
+      log.error("Need a cert password! Use env var CERT_PASSWORD");
+      throw new AcmeException("Need a cert password");
+    }
     log.info("Authorization for domain: {}", auth.getIdentifier().getDomain());
 
     if (auth.getStatus() == Status.VALID) {
@@ -212,7 +238,142 @@ public class AcmeRenewal {
 
     log.info("Challenge completed!");
     publisher.removeTokenContent();
+    log.info("Writing things to a pkcs12 file");
+    try (FileOutputStream fos = new FileOutputStream("convert_test.p12")) {
+      fos.write(convertPEMToPKCS12(DOMAIN_KEY_FILE, DOMAIN_CHAIN_FILE, password));
+    } catch (Exception ex) {
+      log.error("Error on convertPEM: " + StdLib.strFromException(ex)); 
+    }
+    try (FileOutputStream fos = new FileOutputStream("test.p12")) {
+      fos.write(test(DOMAIN_KEY_FILE, DOMAIN_CHAIN_FILE, password));
+    } catch (Exception ex) {
+      log.error("Error on test: " + StdLib.strFromException(ex)); 
+    }
   }
+
+  /** https://stackoverflow.com/a/9829632/11416267 */
+  /* public static byte[] pemToPKCS12(final String keyFile, final String cerFile,
+      final String password) throws Exception {
+    // Get the private key
+    FileReader reader = new FileReader(keyFile);
+
+    PEMParser pem = new PEMParser(reader);
+
+    Object object = pemParser.readObject();
+    PEMDecryptorProvidor decProv = new JcePEMDecryptorProviderBuilder.build(password);
+
+    PrivateKey key = ((KeyPair) pem.readObject()).getPrivate();
+
+    pem.close();
+    reader.close();
+
+    // Get the certificate
+    reader = new FileReader(cerFile);
+    pem = new PEMParser(reader);
+
+    X509Certificate cert = (X509Certificate) pem.readPemObject();
+
+    pem.close();
+    reader.close();
+
+    // Put them into a PKCS12 keystore and write it to a byte[]
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    KeyStore ks = KeyStore.getInstance("PKCS12");
+    ks.load(null);
+    ks.setKeyEntry("alias", (Key) key, password.toCharArray(),
+        new java.security.cert.Certificate[] { cert });
+    ks.store(bos, password.toCharArray());
+    bos.close();
+    return bos.toByteArray();
+  } */
+
+  /** https://stackoverflow.com/a/26678732/11416267 */
+  public static byte[] convertPEMToPKCS12(final File keyFile, final File cerFile,
+      final String password)
+      throws IOException, CertificateException, KeyStoreException, NoSuchAlgorithmException {
+    // Get the private key
+    FileReader reader = new FileReader(keyFile);
+
+    PEMParser pem = new PEMParser(reader);
+    PEMKeyPair pemKeyPair = ((PEMKeyPair) pem.readObject());
+    JcaPEMKeyConverter jcaPEMKeyConverter = new JcaPEMKeyConverter().setProvider("BC");
+    KeyPair keyPair = jcaPEMKeyConverter.getKeyPair(pemKeyPair);
+
+    PrivateKey key = keyPair.getPrivate();
+
+    pem.close();
+    reader.close();
+
+    // Get the certificate
+    reader = new FileReader(cerFile);
+    pem = new PEMParser(reader);
+
+    X509CertificateHolder certHolder = (X509CertificateHolder) pem.readObject();
+    java.security.cert.Certificate X509Certificate = new JcaX509CertificateConverter()
+        .setProvider("BC").getCertificate(certHolder);
+
+    pem.close();
+    reader.close();
+
+    // Put them into a PKCS12 keystore and write it to a byte[]
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    KeyStore ks = KeyStore.getInstance("PKCS12");
+    ks.load(null);
+    ks.setKeyEntry("alias", key, password.toCharArray(),
+        new java.security.cert.Certificate[] { X509Certificate });
+    ks.store(bos, password.toCharArray());
+    bos.close();
+    return bos.toByteArray();
+  }
+
+    /** https://stackoverflow.com/a/58426371/11416267 
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
+     * @throws InvalidKeySpecException
+     * @throws CertificateException
+     * @throws KeyStoreException */
+    public static byte[] test(File keyFile, File certFile, String password) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, CertificateException, KeyStoreException {
+      String alias = "alias";
+
+      // Private Key
+      PEMParser pem = new PEMParser(new FileReader(keyFile));
+      Object parsedObject = pem.readObject();
+
+      PrivateKeyInfo privateKeyInfo = parsedObject instanceof PEMKeyPair
+          ? ((PEMKeyPair) parsedObject).getPrivateKeyInfo()
+          : (PrivateKeyInfo) parsedObject;
+      PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyInfo.getEncoded());
+      KeyFactory factory = KeyFactory.getInstance("RSA");
+      PrivateKey key = factory.generatePrivate(privateKeySpec);
+
+      List<X509Certificate> certs = new ArrayList<>();
+      X509CertificateHolder certHolder = (X509CertificateHolder) pem.readObject();
+      if (certHolder != null) {
+        certs.add(new JcaX509CertificateConverter().setProvider("BC").getCertificate(certHolder));
+      }
+
+      // Certificate
+      pem = new PEMParser(new FileReader(certFile));
+      while ((certHolder = (X509CertificateHolder) pem.readObject()) != null) {
+        certs.add(new JcaX509CertificateConverter().setProvider("BC").getCertificate(certHolder));
+      }
+
+      // Keystore
+      KeyStore ks = KeyStore.getInstance("PKCS12");
+      ks.load(null);
+
+      for (int i = 0; i < certs.size(); i++) {
+        ks.setCertificateEntry(alias + "_" + i, certs.get(i));
+      }
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      KeyStore keyStore = KeyStore.getInstance("PKCS12");
+      keyStore.load(null);
+      keyStore.setKeyEntry(alias, key, password.toCharArray(), certs.toArray(new X509Certificate[certs.size()]));
+      keyStore.store(bos, password.toCharArray());
+      bos.close();
+      return bos.toByteArray();
+    }
 
 
   /** Can be run on it's own: writes the token content to be used in two 
