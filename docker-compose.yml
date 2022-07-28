@@ -3,8 +3,6 @@ services:
   efspjava:
     build:
       context: .
-      args: 
-        EFM_SUPPORT: tyler
     # Necessary b/c docassemble is external to the docker network
     ports:
       - target: 9000

@@ -1,13 +1,8 @@
-ARG EFM_SUPPORT=tyler
-
 # TODO(brycew): consider http://whichjdk.com/#adoptium-eclipse-temurin
 FROM maven:3.8-openjdk-17 AS build_tyler
-ONBUILD COPY pom.xml LICENSE client_sign.properties quartz.properties Suffolk.pfx /usr/src/app/
-
-FROM maven:3.8-openjdk-17 AS build_no_tyler
-ONBUILD COPY pom.xml LICENSE quartz.properties /usr/src/app/
-
-FROM build_${EFM_SUPPORT}
+# The `[]` is an optional COPY: doesn't copy if thaose files aren't there.
+# They are needed for Tyler API usage, and serving the REST API as HTTPS
+COPY pom.xml LICENSE client_sign.propertie[s] quartz.properties Suffolk.pf[x] acme_user.ke[y] acme_domain.ke[y] acme_domain-chain.cr[t] /usr/src/app/
 # Install all of the maven packages, so we don't have to every time we change code
 RUN mvn -f /usr/src/app/pom.xml -DskipTests clean dependency:resolve dependency:go-offline package && mvn -f /usr/src/app/pom.xml test
 COPY src /usr/src/app/src
