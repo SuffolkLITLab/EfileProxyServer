@@ -31,7 +31,6 @@ import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
-import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.shredzone.acme4j.Account;
 import org.shredzone.acme4j.AccountBuilder;
 import org.shredzone.acme4j.Authorization;
@@ -90,10 +89,10 @@ public class AcmeRenewal {
   }
 
 
-  public void fetchCertificate(Collection<String> domains, AcmeChallengePublisher publisher) throws IOException, AcmeException {
+  public void fetchCertificate(Collection<String> domains, AcmeChallengePublisher publisher, String certPassword) throws IOException, AcmeException {
     KeyPair userKeyPair = loadOrCreateUserKeyPair();
 
-    Session session = new Session("acme://letsencrypt.org/staging");
+    Session session = new Session("acme://letsencrypt.org/");
 
     // If there is no account yet, create a new one
     Account acct = findOrRegisterAccount(session, userKeyPair);
@@ -104,7 +103,7 @@ public class AcmeRenewal {
     Order order = acct.newOrder().domains(domains).create();
 
     for (Authorization auth: order.getAuthorizations()) {
-      authorize(auth, publisher);
+      authorize(auth, publisher, certPassword);
     }
 
     CSRBuilder csrb = new CSRBuilder();
@@ -177,12 +176,7 @@ public class AcmeRenewal {
     }
   }
 
-  private void authorize(Authorization auth, AcmeChallengePublisher publisher) throws AcmeException, IOException {
-    String password = System.getenv("CERT_PASSWORD");
-    if (password == null || password.isBlank()) {
-      log.error("Need a cert password! Use env var CERT_PASSWORD");
-      throw new AcmeException("Need a cert password");
-    }
+  private void authorize(Authorization auth, AcmeChallengePublisher publisher, String certPassword) throws AcmeException, IOException {
     log.info("Authorization for domain: {}", auth.getIdentifier().getDomain());
 
     if (auth.getStatus() == Status.VALID) {
@@ -238,56 +232,16 @@ public class AcmeRenewal {
 
     log.info("Challenge completed!");
     publisher.removeTokenContent();
-    log.info("Writing things to a pkcs12 file");
-    try (FileOutputStream fos = new FileOutputStream("convert_test.p12")) {
-      fos.write(convertPEMToPKCS12(DOMAIN_KEY_FILE, DOMAIN_CHAIN_FILE, password));
+    log.info("Writing things to a jks file");
+    try (FileOutputStream fos = new FileOutputStream("tls_server_cert.jks")) {
+      fos.write(convertPEMToJKS(DOMAIN_KEY_FILE, DOMAIN_CHAIN_FILE, certPassword));
     } catch (Exception ex) {
-      log.error("Error on convertPEM: " + StdLib.strFromException(ex)); 
-    }
-    try (FileOutputStream fos = new FileOutputStream("test.p12")) {
-      fos.write(test(DOMAIN_KEY_FILE, DOMAIN_CHAIN_FILE, password));
-    } catch (Exception ex) {
-      log.error("Error on test: " + StdLib.strFromException(ex)); 
+      log.error("Error on cert conversion: " + StdLib.strFromException(ex));
     }
   }
 
-  /** https://stackoverflow.com/a/9829632/11416267 */
-  /* public static byte[] pemToPKCS12(final String keyFile, final String cerFile,
-      final String password) throws Exception {
-    // Get the private key
-    FileReader reader = new FileReader(keyFile);
-
-    PEMParser pem = new PEMParser(reader);
-
-    Object object = pemParser.readObject();
-    PEMDecryptorProvidor decProv = new JcePEMDecryptorProviderBuilder.build(password);
-
-    PrivateKey key = ((KeyPair) pem.readObject()).getPrivate();
-
-    pem.close();
-    reader.close();
-
-    // Get the certificate
-    reader = new FileReader(cerFile);
-    pem = new PEMParser(reader);
-
-    X509Certificate cert = (X509Certificate) pem.readPemObject();
-
-    pem.close();
-    reader.close();
-
-    // Put them into a PKCS12 keystore and write it to a byte[]
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    KeyStore ks = KeyStore.getInstance("PKCS12");
-    ks.load(null);
-    ks.setKeyEntry("alias", (Key) key, password.toCharArray(),
-        new java.security.cert.Certificate[] { cert });
-    ks.store(bos, password.toCharArray());
-    bos.close();
-    return bos.toByteArray();
-  } */
-
-  /** https://stackoverflow.com/a/26678732/11416267 */
+  /* https://stackoverflow.com/a/9829632/11416267 looked useful, but old */
+  /* https://stackoverflow.com/a/26678732/11416267
   public static byte[] convertPEMToPKCS12(final File keyFile, final File cerFile,
       final String password)
       throws IOException, CertificateException, KeyStoreException, NoSuchAlgorithmException {
@@ -325,6 +279,7 @@ public class AcmeRenewal {
     bos.close();
     return bos.toByteArray();
   }
+  */
 
     /** https://stackoverflow.com/a/58426371/11416267 
      * @throws NoSuchAlgorithmException
@@ -332,7 +287,7 @@ public class AcmeRenewal {
      * @throws InvalidKeySpecException
      * @throws CertificateException
      * @throws KeyStoreException */
-    public static byte[] test(File keyFile, File certFile, String password) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, CertificateException, KeyStoreException {
+    public static byte[] convertPEMToJKS(File keyFile, File certFile, String password) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, CertificateException, KeyStoreException {
       String alias = "alias";
 
       // Private Key
@@ -351,6 +306,7 @@ public class AcmeRenewal {
       if (certHolder != null) {
         certs.add(new JcaX509CertificateConverter().setProvider("BC").getCertificate(certHolder));
       }
+      pem.close();
 
       // Certificate
       pem = new PEMParser(new FileReader(certFile));
@@ -359,7 +315,7 @@ public class AcmeRenewal {
       }
 
       // Keystore
-      KeyStore ks = KeyStore.getInstance("PKCS12");
+      KeyStore ks = KeyStore.getInstance("JKS");
       ks.load(null);
 
       for (int i = 0; i < certs.size(); i++) {
@@ -367,18 +323,18 @@ public class AcmeRenewal {
       }
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      KeyStore keyStore = KeyStore.getInstance("PKCS12");
+      KeyStore keyStore = KeyStore.getInstance("JKS");
       keyStore.load(null);
       keyStore.setKeyEntry(alias, key, password.toCharArray(), certs.toArray(new X509Certificate[certs.size()]));
       keyStore.store(bos, password.toCharArray());
       bos.close();
+      pem.close();
       return bos.toByteArray();
     }
 
-
-  /** Can be run on it's own: writes the token content to be used in two 
+  /** Can be run on it's own: writes the token content to be used in two
    * different files that are independently read by the Acme service.
-   * 
+   *
    * Run with `mvn exec:java@AcmeRenewal -Dexec.args="efile.suffolklitlab.edu"`.
    * @throws AcmeException
    * @throws IOException */
@@ -387,9 +343,19 @@ public class AcmeRenewal {
       log.error("Usage: AcmeRenewal <domain>...");
       System.exit(1);
     }
+    String password = System.getenv("CERT_PASSWORD");
+    if (password == null || password.isBlank()) {
+      // Sometimes, CERT_PASSWORD will try to start the whole server with https, even
+      // if the cert isn't present yet. Use this backup on the first time the server is started.
+      password = System.getenv("NEW_CERT_PASSWORD");
+      if (password == null || password.isBlank()) {
+        log.error("Need a cert password! Use env var CERT_PASSWORD");
+        return;
+      }
+    }
     Security.addProvider(new BouncyCastleProvider());
     AcmeRenewal renewal = new AcmeRenewal();
     AcmeChallengePublisher publisher = new AcmeChallengeWriter();
-    renewal.fetchCertificate(Arrays.asList(args), publisher);
+    renewal.fetchCertificate(Arrays.asList(args), publisher, password);
   }
 }
