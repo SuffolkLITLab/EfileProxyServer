@@ -2,7 +2,7 @@ ARG EFM_SUPPORT=tyler
 
 # TODO(brycew): consider http://whichjdk.com/#adoptium-eclipse-temurin
 FROM maven:3.8-openjdk-17 AS build_tyler
-ONBUILD COPY pom.xml LICENSE client_sign.properties quartz.properties Suffolk.pfx /usr/src/app/
+ONBUILD COPY pom.xml LICENSE client_sign.properties quartz.properties Suffolk.pfx acme_user.ke[y] acme_domain.ke[y] /usr/src/app/
 
 FROM maven:3.8-openjdk-17 AS build_no_tyler
 ONBUILD COPY pom.xml LICENSE quartz.properties /usr/src/app/
