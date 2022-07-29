@@ -8,6 +8,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyStore;
@@ -47,13 +50,25 @@ import org.slf4j.LoggerFactory;
 
 import edu.suffolk.litlab.efspserver.StdLib;
 
+/** Handles Renewing the Server's HTTPS / TLS certificates using the ACME protocol.
+ * 
+ * The full process is as follows:
+ * - if not already present make a user public/private key pair (i.e. you, the org running the site)
+ * - if not already present make a domain public/private key pair (specific to this site's domain)
+ * - make a Certificate signing request (CSR) and send to let's encrypt
+ *   - in the background, it also creates a special token that is available at a URL path known
+ *     to Let's Encrypt that they use to verify we have control of the website at that domain
+ * - get back a certificate chain (*.crt) from let's encrypt, showing that our domain public key is
+ *   the approved key for our given domain
+ * - save the domain private key and the *.crt as a Java Key Store (JKS) file. This is used by
+ *   our server to serve the REST API over HTTPS
+ */
 public class AcmeRenewal {
-
   private static final File USER_KEY_FILE = new File("acme_user.key");
   private static final File DOMAIN_KEY_FILE = new File("acme_domain.key");
   private static final File DOMAIN_CSR_FILE = new File("acme_domain.csr");
   private static final File DOMAIN_CHAIN_FILE = new File("acme_domain-chain.crt");
-  private static final String JSK_OUT_FILE_PATH = "tls_server_cert.jks";
+  private static final File JSK_OUT_FILE_PATH = new File("tls_server_cert.jks");
 
   // RSA key size of the generated key pairs
   private static final int KEY_SIZE = 2048;
@@ -70,6 +85,7 @@ public class AcmeRenewal {
       KeyPair userKeyPair = KeyPairUtils.createKeyPair(KEY_SIZE);
       try (FileWriter fw = new FileWriter(USER_KEY_FILE)) {
         KeyPairUtils.writeKeyPair(userKeyPair, fw);
+        copyToVolume(USER_KEY_FILE);
       }
       return userKeyPair;
     }
@@ -84,6 +100,7 @@ public class AcmeRenewal {
       KeyPair domainKeyPair = KeyPairUtils.createKeyPair(KEY_SIZE);
       try (FileWriter fw = new FileWriter(DOMAIN_KEY_FILE)) {
         KeyPairUtils.writeKeyPair(domainKeyPair, fw);
+        copyToVolume(DOMAIN_KEY_FILE);
       }
       return domainKeyPair;
     }
@@ -112,6 +129,7 @@ public class AcmeRenewal {
     csrb.sign(domainKeyPair);
     try (Writer out = new FileWriter(DOMAIN_CSR_FILE)) {
       csrb.write(out);
+      copyToVolume(DOMAIN_CSR_FILE);
     }
 
     order.execute(csrb.getEncoded());
@@ -138,10 +156,12 @@ public class AcmeRenewal {
     log.info("Certificate URL: {}", certificate.getLocation());
     try (FileWriter fw = new FileWriter(DOMAIN_CHAIN_FILE)) {
       certificate.writeCertificate(fw);
+      copyToVolume(DOMAIN_CHAIN_FILE);
     }
     log.info("Writing things to a jks file");
     try (FileOutputStream fos = new FileOutputStream(JSK_OUT_FILE_PATH)) {
       fos.write(convertPEMToJKS(DOMAIN_KEY_FILE, DOMAIN_CHAIN_FILE, certPassword));
+      copyToVolume(JSK_OUT_FILE_PATH);
     } catch (Exception ex) {
       log.error("Error on cert conversion: " + StdLib.strFromException(ex));
     }
@@ -296,6 +316,22 @@ public class AcmeRenewal {
     return bos.toByteArray();
   }
 
+  /** Copys a given file to a pre-determined location (a docker volume). 
+   * 
+   * Given that we are handling much of the certificate generation within the running container, 
+   * if someone ever decides to restart the container, they would automatically lose their signed certificates.
+   * So we save these certs outside the container to the volume, if it's present.
+   */
+  private static void copyToVolume(File toCopy) throws IOException {
+    File dockerVolume = new File("/tmp/save_certs");
+    if (dockerVolume.exists() && dockerVolume.isDirectory()) {
+      Files.copy(Paths.get(toCopy.getAbsolutePath()), Paths.get("/tmp/save_certs/" + toCopy.getName()), StandardCopyOption.REPLACE_EXISTING);
+    } else {
+      log.info("No docker volume at expected location (" + dockerVolume.getAbsolutePath() 
+          + "), only saving " + toCopy.getName() + " inside container!");
+    }
+  }
+
   /** Can be run on it's own: writes the token content to be used in two
    * different files that are independently read by the Acme service.
    *
@@ -305,13 +341,8 @@ public class AcmeRenewal {
   public static void main(String... args) throws IOException, AcmeException {
     String password = System.getenv("CERT_PASSWORD");
     if (password == null || password.isBlank()) {
-      // Sometimes, CERT_PASSWORD will try to start the whole server with https, even
-      // if the cert isn't present yet. Use this backup on the first time the server is started.
-      password = System.getenv("NEW_CERT_PASSWORD");
-      if (password == null || password.isBlank()) {
-        log.error("Need a cert password! Use env var CERT_PASSWORD");
-        return;
-      }
+      log.error("Need a cert password! Use env var CERT_PASSWORD");
+      return;
     }
     if (args.length == 0) {
       log.info("No domains passed: Writing crt to a jks file");
