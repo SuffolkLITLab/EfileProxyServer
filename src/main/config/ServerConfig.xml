@@ -30,9 +30,9 @@
         <httpj:identifiedTLSServerParameters id="secure">
             <httpj:tlsServerParameters>
                 <sec:keyManagers keyPasswordCallbackHandler="edu.suffolk.litlab.efspserver.HttpsCallbackHandler">
-                    <sec:keyStore file="src/main/config/efile.suffolklitlab.org.combined.jks" type="JKS"/>
+                    <sec:keyStore file="src/main/config/tls_server_cert.jks" type="JKS"/>
                 </sec:keyManagers>
-	              <sec:certAlias>1</sec:certAlias>
+	              <sec:certAlias>alias</sec:certAlias>
             </httpj:tlsServerParameters>
         </httpj:identifiedTLSServerParameters>
         <httpj:engine port="9000">

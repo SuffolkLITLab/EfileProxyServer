@@ -53,6 +53,7 @@ public class AcmeRenewal {
   private static final File DOMAIN_KEY_FILE = new File("acme_domain.key");
   private static final File DOMAIN_CSR_FILE = new File("acme_domain.csr");
   private static final File DOMAIN_CHAIN_FILE = new File("acme_domain-chain.crt");
+  private static final String JSK_OUT_FILE_PATH = "tls_server_cert.jks";
 
   // RSA key size of the generated key pairs
   private static final int KEY_SIZE = 2048;
@@ -60,7 +61,7 @@ public class AcmeRenewal {
   private static Logger log =
       LoggerFactory.getLogger(AcmeRenewal.class);
 
-  private KeyPair loadOrCreateUserKeyPair() throws IOException {
+  private static KeyPair loadOrCreateUserKeyPair() throws IOException {
     if (USER_KEY_FILE.exists()) {
       try (FileReader fr = new FileReader(USER_KEY_FILE)) {
         return KeyPairUtils.readKeyPair(fr);
@@ -74,7 +75,7 @@ public class AcmeRenewal {
     }
   }
 
-  private KeyPair loadOrCreateDomainKeyPair() throws IOException {
+  private static KeyPair loadOrCreateDomainKeyPair() throws IOException {
     if (DOMAIN_KEY_FILE.exists()) {
       try (FileReader fr = new FileReader(DOMAIN_KEY_FILE)) {
         return KeyPairUtils.readKeyPair(fr);
@@ -103,13 +104,12 @@ public class AcmeRenewal {
     Order order = acct.newOrder().domains(domains).create();
 
     for (Authorization auth: order.getAuthorizations()) {
-      authorize(auth, publisher, certPassword);
+      authorize(auth, publisher);
     }
 
     CSRBuilder csrb = new CSRBuilder();
     csrb.addDomains(domains);
     csrb.sign(domainKeyPair);
-
     try (Writer out = new FileWriter(DOMAIN_CSR_FILE)) {
       csrb.write(out);
     }
@@ -139,11 +139,12 @@ public class AcmeRenewal {
     try (FileWriter fw = new FileWriter(DOMAIN_CHAIN_FILE)) {
       certificate.writeCertificate(fw);
     }
-    // Additionally TODO(brycew):
-    // * cat ca-bundle (?) and crt together to make combined crt (?)
-    // * openssl to make the combined crt and key into a p12
-    // * keytool to make the combined p12 into a JKS (the final product)
-    // * (optionally) keytool to export the cert from the jks (alias 1) to a cert.pem to openssl verify
+    log.info("Writing things to a jks file");
+    try (FileOutputStream fos = new FileOutputStream(JSK_OUT_FILE_PATH)) {
+      fos.write(convertPEMToJKS(DOMAIN_KEY_FILE, DOMAIN_CHAIN_FILE, certPassword));
+    } catch (Exception ex) {
+      log.error("Error on cert conversion: " + StdLib.strFromException(ex));
+    }
   }
 
   public Account findOrRegisterAccount(Session session, KeyPair accountKey) throws AcmeException {
@@ -176,7 +177,7 @@ public class AcmeRenewal {
     }
   }
 
-  private void authorize(Authorization auth, AcmeChallengePublisher publisher, String certPassword) throws AcmeException, IOException {
+  private static void authorize(Authorization auth, AcmeChallengePublisher publisher) throws AcmeException, IOException {
     log.info("Authorization for domain: {}", auth.getIdentifier().getDomain());
 
     if (auth.getStatus() == Status.VALID) {
@@ -232,117 +233,76 @@ public class AcmeRenewal {
 
     log.info("Challenge completed!");
     publisher.removeTokenContent();
-    log.info("Writing things to a jks file");
-    try (FileOutputStream fos = new FileOutputStream("tls_server_cert.jks")) {
-      fos.write(convertPEMToJKS(DOMAIN_KEY_FILE, DOMAIN_CHAIN_FILE, certPassword));
-    } catch (Exception ex) {
-      log.error("Error on cert conversion: " + StdLib.strFromException(ex));
-    }
   }
 
-  /* https://stackoverflow.com/a/9829632/11416267 looked useful, but old */
-  /* https://stackoverflow.com/a/26678732/11416267
-  public static byte[] convertPEMToPKCS12(final File keyFile, final File cerFile,
-      final String password)
-      throws IOException, CertificateException, KeyStoreException, NoSuchAlgorithmException {
-    // Get the private key
-    FileReader reader = new FileReader(keyFile);
+  /** Converts certificate information from Let's Encrypt (plus our domain private key file) into
+   * a java key store.
+   * 
+   * NOTE(brycew): keytool (since Java 9) says that "The JKS keystore uses a proprietary format.
+   * It is recommended to migrate to PKCS12 which is an industry standard format". However, for some
+   * reason the TLS for the site won't work with PKCS (even when using pre-signed namecheap certs, 
+   * so it's not a new letsencrypt thing). Not sure how to progress.
+   * 
+   * From https://stackoverflow.com/a/58426371/11416267 
+   * @throws NoSuchAlgorithmException
+   * @throws IOException
+   * @throws InvalidKeySpecException
+   * @throws CertificateException
+   * @throws KeyStoreException 
+   */
+  public static byte[] convertPEMToJKS(File keyFile, File certFile, String password) 
+      throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, CertificateException, KeyStoreException {
+    String alias = "alias";
 
-    PEMParser pem = new PEMParser(reader);
-    PEMKeyPair pemKeyPair = ((PEMKeyPair) pem.readObject());
-    JcaPEMKeyConverter jcaPEMKeyConverter = new JcaPEMKeyConverter().setProvider("BC");
-    KeyPair keyPair = jcaPEMKeyConverter.getKeyPair(pemKeyPair);
+    // Private Key
+    PEMParser pem = new PEMParser(new FileReader(keyFile));
+    Object parsedObject = pem.readObject();
 
-    PrivateKey key = keyPair.getPrivate();
+    PrivateKeyInfo privateKeyInfo = parsedObject instanceof PEMKeyPair
+        ? ((PEMKeyPair) parsedObject).getPrivateKeyInfo()
+        : (PrivateKeyInfo) parsedObject;
+    PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyInfo.getEncoded());
+    KeyFactory factory = KeyFactory.getInstance("RSA");
+    PrivateKey key = factory.generatePrivate(privateKeySpec);
 
-    pem.close();
-    reader.close();
-
-    // Get the certificate
-    reader = new FileReader(cerFile);
-    pem = new PEMParser(reader);
-
+    List<X509Certificate> certs = new ArrayList<>();
     X509CertificateHolder certHolder = (X509CertificateHolder) pem.readObject();
-    java.security.cert.Certificate X509Certificate = new JcaX509CertificateConverter()
-        .setProvider("BC").getCertificate(certHolder);
-
+    if (certHolder != null) {
+      certs.add(new JcaX509CertificateConverter().setProvider("BC").getCertificate(certHolder));
+    }
     pem.close();
-    reader.close();
 
-    // Put them into a PKCS12 keystore and write it to a byte[]
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    KeyStore ks = KeyStore.getInstance("PKCS12");
+    // Certificate
+    pem = new PEMParser(new FileReader(certFile));
+    while ((certHolder = (X509CertificateHolder) pem.readObject()) != null) {
+      certs.add(new JcaX509CertificateConverter().setProvider("BC").getCertificate(certHolder));
+    }
+
+    // Keystore
+    KeyStore ks = KeyStore.getInstance("JKS");
     ks.load(null);
-    ks.setKeyEntry("alias", key, password.toCharArray(),
-        new java.security.cert.Certificate[] { X509Certificate });
-    ks.store(bos, password.toCharArray());
+
+    for (int i = 0; i < certs.size(); i++) {
+      ks.setCertificateEntry(alias + "_" + i, certs.get(i));
+    }
+
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    KeyStore keyStore = KeyStore.getInstance("JKS");
+    keyStore.load(null);
+    keyStore.setKeyEntry(alias, key, password.toCharArray(), certs.toArray(new X509Certificate[certs.size()]));
+    keyStore.store(bos, password.toCharArray());
     bos.close();
+    pem.close();
     return bos.toByteArray();
   }
-  */
-
-    /** https://stackoverflow.com/a/58426371/11416267 
-     * @throws NoSuchAlgorithmException
-     * @throws IOException
-     * @throws InvalidKeySpecException
-     * @throws CertificateException
-     * @throws KeyStoreException */
-    public static byte[] convertPEMToJKS(File keyFile, File certFile, String password) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, CertificateException, KeyStoreException {
-      String alias = "alias";
-
-      // Private Key
-      PEMParser pem = new PEMParser(new FileReader(keyFile));
-      Object parsedObject = pem.readObject();
-
-      PrivateKeyInfo privateKeyInfo = parsedObject instanceof PEMKeyPair
-          ? ((PEMKeyPair) parsedObject).getPrivateKeyInfo()
-          : (PrivateKeyInfo) parsedObject;
-      PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyInfo.getEncoded());
-      KeyFactory factory = KeyFactory.getInstance("RSA");
-      PrivateKey key = factory.generatePrivate(privateKeySpec);
-
-      List<X509Certificate> certs = new ArrayList<>();
-      X509CertificateHolder certHolder = (X509CertificateHolder) pem.readObject();
-      if (certHolder != null) {
-        certs.add(new JcaX509CertificateConverter().setProvider("BC").getCertificate(certHolder));
-      }
-      pem.close();
-
-      // Certificate
-      pem = new PEMParser(new FileReader(certFile));
-      while ((certHolder = (X509CertificateHolder) pem.readObject()) != null) {
-        certs.add(new JcaX509CertificateConverter().setProvider("BC").getCertificate(certHolder));
-      }
-
-      // Keystore
-      KeyStore ks = KeyStore.getInstance("JKS");
-      ks.load(null);
-
-      for (int i = 0; i < certs.size(); i++) {
-        ks.setCertificateEntry(alias + "_" + i, certs.get(i));
-      }
-
-      ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      KeyStore keyStore = KeyStore.getInstance("JKS");
-      keyStore.load(null);
-      keyStore.setKeyEntry(alias, key, password.toCharArray(), certs.toArray(new X509Certificate[certs.size()]));
-      keyStore.store(bos, password.toCharArray());
-      bos.close();
-      pem.close();
-      return bos.toByteArray();
-    }
 
   /** Can be run on it's own: writes the token content to be used in two
    * different files that are independently read by the Acme service.
    *
-   * Run with `mvn exec:java@AcmeRenewal -Dexec.args="efile.suffolklitlab.edu"`.
+   * Run with `mvn exec:java@AcmeRenewal -Dexec.args="efile.example.com"`.
    * @throws AcmeException
    * @throws IOException */
   public static void main(String... args) throws IOException, AcmeException {
-    if (args.length == 0) {
-      log.error("Usage: AcmeRenewal <domain>...");
-      System.exit(1);
-    }
     String password = System.getenv("CERT_PASSWORD");
     if (password == null || password.isBlank()) {
       // Sometimes, CERT_PASSWORD will try to start the whole server with https, even
@@ -352,6 +312,15 @@ public class AcmeRenewal {
         log.error("Need a cert password! Use env var CERT_PASSWORD");
         return;
       }
+    }
+    if (args.length == 0) {
+      log.info("No domains passed: Writing crt to a jks file");
+      try (FileOutputStream fos = new FileOutputStream(JSK_OUT_FILE_PATH)) {
+        fos.write(convertPEMToJKS(DOMAIN_KEY_FILE, DOMAIN_CHAIN_FILE, password));
+      } catch (Exception ex) {
+        log.error("Error on cert conversion: " + StdLib.strFromException(ex));
+      }
+      return;
     }
     Security.addProvider(new BouncyCastleProvider());
     AcmeRenewal renewal = new AcmeRenewal();
