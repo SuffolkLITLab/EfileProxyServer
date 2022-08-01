@@ -26,7 +26,8 @@ cat .env | export $(cut -d= -f1 -)="$(cut -d= -f2 -)"
 ## Testing
 
 You can run tests and get coverage with the following command:
-```
+
+```bash
 mvn clean jacoco:prepare-agent verify jacoco:report
 ```
 

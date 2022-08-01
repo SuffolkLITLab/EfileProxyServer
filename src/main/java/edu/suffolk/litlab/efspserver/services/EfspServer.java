@@ -47,7 +47,7 @@ public class EfspServer {
   private JAXRSServerFactoryBean sf;
   private Server server;
 
-  private final static File CERT_KEY_STORE = new File("/src/main/config/tls_server_cert.jks");
+  private final static File CERT_KEY_STORE = new File("src/main/config/tls_server_cert.jks");
 
   static {
     Optional<String> certPassword = GetEnv("CERT_PASSWORD");
@@ -55,14 +55,13 @@ public class EfspServer {
       HttpsCallbackHandler.setCertPassword(certPassword.get());
       SpringBusFactory factory = new SpringBusFactory();
       Bus bus = factory.createBus("src/main/config/ServerConfig.xml");
-      //log.info("" + bus.getProperties().get("bus"));
       // bus.setProperty(HttpServerEngineSupport.ENABLE_HTTP2, true);
       BusFactory.setDefaultBus(bus);
     } else {
       if (certPassword.isEmpty()) {
         log.warn("Didn't enter a CERT_PASSWORD. Falling back to HTTP. Did you pass an .env file?");
       }
-      if (CERT_KEY_STORE.isFile()) {
+      if (!CERT_KEY_STORE.isFile()) {
         log.warn(CERT_KEY_STORE.getAbsolutePath() + " doesn't exist, needed to run HTTPS. Falling back to HTTP.");
       }
     }
