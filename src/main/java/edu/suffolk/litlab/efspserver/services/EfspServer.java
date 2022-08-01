@@ -15,6 +15,7 @@ import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingInformationC
 import edu.suffolk.litlab.efspserver.ecf.TylerModuleSetup;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetModuleSetup;
 
+import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -46,9 +47,11 @@ public class EfspServer {
   private JAXRSServerFactoryBean sf;
   private Server server;
 
+  private final static File CERT_KEY_STORE = new File("/src/main/config/tls_server_cert.jks");
+
   static {
     Optional<String> certPassword = GetEnv("CERT_PASSWORD");
-    if (certPassword.isPresent()) {
+    if (certPassword.isPresent() && CERT_KEY_STORE.isFile()) {
       HttpsCallbackHandler.setCertPassword(certPassword.get());
       SpringBusFactory factory = new SpringBusFactory();
       Bus bus = factory.createBus("src/main/config/ServerConfig.xml");
@@ -56,7 +59,12 @@ public class EfspServer {
       // bus.setProperty(HttpServerEngineSupport.ENABLE_HTTP2, true);
       BusFactory.setDefaultBus(bus);
     } else {
-      log.warn("Didn't enter a CERT_PASSWORD. Falling back to HTTP. Did you pass an .env file?");
+      if (certPassword.isEmpty()) {
+        log.warn("Didn't enter a CERT_PASSWORD. Falling back to HTTP. Did you pass an .env file?");
+      }
+      if (CERT_KEY_STORE.isFile()) {
+        log.warn(CERT_KEY_STORE.getAbsolutePath() + " doesn't exist, needed to run HTTPS. Falling back to HTTP.");
+      }
     }
   }
 

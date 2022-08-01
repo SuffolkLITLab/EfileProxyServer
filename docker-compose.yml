@@ -12,9 +12,15 @@ services:
     env_file: .env
     depends_on:
       - "db"
-    # Use to get exact SOAP envelopes being sent, you can run wireshark locally
-    #volumes:
-    #  - .:/tmp/secrets
+    volumes:
+      - type: bind
+        source: ./src/main/config
+        target: /tmp/tls_certs
+    # Uncomment this for debugging: you can get exact SOAP envelopes being
+    # sent by running wireshark locally
+    #  - type: bind
+    #    source: .
+    #    target: /tmp/secrets
   db:
     image: "postgres:14"
     shm_size: 128MB
