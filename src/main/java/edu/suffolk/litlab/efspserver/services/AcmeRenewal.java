@@ -333,7 +333,7 @@ public class AcmeRenewal {
   /** Can be run on it's own: writes the token content to be used in two
    * different files that are independently read by the Acme service.
    *
-   * Run with `mvn exec:java@AcmeRenewal -Dexec.args="efile.example.com"`.
+   * Run with `mvn exec:java@AcmeRenewal renew`.
    * @throws AcmeException
    * @throws IOException */
   public static void main(String... args) throws IOException, AcmeException {
@@ -343,7 +343,7 @@ public class AcmeRenewal {
       return;
     }
     if (args.length == 0) {
-      log.info("No domains passed: Writing crt to a jks file");
+      log.info("No args passed: Writing crt to a jks file");
       try (FileOutputStream fos = new FileOutputStream(JSK_OUT_FILE_PATH)) {
         fos.write(convertPEMToJKS(DOMAIN_KEY_FILE, DOMAIN_CHAIN_FILE, password));
       } catch (Exception ex) {
@@ -351,9 +351,19 @@ public class AcmeRenewal {
       }
       return;
     }
-    Security.addProvider(new BouncyCastleProvider());
-    AcmeRenewal renewal = new AcmeRenewal();
-    AcmeChallengePublisher publisher = new AcmeChallengeWriter();
-    renewal.fetchCertificate(Arrays.asList(args), publisher, password);
+
+    if (args.length == 1 && args[0].equalsIgnoreCase("renew")) {
+      String domain = System.getenv("EXTERNAL_DOMAIN");
+      if (domain == null || domain.isBlank()) {
+        log.error("Need a domain! Use env var EXTERNAL_DOMAIN");
+        return;
+      }
+      Security.addProvider(new BouncyCastleProvider());
+      AcmeRenewal renewal = new AcmeRenewal();
+      AcmeChallengePublisher publisher = new AcmeChallengeWriter();
+      renewal.fetchCertificate(Arrays.asList(domain), publisher, password);
+    } else {
+      log.info("No valid commands passed, doing nothing.");
+    }
   }
 }

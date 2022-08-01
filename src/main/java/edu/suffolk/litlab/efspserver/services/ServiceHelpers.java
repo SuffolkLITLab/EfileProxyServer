@@ -52,20 +52,26 @@ public class ServiceHelpers {
 
   public static String ASSEMBLY_PORT = "/filingassembly/callbacks/FilingAssemblyMDEPort";
   public static String ASSEMBLY_PORT_V5 = "/filingassembly/callbacks/FilingAssemblyMDEPortEcfv5";
-  public static String BASE_LOCAL_URL;
-  public static final String EXTERNAL_URL = GetEnv("EXTERNAL_URL").orElse("filingassemblymde.com:9000");
-  public static final String SERVICE_URL = EXTERNAL_URL + ASSEMBLY_PORT;
-  public static final String REST_CALLBACK_URL = EXTERNAL_URL + "/filingreview/jurisdictions/%s/courts/%s/filing/status"; 
+  public static final String EXTERNAL_DOMAIN = GetEnv("EXTERNAL_DOMAIN").orElse("filingassemblymde.com:9000");
+  public static final String BASE_LOCAL_URL;
+  public static final String EXTERNAL_URL;
+  public static final String SERVICE_URL;
+  public static final String REST_CALLBACK_URL;
   static Map<String, Integer> tylerToHttp = new HashMap<>();
   static {
     Optional<String> certPassword = GetEnv("CERT_PASSWORD");
     // The 9000 is hard coded (we'll always be running on 9000 inside the docker container,
     // but might be mapped to other things outside of it)
     if (certPassword.isPresent()) {
+      EXTERNAL_URL = "https://" + EXTERNAL_DOMAIN;
       BASE_LOCAL_URL = "https://0.0.0.0:9000";
     } else {
+      EXTERNAL_URL = "http://" + EXTERNAL_DOMAIN;
       BASE_LOCAL_URL = "http://0.0.0.0:9000";
     }
+
+    SERVICE_URL = EXTERNAL_URL + ASSEMBLY_PORT;
+    REST_CALLBACK_URL = EXTERNAL_URL + "/filingreview/jurisdictions/%s/courts/%s/filing/status"; 
 
     tylerToHttp.clear();
     // First three are ones that the proxy should handle well. If we don't then it's our fault.
