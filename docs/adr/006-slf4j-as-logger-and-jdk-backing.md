@@ -19,8 +19,8 @@ Most of the actual advice here was from https://sematext.com/blog/java-logging.
 
 ## Decision Outcome
 
-* SLF4J + JDK Common Logger 
+* SLF4J + JDK Common Logger
 * Given my inexperience with logs, being able to switch out backends is very useful, and we
-  will change from all of the `System.err.println` calls to something else anyway. 
+  will change from all of the `System.err.println` calls to something else anyway.
 * JDK is the simplest backing logger, so sticking with it for now.
 * Config files have yet to be setup consistently, so I still need to look into that.

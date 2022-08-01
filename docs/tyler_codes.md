@@ -69,7 +69,7 @@ Many of these codes are applicable for criminal cases only, and aren't used in o
 * general offense
 * haircolor
 * lawenforcementunit: EnforcementOfficialText
-* physicalfeature: personphysicalfeature, and physicalfeature* vehicletype, i.e. Four Door, 34 PU, Moped, etc.
+* physicalfeature: personphysicalfeature, and physicalfeature: vehicletype, i.e. Four Door, 34 PU, Moped, etc.
 * question: QuestionAnswer in ReviewFiling
 * race: PersonRaceText in ReviewFiling
 * statute
@@ -166,7 +166,7 @@ A general number that references some other schema or database elsewhere. The mo
 
 ### Party Type
 
-The parties that are allowed to be in a case type. The most common of these are Plaintiff/Petetioner and Defendent/Respondent, but other ones include Guardian, Minor, Executor, Ward, etc.
+The parties that are allowed to be in a case type. The most common of these are Plaintiff/Petitioner and Defendant/Respondent, but other ones include Guardian, Minor, Executor, Ward, etc.
 
 ### Filing
 

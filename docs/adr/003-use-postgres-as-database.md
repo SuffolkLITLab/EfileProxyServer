@@ -4,10 +4,10 @@
 
 Mostly in conversations with Quinten, a little bit of research as it was chosen.
 
-Tyler Technologies (specifically Tyler Technologies, not the ECF v4.0 standard) has a system of 
+Tyler Technologies (specifically Tyler Technologies, not the ECF v4.0 standard) has a system of
 Court codes, which are genericode XML files per court (and a few court-wide ones) that
 allow courts flexibility in what sorts of fields they expect in filings. It's complicated,
-to the point that the most maintainable and simple implementation of these codes in Java would 
+to the point that the most maintainable and simple implementation of these codes in Java would
 be in an actual SQL database, as opposed to an Java datastructures in memory and serialized /
 deserialized directly. Thus, we need to choose a specific SQL database implementation that
 would work the best for our purposes.
@@ -34,17 +34,17 @@ maintainability: so far, the few queries so far have been handwritten SQL querie
 
 ## Pros and Cons of the Alternatives <!-- optional -->
 
-### PostgreSQL 
+### PostgreSQL
 
-* `+` Generally considered the "safer, more robust" choice 
-* `+` Also used by Docassemble 
-* `-` Historically has been slower than MySQL, but might not be true any more 
+* `+` Generally considered the "safer, more robust" choice
+* `+` Also used by Docassemble
+* `-` Historically has been slower than MySQL, but might not be true any more
 
-### MySQL 
+### MySQL
 
-* `+` Probably the most used SQL DB 
+* `+` Probably the most used SQL DB
 
-### MariaDB 
+### MariaDB
 
-* `+` The "freer" version of MySQL 
+* `+` The "freer" version of MySQL
 

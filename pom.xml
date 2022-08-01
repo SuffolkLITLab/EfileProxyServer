@@ -5,20 +5,22 @@
     <groupId>edu.suffolk.litlab</groupId>
     <artifactId>efspserver</artifactId>
     <version>1.0.0-beta-1</version>
-    <name>Suffolk LITLab AssemblyLine EFSP Proxy Server</name>
+    <name>Suffolk LITLab EFSP Proxy Server</name>
     <url>https://suffolklitlab.org</url>
-    <description>an EFSP client for the Assembly Line Project</description>
+    <description>an EFSP client for the AssemblyLine Project</description>
     <!-- to find dependencies that have been changed to a different group / artifact id, run `mvn biz.lermitage.oga:oga-maven-plugin:check` -->
-    <!-- NOTE: as of 2021/12/14, CXF is still using javax / jaxb and not jakarta namespaces. Should be fixed by 3.5, until then
-         the above command will fail. -->
+    <!-- TODO(#108): CXF is still using javax / jaxb and not jakarta namespaces, and won't until version 4.0.
+         Our code now also seems to be tied up with newer versions of the libraries. Until then
+         the above command will fail, but we can just not update the jakarta issues -->
     <!-- to quickly find dependencies that can be updated, run `mvn versions:display-dependency-updates` -->
 
     <properties>
         <cxf.version>3.5.1</cxf.version>
         <junit.version>5.8.2</junit.version>
         <slf4j.version>1.7.32</slf4j.version>
+        <jackson.version>2.13.3</jackson.version>
         <bouncycastle.version>1.70</bouncycastle.version>
-        <testcontainers.version>1.17.1</testcontainers.version>
+        <testcontainers.version>1.17.3</testcontainers.version>
         <maven-surefire.version>3.0.0-M5</maven-surefire.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
@@ -124,22 +126,22 @@
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-base</artifactId>
-            <version>2.13.0</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.13.0</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.13.3</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>2.13.0</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -162,7 +164,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>5.3.21</version>
+            <version>5.3.22</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>

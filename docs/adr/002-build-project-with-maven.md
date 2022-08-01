@@ -9,8 +9,8 @@ system for that language.
 
 ## Considered Alternatives
 
-* Maven 
-* Gradle 
+* Maven
+* Gradle
 * Bazel
 * No build systems
 
