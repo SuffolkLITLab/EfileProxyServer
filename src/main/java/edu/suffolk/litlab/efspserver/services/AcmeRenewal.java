@@ -8,9 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyStore;
@@ -64,19 +61,41 @@ import edu.suffolk.litlab.efspserver.StdLib;
  *   our server to serve the REST API over HTTPS
  */
 public class AcmeRenewal {
-  private static final File USER_KEY_FILE = new File("acme_user.key");
-  private static final File DOMAIN_KEY_FILE = new File("acme_domain.key");
-  private static final File DOMAIN_CSR_FILE = new File("acme_domain.csr");
-  private static final File DOMAIN_CHAIN_FILE = new File("acme_domain-chain.crt");
-  private static final File JSK_OUT_FILE_PATH = new File("tls_server_cert.jks");
 
   // RSA key size of the generated key pairs
   private static final int KEY_SIZE = 2048;
 
-  private static Logger log =
+  private final static Logger log =
       LoggerFactory.getLogger(AcmeRenewal.class);
 
+  /** Given that we are handling much of the certificate generation within the running container, 
+   * if someone ever decides to restart the container, they would automatically lose their signed
+   * certificates. So we save these certs outside the container to the volume, if it's present.
+   */
+  private static final File USER_KEY_FILE;
+  private static final File DOMAIN_KEY_FILE;
+  private static final File DOMAIN_CSR_FILE;
+  private static final File DOMAIN_CHAIN_FILE;
+  private static final File JSK_OUT_FILE_PATH;
+
+  static {
+    File dockerVolume = new File("/tmp/tls_certs");
+    String prefix = "";
+    if (dockerVolume.exists() && dockerVolume.isDirectory()) {
+      prefix = "/tmp/tls_certs/";
+    } else {
+      log.warn("No docker volume at extected location (" + dockerVolume.getAbsolutePath()
+          + "), only saving cert files inside container!");
+    }
+    USER_KEY_FILE = new File(prefix + "acme_user.key");
+    DOMAIN_KEY_FILE = new File(prefix + "acme_domain.key");
+    DOMAIN_CSR_FILE = new File(prefix + "acme_domain.csr");
+    DOMAIN_CHAIN_FILE = new File(prefix + "acme_domain-chain.crt");
+    JSK_OUT_FILE_PATH = new File(prefix + "tls_server_cert.jsk");
+  }
+
   private static KeyPair loadOrCreateUserKeyPair() throws IOException {
+    USER_KEY_FILE.getParentFile().mkdirs();
     if (USER_KEY_FILE.exists()) {
       try (FileReader fr = new FileReader(USER_KEY_FILE)) {
         return KeyPairUtils.readKeyPair(fr);
@@ -85,7 +104,6 @@ public class AcmeRenewal {
       KeyPair userKeyPair = KeyPairUtils.createKeyPair(KEY_SIZE);
       try (FileWriter fw = new FileWriter(USER_KEY_FILE)) {
         KeyPairUtils.writeKeyPair(userKeyPair, fw);
-        copyToVolume(USER_KEY_FILE);
       }
       return userKeyPair;
     }
@@ -100,7 +118,6 @@ public class AcmeRenewal {
       KeyPair domainKeyPair = KeyPairUtils.createKeyPair(KEY_SIZE);
       try (FileWriter fw = new FileWriter(DOMAIN_KEY_FILE)) {
         KeyPairUtils.writeKeyPair(domainKeyPair, fw);
-        copyToVolume(DOMAIN_KEY_FILE);
       }
       return domainKeyPair;
     }
@@ -129,7 +146,6 @@ public class AcmeRenewal {
     csrb.sign(domainKeyPair);
     try (Writer out = new FileWriter(DOMAIN_CSR_FILE)) {
       csrb.write(out);
-      copyToVolume(DOMAIN_CSR_FILE);
     }
 
     order.execute(csrb.getEncoded());
@@ -156,12 +172,10 @@ public class AcmeRenewal {
     log.info("Certificate URL: {}", certificate.getLocation());
     try (FileWriter fw = new FileWriter(DOMAIN_CHAIN_FILE)) {
       certificate.writeCertificate(fw);
-      copyToVolume(DOMAIN_CHAIN_FILE);
     }
     log.info("Writing things to a jks file");
     try (FileOutputStream fos = new FileOutputStream(JSK_OUT_FILE_PATH)) {
       fos.write(convertPEMToJKS(DOMAIN_KEY_FILE, DOMAIN_CHAIN_FILE, certPassword));
-      copyToVolume(JSK_OUT_FILE_PATH);
     } catch (Exception ex) {
       log.error("Error on cert conversion: " + StdLib.strFromException(ex));
     }
@@ -314,22 +328,6 @@ public class AcmeRenewal {
     bos.close();
     pem.close();
     return bos.toByteArray();
-  }
-
-  /** Copys a given file to a pre-determined location (a docker volume). 
-   * 
-   * Given that we are handling much of the certificate generation within the running container, 
-   * if someone ever decides to restart the container, they would automatically lose their signed certificates.
-   * So we save these certs outside the container to the volume, if it's present.
-   */
-  private static void copyToVolume(File toCopy) throws IOException {
-    File dockerVolume = new File("/tmp/save_certs");
-    if (dockerVolume.exists() && dockerVolume.isDirectory()) {
-      Files.copy(Paths.get(toCopy.getAbsolutePath()), Paths.get("/tmp/save_certs/" + toCopy.getName()), StandardCopyOption.REPLACE_EXISTING);
-    } else {
-      log.info("No docker volume at expected location (" + dockerVolume.getAbsolutePath() 
-          + "), only saving " + toCopy.getName() + " inside container!");
-    }
   }
 
   /** Can be run on it's own: writes the token content to be used in two
