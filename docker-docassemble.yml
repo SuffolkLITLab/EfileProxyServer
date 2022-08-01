@@ -3,8 +3,6 @@ services:
   efspjava:
     build:
       context: .
-      args:
-        EFM_SUPPORT: no_tyler
     env_file: .env
     depends_on:
       - "db"

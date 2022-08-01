@@ -35,6 +35,7 @@ import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
 import org.apache.cxf.jaxrs.provider.JAXBElementProvider;
+//import org.apache.cxf.transport.http.HttpServerEngineSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +52,8 @@ public class EfspServer {
       HttpsCallbackHandler.setCertPassword(certPassword.get());
       SpringBusFactory factory = new SpringBusFactory();
       Bus bus = factory.createBus("src/main/config/ServerConfig.xml");
+      //log.info("" + bus.getProperties().get("bus"));
+      // bus.setProperty(HttpServerEngineSupport.ENABLE_HTTP2, true);
       BusFactory.setDefaultBus(bus);
     } else {
       log.warn("Didn't enter a CERT_PASSWORD. Falling back to HTTP. Did you pass an .env file?");
