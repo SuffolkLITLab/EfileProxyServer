@@ -1,6 +1,6 @@
 # TODO(brycew): consider http://whichjdk.com/#adoptium-eclipse-temurin
 FROM maven:3.8-openjdk-17 AS build_tyler
-# The `[]` is an optional COPY: doesn't copy if thaose files aren't there.
+# The `[]` is an optional COPY: doesn't copy if those files aren't there (https://stackoverflow.com/a/46801962/11416267)
 # They are needed for Tyler API usage, and serving the REST API as HTTPS
 COPY pom.xml LICENSE client_sign.propertie[s] quartz.properties Suffolk.pf[x] acme_user.ke[y] acme_domain.ke[y] acme_domain-chain.cr[t] /usr/src/app/
 # Install all of the maven packages, so we don't have to every time we change code

@@ -167,6 +167,7 @@ public class OrgMessageSender {
       String courtName, List<UUID> transactionIds, String caseType, String caseTitle) {
     MessageInfo msgSettings = getSettings(serverId);
     if (emailTemplate == null || emailTemplate.isBlank()) {
+      log.warn("given email template was blank (" + emailTemplate + "), using default");
       emailTemplate = msgSettings.emailConfirmation;
     }
     String ids = transactionIds.stream().map(t -> t.toString()).collect(Collectors.joining(", "));
@@ -180,7 +181,7 @@ public class OrgMessageSender {
     if (canEmail) {
       int result;
       try {
-        result = sendMsg.sendEmail(msgSettings.fromEmail, msgSettings.subjectLine, email, msgSettings.emailConfirmation, templateVars);
+        result = sendMsg.sendEmail(msgSettings.fromEmail, msgSettings.subjectLine, email, emailTemplate, templateVars);
         return (result == 200 || result == 202 || result == 204);
       } catch (IOException e) {
         log.error(e.toString());

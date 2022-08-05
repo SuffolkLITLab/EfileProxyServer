@@ -157,9 +157,9 @@ public class FilingReviewService {
     if (mediaType == null) {
       mediaType = MediaType.valueOf("application/json");
     }
-    log.info("All vars for check:" + allVars);
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
+      log.info("All vars for check, on error:" + allVars);
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
@@ -174,6 +174,7 @@ public class FilingReviewService {
     Result<FilingInformation, FilingError> res = converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
     if (res.isErr()) {
       log.warn(res.toString());
+      log.info("All vars for check, on error:" + allVars);
       return Response.status(400).entity(collector.jsonSummary()).build();
     }
     FilingInformation info = res.unwrapOrElseThrow();
@@ -181,6 +182,7 @@ public class FilingReviewService {
     Result<NullValue, FilingError> resEfm = filer.checkFiling(info, activeToken.get(), collector);
     if (resEfm.isErr()) {
       log.warn(resEfm.toString());
+      log.info("All vars for check, on error:" + allVars);
       return Response.ok(collector.jsonSummary()).build();
     }
     return Response.ok(collector.jsonSummary()).build();
