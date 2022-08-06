@@ -268,17 +268,23 @@
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>
+        <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+          </resource>
+        </resources>
         <pluginManagement>
             <!-- lock down plugins versions to avoid Maven defaults -->
             <plugins>
-        <plugin>
-            <groupId>biz.lermitage.oga</groupId>
-            <artifactId>oga-maven-plugin</artifactId>
-            <version>1.7.0</version>
-            <configuration>
-                <failOnError>true</failOnError>
-            </configuration>
-        </plugin>
+                <plugin>
+                    <groupId>biz.lermitage.oga</groupId>
+                    <artifactId>oga-maven-plugin</artifactId>
+                    <version>1.7.0</version>
+                    <configuration>
+                        <failOnError>true</failOnError>
+                    </configuration>
+                </plugin>
                 <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
