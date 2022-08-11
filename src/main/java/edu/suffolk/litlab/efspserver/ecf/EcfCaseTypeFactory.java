@@ -736,7 +736,7 @@ public class EcfCaseTypeFactory {
     // Unclear if this needs to be the code
     InterviewVariable lowerNameVar = collector.requestVar("trial_court.name", "The lower court name", "text");
     if (node.has("trial_court") && node.get("trial_court").isObject()) {
-      var maybeCodeText = JsonHelpers.getStringMember(node.get("trial_court"), "lower_court_code");
+      var maybeCodeText = JsonHelpers.getStringMember(node.get("trial_court"), "tyler_lower_court_code");
       if (maybeCodeText.isPresent()) {
         tylerAug.getValue().setLowerCourtText(XmlHelper.convertText(maybeCodeText.get()));
       } else {
