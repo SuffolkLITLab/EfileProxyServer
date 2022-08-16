@@ -62,7 +62,7 @@ public class OrgMessageSender {
       """
       Dear {{ name }},
       
-      The {{ court_name }} has received your filing in {{ case_title }} ({{ case_type }})!
+      The {{ court_name }} has received your filing in {{ case_title }} ({{ case_type }}).
       
       Its transaction ID is {{ transaction_id }}. You should keep track of this; the court might
       need it in your interactions with them.

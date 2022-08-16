@@ -227,8 +227,13 @@ public class FilingInformationDocassembleJacksonDeserializer
     // Get the interview metadablock TODO(brycew-later): just one for now
     //log.info("Keyset: " + metadataElems.fieldNames());
 
-    entities.setFilings(extractFilingDocs(node.get("al_court_bundle"), 
+    entities.setFilings(extractFilingDocs(node.get("al_court_bundle"),
         node.get("comments_to_clerk"), varToPartyId, collector));
+    if (entities.getFilings().isEmpty()) {
+      log.error("There are no filings in the envelope?");
+      FilingError err = FilingError.malformedInterview("the envelope needs at least one filing as a bundle and that has sub documents, each with a PDF URL, or needs to have that info itself");
+      collector.error(err);
+    }
     entities.setPaymentId(extractNullableString(node.get("tyler_payment_id"))); 
     
     JsonNode leadJson = node.get("lead_contact");

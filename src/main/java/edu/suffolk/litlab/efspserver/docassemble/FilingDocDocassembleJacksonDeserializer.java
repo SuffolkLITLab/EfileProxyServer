@@ -128,7 +128,7 @@ public class FilingDocDocassembleJacksonDeserializer {
     } else {
       if (node.has("elements") && node.get("elements").isArray()) {
         Iterable<JsonNode> nodes = node.get("elements")::elements;
-        System.out.println("In multi attachments");
+        log.info("In multi attachments");
         for (var attachNode : nodes) {
           var maybeAttachment = getAttachment(attachNode, collector);
           if (maybeAttachment.isPresent()) {
@@ -138,7 +138,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       }
     }
     if (attachments.isEmpty()) {
-      System.out.println("In no attachments");
+      log.info("In no attachments");
       Optional<FilingAttachment> attachment = getAttachment(node, collector);
       if (attachment.isPresent()) {
         attachments = fj.data.List.single(attachment.get());
@@ -146,8 +146,8 @@ public class FilingDocDocassembleJacksonDeserializer {
     }
     Option<NonEmptyList<FilingAttachment>> goodAttachments = NonEmptyList.<FilingAttachment>fromList(attachments);
     if (goodAttachments.isNone()) {
-      FilingError err = FilingError.malformedInterview("the document needs to be a bundle and have sub documents, each with a PDF URL, or needs to have that info itself");
-      collector.error(err);
+      log.warn("The " + userDescription + " document doesn't have sub documents / PDFs. It's possible that the document was turned off at runtime.");
+      return Optional.empty();
     }
     return Optional.of(
         new FilingDoc(filingType, 
