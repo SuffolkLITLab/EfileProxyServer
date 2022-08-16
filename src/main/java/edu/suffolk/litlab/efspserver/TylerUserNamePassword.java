@@ -29,9 +29,16 @@ public class TylerUserNamePassword {
     return userName;
   }
   
-  public Header toHeader() throws JAXBException {
-    return new Header(new QName("urn:tyler:efm:services", "UserNameHeader"),
-        this, new JAXBDataBinding(TylerUserNamePassword.class));
+  public Header toHeader() {
+    try {
+      return new Header(new QName("urn:tyler:efm:services", "UserNameHeader"),
+          this, new JAXBDataBinding(TylerUserNamePassword.class));
+    } catch (JAXBException ex) {
+      // We are always passing this class to JAXB. If at any point it would fail,
+      // it should be a compile time thing tbh. We don't need the extra overhead
+      // of trying to catch the exception everywhere, so just crash.
+      throw new RuntimeException(ex);
+    }
   }
 
   /**
@@ -42,13 +49,12 @@ public class TylerUserNamePassword {
    *                       call).
    * @return               the Header object to the request context's
    *                       Header.HEADER_LIST
-   * @throws JAXBException if the Data binding fails for any reason
    */
-  public static Header makeHeader(String userName, String passwordHash) throws JAXBException {
+  public static Header makeHeader(String userName, String passwordHash) {
     return (new TylerUserNamePassword(userName, passwordHash)).toHeader(); 
   }
 
-  public static List<Header> makeHeaderList(AuthenticateResponseType authRes) throws JAXBException {
+  public static List<Header> makeHeaderList(AuthenticateResponseType authRes) {
     return Arrays.asList(makeHeader(authRes.getEmail(), authRes.getPasswordHash()));
   }
 }
