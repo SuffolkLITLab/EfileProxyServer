@@ -51,7 +51,7 @@ public class ServiceHelpers {
 
   public static String ASSEMBLY_PORT = "/filingassembly/callbacks/FilingAssemblyMDEPort";
   public static String ASSEMBLY_PORT_V5 = "/filingassembly/callbacks/FilingAssemblyMDEPortEcfv5";
-  public static final String EXTERNAL_DOMAIN = GetEnv("EXTERNAL_DOMAIN").orElse("filingassemblymde.com:9000");
+  private static String EXTERNAL_DOMAIN = GetEnv("EXTERNAL_DOMAIN").orElse("filingassemblymde.com:9000");
   public static final String BASE_LOCAL_URL;
   public static final String EXTERNAL_URL;
   public static final String SERVICE_URL;
@@ -61,6 +61,12 @@ public class ServiceHelpers {
     Optional<String> certPassword = GetEnv("CERT_PASSWORD");
     // The 9000 is hard coded (we'll always be running on 9000 inside the docker container,
     // but might be mapped to other things outside of it)
+    if (EXTERNAL_DOMAIN.startsWith("http://")) {
+      EXTERNAL_DOMAIN = EXTERNAL_DOMAIN.substring(7);
+    }
+    if (EXTERNAL_DOMAIN.startsWith("https://")) {
+      EXTERNAL_DOMAIN = EXTERNAL_DOMAIN.substring(8);
+    }
     if (certPassword.isPresent()) {
       EXTERNAL_URL = "https://" + EXTERNAL_DOMAIN;
       BASE_LOCAL_URL = "https://0.0.0.0:9000";

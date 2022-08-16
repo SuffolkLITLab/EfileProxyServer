@@ -154,10 +154,18 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     createIndicesIfAbsent(tableName);
 
     XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-    XMLStreamReader sr = xmlInputFactory.createXMLStreamReader(inStream);
-    Unmarshaller u = JAXBContext.newInstance(CodeListDocument.class).createUnmarshaller();
-    final CodeListDocument doc = u.unmarshal(sr, CodeListDocument.class).getValue();
+    XMLStreamReader xsr = xmlInputFactory.createXMLStreamReader(inStream);
+    updateTable(tableName, courtName, xsr);
+    xsr.close();
+  }
 
+  public void updateTable(String tableName, String courtName, XMLStreamReader xsr) throws JAXBException, SQLException, XMLStreamException {
+    Unmarshaller u = JAXBContext.newInstance(CodeListDocument.class).createUnmarshaller();
+    final CodeListDocument doc = u.unmarshal(xsr, CodeListDocument.class).getValue();
+    updateTable(tableName, courtName, doc);
+  }
+
+  public void updateTable(String tableName, String courtName, CodeListDocument doc) throws JAXBException, SQLException, XMLStreamException {
     String insertQuery = CodeTableConstants.getInsertInto(tableName);
     String versionUpdate = CodeTableConstants.updateVersion();
     try (PreparedStatement stmt = conn.prepareStatement(insertQuery);
@@ -189,6 +197,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       log.error("Going to rollback updates to this table");
       throw ex;
     }
+
   }
   
   public PreparedStatement singleInsert(PreparedStatement stmt, String tableName, String courtName, 
@@ -838,18 +847,18 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     if (conn == null) {
       throw new SQLException();
     }
-    String deleteFromTable = CodeTableConstants.getDeleteFrom(tableName);
+    String deleteFromTableStr = CodeTableConstants.getDeleteFrom(tableName);
     if (courtLocation == null || courtLocation.isBlank()) {
       log.warn("Don't call this without a valid court: just don't use the var");
       return false;
     }
     // TODO(brycew): make variant that deletes everything with a specific jurisdiction
-    boolean tableHasCourt = !deleteFromTable.isBlank();
+    boolean tableHasCourt = !deleteFromTableStr.isBlank();
     if (!tableHasCourt) {
       log.warn("Cannot remove the " + courtLocation + " from " + tableName + ", a table with no court locations");
       return false;
     }
-    try (PreparedStatement st = conn.prepareStatement(deleteFromTable)) {
+    try (PreparedStatement st = conn.prepareStatement(deleteFromTableStr)) {
       st.setString(1, tylerDomain);
       st.setString(2, courtLocation);
       st.executeUpdate();
