@@ -419,14 +419,8 @@ public class CasesService {
     ((BindingProvider) port).getRequestContext().put("com.sun.xml.internal.ws.request.timeout", 90000);
     ServiceHelpers.setupServicePort((BindingProvider) port);
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    try {
-      List<Header> headersList = List.of(creds.get().toHeader());
-      ctx.put(Header.HEADER_LIST, headersList);
-    } catch (JAXBException ex) {
-      log.warn(ex.toString());
-      return Optional.empty();
-    }
-
+    List<Header> headersList = List.of(creds.get().toHeader());
+    ctx.put(Header.HEADER_LIST, headersList);
     return Optional.of(port);
   }
 

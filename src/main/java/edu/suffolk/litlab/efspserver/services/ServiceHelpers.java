@@ -13,7 +13,6 @@ import javax.sql.DataSource;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
 import javax.xml.ws.BindingProvider;
 
 import org.apache.cxf.headers.Header;
@@ -255,14 +254,8 @@ public class ServiceHelpers {
     IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
     setupServicePort((BindingProvider) port);
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    try {
-      List<Header> headersList = List.of(creds.get().toHeader());
-      ctx.put(Header.HEADER_LIST, headersList);
-    } catch (JAXBException ex) {
-      log.warn(ex.toString());
-      return Optional.empty();
-    }
-
+    List<Header> headersList = List.of(creds.get().toHeader());
+    ctx.put(Header.HEADER_LIST, headersList);
     return Optional.of(port);
   }
   

@@ -448,13 +448,8 @@ public class CourtSchedulingService {
     CourtSchedulingMDE serv = schedFactory.getCourtSchedulingMDEPort();
     ServiceHelpers.setupServicePort((BindingProvider) serv);
     Map<String, Object> ctx = ((BindingProvider) serv).getRequestContext();
-    try {
-      List<Header> headersList = List.of(creds.get().toHeader());
-      ctx.put(Header.HEADER_LIST, headersList);
-    } catch (JAXBException ex) {
-      log.warn(ex.toString());
-      return Optional.empty();
-    }
+    List<Header> headersList = List.of(creds.get().toHeader());
+    ctx.put(Header.HEADER_LIST, headersList);
     return Optional.of(serv);
   }
 
@@ -469,14 +464,8 @@ public class CourtSchedulingService {
     CourtRecordMDEPort port = recordFactory.getCourtRecordMDEPort();
     ServiceHelpers.setupServicePort((BindingProvider) port);
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    try {
-      List<Header> headersList = List.of(creds.get().toHeader());
-      ctx.put(Header.HEADER_LIST, headersList);
-    } catch (JAXBException ex) {
-      log.warn(ex.toString());
-      return Optional.empty();
-    }
-
+    List<Header> headersList = List.of(creds.get().toHeader());
+    ctx.put(Header.HEADER_LIST, headersList);
     return Optional.of(port);
   }
   
