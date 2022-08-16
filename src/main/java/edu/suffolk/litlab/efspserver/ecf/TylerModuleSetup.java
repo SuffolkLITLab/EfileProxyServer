@@ -163,7 +163,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
       boolean downloadAll = (cd.getAllLocations().size() == 0);
       if (downloadAll) {
         log.info("Downloading all codes for " + tylerJurisdiction + ": please wait a bit");
-        CodeUpdater.executeCommand(cd, tylerJurisdiction, tylerEnv, "downloadAll", this.x509Password);
+        CodeUpdater.executeCommand(cd, tylerJurisdiction, tylerEnv, List.of("downloadAll"), this.x509Password);
       }
     } catch (SQLException e) {
       log.error("SQL Exception: " + StdLib.strFromException(e));
