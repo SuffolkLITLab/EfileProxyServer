@@ -56,7 +56,7 @@ public class FilingInformationToJeffNetTest {
     String componentCode = "332";
     String fileName = "quality_check_overlay.pdf";
     InputStream x = this.getClass().getResourceAsStream("/" + fileName); 
-    FilingAttachment fa = new FilingAttachment(fileName, x, "5766", componentCode);
+    FilingAttachment fa = new FilingAttachment(fileName, x, "5766", componentCode, "The Quality Check Overlay");
     FilingDoc filingDoc = new FilingDoc(Optional.empty(),
         info.getNewPlaintiffs().stream().map(p -> PartyId.CurrentFilingNew(p.getIdString())).collect(
             Collectors.toList()), NonEmptyList.fromList(fj.data.List.list(fa)).some(), true);
