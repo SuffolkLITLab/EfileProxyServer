@@ -7,6 +7,7 @@ import java.io.InputStream;
 public class FilingAttachment {
   final private String filingComponentCode;
   // For the setBinaryDescriptionText
+  final private String documentDescription;
   final private String fileName;
   final private byte[] fileContents;
   // This is, "determined via configuration within the EFM for each EFSP"?
@@ -16,18 +17,20 @@ public class FilingAttachment {
   // page count?
   
   public FilingAttachment(String fileName, InputStream fileStream,
-      String documentTypeFormatStandardName, String filingComponentCode) throws IOException {
+      String documentTypeFormatStandardName, String filingComponentCode, String documentDescription) throws IOException {
     this.filingComponentCode = filingComponentCode;
     this.fileName = fileName;
     this.documentTypeFormatStandardName = documentTypeFormatStandardName;
+    this.documentDescription = documentDescription;
     this.fileContents = fileStream.readAllBytes();
   }
   
   public FilingAttachment(String fileName, byte[] fileStream,
-      String documentTypeFormatStandardName, String filingComponentCode) {
+      String documentTypeFormatStandardName, String filingComponentCode, String documentDescription) {
     this.filingComponentCode = filingComponentCode;
     this.fileName = fileName;
     this.documentTypeFormatStandardName = documentTypeFormatStandardName;
+    this.documentDescription = documentDescription;
     this.fileContents = fileStream;
   }
   
@@ -45,6 +48,11 @@ public class FilingAttachment {
   
   public String getDocumentTypeFormatStandardName() {
     return documentTypeFormatStandardName;
+  }
+
+  /** The description of this document. Goes into BinaryDescriptionText for Tyler. */
+  public String getDocumentDescription() {
+    return documentDescription;
   }
 
 }

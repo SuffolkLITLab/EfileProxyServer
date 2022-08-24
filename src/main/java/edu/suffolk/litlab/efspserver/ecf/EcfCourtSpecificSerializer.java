@@ -728,7 +728,7 @@ public class EcfCourtSpecificSerializer {
           JsonNode miscInfo, InfoCollector collector, int seqNum) throws IOException, FilingError {
     // TODO(brycew-later): what should this actually be? Very unclear
     DocumentAttachmentType attachment = ecfOf.createDocumentAttachmentType();
-    attachment.setBinaryDescriptionText(XmlHelper.convertText(fa.getFileName()));
+    attachment.setBinaryDescriptionText(XmlHelper.convertText(fa.getDocumentDescription()));
 
     InterviewVariable var = collector.requestVar("filing_component", "Filing component: Lead or attachment", "text");
     if (components.isEmpty()) {

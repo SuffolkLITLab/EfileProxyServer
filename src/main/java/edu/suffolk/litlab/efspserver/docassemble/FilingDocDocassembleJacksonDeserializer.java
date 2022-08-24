@@ -178,6 +178,7 @@ public class FilingDocDocassembleJacksonDeserializer {
     if (!fileName.endsWith(".pdf")) {
       fileName += ".pdf";
     }
+    String documentDescription = getStringDefault(node, "document_description", fileName);
     if (!node.has("proxy_enabled") || !node.get("proxy_enabled").asBoolean(false)) {
       log.info(fileName + " isn't proxy enabled");
       return Optional.empty();
@@ -209,7 +210,7 @@ public class FilingDocDocassembleJacksonDeserializer {
           new FilingAttachment(fileName,
               inStream.readAllBytes(),
               documentTypeFormatName,
-              filingComponentCode)); 
+              filingComponentCode, documentDescription)); 
     } catch (MalformedURLException ex) {
       FilingError err = serverError("MalformedURLException trying to parse the data_url (" + dataUrl + "): " + ex);
       collector.error(err);
