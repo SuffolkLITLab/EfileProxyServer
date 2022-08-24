@@ -290,7 +290,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
         log.info("Adding a document to the XML");
         long bytes = filingDoc.allAttachmentsLength();
         if (bytes > maxSize) {
-          FilingError err = FilingError.malformedInterview("Document " + filingDoc.getDescription().orElse(filingDoc.getFilingComments())
+          FilingError err = FilingError.malformedInterview("Document " + filingDoc.getDescription().map(d -> d.get()).orElse(filingDoc.getFilingComments())
               + " is too big! Must be max " + maxSize + ", is " + bytes);
           collector.error(err);
         }

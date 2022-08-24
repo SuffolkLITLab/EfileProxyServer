@@ -89,11 +89,13 @@ public class FilingDocDocassembleJacksonDeserializer {
     if (jsonDueDate != null && jsonDueDate.isTextual()) {
       maybeDueDate = Optional.of(LocalDate.ofInstant(Instant.parse(jsonDueDate.asText()), ZoneId.of("America/Chicago")));
     }
-    Optional<String> userDescription = getStringMember(node, "filing_description");
+    String userDescription = getStringDefault(node, "filing_description", "");
     Optional<String> filingRefNum = getStringMember(node, "reference_number");
     Optional<String> filingAttorney = getStringMember(node, "filing_attorney");
     String filingComment = getStringDefault(node, "filing_comment", "");
       
+    String _logName = (userDescription.isBlank()) ? filingType.orElse(filingComment) : userDescription;
+
     List<String> courtesyCopies = getMemberList(node, "courtesy_copies");
     List<String> preliminaryCopies = getMemberList(node, "preliminary_copies");
     List<String> filingParties = getMemberList(node, "filing_parties");
@@ -124,7 +126,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       
     fj.data.List<FilingAttachment> attachments = fj.data.List.nil();
     if (node.has("tyler_merge_attachments") && node.get("tyler_merge_attachments").asBoolean(false)) {
-      log.info(userDescription.orElse(filingComment) + " indicated that we should only use the parent document; skipping parsing child elements");
+      log.info(_logName + " indicated that we should only use the parent document; skipping parsing child elements");
     } else {
       if (node.has("elements") && node.get("elements").isArray()) {
         Iterable<JsonNode> nodes = node.get("elements")::elements;
@@ -146,7 +148,7 @@ public class FilingDocDocassembleJacksonDeserializer {
     }
     Option<NonEmptyList<FilingAttachment>> goodAttachments = NonEmptyList.<FilingAttachment>fromList(attachments);
     if (goodAttachments.isNone()) {
-      log.warn("The " + userDescription + " document doesn't have sub documents / PDFs. It's possible that the document was turned off at runtime.");
+      log.warn("The " + _logName + " document doesn't have sub documents / PDFs. It's possible that the document was turned off at runtime.");
       return Optional.empty();
     }
     return Optional.of(

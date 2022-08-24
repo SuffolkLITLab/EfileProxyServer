@@ -13,7 +13,7 @@ import tyler.ecf.extensions.common.FilingTypeType;
 // TODO(brycew-later): this class is a mess. Refactor, considering the same pattern that's in
 // FilingInformation: add a JsonNode / generic container for EFM specific settings
 public class FilingDoc {
-  final private Optional<String> userProvidedDescription;
+  final private Optional<NonEmptyString> userProvidedDescription;
   // TODO(#57): what is this? Might be able to be a dup of the GUID,
   // it's returned with Get FilingList
   final private Optional<String> filingReferenceNum;
@@ -46,7 +46,7 @@ public class FilingDoc {
       List<PartyId> filingPartyIds,
       NonEmptyList<FilingAttachment> filingAttachments,
       boolean isLeadDoc) {
-    this(filingCode, Optional.empty(), Optional.empty(), Optional.empty(),
+    this(filingCode, "", Optional.empty(), Optional.empty(),
         filingPartyIds, Optional.empty(), filingAttachments, 
         "", Optional.empty(), List.of(), List.of(), List.of(),
         Optional.empty(),
@@ -55,7 +55,7 @@ public class FilingDoc {
 
   /** Full constructor, in all it's mess. */
   public FilingDoc(Optional<String> filingCode,
-      Optional<String> userProvidedDescription,
+      String userProvidedDescription,
       Optional<String> filingReferenceNum, Optional<LocalDate> dueDate, 
       List<PartyId> filingPartyIds, Optional<String> filingAttorney,
       NonEmptyList<FilingAttachment> filingAttachments,
@@ -64,7 +64,7 @@ public class FilingDoc {
       Optional<FilingTypeType> filingAction,
       boolean isLeadDoc) {
     this.filingCode = filingCode;
-    this.userProvidedDescription = userProvidedDescription;
+    this.userProvidedDescription = NonEmptyString.create(userProvidedDescription);
     this.filingReferenceNum= filingReferenceNum;
     this.dueDate = dueDate;
     this.id = UUID.randomUUID();
@@ -112,7 +112,7 @@ public class FilingDoc {
     return filingPartyIds;
   }
 
-  public Optional<String> getDescription() {
+  public Optional<NonEmptyString> getDescription() {
     return userProvidedDescription;
   }
 
