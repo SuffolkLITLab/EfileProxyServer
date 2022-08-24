@@ -70,25 +70,25 @@ public class TylerModuleSetup implements EfmModuleSetup {
     public String pgPassword;
     public String tylerEnv;
     public String x509Password;
-    public String togaKey;
     public String togaUrl;
   }
 
   /** Use this factory method instead of the class constructor. */
   public static Optional<TylerModuleSetup> create(
-      String jurisdiction, Map<String, InterviewToFilingInformationConverter> converterMap,
+      String jurisdiction, String togaKey, Map<String, InterviewToFilingInformationConverter> converterMap,
       DataSource codeDs, DataSource userDs, OrgMessageSender sender) {
     Optional<CreationArgs> args = createFromEnvVars();
     if (args.isEmpty()) {
       return Optional.empty();
     }
 
-    return Optional.of(new TylerModuleSetup(args.get(), jurisdiction, converterMap, codeDs, userDs, sender));
+    return Optional.of(new TylerModuleSetup(args.get(), jurisdiction, togaKey, converterMap, codeDs, userDs, sender));
   }
 
   private TylerModuleSetup(
       CreationArgs args,
       String jurisdiction,
+      String togaKey,
       Map<String, InterviewToFilingInformationConverter> converterMap,
       DataSource codeDs, DataSource userDs, OrgMessageSender sender) {
     this.codeDs = codeDs;
@@ -101,7 +101,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     this.tylerJurisdiction = jurisdiction; 
     this.tylerEnv = args.tylerEnv;
     this.x509Password = args.x509Password;
-    this.togaKey = args.togaKey;
+    this.togaKey = togaKey;
     this.togaUrl = args.togaUrl;
     this.sender = sender;
   }
@@ -134,12 +134,6 @@ public class TylerModuleSetup implements EfmModuleSetup {
     args.pgUrl = "jdbc:postgresql://" + EfmModuleSetup.GetEnv("POSTGRES_URL").orElse("localhost")
         + ":" + EfmModuleSetup.GetEnv("POSTGRES_PORT").orElse("5432");
 
-    Optional<String> maybeTogaKey = EfmModuleSetup.GetEnv("TOGA_CLIENT_KEY");
-    if (maybeTogaKey.isEmpty()) {
-      log.warn("You need to define a TOGA_CLIENT_KEY (Tyler payments (TOGA) client key)");
-      return Optional.empty();
-    }
-    args.togaKey = maybeTogaKey.get();
     Optional<String> maybeTogaUrl = EfmModuleSetup.GetEnv("TOGA_URL");
     if (maybeTogaUrl.isEmpty()) {
       log.warn("You need to define a TOGA_URL");
