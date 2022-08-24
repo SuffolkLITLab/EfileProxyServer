@@ -20,31 +20,36 @@ public class SoapClientChooser {
       "illinois-stage", "wsdl/illinois/stage/EFMUserServiceSingle.svc.wsdl",
       "illinois-test",  "wsdl/illinois/test/EFMUserServiceSingle.svc.wsdl",
       "massachusetts-stage", "wsdl/massachusetts/stage/EFMUserServiceSingle.svc.wsdl",
-      "texas-stage", "wsdl/texas/stage/EFMUserServiceSingle.svc.wsdl");
+      "texas-stage", "wsdl/texas/stage/EFMUserServiceSingle.svc.wsdl",
+      "indiana-stage", "wsdl/indiana/stage/EFMUserServiceSingle.svc.wsdl");
 
   static Map<String, String> efmFirmWsdls = Map.of(
       "illinois-stage", "wsdl/illinois/stage/EFMFirmServiceSingle.svc.wsdl",
       "illinois-test",  "wsdl/illinois/test/EFMFirmServiceSingle.svc.wsdl",
       "massachusetts-stage", "wsdl/massachusetts/stage/EFMFirmServiceSingle.svc.wsdl",
-      "texas-stage", "wsdl/texas/stage/EFMFirmServiceSingle.svc.wsdl");
+      "texas-stage", "wsdl/texas/stage/EFMFirmServiceSingle.svc.wsdl",
+      "indiana-stage", "wsdl/indiana/stage/EFMFirmServiceSingle.svc.wsdl");
 
   static Map<String, String> serviceMDEWsdls = Map.of(
       "illinois-stage", "wsdl/illinois/stage/ECF-4.0-ServiceMDEService.wsdl",
       "illinois-test",  "wsdl/illinois/test/ECF-4.0-ServiceMDEService.wsdl",
       "massachusetts-stage", "wsdl/massachusetts/stage/ECF-4.0-ServiceMDEService.wsdl",
-      "texas-stage", "wsdl/texas/stage/ECF-4.0-ServiceMDEService.wsdl");
+      "texas-stage", "wsdl/texas/stage/ECF-4.0-ServiceMDEService.wsdl",
+      "indiana-stage", "wsdl/indiana/stage/ECF-4.0-ServiceMDEService.wsdl");
 
   static Map<String, String> filingReviewMDEWsdls = Map.of(
       "illinois-stage", "wsdl/illinois/stage/ECF-4.0-FilingReviewMDEService.wsdl",
       "illinois-test",  "wsdl/illinois/test/ECF-4.0-FilingReviewMDEService.wsdl",
       "massachusetts-stage", "wsdl/massachusetts/stage/ECF-4.0-FilingReviewMDEService.wsdl",
-      "texas-stage", "wsdl/texas/stage/ECF-4.0-FilingReviewMDEService.wsdl");
+      "texas-stage", "wsdl/texas/stage/ECF-4.0-FilingReviewMDEService.wsdl",
+      "indiana-stage", "wsdl/indiana/stage/ECF-4.0-FilingReviewMDEService.wsdl");
 
   static Map<String, String> courtRecordMDEWsdls = Map.of(
       "illinois-stage", "wsdl/illinois/stage/ECF-4.0-CourtRecordMDEService.wsdl",
       "illinois-test",  "wsdl/illinois/test/ECF-4.0-CourtRecordMDEService.wsdl",
       "massachusetts-stage", "wsdl/massachusetts/stage/ECF-4.0-CourtRecordMDEService.wsdl",
-      "texas-stage", "wsdl/texas/stage/ECF-4.0-CourtRecordMDEService.wsdl");
+      "texas-stage", "wsdl/texas/stage/ECF-4.0-CourtRecordMDEService.wsdl",
+      "indiana-stage", "wsdl/indiana/stage/ECF-4.0-CourtRecordMDEService.wsdl");
 
   public static String getCodeEndpointRootUrl(String jurisdiction, String env) {
     if (jurisdiction.equalsIgnoreCase("massachusetts") && env.equalsIgnoreCase("prod")) {

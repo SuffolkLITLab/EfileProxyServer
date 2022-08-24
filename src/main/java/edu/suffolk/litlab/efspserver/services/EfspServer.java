@@ -180,13 +180,20 @@ public class EfspServer {
     List<EfmModuleSetup> modules = new ArrayList<>();
 
     Optional<String> tylerJurisdictions = GetEnv("TYLER_JURISDICTIONS");
+    Optional<String> togaKeyStr = GetEnv("TOGA_CLIENT_KEYS");
     Optional<String> tylerEnv = GetEnv("TYLER_ENV");
     List<String> jurisdictions = List.of(tylerJurisdictions.orElse("").split(" "));
-    for (String jurisdiction : jurisdictions) {
+    List<String> togaKeys = List.of(togaKeyStr.orElse("").split(" "));
+    if (jurisdictions.size() > 0 && jurisdictions.size() != togaKeys.size()) {
+      log.error("TOGA_CLIENT_KEYS list should be same size as TYLER_JURSIDICTIONS list.");
+      throw new RuntimeException("TOGA_CLIENT_KEYS and TYLER_JURISDICTION mismatch");
+    }
+    for (int idx = 0; idx < jurisdictions.size(); idx++) {
+      String jurisdiction = jurisdictions.get(idx);
       if (jurisdiction.isBlank()) {
         continue;
       }
-      TylerModuleSetup.create(jurisdiction, converterMap, codeDs, userDs, sender).ifPresent(mod -> modules.add(mod));
+      TylerModuleSetup.create(jurisdiction, togaKeys.get(idx), converterMap, codeDs, userDs, sender).ifPresent(mod -> modules.add(mod));
     }
     JeffNetModuleSetup.create(converterMap, userDs, sender).ifPresent(mod -> modules.add(mod));
     if (modules.isEmpty()) {
