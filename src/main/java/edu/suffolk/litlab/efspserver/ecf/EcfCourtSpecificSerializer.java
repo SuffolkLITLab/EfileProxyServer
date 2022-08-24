@@ -27,6 +27,7 @@ import edu.suffolk.litlab.efspserver.FilingAttachment;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Name;
+import edu.suffolk.litlab.efspserver.NonEmptyString;
 import edu.suffolk.litlab.efspserver.OptionalService;
 import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
@@ -502,7 +503,7 @@ public class EcfCourtSpecificSerializer {
       if (name.getSuffix().isBlank()) {
         if (suffixRow.isrequired) {
           // TODO(brycew-later):
-          log.error("DEV WARNING: why the hell would you ever require a suffix? There aren't empty suffix codes at all.");
+          log.error("DEV WARNING: why would you ever require a suffix? There aren't empty suffix codes at all.");
           collector.addRequired(var);
         } else {
           personName.setPersonNameSuffixText(wrapName.apply(name.getSuffix()));
@@ -840,13 +841,11 @@ public class EcfCourtSpecificSerializer {
       return ids;
   }
   
-  
-
-  private String findDocumentDescription(Optional<String> userProvidedDescription,
+  private String findDocumentDescription(Optional<NonEmptyString> userProvidedDescription,
       DataFieldRow descriptionRow, FilingDoc doc, FilingCode filing,
       InfoCollector collector) throws FilingError {
       if (userProvidedDescription.isPresent()) {
-        return userProvidedDescription.get();
+        return userProvidedDescription.get().get();
       } else {
         if (this.court.defaultdocumentdescription.equals("1")) {
           return filing.name;
