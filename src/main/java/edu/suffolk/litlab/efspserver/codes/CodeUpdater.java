@@ -315,6 +315,7 @@ public class CodeUpdater {
   private boolean downloadCourtTables(String location, Optional<List<String>> tables,
       CodeDatabase cd, HeaderSigner signer, CourtPolicyResponseMessageType policyResp)
       throws JAXBException, IOException, SQLException {
+    log.info("Doing updates for: {}, tables: {}", location, tables);
     Instant downloadStart = Instant.now(Clock.systemUTC());
     var toDownload = policyResp.getRuntimePolicyParameters().getCourtCodelist().stream().map(ccl -> {
       // TODO(brycew-later): check that the effective date is later than today
@@ -331,13 +332,14 @@ public class CodeUpdater {
     }
     Map<String, DownloadedCodes> downloaded = streamDownload(signedTime.get(), location, toDownload.parallel(), tables);
     downloads = downloads.plus(Duration.between(downloadStart, Instant.now(Clock.systemUTC())));
+    log.info("Location: {}: Downloads took: {}", location, downloads);
 
     Instant updateStart = Instant.now(Clock.systemUTC());
     for (DownloadedCodes down : downloaded.values()) {
       try {
         cd.updateTable(down.tableName, down.location, down.xsr);
       } catch (Exception ex) {
-        log.error("Couldn't update table? " + StdLib.strFromException(ex));
+        log.error("Couldn't update table? {}", StdLib.strFromException(ex));
       } finally {
         StdLib.closeQuitely(down.xsr);
         down.input.close();
@@ -346,7 +348,7 @@ public class CodeUpdater {
     updates = updates.plus(Duration.between(updateStart, Instant.now(Clock.systemUTC())));
 
     cd.getConnection().commit();
-    log.info("Soaps took: " + soaps + ", downloads took: " + downloads + ", updates took: " + updates);
+    log.info("Location: {}: updates took: {}", location, updates);
     return true;
   }
 
@@ -373,31 +375,32 @@ public class CodeUpdater {
     for (String table : allTables) {
       cd.createTableIfAbsent(table);
     }
-    log.info("Removing " + versionsToUpdate.size() + " court entries, over " + n + " queries");
+    log.info("Removing {} court entries, over {} queries", versionsToUpdate.size(), n);
     for (Entry<String, List<String>> courtAndTables : versionsToUpdate.entrySet()) {
       final String courtLocation = courtAndTables.getKey();
       List<String> tables = courtAndTables.getValue();
-      log.debug("In " + cd.getDomain() + ", removing entries for court " + courtLocation + " for tables: " + tables);
+      log.debug("In {}, removing entries for court {} for tables: {}", cd.getDomain(), courtLocation, tables);
       for (String table : tables) {
         Instant deleteFromTable = Instant.now(Clock.systemUTC());
         if (!cd.deleteFromTable(table, courtLocation)) {
-          log.warn("Couldn't delete from " + table + " at " + courtLocation + ", aborting");
+          log.warn("Couldn't delete from {} at {}, aborting", table, courtLocation);
           cd.getConnection().rollback(sp);
           return;
         }
         updates = updates.plus(Duration.between(deleteFromTable, Instant.now(Clock.systemUTC())));
       }
     }
-    log.info("Took " + Duration.between(startDel, Instant.now(Clock.systemUTC())) + " to remove existing tables");
+    log.info("Took {} to remove existing tables", Duration.between(startDel, Instant.now(Clock.systemUTC())));
     Instant startPolicy = Instant.now(Clock.systemUTC());
     Map<String, CourtPolicyResponseMessageType> policies = streamPolicies(versionsToUpdate.keySet().stream().parallel(), cd.getDomain(), filingPort);
     soaps = soaps.plus(Duration.between(startPolicy, Instant.now(Clock.systemUTC())));
+    log.info("Soaps: {}", soaps);
 
     for (var policy: policies.entrySet()) {
       final String courtLocation = policy.getKey();
       final List<String> tables = versionsToUpdate.get(courtLocation);
       if (!downloadCourtTables(courtLocation, Optional.of(tables), cd, signer, policy.getValue())) {
-        log.warn("Failed updating court " + courtLocation + "'s tables " + tables);
+        log.warn("Failed updating court {}'s tables {}", courtLocation, tables);
         cd.getConnection().rollback(sp);
         return;
       }
@@ -413,7 +416,7 @@ public class CodeUpdater {
   public void downloadAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
       throws SQLException, IOException, JAXBException, XMLStreamException {
     HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
-    log.info("Downloading system tables for " + cd.getDomain());
+    log.info("Downloading system tables for {}", cd.getDomain());
     downloadSystemTables(baseUrl, cd, signer);
 
     List<String> tablesToDeleteDomain = ncToTableName.entrySet().stream().map((e) -> e.getValue())
@@ -431,10 +434,10 @@ public class CodeUpdater {
     Map<String, CourtPolicyResponseMessageType> policies = streamPolicies(locs.stream(), cd.getDomain(), filingPort);
     for (var policy: policies.entrySet()) {
       final String location = policy.getKey();
-      log.info("Downloading tables for " + location);
+      log.info("Downloading tables for {}", location);
       downloadCourtTables(location, Optional.empty(), cd, signer, policy.getValue());
     }
-    log.info("Downloads took: " + downloads + ", and updates took: " + updates + ", soaps took: " + soaps);
+    log.info("Downloads took: {}, and updates took: {}, soaps took: {}", downloads, updates, soaps);
     cd.getConnection().commit();
     cd.getConnection().setAutoCommit(true);
     cd.vacuumAll();
@@ -446,7 +449,7 @@ public class CodeUpdater {
     if (userService.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " in Soap chooser for EFMUser");
     }
-    log.info("Getting filing factory for " + jurisdiction + " " + env);
+    log.info("Getting filing factory for {} {}", jurisdiction, env);
     Optional<FilingReviewMDEService> filingFactory = SoapClientChooser.getFilingReviewFactory(jurisdiction, env); 
     if (filingFactory.isEmpty()) {
       throw new RuntimeException(
@@ -530,25 +533,25 @@ public class CodeUpdater {
     Duration parPolicy = Duration.between(startPolicy, Instant.now(Clock.systemUTC()));
     boolean keysEq = !policies.keySet().equals(policiesSeq.keySet());
     if (!keysEq) {
-      log.info("Policy keys not equal!? " + policies.keySet() + ", " + policiesSeq.keySet()); 
+      log.info("Policy keys not equal!? {}, {}", policies.keySet(), policiesSeq.keySet()); 
     }
     for (var entry : policies.entrySet()) {
       var parList = entry.getValue().getRuntimePolicyParameters().getCourtCodelist().stream().collect(Collectors.toMap(cc1 -> cc1.getECFElementName().getValue(), ccl -> ccl.getCourtCodelistURI().getIdentificationID().getValue()));
       var seqList = policiesSeq.get(entry.getKey()).getRuntimePolicyParameters().getCourtCodelist().stream().collect(Collectors.toMap(cc1 -> cc1.getECFElementName().getValue(), cc1 -> cc1.getCourtCodelistURI().getIdentificationID().getValue()));
       if (!parList.equals(seqList)) {
-        log.info("Policies not equal!? " + entry.getKey() + ";;; " + parList + ";;; " + seqList);
+        log.info("Policies not equal!? {};;; {};;; {}", entry.getKey(), parList, seqList);
       }
     }
-    log.info("Seq policy took: " + seqPolicy + " Par policy took: " + parPolicy);
+    log.info("Seq policy took: {} Par policy took: {}", seqPolicy, parPolicy);
 
     CourtPolicyResponseMessageType p;
-    log.info("Downloading " + court + " in " + jurisdiction);
+    log.info("Downloading {} in {}", court, jurisdiction);
 
     try {
       var m = ServiceHelpers.prep(new CourtPolicyQueryMessageType(), court);
       p = filingPort.getPolicy(m);
     } catch (SOAPFaultException ex) {
-      log.warn("Got a SOAP Fault excption when getting the policy for " + court + " in " + jurisdiction + ": " + StdLib.strFromException(ex));
+      log.warn("Got a SOAP Fault excption when getting the policy for {} in {}: {}", court, jurisdiction, StdLib.strFromException(ex));
       return;
     }
     var toDownload = p.getRuntimePolicyParameters().getCourtCodelist().stream().map(ccl -> {
@@ -563,7 +566,7 @@ public class CodeUpdater {
     Instant startPar = Instant.now(Clock.systemUTC());
     streamDownload(signedTime.get(), court, toDownload.stream().parallel(), Optional.empty());
     Duration parDur = Duration.between(startPar, Instant.now(Clock.systemUTC()));
-    log.info("Seq download took: " + seqDur + " Par download took: " + parDur);
+    log.info("Seq download took: {} Par download took: {}", seqDur, parDur);
     return;
   }
 

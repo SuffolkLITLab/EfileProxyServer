@@ -56,11 +56,12 @@ public class MessageSettingsDatabase implements DatabaseInterface {
   
   public void updateTable(MessageInfo info) throws SQLException {
     updateTable(info.serverId, info.fromEmail, info.subjectLine, info.emailResponseTemplate,
+        info.confirmationSubjectLine,
         info.emailConfirmation);
   }
   
   public void updateTable(UUID serverId, String toEmail, String subjectLine, 
-      String emailTemplate, String emailConfirmation) throws SQLException {
+      String emailTemplate, String confirmationSubjectLine, String emailConfirmation) throws SQLException {
     if (conn == null) {
       log.error("Connection in addToTable wasn't open yet!");
       throw new SQLException();
@@ -68,10 +69,10 @@ public class MessageSettingsDatabase implements DatabaseInterface {
     
     String insertIntoTable = """
         INSERT INTO message_settings (
-            "server_id", "from_email", "subject_line", "email_template", "email_confirmation"
+            "server_id", "from_email", "subject_line", "email_template", "confirmation_subject_line", "email_confirmation"
         ) VALUES (
-          ?, ?, ?, ?, ?) ON CONFLICT (server_id) DO UPDATE SET from_email=?, subject_line=?, 
-              email_template=?, email_confirmation=?
+          ?, ?, ?, ?, ?, ?) ON CONFLICT (server_id) DO UPDATE SET from_email=?, subject_line=?, 
+              email_template=?, confirmation_subject_line=?, email_confirmation=?
         """; 
     
     try (PreparedStatement insertSt = conn.prepareStatement(insertIntoTable)) {
@@ -79,11 +80,13 @@ public class MessageSettingsDatabase implements DatabaseInterface {
       insertSt.setString(2, toEmail);
       insertSt.setString(3, subjectLine);
       insertSt.setString(4, emailTemplate);
-      insertSt.setString(5, emailConfirmation);
-      insertSt.setString(6, toEmail);
-      insertSt.setString(7, subjectLine);
-      insertSt.setString(8, emailTemplate);
-      insertSt.setString(9, emailConfirmation);
+      insertSt.setString(5, confirmationSubjectLine);
+      insertSt.setString(6, emailConfirmation);
+      insertSt.setString(7, toEmail);
+      insertSt.setString(8, subjectLine);
+      insertSt.setString(9, emailTemplate);
+      insertSt.setString(10, confirmationSubjectLine);
+      insertSt.setString(11, emailConfirmation);
       insertSt.executeUpdate();
     }
   }
@@ -95,7 +98,8 @@ public class MessageSettingsDatabase implements DatabaseInterface {
     }
     
     String query = """
-        SELECT server_id, from_email, subject_line, email_template, email_confirmation 
+        SELECT server_id, from_email, subject_line, email_template, confirmation_subject_line,
+        email_confirmation 
         FROM message_settings 
         WHERE server_id=?""";
     try (PreparedStatement st = conn.prepareStatement(query)) {
@@ -103,7 +107,7 @@ public class MessageSettingsDatabase implements DatabaseInterface {
       ResultSet rs = st.executeQuery();
       if (rs.next()) {
         MessageInfo info = new MessageInfo((UUID)rs.getObject(1), rs.getString(2), 
-            rs.getString(3), rs.getString(4), rs.getString(5));
+            rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6));
         return Optional.of(info);
       }
     } catch (SQLException e) {

@@ -58,6 +58,7 @@ public class OrgMessageSender {
       Best,
       Court Forms Online
       """;
+  private String defaultConfirmationSubject = "An update on your e-filing";
   private String defaultConfirmation = 
       """
       Dear {{ name }},
@@ -106,7 +107,7 @@ public class OrgMessageSender {
       return info;
     } else {
       log.warn("Couldn't get message settings, using defaults");
-      return new MessageInfo(serverId, defaultFrom, defaultSubject, defaultResponseTemplate, defaultConfirmation); 
+      return new MessageInfo(serverId, defaultFrom, defaultSubject, defaultResponseTemplate, defaultConfirmationSubject, defaultConfirmation); 
     }
   }
 
@@ -120,17 +121,29 @@ public class OrgMessageSender {
     MessageInfo msgSettings = getSettings(trans.serverId);
     Map<String, Object> templateVars = new HashMap<String, Object>();
     String template = msgSettings.emailResponseTemplate;
-    if (status.equals(UpdateMessageStatus.ACCEPTED)
-        && trans.acceptedMsgTemplate!= null && !trans.acceptedMsgTemplate.isBlank()) {
-      template = trans.acceptedMsgTemplate;
-    }
-    if (status.equals(UpdateMessageStatus.REJECTED)
-        && trans.rejectedMsgTemplate != null && !trans.rejectedMsgTemplate.isBlank()) {
-      template = trans.rejectedMsgTemplate;
-    }
-    if (status.equals(UpdateMessageStatus.NEUTRAL)
-        && trans.neutralMsgTemplate != null && !trans.neutralMsgTemplate.isBlank()) {
+    String subject = msgSettings.subjectLine;
+    // Set neutral msg and subject first, since we prefer personalized messages over
+    // defaults, even if tone isn't perfect.
+    if (trans.neutralMsgTemplate != null && !trans.neutralMsgTemplate.isBlank()) {
       template = trans.neutralMsgTemplate;
+    }
+    if (trans.neutralMsgSubject != null && !trans.neutralMsgSubject.isBlank()) {
+      subject = trans.neutralMsgSubject;
+    }
+    if (status.equals(UpdateMessageStatus.ACCEPTED)) {
+      if (trans.acceptedMsgTemplate != null && !trans.acceptedMsgTemplate.isBlank()) {
+        template = trans.acceptedMsgTemplate;
+      }
+      if (trans.acceptedMsgSubject != null && !trans.acceptedMsgTemplate.isBlank()) {
+        subject = trans.acceptedMsgSubject;
+      }
+    } else if (status.equals(UpdateMessageStatus.REJECTED)) {
+      if (trans.rejectedMsgTemplate != null && !trans.rejectedMsgTemplate.isBlank()) {
+        template = trans.rejectedMsgTemplate;
+      }
+      if (trans.rejectedMsgSubject != null && !trans.rejectedMsgSubject.isBlank()) {
+        subject = trans.rejectedMsgSubject;
+      }
     }
     templateVars.put("name", trans.name);
     templateVars.put("court_name", courtName);
@@ -150,7 +163,7 @@ public class OrgMessageSender {
     if (canEmail) {
       int result;
       try {
-        result = sendMsg.sendEmail(msgSettings.fromEmail, msgSettings.subjectLine, trans.email, template, templateVars);
+        result = sendMsg.sendEmail(msgSettings.fromEmail, subject, trans.email, template, templateVars);
         return (result == 200 || result == 202 || result == 204);
       } catch (IOException e) {
         log.error(e.toString());
@@ -163,12 +176,15 @@ public class OrgMessageSender {
     return false;
   }
   
-  public boolean sendConfirmation(String email, String emailTemplate, UUID serverId, String name, 
+  public boolean sendConfirmation(String email, String emailTemplate, String emailSubject, UUID serverId, String name, 
       String courtName, List<UUID> transactionIds, String caseType, String caseTitle) {
     MessageInfo msgSettings = getSettings(serverId);
     if (emailTemplate == null || emailTemplate.isBlank()) {
       log.warn("given email template was blank (" + emailTemplate + "), using default");
       emailTemplate = msgSettings.emailConfirmation;
+    }
+    if (emailSubject == null || emailSubject.isBlank()) {
+      emailSubject = msgSettings.subjectLine;
     }
     String ids = transactionIds.stream().map(t -> t.toString()).collect(Collectors.joining(", "));
     Map<String, Object> templateVars = new HashMap<String, Object>();
@@ -181,7 +197,7 @@ public class OrgMessageSender {
     if (canEmail) {
       int result;
       try {
-        result = sendMsg.sendEmail(msgSettings.fromEmail, msgSettings.subjectLine, email, emailTemplate, templateVars);
+        result = sendMsg.sendEmail(msgSettings.fromEmail, emailSubject, email, emailTemplate, templateVars);
         return (result == 200 || result == 202 || result == 204);
       } catch (IOException e) {
         log.error(e.toString());

@@ -17,8 +17,10 @@ public class StdLib {
   public static String strFromException(Exception ex) {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
+    pw.print(ex.toString());
+    pw.print(" ");
     ex.printStackTrace(pw);
-    return ex.toString() + " " + sw.toString();
+    return sw.toString();
   }
 
   public static void closeQuitely(XMLStreamReader xsr) {

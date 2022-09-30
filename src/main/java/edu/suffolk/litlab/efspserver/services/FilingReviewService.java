@@ -356,9 +356,13 @@ public class FilingReviewService {
     JsonNode miscInfo = info.getMiscInfo();
 
     String confirmationTemplate = getStringDefault(miscInfo, "email_confirmation_contents", "");
+    String confirmationSubject = getStringDefault(miscInfo, "email_confirmation_subject", "");
     String acceptedTemplate = getStringDefault(miscInfo, "acceptance_contents", "");
+    String acceptedSubject = getStringDefault(miscInfo, "acceptance_subject", "");
     String rejectedTemplate = getStringDefault(miscInfo, "rejected_contents", "");
+    String rejectedSubject = getStringDefault(miscInfo, "rejected_subject", "");
     String neutralTemplate = getStringDefault(miscInfo, "neutral_contents", "");
+    String neutralSubject = getStringDefault(miscInfo, "neutral_subject", "");
 
     try (Connection conn = ds.getConnection()){
       // TODO(brycew): this is going to send case type code (i.e. random numbers to the user. 
@@ -369,10 +373,11 @@ public class FilingReviewService {
       ud.addToTable(user.getName().getFullName(), user.getId(),
           phoneNumber, user.getContactInfo().getEmail().orElse(""),
           filingIds, atRest.get().serverId, activeToken.get(),
-          info.getCaseTypeCode(), courtId, ts, acceptedTemplate, rejectedTemplate, neutralTemplate, filingResult.caseTitle);
+          info.getCaseTypeCode(), courtId, ts, acceptedTemplate, acceptedSubject, rejectedTemplate, rejectedSubject,
+              neutralTemplate, neutralSubject, filingResult.caseTitle);
 
       msgSender.sendConfirmation(user.getContactInfo().getEmail().orElse(""),
-          confirmationTemplate,
+          confirmationTemplate, confirmationSubject,
           atRest.get().serverId, user.getName().getFullName(), filingResult.courtName, filingIds,
           filingResult.caseCategoryName, filingResult.caseTitle);
     } catch (SQLException ex) {

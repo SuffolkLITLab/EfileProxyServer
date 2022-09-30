@@ -105,7 +105,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
           return;
         }
         try (Statement createSt = conn.createStatement()) {
-          log.info("Full statement: " + createQuery);
+          log.info("Full statement: {}", createQuery);
           createSt.executeUpdate(createQuery);
         }
       }
@@ -193,11 +193,10 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       update.setString(5, doc.getIdentification().getVersion());
       update.executeUpdate();
     } catch (SQLException ex) {
-      log.error("Tried to execute an insert, but failed! Exception: " + StdLib.strFromException(ex)); 
+      log.error("Tried to execute an insert, but failed! Exception: {}", StdLib.strFromException(ex)); 
       log.error("Going to rollback updates to this table");
       throw ex;
     }
-
   }
   
   public PreparedStatement singleInsert(PreparedStatement stmt, String tableName, String courtName, 

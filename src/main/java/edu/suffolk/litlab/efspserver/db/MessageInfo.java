@@ -9,15 +9,19 @@ public class MessageInfo {
     public String fromEmail;
     public String subjectLine;
     public String emailResponseTemplate;
+    public String confirmationSubjectLine;
     public String emailConfirmation;
     
     public MessageInfo(UUID serverId, String fromEmail, String subjectLine, 
-        String emailResponseTemplate, String emailConfirmation) {
+        String emailResponseTemplate,
+        String confirmationSubjectLine,
+        String emailConfirmation) {
       this.serverId = serverId;
       this.fromEmail = fromEmail;
       this.subjectLine = subjectLine;
       this.emailResponseTemplate = emailResponseTemplate;
       this.emailConfirmation = emailConfirmation;
+      this.confirmationSubjectLine = confirmationSubjectLine;
     }
     
     public MessageInfo(JsonNode node) {
@@ -25,6 +29,7 @@ public class MessageInfo {
            (node.has("from_email")) ? node.get("from_email").asText(null) : null, 
            (node.has("subject_line")) ? node.get("subject_line").asText(null) : null, 
            (node.has("email_template")) ? node.get("email_template").asText(null) : null,
+           (node.has("email_confirmation_subject")) ? node.get("email_confirmation_subject").asText(null): null,
            (node.has("email_confirmation")) ? node.get("email_confirmation").asText(null): null);
     }
 }

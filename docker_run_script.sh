@@ -10,4 +10,5 @@ cd /usr/src/app
 # https://stackoverflow.com/questions/53215038/how-to-log-request-response-using-java-net-http-httpclient
 java \
     -cp $(cat cp.txt):target/efspserver.jar \
+    -XX:+HeapDumpOnOutOfMemoryError \
     edu.suffolk.litlab.efspserver.services.EfspServer

@@ -55,12 +55,12 @@ public class MessageSettingsService {
       LoginDatabase ld = new LoginDatabase(conn);
       Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY")); 
       if (atRest.isEmpty()) {
-        return Response.status(401).entity("Not logged in to efile").build();
+        return Response.status(401).entity("\"Not logged in to efile\"").build();
       }
       var md = new MessageSettingsDatabase(conn);
       Optional<MessageInfo> info = md.findMessageInfo(atRest.get().serverId);
       if (info.isEmpty()) {
-        return Response.status(404).entity("No current email settings for this server").build();
+        return Response.status(404).entity("\"No current email settings for this server\"").build();
       }
       return Response.ok(info.get()).build();
     } catch (SQLException ex) {
@@ -77,7 +77,7 @@ public class MessageSettingsService {
       LoginDatabase ld = new LoginDatabase(conn);
       Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY")); 
       if (atRest.isEmpty()) {
-        return Response.status(401).entity("Not logged in to efile").build();
+        return Response.status(401).entity("\"Not logged in to efile\"").build();
       }
       if (newInfoStr == null || newInfoStr.isBlank()) {
         return Response.status(200).build();
@@ -95,7 +95,7 @@ public class MessageSettingsService {
 
       var md = new MessageSettingsDatabase(conn);
       MessageInfo existingInfo = md.findMessageInfo(atRest.get().serverId)
-          .orElse(new MessageInfo(atRest.get().serverId, null, null, null, null));
+          .orElse(new MessageInfo(atRest.get().serverId, null, null, null, null, null));
       existingInfo.emailResponseTemplate = newInfo.emailResponseTemplate;
       existingInfo.subjectLine = newInfo.subjectLine;
       existingInfo.fromEmail = newInfo.fromEmail;

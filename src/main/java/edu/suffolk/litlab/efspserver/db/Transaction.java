@@ -13,8 +13,11 @@ public class Transaction {
   public Optional<String> phoneNumber;
   public String email;
   public String acceptedMsgTemplate;
+  public String acceptedMsgSubject;
   public String rejectedMsgTemplate;
+  public String rejectedMsgSubject;
   public String neutralMsgTemplate;
+  public String neutralMsgSubject;
   public UUID transactionId;
   public UUID serverId;
   public String apiKeyUsed;
@@ -22,6 +25,14 @@ public class Transaction {
   public String courtId;
   public Timestamp submitted;
   public String caseTitle;
+
+  public final static String query = """
+        SELECT name, user_id, phone_number, email, transaction_id, server_id,
+            api_key_used, casetype, court_id, submitted, accepted_msg_template, 
+            accepted_msg_subject, rejected_msg_template, rejected_msg_subject,
+            neutral_msg_template, neutral_msg_subject, case_title
+        FROM submitted_filings
+        WHERE transaction_id = ?""";
 
   public static Transaction fromResults(ResultSet rs) throws SQLException {
     Transaction trans = new Transaction();
@@ -40,9 +51,12 @@ public class Transaction {
     trans.courtId = rs.getString(9);
     trans.submitted = rs.getTimestamp(10);
     trans.acceptedMsgTemplate = rs.getString(11);
-    trans.rejectedMsgTemplate = rs.getString(12);
-    trans.neutralMsgTemplate = rs.getString(13);
-    trans.caseTitle = rs.getString(14);
+    trans.acceptedMsgSubject = rs.getString(12);
+    trans.rejectedMsgTemplate = rs.getString(13);
+    trans.rejectedMsgSubject = rs.getString(14);
+    trans.neutralMsgTemplate = rs.getString(15);
+    trans.neutralMsgSubject = rs.getString(16);
+    trans.caseTitle = rs.getString(17);
     return trans;
   }
 }

@@ -42,13 +42,18 @@ public class UserDatabase implements DatabaseInterface {
       existsSt.setString(1, "submitted_filings");
       ResultSet rs = existsSt.executeQuery();
       if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
-        String createQuery = """ 
+        String createQuery = """
              CREATE TABLE submitted_filings (
              "user_id" uuid, "name" text, "phone_number" text,
              "email" text, "transaction_id" uuid PRIMARY KEY, "server_id" uuid, "api_key_used" text, 
              "court_id" text, "casetype" text, 
-             "submitted" date, "accepted_msg_template" text, "rejected_msg_template" text,
-             "neutral_msg_template" text, "case_title" text)""";
+             "submitted" date, "accepted_msg_template" text,
+             "accepted_msg_subject" text,
+             "rejected_msg_template" text,
+             "rejected_msg_subject" text,
+             "neutral_msg_template" text,
+             "neutral_msg_subject" text,
+             "case_title" text)""";
         try (Statement createSt = conn.createStatement()) {
           log.info("Full statement: " + createQuery); 
           int retVal = createSt.executeUpdate(createQuery);
@@ -64,10 +69,11 @@ public class UserDatabase implements DatabaseInterface {
   public void addToTable(String name,
       UUID filingPartyId, Optional<String> phoneNumber, String email,
       List<UUID> transactionIds, UUID serverId, String apiKeyUsed, String caseType, String courtId, Timestamp submitted,
-      String acceptedTmpl, String rejectedTmpl, String neutralTmpl, String caseTitle) throws SQLException {
+      String acceptedTmpl, String acceptedSubject, String rejectedTmpl, String rejectedSubject, String neutralTmpl, String neutralSubject,
+      String caseTitle) throws SQLException {
     for (UUID id : transactionIds) {
       addToTable(name, filingPartyId, phoneNumber, email, id, serverId, apiKeyUsed, caseType, courtId, submitted,
-        acceptedTmpl, rejectedTmpl, neutralTmpl, caseTitle);
+        acceptedTmpl, acceptedSubject, rejectedTmpl, rejectedSubject, neutralTmpl, neutralSubject, caseTitle);
     }
   }
   
@@ -75,8 +81,10 @@ public class UserDatabase implements DatabaseInterface {
   public void addToTable(String name,
       UUID filingPartyId, Optional<String> phoneNumber, String email, 
       UUID transactionId, UUID serverId, String apiKeyUsed, String caseType, 
-      String courtId, Timestamp submitted, String acceptedTmpl, String rejectedTmpl,
-      String neutralTmpl, String caseTitle) throws SQLException {
+      String courtId, Timestamp submitted, String acceptedTmpl, 
+      String acceptedSubject,
+      String rejectedTmpl, String rejectedSubject,
+      String neutralTmpl, String neutralSubject, String caseTitle) throws SQLException {
     if (conn == null) {
       log.error("Connection in addToTable wasn't open yet!");
       throw new SQLException();
@@ -86,12 +94,18 @@ public class UserDatabase implements DatabaseInterface {
                         "user_id", "name", 
                         "phone_number", "email", "transaction_id", "server_id",
                         "api_key_used", "casetype", "court_id", "submitted", 
-                        "accepted_msg_template", "rejected_msg_template", 
-                        "neutral_msg_template", "case_title"
+                        "accepted_msg_template",
+                        "accepted_msg_subject",
+                        "rejected_msg_template",
+                        "rejected_msg_subject",
+                        "neutral_msg_template",
+                        "neutral_msg_subject",
+                        "case_title"
                     ) VALUES (
                         ?, ?, 
                         ?, ?, ?, ?,
-                        ?, ?, ?, ?, ?, ?, ?, ?)""";
+                        ?, ?, ?, ?,
+                        ?, ?, ?, ?, ?, ?, ?)""";
     try (PreparedStatement insertSt = conn.prepareStatement(insertIntoTable)) {
       insertSt.setObject(1, filingPartyId);
       insertSt.setString(2, name);
@@ -105,9 +119,12 @@ public class UserDatabase implements DatabaseInterface {
       insertSt.setString(9, courtId);
       insertSt.setTimestamp(10, submitted);
       insertSt.setString(11, acceptedTmpl);
-      insertSt.setString(12, rejectedTmpl);
-      insertSt.setString(13, neutralTmpl);
-      insertSt.setString(14, caseTitle);
+      insertSt.setString(12, acceptedSubject);
+      insertSt.setString(13, rejectedTmpl);
+      insertSt.setString(14, rejectedSubject);
+      insertSt.setString(15, neutralTmpl);
+      insertSt.setString(16, neutralSubject);
+      insertSt.setString(17, caseTitle);
       insertSt.executeUpdate();
     }
   }
@@ -120,14 +137,7 @@ public class UserDatabase implements DatabaseInterface {
       log.error("Connection in findTransaction wasn't open yet!");
       throw new SQLException();
     }
-    String query = """
-        SELECT name, user_id, phone_number, email, transaction_id, server_id,
-            api_key_used, casetype, court_id, submitted, accepted_msg_template, 
-            rejected_msg_template, neutral_msg_template, case_title
-        FROM submitted_filings
-        WHERE transaction_id = ?""";
-    
-    try (PreparedStatement st = conn.prepareStatement(query)) {
+    try (PreparedStatement st = conn.prepareStatement(Transaction.query)) {
       st.setObject(1, transactionToFind);
       ResultSet rs = st.executeQuery();
       if (!rs.next()) {

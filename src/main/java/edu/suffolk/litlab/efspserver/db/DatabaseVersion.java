@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DatabaseVersion {
   
-  final static int CURRENT_VERSION = 4;
+  final static int CURRENT_VERSION = 5;
   private static Logger log = 
       LoggerFactory.getLogger(DatabaseVersion.class);
   private final Connection codeConn;
@@ -47,7 +47,7 @@ public class DatabaseVersion {
   
   public void createTablesIfAbsent(boolean brandNew) throws SQLException {
     String tableExistsQuery = TABLE_EXISTS; 
-    PreparedStatement existsSt  = userConn.prepareStatement(tableExistsQuery);
+    PreparedStatement existsSt = userConn.prepareStatement(tableExistsQuery);
     existsSt.setString(1, "schema_version");
     ResultSet rs = existsSt.executeQuery();
     if (!rs.next() || rs.getInt(1) <= 0) {
@@ -96,6 +96,7 @@ public class DatabaseVersion {
       userConn.setAutoCommit(false);
       codeConn.setAutoCommit(false);
       while (onDiskVersion < CURRENT_VERSION) {
+        System.out.println(onDiskVersion + " " + CURRENT_VERSION);
         Savepoint savepoint = userConn.setSavepoint("beginning_update");
         log.info("Updating database from version " + onDiskVersion + " to " + (onDiskVersion + 1));
         try {
@@ -103,7 +104,7 @@ public class DatabaseVersion {
           if (!successful) {
             return false;
           }
-        onDiskVersion += 1;
+          onDiskVersion += 1;
         } catch (SQLException ex) {
           log.error("Couldn't update from version " + onDiskVersion + " to " + CURRENT_VERSION + ": " 
             + strFromException(ex) + ": , reverting to on disk db");
@@ -113,6 +114,7 @@ public class DatabaseVersion {
             log.error("Couldn't rollback! Error: " + strFromException(rollbackEx));
             return false;
           }
+          return false;
         }
       }
     } catch (SQLException ex) {
@@ -131,6 +133,8 @@ public class DatabaseVersion {
       update2To3();
     } else if (onDiskVersion == 3) {
       update3To4();
+    } else if (onDiskVersion == 4) {
+      update4To5();
     }
     setSchemaVersion(onDiskVersion + 1);
     userConn.commit();
@@ -223,5 +227,22 @@ public class DatabaseVersion {
     try (Statement st = userConn.createStatement()) {
       st.executeUpdate(alterTransactionWithCaseTitle);
     }
+    userConn.commit();
+  }
+
+  private void update4To5() throws SQLException {
+    final String alterMsgSubjectTones = """
+      ALTER TABLE submitted_filings
+        ADD COLUMN accepted_msg_subject text,
+        ADD COLUMN rejected_msg_subject text,
+        ADD COLUMN neutral_msg_subject text""";
+    final String alterMsgSubjects = """
+      ALTER TABLE message_settings
+        ADD COLUMN confirmation_subject_line text""";
+    try (Statement st = userConn.createStatement()) {
+      st.executeUpdate(alterMsgSubjectTones);
+      st.executeUpdate(alterMsgSubjects);
+    }
+    userConn.commit();
   }
 }
