@@ -56,7 +56,7 @@ public class DatabaseCreator {
   }
   
   public static Connection makeSingleConnection(String pgDb, String pgFullUrl, String pgUser, String pgPassword) throws SQLException {
-    String tempUrl = pgFullUrl + "/postgres";
+    String tempUrl = pgFullUrl + "/" + pgDb;
     Properties props = new Properties();
     props.setProperty("user", pgUser);
     props.setProperty("password", pgPassword);
@@ -76,7 +76,7 @@ public class DatabaseCreator {
     while (System.currentTimeMillis() - startTime < RETRY_TIME_MILLIS) {
       // Check if the named database exists before creating it
       log.info("Trying to connect to the default database");
-      try (Connection tempConn = makeSingleConnection(pgDb, pgFullUrl, pgUser, pgPassword)) {
+      try (Connection tempConn = makeSingleConnection("postgres", pgFullUrl, pgUser, pgPassword)) {
         log.trace("Got connection");
         ResultSet rs = tempConn.getMetaData().getCatalogs();
         boolean needToMakeDb = true;
