@@ -108,7 +108,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   private static Optional<CreationArgs> createFromEnvVars() {
     Optional<String> maybeX509Password = EfmModuleSetup.GetEnv("X509_PASSWORD");
-    if (maybeX509Password.isEmpty()) {
+    if (maybeX509Password.isEmpty() || maybeX509Password.orElse("").isBlank()) {
       log.warn("If using Tyler, X509_PASSWORD can't be null. Did you forget to source .env?");
       return Optional.empty();
     }

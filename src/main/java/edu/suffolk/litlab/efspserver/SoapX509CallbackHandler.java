@@ -11,6 +11,9 @@ public class SoapX509CallbackHandler implements CallbackHandler {
   
   public static void setX509Password(String newPassword) {
     x509Password = newPassword;
+    if (x509Password == null || x509Password.isBlank()) {
+      throw new RuntimeException("x509Password can't be null: " + x509Password);
+    }
   }
 
   /** Handles setting the password for Webservices accessing the x509 certificates. */
