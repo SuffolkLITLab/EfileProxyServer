@@ -76,7 +76,7 @@ public class AcmeRenewal {
   private static final File DOMAIN_KEY_FILE;
   private static final File DOMAIN_CSR_FILE;
   private static final File DOMAIN_CHAIN_FILE;
-  private static final File JSK_OUT_FILE_PATH;
+  private static final File JKS_OUT_FILE_PATH;
 
   static {
     File dockerVolume = new File("/tmp/tls_certs");
@@ -91,7 +91,7 @@ public class AcmeRenewal {
     DOMAIN_KEY_FILE = new File(prefix + "acme_domain.key");
     DOMAIN_CSR_FILE = new File(prefix + "acme_domain.csr");
     DOMAIN_CHAIN_FILE = new File(prefix + "acme_domain-chain.crt");
-    JSK_OUT_FILE_PATH = new File(prefix + "tls_server_cert.jsk");
+    JKS_OUT_FILE_PATH = new File(prefix + "tls_server_cert.jks");
   }
 
   private static KeyPair loadOrCreateUserKeyPair() throws IOException {
@@ -173,8 +173,8 @@ public class AcmeRenewal {
     try (FileWriter fw = new FileWriter(DOMAIN_CHAIN_FILE)) {
       certificate.writeCertificate(fw);
     }
-    log.info("Writing things to a jks file");
-    try (FileOutputStream fos = new FileOutputStream(JSK_OUT_FILE_PATH)) {
+    log.info("Writing things to a jks file: " + JKS_OUT_FILE_PATH);
+    try (FileOutputStream fos = new FileOutputStream(JKS_OUT_FILE_PATH)) {
       fos.write(convertPEMToJKS(DOMAIN_KEY_FILE, DOMAIN_CHAIN_FILE, certPassword));
     } catch (Exception ex) {
       log.error("Error on cert conversion: " + StdLib.strFromException(ex));
@@ -266,7 +266,9 @@ public class AcmeRenewal {
     }
 
     log.info("Challenge completed!");
-    publisher.removeTokenContent();
+    if (publisher != null) {
+      publisher.removeTokenContent();
+    }
   }
 
   /** Converts certificate information from Let's Encrypt (plus our domain private key file) into
@@ -344,7 +346,7 @@ public class AcmeRenewal {
     }
     if (args.length == 0) {
       log.info("No args passed: Writing crt to a jks file");
-      try (FileOutputStream fos = new FileOutputStream(JSK_OUT_FILE_PATH)) {
+      try (FileOutputStream fos = new FileOutputStream(JKS_OUT_FILE_PATH)) {
         fos.write(convertPEMToJKS(DOMAIN_KEY_FILE, DOMAIN_CHAIN_FILE, password));
       } catch (Exception ex) {
         log.error("Error on cert conversion: " + StdLib.strFromException(ex));
