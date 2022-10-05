@@ -51,8 +51,9 @@ public class ServiceHelpers {
 
   public static String ASSEMBLY_PORT = "/filingassembly/callbacks/FilingAssemblyMDEPort";
   public static String ASSEMBLY_PORT_V5 = "/filingassembly/callbacks/FilingAssemblyMDEPortEcfv5";
-  private static String EXTERNAL_DOMAIN = GetEnv("EXTERNAL_DOMAIN").orElse("filingassemblymde.com:9000");
+  private static String EXTERNAL_DOMAIN = GetEnv("EXTERNAL_DOMAIN").orElse("filingassemblymde.com");
   public static final String BASE_LOCAL_URL;
+  public static final String BASE_ACME_URL;
   public static final String EXTERNAL_URL;
   public static final String SERVICE_URL;
   public static final String REST_CALLBACK_URL;
@@ -70,9 +71,11 @@ public class ServiceHelpers {
     if (certPassword.isPresent()) {
       EXTERNAL_URL = "https://" + EXTERNAL_DOMAIN;
       BASE_LOCAL_URL = "https://0.0.0.0:9000";
+      BASE_ACME_URL = "http://0.0.0.0:9009";
     } else {
       EXTERNAL_URL = "http://" + EXTERNAL_DOMAIN;
-      BASE_LOCAL_URL = "http://0.0.0.0:9000";
+      BASE_LOCAL_URL = "http://0.0.0.0:9009";
+      BASE_ACME_URL = "";
     }
 
     SERVICE_URL = EXTERNAL_URL + ASSEMBLY_PORT;

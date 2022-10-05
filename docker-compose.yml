@@ -5,7 +5,7 @@ services:
       context: .
     # Necessary b/c docassemble is external to the docker network
     ports:
-      - target: 9000
+      - target: 9009
         published: 80
       - target: 9000
         published: 443

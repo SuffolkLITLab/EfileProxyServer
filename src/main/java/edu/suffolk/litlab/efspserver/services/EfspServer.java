@@ -45,7 +45,9 @@ public class EfspServer {
       LoggerFactory.getLogger(EfspServer.class);
 
   private JAXRSServerFactoryBean sf;
+  private JAXRSServerFactoryBean acmeSf;
   private Server server;
+  private Server acmeServer;
 
   private final static File CERT_KEY_STORE = new File("src/main/config/tls_server_cert.jks");
 
@@ -106,8 +108,13 @@ public class EfspServer {
     services.put(AuthenticationService.class,
         new SingletonResourceProvider(new AuthenticationService(security)));
     services.put(JurisdictionSwitch.class, new SingletonResourceProvider(new JurisdictionSwitch(jurisdictionMap)));
-    if (challengeService != null) {
+    if (challengeService != null && !ServiceHelpers.BASE_ACME_URL.isBlank()) {
       services.put(AcmeChallengeService.class, new SingletonResourceProvider(challengeService));
+      acmeSf = new JAXRSServerFactoryBean();
+      acmeSf.setResourceClasses(AcmeChallengeService.class);
+      acmeSf.setResourceProvider(AcmeChallengeService.class, new SingletonResourceProvider(challengeService));
+      acmeSf.setAddress(ServiceHelpers.BASE_ACME_URL);
+      acmeServer = acmeSf.create();
     }
 
     sf = new JAXRSServerFactoryBean();
@@ -122,15 +129,18 @@ public class EfspServer {
         new JAXBElementProvider<Object>(),
         new JacksonJsonProvider()));
 
-    String baseLocalUrl = ServiceHelpers.BASE_LOCAL_URL;
-    sf.setAddress(baseLocalUrl);
+    sf.setAddress(ServiceHelpers.BASE_LOCAL_URL);
     server = sf.create();
   }
 
-  protected void stopServer() {
+  protected void stopServers() {
     if (server != null) {
       server.stop();
       server.destroy();
+    }
+    if (acmeServer != null) {
+      acmeServer.stop();
+      acmeServer.destroy();
     }
   }
 
@@ -217,13 +227,13 @@ public class EfspServer {
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
       public void run() {
-        server.stopServer();
+        server.stopServers();
         for (EfmModuleSetup mod : modules) {
           mod.shutdown();
         }
       }
     });
-    log.info("Server ready...");
+    log.info("Server ready!");
 
     while (true) {
       Thread.sleep(5 * 60 * 1000);

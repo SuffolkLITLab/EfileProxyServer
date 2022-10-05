@@ -224,7 +224,7 @@ public class AcmeRenewal {
     }
 
     StringBuilder msg = new StringBuilder()
-        .append("Commencing challenge! You must create a file in the server's base directory, at")
+        .append("Commencing challenge! You must create a file in the server's base directory, at ")
         .append("http://")
         .append(auth.getIdentifier().getDomain())
         .append("/.well-known/acme-challenge/")

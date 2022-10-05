@@ -26,7 +26,7 @@ At approximately what time did you make the API call
 **Version Information (should be in `your.docassemble.server/updatepackage`:**
  - Docassemble Version:
  - EFSPIntegration Version:
- - what server URL you were sending to (i.e. `efile.suffolklitlab.org:9000`)
+ - what server URL you were sending to (i.e. `efile.suffolklitlab.org` or `efile-test.suffolklitlab.org`)
 
 **Additional context**
 Add any other context about the problem here.
