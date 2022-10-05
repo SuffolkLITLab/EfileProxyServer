@@ -521,6 +521,10 @@ public class AdminUserService {
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
+    if (req.getCountryCode() == null || req.getCountryCode().isBlank()) {
+      // By default, assume US.
+      req.setCountryCode("US");
+    }
 
     if (regType.equals(RegistrationType.FIRM_ADMINISTRATOR) || regType.equals(RegistrationType.INDIVIDUAL)) {
       for (var entry: Map.of(

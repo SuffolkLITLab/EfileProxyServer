@@ -55,6 +55,10 @@ public class FilingDocDocassembleJacksonDeserializer {
       collector.error(err);
     }
 
+    if (!node.has("proxy_enabled") || !node.get("proxy_enabled").asBoolean(false)) {
+      log.info("Filing doc isn't proxy enabled, won't parse it or attachments");
+      return Optional.empty();
+    }
     JsonNode filingJson = node.get("filing_type");
     Optional<String> filingType = Optional.empty(); 
     if (filingJson != null && filingJson.isTextual()) {
@@ -212,7 +216,7 @@ public class FilingDocDocassembleJacksonDeserializer {
           new FilingAttachment(fileName,
               inStream.readAllBytes(),
               documentTypeFormatName,
-              filingComponentCode, documentDescription)); 
+              filingComponentCode, documentDescription));
     } catch (MalformedURLException ex) {
       FilingError err = serverError("MalformedURLException trying to parse the data_url (" + dataUrl + "): " + ex);
       collector.error(err);
