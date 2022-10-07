@@ -33,7 +33,7 @@ public class SoapClientChooser {
 
   static final Map<String, String> efmFirmWsdls = Map.of(
       "illinois-stage", "wsdl/stage/illinois-EFMFirmServiceSingle.svc.wsdl",
-      "illinois-test",  "wsdl/test/illinois-EFMFirmServiceSingle.svc.wsdl",
+      "illinois-test", "wsdl/test/illinois-EFMFirmServiceSingle.svc.wsdl",
       "illinois-prod", "wsdl/prod/illinois-EFMFirmServiceSingle.svc.wsdl",
       "massachusetts-stage", "wsdl/stage/massachusetts-EFMFirmServiceSingle.svc.wsdl",
       "texas-stage", "wsdl/stage/texas-EFMFirmServiceSingle.svc.wsdl",
