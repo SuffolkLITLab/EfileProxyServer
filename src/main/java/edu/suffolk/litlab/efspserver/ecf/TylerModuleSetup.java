@@ -238,7 +238,10 @@ public class TylerModuleSetup implements EfmModuleSetup {
     var adminUser = new AdminUserService(jurisdiction, env, this.codeDs, this.userDs);
     var cases = new CasesService(jurisdiction, env, this.codeDs, this.userDs);
     var codes = new CodesService(jurisdiction, env, this.codeDs);
-    var courtScheduler = new CourtSchedulingService(converterMap, jurisdiction, env, codeDs, userDs);
+    Optional<CourtSchedulingService> courtScheduler = Optional.empty();
+    if (jurisdiction == "illinois") {
+      courtScheduler = Optional.of(new CourtSchedulingService(converterMap, jurisdiction, env, codeDs, userDs));
+    }
     var filingReview = new FilingReviewService(getJurisdiction(), this.userDs, converterMap, filingMap, callbackMap, this.sender); 
     var firmAttorney = new FirmAttorneyAndServiceService(jurisdiction, env, this.codeDs, this.userDs);
     var payments = new PaymentsService(jurisdiction, env, this.togaKey, this.togaUrl, this.codeDs, this.userDs);
@@ -271,9 +274,10 @@ public class TylerModuleSetup implements EfmModuleSetup {
     log.info("V5 Address : " + jaxWsV5Endpoint.getAddress());
     log.info("V5 Bean name: " + jaxWsV5Endpoint.getBeanName());
 
-    //Endpoint cxfEndpoint = jaxWsEndpoint.getServer().getEndpoint();
     
     /*
+    Endpoint cxfEndpoint = jaxWsEndpoint.getServer().getEndpoint();
+
     // Tyler SHOULD actually send us signed messages, but they're lazy, and we have to do what they do.
     cxfEndpoint.getBinding().getBindingInfo().setProperty("security.callback-handler", SoapX509CallbackHandler.class.getName());
     cxfEndpoint.getBinding().getBindingInfo().setProperty("security.signature.properties", "client_sign.properties");
@@ -284,10 +288,11 @@ public class TylerModuleSetup implements EfmModuleSetup {
     cxfEndpoint.getInInterceptors().add(wssIn);
     Map<String, Object> outProps = new HashMap<String, Object>();
     WSS4JOutInterceptor wssOut = new WSS4JOutInterceptor(outProps);
-    */
+
     // Keep these lines around, good for debugging if SOAP starts to act up again
-    //cxfEndpoint.getInInterceptors().add(new LoggingInInterceptor());
-    //cxfEndpoint.getOutInterceptors().add(new LoggingOutInterceptor());
+    cxfEndpoint.getInInterceptors().add(new LoggingInInterceptor());
+    cxfEndpoint.getOutInterceptors().add(new LoggingOutInterceptor());
+    */
   }
 
   @Override

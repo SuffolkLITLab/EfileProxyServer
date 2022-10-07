@@ -85,8 +85,8 @@ import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.Response
 public class CourtSchedulingService {
 
   private final static Logger log = LoggerFactory.getLogger(CourtSchedulingService.class);
-  private final static CourtSchedulingMDE_Service schedFactory = new CourtSchedulingMDE_Service();
 
+  private final CourtSchedulingMDE_Service schedFactory;
   private final ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ObjectFactory oasisWrapObjFac;
   private final ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ObjectFactory reserveDateObjFac;
   private final ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory niemObjFac;
@@ -105,6 +105,11 @@ public class CourtSchedulingService {
     this.env = env;
     this.codeDs = codeDs;
     this.userDs = userDs;
+    var maybeSchedFactory = SoapClientChooser.getCourtSchedulingFactory(jurisdiction, env); 
+    if (maybeSchedFactory.isEmpty()) {
+      throw new RuntimeException("Can't find " + jurisdiction + " in the SoapClientChooser for CourtScheduler"); 
+    }
+    this.schedFactory = maybeSchedFactory.get();
     this.converterMap = converterMap;
     this.oasisWrapObjFac = new ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ObjectFactory();
     this.reserveDateObjFac = new ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ObjectFactory();

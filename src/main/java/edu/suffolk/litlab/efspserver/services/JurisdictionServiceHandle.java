@@ -29,6 +29,11 @@ public class JurisdictionServiceHandle {
       FilingReviewService fr, FirmAttorneyAndServiceService fa, PaymentsService p) {
     this(jurisdiction, Optional.of(au), Optional.of(c), Optional.of(codes), Optional.of(cs), fr, Optional.of(fa), Optional.of(p));
   }
+
+  public JurisdictionServiceHandle(String jurisdiction, AdminUserService au, CasesService c, CodesService codes, Optional<CourtSchedulingService> cs,
+      FilingReviewService fr, FirmAttorneyAndServiceService fa, PaymentsService p) {
+    this(jurisdiction, Optional.of(au), Optional.of(c), Optional.of(codes), cs, fr, Optional.of(fa), Optional.of(p));
+  }
   
   public JurisdictionServiceHandle(String jurisdiction, FilingReviewService filingReview) {
     this(jurisdiction, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), filingReview, Optional.empty(), Optional.empty());

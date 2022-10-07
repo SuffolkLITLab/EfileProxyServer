@@ -16,7 +16,7 @@ public class FilingAssemblyMDE_FilingAssemblyMDEPort_Server{
     protected FilingAssemblyMDE_FilingAssemblyMDEPort_Server() throws java.lang.Exception {
         System.out.println("Starting Server");
         Object implementor = new FilingAssemblyMDEPortImpl();
-        String address = "https://efile.suffolklitlab.org:9001/filingassembly/callbacks/FilingAssemblyMDEPort";
+        String address = "https://efile.suffolklitlab.org/filingassembly/callbacks/FilingAssemblyMDEPort";
         Endpoint.publish(address, implementor);
     }
 

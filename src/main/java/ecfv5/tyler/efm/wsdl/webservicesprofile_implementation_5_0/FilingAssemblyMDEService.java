@@ -31,7 +31,7 @@ public class FilingAssemblyMDEService extends Service {
         } catch (MalformedURLException e) {
             java.util.logging.Logger.getLogger(FilingAssemblyMDEService.class.getName())
                 .log(java.util.logging.Level.INFO,
-                     "Can not initialize the default wsdl from {0}", "file:FilingAssemblyMDE.wsdl");
+                     "Can not initialize the default wsdl from file:FilingAssemblyMDE.wsdl");
         }
         WSDL_LOCATION = url;
     }

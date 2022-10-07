@@ -53,7 +53,8 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.Card
     serviceName="FilingAssemblyMDEService",
     portName="FilingAssemblyMDEPort",
     targetNamespace="urn:tyler:efm:wsdl:WebServicesProfile-Implementation-5.0",
-    wsdlLocation="file:src/main/resources/wsdl/illinois/v5/FilingAssemblyMDE.wsdl",
+    // "Typically, users never use the attribute in their own JWS files": https://docs.oracle.com/cd/E13222_01/wls/docs92/webserv/annotations.html
+    //wsdlLocation="file:src/main/resources/wsdl/stage/illinois-v5-FilingAssemblyMDE.wsdl",
     endpointInterface="ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.filingassemblymde.FilingAssemblyMDE")
 public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
   private static Logger log =

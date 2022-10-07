@@ -43,10 +43,11 @@ import tyler.ecf.extensions.servicecallbackmessage.ServiceCallbackMessageType;
 // TODO(brycew): does this need to become multiple different files, one for each jurisdiction? Can't have multiple wsdlLocations
 
 @javax.jws.WebService(
-    serviceName=  "FilingAssemblyMDEService",
+    serviceName="FilingAssemblyMDEService",
     portName="FilingAssemblyMDEPort",
     targetNamespace="urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0",
-    wsdlLocation="file:src/main/resources/wsdl/illinois/stage/ECF-4.0-FilingAssemblyMDEService-mod.wsdl",
+    // "Typically, users never use the attribute in their own JWS files": https://docs.oracle.com/cd/E13222_01/wls/docs92/webserv/annotations.html
+    //wsdlLocation="file:src/main/resources/wsdl/stage/illinois-ECF-4.0-FilingAssemblyMDEService-mod.wsdl",
     endpointInterface="oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingAssemblyMDEPort")
 public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   private static Logger log =

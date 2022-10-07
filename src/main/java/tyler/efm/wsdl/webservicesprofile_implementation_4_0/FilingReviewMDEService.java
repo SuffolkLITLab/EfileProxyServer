@@ -15,7 +15,7 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
  *
  */
 @WebServiceClient(name = "FilingReviewMDEService",
-                  wsdlLocation = "classpath:wsdl/illinois/stage/ECF-4.0-FilingReviewMDEService.wsdl",
+                  wsdlLocation = "classpath:wsdl/stage/illinois-ECF-4.0-FilingReviewMDEService.wsdl",
                   targetNamespace = "urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0")
 public class FilingReviewMDEService extends Service {
 

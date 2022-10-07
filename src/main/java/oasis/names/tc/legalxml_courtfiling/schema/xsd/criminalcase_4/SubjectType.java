@@ -60,8 +60,8 @@ public class SubjectType
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "PersonAugmentation" is used by two different parts of a schema. See: 
-     * line 98 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/illinois/stage/ecf-23.xsd
-     * line 97 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/illinois/stage/ecf-23.xsd
+     * line 98 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-23.xsd
+     * line 97 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-23.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 

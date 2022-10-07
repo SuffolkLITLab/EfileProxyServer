@@ -7,3 +7,4 @@ docassemble/**
 docassemble-os/**
 target/**
 bin/**
+*.hprof

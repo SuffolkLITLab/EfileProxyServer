@@ -14,22 +14,12 @@ import javax.xml.ws.Service;
  *
  */
 @WebServiceClient(name = "CourtSchedulingMDE",
-                  wsdlLocation = "file:EfileProxyServer/src/main/resources/wsdl/illinois/v5/CourtSchedulingMDE.wsdl",
+                  wsdlLocation = "file:EfileProxyServer/src/main/resources/wsdl/stage/illinois-v5-CourtSchedulingMDE.wsdl",
                   targetNamespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE")
 public class CourtSchedulingMDE_Service extends Service {
 
-    public final static URL WSDL_LOCATION;
-
     public final static QName SERVICE = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE", "CourtSchedulingMDE");
     public final static QName CourtSchedulingMDEPort = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE", "CourtSchedulingMDEPort");
-    static {
-        URL url = CourtSchedulingMDE_Service.class.getClassLoader().getResource("wsdl/v5/CourtSchedulingMDE.wsdl");;
-        if (url == null) {
-          org.slf4j.LoggerFactory.getLogger(CourtSchedulingMDE_Service.class.getName()).info(
-               "Can not initialize the default wsdl from {0}", "classpath:wsdl/v5/CourtSchedulingMDE.wsdl");
-        }
-        WSDL_LOCATION = url;
-    }
 
     public CourtSchedulingMDE_Service(URL wsdlLocation) {
         super(wsdlLocation, SERVICE);
@@ -37,14 +27,6 @@ public class CourtSchedulingMDE_Service extends Service {
 
     public CourtSchedulingMDE_Service(URL wsdlLocation, QName serviceName) {
         super(wsdlLocation, serviceName);
-    }
-
-    public CourtSchedulingMDE_Service() {
-        super(WSDL_LOCATION, SERVICE);
-    }
-
-    public CourtSchedulingMDE_Service(WebServiceFeature ... features) {
-        super(WSDL_LOCATION, SERVICE, features);
     }
 
     public CourtSchedulingMDE_Service(URL wsdlLocation, WebServiceFeature ... features) {
