@@ -207,8 +207,14 @@ public class CodeUpdater {
         // NOTE: the Tyler docs say "error" is available from `GetPolicy'. That is wrong.
         "error", "/CodeService/codes/error");
 
+    for (Map.Entry<String, String> urlSuffix : codeUrls.entrySet()) {
+      cd.createTableIfAbsent(urlSuffix.getKey());
+    }
+
     // On first download, there won't be installed versions of things yet.
     cd.createTableIfAbsent("installedversion");
+
+    cd.getConnection().commit();
 
     Savepoint sp = cd.getConnection().setSavepoint("systemTables");
 
@@ -220,7 +226,6 @@ public class CodeUpdater {
     }
 
     for (Map.Entry<String, String> urlSuffix : codeUrls.entrySet()) {
-      cd.createTableIfAbsent(urlSuffix.getKey());
       cd.deleteFromTable(urlSuffix.getKey());
       final Function<InputStream, Boolean> process = (is) -> {
         try {

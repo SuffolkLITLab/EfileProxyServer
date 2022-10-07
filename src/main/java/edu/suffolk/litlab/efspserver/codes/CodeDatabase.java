@@ -74,6 +74,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
 
   @Override
   public void createTablesIfAbsent() throws SQLException {
+    createTableIfAbsent("location");
     createTableIfAbsent("installedversion");
   }
 
