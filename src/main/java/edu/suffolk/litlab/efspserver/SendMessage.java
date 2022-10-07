@@ -235,9 +235,13 @@ public class SendMessage {
     SendGrid sg = new SendGrid(sendgridApiKey); 
     Request request = new Request();
     Jinjava jinjava = new Jinjava();
-    String renderedTemplate = jinjava.render(messageTemplate, context);
+    String renderedTemplate = jinjava.render(messageTemplate, context).strip();
 
-    Mail mail = new Mail(new Email(from), subject, new Email(to), new Content("text/plain", renderedTemplate));
+    String contentType = "text/plain";
+    if (renderedTemplate.startsWith("<!DOCTYPE html>")) {
+      contentType = "text/html";
+    }
+    Mail mail = new Mail(new Email(from), subject, new Email(to), new Content(contentType, renderedTemplate));
 
     request.setMethod(Method.POST);
     request.setEndpoint("mail/send");
