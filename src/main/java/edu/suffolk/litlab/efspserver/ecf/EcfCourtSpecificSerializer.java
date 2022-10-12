@@ -218,13 +218,22 @@ public class EcfCourtSpecificSerializer {
       // Is foundational, so returning now
       throw FilingError.wrongValue(var);
     }
+    collector.popAttributeStack();
 
     if (maybeCodes.stream().anyMatch(f -> f.isEmpty())) {
       log.error("Nothing matches filing in the info!");
-      var filingVar = collector.requestVar("filing_type", "What filing type is this?", "text", filingOptions.stream().map(f -> f.code).collect(Collectors.toList()));
-      collector.addWrong(filingVar);
-      collector.popAttributeStack(); 
-      throw FilingError.missingRequired(filingVar);
+      int idx = 0;
+      for (var maybeCode: maybeCodes) {
+        if (maybeCode.isEmpty()) {
+          collector.pushAttributeStack("al_court_bundle[" + idx + "]");
+          var filingVar = collector.requestVar("filing_type", "What filing type is this? (can't be " + maybeCodeStrs.get(idx) + ")",
+               "text", filingOptions.stream().map(f -> f.code).collect(Collectors.toList()));
+          collector.addWrong(filingVar);
+          collector.popAttributeStack(); 
+          throw FilingError.missingRequired(filingVar);
+        }
+        idx += 1;
+      }
     }
     
     collector.popAttributeStack();

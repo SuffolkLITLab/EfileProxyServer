@@ -436,7 +436,10 @@ public class CodeUpdater {
     soaps = Duration.ZERO;
     updates = Duration.ZERO;
     List<String> locs = cd.getAllLocations();
+    Instant startPolicy = Instant.now(Clock.systemUTC());
     Map<String, CourtPolicyResponseMessageType> policies = streamPolicies(locs.stream(), cd.getDomain(), filingPort);
+    soaps = soaps.plus(Duration.between(startPolicy, Instant.now(Clock.systemUTC())));
+    log.info("Soaps: {}", soaps);
     for (var policy: policies.entrySet()) {
       final String location = policy.getKey();
       log.info("Downloading tables for {}", location);
