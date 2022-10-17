@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
+import java.util.EmptyStackException;
 
 public abstract class InfoCollector {
   public enum Dep {
@@ -78,8 +79,15 @@ public abstract class InfoCollector {
     variableAttributes.push(variableName);
   }
   
+  /**
+   * Should never throw exceptions, that's a silly java thing.
+   */
   public void popAttributeStack() {
-    variableAttributes.pop();
+    try {
+      variableAttributes.pop();
+    } catch (EmptyStackException ex) {
+      // do nothing
+    }
   }
   
   private String currentAttributeStack() {

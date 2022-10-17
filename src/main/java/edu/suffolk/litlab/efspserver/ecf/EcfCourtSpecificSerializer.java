@@ -236,7 +236,6 @@ public class EcfCourtSpecificSerializer {
       }
     }
     
-    collector.popAttributeStack();
     return maybeCodes.stream().map(f -> f.get()).collect(Collectors.toList());
   }
   
