@@ -6,7 +6,7 @@
     <import namespace="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0" location="ecf-1.xsd"/>
 	<service name="FilingAssemblyMDEService">
 		<port name="FilingAssemblyMDEPort" binding="wsmp:FilingAssemblyMDEPortSOAPBinding">
-		    <soap:address location="https://efile-test.suffolklitlab.org/illinois/filingassembly/callbacks/FilingAssemblyMDEPort"/>
+		    <soap:address location="https://efile-test.suffolklitlab.org/jurisdictions/illinois/filingassembly/callbacks/FilingAssemblyMDEPort"/>
 		</port>
 	</service>
 </definitions>

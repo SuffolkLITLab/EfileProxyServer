@@ -159,9 +159,14 @@ public class FilingInformationDocassembleJacksonDeserializer
     if (startedCaseJson != null && startedCaseJson.isBoolean()) {
       userStartedCase = startedCaseJson.asBoolean(); 
     } else {
-      InterviewVariable var = collector.requestVar("user_started_case",
-          "Whether or not the user is the plaintiff or petitioner", "boolean", List.of("true", "false"));
-      collector.addRequired(var);
+      JsonNode roleJson = node.get("user_role");
+      if (roleJson!= null && roleJson.isTextual()) {
+        userStartedCase = roleJson.asText("").equalsIgnoreCase("plaintiff");
+      } else {
+        InterviewVariable var = collector.requestVar("user_started_case",
+            "True if the user is the plaintiff or petitioner", "boolean", List.of("true", "false"));
+        collector.addRequired(var);
+      }
     }
 
     // TODO(brycew-later): plaintiff and petitioners are both defined.
