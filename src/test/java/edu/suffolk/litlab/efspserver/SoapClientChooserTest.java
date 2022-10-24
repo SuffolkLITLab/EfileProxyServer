@@ -13,6 +13,6 @@ public class SoapClientChooserTest {
     assertEquals("https://massachusetts-stage.tylertech.cloud/", SoapClientChooser.getCodeEndpointRootUrl("massachusetts", "stage"));
     assertEquals("https://massachusetts.tylerhost.net/", SoapClientChooser.getCodeEndpointRootUrl("massachusetts", "prod"));
     assertEquals("https://illinois-stage.tylertech.cloud/", SoapClientChooser.getCodeEndpointRootUrl("illinois", "stage"));
-    assertEquals("https://illinois.tylertech.cloud/", SoapClientChooser.getCodeEndpointRootUrl("illinois", "prod"));
+    assertEquals("https://illinois.tylerhost.net/", SoapClientChooser.getCodeEndpointRootUrl("illinois", "prod"));
   }
 }

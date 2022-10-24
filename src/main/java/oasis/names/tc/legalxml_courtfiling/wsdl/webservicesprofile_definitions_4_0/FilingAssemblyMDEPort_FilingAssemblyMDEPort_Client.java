@@ -46,8 +46,8 @@ public class FilingAssemblyMDEPort_FilingAssemblyMDEPort_Client {
             }
         }
 
-    Optional<String> maybeX509Password = EfmModuleSetup.GetEnv("X509_PASSWORD");
-    SoapX509CallbackHandler.setX509Password(maybeX509Password.get());
+        Optional<String> maybeX509Password = EfmModuleSetup.GetEnv("X509_PASSWORD");
+        SoapX509CallbackHandler.setX509Password(maybeX509Password.get());
         FilingAssemblyMDEService ss = new FilingAssemblyMDEService(wsdlURL, SERVICE_NAME);
         FilingAssemblyMDEPort port = ss.getFilingAssemblyMDEPort();
         ServiceHelpers.setupServicePort((BindingProvider) port);
