@@ -423,7 +423,17 @@ public class EcfCaseTypeFactory {
         IdentificationType id = of.createIdentificationType();
         id.setIdentificationCategory(of.createIdentificationCategoryText(XmlHelper.convertText("CASEPARTYID")));
         id.setIdentificationID(XmlHelper.convertString(partyId.getIdentificationString()));
-        if (comboCodes.partyInfo.get(partyId.getIdentificationString()).getRight()) {
+        var pInfo = comboCodes.partyInfo.get(partyId.getIdentificationString());
+        boolean isOrg = false;
+        if (pInfo == null) {
+          log.warn("PartyId (" + partyId + ") has null info in combocodes. Why? Assuming person");
+          log.warn("Service contacts: " + info.getServiceContacts().stream().filter(c -> c.partyAssociated.isPresent()).map(c -> c.partyAssociated.get()));
+          log.warn("Party attorneys: " + info.getPartyAttorneyMap().entrySet().stream().map(pa -> pa.getKey()));
+          log.warn("Filing party IDs:" + info.getFilings().stream().flatMap(filing -> filing.getFilingPartyIds().stream()));
+        } else {
+          isOrg = pInfo.getRight();
+        }
+        if (isOrg) {
           OrganizationIdentificationType orgId = tylerObjFac.createOrganizationIdentificationType();
           orgId.getIdentification().add(id);
           OrganizationType ot = ecfCommonObjFac.createOrganizationType();

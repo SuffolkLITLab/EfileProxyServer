@@ -245,16 +245,28 @@ public class EcfCourtSpecificSerializer {
    * @return the combined map of tyler ids and our ids to each party type
    */
   private Map<String, Pair<PartyType, Boolean>> vetPartyTypes(
-      Map<String, Person> existingParties, 
+      Map<String, Person> existingParties,
       Map<String, Person> newParties, CaseType type) throws FilingError {
-    List<PartyType> allTypes = cd.getPartyTypeFor(court.code, type.code);
-    Map<String, PartyType> codeToPartyType = allTypes.stream().collect(Collectors.toMap(pt -> pt.code, pt -> pt));
+    List<PartyType> pTypesForCase = cd.getPartyTypeFor(court.code, type.code);
+    Map<String, PartyType> codeToPartyType = pTypesForCase.stream().collect(Collectors.toMap(pt -> pt.code, pt -> pt));
+    // So, Tyler lies: it's possible for older cases to have party types that aren't allowed
+    // on new cases anymore. So we'll make a backup map of all of the real party types, if necessary.
+    Map<String, PartyType> codeToAllPartyType = Map.of();
     Map<String, Pair<PartyType, Boolean>> partyInfo = new HashMap<>();
     for (Map.Entry<String, Person> party : existingParties.entrySet()) {
       if (codeToPartyType.containsKey(party.getValue().getRole())) {
         partyInfo.put(party.getKey(), Pair.of(codeToPartyType.get(party.getValue().getRole()), party.getValue().isOrg()));
       } else {
         log.warn("Existing party " + party.getKey() + "'s role (" + party.getValue().getRole() + ") isn't a code?");
+        if (codeToAllPartyType.isEmpty()) {
+          var allForCourt = cd.getPartyTypeFor(court.code, type.code);
+          codeToAllPartyType = allForCourt.stream().collect(Collectors.toMap(pt -> pt.code, pt -> pt));
+        }
+        if (codeToAllPartyType.containsKey(party.getValue().getRole())) {
+          partyInfo.put(party.getKey(), Pair.of(codeToAllPartyType.get(party.getValue().getRole()), party.getValue().isOrg()));
+        } else {
+          partyInfo.put(party.getKey(), Pair.of(null, party.getValue().isOrg()));
+        }
       }
     }
     for (Map.Entry<String, Person> party : newParties.entrySet()) {
@@ -262,6 +274,15 @@ public class EcfCourtSpecificSerializer {
         partyInfo.put(party.getKey(), Pair.of(codeToPartyType.get(party.getValue().getRole()), party.getValue().isOrg()));
       } else {
         log.warn("New party " + party.getKey() + "'s role (" + party.getValue().getRole() + ") isn't a code?");
+        if (codeToAllPartyType.isEmpty()) {
+          var allForCourt = cd.getPartyTypeFor(court.code, type.code);
+          codeToAllPartyType = allForCourt.stream().collect(Collectors.toMap(pt -> pt.code, pt -> pt));
+        }
+        if (codeToAllPartyType.containsKey(party.getValue().getRole())) {
+          partyInfo.put(party.getKey(), Pair.of(codeToAllPartyType.get(party.getValue().getRole()), party.getValue().isOrg()));
+        } else {
+          partyInfo.put(party.getKey(), Pair.of(null, party.getValue().isOrg()));
+        }
       }
     }
     // TODO(brycew): move more detailed vetting to be here: stuff in EcfCaseTypeFactory.java:263

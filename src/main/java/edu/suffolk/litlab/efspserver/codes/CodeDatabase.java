@@ -489,6 +489,12 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     });
   }
 
+  /**
+   * Gets the party types that are allowed for a given court and case type.
+   * @param courtLocationId
+   * @param typeCode Nullable, if null, gets all party types for court, otherwise, just for that case type.
+   * @return a list of party types
+   */
   public List<PartyType> getPartyTypeFor(String courtLocationId, String typeCode) {
     return safetyWrap(() -> {
       String query = PartyType.getPartyTypeFromCaseType();
