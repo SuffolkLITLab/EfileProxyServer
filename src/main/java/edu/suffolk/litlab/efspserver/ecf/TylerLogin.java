@@ -23,7 +23,7 @@ public class TylerLogin implements LoginInterface {
       LoggerFactory.getLogger(LoginInterface.class);
 
   private final EfmUserService userServiceFactory;
-  private static final String HEADER_KEY = "TYLER-TOKEN";
+  private static final String HEADER_KEY_PREFIX = "TYLER-TOKEN";
   private final String jurisdiction;
 
   public TylerLogin(String jurisdiction, String env) {
@@ -35,9 +35,9 @@ public class TylerLogin implements LoginInterface {
       throw new RuntimeException(jurisdiction + "-" + env + " not in SoapClientChooser for EFMUser");
     }
   }
-  
+
   public static String getHeaderKeyFromJurisdiction(String jurisdiction) {
-    return HEADER_KEY + "-" + jurisdiction.toUpperCase();
+    return HEADER_KEY_PREFIX + "-" + jurisdiction.toUpperCase();
   }
 
   @Override

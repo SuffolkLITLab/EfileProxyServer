@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -49,7 +48,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.suffolk.litlab.efspserver.RandomString;
 import edu.suffolk.litlab.efspserver.SoapClientChooser;
-import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 
 import tyler.efm.services.EfmFirmService;
@@ -281,6 +279,7 @@ public class PaymentsService {
       @FormParam("tyler_info") String tylerInfo, @FormParam("original_url") String originalUrl,
       @FormParam("error_url") String errorUrl) {
     String errorHtml = """
+    <!DOCTYPE html>
     <html>
       <head>
       </head>
@@ -289,6 +288,7 @@ public class PaymentsService {
         
         The error: %s
       </body>
+    </html>
     """;
     String transactionId = transactionIdGen.nextString();
     TempAccount account = new TempAccount();
@@ -321,6 +321,7 @@ public class PaymentsService {
 
     log.info("Redirecting with transactionId: " + transactionId);
     String fullHtml = """
+<!DOCTYPE html>
 <html>
     <head>
     </head>
@@ -386,39 +387,23 @@ public class PaymentsService {
       TogaResponseXml resp = (TogaResponseXml) unmar.unmarshal(stream);
 
       CreatePaymentAccountRequestType createAccount = new CreatePaymentAccountRequestType();
+      if (!tempAccounts.containsKey(resp.transactionId)) {
+        log.warn("Response transaction id for: " + resp.transactionId + " not there!");
+        return Response.status(404).build();
+      }
       TempAccount tempInfo = tempAccounts.get(resp.transactionId);
-      PaymentAccountType newAccount = new PaymentAccountType();
-      Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, tempInfo.loginInfo);
-      if (firmPort.isEmpty()) {
+      Optional<IEfmFirmService> maybeFirmPort = ServiceHelpers.setupFirmPort(firmFactory, tempInfo.loginInfo);
+      if (maybeFirmPort.isEmpty()) {
         return Response.status(403).build();
       }
+      IEfmFirmService firmPort = maybeFirmPort.get();
 
-      // Since users can change their minds and enter a credit card on the TOGA site while telling
-      // us they wanted a bank account, we default to the TOGA response. There are several cases: 
-      // * TOGA response is a credit card and it's accepted: use it!
-      // * it's a Credit card, but not accepted: fallback
-      // * it's a bank account, is accepted: use it!
-      // * it's a bank account, but not accepted: fallback
-      // * can't tell what it is: fallback
+      PaymentAccountType newAccount = new PaymentAccountType();
       String[] tenderDesc = resp.tenderDescription.split(" ");
       String cardTypeName = tenderDesc[0];
       newAccount.setCardType(tylerCommonObjFac.createPaymentAccountTypeCardType(cardTypeName));
-      log.info("Card Type: " + cardTypeName);
-      List<PaymentAccountTypeType> paymentTypes = firmPort.get().getPaymentAccountTypeList().getPaymentAccountType();
-      BiFunction<String, List<PaymentAccountTypeType>, Integer> getCode = (cardType, types) -> {
-        if (cardType.equalsIgnoreCase("MASTERCARD") || cardType.equalsIgnoreCase("DISCOVER") || cardType.equalsIgnoreCase("VISA") 
-            || cardType.equalsIgnoreCase("AMEX")) {
-          Optional<PaymentAccountTypeType> ccType= types.stream().filter(type -> type.getCode().equalsIgnoreCase("CC")).findFirst();
-          return ccType.map(t -> t.getCodeId().getValue()).orElse(tempInfo.typeCodeId);
-        } else if (cardType.equalsIgnoreCase("Checking") || cardType.equalsIgnoreCase("Savings")) {
-          Optional<PaymentAccountTypeType> bankType= types.stream().filter(type -> type.getCode().equalsIgnoreCase("BankAccount")).findFirst();
-          return bankType.map(t -> t.getCodeId().getValue()).orElse(tempInfo.typeCodeId);
-        } else {
-          // We don't know what this account type is! Fallback to what we were given initially
-          return tempInfo.typeCodeId;
-        }
-      };
-      int codeId = getCode.apply(cardTypeName, paymentTypes);
+      List<PaymentAccountTypeType> paymentTypes = firmPort.getPaymentAccountTypeList().getPaymentAccountType();
+      int codeId = getCodeInt(cardTypeName, paymentTypes, tempInfo.typeCodeId);
       newAccount.setPaymentAccountTypeCode(Integer.toString(codeId));
       newAccount.setPaymentAccountTypeCodeId(tylerCommonObjFac.createPaymentAccountTypePaymentAccountTypeCodeId(codeId));
       newAccount.setAccountName(tempInfo.name);
@@ -430,12 +415,11 @@ public class PaymentsService {
       String last4 = lastItem.substring(lastItem.length() - 4);
       newAccount.setCardLast4(last4);
       createAccount.setPaymentAccount(newAccount);
-      log.info("Final reply for payment account: " + XmlHelper.objectToXmlStrOrError(createAccount, CreatePaymentAccountRequestType.class));
       CreatePaymentAccountResponseType accountResp;
       if (tempInfo.global) {
-        accountResp = firmPort.get().createGlobalPaymentAccount(createAccount);
+        accountResp = firmPort.createGlobalPaymentAccount(createAccount);
       } else {
-        accountResp = firmPort.get().createPaymentAccount(createAccount);
+        accountResp = firmPort.createPaymentAccount(createAccount);
       }
       if (ServiceHelpers.hasError(accountResp)) {
         log.error(accountResp.getError().getErrorCode() + " " + accountResp.getError().getErrorText());
@@ -445,7 +429,35 @@ public class PaymentsService {
     } catch (JAXBException jaxbEx) {
       log.error("Couldn't process the TOGA response in XML: " + body);
       log.error(jaxbEx.toString());
-      return Response.status(400).entity("<html><body>Sorry, we had an error processing that payment account. Please try again.</body></html>").build();
+      return Response.status(400).entity("""
+        <!DOCTYPE html>
+        <html>
+            <head></head>
+            <body>Sorry, we had an error processing that payment account. Please try again.</body>
+        </html>
+      """).build();
+    }
+  }
+
+  /** Since users can change their minds and enter a credit card on the TOGA site while telling
+   * us they wanted a bank account, we default to the TOGA response. There are several cases: 
+   * - TOGA response is a credit card and it's accepted: use it!
+   * - TOGA's a Credit card, but not accepted: fallback
+   * - TOGA's a bank account, is accepted: use it!
+   * - TOGA's a bank account, but not accepted: fallback
+   * - can't tell what it is: fallback 
+   */
+  private static int getCodeInt(String cardType, List<PaymentAccountTypeType> types, int fallbackType) {
+    if (cardType.equalsIgnoreCase("MASTERCARD") || cardType.equalsIgnoreCase("DISCOVER") || cardType.equalsIgnoreCase("VISA") 
+          || cardType.equalsIgnoreCase("AMEX")) {
+      var ccType= types.stream().filter(type -> type.getCode().equalsIgnoreCase("CC")).findFirst();
+      return ccType.map(t -> t.getCodeId().getValue()).orElse(fallbackType);
+    } else if (cardType.equalsIgnoreCase("Checking") || cardType.equalsIgnoreCase("Savings")) {
+      var bankType= types.stream().filter(type -> type.getCode().equalsIgnoreCase("BankAccount")).findFirst();
+      return bankType.map(t -> t.getCodeId().getValue()).orElse(fallbackType);
+    } else {
+      // We don't know what this account type is! Fallback to what we were given initially
+      return fallbackType; 
     }
   }
   
