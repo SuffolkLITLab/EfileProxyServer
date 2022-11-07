@@ -5,6 +5,7 @@ import static edu.suffolk.litlab.efspserver.services.EndpointReflection.replaceP
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +42,7 @@ import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.codes.OptionalServiceCode;
 import edu.suffolk.litlab.efspserver.codes.PartyType;
 import edu.suffolk.litlab.efspserver.codes.ServiceCodeType;
+import edu.suffolk.litlab.efspserver.ecf.PolicyCacher;
 
 @Produces({MediaType.APPLICATION_JSON})
 public class CodesService {
@@ -70,6 +72,7 @@ public class CodesService {
   private final String jurisdiction;
   private final String env;
   private final EndpointReflection ef;
+  private static final PolicyCacher policyCacher = new PolicyCacher();
   
   public CodesService(String jurisdiction, String env, DataSource ds) {
     this.jurisdiction = jurisdiction;
@@ -152,22 +155,30 @@ public class CodesService {
   @GET
   @Path("/courts/{court_id}/filing_types/{filing_code_id}")
   public Response getCodesUnderFilingTypes(@PathParam("court_id") String courtId,
-      @PathParam("filing_code_id") String filingCode) {
-    var errResp = okayCourt(courtId);
-    if (errResp.isPresent()) {
-      return errResp.get();
-    }
-    Class<?> clazz = this.getClass();
-    Method[] methods = clazz.getMethods();
-    List<Method> subCaseMethods = new ArrayList<>();
-    for (Method method : methods) {
-      if (underFilingCodeMethodNames.contains(method.getName())) {
-        subCaseMethods.add(method);
+      @PathParam("filing_code_id") String filingCode) throws SQLException {
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
+      var errResp = okayCourt(cd, courtId);
+      if (errResp.isPresent()) {
+        return errResp.get();
       }
+      var maybeCode = cd.getFilingTypeWith(courtId, filingCode);
+      if (maybeCode.isEmpty()) {
+        return Response.status(404).entity("\"Filing code " + filingCode + " in court " + courtId + " does not exist\"").build();
+      }
+      Class<?> clazz = this.getClass();
+      Method[] methods = clazz.getMethods();
+      List<Method> subCaseMethods = new ArrayList<>();
+      for (Method method : methods) {
+        if (underFilingCodeMethodNames.contains(method.getName())) {
+          subCaseMethods.add(method);
+        }
+      }
+
+      var retMap = new HashMap<String, Object>(ef.endPointsToMap(replacePathParam(ef.makeRestEndpoints(subCaseMethods, clazz),
+          Map.of("court_id", courtId, "filing_code_id", filingCode))));
+      retMap.putAll(maybeCode.get().toMap());
+      return Response.ok(retMap).build();
     }
-    var retMap = ef.endPointsToMap(replacePathParam(ef.makeRestEndpoints(subCaseMethods, clazz),
-        Map.of("court_id", courtId, "filing_code_id", filingCode)));
-    return Response.ok(retMap).build();
   }
 
   @GET

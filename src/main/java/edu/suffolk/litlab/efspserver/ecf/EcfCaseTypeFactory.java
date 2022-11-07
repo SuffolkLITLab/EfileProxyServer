@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efspserver.ecf;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 
 import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.ContactInformation;
@@ -131,6 +132,10 @@ public class EcfCaseTypeFactory {
     
     for (var jaxPart : maybeAug.get().getCaseParticipant()) {
       String role = jaxPart.getValue().getCaseParticipantRoleCode().getValue();
+      if (role.equalsIgnoreCase("ATTY")) {
+        // Skip attorneys, who aren't actually participants with codes
+        continue;
+      }
       var entRep = jaxPart.getValue().getEntityRepresentation();
       boolean isOrg = false;
       String efmId = "";
@@ -245,7 +250,7 @@ public class EcfCaseTypeFactory {
       boolean isInitialFiling,
       boolean isFirstIndexedFiling,
       // HACK(brycew): hacky: needed because "fees" querys and "service" put the payment stuff in the tyler Aug
-      String queryType,
+      QueryType queryType,
       JsonNode miscInfo, // TODO(brycew-later): if we get XML Answer files, this isn't generic
       EcfCourtSpecificSerializer serializer,
       InfoCollector collector,
@@ -316,7 +321,7 @@ public class EcfCaseTypeFactory {
           FilingInformation info,
           boolean isInitialFiling,
           boolean isFirstIndexedFiling,
-          String queryType,
+          QueryType queryType,
           JsonNode miscInfo,
           EcfCourtSpecificSerializer serializer,
           InfoCollector collector,
@@ -448,7 +453,12 @@ public class EcfCaseTypeFactory {
           cpt.setEntityRepresentation(ecfCommonObjFac.createEntityPerson(pt));
           partyIdToRefObj.put(partyId.getIdString(), pt);
         }
-        cpt.setCaseParticipantRoleCode(XmlHelper.convertText(comboCodes.partyInfo.get(partyId.getIdentificationString()).getLeft().code));
+        var partyInfo = comboCodes.partyInfo.get(partyId.getIdentificationString());
+        if (partyInfo != null && partyInfo.getLeft() != null) {
+          cpt.setCaseParticipantRoleCode(XmlHelper.convertText(partyInfo.getLeft().code));
+        } else {
+          cpt.setCaseParticipantRoleCode(XmlHelper.convertText("")); // Will likely cause an error, but what can we do now?
+        }
         ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cpt));
       }
     }
@@ -561,9 +571,10 @@ public class EcfCaseTypeFactory {
     }
 
 
-    if (queryType.equalsIgnoreCase("fees") || queryType.equalsIgnoreCase("service")) {
+    // HACK(brycew): hacky: needed because "fees" querys and "service" put the payment stuff in the tyler Aug, but not the review api.
+    if (queryType.equals(QueryType.Fees) || queryType.equals(QueryType.Service)) {
       if (info.getPaymentId() == null || info.getPaymentId().isBlank()) {
-        collector.addRequired(collector.requestVar("tyler_payment_id", "The ID of the payment method", "text"));
+      //  collector.addRequired(collector.requestVar("tyler_payment_id", "The ID of the payment method", "text"));
       }
       ecfAug.setProviderCharge(PaymentFactory.makeProviderChargeType(info.getPaymentId()));
     }
@@ -760,6 +771,7 @@ public class EcfCaseTypeFactory {
     if (lowerCase == null || lowerCase.isNull()) {
       InterviewVariable var = collector.requestVar("lower_court_case", "An object with information about the lower court desicion, including 'judge', 'title', and 'docket_number'", "DAObject");
       collector.addRequired(var);
+      lowerCase = NullNode.getInstance();
     }
     collector.pushAttributeStack("lower_court_case");
 

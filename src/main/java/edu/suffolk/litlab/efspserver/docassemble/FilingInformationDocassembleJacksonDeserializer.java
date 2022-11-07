@@ -134,7 +134,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       }
       if (otherParties.isEmpty()) {
         InterviewVariable othersExpected = new InterviewVariable("other_parties",
-            "the side of the matter that current person answering this interview is on (must have is_new=True)",
+            "the opposite side of the matter, the side that current person answering this interview is not on (must have is_new=True)",
             "ALPeopleList", List.of());
         collector.addOptional(othersExpected);
       }

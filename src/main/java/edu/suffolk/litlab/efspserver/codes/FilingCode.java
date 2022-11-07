@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 public class FilingCode {
 
@@ -58,6 +59,24 @@ public class FilingCode {
           rs.getString(12), 
           rs.getString(13),
           rs.getString(14));
+  }
+
+  public Map<String, Object> toMap() {
+    return Map.ofEntries(
+      Map.entry("code", code),
+      Map.entry("name", name),
+      Map.entry("fee", fee),
+      Map.entry("casecategory", casecategory),
+      Map.entry("filingtype", filingtype),
+      Map.entry("iscourtuseonly", iscourtuseonly),
+      Map.entry("civilclaimamount", civilclaimamount),
+      Map.entry("probateestateamount", probateestateamount),
+      Map.entry("amountincontroversy", amountincontroversy),
+      Map.entry("useduedate", useduedate),
+      Map.entry("isproposedorder", isproposedorder),
+      Map.entry("efspcode", efspcode),
+      Map.entry("location", location)
+    );
   }
   
   public static PreparedStatement prepQueryWithCaseInfo(Connection conn, 

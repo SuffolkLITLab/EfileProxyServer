@@ -135,11 +135,15 @@ public class FilingDocDocassembleJacksonDeserializer {
       if (node.has("elements") && node.get("elements").isArray()) {
         Iterable<JsonNode> nodes = node.get("elements")::elements;
         log.info("In multi attachments");
+        int idx = 0;
         for (var attachNode : nodes) {
+          collector.pushAttributeStack(".elements[" + idx + "]");
           var maybeAttachment = getAttachment(attachNode, collector);
           if (maybeAttachment.isPresent()) {
             attachments = attachments.snoc(maybeAttachment.get());
           }
+          collector.popAttributeStack();
+          idx += 1;
         }
       }
     }

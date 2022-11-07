@@ -259,13 +259,14 @@ public class EcfCourtSpecificSerializer {
       } else {
         log.warn("Existing party " + party.getKey() + "'s role (" + party.getValue().getRole() + ") isn't a code?");
         if (codeToAllPartyType.isEmpty()) {
-          var allForCourt = cd.getPartyTypeFor(court.code, type.code);
+          var allForCourt = cd.getPartyTypeFor(court.code, null);
           codeToAllPartyType = allForCourt.stream().collect(Collectors.toMap(pt -> pt.code, pt -> pt));
         }
         if (codeToAllPartyType.containsKey(party.getValue().getRole())) {
           partyInfo.put(party.getKey(), Pair.of(codeToAllPartyType.get(party.getValue().getRole()), party.getValue().isOrg()));
         } else {
-          partyInfo.put(party.getKey(), Pair.of(null, party.getValue().isOrg()));
+          log.warn("Existing party " + party.getKey() +"'s role ("+ party.getValue().getRole() + ") still isn't a code?: " + codeToAllPartyType.keySet());
+          //partyInfo.put(party.getKey(), Pair.of(null, party.getValue().isOrg()));
         }
       }
     }
@@ -736,9 +737,13 @@ public class EcfCourtSpecificSerializer {
         throw FilingError.missingRequired(filingComponentVar);
       }
     }
+    int idx = 0;
     for (var attachment : doc.getFilingAttachments()) {
+      collector.pushAttributeStack(".elements[" + idx + "]");
       renditionMetadata.getDocumentAttachment().add(attachmentToXml(attachment, filing, components,
           miscInfo, collector, seqNum));
+      collector.popAttributeStack();
+      idx += 1;
     }
 
     DocumentRenditionType rendition = ecfOf.createDocumentRenditionType();
