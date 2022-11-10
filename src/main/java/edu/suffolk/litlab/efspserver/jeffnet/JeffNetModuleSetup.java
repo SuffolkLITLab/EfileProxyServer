@@ -54,7 +54,6 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
       throw new RuntimeException("JEFFERSON_ENDPOINT needs to be the "
             + "defined. Did you forget to source .env?");
     }
-    
 
     URI jeffnetUri = new URI(maybeJeffersonEndpoint.get());
     InputStream taxonomyCsv = EfspServer.class.getResourceAsStream("/taxonomy.csv");
@@ -95,7 +94,8 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
     }
 
     var filingReview = new FilingReviewService(getJurisdiction(), this.userDs, converterMap, filingMap, callbackMap, this.sender);
-    return new JurisdictionServiceHandle(getJurisdiction(), filingReview);
+    var codes = new CourtsOnlyCodesService(getJurisdiction(), Map.of("jefferson", "Jefferson Parish"));
+    return new JurisdictionServiceHandle(getJurisdiction(), filingReview, codes);
   }
 
   @Override

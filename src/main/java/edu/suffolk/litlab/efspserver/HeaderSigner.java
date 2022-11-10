@@ -107,7 +107,7 @@ public class HeaderSigner {
   public Optional<String> signedBase64(String content) {
     try {
       byte[] signedBytes = signPkcs7(
-          content.getBytes("UTF-8"), 
+          content.getBytes("UTF-8"),
           setUpProvider(loadKeyStore()));
       return Optional.of(Base64.getEncoder().encodeToString(signedBytes));
     } catch (GeneralSecurityException ex) {

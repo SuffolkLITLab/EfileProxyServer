@@ -106,8 +106,11 @@ public class CourtLocationInfo {
    * See TODO(#39) */
   public List<String> redactiontargetconfig;
   public final boolean allowhearing;
+
+  public String efmType;
   
   public CourtLocationInfo() {
+    this.efmType = "ecf";
     this.allowhearing = false;
     this.allowreturndate = false;
     this.showdamageamount = false;
@@ -116,6 +119,7 @@ public class CourtLocationInfo {
   }
   
   public CourtLocationInfo(ResultSet rs) throws SQLException {
+    this.efmType = "ecf";
     this.code = rs.getString(1);
     this.name = rs.getString(2);
     this.initial = Boolean.parseBoolean(rs.getString(3));
