@@ -29,7 +29,6 @@ import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CodeUpdater;
 import edu.suffolk.litlab.efspserver.services.AdminUserService;
 import edu.suffolk.litlab.efspserver.services.CasesService;
-import edu.suffolk.litlab.efspserver.services.CodesService;
 import edu.suffolk.litlab.efspserver.services.CourtSchedulingService;
 import edu.suffolk.litlab.efspserver.services.EfmFilingInterface;
 import edu.suffolk.litlab.efspserver.services.EfmModuleSetup;
@@ -237,7 +236,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     
     var adminUser = new AdminUserService(jurisdiction, env, this.codeDs, this.userDs);
     var cases = new CasesService(jurisdiction, env, this.codeDs, this.userDs);
-    var codes = new CodesService(jurisdiction, env, this.codeDs);
+    var codes = new EcfCodesService(jurisdiction, env, this.codeDs);
     Optional<CourtSchedulingService> courtScheduler = Optional.empty();
     if (jurisdiction == "illinois") {
       courtScheduler = Optional.of(new CourtSchedulingService(converterMap, jurisdiction, env, codeDs, userDs));

@@ -190,11 +190,13 @@ public class FilingInformationDocassembleJacksonDeserializer
     JsonNode metadata = JsonNodeFactory.instance.nullNode();
     if (node.has("interview_metadata") && node.get("interview_metadata").has("elements")) {
       JsonNode metadataElems = node.get("interview_metadata").get("elements");
-      String key = metadataElems.fieldNames().next();
       if (metadataElems.size() >= 1) {
-        log.warn("Only the first metadata element will be looked at: " + key);
+        String key = metadataElems.fieldNames().next();
+        if (metadataElems.size() > 1) {
+          log.warn("Only the first metadata element will be looked at: " + key);
+        }
+        metadata = metadataElems.get(key).get("elements");
       }
-      metadata = metadataElems.get(key).get("elements");
     }
 
     JsonNode category = node.get("efile_case_category"); 

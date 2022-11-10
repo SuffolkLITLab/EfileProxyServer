@@ -33,6 +33,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
+import edu.suffolk.litlab.efspserver.ecf.EcfCodesService;
 
 public class CodesServiceTest {
   private static Logger log = LoggerFactory.getLogger(CodesServiceTest.class);
@@ -66,8 +67,8 @@ public class CodesServiceTest {
     }
 
     JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
-    sf.setResourceClasses(CodesService.class);
-    sf.setResourceProvider(CodesService.class, new SingletonResourceProvider(new CodesService("illinois", "stage", ds)));
+    sf.setResourceClasses(EcfCodesService.class);
+    sf.setResourceProvider(EcfCodesService.class, new SingletonResourceProvider(new EcfCodesService("illinois", "stage", ds)));
     sf.setAddress(ENDPOINT_ADDRESS);
     Map<Object, Object> extensionMappings = Map.of(
         "xml", MediaType.APPLICATION_XML,
@@ -143,6 +144,8 @@ public class CodesServiceTest {
         node.get("getPartyTypes").get("url").asText());
   }
 
+  /**
+   * Was hacky and now we don't let people go to sub resources of things that don't exist.
   @Test
   public void testGetUnderFilingCode() throws Exception {
     ObjectMapper mapper = new ObjectMapper();
@@ -156,5 +159,6 @@ public class CodesServiceTest {
         ServiceHelpers.EXTERNAL_URL + "/jurisdictions/illinois/codes/courts/adams/filing_types/1234/filing_components",
         node.get("getFilingComponents").get("url").asText());
   }
+  */
 
 }
