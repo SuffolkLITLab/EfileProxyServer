@@ -17,7 +17,7 @@ public class NewTokens {
   private final Map<String, String> tokens; 
   
   public NewTokens() {
-    this.tokens = new HashMap<>();
+    this.tokens = Map.of();
   }
   public NewTokens(Map<String, String> tokens) {
     this.tokens = tokens;

@@ -160,7 +160,9 @@ public class LoginDatabase implements DatabaseInterface {
    *
    * @apiKey The api key that the server can use for logging in
    * @param jsonLoginInfo The JSON string with login info for whatever modules it's wants to login to
-   * @return The new API Token that the REST client should now send to the Server
+   * @return If the optional is empty, the apikey or one of the attempted logins failed.
+   *   If not empty, it contains the new API Token that the REST client should now send to the Server,
+   *   or an empty token list (which happens when querying Tyler code endpoints before the user is logged in)
    */
   public Optional<NewTokens> login(String apiKey, String jsonLoginInfo, 
       Map<String, Function<JsonNode, Optional<Map<String, String>>>> loginFunctions) throws SQLException {
@@ -168,10 +170,12 @@ public class LoginDatabase implements DatabaseInterface {
       log.error("Connection in login wasn't open yet!");
       throw new SQLException();
     }
-    Optional<AtRest> atRest = getAtRestInfo(apiKey);
-    if (atRest.isEmpty()) {
+    Optional<AtRest> maybeAtRest = getAtRestInfo(apiKey);
+    if (maybeAtRest.isEmpty()) {
       return Optional.empty();
     }
+
+    AtRest atRest = maybeAtRest.get();
 
     ObjectMapper mapper = new ObjectMapper();
     JsonNode loginInfo;
@@ -187,7 +191,7 @@ public class LoginDatabase implements DatabaseInterface {
       log.error("Can't login with a json that's not an object: " + loginInfo.toPrettyString());
       return Optional.empty();
     }
-    Map<String, String> newTokens = new HashMap<String, String>();
+    var newTokens = new HashMap<String, String>();
     Iterable<String> orgs = loginInfo::fieldNames;
     for (String orgName : orgs) {
       orgName = orgName.toLowerCase(); 
@@ -204,9 +208,9 @@ public class LoginDatabase implements DatabaseInterface {
         return Optional.empty();
       }
 
-      if(!atRest.get().enabled.containsKey(permissionsName)
-          || !atRest.get().enabled.get(permissionsName)) {
-        log.error("There is no " + permissionsName + " to login to: enabled map: " + atRest.get().enabled); 
+      if(!atRest.enabled.containsKey(permissionsName)
+          || !atRest.enabled.get(permissionsName)) {
+        log.error("There is no " + permissionsName + " to login to: enabled map: " + atRest.enabled); 
         return Optional.empty();
       }
       Optional<Map<String, String>> maybeNewTokens = loginFunctions.get(orgName).apply(loginInfo.get(orgName));
@@ -218,8 +222,7 @@ public class LoginDatabase implements DatabaseInterface {
       newTokens.putAll(maybeNewTokens.get());
     }
     if (newTokens.isEmpty()) {
-      log.error("No successful logins occurred: returning nothing");
-      return Optional.empty();
+      log.warn("No successful logins occurred: returning empty tokens object");
     }
     return Optional.of(new NewTokens(newTokens));
   }
