@@ -74,8 +74,8 @@ public class VehicleType
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "VehicleMakeCode" is used by two different parts of a schema. See: 
-     * line 174 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-60.xsd
-     * line 811 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-2.xsd
+     * line 187 of file:/home/brycew/Developer/EfileProxyServer/src/main/resources/wsdl/illinois/stage/ecf-60.xsd
+     * line 811 of file:/home/brycew/Developer/EfileProxyServer/src/main/resources/wsdl/illinois/stage/ecf-2.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 

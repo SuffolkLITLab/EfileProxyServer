@@ -15,6 +15,7 @@ import gov.niem.niem.niem_core._2.NonNegativeDecimalType;
 import gov.niem.niem.niem_core._2.ProperNameTextType;
 import gov.niem.niem.niem_core._2.StructuredAddressType;
 import gov.niem.niem.niem_core._2.TextType;
+import gov.niem.niem.proxy.xsd._2.AnyURI;
 import gov.niem.niem.proxy.xsd._2.Boolean;
 import gov.niem.niem.proxy.xsd._2.Decimal;
 import gov.niem.niem.proxy.xsd._2.GYear;
@@ -43,6 +44,7 @@ public class ObjectFactory {
     private final static QName _DevelopmentPolicyParameters_QNAME = new QName("urn:tyler:ecf:extensions:Common", "DevelopmentPolicyParameters");
     private final static QName _PersonCapability_QNAME = new QName("urn:tyler:ecf:extensions:Common", "PersonCapability");
     private final static QName _IAmThisUserIndicator_QNAME = new QName("urn:tyler:ecf:extensions:Common", "IAmThisUserIndicator");
+    private final static QName _LocationSpecificUrl_QNAME = new QName("urn:tyler:ecf:extensions:Common", "LocationSpecificUrl");
     private final static QName _CourtSplitAmount_QNAME = new QName("urn:tyler:ecf:extensions:Common", "CourtSplitAmount");
     private final static QName _NonCourtSplitAmount_QNAME = new QName("urn:tyler:ecf:extensions:Common", "NonCourtSplitAmount");
     private final static QName _FeeSplit_QNAME = new QName("urn:tyler:ecf:extensions:Common", "FeeSplit");
@@ -61,6 +63,12 @@ public class ObjectFactory {
     private final static QName _RecipientFirmName_QNAME = new QName("urn:tyler:ecf:extensions:Common", "RecipientFirmName");
     private final static QName _SubmitterName_QNAME = new QName("urn:tyler:ecf:extensions:Common", "SubmitterName");
     private final static QName _SubmitterFirmName_QNAME = new QName("urn:tyler:ecf:extensions:Common", "SubmitterFirmName");
+    private final static QName _UseComposableSecurity_QNAME = new QName("urn:tyler:ecf:extensions:Common", "UseComposableSecurity");
+    private final static QName _ComposableSecurityURI_QNAME = new QName("urn:tyler:ecf:extensions:Common", "ComposableSecurityURI");
+    private final static QName _ComposableSecurityTenant_QNAME = new QName("urn:tyler:ecf:extensions:Common", "ComposableSecurityTenant");
+    private final static QName _ComposableSecurityDefaultRole_QNAME = new QName("urn:tyler:ecf:extensions:Common", "ComposableSecurityDefaultRole");
+    private final static QName _UseOktaAuthentication_QNAME = new QName("urn:tyler:ecf:extensions:Common", "UseOktaAuthentication");
+    private final static QName _OktaAuthenticationURI_QNAME = new QName("urn:tyler:ecf:extensions:Common", "OktaAuthenticationURI");
     private final static QName _CaseAddress_QNAME = new QName("urn:tyler:ecf:extensions:Common", "CaseAddress");
     private final static QName _AgencyOperation_QNAME = new QName("urn:tyler:ecf:extensions:Common", "AgencyOperation");
     private final static QName _Agency_QNAME = new QName("urn:tyler:ecf:extensions:Common", "Agency");
@@ -530,6 +538,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AnyURI }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link AnyURI }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "LocationSpecificUrl")
+    public JAXBElement<AnyURI> createLocationSpecificUrl(AnyURI value) {
+        return new JAXBElement<AnyURI>(_LocationSpecificUrl_QNAME, AnyURI.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link SplitAmountType }{@code >}
      * 
      * @param value
@@ -761,6 +782,84 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "SubmitterFirmName")
     public JAXBElement<TextType> createSubmitterFirmName(TextType value) {
         return new JAXBElement<TextType>(_SubmitterFirmName_QNAME, TextType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "UseComposableSecurity")
+    public JAXBElement<Boolean> createUseComposableSecurity(Boolean value) {
+        return new JAXBElement<Boolean>(_UseComposableSecurity_QNAME, Boolean.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AnyURI }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link AnyURI }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "ComposableSecurityURI")
+    public JAXBElement<AnyURI> createComposableSecurityURI(AnyURI value) {
+        return new JAXBElement<AnyURI>(_ComposableSecurityURI_QNAME, AnyURI.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link IdentificationType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link IdentificationType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "ComposableSecurityTenant")
+    public JAXBElement<IdentificationType> createComposableSecurityTenant(IdentificationType value) {
+        return new JAXBElement<IdentificationType>(_ComposableSecurityTenant_QNAME, IdentificationType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link IdentificationType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link IdentificationType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "ComposableSecurityDefaultRole")
+    public JAXBElement<IdentificationType> createComposableSecurityDefaultRole(IdentificationType value) {
+        return new JAXBElement<IdentificationType>(_ComposableSecurityDefaultRole_QNAME, IdentificationType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "UseOktaAuthentication")
+    public JAXBElement<Boolean> createUseOktaAuthentication(Boolean value) {
+        return new JAXBElement<Boolean>(_UseOktaAuthentication_QNAME, Boolean.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AnyURI }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link AnyURI }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "OktaAuthenticationURI")
+    public JAXBElement<AnyURI> createOktaAuthenticationURI(AnyURI value) {
+        return new JAXBElement<AnyURI>(_OktaAuthenticationURI_QNAME, AnyURI.class, null, value);
     }
 
     /**

@@ -24,6 +24,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *         &lt;element name="FirstName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="MiddleName" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
  *         &lt;element name="LastName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="Email" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="AttorneyID" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="FirmID" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
@@ -39,7 +40,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "barNumber",
     "firstName",
     "middleName",
-    "lastName"
+    "lastName",
+    "email"
 })
 public class AttorneyType {
 
@@ -51,6 +53,8 @@ public class AttorneyType {
     protected String middleName;
     @XmlElement(name = "LastName")
     protected String lastName;
+    @XmlElement(name = "Email", required = true, nillable = true)
+    protected String email;
     @XmlAttribute(name = "AttorneyID")
     protected String attorneyID;
     @XmlAttribute(name = "FirmID")
@@ -150,6 +154,30 @@ public class AttorneyType {
      */
     public void setLastName(String value) {
         this.lastName = value;
+    }
+
+    /**
+     * Gets the value of the email property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * Sets the value of the email property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setEmail(String value) {
+        this.email = value;
     }
 
     /**
