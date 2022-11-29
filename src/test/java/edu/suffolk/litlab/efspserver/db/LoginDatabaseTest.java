@@ -55,9 +55,10 @@ public class LoginDatabaseTest {
         "jeffnet", (info) -> Optional.of(Map.of("jeffnet_token", "jeffNetToken123")));
 
     assertTrue(ld.login("fakeKey", "", okFunctions).isEmpty());
-    // If nothing can login, it will fail. Not if it should be a failure, but it is confusing from the user perspective.
-    // Will keep it like this until we actively are hiding most of our functionality behind the API
-    assertTrue(ld.login(cantDoAnything, "{}", okFunctions).isEmpty());
+    // Do nothing should still succeed login (they can ping our codes API)
+    var doNothing = ld.login(cantDoAnything, "{}", okFunctions);
+    assertTrue(doNothing.isPresent());
+    assertTrue(doNothing.get().getTokens().isEmpty());
     
     log.info("TylerOnly key: " + tylerOnly);
     Optional<NewTokens> activeTyler = ld.login(tylerOnly, "{\"tyler\": {}}", okFunctions);
