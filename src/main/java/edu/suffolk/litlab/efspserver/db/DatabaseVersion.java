@@ -69,24 +69,27 @@ public class DatabaseVersion {
 
   public boolean setSchemaVersion(int newVersion) throws SQLException {
     String deleteSt = "DELETE FROM schema_version";
-    Statement delete = userConn.createStatement();
-    delete.executeUpdate(deleteSt);
+    try (Statement delete = userConn.createStatement()) {
+      delete.executeUpdate(deleteSt);
+    }
     String insertSt = "INSERT INTO schema_version (version) VALUES (?)";
-    PreparedStatement insert = userConn.prepareStatement(insertSt);
-    insert.setInt(1, newVersion);
-    int retVal = insert.executeUpdate();
-    // Only worked it if inserted 1 row (the new version)
-    return retVal > 0;
+    try (PreparedStatement insert = userConn.prepareStatement(insertSt)) {
+      insert.setInt(1, newVersion);
+      int retVal = insert.executeUpdate();
+      // Only worked it if inserted 1 row (the new version)
+      return retVal > 0;
+    }
   }
 
   public int getSchemaVersion() throws SQLException {
     String select = "SELECT version from schema_version";
-    Statement st = userConn.createStatement();
-    ResultSet rs = st.executeQuery(select);
-    while (rs.next()) {
-      return rs.getInt(1);
+    try (Statement st = userConn.createStatement()) {
+      ResultSet rs = st.executeQuery(select);
+      while (rs.next()) {
+        return rs.getInt(1);
+      }
+      return 0;
     }
-    return 0;
   }
 
   public boolean updateToLatest() throws NoSuchAlgorithmException {
