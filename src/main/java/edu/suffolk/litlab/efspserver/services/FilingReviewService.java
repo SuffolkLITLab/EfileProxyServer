@@ -214,6 +214,7 @@ public class FilingReviewService {
     InfoCollector collector = new FailFastCollector();
     Result<FilingInformation, FilingError> res = converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
     if (res.isErr()) {
+      log.warn("In fees: " + res.toString());
       return Response.status(400).entity(collector.jsonSummary()).build();
     }
     FilingInformation info = res.unwrapOrElseThrow();
