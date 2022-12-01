@@ -17,6 +17,12 @@
 				<xsd:sequence>
 					<xsd:element maxOccurs="1" minOccurs="1" ref="TimeoutMinutes"/>
 					<xsd:element maxOccurs="1" minOccurs="1" ref="TimeoutResetHour"/>
+					<xsd:element minOccurs="0" ref="UseComposableSecurity"/>
+					<xsd:element minOccurs="0" ref="ComposableSecurityURI"/>
+					<xsd:element minOccurs="0" ref="ComposableSecurityTenant"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="ComposableSecurityDefaultRole"/>
+					<xsd:element minOccurs="0" ref="UseOktaAuthentication"/>
+					<xsd:element minOccurs="0" ref="OktaAuthenticationURI"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -81,6 +87,7 @@
 			<xsd:element minOccurs="1" ref="FeeAmount"/>
 		</xsd:sequence>
 	</xsd:complexType>
+	<xsd:element name="LocationSpecificUrl" type="niem-xsd:anyURI"/>
 	<xsd:element name="CourtSplitAmount" type="SplitAmountType"/>
 	<xsd:element name="NonCourtSplitAmount" type="SplitAmountType"/>
 	<xsd:element name="FeeSplit" type="FeeSplitType"/>
@@ -99,6 +106,12 @@
 	<xsd:element name="RecipientFirmName" type="nc:TextType"/>
 	<xsd:element name="SubmitterName" type="nc:TextType"/>
 	<xsd:element name="SubmitterFirmName" type="nc:TextType"/>
+	<xsd:element name="UseComposableSecurity" type="niem-xsd:boolean"/>
+	<xsd:element name="ComposableSecurityURI" type="niem-xsd:anyURI"/>
+	<xsd:element name="ComposableSecurityTenant" type="nc:IdentificationType"/>
+	<xsd:element name="ComposableSecurityDefaultRole" type="nc:IdentificationType"/>
+	<xsd:element name="UseOktaAuthentication" type="niem-xsd:boolean"/>
+	<xsd:element name="OktaAuthenticationURI" type="niem-xsd:anyURI"/>
 	<xsd:element name="CaseAddress" type="nc:StructuredAddressType"/>
 	<xsd:complexType name="CaseAugmentationType">
 		<xsd:complexContent>

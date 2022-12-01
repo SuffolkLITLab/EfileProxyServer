@@ -132,6 +132,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link LocationNode }
+     * 
+     */
+    public LocationNode createLocationNode() {
+        return new LocationNode();
+    }
+
+    /**
      * Create an instance of {@link ErrorType }
      * 
      */

@@ -30,6 +30,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AccidentSeverityCodeType }
+     * 
+     */
+    public AccidentSeverityCodeType createAccidentSeverityCodeType() {
+        return new AccidentSeverityCodeType();
+    }
+
+    /**
      * Create an instance of {@link DriverLicenseClassCodeType }
      * 
      */
@@ -43,14 +51,6 @@ public class ObjectFactory {
      */
     public DrivingRestrictionCodeType createDrivingRestrictionCodeType() {
         return new DrivingRestrictionCodeType();
-    }
-
-    /**
-     * Create an instance of {@link AccidentSeverityCodeType }
-     * 
-     */
-    public AccidentSeverityCodeType createAccidentSeverityCodeType() {
-        return new AccidentSeverityCodeType();
     }
 
     /**

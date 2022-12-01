@@ -36,6 +36,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *         &lt;element name="IsAvailableAtAllLocations" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
  *         &lt;element name="CourtIdentifier" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element name="PaymentAccountLocationDetails" type="{urn:tyler:efm:services:schema:Common}PaymentAccountLocationDetails" minOccurs="0"/&gt;
+ *         &lt;element name="AvailableLocationNodes" type="{urn:tyler:efm:services:schema:Common}LocationNode" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="PaymentAccountID" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="FirmID" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
@@ -60,7 +61,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "active",
     "isAvailableAtAllLocations",
     "courtIdentifier",
-    "paymentAccountLocationDetails"
+    "paymentAccountLocationDetails",
+    "availableLocationNodes"
 })
 public class PaymentAccountType {
 
@@ -88,6 +90,8 @@ public class PaymentAccountType {
     protected List<String> courtIdentifier;
     @XmlElement(name = "PaymentAccountLocationDetails")
     protected PaymentAccountLocationDetails paymentAccountLocationDetails;
+    @XmlElement(name = "AvailableLocationNodes")
+    protected List<LocationNode> availableLocationNodes;
     @XmlAttribute(name = "PaymentAccountID")
     protected String paymentAccountID;
     @XmlAttribute(name = "FirmID")
@@ -386,6 +390,35 @@ public class PaymentAccountType {
      */
     public void setPaymentAccountLocationDetails(PaymentAccountLocationDetails value) {
         this.paymentAccountLocationDetails = value;
+    }
+
+    /**
+     * Gets the value of the availableLocationNodes property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the availableLocationNodes property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getAvailableLocationNodes().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link LocationNode }
+     * 
+     * 
+     */
+    public List<LocationNode> getAvailableLocationNodes() {
+        if (availableLocationNodes == null) {
+            availableLocationNodes = new ArrayList<LocationNode>();
+        }
+        return this.availableLocationNodes;
     }
 
     /**
