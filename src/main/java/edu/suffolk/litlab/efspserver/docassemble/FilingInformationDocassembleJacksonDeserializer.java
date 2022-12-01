@@ -372,12 +372,14 @@ public class FilingInformationDocassembleJacksonDeserializer
           collector.addWrong(
               collector.requestVar(
                   "contact_id", "Service contacts must have a contact id", "text"));
+          contactId = NullNode.getInstance();
         }
         JsonNode serviceType = servObj.get("service_type");
         if (serviceType == null || !serviceType.isTextual()) {
           collector.addWrong(
               collector.requestVar(
                   "service_type", "Service contacts must have a service type code", "text"));
+          serviceType = NullNode.getInstance();
         }
         CaseServiceContact contact =
             new CaseServiceContact(contactId.asText(), serviceType.asText(), realId);

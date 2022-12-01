@@ -902,12 +902,12 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     if (conn == null) {
       throw new SQLException();
     }
-    String deleteFromTableStr = CodeTableConstants.getDeleteFrom(tableName);
     if (courtLocation == null || courtLocation.isBlank()) {
       log.warn("Don't call this without a valid court: just don't use the var");
       return false;
     }
     // TODO(brycew): make variant that deletes everything with a specific jurisdiction
+    String deleteFromTableStr = CodeTableConstants.getDeleteFrom(tableName);
     boolean tableHasCourt = !deleteFromTableStr.isBlank();
     if (!tableHasCourt) {
       log.warn(

@@ -300,19 +300,18 @@
             <!-- lock down plugins versions to avoid Maven defaults -->
             <plugins>
                 <plugin>
-  <groupId>com.github.spotbugs</groupId>
-  <artifactId>spotbugs-maven-plugin</artifactId>
-  <version>4.7.2.1</version>
-  <dependencies>
-    <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
-    <dependency>
-      <groupId>com.github.spotbugs</groupId>
-      <artifactId>spotbugs</artifactId>
-      <version>4.7.3</version>
-    </dependency>
-  </dependencies>
-</plugin>
-
+                  <groupId>com.github.spotbugs</groupId>
+                  <artifactId>spotbugs-maven-plugin</artifactId>
+                  <version>4.7.2.1</version>
+                  <dependencies>
+                    <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
+                    <dependency>
+                      <groupId>com.github.spotbugs</groupId>
+                      <artifactId>spotbugs</artifactId>
+                      <version>4.7.3</version>
+                    </dependency>
+                  </dependencies>
+                </plugin>
                 <plugin>
                     <groupId>biz.lermitage.oga</groupId>
                     <artifactId>oga-maven-plugin</artifactId>
