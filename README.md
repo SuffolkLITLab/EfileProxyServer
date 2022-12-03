@@ -38,7 +38,7 @@ Then, visit the `target/site/jacoco/index.html` file to see the coverage report.
 Run the following command after starting the services with `docker-compose`:
 
 ```bash
-docker exec -i efileproxyserver_efspjava_1 /usr/bin/mvn -f /usr/src/app/pom.xml exec:java@LoginDatabase -Dexec.args="servername true true"
+docker exec -i efileproxyserver-efspjava-1 /usr/bin/mvn -f /usr/src/app/pom.xml exec:java@LoginDatabase -Dexec.args="servername true true"
 ```
 
 The API token to add to the docassemble config will be printed out.

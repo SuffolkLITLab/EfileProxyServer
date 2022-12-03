@@ -74,9 +74,14 @@ import tyler.efm.services.schema.updatepaymentaccountresponse.UpdatePaymentAccou
  */
 @Produces(MediaType.APPLICATION_JSON)
 public class PaymentsService {
+  private static Logger log = LoggerFactory.getLogger(PaymentsService.class);
+  private static tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac =
+      new tyler.efm.services.schema.common.ObjectFactory();
+  private final String callbackToUsUrl;
 
   public PaymentsService(String jurisdiction, String env, String togaKey, String togaUrl,
       DataSource codeDs, DataSource userDs) {
+    this.callbackToUsUrl = ServiceHelpers.EXTERNAL_URL + "/jurisdictions/" + jurisdiction + "/payments/toga-account";
     this.jurisdiction = jurisdiction;
     this.env = env;
     // Will generated 21 character long transaction ids, the max length.
@@ -531,11 +536,6 @@ public class PaymentsService {
     return makeResponse(resp, () -> Response.ok().build());
   }
 
-  private static Logger log = LoggerFactory.getLogger(PaymentsService.class);
-
-  private static tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac =
-      new tyler.efm.services.schema.common.ObjectFactory();
-
   private static class TempAccount {
     String name;
     String loginInfo;
@@ -553,7 +553,6 @@ public class PaymentsService {
 
   private final RandomString transactionIdGen;
   private final String togaKey;
-  private final String callbackToUsUrl = ServiceHelpers.EXTERNAL_URL + "/payments/toga-account"; 
   private final String togaUrl;
   private final EfmFirmService firmFactory;
   private final DataSource codeDs;
