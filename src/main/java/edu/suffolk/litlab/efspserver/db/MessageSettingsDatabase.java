@@ -42,7 +42,7 @@ public class MessageSettingsDatabase implements DatabaseInterface {
         String createQuery = """
             CREATE TABLE message_settings (
             "server_id" uuid PRIMARY KEY, "from_email" text, "subject_line" text,
-            "email_template" text, "email_confirmation" text)"""; 
+            "email_template" text, "email_confirmation" text, "confirmation_subject_line" text)""";
         try (Statement createSt = conn.createStatement()) {
           int retVal = createSt.executeUpdate(createQuery);
           if (retVal < 0) {

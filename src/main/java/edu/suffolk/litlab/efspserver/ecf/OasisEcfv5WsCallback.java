@@ -130,13 +130,14 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
           }
         }
         if (revAug.getDocumentReviewStatus() != null
-            && revAug.getDocumentReviewStatus().getStatusDescriptionText() != null) {
+            && revAug.getDocumentReviewStatus().getStatusDescriptionText() != null
+            && revAug.getDocumentReviewStatus().getStatusDescriptionText().getValue() != null
+            && !revAug.getDocumentReviewStatus().getStatusDescriptionText().getValue().isBlank()) {
           docText.append(" has the following review comments: ")
-                     .append(revAug.getDocumentReviewStatus().getStatusDescriptionText());
-        }
-        
+                     .append(revAug.getDocumentReviewStatus().getStatusDescriptionText().getValue());
         }
       }
+    }
     docText.append('.');
     return docText.toString();
   }

@@ -120,12 +120,16 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
         }
       }
         
-      if (tylerDoc.getFilingReviewCommentsText() != null) {
+      if (tylerDoc.getFilingReviewCommentsText() != null
+          && tylerDoc.getFilingReviewCommentsText().getValue() != null
+          && !tylerDoc.getFilingReviewCommentsText().getValue().isBlank()) {
         docText.append(" has the following review comments: ")
                    .append(tylerDoc.getFilingReviewCommentsText().getValue());
       }
         
-      if (tylerDoc.getRejectReasonText() != null) {
+      if (tylerDoc.getRejectReasonText() != null
+          && tylerDoc.getRejectReasonText().getValue() != null
+          && !tylerDoc.getRejectReasonText().getValue().isBlank()) {
         if (courtInfo.showreturnonreject) {
           docText.append(", was returned for the following reason: ");
         } else {
@@ -142,7 +146,9 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
         }
       }
     }
-    docText.append('.');
+    if (docText.length() > 0) {
+      docText.append('.');
+    }
     return docText.toString();
   }
   
@@ -163,9 +169,9 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     }
     FilingStatusType filingStat = revFiling.getFilingStatus();
     if (filingStat != null) {
-      messageText.append(' ').append(revFiling.getFilingStatus().getStatusDescriptionText().stream()
+      messageText.append('\n').append(filingStat.getStatusDescriptionText().stream()
                           .reduce("", (des, tt) -> des + ((tt != null) ? tt.getValue() : ""), 
-                              (des1, des2) -> des1 + des2));
+                              (des1, des2) -> des1 + ". " + des2));
     }
     return messageText.toString();
   }
@@ -213,7 +219,8 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   @Override
   public MessageReceiptMessageType notifyFilingReviewComplete(
       NotifyFilingReviewCompleteRequestMessageType msg) {
-    log.info("Full NotifyFilingReviewComplete msg" + msg);
+    msg.getReviewFilingCallbackMessage().getReviewedLeadDocument().getValue().getDocumentBinary().setBinaryObject(null);
+    log.info("Full NotifyFilingReviewComplete msg: " + msg);
     // The bare minimum: get the Document ID, see if we have it in the db, send email response
     PaymentMessageType payment = msg.getPaymentReceiptMessage();
     ReviewFilingCallbackMessageType revFiling = msg.getReviewFilingCallbackMessage();
@@ -263,6 +270,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       }
       // Trust in Tyler's courtId over ours, maybe location can change on their side
       String courtId = (courtIdFromMsg.isBlank()) ? trans.get().courtId : courtIdFromMsg;
+      String caseName = revFiling.getCase().getValue().getCaseTitleText().getValue();
       List<NameAndCode> names = List.of();
       Optional<CourtLocationInfo> courtInfo = Optional.empty();
       try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codesDs.getConnection())) {
@@ -282,8 +290,11 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       reply.setCaseCourt(XmlHelper.convertCourtType(courtId));
       String statusText = reviewedFilingStatusText(revFiling, trans.get());
       String messageText = reviewedFilingMessageText(revFiling, trans.get(), courtInfo.get());
+
       UpdateMessageStatus status = reviewedFilingStatusCode(revFiling);
-      boolean success = msgSender.sendMessage(trans.get(), status, statusText, messageText, null, courtInfo.get().name);
+      boolean success = msgSender.sendMessage(trans.get(), status, statusText, messageText,
+          null, courtInfo.get().name, caseName);
+      log.info("Replying to litigant with: status: " + status + ", statusText: " + statusText + ", messageText: " + messageText + ", courtName: " + courtInfo.get().name);
       if (!success) {
         log.error("Couldn't properly send message to " + trans.get().name + "!");
       }
