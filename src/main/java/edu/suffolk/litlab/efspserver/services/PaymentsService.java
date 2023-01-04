@@ -75,6 +75,14 @@ public class PaymentsService {
   private static tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac =
       new tyler.efm.services.schema.common.ObjectFactory();
   private final String callbackToUsUrl;
+  private static final String paymentsErrorHtml =
+      """
+      <!DOCTYPE html>
+      <html>
+          <head></head>
+          <body>Sorry, we had an error processing that payment account. Please try again.</body>
+      </html>
+      """;
 
   public PaymentsService(
       String jurisdiction,
@@ -448,13 +456,14 @@ public class PaymentsService {
       CreatePaymentAccountRequestType createAccount = new CreatePaymentAccountRequestType();
       if (!tempAccounts.containsKey(resp.transactionId)) {
         log.warn("Response transaction id for: " + resp.transactionId + " not there!");
-        return Response.status(404).build();
+        return Response.status(404).entity(paymentsErrorHtml).build();
       }
       TempAccount tempInfo = tempAccounts.get(resp.transactionId);
       Optional<IEfmFirmService> maybeFirmPort =
           ServiceHelpers.setupFirmPort(firmFactory, tempInfo.loginInfo);
       if (maybeFirmPort.isEmpty()) {
-        return Response.status(403).build();
+        log.warn("Couldn't get the firm port for " + resp.transactionId);
+        return Response.status(403).entity(paymentsErrorHtml).build();
       }
       IEfmFirmService firmPort = maybeFirmPort.get();
 
@@ -495,16 +504,7 @@ public class PaymentsService {
     } catch (JAXBException jaxbEx) {
       log.error("Couldn't process the TOGA response in XML: " + body);
       log.error(jaxbEx.toString());
-      return Response.status(400)
-          .entity(
-              """
-        <!DOCTYPE html>
-        <html>
-            <head></head>
-            <body>Sorry, we had an error processing that payment account. Please try again.</body>
-        </html>
-      """)
-          .build();
+      return Response.status(400).entity(paymentsErrorHtml).build();
     }
   }
 
