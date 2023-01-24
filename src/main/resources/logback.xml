@@ -8,6 +8,7 @@
 
   <logger name="org.ehcache.core.EhcacheManager" level="ERROR"/>
   <logger name="org.apache.cxf.wsdl.service.factory" level="WARN"/>
+  <!--logger name="org.eclipse.jetty" level="DEBUG"/-->
 
   <root level="info">
     <appender-ref ref="STDOUT" />

@@ -555,7 +555,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       return Response.status(403).build();
     }
     FilingListQueryMessageType m = prep(listObjFac.createFilingListQueryMessageType(), courtId);
-    if (courtId.equals("0") || courtId == null) {
+    if (courtId == null || courtId.equals("0")) {
       // Search all courts
       m.setCaseCourt(null);
     }

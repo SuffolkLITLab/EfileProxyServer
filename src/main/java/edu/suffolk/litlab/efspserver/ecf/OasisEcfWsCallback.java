@@ -219,8 +219,13 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   @Override
   public MessageReceiptMessageType notifyFilingReviewComplete(
       NotifyFilingReviewCompleteRequestMessageType msg) {
-    msg.getReviewFilingCallbackMessage().getReviewedLeadDocument().getValue().getDocumentBinary().setBinaryObject(null);
-    log.info("Full NotifyFilingReviewComplete msg: " + msg);
+    if (msg.getReviewFilingCallbackMessage() != null) {
+      var leadDoc = msg.getReviewFilingCallbackMessage().getReviewedLeadDocument();
+      if (leadDoc != null && leadDoc.getValue() != null && leadDoc.getValue().getDocumentBinary() != null) {
+        msg.getReviewFilingCallbackMessage().getReviewedLeadDocument().getValue().getDocumentBinary().setBinaryObject(null);
+      }
+    }
+    log.info("Full NotifyFilingReviewComplete msg: " + XmlHelper.objectToXmlStrOrError(msg, NotifyFilingReviewCompleteRequestMessageType.class));
     // The bare minimum: get the Document ID, see if we have it in the db, send email response
     PaymentMessageType payment = msg.getPaymentReceiptMessage();
     ReviewFilingCallbackMessageType revFiling = msg.getReviewFilingCallbackMessage();
@@ -244,7 +249,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     String filingId = "";
     for (IdentificationType id : revFiling.getDocumentIdentification()) {
       if (id.getIdentificationCategory().getValue() instanceof TextType category) {
-        if (category.getValue().equalsIgnoreCase("FILINGID")) {
+        if (category.getValue() != null && category.getValue().equalsIgnoreCase("FILINGID")) {
           filingId = id.getIdentificationID().getValue();
         }
       }
@@ -259,9 +264,15 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     Optional<CaseAugmentationType> jAug = EcfCaseTypeFactory.getJCaseAugmentation(revFiling.getCase().getValue());
     String courtIdFromMsg = "";
     if (jAug.isPresent()) {
-      courtIdFromMsg = jAug.get().getCaseCourt().getOrganizationIdentification().getValue().getIdentificationID().getValue();
+      var j = jAug.get();
+      if (j.getCaseCourt() != null && j.getCaseCourt().getOrganizationIdentification() != null) {
+        var orgId = j.getCaseCourt().getOrganizationIdentification();
+        if (orgId.getValue() != null && orgId.getValue().getIdentificationID() != null) {
+          courtIdFromMsg = orgId.getValue().getIdentificationID().getValue();
+        }
+      }
     }
-    try (Connection conn = userDs.getConnection()){
+    try (Connection conn = userDs.getConnection()) {
       UserDatabase ud = new UserDatabase(conn);
       Optional<Transaction> trans = ud.findTransaction(UUID.fromString(filingId));
       if (trans.isEmpty()) {
@@ -271,10 +282,8 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       // Trust in Tyler's courtId over ours, maybe location can change on their side
       String courtId = (courtIdFromMsg.isBlank()) ? trans.get().courtId : courtIdFromMsg;
       String caseName = revFiling.getCase().getValue().getCaseTitleText().getValue();
-      List<NameAndCode> names = List.of();
       Optional<CourtLocationInfo> courtInfo = Optional.empty();
       try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codesDs.getConnection())) {
-        names = cd.getFilingStatuses(courtId);
         courtInfo = cd.getFullLocationInfo(courtId);
         if (courtInfo.isEmpty()) {
           log.warn("Court " + courtId + " no longer exists in codes? ("
@@ -317,7 +326,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   @Override
   public MessageReceiptMessageType notifyServiceComplete(
       ServiceCallbackMessageType serviceCallbackMessage) {
-    log.info("Full NotifyServiceComplete msg" + serviceCallbackMessage);
+    log.info("Full NotifyServiceComplete msg: " + XmlHelper.objectToXmlStrOrError(serviceCallbackMessage, ServiceCallbackMessageType.class));
     // TODO(brycew): not going to do anything with for now. Someone should implement this and push upstream
     MessageReceiptMessageType reply = recepitFac.createMessageReceiptMessageType();
     ServiceHelpers.setupReplys(reply);

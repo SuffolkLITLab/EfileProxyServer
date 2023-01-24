@@ -187,7 +187,7 @@ public class XmlHelper {
     try {
       return objectToXmlStr(toXml, toXmlClazz);
     } catch (JAXBException | NullPointerException ex) {
-      return ex.toString();
+      return ex.toString() + "(original obj was : " + toXml.toString() + ")";
     }
   }
 
