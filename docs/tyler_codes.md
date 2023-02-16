@@ -139,7 +139,7 @@ These codes are generally the most relevant to the court and the filing being ma
 Their hierarchy is shown in the below image.
 
 
-![The dependencies of the filing specific codes, as a directed graph](code_dependencies.png)
+![The dependencies of the filing specific codes, as a directed graph](codes_dependencies.png)
 
 
 ### Case Category
