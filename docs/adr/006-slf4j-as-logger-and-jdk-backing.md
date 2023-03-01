@@ -2,13 +2,15 @@
 
 Author: Bryce Willey
 
-Status: Partially chosen, partially in progress
+Date: 2021-07-19
+
+Status: Implemented, overridden by [ADR 007](007-logback-as-logger-backing.md)
 
 We need to have some sort of logging system by the time we are running in production, as
 `System.err.println(...)` is a bit difficult to introspect after the fact, and those logs
 can easily get swamped in other, less useful prints.
 
-Most of the actual advice here was from https://sematext.com/blog/java-logging.
+Most of the actual advice here was from [this blog](https://sematext.com/blog/java-logging).
 
 ## Considered Alternatives
 
@@ -19,7 +21,7 @@ Most of the actual advice here was from https://sematext.com/blog/java-logging.
 
 ## Decision Outcome
 
-* SLF4J + JDK Common Logger
+SLF4J + JDK Common Logger
 * Given my inexperience with logs, being able to switch out backends is very useful, and we
   will change from all of the `System.err.println` calls to something else anyway.
 * JDK is the simplest backing logger, so sticking with it for now.

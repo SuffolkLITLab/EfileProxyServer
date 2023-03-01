@@ -1,15 +1,15 @@
-# Use Java and CXF to communicate over SOAP 
+# Use Java and CXF to communicate over SOAP
 
 Author: Bryce Willey
 
 2021-03-25
 
-The main purpose of this project to create an application that allows Docassemble interviews 
+The main purpose of this project to create an application that allows Docassemble interviews
 to e-file with Tyler Technologies as an E-Filing Service Provider (EFSP). Tyler implements
 the ECF v4.0 standard, which is defined using XML and SOAP services. Thus, the choice
 of what software to use to communicate over SOAP is a vital decision. It needs to be
 reliable, have some longevity / be maintained, and be relatively easy to use, as none of
-us are SOAP experts. The decision also needed to be made relatively early on in the lifetime 
+us are SOAP experts. The decision also needed to be made relatively early on in the lifetime
 of the project, as much of the rest of the software will depend on it working.
 
 
@@ -27,14 +27,14 @@ The following were our discovered choices.
 ## Decision Outcome
 
 We chose to use Java and CXF.
-* Java over other languages: python's Zeep library doesn't have MTOM optimization, which is required, and C#'s .NET Core (or .NET 5.0) doesn't seem to support MTOM and some other aspects of SOAP as well.
+* Java over other languages: python's Zeep library doesn't have MTOM (Message Transmission Optimization Mechanism, an extension of SOAP), which is required, and C#'s .NET Core (or .NET 5.0) doesn't seem to support MTOM and some other aspects of SOAP as well.
 * CXF over other Java libraries: Axis doesn't seem to have good reviews, and JAX-RS isn't fully featured
 
 Consequences:
 * Need to standup a separate proxy server, with a very different tech stack than DA normally has
 * Will need to also setup docker-compose and some additional items as well
 
-## Pros and Cons of the Alternatives 
+## Pros and Cons of the Alternatives
 
 ### Python with a SOAP Library
 
@@ -55,8 +55,8 @@ of the features necessary.
 
 ### Java with a SOAP Libray
 
-* `+` Other EFSPs used Java to implement their software, proving that it can work in production 
-* `+` Tyler themselves mentioned that Java's SOAP code generation tools were better than C#, and had fewer bugs in the generated code. 
+* `+` Other EFSPs used Java to implement their software, proving that it can work in production
+* `+` Tyler themselves mentioned that Java's SOAP code generation tools were better than C#, and had fewer bugs in the generated code.
 * `+` Bryce has experience writing Java, and though rusty, is much more comfortable in it than C#
 * `-` Would still require a separate server from DA
 
@@ -82,8 +82,8 @@ of the features necessary.
 
 ### C# and built in SOAP Capabilities
 
-* `+` C# is the only choice here that has SOAP builtin to the standard library. So it's likely to not have support dropped.  
-* `+` Tyler has provided a minimally working C# implementation that can login a user. 
-* `+` I think Tyler themselves use C# (they've mentioned working with Microsoft tooling elsewhere), so the chance of SOAP library incompatibilites is lower
+* `+` C# is the only choice here that has SOAP builtin to the standard library. So it's likely to not have support dropped.
+* `+` Tyler has provided a minimally working C# implementation that can login a user.
+* `+` I think Tyler themselves use C# (they've mentioned working with Microsoft tooling elsewhere), so the chance of SOAP library incompatibilities is lower
 * `-` No one on our team (Quinten, David, Bryce, or any volunteers) have strong C# or .NET skills
 * `-` There was an issue with the C# working example working on .NET CORE / .NET 5.0 (the cross platform version of .NET). This means we would either need significant C# knowledge to work through the issues, or we would need to pay for and host a windows VM / container to run the server on.

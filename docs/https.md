@@ -18,7 +18,7 @@ We are still working to improve the steps, but current the process is:
 1. In your `.env` file, set `USE_LETSENCRYPT=True`, and `CERT_PASSWORD` to a securely generated password, at least 16 characters.
    Something like `openssl rand -base64 12` will generate 16 characters securely.
 2. Start up the docker containers (see [setup.md](setup.md)).
-3. Start a bash shell inside the running container: `docker exec -it efileproxyserver_efspjava_1 /bin/bash`
+3. Start a bash shell inside the running container: `docker exec -it efileproxyserver-efspjava-1 /bin/bash`
 4. Change directories to the app: `cd /usr/src/app`.
 5. Run the ACME renewal process: `mvn exec:java@AcmeRenewal -Dexec.args="renew"`.
    If the renewal process succeeded, `acme-domain-chain.crt` and `tls_server_cert.jks`

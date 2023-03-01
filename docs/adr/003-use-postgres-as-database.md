@@ -1,6 +1,10 @@
 # Choice of Database for the Project
 
-2021-04-23
+Author: Bryce Willey
+
+Date: 2021-04-23
+
+Status: Implemented
 
 Mostly in conversations with Quinten, a little bit of research as it was chosen.
 

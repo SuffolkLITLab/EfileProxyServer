@@ -14,7 +14,7 @@ Not considered: Rolling our own JSON parser, because that's silly
 
 ## Decision Outcome
 
-* Jackson JSON
+Jackson JSON
 * The primary desire was to reduce the number of libraries we were using: no real need for JSON
 * The code did need to be refactored to use proper deserializers and serializers anyway, and
   making that jump as well as the switch from GSON to Jackson was really easy  
@@ -29,6 +29,6 @@ Not considered: Rolling our own JSON parser, because that's silly
 
 ### Jackson
 
-* `+` Slightly faster than GSON (from what I've seen, don't have the links any more) 
+* `+` Slightly faster than GSON (from what I've seen, don't have the links any more)
 * `+` Already used in CXF/Spring behind the scenes when reading server queries to endpoints
 
