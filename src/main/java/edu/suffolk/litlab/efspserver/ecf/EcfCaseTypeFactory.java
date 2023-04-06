@@ -231,16 +231,20 @@ public class EcfCaseTypeFactory {
   /**
    * Makes a case from specific info + unorganized JSON dumps.
    *
-   * @param courtLocationId the court's name a unique string. ex: 'adams'
-   * @param caseCategory the {@link CaseCategory} object, from a code database
-   * @param caseType the case type code from the casetype table
-   * @param caseSubType the case subtype code, empty if not present
-   * @param plaintiffs List of plaintiff person objects
-   * @param defendants List of defendant person objects
-   * @param filingIds The UIDs of all of the filings
-   * @param paymentId The UID of the tyler payment account, from GetPaymentAccountList
-   * @return
+   * @param courtLocation the court's name a unique string. ex: 'adams'
+   * @param comboCodes contains the case category, the case type code, and the case subtype code (if present) 
+   * @param info The full information about the filing
+   * @param isInitialFiling
+   * @param isFirstIndexedFiling
+   * @param queryType
+   * @param miscInfo
+   * @param serializer
+   * @param collector
+   * @param serviceContactToXmlObjs
+   * @return two objects: the actual case object, and a map from party ID to the object inside the case,
+   *     used to associate other elements to the party element later on.
    * @throws FilingError
+   * @throws SQLException
    */
   public Pair<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>, Map<String, Object>>
       makeCaseTypeFromTylerCategory(

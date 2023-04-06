@@ -32,6 +32,8 @@ document a Java REST server, and need to choose and focus on one.
   a lot of the datatypes that people send to us.
   * we can't really describe the datatypes with Java schemas, since none of them support Optional, and it's not clear what fields are required
     or not without it.
+* might also have to [adjust the config](https://openapi-generator.tech/docs/generators/html2) for the HTML generator, and maybe the [templates](https://github.com/OpenAPITools/openapi-generator/tree/2458743257e4d722fc7b2fd051ddb9f0dab8582e/modules/openapi-generator/src/main/resources/htmlDocs2)
+
 
 ### Still to be decided
 

@@ -130,9 +130,9 @@ public class CourtSchedulingService {
     return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(PaymentsService.class)))).build();
   }
 
-  /**
-  @POST
-  @Path("/return_date_test123")
+  /*
+  // @POST
+  // @Path("/return_date_test123")
   public Response getReturnDate(@Context HttpHeaders httpHeaders) throws SQLException, JAXBException {
     String courtId = "cook:cvd1";
     Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort(httpHeaders);

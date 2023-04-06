@@ -126,12 +126,9 @@ public class CasesService {
   }
   
   /**
+   * Gets all possible cases associated with either a party's name or a docket number.
    * 
-   * @param httpHeaders
-   * @param courtId
-   * @return
    * @throws JsonProcessingException
-   * @throws JAXBException
    */
   @GET
   @Path("/courts/{court_id}/cases")

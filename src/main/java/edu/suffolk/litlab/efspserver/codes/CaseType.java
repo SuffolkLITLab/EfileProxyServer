@@ -31,7 +31,7 @@ public class CaseType {
   }
   
   /** A constructor that takes a result set (DOES NOT modify it), gotten from
-   * executing the below {@link getCaseTypesFor} query.
+   * executing the below {@link prepQueryBroad} query.
    * @param rs
  * @throws SQLException 
    */

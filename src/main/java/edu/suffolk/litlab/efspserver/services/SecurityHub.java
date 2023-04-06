@@ -47,7 +47,7 @@ public class SecurityHub {
   
   /**
    * 
-   * @param ds Gives connections to the user SQL table
+   * @param userDs Gives connections to the user SQL table
    * @param env the running environment, i.e. which Tyler instance to connect to, "stage" vs "prod"
    * @param jurisdictions a list of Tyler jurisdictions to connect to. See SoapClientChooser.
    */
@@ -71,7 +71,7 @@ public class SecurityHub {
    * Actually completes the REST client's login to the server. Completes each login to the 
    * EFMFiling Interfaces separately.
    *
-   * @apiKey The api key that the server can use for logging in
+   * @param apiKey The api key that the server can use for logging in
    * @param jsonLoginInfo The JSON string with login info for whatever modules it's wants to login to
    * @return A map of expected Headers that subsequent calls should have to their expected values.
    *   For example, TYLER-TOKEN will have the provided Tyler email + ":" + password Hash, used to authenticate the

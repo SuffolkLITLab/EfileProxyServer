@@ -876,9 +876,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
    * Gets all court location identifiers (CLI) stored in the database. updateTable
    * should have been called on the `location` table before this works.
    *
-   * @return              a list of all valid CLIs for this jurisdiction
-   * @throws SQLException if something goes wrong, or if the connection hasn't
-   *                      been made yet
+   * @return a list of all valid CLIs for this jurisdiction
    */
   public List<String> getAllLocations() {
     if (conn == null) {

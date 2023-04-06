@@ -158,7 +158,7 @@ public class LoginDatabase implements DatabaseInterface {
    * Actually completes the REST client's login to the server. Completes each login to the 
    * EFMFiling Interfaces separately.
    *
-   * @apiKey The api key that the server can use for logging in
+   * @param apiKey The api key that the server can use for logging in
    * @param jsonLoginInfo The JSON string with login info for whatever modules it's wants to login to
    * @return If the optional is empty, the apikey or one of the attempted logins failed.
    *   If not empty, it contains the new API Token that the REST client should now send to the Server,
