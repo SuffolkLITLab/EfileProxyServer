@@ -188,10 +188,14 @@ public class AcmeRenewal {
         throw new AcmeException("Didn't accept terms of service");
       }
     }
-    Account account = new AccountBuilder()
+    AccountBuilder ab = new AccountBuilder()
       .agreeToTermsOfService()
-      .useKeyPair(accountKey)
-      .create(session);
+      .useKeyPair(accountKey);
+    String email = System.getenv("TYLER_USER_EMAIL");
+    if (email != null && !email.isBlank()) {
+      ab.addEmail(email);
+    }
+    Account account = ab.create(session);
 
     log.info("Registered a new user, URL: {}", account.getLocation());
     return account;
