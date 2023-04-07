@@ -21,7 +21,8 @@ public class RootService {
     return Response.ok(ef.getClassPaths(List.of(
         AuthenticationService.class,
         JurisdictionSwitch.class,
-        MessageSettingsService.class
+        MessageSettingsService.class,
+        ApiUserSettingsService.class
     ))).build();
   }
 

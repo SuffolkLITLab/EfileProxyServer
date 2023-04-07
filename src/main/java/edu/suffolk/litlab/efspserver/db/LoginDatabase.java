@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -149,6 +150,27 @@ public class LoginDatabase implements DatabaseInterface {
       return Optional.empty();
     }
   }
+
+  public boolean updateServerName(AtRest atRest, String apiKey, String newName) {
+    if (apiKey == null || apiKey.isBlank() || newName == null || newName.isBlank()) {
+      return false;
+    }
+    String hash = makeHash(apiKey);
+    final String atRestUpdate = """
+           UPDATE at_rest_keys SET server_name = ? WHERE server_id = ? AND api_key = ?
+    """;
+
+    try (PreparedStatement st = conn.prepareStatement(atRestUpdate)) {
+      st.setString(1, newName);
+      st.setObject(2, atRest.serverId);
+      st.setObject(3, hash);
+      st.executeUpdate();
+      return true;
+    } catch (SQLException ex) {
+      log.error(StdLib.strFromException(ex));
+      return false;
+    }
+  }
   
   public String makeHash(String input) {
     return new String(Hex.encode(digest.digest(input.getBytes(StandardCharsets.UTF_8))));
@@ -176,6 +198,7 @@ public class LoginDatabase implements DatabaseInterface {
     }
 
     AtRest atRest = maybeAtRest.get();
+    MDC.put("serverId", atRest.serverId.toString());
 
     ObjectMapper mapper = new ObjectMapper();
     JsonNode loginInfo;
