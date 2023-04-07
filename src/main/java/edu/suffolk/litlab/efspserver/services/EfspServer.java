@@ -105,6 +105,8 @@ public class EfspServer {
     services.put(RootService.class, new SingletonResourceProvider(new RootService()));
     services.put(MessageSettingsService.class,
         new SingletonResourceProvider(new MessageSettingsService(userDs)));
+    services.put(ApiUserSettingsService.class,
+        new SingletonResourceProvider(new ApiUserSettingsService(userDs)));
     services.put(AuthenticationService.class,
         new SingletonResourceProvider(new AuthenticationService(security)));
     services.put(JurisdictionSwitch.class, new SingletonResourceProvider(new JurisdictionSwitch(jurisdictionMap)));
