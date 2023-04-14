@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,6 +35,7 @@ public class AuthenticationService {
   
   @POST
   public Response authenticateUser(@Context HttpHeaders httpHeaders, String loginInfo) {
+    MDC.put(MDCWrappers.OPERATION, "AuthenticationService.authenticateUser");
     ObjectMapper mapper = new ObjectMapper();
     String apiKey;
     try {
@@ -53,6 +55,7 @@ public class AuthenticationService {
     }
     log.info("Invoking User Auth for an apiKey");
     Optional<NewTokens> activeToken = security.login(apiKey, loginInfo);
+    MDCWrappers.removeAllMDCs();
     return activeToken
         .map((toks) -> Response.ok(toks).build())
         .orElse(Response.status(403).build());

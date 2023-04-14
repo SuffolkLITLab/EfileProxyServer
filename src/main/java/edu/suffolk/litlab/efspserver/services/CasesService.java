@@ -28,6 +28,7 @@ import javax.xml.ws.BindingProvider;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -139,6 +140,7 @@ public class CasesService {
       @QueryParam("first_name") String firstName,
       @QueryParam("middle_name") String middleName,
       @QueryParam("last_name") String lastName) throws JsonProcessingException {
+    MDC.put(MDCWrappers.OPERATION, "CasesService.getCaseList");
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
@@ -223,6 +225,7 @@ public class CasesService {
     }
     log.info(XmlHelper.objectToXmlStrOrError(resp, CaseListResponseMessageType.class));
 
+    MDCWrappers.removeAllMDCs();
     if (hasError(resp)) {
       // If the response has issues connecting with the CMS, we are still supposed to allow
       // for case search / e-filing. So, we'll return an error with the error code, but also any
@@ -240,6 +243,7 @@ public class CasesService {
   @Path("/courts/{court_id}/cases/{case_tracking_id}")
   public Response getCase(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, @PathParam("case_tracking_id") String caseId) {
+    MDC.put(MDCWrappers.OPERATION, "CasesService.getCase");
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
@@ -286,8 +290,10 @@ public class CasesService {
           }
         });
       }
+      MDCWrappers.removeAllMDCs();
       return Response.status(responseCode).entity(resp.getCase()).build();
     } catch (SQLException e) {
+      MDCWrappers.removeAllMDCs();
       log.error("can't get connection: " + StdLib.strFromException(e));
       return Response.status(500).build();
     }
@@ -315,6 +321,7 @@ public class CasesService {
   public Response getServiceAttachCaseList(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
       @PathParam("service_contact_id") String serviceId) {
+    MDC.put(MDCWrappers.OPERATION, "CasesService.getServiceAttachCaseList");
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
@@ -329,6 +336,7 @@ public class CasesService {
     query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     ServiceAttachCaseListResponseMessageType resp = maybePort.get().getServiceAttachCaseList(query);
+    MDCWrappers.removeAllMDCs();
     if (hasError(resp)) {
       return Response.status(400).entity(resp.getError()).build();
     }
@@ -339,6 +347,7 @@ public class CasesService {
   @Path("/courts/{court_id}/cases/{case_tracking_id}/service-information")
   public Response getServiceInformation(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, @PathParam("case_tracking_id") String caseId) {
+    MDC.put(MDCWrappers.OPERATION, "CasesService.getServiceInformation");
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
@@ -354,6 +363,7 @@ public class CasesService {
     query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     ServiceInformationResponseMessageType resp = maybePort.get().getServiceInformation(query);
+    MDCWrappers.removeAllMDCs();
     if (hasError(resp)) {
       return Response.status(400).entity(resp.getError()).build();
     }
@@ -364,6 +374,7 @@ public class CasesService {
   @Path("/courts/{court_id}/cases/{case_tracking_id}/service-information-history")
   public Response getServiceInformationHistory(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, @PathParam("case_tracking_id") String caseId) {
+    MDC.put(MDCWrappers.OPERATION, "CasesService.getServiceInformationHistory");
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
@@ -378,6 +389,7 @@ public class CasesService {
     query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     ServiceInformationHistoryResponseMessageType resp = maybePort.get().getServiceInformationHistory(query);
+    MDCWrappers.removeAllMDCs();
     if (hasError(resp)) {
       return Response.status(400).entity(resp.getError()).build();
     }
@@ -391,21 +403,24 @@ public class CasesService {
 
   private Optional<CourtRecordMDEPort> setupRecordPort(HttpHeaders httpHeaders) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
+    Optional<AtRest> atRest = Optional.empty();
+    String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
     try (Connection conn = userDs.getConnection()) {
       LoginDatabase ld = new LoginDatabase(conn);
-      Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
+      atRest = ld.getAtRestInfo(apiKey);
       if (atRest.isEmpty()) {
         log.warn("Couldn't checkLogin");
         return Optional.empty();
       }
+      MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
     } catch (SQLException ex) {
       log.error(StdLib.strFromException(ex));
       return Optional.empty();
     }
-    String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds?");
+      MDCWrappers.removeAllMDCs();
       return Optional.empty();
     }
 

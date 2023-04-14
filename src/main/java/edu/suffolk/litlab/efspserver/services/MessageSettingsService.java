@@ -52,6 +52,7 @@ public class MessageSettingsService {
   @GET
   @Path("/settings")
   public Response getMsgSettings(@Context HttpHeaders httpHeaders) {
+    MDC.put(MDCWrappers.OPERATION, "MessageSettingsService.getMsgSettings");
     try (Connection conn = ds.getConnection()) {
       LoginDatabase ld = new LoginDatabase(conn);
       Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY")); 
@@ -61,11 +62,14 @@ public class MessageSettingsService {
       var md = new MessageSettingsDatabase(conn);
       Optional<MessageInfo> info = md.findMessageInfo(atRest.get().serverId);
       if (info.isEmpty()) {
+        MDCWrappers.removeAllMDCs();
         return Response.status(404).entity("\"No current email settings for this server\"").build();
       }
+      MDCWrappers.removeAllMDCs();
       return Response.ok(info.get()).build();
     } catch (SQLException ex) {
       log.error("Couldn't get email settings for server: " + StdLib.strFromException(ex));
+      MDCWrappers.removeAllMDCs();
       return Response.status(500).build();
     }
     
@@ -75,12 +79,14 @@ public class MessageSettingsService {
   @Path("/settings")
   public Response setMsgSettings(@Context HttpHeaders httpHeaders, String newInfoStr) {
     try (Connection conn = ds.getConnection()) {
+    MDC.put(MDCWrappers.OPERATION, "MessageSettingsService.setMsgSettings");
       LoginDatabase ld = new LoginDatabase(conn);
       Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY")); 
       if (atRest.isEmpty()) {
         return Response.status(401).entity("\"Not logged in to efile\"").build();
       }
       if (newInfoStr == null || newInfoStr.isBlank()) {
+        MDCWrappers.removeAllMDCs();
         return Response.status(200).build();
       }
       ObjectMapper mapper = new ObjectMapper();
@@ -90,6 +96,7 @@ public class MessageSettingsService {
         node = mapper.readTree(newInfoStr);
       } catch (JsonProcessingException e) {
         log.error("You need to pass a JSON string");
+        MDCWrappers.removeAllMDCs();
         return Response.status(400).build();
       }
       MessageInfo newInfo = new MessageInfo(node);
@@ -101,9 +108,11 @@ public class MessageSettingsService {
       existingInfo.subjectLine = newInfo.subjectLine;
       existingInfo.fromEmail = newInfo.fromEmail;
       md.updateTable(existingInfo); 
+      MDCWrappers.removeAllMDCs();
       return Response.status(200).build();
     } catch (SQLException ex) {
       log.error("Error when trying to update settings: " + ex);
+      MDCWrappers.removeAllMDCs();
       return Response.status(500).build();
     }
   }

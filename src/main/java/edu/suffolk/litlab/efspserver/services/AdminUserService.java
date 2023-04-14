@@ -133,6 +133,7 @@ public class AdminUserService {
   @GET
   @Path("/user")
   public Response getSelfUser(@Context HttpHeaders httpHeaders) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.getSelfUser");
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -152,6 +153,7 @@ public class AdminUserService {
   @GET
   @Path("/user/notification-preferences")
   public Response getNotificationPrefs(@Context HttpHeaders httpHeaders) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.getNotificationPrefs");
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -167,6 +169,7 @@ public class AdminUserService {
   @Path("/user/notification-preferences")
   public Response updateNotificationPrefs(@Context HttpHeaders httpHeaders,
       List<NotificationType> notifications) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateNotificationPrefs");
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -187,6 +190,7 @@ public class AdminUserService {
   @Path("/user/resend-activation-email")
   public Response selfResendActivationEmail(@Context HttpHeaders httpHeaders,
       String emailToSendTo) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.selfResendActivationEmail");
     Optional<IEfmUserService> port = setupUserPort(httpHeaders, false);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -203,6 +207,7 @@ public class AdminUserService {
   @Path("/users/{id}/resend-activation-email")
   public Response resendActivationEmail(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.resendActivationEmail");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -224,6 +229,7 @@ public class AdminUserService {
   @Path("/users/{id}/password")
   public Response resetPassword(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, ResetPasswordParams params) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.resetPassword");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -259,6 +265,7 @@ public class AdminUserService {
   @Path("/user/password")
   public Response setPassword(@Context HttpHeaders httpHeaders,
       SetPasswordParams params) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.setPassword");
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -290,6 +297,7 @@ public class AdminUserService {
   @Path("/user/password/reset")
   public Response selfResetPassword(@Context HttpHeaders httpHeaders,
       String emailToSend) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.selfResetPassword");
     Optional<IEfmUserService> port = setupUserPort(httpHeaders, false);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -315,6 +323,7 @@ public class AdminUserService {
   @Path("/users/{id}")
   public Response getUser(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.getUser");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -331,6 +340,7 @@ public class AdminUserService {
   @GET
   @Path("/users")
   public Response getUserList(@Context HttpHeaders httpHeaders) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.getUserList");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -345,6 +355,7 @@ public class AdminUserService {
   @Path("/user")
   public Response updateUser(@Context HttpHeaders httpHeaders,
       UserType updatedUser) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateUser");
     Optional<IEfmUserService> port = setupUserPort(httpHeaders, true);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -376,6 +387,7 @@ public class AdminUserService {
   @Path("/users/{id}")
   public Response updateUserById(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, UserType updatedUser) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateUserById");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -425,6 +437,7 @@ public class AdminUserService {
   @Path("/users/{id}/roles")
   public Response getRoles(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.getRoles");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -448,6 +461,7 @@ public class AdminUserService {
   @Path("/users/{id}/roles")
   public Response addRoles(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, List<RoleLocationType> toAdd) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.addRoles");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -479,6 +493,7 @@ public class AdminUserService {
   @Path("/users/{id}/roles")
   public Response removeRoles(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id, List<RoleLocationType> toRm) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.removeRoles");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -516,6 +531,7 @@ public class AdminUserService {
   @Path("/users")
   public Response registerUser(@Context HttpHeaders httpHeaders,
       final RegistrationRequestType req) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.registerUser");
     final var regType = req.getRegistrationType();
     boolean needsAuth = regType.equals(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, needsAuth, jurisdiction);
@@ -582,6 +598,7 @@ public class AdminUserService {
   @Path("/users/{id}")
   public Response removeUser(@Context HttpHeaders httpHeaders,
       @PathParam("id") String id) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.removeUser");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
@@ -597,6 +614,7 @@ public class AdminUserService {
   @GET
   @Path("/notification-options")
   public Response getNotificationPreferenceList(@Context HttpHeaders httpHeaders) {
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.getNotificationPreferenceList");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(407).build();
@@ -634,22 +652,23 @@ public class AdminUserService {
       if (atRest.isEmpty()) {
         return Optional.empty();
       }
+      IEfmUserService port = makeUserPort(userFactory);
+      if (needsSoapHeader) {
+        String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
+        MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
+        Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
+        if (creds.isEmpty()) {
+          return Optional.empty();
+        }
+        Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
+        List<Header> headersList = List.of(creds.get().toHeader());
+        ctx.put(Header.HEADER_LIST, headersList);
+      }
+      return Optional.of(port);
     } catch (SQLException ex) {
       log.error(StdLib.strFromException(ex));
       return Optional.empty();
     }
-    IEfmUserService port = makeUserPort(userFactory);
-    if (needsSoapHeader) {
-      Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(
-          httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction))); 
-      if (creds.isEmpty()) {
-        return Optional.empty();
-      }
-      Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-      List<Header> headersList = List.of(creds.get().toHeader());
-      ctx.put(Header.HEADER_LIST, headersList);
-    }
-    return Optional.of(port);
   }
 
   /** Creates a connection to Tyler's SOAP API WITHOUT any Auth headers.

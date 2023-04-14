@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -109,6 +110,7 @@ public class PaymentsService {
   @GET
   @Path("/global-accounts")
   public Response getGlobalPaymentList(@Context HttpHeaders httpHeaders) {
+    MDC.put(MDCWrappers.OPERATION, "PaymentsService.getGlobalPaymentList");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -122,6 +124,7 @@ public class PaymentsService {
   @Path("/global-accounts/{account_id}")
   public Response getGlobalPaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId) {
+    MDC.put(MDCWrappers.OPERATION, "PaymentsService.getGlobalPaymentAccount");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -137,6 +140,7 @@ public class PaymentsService {
   @Path("/global-accounts")
   public Response createGlobalWaiverAccount(@Context HttpHeaders httpHeaders,
       String accountName) {
+    MDC.put(MDCWrappers.OPERATION, "PaymentsService.createGlobalWaiverAccount");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -148,7 +152,7 @@ public class PaymentsService {
   @Path("/global-accounts/{account_id}")
   public Response updateGlobalPaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId, String json) {
-
+    MDC.put(MDCWrappers.OPERATION, "PaymentsService.updateGlobalPaymentAccount");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -167,6 +171,7 @@ public class PaymentsService {
   @Path("/global-accounts/{account_id}")
   public Response removeGlobalPaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId) {
+    MDC.put(MDCWrappers.OPERATION, "PaymentsService.removeGlobalPaymentAccount");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -182,6 +187,7 @@ public class PaymentsService {
   @Path("/payment-accounts/{account_id}")
   public Response getPaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId) {
+    MDC.put(MDCWrappers.OPERATION, "PaymentsService.getPaymentAccount");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -198,6 +204,7 @@ public class PaymentsService {
   @Path("/payment-accounts/{account_id}")
   public Response removePaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId) {
+    MDC.put(MDCWrappers.OPERATION, "PaymentsService.removePaymentAccount");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -213,6 +220,7 @@ public class PaymentsService {
   @Path("/payment-accounts")
   public Response getPaymentAccountList(@Context HttpHeaders httpHeaders,
     @DefaultValue("") @QueryParam("court_id") String courtId) throws SQLException {
+    MDC.put(MDCWrappers.OPERATION, "PaymentsService.getPaymentAccountList");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -236,6 +244,7 @@ public class PaymentsService {
   @Path("/payment-accounts")
   public Response createWaiverAccount(@Context HttpHeaders httpHeaders,
       String accountName) {
+    MDC.put(MDCWrappers.OPERATION, "PaymentsService.createWaiverAccount");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -248,6 +257,7 @@ public class PaymentsService {
   public Response updatePaymentAccount(@Context HttpHeaders httpHeaders,
       @PathParam("account_id") String accountId,
       String json) throws JsonMappingException, JsonProcessingException {
+    MDC.put(MDCWrappers.OPERATION, "PaymentsService.updatePaymentAccount");
     Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -265,6 +275,7 @@ public class PaymentsService {
   @GET
   @Path("/types")
   public Response getPaymentAccountTypeList(@Context HttpHeaders httpHeaders) {
+    MDC.put(MDCWrappers.OPERATION, "PaymentsService.getPaymentAccountTypeList");
     Optional<IEfmFirmService> firmPort = ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -283,6 +294,7 @@ public class PaymentsService {
       @FormParam("type_code") String typeCode, @FormParam("type_code_id") int typeCodeId,
       @FormParam("tyler_info") String tylerInfo, @FormParam("original_url") String originalUrl,
       @FormParam("error_url") String errorUrl) {
+    MDC.put(MDCWrappers.OPERATION, "PaymentsService.redirectToToga");
     String errorHtml = """
     <!DOCTYPE html>
     <html>
@@ -384,6 +396,7 @@ public class PaymentsService {
   @Path("/toga-account")
   public Response makeNewPaymentAccount(@Context HttpHeaders httpHeaders,
       @FormParam("ResponseXML") String body) {
+    MDC.put(MDCWrappers.OPERATION, "PaymentsService.makeNewPaymentAccount");
     log.info("Making new payment account with Tyler's response: " + body);
     try {
       JAXBContext jaxContext = JAXBContext.newInstance(TogaResponseXml.class);

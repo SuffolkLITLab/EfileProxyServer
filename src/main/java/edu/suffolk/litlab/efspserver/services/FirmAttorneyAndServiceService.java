@@ -26,6 +26,7 @@ import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -107,6 +108,7 @@ public class FirmAttorneyAndServiceService {
   @GET
   @Path("/firm")
   public Response getSelfFirm(@Context HttpHeaders httpHeaders) {
+    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getSelfFirm");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -119,6 +121,7 @@ public class FirmAttorneyAndServiceService {
   @PATCH
   @Path("/firm")
   public Response updateFirm(@Context HttpHeaders httpHeaders, String json) {
+    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateFirm");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -155,6 +158,7 @@ public class FirmAttorneyAndServiceService {
   @GET
   @Path("/attorneys")
   public Response getAttorneyList(@Context HttpHeaders httpHeaders) {
+    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getAttorneyList");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -168,6 +172,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/attorneys/{attorney_id}")
   public Response getAttorney(@Context HttpHeaders httpHeaders,
       @PathParam("attorney_id") String attorneyId) {
+    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getAttorney");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -183,6 +188,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/attorneys")
   public Response createAttorney(@Context HttpHeaders httpHeaders,
       AttorneyType attorney) {
+    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.createAttorney");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -212,6 +218,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/attorneys/{attorney_id}")
   public Response updateAttorney(@Context HttpHeaders httpHeaders,
       @PathParam("attorney_id") String attorneyId, String json) {
+    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateAttorney");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -243,6 +250,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/attorneys/{attorney_id}")
   public Response removeAttorney(@Context HttpHeaders httpHeaders,
       @PathParam("attorney_id") String attorneyId) {
+    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.removeAttorney");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -257,6 +265,7 @@ public class FirmAttorneyAndServiceService {
   @GET
   @Path("/service-contacts")
   public Response getServiceContactList(@Context HttpHeaders httpHeaders) {
+    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getServiceContactList");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -269,6 +278,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/service-contacts/{contact_id}")
   public Response getServiceContact(@Context HttpHeaders httpHeaders,
       @PathParam("contact_id") String contactId) {
+    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getServiceContact");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -284,6 +294,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/service-contacts/{contact_id}")
   public Response removeServiceContact(@Context HttpHeaders httpHeaders,
       @PathParam("contact_id") String contactId) {
+    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.removeServiceContact");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -299,6 +310,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/service-contacts")
   public Response createServiceContact(@Context HttpHeaders httpHeaders,
       ServiceContactInput input) {
+    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.createServiceContact");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -327,6 +339,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/service-contacts/{contact_id}/cases")
   public Response attachServiceContact(@Context HttpHeaders httpHeaders,
       @PathParam("contact_id") String contactId, String json) {
+    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.attachServiceContact");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -363,6 +376,7 @@ public class FirmAttorneyAndServiceService {
   public Response detachServiceContact(@Context HttpHeaders httpHeaders,
       @PathParam("contact_id") String contactId, @PathParam("case_id") String caseId,
       @QueryParam("case_party_id") String casePartyId) {
+    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.detachServiceContact");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -382,6 +396,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/service-contacts/{contact_id}")
   public Response updateServiceContact(@Context HttpHeaders httpHeaders,
       @PathParam("contact_id") String contactId, String json) {
+    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateServiceContact");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -420,6 +435,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/service-contacts/public")
   public Response getPublicList(@Context HttpHeaders httpHeaders,
       String json) {
+    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getPublicList");
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
