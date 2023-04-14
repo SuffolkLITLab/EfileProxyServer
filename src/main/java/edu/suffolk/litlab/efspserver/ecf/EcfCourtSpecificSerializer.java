@@ -111,15 +111,11 @@ public class EcfCourtSpecificSerializer {
   public ComboCaseCodes serializeCaseCodesIndexed(String caseCategoryCode, 
       String caseTypeCode, List<String> filingCodeStrs, Map<String, Person> existingParties, Map<String, Person> newParties, 
       InfoCollector collector) throws FilingError {
-    log.info("vet case cat");
     CaseCategory caseCategory = vetCaseCat(cd.getCaseCategoryWithKey(this.court.code, caseCategoryCode), collector);
-    log.info("vet case types");
     List<CaseType> caseTypes = cd.getCaseTypesFor(court.code, caseCategory.code, Optional.empty());
     Optional<CaseType> maybeType = cd.getCaseTypeWith(court.code, caseTypeCode);
     CaseType type = vetCaseType(maybeType, caseTypes, caseCategory, collector, false);
-    log.info("vet filing codes");
     List<FilingCode> filingRealCodes = vetFilingTypes(filingCodeStrs, caseCategory, type, collector, false);
-    log.info("vet party types");
     Map<String, Pair<PartyType, Boolean>> partyTypes = vetPartyTypes(existingParties, newParties, type);
     return new ComboCaseCodes(caseCategory, type, filingRealCodes, partyTypes);
   }

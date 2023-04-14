@@ -287,7 +287,6 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       Map<String, Object> filingIdToObj = new HashMap<>();
       int seqNum = 0;
       for (FilingDoc filingDoc : info.getFilings()) {
-        log.info("Adding a document to the XML");
         long bytes = filingDoc.allAttachmentsLength();
         if (bytes > maxSize) {
           FilingError err = FilingError.malformedInterview("Document " + filingDoc.getDescription().map(d -> d.get()).orElse(filingDoc.getFilingComments())
@@ -473,6 +472,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
           .serverError("Couldn't create SOAP port object with token: " + apiToken);
       return Result.err(err);
     }
+    log.info("Getting Filing Fees");
     try {
       cfm = prepareFiling(info, collector, apiToken, filingPort.get(), recordPort.get(), QueryType.Fees).cfm;
     } catch (FilingError err) {

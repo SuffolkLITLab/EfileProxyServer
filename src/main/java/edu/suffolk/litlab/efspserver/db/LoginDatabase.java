@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.suffolk.litlab.efspserver.RandomString;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.codes.CodeTableConstants;
+import edu.suffolk.litlab.efspserver.services.MDCWrappers;
 
 public class LoginDatabase implements DatabaseInterface {
   private static Logger log = 
@@ -144,6 +145,9 @@ public class LoginDatabase implements DatabaseInterface {
       atRest.enabled = Map.of("tyler", rs.getBoolean(4), "jeffnet", rs.getBoolean(5));
       atRest.serverName = rs.getString(2);
       atRest.created = rs.getTimestamp(6);
+      // Assuming that we will only have the API key hash when directly given it, i.e.
+      // when this server is calling the proxy server. So set the log param
+      MDC.put(MDCWrappers.SERVER_ID, atRest.serverId.toString());
       return Optional.of(atRest);
     } catch (SQLException ex) {
       log.error(StdLib.strFromException(ex));
@@ -198,8 +202,6 @@ public class LoginDatabase implements DatabaseInterface {
     }
 
     AtRest atRest = maybeAtRest.get();
-    MDC.put("serverId", atRest.serverId.toString());
-
     ObjectMapper mapper = new ObjectMapper();
     JsonNode loginInfo;
     try {
