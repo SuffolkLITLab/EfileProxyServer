@@ -8,7 +8,7 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewToFilingInformationConverter;
-import edu.suffolk.litlab.efspserver.services.JsonExtractException;
+
 import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

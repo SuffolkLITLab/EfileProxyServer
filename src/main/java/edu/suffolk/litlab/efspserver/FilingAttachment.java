@@ -1,8 +1,5 @@
 package edu.suffolk.litlab.efspserver;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 /** An individual PDF, all a part of the same "document". The equivalent of an ALDocument. */
 public class FilingAttachment {
   final private String filingComponentCode;
@@ -15,15 +12,6 @@ public class FilingAttachment {
   // Provides Document Type code / BinaryFormatStandardName
   final private String documentTypeFormatStandardName;
   // page count?
-  
-  public FilingAttachment(String fileName, InputStream fileStream,
-      String documentTypeFormatStandardName, String filingComponentCode, String documentDescription) throws IOException {
-    this.filingComponentCode = filingComponentCode;
-    this.fileName = fileName;
-    this.documentTypeFormatStandardName = documentTypeFormatStandardName;
-    this.documentDescription = documentDescription;
-    this.fileContents = fileStream.readAllBytes();
-  }
   
   public FilingAttachment(String fileName, byte[] fileStream,
       String documentTypeFormatStandardName, String filingComponentCode, String documentDescription) {

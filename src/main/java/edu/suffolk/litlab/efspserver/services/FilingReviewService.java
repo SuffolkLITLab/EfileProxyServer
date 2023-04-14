@@ -142,12 +142,12 @@ public class FilingReviewService {
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
+    LocalDate startDate;
+    LocalDate beforeDate;
     try {
-      LocalDate startDate = (startStr != null) ? LocalDate.parse(startStr) : null;
-      LocalDate beforeDate = (beforeStr != null) ? LocalDate.parse(beforeStr) : null;
+      startDate = (startStr != null) ? LocalDate.parse(startStr) : null;
+      beforeDate = (beforeStr != null) ? LocalDate.parse(beforeStr) : null;
       // beforeDate is exclusive!
-      return filer.getFilingList(courtId, userId, startDate, beforeDate,
-          activeToken.get());
     } catch (DateTimeParseException ex) {
       MDCWrappers.removeAllMDCs();
       return Response.status(400).entity(

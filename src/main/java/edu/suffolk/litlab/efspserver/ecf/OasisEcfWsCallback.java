@@ -13,16 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.XmlHelper;
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
-import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
-import edu.suffolk.litlab.efspserver.codes.NameAndCode;
-import edu.suffolk.litlab.efspserver.db.Transaction;
-import edu.suffolk.litlab.efspserver.db.UserDatabase;
-import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
-import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
-import edu.suffolk.litlab.efspserver.services.UpdateMessageStatus;
 import gov.niem.niem.domains.jxdm._4.CaseAugmentationType;
 import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.TextType;
@@ -40,6 +30,18 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingAssemblyMDEPort;
 import tyler.ecf.extensions.eventcallbackmessage.EventCallbackMessageType;
 import tyler.ecf.extensions.servicecallbackmessage.ServiceCallbackMessageType;
+
+import edu.suffolk.litlab.efspserver.StdLib;
+import edu.suffolk.litlab.efspserver.XmlHelper;
+import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
+import edu.suffolk.litlab.efspserver.codes.NameAndCode;
+import edu.suffolk.litlab.efspserver.db.Transaction;
+import edu.suffolk.litlab.efspserver.db.UserDatabase;
+import edu.suffolk.litlab.efspserver.services.MDCWrappers;
+import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
+import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
+import edu.suffolk.litlab.efspserver.services.UpdateMessageStatus;
 
 // TODO(brycew): does this need to become multiple different files, one for each jurisdiction? Can't have multiple wsdlLocations
 
@@ -240,12 +242,6 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       return error(reply, "705", "NotifyFilingReviewComplete message not found");
     }
 
-    // Handle payment stuff: Address is usually empty, it's all in Payment and AllowanceCharges
-    List<String> charges = new ArrayList<>();
-    for (AllowanceChargeType charge: payment.getAllowanceCharge()) {
-      charges.add(chargeToStr(charge));
-    }
-
     // Now for the review filing
     String filingId = "";
     for (IdentificationType id : revFiling.getDocumentIdentification()) {
@@ -273,52 +269,67 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
         }
       }
     }
+    Optional<Transaction> trans = Optional.empty();
     try (Connection conn = userDs.getConnection()) {
       UserDatabase ud = new UserDatabase(conn);
-      Optional<Transaction> trans = ud.findTransaction(UUID.fromString(filingId));
-      if (trans.isEmpty()) {
-        log.warn("No transaction on record for filingId: " + filingId + " no one to send to");
-        return error(reply, "724", "Filing ID " + filingId + " not found");
-      }
-      // Trust in Tyler's courtId over ours, maybe location can change on their side
-      String courtId = (courtIdFromMsg.isBlank()) ? trans.get().courtId : courtIdFromMsg;
-      String caseName = revFiling.getCase().getValue().getCaseTitleText().getValue();
-      Optional<CourtLocationInfo> courtInfo = Optional.empty();
-      try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codesDs.getConnection())) {
-        courtInfo = cd.getFullLocationInfo(courtId);
-        if (courtInfo.isEmpty()) {
-          log.warn("Court " + courtId + " no longer exists in codes? ("
-              + courtIdFromMsg + " from msg, " + trans.get().courtId + " from db)");
-          return error(reply, "70", "Location " + courtId + " not found");
-        }
-      } catch (SQLException ex) {
-        log.error("In ECF v4 callback, couldn't get codes db: " + StdLib.strFromException(ex));
-        courtInfo = Optional.of(new CourtLocationInfo());
-        courtInfo.get().name = courtId;
-      }
-
-      reply.setCaseCourt(XmlHelper.convertCourtType(courtId));
-      String statusText = reviewedFilingStatusText(revFiling, trans.get());
-      String messageText = reviewedFilingMessageText(revFiling, trans.get(), courtInfo.get());
-
-      UpdateMessageStatus status = reviewedFilingStatusCode(revFiling);
-      boolean success = msgSender.sendMessage(trans.get(), status, statusText, messageText,
-          null, courtInfo.get().name, caseName);
-      log.info("Replying to litigant with: status: " + status + ", statusText: " + statusText + ", messageText: " + messageText + ", courtName: " + courtInfo.get().name);
-      if (!success) {
-        log.error("Couldn't properly send message to " + trans.get().name + "!");
-      }
-      return ok(reply);
+      trans = ud.findTransaction(UUID.fromString(filingId));
     } catch (SQLException e) {
       log.error("Couldn't connect to the SQL database to get the transaction: " + e.toString());
       return error(reply, "-1", "Server error");
     }
+    if (trans.isEmpty()) {
+      log.warn("No transaction on record for filingId: " + filingId + " no one to send to");
+      return error(reply, "724", "Filing ID " + filingId + " not found");
+    }
+
+    // Handle payment stuff: Address is usually empty, it's all in Payment and AllowanceCharges
+    List<String> charges = new ArrayList<>();
+    for (AllowanceChargeType charge: payment.getAllowanceCharge()) {
+      charges.add(chargeToStr(charge));
+    }
+
+    MDC.put(MDCWrappers.SERVER_ID, trans.get().serverId.toString());
+    log.info("Full NotifyFilingReviewComplete msg: " + XmlHelper.objectToXmlStrOrError(msg, NotifyFilingReviewCompleteRequestMessageType.class));
+
+    // Trust in Tyler's courtId over ours, maybe location can change on their side
+    String courtId = (courtIdFromMsg.isBlank()) ? trans.get().courtId : courtIdFromMsg;
+    String caseName = revFiling.getCase().getValue().getCaseTitleText().getValue();
+    Optional<CourtLocationInfo> courtInfo = Optional.empty();
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codesDs.getConnection())) {
+      courtInfo = cd.getFullLocationInfo(courtId);
+      if (courtInfo.isEmpty()) {
+        log.warn("Court " + courtId + " no longer exists in codes? ("
+            + courtIdFromMsg + " from msg, " + trans.get().courtId + " from db)");
+        MDCWrappers.removeAllMDCs();
+        return error(reply, "70", "Location " + courtId + " not found");
+      }
+    } catch (SQLException ex) {
+      log.error("In ECF v4 callback, couldn't get codes db: " + StdLib.strFromException(ex));
+      courtInfo = Optional.of(new CourtLocationInfo());
+      courtInfo.get().name = courtId;
+    }
+
+    reply.setCaseCourt(XmlHelper.convertCourtType(courtId));
+    String statusText = reviewedFilingStatusText(revFiling, trans.get());
+    String messageText = reviewedFilingMessageText(revFiling, trans.get(), courtInfo.get());
+
+    UpdateMessageStatus status = reviewedFilingStatusCode(revFiling);
+
+    log.info("Filing status: " + statusText + ";; " + messageText + ";; " + status.toString());
+    boolean success = msgSender.sendMessage(trans.get(), status, statusText, messageText,
+        null, courtInfo.get().name, caseName);
+    log.info("Replying to litigant with: status: " + status + ", statusText: " + statusText + ", messageText: " + messageText + ", courtName: " + courtInfo.get().name);
+    if (!success) {
+      log.error("Couldn't properly send message to " + trans.get().name + "!");
+    }
+    MDCWrappers.removeAllMDCs();
+    return ok(reply);
   }
 
   @Override
   public MessageReceiptMessageType notifyEvent(EventCallbackMessageType eventCallbackMessage) {
     log.info("Full NotifyEvent msg" + eventCallbackMessage);
-    // TODO(brycew): not going to do anything with for now. Someone should implement this and push upstream
+    // TODO(brycew): not going to do anything with for now
     MessageReceiptMessageType reply = recepitFac.createMessageReceiptMessageType();
     ServiceHelpers.setupReplys(reply);
     return ok(reply);
@@ -328,7 +339,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   public MessageReceiptMessageType notifyServiceComplete(
       ServiceCallbackMessageType serviceCallbackMessage) {
     log.info("Full NotifyServiceComplete msg: " + XmlHelper.objectToXmlStrOrError(serviceCallbackMessage, ServiceCallbackMessageType.class));
-    // TODO(brycew): not going to do anything with for now. Someone should implement this and push upstream
+    // TODO(brycew): not going to do anything with for now
     MessageReceiptMessageType reply = recepitFac.createMessageReceiptMessageType();
     ServiceHelpers.setupReplys(reply);
     return ok(reply);
