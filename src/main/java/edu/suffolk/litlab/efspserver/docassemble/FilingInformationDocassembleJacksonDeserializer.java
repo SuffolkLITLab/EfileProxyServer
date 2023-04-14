@@ -384,6 +384,7 @@ public class FilingInformationDocassembleJacksonDeserializer
             collector); 
         collector.popAttributeStack();
         maybeDoc.ifPresent(doc -> {
+          log.info("Adding this doc to filingDocs:" + doc.toString());
           filingDocs.add(doc);
         });
       } catch (FilingError err) {

@@ -68,7 +68,6 @@ public class ApiUserSettingsService {
       if (atRest.isEmpty()) {
         return Response.status(401).entity("\"Not logged in to efile\"").build();
       }
-      MDC.put("serverId", atRest.get().serverId.toString());
       ld.updateServerName(atRest.get(), apiKey, newName);
       return Response.ok("\"" + newName + "\"").build();
     } catch (SQLException ex) {

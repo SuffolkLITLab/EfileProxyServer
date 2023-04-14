@@ -120,7 +120,7 @@ public class FilingDocDocassembleJacksonDeserializer {
     }
     List<PartyId> fullParties = filingParties.stream().map(fp -> {
       if (varToPartyId.containsKey(fp)) {
-        log.info("Filing party id in doc: " + fp + ": " + varToPartyId.get(fp));
+        log.info("Filing party id in " + _logName + ": " + fp + ": " + varToPartyId.get(fp));
         return varToPartyId.get(fp);
       } 
       log.info("Existing filing party id in doc: " + fp);
@@ -134,7 +134,6 @@ public class FilingDocDocassembleJacksonDeserializer {
     } else {
       if (node.has("elements") && node.get("elements").isArray()) {
         Iterable<JsonNode> nodes = node.get("elements")::elements;
-        log.info("In multi attachments");
         int idx = 0;
         for (var attachNode : nodes) {
           collector.pushAttributeStack(".elements[" + idx + "]");
@@ -148,7 +147,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       }
     }
     if (attachments.isEmpty()) {
-      log.info("In no attachments");
+      log.info("No attachments present in " + _logName);
       Optional<FilingAttachment> attachment = getAttachment(node, collector);
       if (attachment.isPresent()) {
         attachments = fj.data.List.single(attachment.get());

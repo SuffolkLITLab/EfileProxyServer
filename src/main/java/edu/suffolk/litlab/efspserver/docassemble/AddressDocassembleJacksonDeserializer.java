@@ -53,7 +53,6 @@ public class AddressDocassembleJacksonDeserializer {
       }
     }
     if (oneMissing) {
-      log.info("None of the address parts are present, won't try to build address");
       return Optional.empty();
     }
     if (!potentiallyReq.isEmpty()) {

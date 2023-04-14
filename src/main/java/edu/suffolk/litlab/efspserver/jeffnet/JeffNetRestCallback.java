@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,6 +31,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import edu.suffolk.litlab.efspserver.db.Transaction;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.services.EfmRestCallbackInterface;
+import edu.suffolk.litlab.efspserver.services.MDCWrappers;
 import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
 import edu.suffolk.litlab.efspserver.services.UpdateMessageStatus;
 
@@ -79,6 +81,7 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
         return Response.status(404).build();
       }
       Transaction transaction = maybeTrans.get();
+      MDC.put(MDCWrappers.SERVER_ID, transaction.serverId.toString());
       if (transaction.apiKeyUsed == null || !transaction.apiKeyUsed.equals(callbackApiKey)) {
         log.error("Call with API key " + callbackApiKey + " didn't match original API key!");
         return Response.status(401).build();
