@@ -18,7 +18,6 @@ import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
-import edu.suffolk.litlab.efspserver.services.JsonExtractException;
 
 import java.io.IOException;
 import java.time.LocalDate;

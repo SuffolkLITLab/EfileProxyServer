@@ -122,7 +122,7 @@ public class EcfCourtSpecificSerializer {
   
   /** Either an initial filing, or a non-indexed case. */
   public ComboCaseCodes serializeCaseCodes(FilingInformation info, InfoCollector collector, boolean isInitialFiling) throws FilingError {
-    Optional<CaseCategory> maybeCaseCat = cd.getCaseCategoryWithKey(court.code, info.getCaseCategoryCode());
+    Optional<CaseCategory> maybeCaseCat = cd.getCaseCategoryWithKey(this.court.code, info.getCaseCategoryCode());
     CaseCategory caseCategory = vetCaseCat(maybeCaseCat, collector); 
 
     List<CaseType> caseTypes = cd.getCaseTypesFor(court.code, caseCategory.code, Optional.empty());

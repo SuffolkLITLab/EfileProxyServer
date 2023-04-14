@@ -183,7 +183,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       InterviewVariable nameVar = collector.requestVar("filename", "The file name of the filing document", "text");
       collector.addRequired(nameVar);
     }
-    String fileName = filenameNode.asText("");
+    String fileName = (filenameNode != null) ? filenameNode.asText("") : "";
     if (!fileName.endsWith(".pdf")) {
       fileName += ".pdf";
     }
@@ -217,7 +217,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       
       return Optional.of(
           new FilingAttachment(fileName,
-              inStream.readAllBytes(),
+              (inStream != null) ? inStream.readAllBytes() : new byte[0],
               documentTypeFormatName,
               filingComponentCode, documentDescription));
     } catch (MalformedURLException ex) {
