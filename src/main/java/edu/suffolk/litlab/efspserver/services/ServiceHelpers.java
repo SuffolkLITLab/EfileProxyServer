@@ -18,6 +18,7 @@ import javax.xml.ws.BindingProvider;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.StdLib;
@@ -240,13 +241,14 @@ public class ServiceHelpers {
         log.warn("Couldn't find server api key");
         return Optional.empty();
       }
+      if (needsSoapHeader) {
+        String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
+        MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
+        return setupFirmPort(firmFactory, tylerToken);
+      }
     } catch (SQLException ex) {
       log.error(StdLib.strFromException(ex));
       return Optional.empty();
-    }
-    if (needsSoapHeader) {
-      String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-      return setupFirmPort(firmFactory, tylerToken);
     }
     IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
     setupServicePort((BindingProvider) port);

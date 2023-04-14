@@ -39,7 +39,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.slf4j.Logger;
+import org.slf4j.MDC;
 import org.slf4j.LoggerFactory;
 
 @Produces({MediaType.APPLICATION_JSON})
@@ -106,6 +108,7 @@ public class FilingReviewService {
   public Response getFilingStatus(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
       @PathParam("filing_id") String filingId) {
+    MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getFilingStatus");
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
@@ -116,7 +119,9 @@ public class FilingReviewService {
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    return filer.getFilingStatus(courtId, filingId, activeToken.get());
+    var toRet = filer.getFilingStatus(courtId, filingId, activeToken.get());
+    MDCWrappers.removeAllMDCs();
+    return toRet;
  }
 
   /** If 0 is passed for court, search all courts. */
@@ -127,6 +132,7 @@ public class FilingReviewService {
       @QueryParam("user_id") String userId, 
       @QueryParam("start_date") String startStr,
       @QueryParam("before_date") String beforeStr) {
+    MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getFilingList");
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
@@ -143,9 +149,14 @@ public class FilingReviewService {
       return filer.getFilingList(courtId, userId, startDate, beforeDate,
           activeToken.get());
     } catch (DateTimeParseException ex) {
+      MDCWrappers.removeAllMDCs();
       return Response.status(400).entity(
           "Dates given were incorrect, should be of the form: yyyy-MM-dd (ISO_LOCAL_DATE): " + ex).build();
     }
+    var toRet = filer.getFilingList(courtId, userId, startDate, beforeDate,
+        activeToken.get());
+    MDCWrappers.removeAllMDCs();
+    return toRet;
   }
 
   @GET
@@ -153,6 +164,7 @@ public class FilingReviewService {
   public Response checkFilingForReview(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, 
       String allVars) {
+    MDC.put(MDCWrappers.OPERATION, "FilingReviewService.checkFilingForReview");
     MediaType mediaType = httpHeaders.getMediaType();
     if (mediaType == null) {
       mediaType = MediaType.valueOf("application/json");
@@ -175,6 +187,7 @@ public class FilingReviewService {
     if (res.isErr()) {
       log.warn(res.toString());
       log.info("All vars for check, on error:" + allVars);
+      MDCWrappers.removeAllMDCs();
       return Response.status(400).entity(collector.jsonSummary()).build();
     }
     FilingInformation info = res.unwrapOrElseThrow();
@@ -183,8 +196,10 @@ public class FilingReviewService {
     if (resEfm.isErr()) {
       log.warn(resEfm.toString());
       log.info("All vars for check, on error:" + allVars);
+      MDCWrappers.removeAllMDCs();
       return Response.ok(collector.jsonSummary()).build();
     }
+    MDCWrappers.removeAllMDCs();
     return Response.ok(collector.jsonSummary()).build();
   }
 
@@ -193,6 +208,7 @@ public class FilingReviewService {
   public Response calculateFilingFees(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, 
       String allVars) {
+    MDC.put(MDCWrappers.OPERATION, "FilingReviewService.calculateFilingFees");
     MediaType mediaType = httpHeaders.getMediaType();
     if (mediaType == null) {
       mediaType = MediaType.valueOf("application/json");
@@ -215,11 +231,13 @@ public class FilingReviewService {
     Result<FilingInformation, FilingError> res = converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
     if (res.isErr()) {
       log.warn("In fees: " + res.toString());
+      MDCWrappers.removeAllMDCs();
       return Response.status(400).entity(collector.jsonSummary()).build();
     }
     FilingInformation info = res.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
     Result<Response, FilingError> fees = filer.getFilingFees(info, activeToken.get());
+    MDCWrappers.removeAllMDCs();
     return fees.match(
         err -> Response.status(400).entity(err.toJson()).build(),
         respon -> respon);
@@ -230,6 +248,7 @@ public class FilingReviewService {
   public Response getServiceTypes(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, 
       String allVars) {
+    MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getServiceTypes");
     MediaType mediaType = httpHeaders.getMediaType();
     if (mediaType == null) {
       mediaType = MediaType.valueOf("application/json");
@@ -245,16 +264,19 @@ public class FilingReviewService {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
     if (!converterMap.containsKey(mediaType.toString())) {
+      MDCWrappers.removeAllMDCs();
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     }
     InfoCollector collector = new FailFastCollector();
     Result<FilingInformation, FilingError> res = converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
     if (res.isErr()) {
+      MDCWrappers.removeAllMDCs();
       return Response.status(400).entity(collector.jsonSummary()).build();
     }
     FilingInformation info = res.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
     Result<Response, FilingError> fees = filer.getServiceTypes(info, activeToken.get());
+    MDCWrappers.removeAllMDCs();
     return fees.match(
         err -> Response.status(400).entity(err.toJson()).build(),
         respon -> respon);
@@ -265,6 +287,7 @@ public class FilingReviewService {
   @Path("/courts/{court_id}/policy")
   public Response getPolicy(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId) {
+    MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getPolicy");
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
@@ -275,7 +298,9 @@ public class FilingReviewService {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
 
-    return filer.getPolicy(courtId, activeToken.get());
+    var toRet = filer.getPolicy(courtId, activeToken.get());
+    MDCWrappers.removeAllMDCs();
+    return toRet;
   }
 
   @POST
@@ -283,10 +308,13 @@ public class FilingReviewService {
   public Response filingUpdateWebhook(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, 
       String statusReport) {
+    MDC.put(MDCWrappers.OPERATION, "FilingReviewService.filingUpdateWebhook");
     if (!callbackInterfaces.containsKey(courtId)) {
       return Response.status(404).entity("Court " + courtId + " doesn't exist").build();
     }
-    return callbackInterfaces.get(courtId).statusCallback(httpHeaders, statusReport);
+    var toRet = callbackInterfaces.get(courtId).statusCallback(httpHeaders, statusReport);
+    MDCWrappers.removeAllMDCs();
+    return toRet;
   }
 
   // TODO(brycew): unclear why this API exists on the Tyler side if the same functionality is in
@@ -306,7 +334,10 @@ public class FilingReviewService {
   public Response submitFilingForReview(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, 
       String allVars) {
-    return fileOrServe(httpHeaders, courtId, allVars, EfmFilingInterface.ApiChoice.FileApi);
+    MDC.put(MDCWrappers.OPERATION, "FilingReviewService.submitFilingForReview");
+    var toRet = fileOrServe(httpHeaders, courtId, allVars, EfmFilingInterface.ApiChoice.FileApi);
+    MDCWrappers.removeAllMDCs();
+    return toRet;
   }
   
   private Response fileOrServe(HttpHeaders httpHeaders, String courtId, String allVars, EfmFilingInterface.ApiChoice choice) {
@@ -417,16 +448,20 @@ public class FilingReviewService {
   public Response getFilingDetails(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, 
       @PathParam("filing_id") String filingId) {
+    MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getFilingDetails");
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
+    var activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
+      MDCWrappers.removeAllMDCs();
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    return filer.getFilingDetails(courtId, filingId, activeToken.get());
+    var toRet = filer.getFilingDetails(courtId, filingId, activeToken.get());
+    MDCWrappers.removeAllMDCs();
+    return toRet;
   }
 
   @GET
@@ -435,16 +470,19 @@ public class FilingReviewService {
       @PathParam("court_id") String courtId,
       @PathParam("filing_id") String filingId,
       @PathParam("contact_id") String contactId) {
+    MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getFilingService");
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
+    var activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    return filer.getFilingService(courtId, filingId, contactId, activeToken.get());
+    var toRet = filer.getFilingService(courtId, filingId, contactId, activeToken.get());
+    MDCWrappers.removeAllMDCs();
+    return toRet;
   }
 
   @DELETE
@@ -452,16 +490,19 @@ public class FilingReviewService {
   public Response cancelFiling(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, 
       @PathParam("filing_id") String filingId) {
+    MDC.put(MDCWrappers.OPERATION, "FilingReviewService.cancelFiling");
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
+    var activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    return filer.cancelFiling(courtId, filingId, activeToken.get());
+    var toRet = filer.cancelFiling(courtId, filingId, activeToken.get());
+    MDCWrappers.removeAllMDCs();
+    return toRet;
   }
 
   private Optional<String> getActiveToken(HttpHeaders httpHeaders, String orgHeaderKey) {

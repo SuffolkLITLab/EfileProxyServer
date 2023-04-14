@@ -32,6 +32,7 @@ import javax.xml.ws.BindingProvider;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -208,6 +209,7 @@ public class CourtSchedulingService {
   @Path("/courts/{court_id}/return_date")
   public Response getReturnDate(@Context HttpHeaders httpHeaders, 
       @PathParam("court_id") String courtId, String allVars) throws SQLException, JAXBException {
+    MDC.put(MDCWrappers.OPERATION, "CourtSchedulingService.getReturnDate");
     Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort(httpHeaders);
     if (maybeServ.isEmpty()) {
       return Response.status(401).build();
@@ -348,6 +350,7 @@ public class CourtSchedulingService {
   @Path("/courts/{court_id}/reserve_date")
   public Response reserveCourtDateSync(@Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId, String paramStr) throws JsonMappingException, JsonProcessingException, DatatypeConfigurationException, SQLException {
+    MDC.put(MDCWrappers.OPERATION, "CourtSchedulingService.reserveCourtDateSync");
     log.info("AllParams: " + paramStr);
     JsonMapper mapper = new JsonMapper();
     JsonNode params = mapper.readTree(paramStr); 
@@ -433,6 +436,7 @@ public class CourtSchedulingService {
     
   private Optional<CourtSchedulingMDE> setupSchedulingPort(HttpHeaders httpHeaders) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
+    Optional<TylerUserNamePassword> creds = Optional.empty();
     try (Connection conn = userDs.getConnection()) {
       LoginDatabase ld = new LoginDatabase(conn);
       Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
@@ -440,12 +444,13 @@ public class CourtSchedulingService {
         log.warn("Couldn't checkLogin");
         return Optional.empty();
       }
+      String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
+      MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
+      creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     } catch (SQLException ex) {
       log.error(StdLib.strFromException(ex));
       return Optional.empty();
     }
-    String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction)); 
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds?");
       return Optional.empty();
