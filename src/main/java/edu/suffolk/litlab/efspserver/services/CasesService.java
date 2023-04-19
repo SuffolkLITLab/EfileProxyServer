@@ -245,6 +245,7 @@ public class CasesService {
     MDC.put(MDCWrappers.OPERATION, "CasesService.getCase");
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
+      MDCWrappers.removeAllMDCs();
       return Response.status(401).build();
     }
 
@@ -289,12 +290,12 @@ public class CasesService {
           }
         });
       }
-      MDCWrappers.removeAllMDCs();
       return Response.status(responseCode).entity(resp.getCase()).build();
     } catch (SQLException e) {
-      MDCWrappers.removeAllMDCs();
       log.error("can't get connection: " + StdLib.strFromException(e));
       return Response.status(500).build();
+    } finally {
+      MDCWrappers.removeAllMDCs();
     }
   }
   
