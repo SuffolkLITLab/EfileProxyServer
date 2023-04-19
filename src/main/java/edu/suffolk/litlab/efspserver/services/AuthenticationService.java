@@ -29,7 +29,15 @@ public class AuthenticationService {
   }
 
   @POST
-  public Response authenticateUser(@Context HttpHeaders httpHeaders, String loginInfo) {
+  /**
+   * Log in the user to all of the requested e-filing EFMs.
+   *
+   * @param loginInfo should be a JSON object, with the following keys: * api_key: the api key for
+   *     this server * tyler-illinois: an object with the username and password for this tyler
+   *     jurisdiction, can be any jurisdiction
+   * @return 200 and the logged in tokens to hang on to and send in with every call
+   */
+  public Response authenticateUser(String loginInfo) {
     MDC.put(MDCWrappers.OPERATION, "AuthenticationService.authenticateUser");
     ObjectMapper mapper = new ObjectMapper();
     String apiKey;

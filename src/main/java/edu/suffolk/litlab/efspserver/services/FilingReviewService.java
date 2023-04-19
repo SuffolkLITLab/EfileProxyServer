@@ -170,7 +170,6 @@ public class FilingReviewService {
     }
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
-      log.info("All vars for check, on error:" + allVars);
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();

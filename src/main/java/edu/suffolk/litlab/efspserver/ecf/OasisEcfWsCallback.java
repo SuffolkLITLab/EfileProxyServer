@@ -254,10 +254,6 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
             .setBinaryObject(null);
       }
     }
-    log.info(
-        "Full NotifyFilingReviewComplete msg: "
-            + XmlHelper.objectToXmlStrOrError(
-                msg, NotifyFilingReviewCompleteRequestMessageType.class));
     // The bare minimum: get the Document ID, see if we have it in the db, send email response
     PaymentMessageType payment = msg.getPaymentReceiptMessage();
     ReviewFilingCallbackMessageType revFiling = msg.getReviewFilingCallbackMessage();
