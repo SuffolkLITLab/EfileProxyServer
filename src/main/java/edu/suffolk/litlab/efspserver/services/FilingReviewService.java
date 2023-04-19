@@ -142,21 +142,17 @@ public class FilingReviewService {
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    LocalDate startDate;
-    LocalDate beforeDate;
     try {
-      startDate = (startStr != null) ? LocalDate.parse(startStr) : null;
-      beforeDate = (beforeStr != null) ? LocalDate.parse(beforeStr) : null;
+      LocalDate startDate = (startStr != null) ? LocalDate.parse(startStr) : null;
+      LocalDate beforeDate = (beforeStr != null) ? LocalDate.parse(beforeStr) : null;
       // beforeDate is exclusive!
+      return filer.getFilingList(courtId, userId, startDate, beforeDate, activeToken.get());
     } catch (DateTimeParseException ex) {
-      MDCWrappers.removeAllMDCs();
       return Response.status(400).entity(
           "Dates given were incorrect, should be of the form: yyyy-MM-dd (ISO_LOCAL_DATE): " + ex).build();
+    } finally {
+      MDCWrappers.removeAllMDCs();
     }
-    var toRet = filer.getFilingList(courtId, userId, startDate, beforeDate,
-        activeToken.get());
-    MDCWrappers.removeAllMDCs();
-    return toRet;
   }
 
   @GET
@@ -449,19 +445,20 @@ public class FilingReviewService {
       @PathParam("court_id") String courtId, 
       @PathParam("filing_id") String filingId) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getFilingDetails");
-    Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
-    if (checked.isErr()) {
-      return checked.unwrapErrOrElseThrow();
-    }
-    EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    var activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
-    if (activeToken.isEmpty()) {
+    try {
+      Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
+      if (checked.isErr()) {
+        return checked.unwrapErrOrElseThrow();
+      }
+      EfmFilingInterface filer = checked.unwrapOrElseThrow();
+      var activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
+      if (activeToken.isEmpty()) {
+        return Response.status(401).entity("Not logged in to file with " + courtId).build();
+      }
+      return filer.getFilingDetails(courtId, filingId, activeToken.get());
+    } finally {
       MDCWrappers.removeAllMDCs();
-      return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    var toRet = filer.getFilingDetails(courtId, filingId, activeToken.get());
-    MDCWrappers.removeAllMDCs();
-    return toRet;
   }
 
   @GET
