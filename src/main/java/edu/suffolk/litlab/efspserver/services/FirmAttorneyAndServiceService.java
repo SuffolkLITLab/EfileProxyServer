@@ -283,6 +283,9 @@ public class FirmAttorneyAndServiceService {
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
+    if (contactId == null || contactId.isBlank() || contactId.equals("None")) {
+      return Response.status(400).build();
+    }
 
     GetServiceContactRequestType req = new GetServiceContactRequestType();
     req.setServiceContactID(contactId);
@@ -309,27 +312,39 @@ public class FirmAttorneyAndServiceService {
   @POST
   @Path("/service-contacts")
   public Response createServiceContact(@Context HttpHeaders httpHeaders,
-      ServiceContactInput input) {
-    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.createServiceContact");
-    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
-    if (firmPort.isEmpty()) {
-      return Response.status(401).build();
-    }
+      String strInput) {
+    try {
+      ServiceContactInput input = new ObjectMapper().readValue(strInput, ServiceContactInput.class);
+      MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.createServiceContact");
+      Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+      if (firmPort.isEmpty()) {
+        return Response.status(401).build();
+      }
 
-    CreateServiceContactRequestType req = new CreateServiceContactRequestType();
-    ServiceContactType contact = new ServiceContactType();
-    contact.setAddress(input.address);
-    contact.setAdministrativeCopy(input.administrativeCopy);
-    contact.setEmail(input.email);
-    contact.setFirstName(input.firstName);
-    contact.setMiddleName(input.middleName);
-    contact.setLastName(input.lastName);
-    contact.setIsPublic(tylerCommonObjFac.createServiceContactTypeIsPublic(input.isPublic));
-    contact.setIsInFirmMasterList(tylerCommonObjFac.createServiceContactTypeIsInFirmMasterList(input.isInFirmMaster));
-    contact.setPhoneNumber(input.phoneNumber);
-    req.setServiceContact(contact);
-    CreateServiceContactResponseType resp = firmPort.get().createServiceContact(req);
-    return makeResponse(resp, ()->Response.ok("\"" + resp.getServiceContactID() + "\"").build());
+      CreateServiceContactRequestType req = new CreateServiceContactRequestType();
+      ServiceContactType contact = new ServiceContactType();
+      contact.setAddress(input.address);
+      contact.setAdministrativeCopy(input.administrativeCopy);
+      contact.setEmail(input.email);
+      contact.setFirstName(input.firstName);
+      contact.setMiddleName(input.middleName);
+      contact.setLastName(input.lastName);
+      contact.setIsPublic(tylerCommonObjFac.createServiceContactTypeIsPublic(input.isPublic));
+      contact.setIsInFirmMasterList(tylerCommonObjFac.createServiceContactTypeIsInFirmMasterList(input.isInFirmMaster));
+      contact.setPhoneNumber(input.phoneNumber);
+      req.setServiceContact(contact);
+      log.info("Making new service contact: " + contact + "(" + input.firstName + ")");
+      CreateServiceContactResponseType resp = firmPort.get().createServiceContact(req);
+      log.info("Got response: " + resp.getError().getErrorCode());
+      log.info("Got response id: " + resp.getServiceContactID());
+      MDCWrappers.removeAllMDCs();
+      return makeResponse(resp, ()->Response.ok("\"" + resp.getServiceContactID() + "\"").build());
+    } catch (JsonProcessingException ex) {
+      log.info("JsonProcessingException: " + StdLib.strFromException(ex));
+      return Response.status(400).entity("\"Cannot read service contact input\"").build();
+    } finally {
+      MDCWrappers.removeAllMDCs();
+    }
   }
 
   /**
@@ -400,6 +415,9 @@ public class FirmAttorneyAndServiceService {
     Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
+    }
+    if (contactId == null || contactId.isBlank() || contactId.equals("None")) {
+      return Response.status(400).build();
     }
 
     GetServiceContactRequestType getReq = new GetServiceContactRequestType();
