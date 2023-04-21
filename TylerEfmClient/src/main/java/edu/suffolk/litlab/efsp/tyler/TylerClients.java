@@ -55,7 +55,7 @@ public class TylerClients {
    * Gets Tyler server's root URL for a given jurisdiction / Tyler Env (i.e. california stage).
    *
    * @param jurisdiction
-   * @param env
+   * @param envEnum
    * @return
    */
   public static String getTylerServerRootUrl(String jurisdiction, TylerEnv envEnum) {
