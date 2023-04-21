@@ -17,7 +17,7 @@ public class CodeTableConstants {
   private static final Map<String, String> createQueries = new HashMap<>();
   private static final Map<String, String> insertQueries = new HashMap<>();
   private static final Map<String, String> deleteFromQueries = new HashMap<>();
-  private static final Map<String, String> deleteAllJurisdictionFromQueries = new HashMap<>();
+  private static final Map<String, String> deleteAllCourtsFromQueries = new HashMap<>();
 
   static {
     List<Pair<String, String>> locationColumns = new ArrayList<Pair<String, String>>();
@@ -93,17 +93,17 @@ public class CodeTableConstants {
           new ImmutablePair<String, String>("code", "text"),
           new ImmutablePair<String, String>("name", "text")))),
         Map.entry("datafieldconfig", makeCourtColumnInfo(List.of(
-          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("code", "varchar(40)"),
           new ImmutablePair<String, String>("name", "text"), 
-          new ImmutablePair<String, String>("isvisible", "text"),
-          new ImmutablePair<String, String>("isrequired", "text"), 
+          new ImmutablePair<String, String>("isvisible", "boolean"),
+          new ImmutablePair<String, String>("isrequired", "boolean"), 
           new ImmutablePair<String, String>("helptext", "text"),
           new ImmutablePair<String, String>("ghosttext", "text"),
           new ImmutablePair<String, String>("contextualhelpdata", "text"),
           new ImmutablePair<String, String>("validationmessage", "text"),
           new ImmutablePair<String, String>("regularexpression", "text"),
           new ImmutablePair<String, String>("defaultvalueexpression", "text"),
-          new ImmutablePair<String, String>("isreadonly", "text")))),
+          new ImmutablePair<String, String>("isreadonly", "boolean")))),
         ///////// Tables for courts specifically
         Map.entry("answer", makeCourtColumnInfo(List.of(
           new ImmutablePair<String, String>("code", "text"),
@@ -134,7 +134,7 @@ public class CodeTableConstants {
           new ImmutablePair<String, String>("casetypeid", "text"),
           new ImmutablePair<String, String>("efspcode", "text")))),
         Map.entry("casetype", makeCourtColumnInfo(List.of(
-          new ImmutablePair<String, String>("code", "text"),
+          new ImmutablePair<String, String>("code", "varchar(40)"),
           new ImmutablePair<String, String>("name", "text"),
           new ImmutablePair<String, String>("casecategory", "text"),
           new ImmutablePair<String, String>("initial", "text"),
@@ -204,26 +204,26 @@ public class CodeTableConstants {
           new ImmutablePair<String, String>("extension", "text"),
           new ImmutablePair<String, String>("efspcode", "text")))),
         Map.entry("filing", makeCourtColumnInfo(List.of(
-          new ImmutablePair<String, String>("code", "text"), 
+          new ImmutablePair<String, String>("code", "varchar(40)"), 
           new ImmutablePair<String, String>("name", "text"),
-          new ImmutablePair<String, String>("fee", "text"), 
+          new ImmutablePair<String, String>("fee", "text"),
           new ImmutablePair<String, String>("casecategory", "text"),
           new ImmutablePair<String, String>("casetypeid", "text"),
           new ImmutablePair<String, String>("filingtype", "text"),
-          new ImmutablePair<String, String>("iscourtuseonly", "text"),
+          new ImmutablePair<String, String>("iscourtuseonly", "boolean"),
           new ImmutablePair<String, String>("civilclaimamount", "text"),
           new ImmutablePair<String, String>("probateestateamount", "text"),
           new ImmutablePair<String, String>("amountincontroversy", "text"),
-          new ImmutablePair<String, String>("useduedate", "text"),
-          new ImmutablePair<String, String>("isproposedorder", "text"),
+          new ImmutablePair<String, String>("useduedate", "boolean"),
+          new ImmutablePair<String, String>("isproposedorder", "boolean"),
           new ImmutablePair<String, String>("efspcode", "text")))),
         Map.entry("filingcomponent", makeCourtColumnInfo(List.of(
-          new ImmutablePair<>("code", "text"), 
+          new ImmutablePair<>("code", "varchar(40)"), 
           new ImmutablePair<>("name", "text"),
-          new ImmutablePair<>("filingcodeid", "text"),
-          new ImmutablePair<>("required", "text"),
-          new ImmutablePair<>("allowmultiple", "text"),
-          new ImmutablePair<>("displayorder", "text"),
+          new ImmutablePair<>("filingcodeid", "varchar(40)"),
+          new ImmutablePair<>("required", "boolean"),
+          new ImmutablePair<>("allowmultiple", "boolean"),
+          new ImmutablePair<>("displayorder", "integer"),
           new ImmutablePair<>("efspcode", "text")))),
         Map.entry("generaloffense", makeCourtColumnInfo(List.of(
           new ImmutablePair<>("code", "text"), 
@@ -252,22 +252,22 @@ public class CodeTableConstants {
           new ImmutablePair<String, String>("name", "text"), 
           new ImmutablePair<String, String>("efspcode", "text")))),
         Map.entry("optionalservices", makeCourtColumnInfo(List.of(
-          new ImmutablePair<String, String>("code", "text"), 
+          new ImmutablePair<String, String>("code", "varchar(40)"),
           new ImmutablePair<String, String>("name", "text"),
-          new ImmutablePair<String, String>("displayorder", "text"), 
+          new ImmutablePair<String, String>("displayorder", "integer"), 
           new ImmutablePair<String, String>("fee", "text"),
-          new ImmutablePair<String, String>("filingcodeid", "text"),
-          new ImmutablePair<String, String>("multiplier", "text"),
+          //new ImmutablePair<String, String>("filingcodeid", "varchar(40)"),
+          new ImmutablePair<String, String>("multiplier", "boolean"),
           new ImmutablePair<String, String>("altfeedesc", "text"),
-          new ImmutablePair<String, String>("hasfeeprompt", "text"),
+          new ImmutablePair<String, String>("hasfeeprompt", "boolean"),
           new ImmutablePair<String, String>("feeprompttext", "text"),
           new ImmutablePair<String, String>("efspcode", "text")))),
         Map.entry("partytype", makeCourtColumnInfo(List.of(
-          new ImmutablePair<String, String>("code", "text"), 
+          new ImmutablePair<String, String>("code", "varchar(40)"), 
           new ImmutablePair<String, String>("name", "text"),
-          new ImmutablePair<String, String>("isavailablefornewparties", "text"),
+          new ImmutablePair<String, String>("isavailablefornewparties", "boolean"),
           new ImmutablePair<String, String>("casetypeid", "text"),
-          new ImmutablePair<String, String>("isrequired", "text"),
+          new ImmutablePair<String, String>("isrequired", "boolean"),
           new ImmutablePair<String, String>("amount", "text"),
           new ImmutablePair<String, String>("numberofpartiestoignore", "text"),
           new ImmutablePair<String, String>("sendforredaction", "text"),
@@ -330,22 +330,21 @@ public class CodeTableConstants {
     for (Map.Entry<String, TableColumns> table : tableColumns.entrySet()) {
       createQueries.put(table.getKey(), createTableQuery(table.getKey(), table.getValue()));
       insertQueries.put(table.getKey(), createInsertQuery(table.getKey(), table.getValue()));
-      deleteAllJurisdictionFromQueries.put(table.getKey(), "DELETE FROM " + table.getKey() + " WHERE domain=?");
+      deleteAllCourtsFromQueries.put(table.getKey(), "DELETE FROM " + table.getKey() + " WHERE domain=?");
       if (table.getValue().needsExtraLocCol) {
         deleteFromQueries.put(table.getKey(), "DELETE FROM " + table.getKey() + " WHERE domain=? AND location=?");
       }
     }
     
-    tableIndices.put("optionalservices", List.of(
-        "CREATE INDEX ON optionalservices (location)",
-        "CREATE INDEX ON optionalservices (filingcodeid)"));
     tableIndices.put("filing", List.of(
         "CREATE INDEX ON filing (location)",
         "CREATE INDEX ON filing (casecategory)",
-        "CREATE INDEX ON filing (casetypeid)")); 
+        "CREATE INDEX ON filing (casetypeid)",
+        "CREATE INDEX ON filing (domain)"));
     tableIndices.put("filingcomponent", List.of(
         "CREATE INDEX ON filingcomponent (location)", 
-        "CREATE INDEX ON filingcomponent (filingcodeid)")); 
+        "CREATE INDEX ON filingcomponent (filingcodeid)",
+        "CREATE INDEX ON filingcomponent (domain)")); 
   }
 
   public static String getZipNameFromTable(String tableName) {
@@ -388,6 +387,10 @@ public class CodeTableConstants {
     // Drops the type in the column name + type pairs.
     return tableColumns.getOrDefault(tableName, new TableColumns())
         .mainList.stream().map((e) -> e.getLeft()).collect(Collectors.toList());
+  }
+
+  public static List<Pair<String, String>> getTableColumnsWithType(String tableName) {
+    return tableColumns.getOrDefault(tableName, new TableColumns()).mainList;
   }
   
   public static boolean isCourtTable(String tableName) {
@@ -491,11 +494,11 @@ public class CodeTableConstants {
     return deleteFromQueries.get(tableName);
   }
 
-  public static String getDeleteAllJurisdictionFrom(String tableName) {
-    if (!deleteAllJurisdictionFromQueries.containsKey(tableName)) {
+  public static String getDeleteAllCourtsFrom(String tableName) {
+    if (!deleteAllCourtsFromQueries.containsKey(tableName)) {
       return "";
     }
-    return deleteAllJurisdictionFromQueries.get(tableName);
+    return deleteAllCourtsFromQueries.get(tableName);
   }
 
   /**
@@ -551,9 +554,9 @@ public class CodeTableConstants {
       createLocation.append("\"" + col.getLeft() + "\" " + col.getRight());
     }
     if (tc.needsExtraLocCol) {
-      createLocation.append(", \"location\" text");
+      createLocation.append(", \"location\" varchar(80)");
     }
-    createLocation.append(", \"domain\" text");
+    createLocation.append(", \"domain\" varchar(80)");
 
     if (!tc.primaryKeys.isEmpty()) {
       createLocation.append(

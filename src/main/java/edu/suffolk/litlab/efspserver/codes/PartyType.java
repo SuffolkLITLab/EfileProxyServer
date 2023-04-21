@@ -21,16 +21,15 @@ public class PartyType {
   public final String location;
 
   public static PartyType TestObj(String code, String name, String location) {
-    return new PartyType(
-        code, name, "True", "123", "True", "386.53", "0", "", "", "", "", location);
+    return new PartyType(code, name, true, "123", true, "386.53", "0", "", "", "", "", location);
   }
 
   public PartyType(
       String code,
       String name,
-      String isAvailable,
+      boolean isAvailable,
       String casetypeid,
-      String isrequired,
+      boolean isrequired,
       String fee,
       String numberofpartiestoignore,
       String sendforredaction,
@@ -40,9 +39,9 @@ public class PartyType {
       String location) {
     this.code = code;
     this.name = name;
-    this.isAvailableForNewParties = Boolean.parseBoolean(isAvailable);
+    this.isAvailableForNewParties = isAvailable;
     this.casetypeid = casetypeid;
-    this.isrequired = Boolean.parseBoolean(isrequired);
+    this.isrequired = isrequired;
     this.amount = new BigDecimal(Double.parseDouble(fee));
     this.numberofpartiestoignore = numberofpartiestoignore;
     this.sendforredaction = sendforredaction;
@@ -60,9 +59,9 @@ public class PartyType {
     this(
         rs.getString(1),
         rs.getString(2),
-        rs.getString(3),
+        rs.getBoolean(3),
         rs.getString(4),
-        rs.getString(5),
+        rs.getBoolean(5),
         rs.getString(6),
         rs.getString(7),
         rs.getString(8),

@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import javax.sql.DataSource;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import org.apache.commons.lang3.tuple.Pair;
 import org.oasis_open.docs.codelist.ns.genericode._1.CodeListDocument;
 import org.oasis_open.docs.codelist.ns.genericode._1.Column;
 import org.oasis_open.docs.codelist.ns.genericode._1.Row;
@@ -81,6 +83,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
   }
 
   public void createTableIfAbsent(String tableName) throws SQLException {
+    log.info("Start of creatTableIfAbsent: {}", tableName);
     if (conn == null) {
       throw new SQLException();
     }
@@ -98,14 +101,19 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       boolean next = rs.next();
       int firstVal = rs.getInt(1);
       if (!next || firstVal <= 0) { // There's no table! Make one
-        String createQuery = CodeTableConstants.getCreateTable(tableName);
-        if (createQuery.isEmpty()) {
-          log.warn("Will not create table with name: " + tableName);
-          return;
-        }
-        try (Statement createSt = conn.createStatement()) {
-          log.info("Full statement: {}", createQuery);
-          createSt.executeUpdate(createQuery);
+        if (tableName.equals("optionalservices")) {
+          log.info("Creating optionalservices");
+          OptionalServiceCode.createFromOptionalServiceTable(conn);
+        } else {
+          String createQuery = CodeTableConstants.getCreateTable(tableName);
+          if (createQuery.isEmpty()) {
+            log.warn("Will not create table with name: " + tableName);
+            return;
+          }
+          try (Statement createSt = conn.createStatement()) {
+            log.info("Full statement: {}", createQuery);
+            createSt.executeUpdate(createQuery);
+          }
         }
       }
       rs.close();
@@ -128,11 +136,15 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       boolean next = rs.next();
       int firstVal = rs.getInt(1);
       if (!next || firstVal <= 0) {
-        // Create the indices: might take a while
-        List<String> createIndices = CodeTableConstants.getCreateIndex(tableName);
-        for (String createIndex : createIndices) {
-          try (PreparedStatement createSt = conn.prepareStatement(createIndex)) {
-            createSt.executeUpdate();
+        if (tableName.equals("optionalservices")) {
+          OptionalServiceCode.createIndices(conn);
+        } else {
+          // Create the indices: might take a while
+          List<String> createIndices = CodeTableConstants.getCreateIndex(tableName);
+          for (String createIndex : createIndices) {
+            try (PreparedStatement createSt = conn.prepareStatement(createIndex)) {
+              createSt.executeUpdate();
+            }
           }
         }
       }
@@ -167,24 +179,13 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
 
   public void updateTable(String tableName, String courtName, CodeListDocument doc)
       throws JAXBException, SQLException, XMLStreamException {
-    String insertQuery = CodeTableConstants.getInsertInto(tableName);
     String versionUpdate = CodeTableConstants.updateVersion();
-    try (PreparedStatement stmt = conn.prepareStatement(insertQuery);
-        PreparedStatement update = conn.prepareStatement(versionUpdate)) {
-      // TODO(brycew-later): dive deeper in the Column set, and see if any Data type isn't a
-      // normalizedString.
-      // ColumnSet cs = doc.getColumnSet();
-      for (Row r : doc.getSimpleCodeList().getRow()) {
-        // HACK(brycew): jeez, this is horrible. Figure a better option
-        Map<String, String> rowsVals = new HashMap<>();
-        for (Value v : r.getValue()) {
-          Column c = (Column) v.getColumnRef();
-          rowsVals.put(c.getId(), v.getSimpleValue().getValue());
-        }
-        singleInsert(stmt, tableName, courtName, rowsVals);
-        stmt.addBatch();
+    try (PreparedStatement update = conn.prepareStatement(versionUpdate)) {
+      if (tableName.equals("optionalservices")) {
+        OptionalServiceCode.updateOptionalServiceTable(courtName, this.tylerDomain, doc, this.conn);
+      } else {
+        updateTableInner(tableName, courtName, doc);
       }
-      stmt.executeBatch();
       // The version table that we directly download references things by "___codes.zip", not the
       // table name. We can translate those here.
       String zipName = CodeTableConstants.getZipNameFromTable(tableName);
@@ -202,16 +203,54 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     }
   }
 
+  public void updateTableInner(String tableName, String courtName, CodeListDocument doc)
+      throws JAXBException, SQLException, XMLStreamException {
+    String insertQuery = CodeTableConstants.getInsertInto(tableName);
+    try (PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
+      // TODO(brycew-later): dive deeper in the Column set, and see if any Data type isn't a
+      // normalizedString.
+      // ColumnSet cs = doc.getColumnSet();
+      for (Row r : doc.getSimpleCodeList().getRow()) {
+        // HACK(brycew): jeez, this is horrible. Figure a better option
+        Map<String, String> rowsVals = new HashMap<>();
+        for (Value v : r.getValue()) {
+          Column c = (Column) v.getColumnRef();
+          rowsVals.put(c.getId(), v.getSimpleValue().getValue());
+        }
+        singleInsert(stmt, tableName, courtName, rowsVals);
+        stmt.addBatch();
+      }
+      stmt.executeBatch();
+    }
+  }
+
   public PreparedStatement singleInsert(
       PreparedStatement stmt, String tableName, String courtName, Map<String, String> rowsVals)
       throws SQLException {
     int idx = 1;
-    List<String> tc = CodeTableConstants.getTableColumns(tableName);
-    for (String colName : tc) {
-      if (rowsVals.containsKey(colName)) {
-        stmt.setString(idx, rowsVals.get(colName));
+    List<Pair<String, String>> tc = CodeTableConstants.getTableColumnsWithType(tableName);
+    for (Pair<String, String> col : tc) {
+      String colName = col.getLeft();
+      String colType = col.getRight();
+      if (colType.equalsIgnoreCase("boolean")) {
+        if (rowsVals.containsKey(colName)) {
+          stmt.setBoolean(idx, Boolean.parseBoolean(rowsVals.get(colName)));
+        } else {
+          stmt.setNull(idx, Types.BOOLEAN);
+        }
+      } else if (colType.equalsIgnoreCase("integer")) {
+        if (rowsVals.containsKey(colName)) {
+          stmt.setInt(idx, Integer.parseInt(rowsVals.get(colName)));
+        } else {
+          stmt.setNull(idx, Types.INTEGER);
+        }
       } else {
-        stmt.setString(idx, null);
+        // colType.equalsIgnoreCase("text") || colType.startsWith("varchar")
+        if (rowsVals.containsKey(colName)) {
+          stmt.setString(idx, rowsVals.get(colName));
+        } else {
+          stmt.setString(idx, null);
+        }
       }
       idx += 1;
     }
@@ -888,12 +927,16 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     if (conn == null) {
       throw new SQLException();
     }
-    String deleteFromTable = CodeTableConstants.getDeleteAllJurisdictionFrom(tableName);
-    // TODO(brycew): make variant that deletes everything with a specific jurisdiction
-    try (PreparedStatement st = conn.prepareStatement(deleteFromTable)) {
-      st.setString(1, tylerDomain);
-      log.debug(st.toString());
-      st.executeUpdate();
+    if (tableName.equals("optionalservices")) {
+      OptionalServiceCode.deleteFromOptionalServiceTable(null, tylerDomain, conn);
+    } else {
+      final String deleteFromTable = CodeTableConstants.getDeleteAllCourtsFrom(tableName);
+      // TODO(brycew): make variant that deletes everything with a specific jurisdiction
+      try (PreparedStatement st = conn.prepareStatement(deleteFromTable)) {
+        st.setString(1, tylerDomain);
+        log.debug(st.toString());
+        st.executeUpdate();
+      }
     }
     return true;
   }
@@ -905,6 +948,9 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     if (courtLocation == null || courtLocation.isBlank()) {
       log.warn("Don't call this without a valid court: just don't use the var");
       return false;
+    }
+    if (tableName.equals("optionalservices")) {
+      OptionalServiceCode.deleteFromOptionalServiceTable(courtLocation, tylerDomain, conn);
     }
     // TODO(brycew): make variant that deletes everything with a specific jurisdiction
     final String deleteFromTableStr = CodeTableConstants.getDeleteFrom(tableName);
