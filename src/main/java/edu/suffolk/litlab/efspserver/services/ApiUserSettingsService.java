@@ -19,7 +19,6 @@ import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
@@ -55,6 +54,25 @@ public class ApiUserSettingsService {
       return Response.ok("\"" + atRest.get().serverName + "\"").build();
     } catch (SQLException ex) {
       return Response.status(500).build();
+    } finally {
+      MDCWrappers.removeAllMDCs();
+    }
+  }
+
+  @GET
+  @Path("/serverid")
+  public Response getServerId(@Context HttpHeaders httpHeaders) {
+    try (Connection conn = ds.getConnection()) {
+      LoginDatabase ld = new LoginDatabase(conn);
+      Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
+      if (atRest.isEmpty()) {
+        return Response.status(401).entity("\"Not logged in to efile\"").build();
+      }
+      return Response.ok("\"" + atRest.get().serverId + "\"").build();
+    } catch (SQLException ex) {
+      return Response.status(500).build();
+    } finally {
+      MDCWrappers.removeAllMDCs();
     }
   }
 
@@ -72,6 +90,8 @@ public class ApiUserSettingsService {
       return Response.ok("\"" + newName + "\"").build();
     } catch (SQLException ex) {
       return Response.status(500).build();
+    } finally {
+      MDCWrappers.removeAllMDCs();
     }
   }
 
@@ -94,6 +114,8 @@ public class ApiUserSettingsService {
           .build();
     } catch (SQLException ex) {
       return Response.status(500).build();
+    } finally {
+      MDCWrappers.removeAllMDCs();
     }
   }
 }

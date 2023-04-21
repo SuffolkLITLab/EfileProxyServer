@@ -12,13 +12,4 @@ public class ServiceContactInput {
   public boolean isInFirmMaster;
   public String phoneNumber;
   public AddressType address;
-  
-  public static class ContactAddress {
-    public String addressLine1;
-    public String addressLine2;
-    public String city;
-    public String state;
-    public String zipCode;
-    public String country;
-  }
 }

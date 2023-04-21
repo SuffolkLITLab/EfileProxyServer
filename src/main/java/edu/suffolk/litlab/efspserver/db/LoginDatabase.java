@@ -177,6 +177,9 @@ public class LoginDatabase implements DatabaseInterface {
   }
   
   public String makeHash(String input) {
+    if (input == null) {
+      return "";
+    }
     return new String(Hex.encode(digest.digest(input.getBytes(StandardCharsets.UTF_8))));
   }
   
