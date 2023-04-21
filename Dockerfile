@@ -5,7 +5,7 @@ COPY pom.xml /usr/app/
 COPY TylerEcf4 /usr/app/TylerEcf4/
 COPY TylerEcf5 /usr/app/TylerEcf5/
 COPY TylerEfmClient /usr/app/TylerEfmClient/
-COPY proxyserver/pom.xml /usr/app/proxyserver/
+COPY proxyserver/pom.xml proxyserver/enunciate.xml /usr/app/proxyserver/
 # Install all of the maven packages, so we don't have to every time we change code
 RUN mvn -f /usr/app/pom.xml -DskipTests clean dependency:resolve dependency:go-offline compile
 
