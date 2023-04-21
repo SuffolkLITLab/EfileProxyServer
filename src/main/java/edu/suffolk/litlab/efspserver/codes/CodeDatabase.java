@@ -83,6 +83,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
   }
 
   public void createTableIfAbsent(String tableName) throws SQLException {
+    log.info("Start of creatTableIfAbsent: {}", tableName);
     if (conn == null) {
       throw new SQLException();
     }
