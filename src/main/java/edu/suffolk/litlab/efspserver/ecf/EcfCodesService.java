@@ -635,9 +635,6 @@ public class EcfCodesService implements CodesService {
     return Optional.empty();
   }
 
-
-
-
   /**
    * Adds proper CORS headers to all responses to the codes API, which is public
    *
