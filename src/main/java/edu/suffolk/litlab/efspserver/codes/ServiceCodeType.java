@@ -25,6 +25,6 @@ public class ServiceCodeType {
 
   public static String query() {
     return "SELECT code, name, servicemethod, fee, disclaimertext FROM servicetype WHERE domain=?"
-               + " AND location=?";
+        + " AND location=?";
   }
 }
