@@ -9,6 +9,9 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +29,6 @@ public class AuthenticationService {
     this.security = security;
   }
 
-  @POST
   /**
    * Log in the user to all of the requested e-filing EFMs.
    *
@@ -35,6 +37,13 @@ public class AuthenticationService {
    *     jurisdiction, can be any jurisdiction
    * @return 200 and the logged in tokens to hang on to and send in with every call
    */
+  @Operation(summary="Log in the user to all of the requested e-filing EFMs",
+    description="Passes in a ",
+    responses = {
+      @ApiResponse(description= "The logged-in tokens"),
+      @ApiResponse(responseCode="403", description="login information not valid")
+    })
+  @POST
   public Response authenticateUser(String loginInfo) {
     MDC.put(MDCWrappers.OPERATION, "AuthenticationService.authenticateUser");
     ObjectMapper mapper = new ObjectMapper();
