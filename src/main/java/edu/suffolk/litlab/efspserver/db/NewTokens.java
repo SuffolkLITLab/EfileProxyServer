@@ -1,31 +1,29 @@
 package edu.suffolk.litlab.efspserver.db;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import java.util.Map;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-
-@XmlRootElement(name="tokens")
+@XmlRootElement(name = "tokens")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class NewTokens {
 
-  @JsonUnwrapped
-  private final Map<String, String> tokens; 
-  
+  @JsonUnwrapped private final Map<String, String> tokens;
+
   public NewTokens() {
     this.tokens = Map.of();
   }
+
   public NewTokens(Map<String, String> tokens) {
     this.tokens = tokens;
   }
- 
+
   public Map<String, String> getTokens() {
-      return tokens;
+    return tokens;
   }
- 
+
   @Override
   public boolean equals(Object other) {
     if (other == null) {
@@ -42,10 +40,9 @@ public class NewTokens {
   public int hashCode() {
     return tokens.hashCode();
   }
-  
+
   @Override
   public String toString() {
     return tokens.toString();
   }
-  
 }

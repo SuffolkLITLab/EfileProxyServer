@@ -1,10 +1,9 @@
 package edu.suffolk.litlab.efspserver.services;
 
 /**
- * Similar to {@link AllWrongCollector}, but will never actually submit
- * to the EFM.
+ * Similar to {@link AllWrongCollector}, but will never actually submit to the EFM.
  *
- * @author brycew 
+ * @author brycew
  */
 public class NeverSubmitCollector extends InfoCollector {
 
@@ -15,10 +14,9 @@ public class NeverSubmitCollector extends InfoCollector {
     }
     return false;
   }
-  
+
   @Override
   public boolean okToSubmit() {
     return false;
   }
-
 }

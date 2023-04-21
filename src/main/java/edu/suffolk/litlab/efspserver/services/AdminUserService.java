@@ -3,13 +3,21 @@ package edu.suffolk.litlab.efspserver.services;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
 
+import edu.suffolk.litlab.efspserver.SoapClientChooser;
+import edu.suffolk.litlab.efspserver.StdLib;
+import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
+import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
+import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
+import edu.suffolk.litlab.efspserver.db.AtRest;
+import edu.suffolk.litlab.efspserver.db.LoginDatabase;
+import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import java.net.URI;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.sql.DataSource;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -27,16 +35,6 @@ import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-
-import edu.suffolk.litlab.efspserver.SoapClientChooser;
-import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
-import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
-import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
-import edu.suffolk.litlab.efspserver.db.AtRest;
-import edu.suffolk.litlab.efspserver.db.LoginDatabase;
-import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.EfmUserService;
 import tyler.efm.services.IEfmFirmService;
@@ -68,36 +66,20 @@ import tyler.efm.services.schema.updateuserresponse.UpdateUserResponseType;
 import tyler.efm.services.schema.userlistresponse.UserListResponseType;
 
 /**
- * Covers all of the FirmUserManagement and UserService operations. 
- * * User Service
- *   * AuthenticateUser
- *   * ChangePassword
- *   * ResetPassword
- *   * GetUser (User Service)
- *   * UpdateUser (User Service)
- *   * GetNotificationPreferences
- *   * UpdateNotificationPreferences
- *   * SelfResendActivationEmail
- * * Firm User Management
- *   * RegisterUser: PUT on /users
- *   * AddUserRole: POST on /users/{id}/role
- *   * GetUser: GET on /users/{id}
- *   * GetUserList: GET on /users
- *   * RemoveUser: DELETE on /users/{id}
- *   * RemoveUserRole: DELETE on /users/{id}/role
- *   * ResendActivationEmail
- *   * ResetUserPassword
- *   * UpdateUser: POST on /users/{id}
- *   * GetNotificationPreferencesList
+ * Covers all of the FirmUserManagement and UserService operations. * User Service *
+ * AuthenticateUser * ChangePassword * ResetPassword * GetUser (User Service) * UpdateUser (User
+ * Service) * GetNotificationPreferences * UpdateNotificationPreferences * SelfResendActivationEmail
+ * * Firm User Management * RegisterUser: PUT on /users * AddUserRole: POST on /users/{id}/role *
+ * GetUser: GET on /users/{id} * GetUserList: GET on /users * RemoveUser: DELETE on /users/{id} *
+ * RemoveUserRole: DELETE on /users/{id}/role * ResendActivationEmail * ResetUserPassword *
+ * UpdateUser: POST on /users/{id} * GetNotificationPreferencesList
  *
  * @author brycew
- *
  */
 @Produces(MediaType.APPLICATION_JSON)
 public class AdminUserService {
 
-  private final static Logger log =
-      LoggerFactory.getLogger(AdminUserService.class);
+  private static final Logger log = LoggerFactory.getLogger(AdminUserService.class);
 
   private final EfmUserService userFactory;
   private final EfmFirmService firmFactory;
@@ -109,25 +91,32 @@ public class AdminUserService {
   public AdminUserService(String jurisdiction, String env, DataSource codeDs, DataSource userDs) {
     this.jurisdiction = jurisdiction;
     this.env = env;
-    Optional<EfmUserService> maybeUserFactory = SoapClientChooser.getEfmUserFactory(jurisdiction, env);
+    Optional<EfmUserService> maybeUserFactory =
+        SoapClientChooser.getEfmUserFactory(jurisdiction, env);
     if (maybeUserFactory.isEmpty()) {
-      throw new RuntimeException("Can't find " + jurisdiction + " in the SoapClientChooser for EfmUser"); 
+      throw new RuntimeException(
+          "Can't find " + jurisdiction + " in the SoapClientChooser for EfmUser");
     }
-    this.userFactory = maybeUserFactory.get();;
-    Optional<EfmFirmService> maybeFirmFactory = SoapClientChooser.getEfmFirmFactory(jurisdiction, env);
+    this.userFactory = maybeUserFactory.get();
+    ;
+    Optional<EfmFirmService> maybeFirmFactory =
+        SoapClientChooser.getEfmFirmFactory(jurisdiction, env);
     if (maybeFirmFactory.isEmpty()) {
-      throw new RuntimeException("Can't find " + jurisdiction + " in the SoapClientChooser for EfmFirm factory"); 
+      throw new RuntimeException(
+          "Can't find " + jurisdiction + " in the SoapClientChooser for EfmFirm factory");
     }
     this.firmFactory = maybeFirmFactory.get();
-    this.codeDs = codeDs; 
+    this.codeDs = codeDs;
     this.userDs = userDs;
   }
 
   @GET
   @Path("/")
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/adminusers/");
-    return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(AdminUserService.class)))).build();
+    EndpointReflection ef =
+        new EndpointReflection("/jurisdictions/" + jurisdiction + "/adminusers/");
+    return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(AdminUserService.class))))
+        .build();
   }
 
   @GET
@@ -138,10 +127,13 @@ public class AdminUserService {
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    String tylerId = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction)); 
+    String tylerId =
+        httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
     if (tylerId == null || tylerId.isBlank()) {
-      return Response.status(500).entity(
-          "Server does not have a Tyler UUID for the current account. Can you give it to me?").build();
+      return Response.status(500)
+          .entity(
+              "Server does not have a Tyler UUID for the current account. Can you give it to me?")
+          .build();
     }
 
     GetUserRequestType req = new GetUserRequestType();
@@ -161,14 +153,14 @@ public class AdminUserService {
 
     NotificationPreferencesResponseType notifResp = port.get().getNotificationPreferences();
 
-    return ServiceHelpers.mapTylerCodesToHttp(notifResp.getError(),
-        () -> Response.ok(notifResp.getNotification()).build());
+    return ServiceHelpers.mapTylerCodesToHttp(
+        notifResp.getError(), () -> Response.ok(notifResp.getNotification()).build());
   }
 
   @PATCH
   @Path("/user/notification-preferences")
-  public Response updateNotificationPrefs(@Context HttpHeaders httpHeaders,
-      List<NotificationType> notifications) {
+  public Response updateNotificationPrefs(
+      @Context HttpHeaders httpHeaders, List<NotificationType> notifications) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateNotificationPrefs");
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) {
@@ -182,22 +174,20 @@ public class AdminUserService {
     }
 
     BaseResponseType notifResp = port.get().updateNotificationPreferences(updateNotif);
-    return ServiceHelpers.mapTylerCodesToHttp(notifResp.getError(),
-        () -> Response.ok().build());
+    return ServiceHelpers.mapTylerCodesToHttp(notifResp.getError(), () -> Response.ok().build());
   }
 
   @POST
   @Path("/user/resend-activation-email")
-  public Response selfResendActivationEmail(@Context HttpHeaders httpHeaders,
-      String emailToSendTo) {
+  public Response selfResendActivationEmail(
+      @Context HttpHeaders httpHeaders, String emailToSendTo) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.selfResendActivationEmail");
     Optional<IEfmUserService> port = setupUserPort(httpHeaders, false);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
 
-    SelfResendActivationEmailRequestType req =
-        new SelfResendActivationEmailRequestType();
+    SelfResendActivationEmailRequestType req = new SelfResendActivationEmailRequestType();
     req.setEmail(emailToSendTo);
     BaseResponseType resp = port.get().selfResendActivationEmail(req);
     return makeResponse(resp, () -> Response.noContent().build());
@@ -205,16 +195,15 @@ public class AdminUserService {
 
   @POST
   @Path("/users/{id}/resend-activation-email")
-  public Response resendActivationEmail(@Context HttpHeaders httpHeaders,
-      @PathParam("id") String id) {
+  public Response resendActivationEmail(
+      @Context HttpHeaders httpHeaders, @PathParam("id") String id) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.resendActivationEmail");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
 
-    ResendActivationEmailRequestType req =
-        new ResendActivationEmailRequestType();
+    ResendActivationEmailRequestType req = new ResendActivationEmailRequestType();
     req.setUserID(id);
     BaseResponseType resp = port.get().resendActivationEmail(req);
     return makeResponse(resp, () -> Response.noContent().build());
@@ -227,8 +216,8 @@ public class AdminUserService {
 
   @POST
   @Path("/users/{id}/password")
-  public Response resetPassword(@Context HttpHeaders httpHeaders,
-      @PathParam("id") String id, ResetPasswordParams params) {
+  public Response resetPassword(
+      @Context HttpHeaders httpHeaders, @PathParam("id") String id, ResetPasswordParams params) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.resetPassword");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
@@ -250,7 +239,8 @@ public class AdminUserService {
     resetReq.setEmail(params.email);
     resetReq.setPassword(params.newPassword);
     ResetPasswordResponseType resp = port.get().resetUserPassword(resetReq);
-    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
+    return ServiceHelpers.mapTylerCodesToHttp(
+        resp.getError(),
         () -> {
           return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
         });
@@ -263,8 +253,7 @@ public class AdminUserService {
 
   @POST
   @Path("/user/password")
-  public Response setPassword(@Context HttpHeaders httpHeaders,
-      SetPasswordParams params) {
+  public Response setPassword(@Context HttpHeaders httpHeaders, SetPasswordParams params) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.setPassword");
     Optional<IEfmUserService> port = setupUserPort(httpHeaders);
     if (port.isEmpty()) {
@@ -287,7 +276,8 @@ public class AdminUserService {
     change.setPasswordQuestion("");
     change.setPasswordAnswer("");
     ChangePasswordResponseType resp = port.get().changePassword(change);
-    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
+    return ServiceHelpers.mapTylerCodesToHttp(
+        resp.getError(),
         () -> {
           return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
         });
@@ -295,8 +285,7 @@ public class AdminUserService {
 
   @POST
   @Path("/user/password/reset")
-  public Response selfResetPassword(@Context HttpHeaders httpHeaders,
-      String emailToSend) {
+  public Response selfResetPassword(@Context HttpHeaders httpHeaders, String emailToSend) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.selfResetPassword");
     Optional<IEfmUserService> port = setupUserPort(httpHeaders, false);
     if (port.isEmpty()) {
@@ -306,8 +295,10 @@ public class AdminUserService {
     ResetPasswordRequestType reset = new ResetPasswordRequestType();
     reset.setEmail(emailToSend);
     ResetPasswordResponseType resp = port.get().resetPassword(reset);
-    // TODO(brycew-later): why would we reply with the password hash? They still shouldn't be able to log in?
-    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
+    // TODO(brycew-later): why would we reply with the password hash? They still shouldn't be able
+    // to log in?
+    return ServiceHelpers.mapTylerCodesToHttp(
+        resp.getError(),
         () -> {
           return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
         });
@@ -321,8 +312,7 @@ public class AdminUserService {
    */
   @GET
   @Path("/users/{id}")
-  public Response getUser(@Context HttpHeaders httpHeaders,
-      @PathParam("id") String id) {
+  public Response getUser(@Context HttpHeaders httpHeaders, @PathParam("id") String id) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.getUser");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
@@ -333,8 +323,8 @@ public class AdminUserService {
     getUserReq.setUserID(id);
     GetUserResponseType userRes = port.get().getUser(getUserReq);
 
-    return ServiceHelpers.mapTylerCodesToHttp(userRes.getError(),
-        () -> Response.ok(userRes.getUser()).build());
+    return ServiceHelpers.mapTylerCodesToHttp(
+        userRes.getError(), () -> Response.ok(userRes.getUser()).build());
   }
 
   @GET
@@ -347,14 +337,13 @@ public class AdminUserService {
     }
 
     UserListResponseType resp = port.get().getUserList();
-    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
-        () -> Response.ok(resp.getUser()).build());
+    return ServiceHelpers.mapTylerCodesToHttp(
+        resp.getError(), () -> Response.ok(resp.getUser()).build());
   }
-  
+
   @PATCH
   @Path("/user")
-  public Response updateUser(@Context HttpHeaders httpHeaders,
-      UserType updatedUser) {
+  public Response updateUser(@Context HttpHeaders httpHeaders, UserType updatedUser) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateUser");
     Optional<IEfmUserService> port = setupUserPort(httpHeaders, true);
     if (port.isEmpty()) {
@@ -368,7 +357,7 @@ public class AdminUserService {
       return Response.status(401, userRes.getError().getErrorText()).build();
     }
 
-    UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser); 
+    UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser);
     UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
     if (ServiceHelpers.checkErrors(updateResp.getError())) {
       return Response.status(401).entity(updateResp.getError().getErrorText()).build();
@@ -379,14 +368,15 @@ public class AdminUserService {
 
   /**
    * For UpdateUser (AdminUserService).
+   *
    * @param id The id of the user, embedded in the URL
    * @param updatedUser, null fields are ignored
    * @return
    */
   @PATCH
   @Path("/users/{id}")
-  public Response updateUserById(@Context HttpHeaders httpHeaders,
-      @PathParam("id") String id, UserType updatedUser) {
+  public Response updateUserById(
+      @Context HttpHeaders httpHeaders, @PathParam("id") String id, UserType updatedUser) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateUserById");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
@@ -400,7 +390,7 @@ public class AdminUserService {
       return Response.status(401, userRes.getError().getErrorText()).build();
     }
 
-    UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser); 
+    UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser);
     UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
     if (ServiceHelpers.checkErrors(updateResp.getError())) {
       return Response.status(401).entity(updateResp.getError().getErrorText()).build();
@@ -408,7 +398,7 @@ public class AdminUserService {
 
     return Response.noContent().build();
   }
-  
+
   private static UpdateUserRequestType updateUser(UserType existingUser, UserType updatedUser) {
     if (updatedUser.getEmail() != null) {
       existingUser.setEmail(updatedUser.getEmail());
@@ -435,8 +425,7 @@ public class AdminUserService {
    */
   @GET
   @Path("/users/{id}/roles")
-  public Response getRoles(@Context HttpHeaders httpHeaders,
-      @PathParam("id") String id) {
+  public Response getRoles(@Context HttpHeaders httpHeaders, @PathParam("id") String id) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.getRoles");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
@@ -446,8 +435,8 @@ public class AdminUserService {
     GetUserRequestType getUserReq = new GetUserRequestType();
     getUserReq.setUserID(id);
     GetUserResponseType userRes = port.get().getUser(getUserReq);
-    return ServiceHelpers.mapTylerCodesToHttp(userRes.getError(),
-        () -> Response.ok(userRes.getUser().getRole()).build());
+    return ServiceHelpers.mapTylerCodesToHttp(
+        userRes.getError(), () -> Response.ok(userRes.getUser().getRole()).build());
   }
 
   /**
@@ -459,8 +448,8 @@ public class AdminUserService {
    */
   @POST
   @Path("/users/{id}/roles")
-  public Response addRoles(@Context HttpHeaders httpHeaders,
-      @PathParam("id") String id, List<RoleLocationType> toAdd) {
+  public Response addRoles(
+      @Context HttpHeaders httpHeaders, @PathParam("id") String id, List<RoleLocationType> toAdd) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.addRoles");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
@@ -491,8 +480,8 @@ public class AdminUserService {
    */
   @DELETE
   @Path("/users/{id}/roles")
-  public Response removeRoles(@Context HttpHeaders httpHeaders,
-      @PathParam("id") String id, List<RoleLocationType> toRm) {
+  public Response removeRoles(
+      @Context HttpHeaders httpHeaders, @PathParam("id") String id, List<RoleLocationType> toRm) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.removeRoles");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
@@ -529,12 +518,13 @@ public class AdminUserService {
    */
   @POST
   @Path("/users")
-  public Response registerUser(@Context HttpHeaders httpHeaders,
-      final RegistrationRequestType req) {
+  public Response registerUser(
+      @Context HttpHeaders httpHeaders, final RegistrationRequestType req) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.registerUser");
     final var regType = req.getRegistrationType();
     boolean needsAuth = regType.equals(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
-    Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, needsAuth, jurisdiction);
+    Optional<IEfmFirmService> port =
+        setupFirmPort(firmFactory, httpHeaders, userDs, needsAuth, jurisdiction);
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
@@ -543,17 +533,21 @@ public class AdminUserService {
       req.setCountryCode("US");
     }
 
-    if (regType.equals(RegistrationType.FIRM_ADMINISTRATOR) || regType.equals(RegistrationType.INDIVIDUAL)) {
-      for (var entry: Map.of(
-              "streetAddressLine1", req.getStreetAddressLine1(),
-              "city", req.getCity(),
-              "stateCode", req.getStateCode(),
-              "zipCode", req.getZipCode(),
-              "countryCode", req.getCountryCode(),
-              "phoneNumber", req.getPhoneNumber()
-          ).entrySet()) {
+    if (regType.equals(RegistrationType.FIRM_ADMINISTRATOR)
+        || regType.equals(RegistrationType.INDIVIDUAL)) {
+      for (var entry :
+          Map.of(
+                  "streetAddressLine1", req.getStreetAddressLine1(),
+                  "city", req.getCity(),
+                  "stateCode", req.getStateCode(),
+                  "zipCode", req.getZipCode(),
+                  "countryCode", req.getCountryCode(),
+                  "phoneNumber", req.getPhoneNumber())
+              .entrySet()) {
         if (nullOrBlank(entry.getValue())) {
-          return Response.status(422).entity("You are missing " + entry.getKey() + ", which is required").build();
+          return Response.status(422)
+              .entity("You are missing " + entry.getKey() + ", which is required")
+              .build();
         }
       }
     }
@@ -567,7 +561,9 @@ public class AdminUserService {
       if (system.isPresent()) {
         if (regType.equals(RegistrationType.INDIVIDUAL)
             && !system.get().allowindividualregistration) {
-          return Response.status(400).entity("System does not allow individual registration").build();
+          return Response.status(400)
+              .entity("System does not allow individual registration")
+              .build();
         }
       }
       DataFieldRow globalPasswordRow = cd.getDataField("1", "GlobalPassword");
@@ -581,7 +577,13 @@ public class AdminUserService {
     }
 
     RegistrationResponseType regResp = port.get().registerUser(req);
-    log.info("Created new user with requested " + req.getRegistrationType() + ", firm id: " + regResp.getFirmID() + " and user id: " + regResp.getUserID());
+    log.info(
+        "Created new user with requested "
+            + req.getRegistrationType()
+            + ", firm id: "
+            + regResp.getFirmID()
+            + " and user id: "
+            + regResp.getUserID());
     if (!ServiceHelpers.checkErrors(regResp.getError())) {
       return Response.created(URI.create(regResp.getUserID())).entity(regResp).build();
     }
@@ -596,8 +598,7 @@ public class AdminUserService {
    */
   @DELETE
   @Path("/users/{id}")
-  public Response removeUser(@Context HttpHeaders httpHeaders,
-      @PathParam("id") String id) {
+  public Response removeUser(@Context HttpHeaders httpHeaders, @PathParam("id") String id) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.removeUser");
     Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (port.isEmpty()) {
@@ -607,8 +608,7 @@ public class AdminUserService {
     RemoveUserRequestType rmUser = new RemoveUserRequestType();
     rmUser.setUserID(id);
     BaseResponseType resp = port.get().removeUser(rmUser);
-    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
-        () -> Response.ok().build());
+    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), () -> Response.ok().build());
   }
 
   @GET
@@ -621,13 +621,12 @@ public class AdminUserService {
     }
 
     NotificationPreferencesListResponseType resp = port.get().getNotificationPreferencesList();
-    return ServiceHelpers.mapTylerCodesToHttp(resp.getError(),
-        () -> Response.ok(resp.getNotificationListItem()).build());
+    return ServiceHelpers.mapTylerCodesToHttp(
+        resp.getError(), () -> Response.ok(resp.getNotificationListItem()).build());
   }
 
   private static boolean passwordOk(DataFieldRow row, String password) {
-    if (row.isvisible && row.isrequired
-        && password != null && !password.isEmpty()) {
+    if (row.isvisible && row.isrequired && password != null && !password.isEmpty()) {
       return row.matchRegex(password);
     }
     return true;
@@ -638,13 +637,15 @@ public class AdminUserService {
     return setupUserPort(httpHeaders, true);
   }
 
-  /** Creates a connection to Tyler's SOAP API that is has the right Auth Headers.
+  /**
+   * Creates a connection to Tyler's SOAP API that is has the right Auth Headers.
    *
    * @param httpHeaders The context tag from the server method
    * @param needsSoapHeader True if the operation needs Authenticated Tyler creds to work
    * @return false if setup didn't work, and subsequent service calls will likely fail
    */
-  private Optional<IEfmUserService> setupUserPort(HttpHeaders httpHeaders, boolean needsSoapHeader) {
+  private Optional<IEfmUserService> setupUserPort(
+      HttpHeaders httpHeaders, boolean needsSoapHeader) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
     try (Connection conn = userDs.getConnection()) {
       LoginDatabase ld = new LoginDatabase(conn);
@@ -654,9 +655,11 @@ public class AdminUserService {
       }
       IEfmUserService port = makeUserPort(userFactory);
       if (needsSoapHeader) {
-        String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
+        String tylerToken =
+            httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
         MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
-        Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
+        Optional<TylerUserNamePassword> creds =
+            ServiceHelpers.userCredsFromAuthorization(tylerToken);
         if (creds.isEmpty()) {
           return Optional.empty();
         }
@@ -671,8 +674,9 @@ public class AdminUserService {
     }
   }
 
-  /** Creates a connection to Tyler's SOAP API WITHOUT any Auth headers.
-   * Can be used to make an Auth request, or can have the header inserted later.
+  /**
+   * Creates a connection to Tyler's SOAP API WITHOUT any Auth headers. Can be used to make an Auth
+   * request, or can have the header inserted later.
    *
    * @param EfmUserService the definition of the SOAP WSDL service
    * @return A port connection to the SOAP server
@@ -682,5 +686,4 @@ public class AdminUserService {
     ServiceHelpers.setupServicePort((BindingProvider) port);
     return port;
   }
-
 }

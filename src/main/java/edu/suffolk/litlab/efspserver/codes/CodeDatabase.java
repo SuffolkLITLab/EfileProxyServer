@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver.codes;
 
+import edu.suffolk.litlab.efspserver.StdLib;
+import edu.suffolk.litlab.efspserver.db.DatabaseInterface;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -26,20 +27,17 @@ import org.oasis_open.docs.codelist.ns.genericode._1.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.db.DatabaseInterface;
-
-/** The class that interfaces with the database tables that contain the Tyler case codes.
+/**
+ * The class that interfaces with the database tables that contain the Tyler case codes.
  *
- * <p>Codes in this case doesn't mean programming code", it's more like code numbers
- * code names for all of the different case details and information.</p>
+ * <p>Codes in this case doesn't mean programming code", it's more like code numbers code names for
+ * all of the different case details and information.
  *
  * @author brycew
  */
 public class CodeDatabase implements DatabaseInterface, AutoCloseable {
-  private final static Logger log =
-      LoggerFactory.getLogger(CodeDatabase.class);
-  
+  private static final Logger log = LoggerFactory.getLogger(CodeDatabase.class);
+
   private final Connection conn;
   /** The DNS domain (tyler jurisdiction + tyler environment, illinois-stage). */
   private final String tylerDomain;
@@ -48,7 +46,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     this.tylerDomain = jurisdiction + "-" + env;
     this.conn = conn;
   }
-  
+
   public CodeDatabase(String jurisdiction, String env, DataSource ds) {
     this.tylerDomain = jurisdiction + "-" + env;
     Connection the_conn;
@@ -60,7 +58,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     }
     this.conn = the_conn;
   }
-  
+
   public Connection getConnection() {
     return conn;
   }
@@ -113,7 +111,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       rs.close();
     }
   }
-  
+
   public void createIndicesIfAbsent(String tableName) throws SQLException {
     if (conn == null) {
       throw new SQLException();
@@ -122,7 +120,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       log.warn("Must be a valid table name: " + tableName + " is not");
       return;
     }
-    
+
     String indicesExist = CodeTableConstants.getIndicesExist();
     try (PreparedStatement existsSt = conn.prepareStatement(indicesExist)) {
       existsSt.setString(1, tableName);
@@ -160,19 +158,22 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     xsr.close();
   }
 
-  public void updateTable(String tableName, String courtName, XMLStreamReader xsr) throws JAXBException, SQLException, XMLStreamException {
+  public void updateTable(String tableName, String courtName, XMLStreamReader xsr)
+      throws JAXBException, SQLException, XMLStreamException {
     Unmarshaller u = JAXBContext.newInstance(CodeListDocument.class).createUnmarshaller();
     final CodeListDocument doc = u.unmarshal(xsr, CodeListDocument.class).getValue();
     updateTable(tableName, courtName, doc);
   }
 
-  public void updateTable(String tableName, String courtName, CodeListDocument doc) throws JAXBException, SQLException, XMLStreamException {
+  public void updateTable(String tableName, String courtName, CodeListDocument doc)
+      throws JAXBException, SQLException, XMLStreamException {
     String insertQuery = CodeTableConstants.getInsertInto(tableName);
     String versionUpdate = CodeTableConstants.updateVersion();
     try (PreparedStatement stmt = conn.prepareStatement(insertQuery);
         PreparedStatement update = conn.prepareStatement(versionUpdate)) {
-      // TODO(brycew-later): dive deeper in the Column set, and see if any Data type isn't a normalizedString.
-      //ColumnSet cs = doc.getColumnSet();
+      // TODO(brycew-later): dive deeper in the Column set, and see if any Data type isn't a
+      // normalizedString.
+      // ColumnSet cs = doc.getColumnSet();
       for (Row r : doc.getSimpleCodeList().getRow()) {
         // HACK(brycew): jeez, this is horrible. Figure a better option
         Map<String, String> rowsVals = new HashMap<>();
@@ -194,14 +195,16 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       update.setString(5, doc.getIdentification().getVersion());
       update.executeUpdate();
     } catch (SQLException ex) {
-      log.error("Tried to execute an insert, but failed! Exception: {}", StdLib.strFromException(ex)); 
+      log.error(
+          "Tried to execute an insert, but failed! Exception: {}", StdLib.strFromException(ex));
       log.error("Going to rollback updates to this table");
       throw ex;
     }
   }
-  
-  public PreparedStatement singleInsert(PreparedStatement stmt, String tableName, String courtName, 
-      Map<String, String> rowsVals) throws SQLException {
+
+  public PreparedStatement singleInsert(
+      PreparedStatement stmt, String tableName, String courtName, Map<String, String> rowsVals)
+      throws SQLException {
     int idx = 1;
     List<String> tc = CodeTableConstants.getTableColumns(tableName);
     for (String colName : tc) {
@@ -221,91 +224,101 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
   }
 
   public List<CaseCategory> getCaseCategoriesFor(String courtLocationId) {
-    return safetyWrap(() -> {
-      String query = CaseCategory.getCaseCategoriesForLoc();
-      List<CaseCategory> cats = new ArrayList<>();
-      try (PreparedStatement st = conn.prepareStatement(query)) {
-        st.setString(1, tylerDomain);
-        st.setString(2, courtLocationId);
-        ResultSet rs = st.executeQuery();
-        while (rs.next()) {
-          cats.add(new CaseCategory(rs)); 
-        }
-      }
-      return cats;
-    });
+    return safetyWrap(
+        () -> {
+          String query = CaseCategory.getCaseCategoriesForLoc();
+          List<CaseCategory> cats = new ArrayList<>();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, courtLocationId);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              cats.add(new CaseCategory(rs));
+            }
+          }
+          return cats;
+        });
   }
-  
-  public List<CaseCategory> getFilableCaseCategories(String courtLocationId, Optional<Boolean> initial) {
-    return safetyWrap(() -> {
-      PreparedStatement st;
-      if (initial.isPresent()) {
-        st = CaseCategory.prepFilableQueryTiming(conn, this.tylerDomain ,courtLocationId, initial.get());
-      } else {
-        st = CaseCategory.prepFileableQuery(conn, this.tylerDomain, courtLocationId); 
-      }
-      ResultSet rs = st.executeQuery();
-      List<CaseCategory> cats = new ArrayList<>();
-      while (rs.next()) {
-        cats.add(new CaseCategory(rs)); 
-      }
-      st.close();
-      return cats;
-      
-    });
+
+  public List<CaseCategory> getFilableCaseCategories(
+      String courtLocationId, Optional<Boolean> initial) {
+    return safetyWrap(
+        () -> {
+          PreparedStatement st;
+          if (initial.isPresent()) {
+            st =
+                CaseCategory.prepFilableQueryTiming(
+                    conn, this.tylerDomain, courtLocationId, initial.get());
+          } else {
+            st = CaseCategory.prepFileableQuery(conn, this.tylerDomain, courtLocationId);
+          }
+          ResultSet rs = st.executeQuery();
+          List<CaseCategory> cats = new ArrayList<>();
+          while (rs.next()) {
+            cats.add(new CaseCategory(rs));
+          }
+          st.close();
+          return cats;
+        });
   }
 
   public Optional<CaseCategory> getCaseCategoryWithKey(String courtLocationId, String caseCatCode) {
-    return safetyWrapOpt(() -> {
-      String query = CaseCategory.getCaseCategoryWithKey();
-      try (PreparedStatement st = conn.prepareStatement(query)) {
-        st.setString(1, tylerDomain);
-        st.setString(2, courtLocationId);
-        st.setString(3, caseCatCode);
-        ResultSet rs = st.executeQuery();
-        if (rs.next()) {
-          CaseCategory newCat = new CaseCategory(rs); 
-          return Optional.of(newCat);
-        } else {
-          log.error("No categories for code " + caseCatCode + " at " + courtLocationId);
-          return Optional.empty();
-        }
-      }
-    });
-    
+    return safetyWrapOpt(
+        () -> {
+          String query = CaseCategory.getCaseCategoryWithKey();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, courtLocationId);
+            st.setString(3, caseCatCode);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+              CaseCategory newCat = new CaseCategory(rs);
+              return Optional.of(newCat);
+            } else {
+              log.error("No categories for code " + caseCatCode + " at " + courtLocationId);
+              return Optional.empty();
+            }
+          }
+        });
   }
 
-  public List<CaseType> getCaseTypesFor(String courtLocationId, String caseCategoryCode, Optional<Boolean> initial) {
-    return safetyWrap(() -> {
-      PreparedStatement st;
-      if (initial.isPresent()) {
-        st = CaseType.prepQueryTiming(conn, tylerDomain, courtLocationId, caseCategoryCode, initial);  
-      } else {
-        st = CaseType.prepQueryBroad(conn, tylerDomain, courtLocationId, caseCategoryCode);
-      }
-      ResultSet rs = st.executeQuery();
-      List<CaseType> types = new ArrayList<>();
-      while (rs.next()) {
-        types.add(new CaseType(rs));
-      }
-      st.close();
-      return types;
-    });
+  public List<CaseType> getCaseTypesFor(
+      String courtLocationId, String caseCategoryCode, Optional<Boolean> initial) {
+    return safetyWrap(
+        () -> {
+          PreparedStatement st;
+          if (initial.isPresent()) {
+            st =
+                CaseType.prepQueryTiming(
+                    conn, tylerDomain, courtLocationId, caseCategoryCode, initial);
+          } else {
+            st = CaseType.prepQueryBroad(conn, tylerDomain, courtLocationId, caseCategoryCode);
+          }
+          ResultSet rs = st.executeQuery();
+          List<CaseType> types = new ArrayList<>();
+          while (rs.next()) {
+            types.add(new CaseType(rs));
+          }
+          st.close();
+          return types;
+        });
   }
-  
+
   public Optional<CaseType> getCaseTypeWith(String courtLocationId, String caseTypeCode) {
-    return safetyWrapOpt(() -> {
-      try (PreparedStatement st = CaseType.prepQueryWithCode(conn, tylerDomain, courtLocationId, caseTypeCode)) {
-        ResultSet rs = st.executeQuery();
-        if (rs.next()) {
-          return Optional.of(new CaseType(rs));
-        } else {
-          return Optional.empty();
-        }
-      }
-    });
+    return safetyWrapOpt(
+        () -> {
+          try (PreparedStatement st =
+              CaseType.prepQueryWithCode(conn, tylerDomain, courtLocationId, caseTypeCode)) {
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+              return Optional.of(new CaseType(rs));
+            } else {
+              return Optional.empty();
+            }
+          }
+        });
   }
-  
+
   public List<NameAndCode> getCaseSubtypesFor(String courtLocationId, String caseType)
       throws SQLException {
     if (conn == null) {
@@ -342,16 +355,27 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       if (!rs.next()) {
         return DataFieldRow.MissingDataField(dataName);
       }
-      DataFieldRow dfr = new DataFieldRow(rs.getString(1), rs.getString(2), rs.getString(3),
-          rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8),
-          rs.getString(9), rs.getString(10), rs.getString(11), rs.getString(12));
+      DataFieldRow dfr =
+          new DataFieldRow(
+              rs.getString(1),
+              rs.getString(2),
+              rs.getString(3),
+              rs.getString(4),
+              rs.getString(5),
+              rs.getString(6),
+              rs.getString(7),
+              rs.getString(8),
+              rs.getString(9),
+              rs.getString(10),
+              rs.getString(11),
+              rs.getString(12));
       return dfr;
     } catch (SQLException ex) {
       log.error("SQLException: " + ex.toString());
       return DataFieldRow.MissingDataField(dataName);
     }
   }
-  
+
   public List<NameAndCode> getDataFieldNames(String courtLocationId) {
     if (conn == null) {
       log.error("SQL connection not created in DataField yet");
@@ -363,22 +387,22 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       st.setString(1, tylerDomain);
       st.setString(2, courtLocationId);
       ResultSet rs = st.executeQuery();
-      var dataFields = new ArrayList<NameAndCode>(); 
+      var dataFields = new ArrayList<NameAndCode>();
       while (rs.next()) {
-        dataFields.add(new NameAndCode(rs.getString(2), rs.getString(1))); 
+        dataFields.add(new NameAndCode(rs.getString(2), rs.getString(1)));
       }
-      return dataFields; 
+      return dataFields;
     } catch (SQLException ex) {
       log.error("SQLException: " + ex.toString());
-      return List.of(); 
+      return List.of();
     }
   }
-  
+
   /** gets all data fields if dataNames is empty, otherwise just those that match the code. */
   public DataFields getDataFields(String courtLocationId) {
     if (conn == null) {
       log.error("SQL connection not created in DataField yet");
-      return new DataFields(Map.of()); 
+      return new DataFields(Map.of());
     }
 
     String query = DataFieldRow.getAllDataFieldConfigsForLoc();
@@ -388,15 +412,26 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       ResultSet rs = st.executeQuery();
       var dataFieldMap = new HashMap<String, DataFieldRow>();
       while (rs.next()) {
-        DataFieldRow dfr = new DataFieldRow(rs.getString(1), rs.getString(2), rs.getString(3),
-            rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8),
-            rs.getString(9), rs.getString(10), rs.getString(11), rs.getString(12));
+        DataFieldRow dfr =
+            new DataFieldRow(
+                rs.getString(1),
+                rs.getString(2),
+                rs.getString(3),
+                rs.getString(4),
+                rs.getString(5),
+                rs.getString(6),
+                rs.getString(7),
+                rs.getString(8),
+                rs.getString(9),
+                rs.getString(10),
+                rs.getString(11),
+                rs.getString(12));
         dataFieldMap.put(dfr.code, dfr);
       }
       return new DataFields(dataFieldMap);
     } catch (SQLException ex) {
       log.error("SQLException: " + ex.toString());
-      return new DataFields(Map.of()); 
+      return new DataFields(Map.of());
     }
   }
 
@@ -423,45 +458,49 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     }
   }
 
-  public List<FilingCode> getFilingType(String courtLocationId, String categoryCode, String typeCode, 
-      boolean initial) {
-    return safetyWrap(() -> {
-      List<FilingCode> filingTypes = new ArrayList<FilingCode>();
-      try (PreparedStatement specificSt = 
-          FilingCode.prepQueryWithCaseInfo(conn, initial, tylerDomain, courtLocationId, categoryCode, typeCode)) {
-        ResultSet rs = specificSt.executeQuery();
-        while (rs.next()) {
-          filingTypes.add(new FilingCode(rs));
-        }
-        // If there's nothing for the specific category and type, then get filing types without categories or types
-        if (filingTypes.isEmpty()) {
-          try (PreparedStatement broadSt = FilingCode.prepQueryNoCaseInfo(
-              conn, initial, tylerDomain, courtLocationId)) {
-            ResultSet broadRs = broadSt.executeQuery();
-            while(broadRs.next()) {
-              filingTypes.add(new FilingCode(broadRs));
+  public List<FilingCode> getFilingType(
+      String courtLocationId, String categoryCode, String typeCode, boolean initial) {
+    return safetyWrap(
+        () -> {
+          List<FilingCode> filingTypes = new ArrayList<FilingCode>();
+          try (PreparedStatement specificSt =
+              FilingCode.prepQueryWithCaseInfo(
+                  conn, initial, tylerDomain, courtLocationId, categoryCode, typeCode)) {
+            ResultSet rs = specificSt.executeQuery();
+            while (rs.next()) {
+              filingTypes.add(new FilingCode(rs));
+            }
+            // If there's nothing for the specific category and type, then get filing types without
+            // categories or types
+            if (filingTypes.isEmpty()) {
+              try (PreparedStatement broadSt =
+                  FilingCode.prepQueryNoCaseInfo(conn, initial, tylerDomain, courtLocationId)) {
+                ResultSet broadRs = broadSt.executeQuery();
+                while (broadRs.next()) {
+                  filingTypes.add(new FilingCode(broadRs));
+                }
+              }
             }
           }
-        }
-      }
-      return filingTypes;
-    });
+          return filingTypes;
+        });
   }
 
   public Optional<FilingCode> getFilingTypeWith(String courtLocationId, String filingCode) {
-    return safetyWrapOpt(() -> {
-      try (PreparedStatement st = FilingCode.prepQueryWithKey(conn, tylerDomain, courtLocationId, filingCode)) {
-        ResultSet rs = st.executeQuery();
-        if (rs.next()) {
-          return Optional.of(new FilingCode(rs));
-        } else {
-          return Optional.empty();
-        }
-      }
-    });
-    
+    return safetyWrapOpt(
+        () -> {
+          try (PreparedStatement st =
+              FilingCode.prepQueryWithKey(conn, tylerDomain, courtLocationId, filingCode)) {
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+              return Optional.of(new FilingCode(rs));
+            } else {
+              return Optional.empty();
+            }
+          }
+        });
   }
-  
+
   public void vacuumAll() throws SQLException {
     String vacuum = CodeTableConstants.vacuumAnalyzeAll();
     try (PreparedStatement vacuumSt = conn.prepareStatement(vacuum)) {
@@ -470,95 +509,100 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     }
   }
 
-
   public List<NameAndCode> getDamageAmount(String courtLocationId, String caseCategory) {
-    return safetyWrap(() -> {
-      String query = CodeTableConstants.getDamageAmount();
-      List<NameAndCode> amounts = new ArrayList<NameAndCode>();
-      try (PreparedStatement st = conn.prepareStatement(query)) {
-        st.setString(1, tylerDomain);
-        st.setString(2, courtLocationId);
-        st.setString(3, caseCategory);
-        try (ResultSet rs = st.executeQuery()) {
-          while (rs.next()) {
-            amounts.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+    return safetyWrap(
+        () -> {
+          String query = CodeTableConstants.getDamageAmount();
+          List<NameAndCode> amounts = new ArrayList<NameAndCode>();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, courtLocationId);
+            st.setString(3, caseCategory);
+            try (ResultSet rs = st.executeQuery()) {
+              while (rs.next()) {
+                amounts.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+              }
+            }
           }
-        }
-      }
-      return amounts;
-    });
+          return amounts;
+        });
   }
 
   /**
    * Gets the party types that are allowed for a given court and case type.
+   *
    * @param courtLocationId
-   * @param typeCode Nullable, if null, gets all party types for court, otherwise, just for that case type.
+   * @param typeCode Nullable, if null, gets all party types for court, otherwise, just for that
+   *     case type.
    * @return a list of party types
    */
   public List<PartyType> getPartyTypeFor(String courtLocationId, String typeCode) {
-    return safetyWrap(() -> {
-      String query = PartyType.getPartyTypeFromCaseType();
-      List<PartyType> partyTypes = new ArrayList<>();
-      try (PreparedStatement caseSt = conn.prepareStatement(query)) {
-        caseSt.setString(1, tylerDomain);
-        caseSt.setString(2, courtLocationId);
-        if (typeCode != null) {
-          caseSt.setString(3, typeCode);
-          try (ResultSet rs = caseSt.executeQuery()) {
-            while (rs.next()) {
-              partyTypes.add(new PartyType(rs));
+    return safetyWrap(
+        () -> {
+          String query = PartyType.getPartyTypeFromCaseType();
+          List<PartyType> partyTypes = new ArrayList<>();
+          try (PreparedStatement caseSt = conn.prepareStatement(query)) {
+            caseSt.setString(1, tylerDomain);
+            caseSt.setString(2, courtLocationId);
+            if (typeCode != null) {
+              caseSt.setString(3, typeCode);
+              try (ResultSet rs = caseSt.executeQuery()) {
+                while (rs.next()) {
+                  partyTypes.add(new PartyType(rs));
+                }
+              }
             }
-          }
-        }
-        if (partyTypes.isEmpty()) {
-          String broadQuery = PartyType.getPartyTypeNoCaseType();
-          try (PreparedStatement broadSt = conn.prepareStatement(broadQuery)) {
-            broadSt.setString(1, tylerDomain);
-            broadSt.setString(2, courtLocationId);
-            try (ResultSet broadRs = broadSt.executeQuery()) {
-              while (broadRs.next()) {
-                partyTypes.add(new PartyType(broadRs));
+            if (partyTypes.isEmpty()) {
+              String broadQuery = PartyType.getPartyTypeNoCaseType();
+              try (PreparedStatement broadSt = conn.prepareStatement(broadQuery)) {
+                broadSt.setString(1, tylerDomain);
+                broadSt.setString(2, courtLocationId);
+                try (ResultSet broadRs = broadSt.executeQuery()) {
+                  while (broadRs.next()) {
+                    partyTypes.add(new PartyType(broadRs));
+                  }
+                }
               }
             }
           }
-        }
-      }
-      return partyTypes;
-    });
+          return partyTypes;
+        });
   }
 
   public List<CrossReference> getCrossReference(String courtLocationId, String caseTypeId) {
-    return safetyWrap(() -> {
-      try (PreparedStatement st = conn.prepareStatement(CrossReference.query())) {
-        st.setString(1, tylerDomain);
-        st.setString(2, courtLocationId);
-        st.setString(3, caseTypeId);
-        ResultSet rs = st.executeQuery();
-        var types = new ArrayList<CrossReference>();
-        while (rs.next()) {
-          types.add(new CrossReference(rs));
-        }
-        return types;
-      }
-    });
+    return safetyWrap(
+        () -> {
+          try (PreparedStatement st = conn.prepareStatement(CrossReference.query())) {
+            st.setString(1, tylerDomain);
+            st.setString(2, courtLocationId);
+            st.setString(3, caseTypeId);
+            ResultSet rs = st.executeQuery();
+            var types = new ArrayList<CrossReference>();
+            while (rs.next()) {
+              types.add(new CrossReference(rs));
+            }
+            return types;
+          }
+        });
   }
 
   public List<ServiceCodeType> getServiceTypes(String courtLocationId) {
-    return safetyWrap(() -> {
-      String query  = ServiceCodeType.query();
-      List<ServiceCodeType> types = new ArrayList<>();
-      try (PreparedStatement st = conn.prepareStatement(query)) {
-        st.setString(1, tylerDomain);
-        st.setString(2, courtLocationId);
-        ResultSet rs = st.executeQuery();
-        while (rs.next()) {
-          types.add(new ServiceCodeType(rs));
-        }
-      }
-      return types;
-    });
+    return safetyWrap(
+        () -> {
+          String query = ServiceCodeType.query();
+          List<ServiceCodeType> types = new ArrayList<>();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, courtLocationId);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              types.add(new ServiceCodeType(rs));
+            }
+          }
+          return types;
+        });
   }
-  
+
   private <T> List<T> safetyWrap(SQLFunction<List<T>> sup) {
     if (conn == null) {
       log.error("SQL connection not created yet!");
@@ -608,13 +652,13 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
           broadSt.setString(2, courtLocationId);
           ResultSet broadRs = broadSt.executeQuery();
           while (broadRs.next()) {
-           docTypes.add(new DocumentTypeTableRow(broadRs));
+            docTypes.add(new DocumentTypeTableRow(broadRs));
           }
         }
       }
       return docTypes;
     } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex)); 
+      log.error(StdLib.strFromException(ex));
       return List.of();
     }
   }
@@ -637,7 +681,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       }
       return motions;
     } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex)); 
+      log.error(StdLib.strFromException(ex));
       return List.of();
     }
   }
@@ -659,7 +703,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       }
       return motions;
     } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex)); 
+      log.error(StdLib.strFromException(ex));
       return List.of();
     }
   }
@@ -722,35 +766,37 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
   }
 
   public List<FileType> getAllowedFileTypes(String courtId) {
-    return safetyWrap(() -> {
-      String query = FileType.fileTypeQueries();
-      try (PreparedStatement st = conn.prepareStatement(query)) {
-        st.setString(1, tylerDomain);
-        st.setString(2, courtId);
-        ResultSet rs = st.executeQuery();
-        List<FileType> types = new ArrayList<FileType>();
-        while (rs.next()) {
-          types.add(new FileType(rs));
-        }
-        return types;
-      }
-    });
+    return safetyWrap(
+        () -> {
+          String query = FileType.fileTypeQueries();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, courtId);
+            ResultSet rs = st.executeQuery();
+            List<FileType> types = new ArrayList<FileType>();
+            while (rs.next()) {
+              types.add(new FileType(rs));
+            }
+            return types;
+          }
+        });
   }
 
   public List<FilerType> getFilerTypes(String courtId) {
-    return safetyWrap(() -> {
-      String query = FilerType.query();
-      try (PreparedStatement st = conn.prepareStatement(query)) {
-        st.setString(1, tylerDomain);
-        st.setString(2, courtId);
-        ResultSet rs = st.executeQuery();
-        List<FilerType> types = new ArrayList<FilerType>();
-        while (rs.next()) {
-          types.add(new FilerType(rs));
-        }
-        return types;
-      }
-    });
+    return safetyWrap(
+        () -> {
+          String query = FilerType.query();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, courtId);
+            ResultSet rs = st.executeQuery();
+            List<FilerType> types = new ArrayList<FilerType>();
+            while (rs.next()) {
+              types.add(new FilerType(rs));
+            }
+            return types;
+          }
+        });
   }
 
   public List<NameAndCode> getFilingStatuses(String courtId) {
@@ -776,32 +822,35 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
   }
 
   public List<OptionalServiceCode> getOptionalServices(String courtId, String filingCode) {
-    return safetyWrap(() -> {
-      try (PreparedStatement st = OptionalServiceCode.prepQuery(conn, tylerDomain, courtId, filingCode)) {
-        ResultSet rs = st.executeQuery();
-        List<OptionalServiceCode> services = new ArrayList<OptionalServiceCode>();
-        while (rs.next()) {
-          services.add(new OptionalServiceCode(rs));
-        }
-        return services;
-      }
-    });
+    return safetyWrap(
+        () -> {
+          try (PreparedStatement st =
+              OptionalServiceCode.prepQuery(conn, tylerDomain, courtId, filingCode)) {
+            ResultSet rs = st.executeQuery();
+            List<OptionalServiceCode> services = new ArrayList<OptionalServiceCode>();
+            while (rs.next()) {
+              services.add(new OptionalServiceCode(rs));
+            }
+            return services;
+          }
+        });
   }
 
   public List<String> getLanguages(String courtLocationId) {
-    return safetyWrap(() -> {
-      String query = CodeTableConstants.getLanguages();
-      try (PreparedStatement st = conn.prepareStatement(query)) {
-        st.setString(1, tylerDomain);
-        st.setString(2, courtLocationId);
-        ResultSet rs = st.executeQuery();
-        List<String> languages = new ArrayList<String>();
-        while (rs.next()) {
-          languages.add(rs.getString(2));
-        }
-        return languages;
-      }
-    });
+    return safetyWrap(
+        () -> {
+          String query = CodeTableConstants.getLanguages();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, courtLocationId);
+            ResultSet rs = st.executeQuery();
+            List<String> languages = new ArrayList<String>();
+            while (rs.next()) {
+              languages.add(rs.getString(2));
+            }
+            return languages;
+          }
+        });
   }
 
   /** Returns map of court locations to the list of tables they need to update. */
@@ -825,7 +874,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
         }
         if (tableName.endsWith("codes")) {
           tableName = tableName.substring(0, tableName.length() - 5);
-       }
+        }
         if (tableName.equals("locations")) {
           tableName = "location";
         }
@@ -861,7 +910,12 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     // TODO(brycew): make variant that deletes everything with a specific jurisdiction
     boolean tableHasCourt = !deleteFromTableStr.isBlank();
     if (!tableHasCourt) {
-      log.warn("Cannot remove the " + courtLocation + " from " + tableName + ", a table with no court locations");
+      log.warn(
+          "Cannot remove the "
+              + courtLocation
+              + " from "
+              + tableName
+              + ", a table with no court locations");
       return false;
     }
     try (PreparedStatement st = conn.prepareStatement(deleteFromTableStr)) {
@@ -873,8 +927,8 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
   }
 
   /**
-   * Gets all court location identifiers (CLI) stored in the database. updateTable
-   * should have been called on the `location` table before this works.
+   * Gets all court location identifiers (CLI) stored in the database. updateTable should have been
+   * called on the `location` table before this works.
    *
    * @return a list of all valid CLIs for this jurisdiction
    */
@@ -899,80 +953,84 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
   }
 
   public List<NameAndCode> getLocationNames() {
-    return safetyWrap(() -> {
-      try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.allNames())) {
-        st.setString(1, tylerDomain);
-        ResultSet rs = st.executeQuery(); 
-        var names = new ArrayList<NameAndCode>();
-        while (rs.next()) {
-          names.add(new NameAndCode(rs.getString(1), rs.getString(2)));
-        }
-        return names;
-      }
-    });
+    return safetyWrap(
+        () -> {
+          try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.allNames())) {
+            st.setString(1, tylerDomain);
+            ResultSet rs = st.executeQuery();
+            var names = new ArrayList<NameAndCode>();
+            while (rs.next()) {
+              names.add(new NameAndCode(rs.getString(1), rs.getString(2)));
+            }
+            return names;
+          }
+        });
   }
 
   public List<String> getFileableLocations() {
-    return safetyWrap(() -> {
-      try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.fileableQuery())) {
-        st.setString(1, tylerDomain);
-        ResultSet rs = st.executeQuery();
-        var codes = new ArrayList<String>();
-        while (rs.next()) {
-          codes.add(rs.getString(1));
-        }
-        return codes;
-      }
-    });
-  }
-  
-  public List<NameAndCode> getFileableLocationNames() {
-    return safetyWrap(() -> {
-      try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.fileableQuery())) {
-        st.setString(1, tylerDomain);
-        ResultSet rs = st.executeQuery();
-        var codes = new ArrayList<NameAndCode>();
-        while (rs.next()) {
-          codes.add(new NameAndCode(rs.getString(1), rs.getString(2)));
-        }
-        return codes;
-      }
-    });
+    return safetyWrap(
+        () -> {
+          try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.fileableQuery())) {
+            st.setString(1, tylerDomain);
+            ResultSet rs = st.executeQuery();
+            var codes = new ArrayList<String>();
+            while (rs.next()) {
+              codes.add(rs.getString(1));
+            }
+            return codes;
+          }
+        });
   }
 
+  public List<NameAndCode> getFileableLocationNames() {
+    return safetyWrap(
+        () -> {
+          try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.fileableQuery())) {
+            st.setString(1, tylerDomain);
+            ResultSet rs = st.executeQuery();
+            var codes = new ArrayList<NameAndCode>();
+            while (rs.next()) {
+              codes.add(new NameAndCode(rs.getString(1), rs.getString(2)));
+            }
+            return codes;
+          }
+        });
+  }
 
   public Optional<CourtLocationInfo> getFullLocationInfo(String courtId) {
-    return safetyWrapOpt(() -> {
-      try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.fullSingleQuery())) {
-        st.setString(1, tylerDomain);
-        st.setString(2, courtId);
-        ResultSet rs = st.executeQuery();
-        if (rs.next()) {
-          CourtLocationInfo info = new CourtLocationInfo(rs);
-          return Optional.of(info);
-        } else {
-          log.error("CourtLocation " + courtId + " not found!");
-          return Optional.empty();
-        }
-      }
-    });
+    return safetyWrapOpt(
+        () -> {
+          try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.fullSingleQuery())) {
+            st.setString(1, tylerDomain);
+            st.setString(2, courtId);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+              CourtLocationInfo info = new CourtLocationInfo(rs);
+              return Optional.of(info);
+            } else {
+              log.error("CourtLocation " + courtId + " not found!");
+              return Optional.empty();
+            }
+          }
+        });
   }
-  
 
   public List<Disclaimer> getDisclaimerRequirements(String courtLocation) {
-    return safetyWrap(() -> {
-      String query = Disclaimer.getDisclaimerRequirements();
-      try  (PreparedStatement st = conn.prepareStatement(query)) {
-        st.setString(1, tylerDomain);
-        st.setString(2, courtLocation);
-        ResultSet rs = st.executeQuery();
-        List<Disclaimer> disclaimers = new ArrayList<Disclaimer>();
-        while (rs.next()) {
-          disclaimers.add(new Disclaimer(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4)));
-        }
-        return disclaimers;
-      }
-    });
+    return safetyWrap(
+        () -> {
+          String query = Disclaimer.getDisclaimerRequirements();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, courtLocation);
+            ResultSet rs = st.executeQuery();
+            List<Disclaimer> disclaimers = new ArrayList<Disclaimer>();
+            while (rs.next()) {
+              disclaimers.add(
+                  new Disclaimer(
+                      rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4)));
+            }
+            return disclaimers;
+          }
+        });
   }
-
 }

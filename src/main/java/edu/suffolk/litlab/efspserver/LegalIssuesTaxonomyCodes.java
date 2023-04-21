@@ -19,8 +19,9 @@ import org.slf4j.LoggerFactory;
 public class LegalIssuesTaxonomyCodes {
   private static Logger log = LoggerFactory.getLogger(LegalIssuesTaxonomyCodes.class);
 
-  /** Reads a special version of the csv at originally from https://taxonomy.legal/download.
-   * A column is added before "Taxonomies" that maps top level codes to ECF case types:
+  /**
+   * Reads a special version of the csv at originally from https://taxonomy.legal/download. A column
+   * is added before "Taxonomies" that maps top level codes to ECF case types:
    * https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Toc425241622
    */
   public LegalIssuesTaxonomyCodes(InputStream csvFile) throws IOException, CsvValidationException {
@@ -35,8 +36,13 @@ public class LegalIssuesTaxonomyCodes {
         throw new CsvValidationException();
       }
       Set<String> parents = new HashSet<String>(Arrays.asList(row[3].split(",")));
-      InternalNode node = new InternalNode(row[0], row[1], row[2], parents,
-          (row[4].isBlank()) ? Optional.empty() : Optional.of(row[4]));
+      InternalNode node =
+          new InternalNode(
+              row[0],
+              row[1],
+              row[2],
+              parents,
+              (row[4].isBlank()) ? Optional.empty() : Optional.of(row[4]));
       taxonomyGraph.put(row[0], node);
       row = reader.readNext();
     }
@@ -57,7 +63,6 @@ public class LegalIssuesTaxonomyCodes {
     }
     return ecfCases;
   }
-
 
   Map<String, InternalNode> taxonomyGraph;
 
@@ -95,10 +100,9 @@ public class LegalIssuesTaxonomyCodes {
     return;
   }
 
-
-  /** A very lazy list-based adjacency directed graph implementation.
-   * Each node has parents, and children. All nodes are contained in a map
-   * in the parent class.
+  /**
+   * A very lazy list-based adjacency directed graph implementation. Each node has parents, and
+   * children. All nodes are contained in a map in the parent class.
    */
   class InternalNode {
     String code;
@@ -109,8 +113,12 @@ public class LegalIssuesTaxonomyCodes {
     Set<String> parents;
     Set<String> children;
 
-    public InternalNode(String code, String title, String definition,
-        Set<String> parents, Optional<String> caseType) {
+    public InternalNode(
+        String code,
+        String title,
+        String definition,
+        Set<String> parents,
+        Optional<String> caseType) {
       this.code = code;
       this.title = title;
       this.definition = definition;

@@ -1,34 +1,29 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import edu.suffolk.litlab.efspserver.db.AtRest;
+import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-
 import javax.sql.DataSource;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import edu.suffolk.litlab.efspserver.db.AtRest;
-import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 
 @Path("/api_user_settings")
 @Produces({MediaType.APPLICATION_JSON})
 public class ApiUserSettingsService {
-  private static Logger log =
-    LoggerFactory.getLogger(ApiUserSettingsService.class);
-  
+  private static Logger log = LoggerFactory.getLogger(ApiUserSettingsService.class);
+
   private final DataSource ds;
 
   public ApiUserSettingsService(DataSource ds) {
@@ -39,7 +34,9 @@ public class ApiUserSettingsService {
   @Path("/")
   public Response getAll() {
     EndpointReflection ef = new EndpointReflection("");
-    return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(ApiUserSettingsService.class)))).build();
+    return Response.ok(
+            ef.endPointsToMap(ef.findRESTEndpoints(List.of(ApiUserSettingsService.class))))
+        .build();
   }
 
   @GET

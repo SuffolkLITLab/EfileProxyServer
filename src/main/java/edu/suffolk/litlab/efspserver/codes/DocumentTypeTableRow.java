@@ -11,12 +11,26 @@ public class DocumentTypeTableRow {
   public final boolean isdefault;
   public final String efspcode;
   public final String location;
-  
+
   public DocumentTypeTableRow(ResultSet rs) throws SQLException {
-    this(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7));
+    this(
+        rs.getString(1),
+        rs.getString(2),
+        rs.getString(3),
+        rs.getString(4),
+        rs.getString(5),
+        rs.getString(6),
+        rs.getString(7));
   }
-  
-  public DocumentTypeTableRow(String code, String name, String filingcodeid, String iscourtuseonly, String isdefault, String efspcode, String location) {
+
+  public DocumentTypeTableRow(
+      String code,
+      String name,
+      String filingcodeid,
+      String iscourtuseonly,
+      String isdefault,
+      String efspcode,
+      String location) {
     this.code = code;
     this.name = name;
     this.filingcodeid = filingcodeid;
@@ -28,17 +42,15 @@ public class DocumentTypeTableRow {
 
   public static String getDocumentTypeWithFilingCode() {
     return """
-        SELECT code, name, filingcodeid, iscourtuseonly, isdefault, efspcode, location 
-        FROM documenttype 
+        SELECT code, name, filingcodeid, iscourtuseonly, isdefault, efspcode, location
+        FROM documenttype
         WHERE domain=? AND location=? AND iscourtuseonly='False' AND filingcodeid=?""";
   }
 
   public static String getDocumentTypeNoFiling() {
     return """
-        SELECT code, name, filingcodeid, iscourtuseonly, isdefault, efspcode, location 
-        FROM documenttype 
+        SELECT code, name, filingcodeid, iscourtuseonly, isdefault, efspcode, location
+        FROM documenttype
         WHERE domain=? AND location=? AND iscourtuseonly='False' AND filingcodeid=''""";
   }
-  
-  
 }

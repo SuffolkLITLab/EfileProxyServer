@@ -15,54 +15,58 @@ import tyler.ecf.extensions.common.ProviderChargeType;
 public class PaymentFactory {
   // TODO(brycew-later): this is the amount that we take as a cut
   private static BigDecimal ourCut = new BigDecimal(0.00);
-  
+
   // TODO(brycew): make tax configurable to Jurisdiction
   private static BigDecimal taxPercent = new BigDecimal(0.0625);
 
   public static PaymentMessageType makePaymentMessage(String paymentId) {
-    var ecfObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.ObjectFactory();
+    var ecfObjFac =
+        new oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.ObjectFactory();
     PaymentMessageType pmt = ecfObjFac.createPaymentMessageType();
     pmt.setFeeExceptionReasonCode("");
     pmt.setFeeExceptionSupportingText("");
     pmt.setPayerName("");
     pmt.getAllowanceCharge().add(makeAllowanceChargeType(paymentId));
     // TODO(brycew-later): Do these need to be filled? With what?
-    var cacObjFac = new oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory();
+    var cacObjFac =
+        new oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory();
     pmt.setAddress(cacObjFac.createAddressType());
     pmt.setPayment(cacObjFac.createPaymentType());
     return pmt;
   }
-  
+
   public static ProviderChargeType makeProviderChargeType(String paymentId) {
-    tyler.ecf.extensions.common.ObjectFactory tylerObjFac = 
+    tyler.ecf.extensions.common.ObjectFactory tylerObjFac =
         new tyler.ecf.extensions.common.ObjectFactory();
     ProviderChargeType pct = tylerObjFac.createProviderChargeType();
     pct.getAllowanceCharge().add(makeAllowanceChargeType(paymentId));
     return pct;
   }
-  
+
   private static AllowanceChargeType makeAllowanceChargeType(String paymentId) {
-    var cacObjFac = new oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory();
-    var cbcObjFac = new oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ObjectFactory();
+    var cacObjFac =
+        new oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory();
+    var cbcObjFac =
+        new oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ObjectFactory();
     AllowanceChargeType act = cacObjFac.createAllowanceChargeType();
     var at = cbcObjFac.createAmountType();
     at.setCurrencyID("USD");
-    at.setValue(ourCut); 
+    at.setValue(ourCut);
     act.setAmount(at);
     ChargeIndicatorType cit = cbcObjFac.createChargeIndicatorType();
     // BigDecimal.equals is weird about "scale" (i.e. 2.00 != 2.0), so we need to use compareTo.
     // https://docs.oracle.com/javase/7/docs/api/java/math/BigDecimal.html#equals(java.lang.Object)
     boolean makeEfmCollectFeeAndTax = (ourCut.compareTo(BigDecimal.ZERO) > 0);
     cit.setValue(makeEfmCollectFeeAndTax);
-    act.setChargeIndicator(cit); 
+    act.setChargeIndicator(cit);
     if (makeEfmCollectFeeAndTax) {
       PercentType perc = cbcObjFac.createPercentType();
-      perc.setValue(taxPercent); 
+      perc.setValue(taxPercent);
       TaxCategoryType tct = cacObjFac.createTaxCategoryType();
       tct.setPercent(perc);
-      tct.setBaseUnitMeasure(cbcObjFac.createBaseUnitMeasureType()); 
-      tct.setPerUnitAmount(cbcObjFac.createPerUnitAmountType()); 
-      tct.setTaxExemptionReasonCode(cbcObjFac.createTaxExemptionReasonCodeType()); 
+      tct.setBaseUnitMeasure(cbcObjFac.createBaseUnitMeasureType());
+      tct.setPerUnitAmount(cbcObjFac.createPerUnitAmountType());
+      tct.setTaxExemptionReasonCode(cbcObjFac.createTaxExemptionReasonCodeType());
       tct.setTaxExemptionReason(cbcObjFac.createTaxExemptionReasonType());
       tct.setTierRange(cbcObjFac.createTierRangeType());
       tct.setTierRatePercent(cbcObjFac.createTierRatePercentType());

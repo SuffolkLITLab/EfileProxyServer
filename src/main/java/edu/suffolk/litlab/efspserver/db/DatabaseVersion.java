@@ -13,45 +13,44 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.List;
 import java.util.UUID;
-
 import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Updates all of the collective tables for a consistent "schema".
- * Since this class should work going back to extremely old versions of the 
- * code, this class should be completely self contained, only using SQL queries
- * from here.
+/**
+ * Updates all of the collective tables for a consistent "schema". Since this class should work
+ * going back to extremely old versions of the code, this class should be completely self contained,
+ * only using SQL queries from here.
  *
  * @author brycew
- *
  */
 public class DatabaseVersion {
-  
-  final static int CURRENT_VERSION = 5;
-  private static Logger log = 
-      LoggerFactory.getLogger(DatabaseVersion.class);
+
+  static final int CURRENT_VERSION = 5;
+  private static Logger log = LoggerFactory.getLogger(DatabaseVersion.class);
   private final Connection codeConn;
   private final Connection userConn;
-  
+
   // Copied from CodeTableConstants
-  private final static String TABLE_EXISTS = """
+  private static final String TABLE_EXISTS =
+      """
         SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'
         AND table_name = ? LIMIT 1;
       """;
-  
+
   public DatabaseVersion(Connection codeConn, Connection userConn) {
     this.codeConn = codeConn;
     this.userConn = userConn;
   }
-  
+
   public void createTablesIfAbsent(boolean brandNew) throws SQLException {
-    String tableExistsQuery = TABLE_EXISTS; 
+    String tableExistsQuery = TABLE_EXISTS;
     PreparedStatement existsSt = userConn.prepareStatement(tableExistsQuery);
     existsSt.setString(1, "schema_version");
     ResultSet rs = existsSt.executeQuery();
     if (!rs.next() || rs.getInt(1) <= 0) {
-      String createSt = """
+      String createSt =
+          """
           CREATE TABLE schema_version ("version" integer NOT NULL)
           """;
       PreparedStatement pst = userConn.prepareStatement(createSt);
@@ -65,12 +64,12 @@ public class DatabaseVersion {
         setSchemaVersion(0);
       }
     }
-    return; 
+    return;
   }
-  
+
   public boolean setSchemaVersion(int newVersion) throws SQLException {
     String deleteSt = "DELETE FROM schema_version";
-    Statement delete = userConn.createStatement(); 
+    Statement delete = userConn.createStatement();
     delete.executeUpdate(deleteSt);
     String insertSt = "INSERT INTO schema_version (version) VALUES (?)";
     PreparedStatement insert = userConn.prepareStatement(insertSt);
@@ -79,7 +78,7 @@ public class DatabaseVersion {
     // Only worked it if inserted 1 row (the new version)
     return retVal > 0;
   }
-  
+
   public int getSchemaVersion() throws SQLException {
     String select = "SELECT version from schema_version";
     Statement st = userConn.createStatement();
@@ -89,7 +88,7 @@ public class DatabaseVersion {
     }
     return 0;
   }
-  
+
   public boolean updateToLatest() throws NoSuchAlgorithmException {
     try {
       int onDiskVersion = getSchemaVersion();
@@ -106,8 +105,14 @@ public class DatabaseVersion {
           }
           onDiskVersion += 1;
         } catch (SQLException ex) {
-          log.error("Couldn't update from version " + onDiskVersion + " to " + CURRENT_VERSION + ": " 
-            + strFromException(ex) + ": , reverting to on disk db");
+          log.error(
+              "Couldn't update from version "
+                  + onDiskVersion
+                  + " to "
+                  + CURRENT_VERSION
+                  + ": "
+                  + strFromException(ex)
+                  + ": , reverting to on disk db");
           try {
             userConn.rollback(savepoint);
           } catch (SQLException rollbackEx) {
@@ -123,7 +128,7 @@ public class DatabaseVersion {
     }
     return true;
   }
-  
+
   private boolean updateDatabase(int onDiskVersion) throws NoSuchAlgorithmException, SQLException {
     if (onDiskVersion == 0) {
       update0To1();
@@ -147,14 +152,16 @@ public class DatabaseVersion {
     try (Statement st = userConn.createStatement()) {
       ResultSet rs = st.executeQuery(query);
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
-      String updateTable = """
+      String updateTable =
+          """
           INSERT INTO at_rest_keys ("server_id", "api_key")
           VALUES (?, ?) ON CONFLICT (server_id) DO UPDATE SET api_key=?
           """;
       while (rs.next()) {
         UUID serverId = (UUID) rs.getObject(1);
         String apiKey = rs.getString(2);
-        String hashedKey = new String(Hex.encode(digest.digest(apiKey.getBytes(StandardCharsets.UTF_8))));
+        String hashedKey =
+            new String(Hex.encode(digest.digest(apiKey.getBytes(StandardCharsets.UTF_8))));
         try (PreparedStatement insertSt = userConn.prepareStatement(updateTable)) {
           insertSt.setObject(1, serverId);
           insertSt.setObject(2, hashedKey);
@@ -166,40 +173,82 @@ public class DatabaseVersion {
   }
 
   private void update1To2() throws SQLException {
-    // Conincides with the "jurisdiction" refactor: all codes need to also note which jurisdiction / domain they came from.
-    // Need to add the "domain text" column to every code table, with the value "illinois-stage" as the value.
+    // Conincides with the "jurisdiction" refactor: all codes need to also note which jurisdiction /
+    // domain they came from.
+    // Need to add the "domain text" column to every code table, with the value "illinois-stage" as
+    // the value.
     final String alterCodes = "ALTER TABLE %s ADD COLUMN domain text";
     final String updateCodes = "UPDATE %s SET domain='illinois-stage'";
     final String alterNotNull = "ALTER TABLE %s ALTER COLUMN domain SET NOT NULL";
-    
-    final List<String> tableNames = List.of("location", "error", "version", "installedversion",
-        "country", "state", "filingstatus", "datafieldconfig", "answer", "arrestlocation",
-        "bond", "casecategory", "casesubtype", "casetype", "chargephase", "citationjurisdiction",
-        "crossreference", "damageamount", "degree", "disclaimerrequirement", "driverlicensetype",
-        "documenttype", "ethnicity", "eyecolor", "filertype", "filetype", "filing", 
-        "filingcomponent", "generaloffense", "haircolor", "language", "lawenforcementunit",
-        "motiontype", "namesuffix", "optionalservices", "partytype", "physicalfeature",
-        "procedureremedy", "question", "race", "servicetype", "statute", "statutetype",
-        "vehiclecolor", "vehiclemake", "vehicletype");
+
+    final List<String> tableNames =
+        List.of(
+            "location",
+            "error",
+            "version",
+            "installedversion",
+            "country",
+            "state",
+            "filingstatus",
+            "datafieldconfig",
+            "answer",
+            "arrestlocation",
+            "bond",
+            "casecategory",
+            "casesubtype",
+            "casetype",
+            "chargephase",
+            "citationjurisdiction",
+            "crossreference",
+            "damageamount",
+            "degree",
+            "disclaimerrequirement",
+            "driverlicensetype",
+            "documenttype",
+            "ethnicity",
+            "eyecolor",
+            "filertype",
+            "filetype",
+            "filing",
+            "filingcomponent",
+            "generaloffense",
+            "haircolor",
+            "language",
+            "lawenforcementunit",
+            "motiontype",
+            "namesuffix",
+            "optionalservices",
+            "partytype",
+            "physicalfeature",
+            "procedureremedy",
+            "question",
+            "race",
+            "servicetype",
+            "statute",
+            "statutetype",
+            "vehiclecolor",
+            "vehiclemake",
+            "vehicletype");
 
     // Also need to make the indices on domain + location for the bigger tables.
     final String osIndex = "CREATE INDEX ON optionalservices (domain)";
     final String fIndex = "CREATE INDEX ON filing (domain)";
     final String fcIndex = "CREATE INDEX ON filingcomponent (domain)";
     final String rmPkey = "ALTER TABLE installedversion DROP CONSTRAINT installedversion_pkey";
-    final String makePkey = "ALTER TABLE installedversion ADD PRIMARY KEY (location, codelist, domain)";
-    
+    final String makePkey =
+        "ALTER TABLE installedversion ADD PRIMARY KEY (location, codelist, domain)";
+
     try (Statement st = codeConn.createStatement()) {
       for (String tableName : tableNames) {
         st.executeUpdate(alterCodes.formatted(tableName));
         st.executeUpdate(updateCodes.formatted(tableName));
         st.executeUpdate(alterNotNull.formatted(tableName));
       }
-      
+
       st.executeUpdate(osIndex);
       st.executeUpdate(fIndex);
       st.executeUpdate(fcIndex);
-      
+
       st.executeUpdate(rmPkey);
       st.executeUpdate(makePkey);
     }
@@ -207,7 +256,8 @@ public class DatabaseVersion {
   }
 
   private void update2To3() throws SQLException {
-    final String alterMsgTmpls = """
+    final String alterMsgTmpls =
+        """
       ALTER TABLE submitted_filings
         ADD COLUMN accepted_msg_template text,
         ADD COLUMN rejected_msg_template text,
@@ -221,7 +271,8 @@ public class DatabaseVersion {
 
   // Adds the case_title column to new transactions
   private void update3To4() throws SQLException {
-    final String alterTransactionWithCaseTitle = """
+    final String alterTransactionWithCaseTitle =
+        """
       ALTER TABLE submitted_filings
         ADD COLUMN case_title text""";
     try (Statement st = userConn.createStatement()) {
@@ -231,12 +282,14 @@ public class DatabaseVersion {
   }
 
   private void update4To5() throws SQLException {
-    final String alterMsgSubjectTones = """
+    final String alterMsgSubjectTones =
+        """
       ALTER TABLE submitted_filings
         ADD COLUMN accepted_msg_subject text,
         ADD COLUMN rejected_msg_subject text,
         ADD COLUMN neutral_msg_subject text""";
-    final String alterMsgSubjects = """
+    final String alterMsgSubjects =
+        """
       ALTER TABLE message_settings
         ADD COLUMN confirmation_subject_line text""";
     try (Statement st = userConn.createStatement()) {

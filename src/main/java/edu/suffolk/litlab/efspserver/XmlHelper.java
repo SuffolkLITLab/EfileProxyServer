@@ -4,13 +4,10 @@ import gov.niem.niem.domains.jxdm._4.CourtType;
 import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.MeasureType;
 import gov.niem.niem.niem_core._2.TextType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
-
 import java.io.File;
 import java.io.StringWriter;
 import java.time.LocalDate;
 import java.util.GregorianCalendar;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -20,22 +17,20 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
 
 /**
- * Helper class that easily converts Java native types to Cumbersome XML Schema types,
- * particularly those from Oasis's ECF standard, and the National Information
- * Exchange Model (NIEM).
+ * Helper class that easily converts Java native types to Cumbersome XML Schema types, particularly
+ * those from Oasis's ECF standard, and the National Information Exchange Model (NIEM).
  *
- * <p>Some information about NIEM:
- * Many of the types here all include the "SimpleObjectAttributeGroup", which,
- * "provides a collection of attributes which are appropriate for
- *    definition of object types", including an ID attribute, a Metadata attribute,
- * and a Link Metadata attribute that directly reference objects via IDs instead of
- * including the object as an element. TBH, I'm not sure what the design decisions
- * that dictate the use of them are, but they exist.</p>
+ * <p>Some information about NIEM: Many of the types here all include the
+ * "SimpleObjectAttributeGroup", which, "provides a collection of attributes which are appropriate
+ * for definition of object types", including an ID attribute, a Metadata attribute, and a Link
+ * Metadata attribute that directly reference objects via IDs instead of including the object as an
+ * element. TBH, I'm not sure what the design decisions that dictate the use of them are, but they
+ * exist.
  *
  * @author Bryce Willey
- *
  */
 public class XmlHelper {
 
@@ -63,10 +58,10 @@ public class XmlHelper {
     // TODO(#47): DEFAULT TIMEZONE IS WRONG: how should LocalDate +
     // GregorianCalendar operate?
     cal.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), 0, 0, 0);
-    
+
     gov.niem.niem.proxy.xsd._2.Date d = niemProxyObjFac.createDate();
     XMLGregorianCalendar x = datatypeFac.newXMLGregorianCalendar(cal);
-    x.setTimezone(DatatypeConstants.FIELD_UNDEFINED); 
+    x.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
     d.setValue(x);
 
     DateType dt = niemCoreObjFac.createDateType();
@@ -81,10 +76,10 @@ public class XmlHelper {
     return val;
   }
 
-
-  /** Converts a Java string to NIEM "Text", a wrapper around the NIEM String.
+  /**
+   * Converts a Java string to NIEM "Text", a wrapper around the NIEM String.
    *
-   * <p>"A data type for a character string"</p>
+   * <p>"A data type for a character string"
    */
   public static TextType convertText(String str) {
     TextType tt = niemCoreObjFac.createTextType();
@@ -92,7 +87,8 @@ public class XmlHelper {
     return tt;
   }
 
-  /** Converts a Java string to NIEM's XML String. "A datatype for character strings in XML."
+  /**
+   * Converts a Java string to NIEM's XML String. "A datatype for character strings in XML."
    * Practically, just a xsd:string with the extra SimpleObjectAttributeGroup attributes.
    */
   public static gov.niem.niem.proxy.xsd._2.String convertString(String str) {
@@ -100,8 +96,10 @@ public class XmlHelper {
     outStr.setValue(str);
     return outStr;
   }
-  
-  /** @param type will always be in bytes, but this is for backup. */
+
+  /**
+   * @param type will always be in bytes, but this is for backup.
+   */
   public static long sizeMeasureAsBytes(MeasureType type) {
     String measureText = ((TextType) type.getMeasureValue().getValue()).getValue();
     long measureNum = Long.parseLong(measureText);
@@ -145,7 +143,7 @@ public class XmlHelper {
     gov.niem.niem.proxy.xsd._2.Base64Binary binaryString = niemProxyObjFac.createBase64Binary();
     // We don't need to encode Base64? For some strange reason, JAXB does it for us.
     // See https://stackoverflow.com/a/7224025
-    //binaryString.setValue(Base64.getEncoder().encode(rawContent));
+    // binaryString.setValue(Base64.getEncoder().encode(rawContent));
     binaryString.setValue(rawContent);
     return binaryString;
   }
@@ -157,7 +155,7 @@ public class XmlHelper {
     court.setOrganizationIdentification(idType);
     return court;
   }
-  
+
   public static String amountToString(AmountType amt) {
     if (amt == null) {
       return "";
@@ -176,12 +174,12 @@ public class XmlHelper {
   }
 
   /**
-   * Converts any XML annotated object (from CXF) to a string. Useful for
-   * debugging. Doesn't throw, but does return the string of the exception instead.
+   * Converts any XML annotated object (from CXF) to a string. Useful for debugging. Doesn't throw,
+   * but does return the string of the exception instead.
    *
-   * @param  <T>   the type of object being passed in
-   * @param  toXml The object to do things with
-   * @return       the XML string to do what you want with
+   * @param  <T> the type of object being passed in
+   * @param toXml The object to do things with
+   * @return the XML string to do what you want with
    */
   public static <T> String objectToXmlStrOrError(T toXml, Class<T> toXmlClazz) {
     try {
@@ -192,24 +190,25 @@ public class XmlHelper {
   }
 
   /**
-   * Converts any XML annotated object (from CXF) to a string. Useful for
-   * testing. Will throw an exception if there's a JAXB error.
+   * Converts any XML annotated object (from CXF) to a string. Useful for testing. Will throw an
+   * exception if there's a JAXB error.
    *
-   * @param  <T>   the type of object being passed in
-   * @param  toXml The object to do things with
-   * @return       the XML string to do what you want with
+   * @param  <T> the type of object being passed in
+   * @param toXml The object to do things with
+   * @return the XML string to do what you want with
    */
   public static <T> String objectToXmlStr(T toXml, Class<T> toXmlClazz) throws JAXBException {
-    JAXBContext jaxContext = JAXBContext.newInstance(toXmlClazz,
-        gov.niem.niem.niem_core._2.ObjectFactory.class,
-        gov.niem.niem.structures._2.ObjectFactory.class,
-        oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
-        oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class,
-        ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ObjectFactory.class,
-        ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.ObjectFactory.class,
-        ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory.class,
-        ecfv5.gov.niem.release.niem.domains.jxdm._6.ObjectFactory.class
-        );
+    JAXBContext jaxContext =
+        JAXBContext.newInstance(
+            toXmlClazz,
+            gov.niem.niem.niem_core._2.ObjectFactory.class,
+            gov.niem.niem.structures._2.ObjectFactory.class,
+            oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
+            oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class,
+            ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ObjectFactory.class,
+            ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.ObjectFactory.class,
+            ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory.class,
+            ecfv5.gov.niem.release.niem.domains.jxdm._6.ObjectFactory.class);
     Marshaller mar = jaxContext.createMarshaller();
     mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
     QName qname = new QName("suffolk.test.objectToXml", "objectToXml");
@@ -220,25 +219,24 @@ public class XmlHelper {
   }
 
   /**
-   * Converts any XML annotated object (from CXF) to a file. Useful for
-   * testing larger XML objects that are unwieldly to print.
-   * Will throw an exception if there's a JAXB error.
+   * Converts any XML annotated object (from CXF) to a file. Useful for testing larger XML objects
+   * that are unwieldly to print. Will throw an exception if there's a JAXB error.
    *
-   * @param  <T>   the type of object being passed in
-   * @param  toXml The object to do things with
+   * @param  <T> the type of object being passed in
+   * @param toXml The object to do things with
    */
-  public static <T> void objectToXmlFile(T toXml, Class<T> toXmlClazz,
-      File outfile) throws JAXBException {
-    JAXBContext jc = JAXBContext.newInstance(
-        gov.niem.niem.niem_core._2.ObjectFactory.class,
-        gov.niem.niem.structures._2.ObjectFactory.class,
-        oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
-        oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class);
+  public static <T> void objectToXmlFile(T toXml, Class<T> toXmlClazz, File outfile)
+      throws JAXBException {
+    JAXBContext jc =
+        JAXBContext.newInstance(
+            gov.niem.niem.niem_core._2.ObjectFactory.class,
+            gov.niem.niem.structures._2.ObjectFactory.class,
+            oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
+            oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class);
     Marshaller mar = jc.createMarshaller();
     mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
     QName qname = new QName("suffolk.test.objectToXml", "objectToXml");
     JAXBElement<T> pp = new JAXBElement<T>(qname, toXmlClazz, toXml);
     mar.marshal(pp, outfile);
   }
-
 }

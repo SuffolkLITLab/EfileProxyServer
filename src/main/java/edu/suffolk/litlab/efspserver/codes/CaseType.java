@@ -13,13 +13,21 @@ public class CaseType {
   public String casecategory;
   /** Whether the court accepts new cases of this type. */
   public boolean initial;
+
   public BigDecimal fee;
   public String willfileddate;
   public String efspcode;
   public String location;
-  
-  public CaseType(String code, String name, String casecategory, String initial,
-      String fee, String willfileddate, String efspcode, String location) {
+
+  public CaseType(
+      String code,
+      String name,
+      String casecategory,
+      String initial,
+      String fee,
+      String willfileddate,
+      String efspcode,
+      String location) {
     this.code = code;
     this.name = name;
     this.casecategory = casecategory;
@@ -29,34 +37,56 @@ public class CaseType {
     this.efspcode = efspcode;
     this.location = location;
   }
-  
-  /** A constructor that takes a result set (DOES NOT modify it), gotten from
-   * executing the below {@link prepQueryBroad} query.
+
+  /**
+   * A constructor that takes a result set (DOES NOT modify it), gotten from executing the below
+   * {@link prepQueryBroad} query.
+   *
    * @param rs
- * @throws SQLException 
+   * @throws SQLException
    */
   public CaseType(ResultSet rs) throws SQLException {
-      this(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
-              rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8));
+    this(
+        rs.getString(1),
+        rs.getString(2),
+        rs.getString(3),
+        rs.getString(4),
+        rs.getString(5),
+        rs.getString(6),
+        rs.getString(7),
+        rs.getString(8));
   }
-  
+
   // HACK(brycew): here for when CaseType isn't present, but we have AllWrong collector
   public static CaseType DummyCase() {
-    return new CaseType("Bad code", "Bad name", "Bad Case Categor", "true", "-1", 
-        "Bad date", "Bade code", "Bad loc");
+    return new CaseType(
+        "Bad code",
+        "Bad name",
+        "Bad Case Categor",
+        "true",
+        "-1",
+        "Bad date",
+        "Bade code",
+        "Bad loc");
   }
-  
-  public static PreparedStatement prepQueryBroad(Connection conn, String domain, String courtLocationId,
-      String caseCategoryCode) throws SQLException {
+
+  public static PreparedStatement prepQueryBroad(
+      Connection conn, String domain, String courtLocationId, String caseCategoryCode)
+      throws SQLException {
     PreparedStatement st = conn.prepareStatement(getCaseTypesForCategory());
     st.setString(1, domain);
     st.setString(2, courtLocationId);
     st.setString(3, caseCategoryCode);
     return st;
   }
-  
-  public static PreparedStatement prepQueryTiming(Connection conn, String domain, String courtLocationId,
-      String caseCategoryCode, Optional<Boolean> isInitial) throws SQLException {
+
+  public static PreparedStatement prepQueryTiming(
+      Connection conn,
+      String domain,
+      String courtLocationId,
+      String caseCategoryCode,
+      Optional<Boolean> isInitial)
+      throws SQLException {
     boolean specifiedInitial = isInitial.orElse(false);
     if (specifiedInitial) {
       PreparedStatement st = conn.prepareStatement(getCaseTypesForTiming());
@@ -66,7 +96,7 @@ public class CaseType {
       st.setString(4, Boolean.toString(specifiedInitial));
       return st;
     }
-    
+
     PreparedStatement st = conn.prepareStatement(getCaseTypesForCategory());
     st.setString(1, domain);
     st.setString(2, courtLocationId);
@@ -74,8 +104,9 @@ public class CaseType {
     return st;
   }
 
-  public static PreparedStatement prepQueryWithCode(Connection conn, String domain, String courtLocationId,
-      String caseTypeCode) throws SQLException {
+  public static PreparedStatement prepQueryWithCode(
+      Connection conn, String domain, String courtLocationId, String caseTypeCode)
+      throws SQLException {
     PreparedStatement st = conn.prepareStatement(getCaseTypesWithCode());
     st.setString(1, domain);
     st.setString(2, courtLocationId);
@@ -110,7 +141,7 @@ public class CaseType {
         fee, willfileddate, efspcode, location
         FROM casetype WHERE domain=? AND location=? AND casecategory=?""";
   }
-  
+
   private static String getCaseTypesForTiming() {
     return getCaseTypesForCategory() + " AND initial ILIKE ?";
   }

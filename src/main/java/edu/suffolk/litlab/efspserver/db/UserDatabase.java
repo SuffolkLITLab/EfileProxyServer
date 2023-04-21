@@ -1,7 +1,6 @@
 package edu.suffolk.litlab.efspserver.db;
 
 import edu.suffolk.litlab.efspserver.codes.CodeTableConstants;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,23 +13,23 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Very similar to the CodeDatabase, but for user data, kept at a minimum.
+/**
+ * Very similar to the CodeDatabase, but for user data, kept at a minimum.
  *
- * <p>At the most, we save the transaction ID for the filing and some method of
- * contact (maybe their name too), so they can have instructions on what to do.</p>
+ * <p>At the most, we save the transaction ID for the filing and some method of contact (maybe their
+ * name too), so they can have instructions on what to do.
  *
  * @author brycew
  */
 public class UserDatabase implements DatabaseInterface {
-  private static Logger log = 
-      LoggerFactory.getLogger(UserDatabase.class); 
-  
+  private static Logger log = LoggerFactory.getLogger(UserDatabase.class);
+
   private final Connection conn;
 
   public UserDatabase(Connection conn) {
     this.conn = conn;
   }
-  
+
   public Connection getConnection() {
     return conn;
   }
@@ -42,11 +41,12 @@ public class UserDatabase implements DatabaseInterface {
       existsSt.setString(1, "submitted_filings");
       ResultSet rs = existsSt.executeQuery();
       if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
-        String createQuery = """
+        String createQuery =
+            """
              CREATE TABLE submitted_filings (
              "user_id" uuid, "name" text, "phone_number" text,
-             "email" text, "transaction_id" uuid PRIMARY KEY, "server_id" uuid, "api_key_used" text, 
-             "court_id" text, "casetype" text, 
+             "email" text, "transaction_id" uuid PRIMARY KEY, "server_id" uuid, "api_key_used" text,
+             "court_id" text, "casetype" text,
              "submitted" date, "accepted_msg_template" text,
              "accepted_msg_subject" text,
              "rejected_msg_template" text,
@@ -55,7 +55,7 @@ public class UserDatabase implements DatabaseInterface {
              "neutral_msg_subject" text,
              "case_title" text)""";
         try (Statement createSt = conn.createStatement()) {
-          log.info("Full statement: " + createQuery); 
+          log.info("Full statement: " + createQuery);
           int retVal = createSt.executeUpdate(createQuery);
           if (retVal < 0) {
             log.warn("Issue when creating submitted_filings: retVal == " + retVal);
@@ -65,35 +65,78 @@ public class UserDatabase implements DatabaseInterface {
       rs.close();
     }
   }
-  
-  public void addToTable(String name,
-      UUID filingPartyId, Optional<String> phoneNumber, String email,
-      List<UUID> transactionIds, UUID serverId, String apiKeyUsed, String caseType, String courtId, Timestamp submitted,
-      String acceptedTmpl, String acceptedSubject, String rejectedTmpl, String rejectedSubject, String neutralTmpl, String neutralSubject,
-      String caseTitle) throws SQLException {
+
+  public void addToTable(
+      String name,
+      UUID filingPartyId,
+      Optional<String> phoneNumber,
+      String email,
+      List<UUID> transactionIds,
+      UUID serverId,
+      String apiKeyUsed,
+      String caseType,
+      String courtId,
+      Timestamp submitted,
+      String acceptedTmpl,
+      String acceptedSubject,
+      String rejectedTmpl,
+      String rejectedSubject,
+      String neutralTmpl,
+      String neutralSubject,
+      String caseTitle)
+      throws SQLException {
     for (UUID id : transactionIds) {
-      addToTable(name, filingPartyId, phoneNumber, email, id, serverId, apiKeyUsed, caseType, courtId, submitted,
-        acceptedTmpl, acceptedSubject, rejectedTmpl, rejectedSubject, neutralTmpl, neutralSubject, caseTitle);
+      addToTable(
+          name,
+          filingPartyId,
+          phoneNumber,
+          email,
+          id,
+          serverId,
+          apiKeyUsed,
+          caseType,
+          courtId,
+          submitted,
+          acceptedTmpl,
+          acceptedSubject,
+          rejectedTmpl,
+          rejectedSubject,
+          neutralTmpl,
+          neutralSubject,
+          caseTitle);
     }
   }
-  
+
   /** Adds the given values as a row in the submitted table. */
-  public void addToTable(String name,
-      UUID filingPartyId, Optional<String> phoneNumber, String email, 
-      UUID transactionId, UUID serverId, String apiKeyUsed, String caseType, 
-      String courtId, Timestamp submitted, String acceptedTmpl, 
+  public void addToTable(
+      String name,
+      UUID filingPartyId,
+      Optional<String> phoneNumber,
+      String email,
+      UUID transactionId,
+      UUID serverId,
+      String apiKeyUsed,
+      String caseType,
+      String courtId,
+      Timestamp submitted,
+      String acceptedTmpl,
       String acceptedSubject,
-      String rejectedTmpl, String rejectedSubject,
-      String neutralTmpl, String neutralSubject, String caseTitle) throws SQLException {
+      String rejectedTmpl,
+      String rejectedSubject,
+      String neutralTmpl,
+      String neutralSubject,
+      String caseTitle)
+      throws SQLException {
     if (conn == null) {
       log.error("Connection in addToTable wasn't open yet!");
       throw new SQLException();
     }
-    String insertIntoTable = """
+    String insertIntoTable =
+        """
                     INSERT INTO submitted_filings (
-                        "user_id", "name", 
+                        "user_id", "name",
                         "phone_number", "email", "transaction_id", "server_id",
-                        "api_key_used", "casetype", "court_id", "submitted", 
+                        "api_key_used", "casetype", "court_id", "submitted",
                         "accepted_msg_template",
                         "accepted_msg_subject",
                         "rejected_msg_template",
@@ -102,14 +145,14 @@ public class UserDatabase implements DatabaseInterface {
                         "neutral_msg_subject",
                         "case_title"
                     ) VALUES (
-                        ?, ?, 
+                        ?, ?,
                         ?, ?, ?, ?,
                         ?, ?, ?, ?,
                         ?, ?, ?, ?, ?, ?, ?)""";
     try (PreparedStatement insertSt = conn.prepareStatement(insertIntoTable)) {
       insertSt.setObject(1, filingPartyId);
       insertSt.setString(2, name);
-      String phone = phoneNumber.orElse(null); 
+      String phone = phoneNumber.orElse(null);
       insertSt.setString(3, phone);
       insertSt.setString(4, email);
       insertSt.setObject(5, transactionId);
@@ -128,10 +171,9 @@ public class UserDatabase implements DatabaseInterface {
       insertSt.executeUpdate();
     }
   }
-  
+
   // TODO(brycew-later): consider having to lookup "callbacked" users: either in DB or just in Logs
-  /** Gets the info from the table by using the (Primary key'd) transaction id.
-   */
+  /** Gets the info from the table by using the (Primary key'd) transaction id. */
   public Optional<Transaction> findTransaction(UUID transactionToFind) throws SQLException {
     if (conn == null) {
       log.error("Connection in findTransaction wasn't open yet!");
@@ -147,13 +189,13 @@ public class UserDatabase implements DatabaseInterface {
       return Optional.of(trans);
     }
   }
-  
+
   public boolean removeFromTable(UUID transactionToRm) throws SQLException {
     if (conn == null) {
       log.error("Connection in removeFromTable wasn't open yet");
       throw new SQLException();
     }
-    
+
     String rmUpdate = "DELETE FROM submitted_filings WHERE transaction_id = ?";
     try (PreparedStatement st = conn.prepareStatement(rmUpdate)) {
       st.setObject(1, transactionToRm);

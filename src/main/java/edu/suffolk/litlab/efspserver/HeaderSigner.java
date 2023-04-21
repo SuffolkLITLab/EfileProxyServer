@@ -31,15 +31,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HeaderSigner {
-  private static Logger log = 
-      LoggerFactory.getLogger(HeaderSigner.class); 
+  private static Logger log = LoggerFactory.getLogger(HeaderSigner.class);
 
   private static final String SIGNATUREALGO = "SHA256withRSA";
-  private final String pathToKeystore; 
+  private final String pathToKeystore;
   private final String x509Password;
 
-  /** The string password to the x509 certificate. This password is given by Tyler,
-   * and will also unlock the .pfx file.
+  /**
+   * The string password to the x509 certificate. This password is given by Tyler, and will also
+   * unlock the .pfx file.
    *
    * @param pathToKeystore The path to the '.pfx' file that contains Tyler provided X509 certificate
    * @param x509Password the password to the password for that x509 password
@@ -64,7 +64,7 @@ public class HeaderSigner {
 
   private KeyStore loadKeyStore() throws GeneralSecurityException, IOException {
     KeyStore keystore = KeyStore.getInstance("JKS");
-    InputStream is = new FileInputStream(this.pathToKeystore); 
+    InputStream is = new FileInputStream(this.pathToKeystore);
     keystore.load(is, this.x509Password.toCharArray());
     return keystore;
   }
@@ -85,30 +85,32 @@ public class HeaderSigner {
     Certificate cert = keystore.getCertificate(alias);
 
     char[] x509Password = this.x509Password.toCharArray();
-    ContentSigner signer = new JcaContentSignerBuilder(SIGNATUREALGO).setProvider("BC")
-        .build((PrivateKey) (keystore.getKey(alias, x509Password)));
+    ContentSigner signer =
+        new JcaContentSignerBuilder(SIGNATUREALGO)
+            .setProvider("BC")
+            .build((PrivateKey) (keystore.getKey(alias, x509Password)));
 
     CMSSignedDataGenerator generator = new CMSSignedDataGenerator();
 
-    generator.addSignerInfoGenerator(new JcaSignerInfoGeneratorBuilder(
-        new JcaDigestCalculatorProviderBuilder().setProvider("BC").build()).build(signer,
-            (X509Certificate) cert));
+    generator.addSignerInfoGenerator(
+        new JcaSignerInfoGeneratorBuilder(
+                new JcaDigestCalculatorProviderBuilder().setProvider("BC").build())
+            .build(signer, (X509Certificate) cert));
 
     generator.addCertificates(certstore);
     return generator;
   }
 
-  /** Signs the provided @param content with the X509 certificate, returning
-   * the signed string as a base64 encoded string. 
+  /**
+   * Signs the provided @param content with the X509 certificate, returning the signed string as a
+   * base64 encoded string.
    *
    * @param content The string to be signed
    * @return The base64 encoded string, empty if something went wrong with the cert
    */
   public Optional<String> signedBase64(String content) {
     try {
-      byte[] signedBytes = signPkcs7(
-          content.getBytes("UTF-8"),
-          setUpProvider(loadKeyStore()));
+      byte[] signedBytes = signPkcs7(content.getBytes("UTF-8"), setUpProvider(loadKeyStore()));
       return Optional.of(Base64.getEncoder().encodeToString(signedBytes));
     } catch (GeneralSecurityException ex) {
       log.error("Exception when trying to sign info with a X509 cert: " + ex);
@@ -123,16 +125,13 @@ public class HeaderSigner {
   }
 
   /**
-   * Gets the current timestamp, signs it with an x.509 cert, and returns the
-   * signature
+   * Gets the current timestamp, signs it with an x.509 cert, and returns the signature
    *
-   * @return           signed bytes of the timestamp string that has been base 64
-   *                   encoded
+   * @return signed bytes of the timestamp string that has been base 64 encoded
    */
   public Optional<String> signedCurrentTime() {
     Instant now = Instant.now(Clock.systemUTC());
     String currentTimestamp = now.toString();
     return signedBase64(currentTimestamp);
   }
-
 }

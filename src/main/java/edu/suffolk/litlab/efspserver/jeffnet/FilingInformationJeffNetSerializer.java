@@ -8,7 +8,6 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,8 +20,8 @@ public class FilingInformationJeffNetSerializer extends StdSerializer<FilingInfo
   private static final long serialVersionUID = 1L;
   private LegalIssuesTaxonomyCodes taxonomyCodes;
 
-  protected FilingInformationJeffNetSerializer(Class<FilingInformation> t, 
-      LegalIssuesTaxonomyCodes taxonomyCodes) {
+  protected FilingInformationJeffNetSerializer(
+      Class<FilingInformation> t, LegalIssuesTaxonomyCodes taxonomyCodes) {
     super(t);
     this.taxonomyCodes = taxonomyCodes;
   }
@@ -32,7 +31,8 @@ public class FilingInformationJeffNetSerializer extends StdSerializer<FilingInfo
       throws IOException {
     CaseInfo caseInfo = new CaseInfo();
     caseInfo.caseCourt = info.getCourtLocation();
-    Set<String> ecfs = taxonomyCodes.allEcfCaseTypes(Arrays.asList(info.getCaseCategoryCode().split(", ")));
+    Set<String> ecfs =
+        taxonomyCodes.allEcfCaseTypes(Arrays.asList(info.getCaseCategoryCode().split(", ")));
     if (ecfs.size() == 1) {
       caseInfo.caseCategory = ecfs.iterator().next();
     } else {
@@ -50,7 +50,8 @@ public class FilingInformationJeffNetSerializer extends StdSerializer<FilingInfo
     Callback callbackObj = new Callback();
     String filingUid = UUID.randomUUID().toString();
     callbackObj.id = filingUid;
-    callbackObj.callbackUrl = ServiceHelpers.REST_CALLBACK_URL.formatted("louisiana", info.getCourtLocation());
+    callbackObj.callbackUrl =
+        ServiceHelpers.REST_CALLBACK_URL.formatted("louisiana", info.getCourtLocation());
 
     gen.writeStartObject();
     gen.writeObjectField("SendingMDELocationID", mde);
@@ -89,5 +90,4 @@ public class FilingInformationJeffNetSerializer extends StdSerializer<FilingInfo
     @JsonProperty("Id")
     String id;
   }
-
 }

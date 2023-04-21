@@ -26,9 +26,10 @@ public class Transaction {
   public Timestamp submitted;
   public String caseTitle;
 
-  public final static String query = """
+  public static final String query =
+      """
         SELECT name, user_id, phone_number, email, transaction_id, server_id,
-            api_key_used, casetype, court_id, submitted, accepted_msg_template, 
+            api_key_used, casetype, court_id, submitted, accepted_msg_template,
             accepted_msg_subject, rejected_msg_template, rejected_msg_subject,
             neutral_msg_template, neutral_msg_subject, case_title
         FROM submitted_filings

@@ -9,31 +9,43 @@ public class CaseCategory {
   /** The Tyler specific code for this case category. E.g.: 183528 */
   public final String code;
   /**
-   *  A human understandable name for this category. Can be broad, like "Probate", or
-   * specific, like "Law Magistrate: Damages over $10,000 up to $50,000
+   * A human understandable name for this category. Can be broad, like "Probate", or specific, like
+   * "Law Magistrate: Damages over $10,000 up to $50,000
    */
   public final String name;
-  /** The ECF Case Type Schema Name. These are things like "AppellateCase", "BankruptcyCase", etc.
-   * The full list is at https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Toc425241622
+  /**
+   * The ECF Case Type Schema Name. These are things like "AppellateCase", "BankruptcyCase", etc.
+   * The full list is at
+   * https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Toc425241622
    */
   public final String ecfcasetype;
   // TODO(brycew-later): turn these into enums
-  /** Indicates the behavior of the Procedure/Remedy code field for initial filings
-   * E.g.: (Not Available, Available, Required)
+  /**
+   * Indicates the behavior of the Procedure/Remedy code field for initial filings E.g.: (Not
+   * Available, Available, Required)
    */
   public final String procedureremedyinitial;
-  /** Indicates the behavior of the Procedure/Remedy code field for subsequent filings
-   * E.g.: (Not Available, Available, Required)
+  /**
+   * Indicates the behavior of the Procedure/Remedy code field for subsequent filings E.g.: (Not
+   * Available, Available, Required)
    */
   public final String procedureremedysubsequent;
-  /** Indicates the behavior of the DamageAmount code field for initial filings.
-   * E.g.: (Not Available, Available, Required)
+  /**
+   * Indicates the behavior of the DamageAmount code field for initial filings. E.g.: (Not
+   * Available, Available, Required)
    */
   public final String damageamountinitial;
+
   public final String damageamountsubsequent;
 
-  public CaseCategory(String code, String name, String ecfCaseType, String procedureremedyinitial,
-      String procedureSub, String damageinitial, String damagesubsequent) {
+  public CaseCategory(
+      String code,
+      String name,
+      String ecfCaseType,
+      String procedureremedyinitial,
+      String procedureSub,
+      String damageinitial,
+      String damagesubsequent) {
     this.code = code;
     this.name = name;
     this.ecfcasetype = ecfCaseType;
@@ -44,16 +56,23 @@ public class CaseCategory {
   }
 
   public CaseCategory(ResultSet rs) throws SQLException {
-    this(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
-        rs.getString(5), rs.getString(6), rs.getString(7));
+    this(
+        rs.getString(1),
+        rs.getString(2),
+        rs.getString(3),
+        rs.getString(4),
+        rs.getString(5),
+        rs.getString(6),
+        rs.getString(7));
   }
 
   public String getCode() {
     return code;
   }
-  
-  public static PreparedStatement prepFilableQueryTiming(Connection conn, String domain, String courtLocationId, 
-      Boolean isInitial) throws SQLException {
+
+  public static PreparedStatement prepFilableQueryTiming(
+      Connection conn, String domain, String courtLocationId, Boolean isInitial)
+      throws SQLException {
     if (isInitial) {
       PreparedStatement st = conn.prepareStatement(getFileableCaseCategoryForTiming());
       st.setString(1, domain);
@@ -61,10 +80,11 @@ public class CaseCategory {
       st.setString(3, Boolean.toString(isInitial));
       return st;
     }
-    return prepFileableQuery(conn, domain, courtLocationId); 
+    return prepFileableQuery(conn, domain, courtLocationId);
   }
 
-  public static PreparedStatement prepFileableQuery(Connection conn, String domain, String courtLocationId) throws SQLException {
+  public static PreparedStatement prepFileableQuery(
+      Connection conn, String domain, String courtLocationId) throws SQLException {
     PreparedStatement st = conn.prepareStatement(getFileableCaseCategoryForLoc());
     st.setString(1, domain);
     st.setString(2, courtLocationId);
@@ -124,5 +144,4 @@ public class CaseCategory {
         FROM casecategory WHERE domain=? AND location=? AND code=?
         """;
   }
-
 }

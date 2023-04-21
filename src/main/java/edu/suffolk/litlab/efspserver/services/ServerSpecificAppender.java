@@ -1,25 +1,20 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.util.Map;
-
-import java.util.HashMap;
-import java.util.concurrent.locks.ReentrantLock;
-
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * A special logging class that we use to write server specific events
- * to specific files.
- */
+/** A special logging class that we use to write server specific events to specific files. */
 public class ServerSpecificAppender extends AppenderBase<ILoggingEvent> {
-  
+
   Encoder<ILoggingEvent> encoder;
 
   // TODO(brycew): does this need a few more locks for better performance?
@@ -31,7 +26,7 @@ public class ServerSpecificAppender extends AppenderBase<ILoggingEvent> {
 
   @Override
   public void start() {
-    if (this.encoder== null) {
+    if (this.encoder == null) {
       addError("No encoder set for the appender named [" + name + "].");
       return;
     }

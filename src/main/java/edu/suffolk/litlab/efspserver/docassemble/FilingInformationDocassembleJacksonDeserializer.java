@@ -4,11 +4,10 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.hubspot.algebra.Result;
-
 import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
@@ -18,7 +17,6 @@ import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,26 +26,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FilingInformationDocassembleJacksonDeserializer
     extends StdDeserializer<FilingInformation> {
-  private static Logger log = LoggerFactory.getLogger(
-      FilingInformationDocassembleJacksonDeserializer.class);
+  private static Logger log =
+      LoggerFactory.getLogger(FilingInformationDocassembleJacksonDeserializer.class);
 
   private static final long serialVersionUID = 1L;
   private final InfoCollector classCollector;
 
-  public FilingInformationDocassembleJacksonDeserializer(Class<FilingInformation> t, InfoCollector collector) {
+  public FilingInformationDocassembleJacksonDeserializer(
+      Class<FilingInformation> t, InfoCollector collector) {
     super(t);
     this.classCollector = collector;
   }
 
-  /** 
+  /**
    * @param topObj
    * @param potentialMember
    * @param collector
@@ -55,10 +53,11 @@ public class FilingInformationDocassembleJacksonDeserializer
    * @return
    * @throws FilingError
    */
-  private static List<Person> collectPeople(JsonNode topObj,
-      String potentialMember, InfoCollector collector, String filterFlag) throws FilingError {
+  private static List<Person> collectPeople(
+      JsonNode topObj, String potentialMember, InfoCollector collector, String filterFlag)
+      throws FilingError {
     if (!topObj.has(potentialMember)) {
-      return List.of();  // Just an empty list: we don't know if it's required
+      return List.of(); // Just an empty list: we don't know if it's required
     }
     Optional<JsonNode> maybePplElements = JsonHelpers.unwrapDAList(topObj.get(potentialMember));
     if (maybePplElements.isEmpty()) {
@@ -66,7 +65,7 @@ public class FilingInformationDocassembleJacksonDeserializer
           potentialMember + " isn't an List with an array attribute called '.elements'");
     }
     List<Person> people = new ArrayList<Person>();
-    JsonNode peopleElements = maybePplElements.get(); 
+    JsonNode peopleElements = maybePplElements.get();
     for (int i = 0; i < peopleElements.size(); i++) {
       JsonNode personJson = peopleElements.get(i);
       if (filterFlag != null && !filterFlag.isBlank()) {
@@ -84,13 +83,14 @@ public class FilingInformationDocassembleJacksonDeserializer
         log.warn("Person exception: " + ex);
         collector.error(ex);
       }
-      
+
       people.add(per.unwrapOrElseThrow());
     }
-    return List.copyOf(people); 
+    return List.copyOf(people);
   }
 
-  public static FilingInformation fromNode(JsonNode node, InfoCollector collector) throws FilingError {
+  public static FilingInformation fromNode(JsonNode node, InfoCollector collector)
+      throws FilingError {
     if (!node.isObject()) {
       FilingError err = FilingError.malformedInterview("interview isn't a json object");
       collector.error(err);
@@ -98,7 +98,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
     FilingInformation entities = new FilingInformation();
     entities.setPreviousCaseId(extractNullableString(node.get("previous_case_id")));
-    entities.setCaseDocketNumber(extractNullableString(node.get("docket_number"))); 
+    entities.setCaseDocketNumber(extractNullableString(node.get("docket_number")));
     boolean isFirstIndexedFiling = entities.getPreviousCaseId().isEmpty();
 
     List<Person> users = collectPeople(node, "users", collector, "");
@@ -107,39 +107,49 @@ public class FilingInformationDocassembleJacksonDeserializer
     var varToPartyId = new HashMap<String, PartyId>();
     int perIdx = 0;
     for (Person user : users) {
-      varToPartyId.put("users[" + perIdx + "]", user.getPartyId()); 
+      varToPartyId.put("users[" + perIdx + "]", user.getPartyId());
       varToPartyId.put(user.getPartyId().getIdentificationString(), user.getPartyId());
       perIdx++;
     }
     perIdx = 0;
     for (Person party : otherParties) {
-      varToPartyId.put("other_parties[" + perIdx + "]", party.getPartyId()); 
+      varToPartyId.put("other_parties[" + perIdx + "]", party.getPartyId());
       varToPartyId.put(party.getPartyId().getIdentificationString(), party.getPartyId());
       perIdx++;
     }
-    users = users.stream()
-        .filter(u -> u.getPartyId().isNewInCurrentFiling())
-        .collect(Collectors.toUnmodifiableList());
-    otherParties = otherParties.stream()
-        .filter(o -> o.getPartyId().isNewInCurrentFiling())
-        .collect(Collectors.toUnmodifiableList());
+    users =
+        users.stream()
+            .filter(u -> u.getPartyId().isNewInCurrentFiling())
+            .collect(Collectors.toUnmodifiableList());
+    otherParties =
+        otherParties.stream()
+            .filter(o -> o.getPartyId().isNewInCurrentFiling())
+            .collect(Collectors.toUnmodifiableList());
     if (isFirstIndexedFiling) {
       if (users.isEmpty()) {
-        InterviewVariable varExpected = new InterviewVariable("users",
-            "the side of the matter that current person answering this interview is on (must have is_new=True)",
-            "ALPeopleList", List.of());
+        InterviewVariable varExpected =
+            new InterviewVariable(
+                "users",
+                "the side of the matter that current person answering this interview is on (must"
+                    + " have is_new=True)",
+                "ALPeopleList",
+                List.of());
         collector.addRequired(varExpected);
         throw FilingError.missingRequired(varExpected);
       }
       if (otherParties.isEmpty()) {
-        InterviewVariable othersExpected = new InterviewVariable("other_parties",
-            "the opposite side of the matter, the side that current person answering this interview is not on (must have is_new=True)",
-            "ALPeopleList", List.of());
+        InterviewVariable othersExpected =
+            new InterviewVariable(
+                "other_parties",
+                "the opposite side of the matter, the side that current person answering this"
+                    + " interview is not on (must have is_new=True)",
+                "ALPeopleList",
+                List.of());
         collector.addOptional(othersExpected);
       }
       JsonNode prefLang = node.get("user_preferred_language");
       if (prefLang != null && prefLang.isTextual()) {
-        users.get(0).setLanguage(prefLang.asText()); 
+        users.get(0).setLanguage(prefLang.asText());
       }
 
       Optional<String> userEmail = Optional.empty();
@@ -147,23 +157,28 @@ public class FilingInformationDocassembleJacksonDeserializer
         userEmail = users.get(0).getContactInfo().getEmail();
       }
       if (userEmail.isEmpty() || userEmail.orElse("").isBlank()) {
-        InterviewVariable var = new InterviewVariable(
-            "users[0].email", "Email is required for at least one user", "text", List.of());
+        InterviewVariable var =
+            new InterviewVariable(
+                "users[0].email", "Email is required for at least one user", "text", List.of());
         collector.addRequired(var);
       }
-    } 
+    }
 
-    boolean userStartedCase = true; 
+    boolean userStartedCase = true;
     JsonNode startedCaseJson = node.get("user_started_case");
     if (startedCaseJson != null && startedCaseJson.isBoolean()) {
-      userStartedCase = startedCaseJson.asBoolean(); 
+      userStartedCase = startedCaseJson.asBoolean();
     } else {
       JsonNode roleJson = node.get("user_role");
-      if (roleJson!= null && roleJson.isTextual()) {
+      if (roleJson != null && roleJson.isTextual()) {
         userStartedCase = roleJson.asText("").equalsIgnoreCase("plaintiff");
       } else {
-        InterviewVariable var = collector.requestVar("user_started_case",
-            "True if the user is the plaintiff or petitioner", "boolean", List.of("true", "false"));
+        InterviewVariable var =
+            collector.requestVar(
+                "user_started_case",
+                "True if the user is the plaintiff or petitioner",
+                "boolean",
+                List.of("true", "false"));
         collector.addRequired(var);
       }
     }
@@ -181,8 +196,10 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
 
     entities.setAttorneyIds(extractAttorneyIds(node.get("attorney_ids")));
-    entities.setPartyAttorneyMap(extractPartyAttorneyMap(node.get("party_to_attorneys"), varToPartyId));
-    entities.setServiceContacts(extractServiceContacts(node.get("service_contacts"), varToPartyId, collector));
+    entities.setPartyAttorneyMap(
+        extractPartyAttorneyMap(node.get("party_to_attorneys"), varToPartyId));
+    entities.setServiceContacts(
+        extractServiceContacts(node.get("service_contacts"), varToPartyId, collector));
 
     // TODO(brycew-later): this approach is a complete mess, don't know
     // how to best map LIST onto case categories, ECF is too high level
@@ -198,13 +215,13 @@ public class FilingInformationDocassembleJacksonDeserializer
       }
     }
 
-    JsonNode category = node.get("efile_case_category"); 
+    JsonNode category = node.get("efile_case_category");
     if (category != null && !category.isNull() && category.isTextual()) {
       entities.setCaseCategoryCode(category.asText());
     } else if (metadata.has("categories") && metadata.get("categories").isArray()) {
       List<String> categories = new ArrayList<String>();
       metadata.get("categories").forEach((cat) -> categories.add(cat.asText()));
-      entities.setCaseCategoryCode(String.join(", ", categories)); 
+      entities.setCaseCategoryCode(String.join(", ", categories));
       log.info("Categories: " + categories.toString());
     } else if (isFirstIndexedFiling) {
       InterviewVariable var = collector.requestVar("efile_case_category", "", "text");
@@ -225,26 +242,33 @@ public class FilingInformationDocassembleJacksonDeserializer
     if (subtype != null && subtype.isTextual()) {
       entities.setCaseSubtypeCode(subtype.asText());
     } else if (isFirstIndexedFiling) {
-      InterviewVariable var = collector.requestVar("efile_case_subtype", "subtype (not always present)", "text");
+      InterviewVariable var =
+          collector.requestVar("efile_case_subtype", "subtype (not always present)", "text");
       collector.addOptional(var);
       entities.setCaseSubtypeCode("");
     }
 
     // Get the interview metadablock TODO(brycew-later): just one for now
-    //log.info("Keyset: " + metadataElems.fieldNames());
+    // log.info("Keyset: " + metadataElems.fieldNames());
 
-    entities.setFilings(extractFilingDocs(node.get("al_court_bundle"),
-        node.get("comments_to_clerk"), varToPartyId, collector));
+    entities.setFilings(
+        extractFilingDocs(
+            node.get("al_court_bundle"), node.get("comments_to_clerk"), varToPartyId, collector));
     if (entities.getFilings().isEmpty()) {
       log.error("There are no filings in the envelope?");
-      FilingError err = FilingError.malformedInterview("the envelope needs at least one filing as a bundle and that has sub documents, each with a PDF URL, or needs to have that info itself");
+      FilingError err =
+          FilingError.malformedInterview(
+              "the envelope needs at least one filing as a bundle and that has sub documents, each"
+                  + " with a PDF URL, or needs to have that info itself");
       collector.error(err);
     }
-    entities.setPaymentId(extractNullableString(node.get("tyler_payment_id"))); 
-    
+    entities.setPaymentId(extractNullableString(node.get("tyler_payment_id")));
+
     JsonNode leadJson = node.get("lead_contact");
     if (leadJson == null) {
-      InterviewVariable var = collector.requestVar("lead_contact", "Someone to contact about this case", "ALIndividual");
+      InterviewVariable var =
+          collector.requestVar(
+              "lead_contact", "Someone to contact about this case", "ALIndividual");
       collector.addRequired(var);
     } else {
       collector.pushAttributeStack("lead_contact");
@@ -259,20 +283,23 @@ public class FilingInformationDocassembleJacksonDeserializer
       } else {
         Person person = per.unwrapOrElseThrow();
         if (person.getContactInfo().getEmail().isEmpty()) {
-          InterviewVariable var = collector.requestVar("lead_contact.email", 
-              "We need an email to contact someone about this case.", "text");
+          InterviewVariable var =
+              collector.requestVar(
+                  "lead_contact.email",
+                  "We need an email to contact someone about this case.",
+                  "text");
           collector.addRequired(var);
         }
-        entities.setLeadContact(person); 
-      } 
+        entities.setLeadContact(person);
+      }
     }
-    
+
     entities.setReturnDate(extractReturnDate(node.get("return_date"), collector));
     entities.setMiscInfo(node);
 
     return entities;
   }
-  
+
   private static List<String> extractAttorneyIds(JsonNode attorneyIdsJson) {
     List<String> ids = new ArrayList<String>();
     if (attorneyIdsJson != null && attorneyIdsJson.isArray()) {
@@ -280,10 +307,10 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
     return ids;
   }
-  
-  private static Map<PartyId, List<String>> extractPartyAttorneyMap(JsonNode maybePartyToAttorney, 
-      Map<String, PartyId> varToPartyId) {
-    Map<PartyId, List<String>> partyToAttorney = new HashMap<>(); 
+
+  private static Map<PartyId, List<String>> extractPartyAttorneyMap(
+      JsonNode maybePartyToAttorney, Map<String, PartyId> varToPartyId) {
+    Map<PartyId, List<String>> partyToAttorney = new HashMap<>();
     Optional<JsonNode> partyToAttorneyJson = JsonHelpers.unwrapDADict(maybePartyToAttorney);
     log.info("" + varToPartyId);
     if (partyToAttorneyJson.isPresent()) {
@@ -299,17 +326,17 @@ public class FilingInformationDocassembleJacksonDeserializer
         log.info("filing party for attorney map: " + userStr + ": " + realId);
         // Get the attorney elements (just strings in a list or DAList) into this Java List
         var theseAttorneys = new ArrayList<String>();
-        JsonHelpers.unwrapDAList(elem.getValue()).ifPresent(x -> x.elements().forEachRemaining(v -> theseAttorneys.add(v.asText())));
+        JsonHelpers.unwrapDAList(elem.getValue())
+            .ifPresent(x -> x.elements().forEachRemaining(v -> theseAttorneys.add(v.asText())));
         partyToAttorney.put(realId, theseAttorneys);
       }
     }
     return partyToAttorney;
   }
-  
+
   private static List<CaseServiceContact> extractServiceContacts(
-          JsonNode maybeContacts, 
-          Map<String, PartyId> varToPartyId, 
-          InfoCollector collector) throws FilingError {
+      JsonNode maybeContacts, Map<String, PartyId> varToPartyId, InfoCollector collector)
+      throws FilingError {
     Optional<JsonNode> serviceContactsJson = JsonHelpers.unwrapDAList(maybeContacts);
     if (serviceContactsJson.isPresent()) {
       List<CaseServiceContact> contacts = new ArrayList<>();
@@ -325,42 +352,54 @@ public class FilingInformationDocassembleJacksonDeserializer
           } else {
             realId = Optional.of(PartyId.Already(partyAssoc.asText()));
           }
-          log.info("Filing party id (" + partyAssoc.asText() + ") for service party assoc ("
-              + servObj.get("contact_id").asText() + "): " + realId);
+          log.info(
+              "Filing party id ("
+                  + partyAssoc.asText()
+                  + ") for service party assoc ("
+                  + servObj.get("contact_id").asText()
+                  + "): "
+                  + realId);
         } else if (partyAssoc != null && !partyAssoc.isNull()) {
-          log.warn("What is party_association? should be text: " + partyAssoc); 
-          collector.addWrong(collector.requestVar("party_association", 
-              "Party association should be text, is" + partyAssoc.toString(), "text"));
+          log.warn("What is party_association? should be text: " + partyAssoc);
+          collector.addWrong(
+              collector.requestVar(
+                  "party_association",
+                  "Party association should be text, is" + partyAssoc.toString(),
+                  "text"));
         }
         JsonNode contactId = servObj.get("contact_id");
         if (contactId == null || !contactId.isTextual()) {
-          collector.addWrong(collector.requestVar("contact_id", "Service contacts must have a contact id", "text"));
+          collector.addWrong(
+              collector.requestVar(
+                  "contact_id", "Service contacts must have a contact id", "text"));
         }
         JsonNode serviceType = servObj.get("service_type");
         if (serviceType == null || !serviceType.isTextual()) {
-          collector.addWrong(collector.requestVar("service_type", "Service contacts must have a service type code", "text"));
+          collector.addWrong(
+              collector.requestVar(
+                  "service_type", "Service contacts must have a service type code", "text"));
         }
-        CaseServiceContact contact = new CaseServiceContact(
-            contactId.asText(),
-            serviceType.asText(), realId);
+        CaseServiceContact contact =
+            new CaseServiceContact(contactId.asText(), serviceType.asText(), realId);
         contacts.add(contact);
         servIdx++;
-        collector.popAttributeStack(); 
+        collector.popAttributeStack();
       }
       return contacts;
     } else {
       return List.of();
     }
   }
-  
+
   private static List<FilingDoc> extractFilingDocs(
-          JsonNode bundle, 
-          JsonNode clerkComments, 
-          Map<String, PartyId> varToPartyId, 
-          InfoCollector collector) throws FilingError {
+      JsonNode bundle,
+      JsonNode clerkComments,
+      Map<String, PartyId> varToPartyId,
+      InfoCollector collector)
+      throws FilingError {
     List<FilingDoc> filingDocs = new ArrayList<FilingDoc>();
-    final InterviewVariable bundleVar = collector.requestVar("al_court_bundle",
-        "The full court bundle", "ALDocumentBundle");
+    final InterviewVariable bundleVar =
+        collector.requestVar("al_court_bundle", "The full court bundle", "ALDocumentBundle");
     if (bundle == null) {
       collector.addRequired(bundleVar);
     }
@@ -369,7 +408,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       throw FilingError.malformedInterview(
           "al_court_bundle should be a JSON object with a elements array (i.e. a python DAList)");
     }
-    JsonNode elems = maybeElems.get(); 
+    JsonNode elems = maybeElems.get();
     if (elems == null || elems.isEmpty()) {
       elems = NullNode.getInstance();
       collector.addRequired(bundleVar);
@@ -378,14 +417,18 @@ public class FilingInformationDocassembleJacksonDeserializer
     for (int i = 0; i < elems.size(); i++) {
       try {
         collector.pushAttributeStack("al_court_bundle.elements[" + i + "]");
-        Optional<FilingDoc> maybeDoc = FilingDocDocassembleJacksonDeserializer.fromNode(
-            elems.get(i), varToPartyId, i == 0,  // the 0th doc is the Lead doc by default
-            collector); 
+        Optional<FilingDoc> maybeDoc =
+            FilingDocDocassembleJacksonDeserializer.fromNode(
+                elems.get(i),
+                varToPartyId,
+                i == 0, // the 0th doc is the Lead doc by default
+                collector);
         collector.popAttributeStack();
-        maybeDoc.ifPresent(doc -> {
-          log.info("Adding this doc to filingDocs:" + doc.toString());
-          filingDocs.add(doc);
-        });
+        maybeDoc.ifPresent(
+            doc -> {
+              log.info("Adding this doc to filingDocs:" + doc.toString());
+              filingDocs.add(doc);
+            });
       } catch (FilingError err) {
         if (err.getType().equals(FilingError.Type.MissingRequired)) {
           collector.addRequired(err.getMissingVariable().get());
@@ -402,20 +445,25 @@ public class FilingInformationDocassembleJacksonDeserializer
     return filingDocs;
   }
 
-  private static Optional<LocalDate> extractReturnDate(JsonNode jsonReturnDate, InfoCollector collector) throws FilingError {
+  private static Optional<LocalDate> extractReturnDate(
+      JsonNode jsonReturnDate, InfoCollector collector) throws FilingError {
     Optional<LocalDate> maybeReturnDate = Optional.empty();
-    if (jsonReturnDate != null && jsonReturnDate.isTextual() && !jsonReturnDate.asText("").isBlank()) {
+    if (jsonReturnDate != null
+        && jsonReturnDate.isTextual()
+        && !jsonReturnDate.asText("").isBlank()) {
       // TODO(#47): Time zone user is using?
       try {
-        maybeReturnDate = Optional.of(LocalDate.parse(jsonReturnDate.asText(), DateTimeFormatter.ISO_DATE)); 
+        maybeReturnDate =
+            Optional.of(LocalDate.parse(jsonReturnDate.asText(), DateTimeFormatter.ISO_DATE));
       } catch (DateTimeParseException ex) {
-        InterviewVariable var = collector.requestVar("return_date", "Should be as YYYY-MM-DD+01:00", "date");
+        InterviewVariable var =
+            collector.requestVar("return_date", "Should be as YYYY-MM-DD+01:00", "date");
         collector.addWrong(var);
       }
     }
     return maybeReturnDate;
   }
-  
+
   private static String extractNullableString(JsonNode json) {
     if (json != null && json.isTextual()) {
       return json.asText();
@@ -433,5 +481,4 @@ public class FilingInformationDocassembleJacksonDeserializer
       throw new JsonExtractException(p, err);
     }
   }
-
 }

@@ -15,8 +15,9 @@ public class NameJeffNetJacksonSerializer extends StdSerializer<Name> {
   }
 
   @Override
-  public void serialize(Name name, JsonGenerator jsonGenerator,
-      SerializerProvider serializerProvider) throws IOException {
+  public void serialize(
+      Name name, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
+      throws IOException {
     jsonGenerator.writeString(name.getFullName());
   }
 }

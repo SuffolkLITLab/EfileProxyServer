@@ -3,7 +3,6 @@ package edu.suffolk.litlab.efspserver.services;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -18,12 +17,14 @@ public class RootService {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAll() {
     EndpointReflection ef = new EndpointReflection("");
-    return Response.ok(ef.getClassPaths(List.of(
-        AuthenticationService.class,
-        JurisdictionSwitch.class,
-        MessageSettingsService.class,
-        ApiUserSettingsService.class
-    ))).build();
+    return Response.ok(
+            ef.getClassPaths(
+                List.of(
+                    AuthenticationService.class,
+                    JurisdictionSwitch.class,
+                    MessageSettingsService.class,
+                    ApiUserSettingsService.class)))
+        .build();
   }
 
   @GET

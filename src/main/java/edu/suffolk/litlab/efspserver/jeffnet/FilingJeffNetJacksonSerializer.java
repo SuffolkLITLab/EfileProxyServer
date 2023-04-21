@@ -4,11 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-
 import edu.suffolk.litlab.efspserver.FilingAttachment;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.PartyId;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -40,9 +38,12 @@ public class FilingJeffNetJacksonSerializer extends StdSerializer<FilingDoc> {
     }
     Metadata metadata = new Metadata();
     metadata.filingParties = filingPartyList;
-    filingDoc.getFilingCode().ifPresent(fc -> {
-      metadata.regAction = fc;
-    });
+    filingDoc
+        .getFilingCode()
+        .ifPresent(
+            fc -> {
+              metadata.regAction = fc;
+            });
     gen.writeObjectField("DocumentMetadata", metadata);
 
     if (filingDoc.getFilingAttachments().length() > 1) {
@@ -84,5 +85,4 @@ public class FilingJeffNetJacksonSerializer extends StdSerializer<FilingDoc> {
     @JsonProperty("IdentificationCategoryText")
     String idCategoryText;
   }
-
 }

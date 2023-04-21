@@ -7,33 +7,46 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.util.Properties;
-
 import javax.sql.DataSource;
-
 import org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS;
 import org.apache.commons.dbcp2.datasources.SharedPoolDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DatabaseCreator {
-  private static Logger log = 
-      LoggerFactory.getLogger(UserDatabase.class); 
+  private static Logger log = LoggerFactory.getLogger(UserDatabase.class);
 
   /**
-   * @param  pgUser               The user of the PostgreSQL database
-   * @param  pgPassword           The password for the above user
+   * @param pgUser The user of the PostgreSQL database
+   * @param pgPassword The password for the above user
    */
-  public static DataSource makeDataSource(String pgUrl, int pgPort, 
-      String pgDb, String pgUser, String pgPassword, 
-      int maxConnections, int waitForConnMillis) throws ClassNotFoundException, SQLException {
-    return makeDataSource("jdbc:postgresql://" + pgUrl + ":" + Integer.toString(pgPort), 
-        pgDb, pgUser, pgPassword, maxConnections, waitForConnMillis);
+  public static DataSource makeDataSource(
+      String pgUrl,
+      int pgPort,
+      String pgDb,
+      String pgUser,
+      String pgPassword,
+      int maxConnections,
+      int waitForConnMillis)
+      throws ClassNotFoundException, SQLException {
+    return makeDataSource(
+        "jdbc:postgresql://" + pgUrl + ":" + Integer.toString(pgPort),
+        pgDb,
+        pgUser,
+        pgPassword,
+        maxConnections,
+        waitForConnMillis);
   }
-  
+
   /** Of the full jdbc form, with no db name: e.g. "jdcb:postgresql://localhost:9000" */
-  public static DataSource makeDataSource(String pgFullUrl, 
-      String pgDb, String pgUser, String pgPassword, 
-      int maxConnections, int waitForConnMillis) throws ClassNotFoundException, SQLException {
+  public static DataSource makeDataSource(
+      String pgFullUrl,
+      String pgDb,
+      String pgUser,
+      String pgPassword,
+      int maxConnections,
+      int waitForConnMillis)
+      throws ClassNotFoundException, SQLException {
     DriverAdapterCPDS cpds = new DriverAdapterCPDS();
     cpds.setDriver("org.postgresql.Driver");
     cpds.setUrl(pgFullUrl + "/" + pgDb);
@@ -54,20 +67,21 @@ public class DatabaseCreator {
     }
     return tds;
   }
-  
-  public static Connection makeSingleConnection(String pgDb, String pgFullUrl, String pgUser, String pgPassword) throws SQLException {
+
+  public static Connection makeSingleConnection(
+      String pgDb, String pgFullUrl, String pgUser, String pgPassword) throws SQLException {
     String tempUrl = pgFullUrl + "/" + pgDb;
     Properties props = new Properties();
     props.setProperty("user", pgUser);
     props.setProperty("password", pgPassword);
     return DriverManager.getConnection(tempUrl, props);
   }
-  
+
   /** Creates the database if it doesn't already exist. */
-  private static boolean createNewDatabase(String pgDb, String pgFullUrl, String pgUser, String pgPassword) throws SQLException {
+  private static boolean createNewDatabase(
+      String pgDb, String pgFullUrl, String pgUser, String pgPassword) throws SQLException {
     if (!pgDb.matches("^[a-zA-Z_]+$")) {
-      throw new SQLException(
-          "Won't make a database named " + pgDb + ": only alpha and _ allowed");
+      throw new SQLException("Won't make a database named " + pgDb + ": only alpha and _ allowed");
     }
 
     long startTime = System.currentTimeMillis();
@@ -107,5 +121,4 @@ public class DatabaseCreator {
     }
     return false;
   }
-
 }

@@ -1,9 +1,11 @@
 package edu.suffolk.litlab.efspserver.docassemble;
 
+import static edu.suffolk.litlab.efspserver.JsonHelpers.getBoolMember;
+import static edu.suffolk.litlab.efspserver.JsonHelpers.getStringMember;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.hubspot.algebra.Result;
-
 import edu.suffolk.litlab.efspserver.Address;
 import edu.suffolk.litlab.efspserver.ContactInformation;
 import edu.suffolk.litlab.efspserver.Name;
@@ -11,10 +13,6 @@ import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
-
-import static edu.suffolk.litlab.efspserver.JsonHelpers.getBoolMember;
-import static edu.suffolk.litlab.efspserver.JsonHelpers.getStringMember;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -28,11 +26,16 @@ public class PersonDocassembleJacksonDeserializer {
 
   protected PersonDocassembleJacksonDeserializer() {}
 
-  /** Parses a person from the Json Object. Used by Deserializers that include people.
-   * @throws FilingError */
-  public static Result<Person, FilingError> fromNode(JsonNode node, InfoCollector collector) throws FilingError {
+  /**
+   * Parses a person from the Json Object. Used by Deserializers that include people.
+   *
+   * @throws FilingError
+   */
+  public static Result<Person, FilingError> fromNode(JsonNode node, InfoCollector collector)
+      throws FilingError {
     if (!node.isObject()) {
-      FilingError err = FilingError.malformedInterview(
+      FilingError err =
+          FilingError.malformedInterview(
               "Refusing to parse person that isn't a Json Object: " + node.toPrettyString());
       collector.error(err);
       return Result.err(err);
@@ -45,8 +48,8 @@ public class PersonDocassembleJacksonDeserializer {
         phones.add(mobile);
       }
     } else {
-      InterviewVariable var = collector.requestVar("mobile_number",
-          "A mobile or cell phone number", "text", List.of());
+      InterviewVariable var =
+          collector.requestVar("mobile_number", "A mobile or cell phone number", "text", List.of());
       collector.addOptional(var);
     }
 
@@ -57,13 +60,14 @@ public class PersonDocassembleJacksonDeserializer {
           phones.add(phone);
         }
       } else {
-        FilingError err = FilingError.malformedInterview("phone number needs to be text: "
-            + node.get("phone_number").toPrettyString());
+        FilingError err =
+            FilingError.malformedInterview(
+                "phone number needs to be text: " + node.get("phone_number").toPrettyString());
         return Result.err(err);
       }
     } else {
-      InterviewVariable var = collector.requestVar("phone_number",
-          "A mobile or cell phone number", "text", List.of());
+      InterviewVariable var =
+          collector.requestVar("phone_number", "A mobile or cell phone number", "text", List.of());
       collector.addOptional(var);
     }
 
@@ -85,8 +89,8 @@ public class PersonDocassembleJacksonDeserializer {
 
     JsonNode partyJson = node.get("party_type");
     if (partyJson == null || !partyJson.isTextual()) {
-      InterviewVariable var = collector.requestVar("party_type",
-          "What legal role the party fulfills", "text");
+      InterviewVariable var =
+          collector.requestVar("party_type", "What legal role the party fulfills", "text");
       collector.addOptional(var);
       partyJson = NullNode.getInstance();
     }
@@ -96,37 +100,49 @@ public class PersonDocassembleJacksonDeserializer {
     Optional<String> gender = getStringMember(node, "gender");
     Optional<String> birthdateString = getStringMember(node, "date_of_birth");
     boolean isFormFiller = getBoolMember(node, "is_form_filler").orElse(false);
-    Optional<LocalDate> birthdate = birthdateString.map(bdStr -> {
-      try {
-        return Optional.<LocalDate>of(LocalDate.parse(bdStr)); 
-      } catch (DateTimeParseException ex) {
-        return Optional.<LocalDate>empty();
-      }
-    }).orElse(Optional.<LocalDate>empty());
+    Optional<LocalDate> birthdate =
+        birthdateString
+            .map(
+                bdStr -> {
+                  try {
+                    return Optional.<LocalDate>of(LocalDate.parse(bdStr));
+                  } catch (DateTimeParseException ex) {
+                    return Optional.<LocalDate>empty();
+                  }
+                })
+            .orElse(Optional.<LocalDate>empty());
     collector.pushAttributeStack("name");
     Name name = NameDocassembleDeserializer.fromNode(node.get("name"), collector);
     collector.popAttributeStack();
     boolean isPer = !name.getMiddleName().isBlank() || !name.getLastName().isBlank();
-    
-    Optional<String> efmId = getStringMember(node, "tyler_id"); 
+
+    Optional<String> efmId = getStringMember(node, "tyler_id");
     if (node.has("is_new")) {
       if (!node.get("is_new").isBoolean()) {
-        collector.addWrong(collector.requestVar("is_new", "if the party is new to the the case", "bool"));
+        collector.addWrong(
+            collector.requestVar("is_new", "if the party is new to the the case", "bool"));
       }
       if (node.get("is_new").asBoolean() && efmId.isPresent()) {
-        collector.addWrong(collector.requestVar("is_new", "Can't have an EFM (tyler) ID on a "
-            + "brand new party to the case: their tyler id shouldn't exist yet", "bool"));
+        collector.addWrong(
+            collector.requestVar(
+                "is_new",
+                "Can't have an EFM (tyler) ID on a "
+                    + "brand new party to the case: their tyler id shouldn't exist yet",
+                "bool"));
       }
       if (!node.get("is_new").asBoolean() && efmId.isEmpty()) {
-        collector.addWrong(collector.requestVar("tyler_id", "Can't be marked as not new, but not have an EFM ID", "text"));
+        collector.addWrong(
+            collector.requestVar(
+                "tyler_id", "Can't be marked as not new, but not have an EFM ID", "text"));
       }
       // if marked as is_new and no EFM id, that's fine! They're brand new to the case
-    } 
+    }
     // if not marked as new, completely depend on the presence of "tyler_id"
-    
-    Person per = Person.FromInput(name, info, gender, language, birthdate, !isPer, isFormFiller, partyType, efmId);
+
+    Person per =
+        Person.FromInput(
+            name, info, gender, language, birthdate, !isPer, isFormFiller, partyType, efmId);
     log.debug("Read in a new person: " + per.getName().getFullName());
     return Result.ok(per);
   }
-
 }

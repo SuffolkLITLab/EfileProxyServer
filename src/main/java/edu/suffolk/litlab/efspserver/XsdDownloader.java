@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -28,19 +27,15 @@ import org.xml.sax.SAXException;
 
 /**
  * Downloaded the FilingReviewMDE wsdl, necessary for it to run faster. Slightly modified to handle
- * relative paths on the server.
- * Runs like:
- * ```
- * mvn exec:java@XsdDownloader -Dexec.args="https://example.tylertech.cloud/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf"
- * ```
- * Then move all of the ecf files into src/main/resources/wsdl/, and point the FilingReviewMDE 
- * URL to it.
- * <a href="https://github.com/pablod/xsd-downloader">Github here</a>
+ * relative paths on the server. Runs like: ``` mvn exec:java@XsdDownloader
+ * -Dexec.args="https://example.tylertech.cloud/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf"
+ * ``` Then move all of the ecf files into src/main/resources/wsdl/, and point the FilingReviewMDE
+ * URL to it. <a href="https://github.com/pablod/xsd-downloader">Github here</a>
  *
  * @author https://github.com/pablod
  */
 public class XsdDownloader {
-  
+
   public XsdDownloader(String downloadPrefix) {
     this.downloadPrefix = downloadPrefix;
   }
@@ -63,7 +58,7 @@ public class XsdDownloader {
         // Don't actually need to check this!
         return xsdUrl;
       }
-      System.out.println("Download " +  xsdUrl + " (past url is " + pastUrl + ")");
+      System.out.println("Download " + xsdUrl + " (past url is " + pastUrl + ")");
       doc = db.parse(xsdUrl);
       workedUrl = xsdUrl;
     } catch (FileNotFoundException ex) {
@@ -72,14 +67,14 @@ public class XsdDownloader {
       } catch (URISyntaxException e) {
         e.printStackTrace();
         return null;
-      } 
+      }
       if (fileNamesByprocessedUrls.containsKey(workedUrl)) {
         // This is also a duplicate of something else we have!
         return workedUrl;
       }
-      doc = db.parse(workedUrl); 
+      doc = db.parse(workedUrl);
     }
-    
+
     System.out.println("workedURL: " + workedUrl);
 
     String outputFileName = downloadPrefix;
@@ -99,8 +94,9 @@ public class XsdDownloader {
     tr.transform(source, result);
     return workedUrl;
   }
-  
-  private static String normalizeUrl(String xsdUrl, final String pastUrl) throws URISyntaxException {
+
+  private static String normalizeUrl(String xsdUrl, final String pastUrl)
+      throws URISyntaxException {
     String baseUrl = pastUrl.substring(0, pastUrl.lastIndexOf('/') + 1);
     return new URI(baseUrl + xsdUrl).normalize().toString();
   }
@@ -114,8 +110,8 @@ public class XsdDownloader {
       if (childNode instanceof Element) {
         Element childElement = (Element) childNode;
         String locAttribute = "";
-        if ((childElement.getLocalName().equals("import") 
-                || childElement.getLocalName().equals("include"))) {
+        if ((childElement.getLocalName().equals("import")
+            || childElement.getLocalName().equals("include"))) {
           if ("http://www.w3.org/2001/XMLSchema".equals(childElement.getNamespaceURI())) {
             locAttribute = "schemaLocation";
           } else if ("http://schemas.xmlsoap.org/wsdl/".equals(childElement.getNamespaceURI())) {
@@ -139,8 +135,10 @@ public class XsdDownloader {
     }
   }
 
-  /** Main method, pass in the URL to find the WSDL, and the xsd prefix 
-   * that everything is changed to. */
+  /**
+   * Main method, pass in the URL to find the WSDL, and the xsd prefix that everything is changed
+   * to.
+   */
   public static void main(final String[] in_args) {
     String[] args;
     if (in_args.length == 1) {
@@ -156,8 +154,8 @@ public class XsdDownloader {
     }
     String xsdUrl = args[0];
     String filePrefix = args[1];
-    System.out.println("XsdUrl: " + xsdUrl); 
-    System.out.println("filePrefix: " + filePrefix); 
+    System.out.println("XsdUrl: " + xsdUrl);
+    System.out.println("filePrefix: " + filePrefix);
     XsdDownloader xsdDownloader = new XsdDownloader(filePrefix);
     try {
       xsdDownloader.downloadXsdRecurse(xsdUrl, "");
@@ -165,5 +163,4 @@ public class XsdDownloader {
       e.printStackTrace();
     }
   }
-
 }

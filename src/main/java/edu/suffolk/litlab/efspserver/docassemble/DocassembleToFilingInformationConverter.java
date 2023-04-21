@@ -8,22 +8,23 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewToFilingInformationConverter;
-
 import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DocassembleToFilingInformationConverter extends InterviewToFilingInformationConverter {
 
-  private static Logger log = LoggerFactory.getLogger(DocassembleToFilingInformationConverter.class); 
-  
+  private static Logger log =
+      LoggerFactory.getLogger(DocassembleToFilingInformationConverter.class);
+
   public DocassembleToFilingInformationConverter(InputStream taxonomyCsv) {}
 
   @Override
-  public Result<FilingInformation, FilingError> traverseInterview(String interviewContents,
-      InfoCollector collector) {
+  public Result<FilingInformation, FilingError> traverseInterview(
+      String interviewContents, InfoCollector collector) {
     SimpleModule module = new SimpleModule();
-    module.addDeserializer(FilingInformation.class, 
+    module.addDeserializer(
+        FilingInformation.class,
         new FilingInformationDocassembleJacksonDeserializer(FilingInformation.class, collector));
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(module);
@@ -32,7 +33,7 @@ public class DocassembleToFilingInformationConverter extends InterviewToFilingIn
       if (info == null) {
         return Result.err(FilingError.malformedInterview("The interview contents were null"));
       }
-      return Result.ok(info);  
+      return Result.ok(info);
     } catch (JsonExtractException ex) {
       log.warn("Got extract Exception: " + ex);
       return Result.err(ex.getError());
@@ -41,5 +42,4 @@ public class DocassembleToFilingInformationConverter extends InterviewToFilingIn
       return Result.err(FilingError.malformedInterview("JsonParsing Exception: " + ex));
     }
   }
-
 }

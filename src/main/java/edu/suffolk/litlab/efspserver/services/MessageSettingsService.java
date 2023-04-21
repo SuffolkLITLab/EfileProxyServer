@@ -1,10 +1,17 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.suffolk.litlab.efspserver.StdLib;
+import edu.suffolk.litlab.efspserver.db.AtRest;
+import edu.suffolk.litlab.efspserver.db.LoginDatabase;
+import edu.suffolk.litlab.efspserver.db.MessageInfo;
+import edu.suffolk.litlab.efspserver.db.MessageSettingsDatabase;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-
 import javax.sql.DataSource;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
@@ -14,28 +21,16 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.db.AtRest;
-import edu.suffolk.litlab.efspserver.db.LoginDatabase;
-import edu.suffolk.litlab.efspserver.db.MessageInfo;
-import edu.suffolk.litlab.efspserver.db.MessageSettingsDatabase;
-
 @Path("/messages")
 @Produces({MediaType.APPLICATION_JSON})
 public class MessageSettingsService {
-  private static Logger log = 
-      LoggerFactory.getLogger(MessageSettingsService.class); 
-  
-  private final DataSource ds; 
+  private static Logger log = LoggerFactory.getLogger(MessageSettingsService.class);
+
+  private final DataSource ds;
 
   public MessageSettingsService(DataSource ds) {
     this.ds = ds;
@@ -46,16 +41,18 @@ public class MessageSettingsService {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAll() {
     EndpointReflection ef = new EndpointReflection("");
-    return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(MessageSettingsService.class)))).build();
+    return Response.ok(
+            ef.endPointsToMap(ef.findRESTEndpoints(List.of(MessageSettingsService.class))))
+        .build();
   }
-  
+
   @GET
   @Path("/settings")
   public Response getMsgSettings(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "MessageSettingsService.getMsgSettings");
     try (Connection conn = ds.getConnection()) {
       LoginDatabase ld = new LoginDatabase(conn);
-      Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY")); 
+      Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
       if (atRest.isEmpty()) {
         return Response.status(401).entity("\"Not logged in to efile\"").build();
       }
@@ -72,16 +69,15 @@ public class MessageSettingsService {
       MDCWrappers.removeAllMDCs();
       return Response.status(500).build();
     }
-    
   }
-  
+
   @PATCH
   @Path("/settings")
   public Response setMsgSettings(@Context HttpHeaders httpHeaders, String newInfoStr) {
     try (Connection conn = ds.getConnection()) {
-    MDC.put(MDCWrappers.OPERATION, "MessageSettingsService.setMsgSettings");
+      MDC.put(MDCWrappers.OPERATION, "MessageSettingsService.setMsgSettings");
       LoginDatabase ld = new LoginDatabase(conn);
-      Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY")); 
+      Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
       if (atRest.isEmpty()) {
         return Response.status(401).entity("\"Not logged in to efile\"").build();
       }
@@ -90,7 +86,7 @@ public class MessageSettingsService {
         return Response.status(200).build();
       }
       ObjectMapper mapper = new ObjectMapper();
-    
+
       JsonNode node;
       try {
         node = mapper.readTree(newInfoStr);
@@ -102,12 +98,13 @@ public class MessageSettingsService {
       MessageInfo newInfo = new MessageInfo(node);
 
       var md = new MessageSettingsDatabase(conn);
-      MessageInfo existingInfo = md.findMessageInfo(atRest.get().serverId)
-          .orElse(new MessageInfo(atRest.get().serverId, null, null, null, null, null));
+      MessageInfo existingInfo =
+          md.findMessageInfo(atRest.get().serverId)
+              .orElse(new MessageInfo(atRest.get().serverId, null, null, null, null, null));
       existingInfo.emailResponseTemplate = newInfo.emailResponseTemplate;
       existingInfo.subjectLine = newInfo.subjectLine;
       existingInfo.fromEmail = newInfo.fromEmail;
-      md.updateTable(existingInfo); 
+      md.updateTable(existingInfo);
       MDCWrappers.removeAllMDCs();
       return Response.status(200).build();
     } catch (SQLException ex) {

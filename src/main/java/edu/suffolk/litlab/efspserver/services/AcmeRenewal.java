@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import edu.suffolk.litlab.efspserver.StdLib;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,7 +25,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
-
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -45,34 +45,32 @@ import org.shredzone.acme4j.util.KeyPairUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.suffolk.litlab.efspserver.StdLib;
-
-/** Handles Renewing the Server's HTTPS / TLS certificates using the ACME protocol.
- * 
- * The full process is as follows:
- * - if not already present make a user public/private key pair (i.e. you, the org running the site)
- * - if not already present make a domain public/private key pair (specific to this site's domain)
- * - make a Certificate signing request (CSR) and send to let's encrypt
- *   - in the background, it also creates a special token that is available at a URL path known
- *     to Let's Encrypt that they use to verify we have control of the website at that domain
+/**
+ * Handles Renewing the Server's HTTPS / TLS certificates using the ACME protocol.
+ *
+ * <p>The full process is as follows: - if not already present make a user public/private key pair
+ * (i.e. you, the org running the site) - if not already present make a domain public/private key
+ * pair (specific to this site's domain) - make a Certificate signing request (CSR) and send to
+ * let's encrypt - in the background, it also creates a special token that is available at a URL
+ * path known to Let's Encrypt that they use to verify we have control of the website at that domain
  * - get back a certificate chain (*.crt) from let's encrypt, showing that our domain public key is
- *   the approved key for our given domain
- * - save the domain private key and the *.crt as a Java Key Store (JKS) file. This is used by
- *   our server to serve the REST API over HTTPS
+ * the approved key for our given domain - save the domain private key and the *.crt as a Java Key
+ * Store (JKS) file. This is used by our server to serve the REST API over HTTPS
  */
 public class AcmeRenewal {
 
   // RSA key size of the generated key pairs
   private static final int KEY_SIZE = 2048;
 
-  private final static Logger log =
-      LoggerFactory.getLogger(AcmeRenewal.class);
+  private static final Logger log = LoggerFactory.getLogger(AcmeRenewal.class);
 
-  /** Given that we are handling much of the certificate generation within the running container, 
-   * if someone ever decides to restart the container, they would automatically lose their signed
+  /**
+   * Given that we are handling much of the certificate generation within the running container, if
+   * someone ever decides to restart the container, they would automatically lose their signed
    * certificates. So we save these certs outside the container to the volume, if it's present.
    */
   private static final File USER_KEY_FILE;
+
   private static final File DOMAIN_KEY_FILE;
   private static final File DOMAIN_CSR_FILE;
   private static final File DOMAIN_CHAIN_FILE;
@@ -84,8 +82,10 @@ public class AcmeRenewal {
     if (dockerVolume.exists() && dockerVolume.isDirectory()) {
       prefix = "/tmp/tls_certs/";
     } else {
-      log.warn("No docker volume at extected location (" + dockerVolume.getAbsolutePath()
-          + "), only saving cert files inside container!");
+      log.warn(
+          "No docker volume at extected location ("
+              + dockerVolume.getAbsolutePath()
+              + "), only saving cert files inside container!");
     }
     USER_KEY_FILE = new File(prefix + "acme_user.key");
     DOMAIN_KEY_FILE = new File(prefix + "acme_domain.key");
@@ -123,8 +123,9 @@ public class AcmeRenewal {
     }
   }
 
-
-  public void fetchCertificate(Collection<String> domains, AcmeChallengePublisher publisher, String certPassword) throws IOException, AcmeException {
+  public void fetchCertificate(
+      Collection<String> domains, AcmeChallengePublisher publisher, String certPassword)
+      throws IOException, AcmeException {
     KeyPair userKeyPair = loadOrCreateUserKeyPair();
 
     Session session = new Session("acme://letsencrypt.org/");
@@ -137,7 +138,7 @@ public class AcmeRenewal {
 
     Order order = acct.newOrder().domains(domains).create();
 
-    for (Authorization auth: order.getAuthorizations()) {
+    for (Authorization auth : order.getAuthorizations()) {
       authorize(auth, publisher);
     }
 
@@ -188,9 +189,7 @@ public class AcmeRenewal {
         throw new AcmeException("Didn't accept terms of service");
       }
     }
-    AccountBuilder ab = new AccountBuilder()
-      .agreeToTermsOfService()
-      .useKeyPair(accountKey);
+    AccountBuilder ab = new AccountBuilder().agreeToTermsOfService().useKeyPair(accountKey);
     String email = System.getenv("TYLER_USER_EMAIL");
     if (email != null && !email.isBlank()) {
       ab.addEmail(email);
@@ -203,7 +202,8 @@ public class AcmeRenewal {
 
   private boolean acceptAgreement(URI agreement) {
     // TODO(brycew): can we see if we're in an interactive mode?
-    System.out.println("Do you accept the Terms of Service at: " + agreement.toString() + "? (y/n)");
+    System.out.println(
+        "Do you accept the Terms of Service at: " + agreement.toString() + "? (y/n)");
     Scanner cliScanner = new Scanner(System.in);
     String userInput = cliScanner.nextLine().toLowerCase();
     cliScanner.close();
@@ -215,7 +215,8 @@ public class AcmeRenewal {
     }
   }
 
-  private static void authorize(Authorization auth, AcmeChallengePublisher publisher) throws AcmeException, IOException {
+  private static void authorize(Authorization auth, AcmeChallengePublisher publisher)
+      throws AcmeException, IOException {
     log.info("Authorization for domain: {}", auth.getIdentifier().getDomain());
 
     if (auth.getStatus() == Status.VALID) {
@@ -224,17 +225,20 @@ public class AcmeRenewal {
 
     Http01Challenge challenge = auth.findChallenge(Http01Challenge.class);
     if (challenge == null) {
-      throw new AcmeException("Found no " + Http01Challenge.TYPE + " challenge, don't know what to do...");
+      throw new AcmeException(
+          "Found no " + Http01Challenge.TYPE + " challenge, don't know what to do...");
     }
 
-    StringBuilder msg = new StringBuilder()
-        .append("Commencing challenge! You must create a file in the server's base directory, at ")
-        .append("http://")
-        .append(auth.getIdentifier().getDomain())
-        .append("/.well-known/acme-challenge/")
-        .append(challenge.getToken())
-        .append(", with the content:\n\n")
-        .append(challenge.getAuthorization());
+    StringBuilder msg =
+        new StringBuilder()
+            .append(
+                "Commencing challenge! You must create a file in the server's base directory, at ")
+            .append("http://")
+            .append(auth.getIdentifier().getDomain())
+            .append("/.well-known/acme-challenge/")
+            .append(challenge.getToken())
+            .append(", with the content:\n\n")
+            .append(challenge.getAuthorization());
     log.info(msg.toString());
     if (publisher != null) {
       log.info("Adding to server now...");
@@ -266,7 +270,10 @@ public class AcmeRenewal {
     }
 
     if (challenge.getStatus() != Status.VALID) {
-      throw new AcmeException("Failed to pass the challenge for domain " + auth.getIdentifier().getDomain() + ", giving up");
+      throw new AcmeException(
+          "Failed to pass the challenge for domain "
+              + auth.getIdentifier().getDomain()
+              + ", giving up");
     }
 
     log.info("Challenge completed!");
@@ -275,32 +282,39 @@ public class AcmeRenewal {
     }
   }
 
-  /** Converts certificate information from Let's Encrypt (plus our domain private key file) into
-   * a java key store.
-   * 
-   * NOTE(brycew): keytool (since Java 9) says that "The JKS keystore uses a proprietary format.
+  /**
+   * Converts certificate information from Let's Encrypt (plus our domain private key file) into a
+   * java key store.
+   *
+   * <p>NOTE(brycew): keytool (since Java 9) says that "The JKS keystore uses a proprietary format.
    * It is recommended to migrate to PKCS12 which is an industry standard format". However, for some
-   * reason the TLS for the site won't work with PKCS (even when using pre-signed namecheap certs, 
+   * reason the TLS for the site won't work with PKCS (even when using pre-signed namecheap certs,
    * so it's not a new letsencrypt thing). Not sure how to progress.
-   * 
-   * From https://stackoverflow.com/a/58426371/11416267 
+   *
+   * <p>From https://stackoverflow.com/a/58426371/11416267
+   *
    * @throws NoSuchAlgorithmException
    * @throws IOException
    * @throws InvalidKeySpecException
    * @throws CertificateException
-   * @throws KeyStoreException 
+   * @throws KeyStoreException
    */
-  public static byte[] convertPEMToJKS(File keyFile, File certFile, String password) 
-      throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, CertificateException, KeyStoreException {
+  public static byte[] convertPEMToJKS(File keyFile, File certFile, String password)
+      throws NoSuchAlgorithmException,
+          IOException,
+          InvalidKeySpecException,
+          CertificateException,
+          KeyStoreException {
     String alias = "alias";
 
     // Private Key
     PEMParser pem = new PEMParser(new FileReader(keyFile));
     Object parsedObject = pem.readObject();
 
-    PrivateKeyInfo privateKeyInfo = parsedObject instanceof PEMKeyPair
-        ? ((PEMKeyPair) parsedObject).getPrivateKeyInfo()
-        : (PrivateKeyInfo) parsedObject;
+    PrivateKeyInfo privateKeyInfo =
+        parsedObject instanceof PEMKeyPair
+            ? ((PEMKeyPair) parsedObject).getPrivateKeyInfo()
+            : (PrivateKeyInfo) parsedObject;
     PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyInfo.getEncoded());
     KeyFactory factory = KeyFactory.getInstance("RSA");
     PrivateKey key = factory.generatePrivate(privateKeySpec);
@@ -329,19 +343,23 @@ public class AcmeRenewal {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     KeyStore keyStore = KeyStore.getInstance("JKS");
     keyStore.load(null);
-    keyStore.setKeyEntry(alias, key, password.toCharArray(), certs.toArray(new X509Certificate[certs.size()]));
+    keyStore.setKeyEntry(
+        alias, key, password.toCharArray(), certs.toArray(new X509Certificate[certs.size()]));
     keyStore.store(bos, password.toCharArray());
     bos.close();
     pem.close();
     return bos.toByteArray();
   }
 
-  /** Can be run on it's own: writes the token content to be used in two
-   * different files that are independently read by the Acme service.
+  /**
+   * Can be run on it's own: writes the token content to be used in two different files that are
+   * independently read by the Acme service.
    *
-   * Run with `mvn exec:java@AcmeRenewal renew`.
+   * <p>Run with `mvn exec:java@AcmeRenewal renew`.
+   *
    * @throws AcmeException
-   * @throws IOException */
+   * @throws IOException
+   */
   public static void main(String... args) throws IOException, AcmeException {
     String password = System.getenv("CERT_PASSWORD");
     if (password == null || password.isBlank()) {

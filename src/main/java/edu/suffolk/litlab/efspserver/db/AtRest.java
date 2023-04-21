@@ -4,8 +4,9 @@ import java.sql.Timestamp;
 import java.util.Map;
 import java.util.UUID;
 
-/** The type for the "at_rest" table for API Keys. API Key is not present in this object, 
- * so the hash never permanently leaves the database.
+/**
+ * The type for the "at_rest" table for API Keys. API Key is not present in this object, so the hash
+ * never permanently leaves the database.
  *
  * @author brycew
  */

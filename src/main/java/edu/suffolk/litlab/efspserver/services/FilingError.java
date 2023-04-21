@@ -13,34 +13,34 @@ public class FilingError extends Exception {
     EfmReplyError,
     ServerError
   }
-  
+
   /** Factory function to make an Server Error, with a human-readable description. */
   public static FilingError serverError(String description) {
     return new FilingError(Type.ServerError, description);
   }
-  
+
   public static FilingError malformedInterview(String description) {
     return new FilingError(Type.MalformedInterview, description);
   }
-  
+
   public static FilingError missingRequired(InterviewVariable missingVariable) {
     return new FilingError(Type.MissingRequired, "", Optional.of(missingVariable));
   }
-  
+
   public static FilingError wrongValue(InterviewVariable rightVariableInfo) {
     return new FilingError(Type.WrongValue, "", Optional.of(rightVariableInfo));
   }
-  
+
   private FilingError(Type type, String description) {
     this(type, description, Optional.empty());
   }
-  
+
   private FilingError(Type type, String description, Optional<InterviewVariable> missingVariable) {
     this.type = type;
     this.description = description;
     this.missingVariable = missingVariable;
   }
-  
+
   @Override
   public boolean equals(Object obj) {
     if (obj == null || !(obj instanceof FilingError)) {
@@ -49,21 +49,21 @@ public class FilingError extends Exception {
     if (obj == this) {
       return true;
     }
-    
+
     FilingError other = (FilingError) obj;
-    return this.type.equals(other.type) 
+    return this.type.equals(other.type)
         && this.description.equals(other.description)
         && this.missingVariable.equals(other.missingVariable);
   }
-  
+
   @Override
   public String toString() {
     if (missingVariable.isEmpty()) {
-      return type.toString() + " " + description; 
+      return type.toString() + " " + description;
     }
-    return type.toString() + " " +description + " " + missingVariable;
+    return type.toString() + " " + description + " " + missingVariable;
   }
-  
+
   public String toJson() {
     if (type.equals(Type.ServerError)) {
       return """
@@ -71,15 +71,17 @@ public class FilingError extends Exception {
                "type": "Server Error",
                "description": "%s"
              }
-             """.formatted(this.description);
+             """
+          .formatted(this.description);
     } else if (type.equals(Type.MalformedInterview)) {
       return """
              {
                "type": "Malformed Interview",
                "description": "%s"
              }
-             """.formatted(this.description);
-    } else if (missingVariable.isPresent()){ // Missing Required
+             """
+          .formatted(this.description);
+    } else if (missingVariable.isPresent()) { // Missing Required
       InterviewVariable var = missingVariable.get();
       return var.toJson();
     }
@@ -88,21 +90,22 @@ public class FilingError extends Exception {
           "type": "Unknown",
           "description": "%s"
         }
-        """.formatted(this.type + " :: " + this.description); 
+        """
+        .formatted(this.type + " :: " + this.description);
   }
-  
+
   public Type getType() {
     return type;
   }
-  
+
   public String getDescription() {
     return description;
   }
-  
+
   public Optional<InterviewVariable> getMissingVariable() {
     return missingVariable;
   }
-  
+
   @Override
   public int hashCode() {
     HashCodeBuilder bd = new HashCodeBuilder();
@@ -113,4 +116,3 @@ public class FilingError extends Exception {
   private String description;
   private Optional<InterviewVariable> missingVariable;
 }
-

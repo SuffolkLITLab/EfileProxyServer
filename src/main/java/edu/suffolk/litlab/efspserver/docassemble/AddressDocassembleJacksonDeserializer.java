@@ -1,19 +1,16 @@
 package edu.suffolk.litlab.efspserver.docassemble;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import edu.suffolk.litlab.efspserver.Address;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,16 +19,17 @@ public class AddressDocassembleJacksonDeserializer {
 
   protected AddressDocassembleJacksonDeserializer() {}
 
-  /** Parses an address from the DA Json Object. Used by Deserializers that include addresses.
+  /**
+   * Parses an address from the DA Json Object. Used by Deserializers that include addresses.
    *
    * @throws FilingError if @param node isn't a JSON object describing an address
    */
-  public static Optional<Address> fromNode(
-          JsonNode node, 
-          InfoCollector collector) throws FilingError {
+  public static Optional<Address> fromNode(JsonNode node, InfoCollector collector)
+      throws FilingError {
     if (!node.isObject()) {
-      FilingError err = FilingError.malformedInterview(
-          "Refusing to parse address that isn't a Json Object: " + node.toPrettyString());
+      FilingError err =
+          FilingError.malformedInterview(
+              "Refusing to parse address that isn't a Json Object: " + node.toPrettyString());
       collector.error(err);
       throw err;
     }
@@ -45,9 +43,12 @@ public class AddressDocassembleJacksonDeserializer {
         continue;
       }
       if (node.has(member) && !node.get(member).isTextual()) {
-        FilingError err = FilingError.malformedInterview(
-            "Refusing to parse an address where the " + member + " isn't text: "
-            + node.toPrettyString());
+        FilingError err =
+            FilingError.malformedInterview(
+                "Refusing to parse an address where the "
+                    + member
+                    + " isn't text: "
+                    + node.toPrettyString());
         collector.error(err);
         throw err;
       }
@@ -71,11 +72,12 @@ public class AddressDocassembleJacksonDeserializer {
       countryCode = CountryCodeSimpleType.fromValue(country);
     } catch (IllegalArgumentException ex) {
       log.error("Country " + country + " isn't a valid country: " + ex);
-      List<String> countries = Arrays.stream(CountryCodeSimpleType.values())
-          .map((t) -> t.toString())
-          .collect(Collectors.toList());
-      InterviewVariable countryOptions = collector.requestVar("country",
-          "The 2 letter country code", "choices", countries);
+      List<String> countries =
+          Arrays.stream(CountryCodeSimpleType.values())
+              .map((t) -> t.toString())
+              .collect(Collectors.toList());
+      InterviewVariable countryOptions =
+          collector.requestVar("country", "The 2 letter country code", "choices", countries);
       FilingError err = FilingError.wrongValue(countryOptions);
       collector.error(err);
       throw err;

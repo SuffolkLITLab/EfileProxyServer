@@ -22,5 +22,4 @@ public class UserAuth {
   public void setPassword(String password) {
     this.password = password;
   }
-
 }

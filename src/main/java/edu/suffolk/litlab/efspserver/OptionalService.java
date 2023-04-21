@@ -8,10 +8,10 @@ public class OptionalService {
   public final Optional<Integer> multiplier;
   public final Optional<BigDecimal> feeAmount;
 
-  public OptionalService(String code, Optional<Integer> multiplier, Optional<BigDecimal> feeAmount) {
+  public OptionalService(
+      String code, Optional<Integer> multiplier, Optional<BigDecimal> feeAmount) {
     this.code = code;
     this.multiplier = multiplier;
     this.feeAmount = feeAmount;
   }
-
 }

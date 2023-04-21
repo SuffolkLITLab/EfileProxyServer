@@ -16,8 +16,9 @@ public class ContactInfoJeffNetJacksonSerializer extends StdSerializer<ContactIn
   }
 
   @Override
-  public void serialize(ContactInformation info, JsonGenerator jsonGenerator,
-      SerializerProvider serializerProvider) throws IOException {
+  public void serialize(
+      ContactInformation info, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
+      throws IOException {
     jsonGenerator.writeStartObject();
     if (info.getAddress().isPresent()) {
       jsonGenerator.writeObjectField("Address", info.getAddress().get());

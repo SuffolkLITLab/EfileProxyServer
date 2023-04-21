@@ -1,5 +1,12 @@
 package edu.suffolk.litlab.efspserver.db;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.suffolk.litlab.efspserver.RandomString;
+import edu.suffolk.litlab.efspserver.StdLib;
+import edu.suffolk.litlab.efspserver.codes.CodeTableConstants;
+import edu.suffolk.litlab.efspserver.services.MDCWrappers;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -14,40 +21,30 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-
 import javax.sql.DataSource;
-
 import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import edu.suffolk.litlab.efspserver.RandomString;
-import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.codes.CodeTableConstants;
-import edu.suffolk.litlab.efspserver.services.MDCWrappers;
-
 public class LoginDatabase implements DatabaseInterface {
-  private static Logger log = 
-      LoggerFactory.getLogger(LoginDatabase.class); 
-  
-  private static final String atRestCreate = """
+  private static Logger log = LoggerFactory.getLogger(LoginDatabase.class);
+
+  private static final String atRestCreate =
+      """
            CREATE TABLE at_rest_keys (
            "server_id" uuid PRIMARY KEY, "server_name" text, "api_key" text NOT NULL,
-           "tyler_enabled" boolean, "jeffnet_enabled" boolean, 
-           "created" timestamp)"""; 
-  
-  private static final String atRestInsert = """
+           "tyler_enabled" boolean, "jeffnet_enabled" boolean,
+           "created" timestamp)""";
+
+  private static final String atRestInsert =
+      """
            INSERT INTO at_rest_keys (
                "server_id", "server_name", "api_key", "tyler_enabled",
                "jeffnet_enabled", "created"
            ) VALUES (
                ?, ?, ?, ?,
-               ?, ?)"""; 
+               ?, ?)""";
 
   private static final RandomString tokenGenerator = new RandomString();
   private final Connection conn;
@@ -61,7 +58,7 @@ public class LoginDatabase implements DatabaseInterface {
     }
     this.conn = conn;
   }
-  
+
   public Connection getConnection() {
     return conn;
   }
@@ -71,9 +68,9 @@ public class LoginDatabase implements DatabaseInterface {
     if (conn == null) {
       throw new SQLException();
     }
-    
+
     String tableName = "at_rest_keys";
-    String createQuery = atRestCreate; 
+    String createQuery = atRestCreate;
     String tableExistsQuery = CodeTableConstants.getTableExists();
     try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
       existsSt.setString(1, tableName);
@@ -90,7 +87,7 @@ public class LoginDatabase implements DatabaseInterface {
       rs.close();
     }
   }
-  
+
   public boolean tablesExist() throws SQLException {
     String tableName = "at_rest_keys";
     String tableExistsQuery = CodeTableConstants.getTableExists();
@@ -100,8 +97,9 @@ public class LoginDatabase implements DatabaseInterface {
       return rs.next() && rs.getInt(1) > 0;
     }
   }
-  
-  public String addNewUser(String serverName, boolean tylerEnabled, boolean jeffNetEnabled) throws SQLException {
+
+  public String addNewUser(String serverName, boolean tylerEnabled, boolean jeffNetEnabled)
+      throws SQLException {
     if (conn == null) {
       log.error("Connection in addNewUser wasn't open yet!");
       throw new SQLException();
@@ -121,16 +119,17 @@ public class LoginDatabase implements DatabaseInterface {
     }
     return apiKey;
   }
-  
+
   public Optional<AtRest> getAtRestInfo(String apiKey) {
     if (apiKey == null || apiKey.isBlank()) {
       return Optional.empty();
     }
     String hash = makeHash(apiKey);
-    String query = """
+    String query =
+        """
         SELECT server_id, server_name, api_key, tyler_enabled,
             jeffnet_enabled, created
-        FROM at_rest_keys 
+        FROM at_rest_keys
         WHERE api_key = ?""";
 
     try (PreparedStatement st = conn.prepareStatement(query)) {
@@ -160,7 +159,8 @@ public class LoginDatabase implements DatabaseInterface {
       return false;
     }
     String hash = makeHash(apiKey);
-    final String atRestUpdate = """
+    final String atRestUpdate =
+        """
            UPDATE at_rest_keys SET server_name = ? WHERE server_id = ? AND api_key = ?
     """;
 
@@ -175,26 +175,31 @@ public class LoginDatabase implements DatabaseInterface {
       return false;
     }
   }
-  
+
   public String makeHash(String input) {
     if (input == null) {
       return "";
     }
     return new String(Hex.encode(digest.digest(input.getBytes(StandardCharsets.UTF_8))));
   }
-  
-  /** 
-   * Actually completes the REST client's login to the server. Completes each login to the 
-   * EFMFiling Interfaces separately.
+
+  /**
+   * Actually completes the REST client's login to the server. Completes each login to the EFMFiling
+   * Interfaces separately.
    *
    * @param apiKey The api key that the server can use for logging in
-   * @param jsonLoginInfo The JSON string with login info for whatever modules it's wants to login to
-   * @return If the optional is empty, the apikey or one of the attempted logins failed.
-   *   If not empty, it contains the new API Token that the REST client should now send to the Server,
-   *   or an empty token list (which happens when querying Tyler code endpoints before the user is logged in)
+   * @param jsonLoginInfo The JSON string with login info for whatever modules it's wants to login
+   *     to
+   * @return If the optional is empty, the apikey or one of the attempted logins failed. If not
+   *     empty, it contains the new API Token that the REST client should now send to the Server, or
+   *     an empty token list (which happens when querying Tyler code endpoints before the user is
+   *     logged in)
    */
-  public Optional<NewTokens> login(String apiKey, String jsonLoginInfo, 
-      Map<String, Function<JsonNode, Optional<Map<String, String>>>> loginFunctions) throws SQLException {
+  public Optional<NewTokens> login(
+      String apiKey,
+      String jsonLoginInfo,
+      Map<String, Function<JsonNode, Optional<Map<String, String>>>> loginFunctions)
+      throws SQLException {
     if (conn == null) {
       log.error("Connection in login wasn't open yet!");
       throw new SQLException();
@@ -222,26 +227,29 @@ public class LoginDatabase implements DatabaseInterface {
     var newTokens = new HashMap<String, String>();
     Iterable<String> orgs = loginInfo::fieldNames;
     for (String orgName : orgs) {
-      orgName = orgName.toLowerCase(); 
+      orgName = orgName.toLowerCase();
       if (orgName.equalsIgnoreCase("api_key")) {
         continue;
       }
-      // TODO(brycew): feels hacky, but we don't want an additional column to the db for each new jurisdiction
+      // TODO(brycew): feels hacky, but we don't want an additional column to the db for each new
+      // jurisdiction
       String permissionsName = orgName;
       if (orgName.contains("-")) {
         permissionsName = orgName.split("-")[0];
       }
       if (!loginFunctions.containsKey(orgName)) {
-        log.error("There is no " + orgName + " to login to: loginFunctions: " + loginFunctions.keySet()); 
+        log.error(
+            "There is no " + orgName + " to login to: loginFunctions: " + loginFunctions.keySet());
         return Optional.empty();
       }
 
-      if(!atRest.enabled.containsKey(permissionsName)
-          || !atRest.enabled.get(permissionsName)) {
-        log.error("There is no " + permissionsName + " to login to: enabled map: " + atRest.enabled); 
+      if (!atRest.enabled.containsKey(permissionsName) || !atRest.enabled.get(permissionsName)) {
+        log.error(
+            "There is no " + permissionsName + " to login to: enabled map: " + atRest.enabled);
         return Optional.empty();
       }
-      Optional<Map<String, String>> maybeNewTokens = loginFunctions.get(orgName).apply(loginInfo.get(orgName));
+      Optional<Map<String, String>> maybeNewTokens =
+          loginFunctions.get(orgName).apply(loginInfo.get(orgName));
       if (maybeNewTokens.isEmpty()) {
         log.error("Couldn't login to " + orgName);
         return Optional.empty();
@@ -254,25 +262,35 @@ public class LoginDatabase implements DatabaseInterface {
     }
     return Optional.of(new NewTokens(newTokens));
   }
-  
-  /** Example on how to trigger: mvn exec:java@LoginDatabase -Dexec.args="localhostServer true true" 
-   * @throws ClassNotFoundException 
-   * @throws NumberFormatException 
-   * @throws NoSuchAlgorithmException */
-  public static void main(final String args[]) throws SQLException, NumberFormatException, ClassNotFoundException, NoSuchAlgorithmException {
+
+  /**
+   * Example on how to trigger: mvn exec:java@LoginDatabase -Dexec.args="localhostServer true true"
+   *
+   * @throws ClassNotFoundException
+   * @throws NumberFormatException
+   * @throws NoSuchAlgorithmException
+   */
+  public static void main(final String args[])
+      throws SQLException, NumberFormatException, ClassNotFoundException, NoSuchAlgorithmException {
     if (args.length != 3) {
       System.out.println("Only 3 params: server name, tyler enabled, jeffnet enabled");
     }
     String serverName = args[0].strip();
     String tylerEnabled = args[1].strip();
     String jeffnetEnabled = args[2].strip();
-    
-    DataSource ds = DatabaseCreator.makeDataSource(System.getenv("POSTGRES_URL"),
-        Integer.parseInt(System.getenv("POSTGRES_PORT")), System.getenv("POSTGRES_USER_DB"),
-        System.getenv("POSTGRES_USER"), System.getenv("POSTGRES_PASSWORD"), 2, 100);
+
+    DataSource ds =
+        DatabaseCreator.makeDataSource(
+            System.getenv("POSTGRES_URL"),
+            Integer.parseInt(System.getenv("POSTGRES_PORT")),
+            System.getenv("POSTGRES_USER_DB"),
+            System.getenv("POSTGRES_USER"),
+            System.getenv("POSTGRES_PASSWORD"),
+            2,
+            100);
     try (Connection conn = ds.getConnection()) {
       conn.setAutoCommit(true);
-      LoginDatabase ld = new LoginDatabase(conn); 
+      LoginDatabase ld = new LoginDatabase(conn);
       boolean tylerBool = Boolean.parseBoolean(tylerEnabled);
       boolean jeffnetBool = Boolean.parseBoolean(jeffnetEnabled);
       String newApiKey = ld.addNewUser(serverName, tylerBool, jeffnetBool);
@@ -280,5 +298,4 @@ public class LoginDatabase implements DatabaseInterface {
       System.out.println("Using tyler: " + tylerBool + " and using jeffnet: " + jeffnetBool);
     }
   }
-
 }

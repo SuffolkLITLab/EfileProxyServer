@@ -2,13 +2,15 @@ package edu.suffolk.litlab.efspserver.jeffnet;
 
 import static edu.suffolk.litlab.efspserver.services.EndpointReflection.replacePathParam;
 
+import edu.suffolk.litlab.efspserver.codes.NameAndCode;
+import edu.suffolk.litlab.efspserver.services.CodesService;
+import edu.suffolk.litlab.efspserver.services.EndpointReflection;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -19,13 +21,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import edu.suffolk.litlab.efspserver.codes.NameAndCode;
-import edu.suffolk.litlab.efspserver.services.CodesService;
-import edu.suffolk.litlab.efspserver.services.EndpointReflection;
 
 @Produces({MediaType.APPLICATION_JSON})
 public class CourtsOnlyCodesService implements CodesService {
@@ -34,7 +31,7 @@ public class CourtsOnlyCodesService implements CodesService {
   private final Map<String, String> courts; // map court code names to full names
   private final EndpointReflection ef;
   private final String jurisdiction;
-  
+
   public CourtsOnlyCodesService(String jurisdiction, Map<String, String> courts) {
     this.jurisdiction = jurisdiction;
     this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/codes");
@@ -51,20 +48,22 @@ public class CourtsOnlyCodesService implements CodesService {
 
   @GET
   @Path("/courts")
-  public Response getCourts(@Context HttpHeaders httpHeaders,
+  public Response getCourts(
+      @Context HttpHeaders httpHeaders,
       @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly,
       @DefaultValue("false") @QueryParam("with_names") boolean withNames) {
     // Assume all fileable.
     if (withNames) {
-      return Response.ok(courts.entrySet()
-          .stream()
-          .map(e -> new NameAndCode(e.getValue(), e.getKey()))
-          .collect(Collectors.toList())).build();
+      return Response.ok(
+              courts.entrySet().stream()
+                  .map(e -> new NameAndCode(e.getValue(), e.getKey()))
+                  .collect(Collectors.toList()))
+          .build();
     } else {
       return Response.ok(courts.keySet().stream().sorted().collect(Collectors.toList())).build();
     }
   }
-  
+
   @GET
   @Path("/courts/{court_id}")
   public Response getCodesUnderCourt(@PathParam("court_id") String courtId) {
@@ -81,8 +80,10 @@ public class CourtsOnlyCodesService implements CodesService {
         subCourtMethods.add(method);
       }
     }
-    var retMap = ef.endPointsToMap(replacePathParam(ef.makeRestEndpoints(subCourtMethods, clazz),
-        Map.of("court_id", courtId)));
+    var retMap =
+        ef.endPointsToMap(
+            replacePathParam(
+                ef.makeRestEndpoints(subCourtMethods, clazz), Map.of("court_id", courtId)));
     return Response.ok(retMap).build();
   }
 
@@ -90,7 +91,9 @@ public class CourtsOnlyCodesService implements CodesService {
   @Path("/courts/{court_id}/codes")
   public Response getCourtLocationCodes(@PathParam("court_id") String courtId) {
     if (this.courts.containsKey(courtId)) {
-      return Response.ok(Map.of("name", this.courts.get(courtId), "code", courtId, "efmType", "jeffnet")).build();
+      return Response.ok(
+              Map.of("name", this.courts.get(courtId), "code", courtId, "efmType", "jeffnet"))
+          .build();
     } else {
       log.info("Wrong court queried?: " + courtId + " in jurisdiction " + jurisdiction);
       return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -101,7 +104,8 @@ public class CourtsOnlyCodesService implements CodesService {
     if (this.courts.containsKey(courtId)) {
       return Optional.empty();
     } else {
-      return Optional.of(Response.status(404).entity("\"Court " + courtId + " does not exist\"").build());
+      return Optional.of(
+          Response.status(404).entity("\"Court " + courtId + " does not exist\"").build());
     }
   }
 }

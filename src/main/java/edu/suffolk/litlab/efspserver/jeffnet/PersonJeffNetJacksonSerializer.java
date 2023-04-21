@@ -16,14 +16,15 @@ public class PersonJeffNetJacksonSerializer extends StdSerializer<Person> {
   }
 
   @Override
-  public void serialize(Person per, JsonGenerator jsonGenerator,
-      SerializerProvider serializerProvider) throws IOException {
+  public void serialize(
+      Person per, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
+      throws IOException {
     jsonGenerator.writeStartObject();
     jsonGenerator.writeObjectField("ContactInformation", per.getContactInfo());
     jsonGenerator.writeStringField("PersonName", per.getName().getFullName());
     if (per.getBirthdate().isPresent()) {
-      jsonGenerator.writeStringField("PersonBirthDate",
-          per.getBirthdate().get().format(DateTimeFormatter.ISO_LOCAL_DATE));
+      jsonGenerator.writeStringField(
+          "PersonBirthDate", per.getBirthdate().get().format(DateTimeFormatter.ISO_LOCAL_DATE));
     }
     if (per.getGender().isPresent()) {
       jsonGenerator.writeStringField("Gender", per.getGender().get());

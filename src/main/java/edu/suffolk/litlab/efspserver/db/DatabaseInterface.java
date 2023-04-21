@@ -5,6 +5,6 @@ import java.sql.SQLException;
 
 public interface DatabaseInterface {
   public void createTablesIfAbsent() throws SQLException;
-  
+
   public Connection getConnection();
 }

@@ -4,11 +4,17 @@ import static edu.suffolk.litlab.efspserver.JsonHelpers.getStringMember;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.suffolk.litlab.efspserver.SoapClientChooser;
+import edu.suffolk.litlab.efspserver.StdLib;
+import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-
 import javax.sql.DataSource;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -23,19 +29,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import edu.suffolk.litlab.efspserver.SoapClientChooser;
-import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
-import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.IEfmFirmService;
 import tyler.efm.services.schema.attachservicecontactrequest.AttachServiceContactRequestType;
@@ -66,15 +62,13 @@ import tyler.efm.services.schema.updateservicecontactrequest.UpdateServiceContac
 import tyler.efm.services.schema.updateservicecontactresponse.UpdateServiceContactResponseType;
 
 /**
- * Service that handles the Firm, Attorney, and Service
- * Endpoints.
- * @author litlab
+ * Service that handles the Firm, Attorney, and Service Endpoints.
  *
+ * @author litlab
  */
 @Produces(MediaType.APPLICATION_JSON)
 public class FirmAttorneyAndServiceService {
-  private static Logger log = 
-      LoggerFactory.getLogger(FirmAttorneyAndServiceService.class); 
+  private static Logger log = LoggerFactory.getLogger(FirmAttorneyAndServiceService.class);
 
   private final EfmFirmService firmFactory;
   private final DataSource codeDs;
@@ -85,14 +79,17 @@ public class FirmAttorneyAndServiceService {
   private static final tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac =
       new tyler.efm.services.schema.common.ObjectFactory();
 
-  public FirmAttorneyAndServiceService(String jurisdiction, String env, DataSource codeDs, DataSource userDs) {
+  public FirmAttorneyAndServiceService(
+      String jurisdiction, String env, DataSource codeDs, DataSource userDs) {
     this.jurisdiction = jurisdiction;
     this.env = env;
-    Optional<EfmFirmService> maybeFirmFactory = SoapClientChooser.getEfmFirmFactory(jurisdiction, env);
+    Optional<EfmFirmService> maybeFirmFactory =
+        SoapClientChooser.getEfmFirmFactory(jurisdiction, env);
     if (maybeFirmFactory.isPresent()) {
-      this.firmFactory = maybeFirmFactory.get(); 
+      this.firmFactory = maybeFirmFactory.get();
     } else {
-      throw new RuntimeException(jurisdiction + "-" + env + " not in SoapClientChooser for EFMFirm");
+      throw new RuntimeException(
+          jurisdiction + "-" + env + " not in SoapClientChooser for EFMFirm");
     }
     this.codeDs = codeDs;
     this.userDs = userDs;
@@ -101,15 +98,19 @@ public class FirmAttorneyAndServiceService {
   @GET
   @Path("/")
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/firmattorneyservice");
-    return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(FirmAttorneyAndServiceService.class)))).build();
+    EndpointReflection ef =
+        new EndpointReflection("/jurisdictions/" + jurisdiction + "/firmattorneyservice");
+    return Response.ok(
+            ef.endPointsToMap(ef.findRESTEndpoints(List.of(FirmAttorneyAndServiceService.class))))
+        .build();
   }
 
   @GET
   @Path("/firm")
   public Response getSelfFirm(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getSelfFirm");
-    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+    Optional<IEfmFirmService> firmPort =
+        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -122,7 +123,8 @@ public class FirmAttorneyAndServiceService {
   @Path("/firm")
   public Response updateFirm(@Context HttpHeaders httpHeaders, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateFirm");
-    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+    Optional<IEfmFirmService> firmPort =
+        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -137,8 +139,8 @@ public class FirmAttorneyAndServiceService {
       AddressType addr = firm.getAddress();
       JsonNode addrNode = node.get("address");
       if (addrNode != null && addrNode.isObject()) {
-        getStringMember(addrNode, "addressLine1").ifPresent(line1-> addr.setAddressLine1(line1));
-        getStringMember(addrNode, "addressLine2").ifPresent(line2-> addr.setAddressLine2(line2));
+        getStringMember(addrNode, "addressLine1").ifPresent(line1 -> addr.setAddressLine1(line1));
+        getStringMember(addrNode, "addressLine2").ifPresent(line2 -> addr.setAddressLine2(line2));
         getStringMember(addrNode, "city").ifPresent(city -> addr.setCity(city));
         getStringMember(addrNode, "state").ifPresent(state -> addr.setState(state));
         getStringMember(addrNode, "zipCode").ifPresent(zip -> addr.setZipCode(zip));
@@ -159,7 +161,8 @@ public class FirmAttorneyAndServiceService {
   @Path("/attorneys")
   public Response getAttorneyList(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getAttorneyList");
-    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+    Optional<IEfmFirmService> firmPort =
+        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -170,10 +173,11 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/attorneys/{attorney_id}")
-  public Response getAttorney(@Context HttpHeaders httpHeaders,
-      @PathParam("attorney_id") String attorneyId) {
+  public Response getAttorney(
+      @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getAttorney");
-    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+    Optional<IEfmFirmService> firmPort =
+        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -186,16 +190,17 @@ public class FirmAttorneyAndServiceService {
 
   @POST
   @Path("/attorneys")
-  public Response createAttorney(@Context HttpHeaders httpHeaders,
-      AttorneyType attorney) {
+  public Response createAttorney(@Context HttpHeaders httpHeaders, AttorneyType attorney) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.createAttorney");
-    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+    Optional<IEfmFirmService> firmPort =
+        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
     CreateAttorneyRequestType req = new CreateAttorneyRequestType();
     req.setAttorney(attorney);
-    // TODO(brycew-later): what happens if a court has an additional requirement on the attorney number?
+    // TODO(brycew-later): what happens if a court has an additional requirement on the attorney
+    // number?
     // Won't in IL at least. If it does, this whole system is poorly defined
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
       DataFieldRow row = cd.getDataField("1", "GlobalAttorneyNumber");
@@ -203,7 +208,9 @@ public class FirmAttorneyAndServiceService {
         return Response.status(400).entity("Bar number required").build();
       }
       if (!row.matchRegex(attorney.getBarNumber())) {
-        return Response.status(400).entity("Bar number doesn't match regex: " + row.regularexpression).build();
+        return Response.status(400)
+            .entity("Bar number doesn't match regex: " + row.regularexpression)
+            .build();
       }
     } catch (SQLException ex) {
       log.error("Couldn't connect to cd to handle codes query to create attorney");
@@ -216,10 +223,11 @@ public class FirmAttorneyAndServiceService {
 
   @PATCH
   @Path("/attorneys/{attorney_id}")
-  public Response updateAttorney(@Context HttpHeaders httpHeaders,
-      @PathParam("attorney_id") String attorneyId, String json) {
+  public Response updateAttorney(
+      @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateAttorney");
-    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+    Optional<IEfmFirmService> firmPort =
+        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -234,7 +242,7 @@ public class FirmAttorneyAndServiceService {
       JsonNode node = mapper.readTree(json);
       getStringMember(node, "firstName").ifPresent(first -> att.setFirstName(first));
       getStringMember(node, "middleName").ifPresent(middle -> att.setMiddleName(middle));
-      getStringMember(node, "lastName").ifPresent(last-> att.setLastName(last));
+      getStringMember(node, "lastName").ifPresent(last -> att.setLastName(last));
       getStringMember(node, "barNumber").ifPresent(bar -> att.setBarNumber(bar));
 
       UpdateAttorneyRequestType updateReq = new UpdateAttorneyRequestType();
@@ -248,10 +256,11 @@ public class FirmAttorneyAndServiceService {
 
   @DELETE
   @Path("/attorneys/{attorney_id}")
-  public Response removeAttorney(@Context HttpHeaders httpHeaders,
-      @PathParam("attorney_id") String attorneyId) {
+  public Response removeAttorney(
+      @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.removeAttorney");
-    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+    Optional<IEfmFirmService> firmPort =
+        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -266,7 +275,8 @@ public class FirmAttorneyAndServiceService {
   @Path("/service-contacts")
   public Response getServiceContactList(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getServiceContactList");
-    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+    Optional<IEfmFirmService> firmPort =
+        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -276,10 +286,11 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/service-contacts/{contact_id}")
-  public Response getServiceContact(@Context HttpHeaders httpHeaders,
-      @PathParam("contact_id") String contactId) {
+  public Response getServiceContact(
+      @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getServiceContact");
-    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+    Optional<IEfmFirmService> firmPort =
+        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -295,10 +306,11 @@ public class FirmAttorneyAndServiceService {
 
   @DELETE
   @Path("/service-contacts/{contact_id}")
-  public Response removeServiceContact(@Context HttpHeaders httpHeaders,
-      @PathParam("contact_id") String contactId) {
+  public Response removeServiceContact(
+      @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.removeServiceContact");
-    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+    Optional<IEfmFirmService> firmPort =
+        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -306,17 +318,17 @@ public class FirmAttorneyAndServiceService {
     RemoveServiceContactRequestType req = new RemoveServiceContactRequestType();
     req.setServiceContactID(contactId);
     BaseResponseType resp = firmPort.get().removeServiceContact(req);
-    return makeResponse(resp, ()-> Response.ok().build());
+    return makeResponse(resp, () -> Response.ok().build());
   }
 
   @POST
   @Path("/service-contacts")
-  public Response createServiceContact(@Context HttpHeaders httpHeaders,
-      String strInput) {
+  public Response createServiceContact(@Context HttpHeaders httpHeaders, String strInput) {
     try {
       ServiceContactInput input = new ObjectMapper().readValue(strInput, ServiceContactInput.class);
       MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.createServiceContact");
-      Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+      Optional<IEfmFirmService> firmPort =
+          setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
       if (firmPort.isEmpty()) {
         return Response.status(401).build();
       }
@@ -330,7 +342,8 @@ public class FirmAttorneyAndServiceService {
       contact.setMiddleName(input.middleName);
       contact.setLastName(input.lastName);
       contact.setIsPublic(tylerCommonObjFac.createServiceContactTypeIsPublic(input.isPublic));
-      contact.setIsInFirmMasterList(tylerCommonObjFac.createServiceContactTypeIsInFirmMasterList(input.isInFirmMaster));
+      contact.setIsInFirmMasterList(
+          tylerCommonObjFac.createServiceContactTypeIsInFirmMasterList(input.isInFirmMaster));
       contact.setPhoneNumber(input.phoneNumber);
       req.setServiceContact(contact);
       log.info("Making new service contact: " + contact + "(" + input.firstName + ")");
@@ -338,7 +351,8 @@ public class FirmAttorneyAndServiceService {
       log.info("Got response: " + resp.getError().getErrorCode());
       log.info("Got response id: " + resp.getServiceContactID());
       MDCWrappers.removeAllMDCs();
-      return makeResponse(resp, ()->Response.ok("\"" + resp.getServiceContactID() + "\"").build());
+      return makeResponse(
+          resp, () -> Response.ok("\"" + resp.getServiceContactID() + "\"").build());
     } catch (JsonProcessingException ex) {
       log.info("JsonProcessingException: " + StdLib.strFromException(ex));
       return Response.status(400).entity("\"Cannot read service contact input\"").build();
@@ -348,14 +362,16 @@ public class FirmAttorneyAndServiceService {
   }
 
   /**
-   * @param json should be a JSON object with a "caseId" and "casePartyId" keys, both with string values
+   * @param json should be a JSON object with a "caseId" and "casePartyId" keys, both with string
+   *     values
    */
   @PUT
   @Path("/service-contacts/{contact_id}/cases")
-  public Response attachServiceContact(@Context HttpHeaders httpHeaders,
-      @PathParam("contact_id") String contactId, String json) {
+  public Response attachServiceContact(
+      @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.attachServiceContact");
-    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+    Optional<IEfmFirmService> firmPort =
+        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -378,7 +394,9 @@ public class FirmAttorneyAndServiceService {
     }
     BaseResponseType resp = firmPort.get().attachServiceContact(req);
     String errorCode = resp.getError().getErrorCode();
-    if (errorCode.equals("85") || errorCode.equals("87") || errorCode.equals("88")) { // already attached to case, so send back a 204 (no content)
+    if (errorCode.equals("85")
+        || errorCode.equals("87")
+        || errorCode.equals("88")) { // already attached to case, so send back a 204 (no content)
       return Response.status(204).build();
     } else if (errorCode.equals("0")) {
       return Response.created(URI.create(req.getCaseID())).build();
@@ -388,11 +406,14 @@ public class FirmAttorneyAndServiceService {
 
   @DELETE
   @Path("/service-contacts/{contact_id}/cases/{case_id}")
-  public Response detachServiceContact(@Context HttpHeaders httpHeaders,
-      @PathParam("contact_id") String contactId, @PathParam("case_id") String caseId,
+  public Response detachServiceContact(
+      @Context HttpHeaders httpHeaders,
+      @PathParam("contact_id") String contactId,
+      @PathParam("case_id") String caseId,
       @QueryParam("case_party_id") String casePartyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.detachServiceContact");
-    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+    Optional<IEfmFirmService> firmPort =
+        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -409,10 +430,11 @@ public class FirmAttorneyAndServiceService {
 
   @PATCH
   @Path("/service-contacts/{contact_id}")
-  public Response updateServiceContact(@Context HttpHeaders httpHeaders,
-      @PathParam("contact_id") String contactId, String json) {
+  public Response updateServiceContact(
+      @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateServiceContact");
-    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+    Optional<IEfmFirmService> firmPort =
+        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -432,14 +454,19 @@ public class FirmAttorneyAndServiceService {
       JsonNode node = mapper.readTree(json);
       getStringMember(node, "firstName").ifPresent(first -> contact.setFirstName(first));
       getStringMember(node, "middleName").ifPresent(middle -> contact.setMiddleName(middle));
-      getStringMember(node, "lastName").ifPresent(last-> contact.setLastName(last));
+      getStringMember(node, "lastName").ifPresent(last -> contact.setLastName(last));
       getStringMember(node, "email").ifPresent(email -> contact.setEmail(email));
-      getStringMember(node, "administrativeCopy").ifPresent(email -> contact.setAdministrativeCopy(email));
+      getStringMember(node, "administrativeCopy")
+          .ifPresent(email -> contact.setAdministrativeCopy(email));
       getStringMember(node, "phoneNumber").ifPresent(phone -> contact.setPhoneNumber(phone));
-      getJsonBoolean(node, "isPublic").ifPresent(
-          pub -> contact.setIsPublic(tylerCommonObjFac.createServiceContactTypeIsPublic(pub)));
-      getJsonBoolean(node, "isInFirmMasterList").ifPresent(
-          in -> contact.setIsInFirmMasterList(tylerCommonObjFac.createServiceContactTypeIsInFirmMasterList(in)));
+      getJsonBoolean(node, "isPublic")
+          .ifPresent(
+              pub -> contact.setIsPublic(tylerCommonObjFac.createServiceContactTypeIsPublic(pub)));
+      getJsonBoolean(node, "isInFirmMasterList")
+          .ifPresent(
+              in ->
+                  contact.setIsInFirmMasterList(
+                      tylerCommonObjFac.createServiceContactTypeIsInFirmMasterList(in)));
     } catch (JsonProcessingException e) {
       return Response.status(400).entity(e.toString()).build();
     }
@@ -451,10 +478,10 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/service-contacts/public")
-  public Response getPublicList(@Context HttpHeaders httpHeaders,
-      String json) {
+  public Response getPublicList(@Context HttpHeaders httpHeaders, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getPublicList");
-    Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+    Optional<IEfmFirmService> firmPort =
+        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -462,12 +489,12 @@ public class FirmAttorneyAndServiceService {
     GetPublicListRequestType msg = new GetPublicListRequestType();
     try {
       JsonNode node = mapper.readTree(json);
-      getStringMember(node, "firstName").ifPresent(first-> msg.setFirstName(first));
-      getStringMember(node, "lastName").ifPresent(last-> msg.setFirstName(last));
-      getStringMember(node, "firmName").ifPresent(firmName-> msg.setFirstName(firmName));
-      getStringMember(node, "email").ifPresent(email-> msg.setFirstName(email));
+      getStringMember(node, "firstName").ifPresent(first -> msg.setFirstName(first));
+      getStringMember(node, "lastName").ifPresent(last -> msg.setFirstName(last));
+      getStringMember(node, "firmName").ifPresent(firmName -> msg.setFirstName(firmName));
+      getStringMember(node, "email").ifPresent(email -> msg.setFirstName(email));
       ServiceContactListResponseType resp = firmPort.get().getPublicList(msg);
-      // For "PublicServiceContactShowEmail" Datafield, we force API keys: the restriction of 
+      // For "PublicServiceContactShowEmail" Datafield, we force API keys: the restriction of
       // "programmatic harvesting of emails" will have to be done on the DA side
       boolean showFirmName = false;
       try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
@@ -477,15 +504,18 @@ public class FirmAttorneyAndServiceService {
         log.error("getPublicList can't get CD: " + StdLib.strFromException(ex));
       }
       final boolean showFreeFormFirmName = showFirmName;
-      return makeResponse(resp,
+      return makeResponse(
+          resp,
           () -> {
             List<ServiceContactType> contacts = resp.getServiceContact();
-            contacts.stream().forEach(con -> {
-              if (!showFreeFormFirmName) {
-                // Hide the FirmName, but leave the AddByFirmName alone
-                con.setFirmName(null);
-              }
-            });
+            contacts.stream()
+                .forEach(
+                    con -> {
+                      if (!showFreeFormFirmName) {
+                        // Hide the FirmName, but leave the AddByFirmName alone
+                        con.setFirmName(null);
+                      }
+                    });
             return Response.ok(contacts).build();
           });
     } catch (JsonProcessingException e) {
@@ -494,10 +524,10 @@ public class FirmAttorneyAndServiceService {
   }
 
   private static Optional<Boolean> getJsonBoolean(JsonNode node, String attr) {
-      JsonNode maybeAttr = node.get(attr);
-      if (maybeAttr != null && maybeAttr.isBoolean()) {
-        return Optional.of(maybeAttr.asBoolean());
-      }
-      return Optional.empty();
+    JsonNode maybeAttr = node.get(attr);
+    if (maybeAttr != null && maybeAttr.isBoolean()) {
+      return Optional.of(maybeAttr.asBoolean());
+    }
+    return Optional.empty();
   }
 }

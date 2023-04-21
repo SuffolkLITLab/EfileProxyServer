@@ -11,9 +11,7 @@ import com.sendgrid.helpers.mail.objects.Email;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
-
 import edu.suffolk.litlab.efspserver.services.EfmModuleSetup;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,9 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Stream;
 import java.util.stream.Collectors;
-
+import java.util.stream.Stream;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
@@ -31,13 +28,12 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SendMessage {
   private static Logger log = LoggerFactory.getLogger(SendMessage.class);
-  
+
   private final String sendingMethod;
   private final String smtpServer;
   private final String smtpPort;
@@ -48,7 +44,7 @@ public class SendMessage {
   private final String twilioAccountSid;
   private final String twilioAuthToken;
   private final String twilioSendingNumber;
-  
+
   public static Optional<SendMessage> create() {
     Optional<String> maybeSendingMethod = EfmModuleSetup.GetEnv("EMAIL_METHOD");
     if (maybeSendingMethod.isEmpty()) {
@@ -65,11 +61,13 @@ public class SendMessage {
       }
       sendgridApiKey = maybeKey.get();
     }
-    
-    List<String> smtpVars; 
+
+    List<String> smtpVars;
     if (sendingMethod.equalsIgnoreCase("smtp")) {
-      Map<Boolean, List<Optional<String>>> allSmtpVars = EfmModuleSetup.GetAllEnvs(
-          Stream.of("SMTP_SERVER", "SMTP_PORT", "SMTP_ENABLE_AUTH", "SMTP_USER", "SMTP_PASSWORD"));
+      Map<Boolean, List<Optional<String>>> allSmtpVars =
+          EfmModuleSetup.GetAllEnvs(
+              Stream.of(
+                  "SMTP_SERVER", "SMTP_PORT", "SMTP_ENABLE_AUTH", "SMTP_USER", "SMTP_PASSWORD"));
       // There should be no empty env vars!
       if (allSmtpVars.containsKey(false) && !allSmtpVars.get(false).isEmpty()) {
         return Optional.empty();
@@ -77,27 +75,31 @@ public class SendMessage {
       smtpVars = allSmtpVars.get(true).stream().map(opt -> opt.get()).collect(Collectors.toList());
     } else {
       // SMTP not needed, so pass nulls to the constructor
-      smtpVars = List.of(); 
+      smtpVars = List.of();
     }
-    
+
     List<String> twilioVars;
     if (sendingMethod.equalsIgnoreCase("twilio")) {
-      Map<Boolean, List<Optional<String>>> allTwilioVars = EfmModuleSetup.GetAllEnvs(
-          Stream.of("TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_SENDING_NUMBER"));
+      Map<Boolean, List<Optional<String>>> allTwilioVars =
+          EfmModuleSetup.GetAllEnvs(
+              Stream.of("TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_SENDING_NUMBER"));
       if (allTwilioVars.containsKey(false) && !allTwilioVars.get(false).isEmpty()) {
         return Optional.empty();
       }
-      twilioVars = allTwilioVars.get(true).stream().map(opt -> opt.get()).collect(Collectors.toList());
+      twilioVars =
+          allTwilioVars.get(true).stream().map(opt -> opt.get()).collect(Collectors.toList());
     } else {
       // Twilio not needed, so pass nulls to the constructor
-      twilioVars = List.of(); 
+      twilioVars = List.of();
     }
-    
-    return Optional.of(new SendMessage(sendingMethod, smtpVars, sendgridApiKey, twilioVars)); 
+
+    return Optional.of(new SendMessage(sendingMethod, smtpVars, sendgridApiKey, twilioVars));
   }
-  
-  private SendMessage(String sendingMethod, List<String> smtpVars, String sendgridApiKey, List<String> twilioVars) {
-    this(sendingMethod,
+
+  private SendMessage(
+      String sendingMethod, List<String> smtpVars, String sendgridApiKey, List<String> twilioVars) {
+    this(
+        sendingMethod,
         (smtpVars.isEmpty()) ? null : smtpVars.get(0),
         (smtpVars.isEmpty()) ? null : smtpVars.get(1),
         (smtpVars.isEmpty()) ? null : smtpVars.get(2),
@@ -108,8 +110,9 @@ public class SendMessage {
         (twilioVars.isEmpty()) ? null : twilioVars.get(1),
         (twilioVars.isEmpty()) ? null : twilioVars.get(2));
   }
-  
-  private SendMessage(String sendingMethod,
+
+  private SendMessage(
+      String sendingMethod,
       String smtpServer,
       String smtpPort,
       String smtpEnableAuth,
@@ -145,20 +148,20 @@ public class SendMessage {
   }
 
   /**
-   * Send an email, respecting method specified in environment variable
-   * EMAIL_METHOD ("smtp" or "sendgrid")
+   * Send an email, respecting method specified in environment variable EMAIL_METHOD ("smtp" or
+   * "sendgrid")
    *
-   * @param from            The email "from" address
-   * @param subject         The email subject
-   * @param to              The email recipient
-   * @param messageTemplate A string with optional Jinja2 template variables. Will
-   *                        be rendered as plain text.
-   * @param context         A HashMap containing variables that will be
-   *                        substituted in the message_template
+   * @param from The email "from" address
+   * @param subject The email subject
+   * @param to The email recipient
+   * @param messageTemplate A string with optional Jinja2 template variables. Will be rendered as
+   *     plain text.
+   * @param context A HashMap containing variables that will be substituted in the message_template
    * @throws IOException If there's a network error talking to sendgrid
    */
-  public int sendEmail(String from, String subject, String to, String messageTemplate,
-      Map<String, Object> context) throws IOException {
+  public int sendEmail(
+      String from, String subject, String to, String messageTemplate, Map<String, Object> context)
+      throws IOException {
 
     if (sendingMethod.equalsIgnoreCase("sendgrid")) {
       return sendSendgridEmail(from, subject, to, messageTemplate, context);
@@ -166,7 +169,9 @@ public class SendMessage {
       boolean success = sendSmtpEmail(from, subject, to, messageTemplate, context);
       return (success) ? 200 : 400; // Should remove the status code and make this a void method
     } else {
-      log.error("No email method not correctly specified. Should be sendgrid or smtp, is: " + sendingMethod);
+      log.error(
+          "No email method not correctly specified. Should be sendgrid or smtp, is: "
+              + sendingMethod);
       return 400;
     }
   }
@@ -174,29 +179,32 @@ public class SendMessage {
   /**
    * Send an email via plain SMTP
    *
-   * @param from            The email "from" address
-   * @param subject         The email subject
-   * @param to              The email recipient
-   * @param messageTemplate A string with optional Jinja2 template variables. Will
-   *                        be rendered as plain text.
-   * @param context         A HashMap containing variables that will be
-   *                        substituted in the message_template
+   * @param from The email "from" address
+   * @param subject The email subject
+   * @param to The email recipient
+   * @param messageTemplate A string with optional Jinja2 template variables. Will be rendered as
+   *     plain text.
+   * @param context A HashMap containing variables that will be substituted in the message_template
    * @throws IOException If there's a network error
    */
-  public boolean sendSmtpEmail(String from, String subject, String to, String messageTemplate,
-      Map<String, Object> context) throws IOException {
+  public boolean sendSmtpEmail(
+      String from, String subject, String to, String messageTemplate, Map<String, Object> context)
+      throws IOException {
 
     Properties props = new Properties();
     props.setProperty("mail.smtp.host", smtpServer);
-    props.setProperty("mail.smtp.port", smtpPort); // 587 for TLS; 465 for SSL; 25 without (uncommon)
+    props.setProperty(
+        "mail.smtp.port", smtpPort); // 587 for TLS; 465 for SSL; 25 without (uncommon)
     props.setProperty("mail.smtp.auth", smtpEnableAuth); // Use lowercase true/false
-    
-    Session session = Session.getInstance(props,
-    new javax.mail.Authenticator() {
-       protected PasswordAuthentication getPasswordAuthentication() {
-          return new PasswordAuthentication(smtpUser, smtpPassword); 
-       }
-    });
+
+    Session session =
+        Session.getInstance(
+            props,
+            new javax.mail.Authenticator() {
+              protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(smtpUser, smtpPassword);
+              }
+            });
 
     Jinjava jinjava = new Jinjava();
     String renderedTemplate = jinjava.render(messageTemplate, context);
@@ -217,22 +225,22 @@ public class SendMessage {
   }
 
   /**
-   * Send an email via Twilio Sendgrid API. Depends on the env variable
-   * SENDGRID_API_KEY. which should be a valid API key for Twilio SendGrid.
+   * Send an email via Twilio Sendgrid API. Depends on the env variable SENDGRID_API_KEY. which
+   * should be a valid API key for Twilio SendGrid.
    *
-   * @param from            The email "from" address
-   * @param subject         The email subject
-   * @param to              The email recipient
-   * @param messageTemplate A string with optional Jinja2 template variables. Will
-   *                        be rendered as plain text.
-   * @param context         A HashMap containing variables that will be
-   *                        substituted in the message_template
+   * @param from The email "from" address
+   * @param subject The email subject
+   * @param to The email recipient
+   * @param messageTemplate A string with optional Jinja2 template variables. Will be rendered as
+   *     plain text.
+   * @param context A HashMap containing variables that will be substituted in the message_template
    * @throws IOException If there's a network error talking to sendgrid
    */
-  public int sendSendgridEmail(String from, String subject, String to, String messageTemplate,
-      Map<String, Object> context) throws IOException {
+  public int sendSendgridEmail(
+      String from, String subject, String to, String messageTemplate, Map<String, Object> context)
+      throws IOException {
 
-    SendGrid sg = new SendGrid(sendgridApiKey); 
+    SendGrid sg = new SendGrid(sendgridApiKey);
     Request request = new Request();
     Jinjava jinjava = new Jinjava();
     String renderedTemplate = jinjava.render(messageTemplate, context).strip();
@@ -241,7 +249,9 @@ public class SendMessage {
     if (renderedTemplate.startsWith("<!DOCTYPE html>")) {
       contentType = "text/html";
     }
-    Mail mail = new Mail(new Email(from), subject, new Email(to), new Content(contentType, renderedTemplate));
+    Mail mail =
+        new Mail(
+            new Email(from), subject, new Email(to), new Content(contentType, renderedTemplate));
 
     request.setMethod(Method.POST);
     request.setEndpoint("mail/send");
@@ -252,23 +262,21 @@ public class SendMessage {
   }
 
   /**
-   * Send an SMS Message, currently using Twilio SMS API. Depends on env variables
-   * - TWILIO_ACCOUNT_SID. 
-   * - TWILIO_AUTH_TOKEN, and 
-   * - TWILIO_SENDING_NUMBER.
+   * Send an SMS Message, currently using Twilio SMS API. Depends on env variables -
+   * TWILIO_ACCOUNT_SID. - TWILIO_AUTH_TOKEN, and - TWILIO_SENDING_NUMBER.
    *
-   * @param to              a valid phone number for SMS messaging, in ISO format.
-   * @param messageTemplate A string with Jinja2 template variables. Will be
-   *                        rendered as plain text.
-   * @param context         a HashMap with variables that will be substituted into
-   *                        the message_template
+   * @param to a valid phone number for SMS messaging, in ISO format.
+   * @param messageTemplate A string with Jinja2 template variables. Will be rendered as plain text.
+   * @param context a HashMap with variables that will be substituted into the message_template
    */
   public String sendSms(String to, String messageTemplate, HashMap<String, Object> context) {
-    Twilio.init(twilioAccountSid, twilioAuthToken); 
+    Twilio.init(twilioAccountSid, twilioAuthToken);
     Jinjava jinjava = new Jinjava();
     String renderedTemplate = jinjava.render(messageTemplate, context);
 
-    Message message = Message.creator(new PhoneNumber(to), new PhoneNumber(twilioSendingNumber), renderedTemplate).create();
+    Message message =
+        Message.creator(new PhoneNumber(to), new PhoneNumber(twilioSendingNumber), renderedTemplate)
+            .create();
 
     return message.getSid();
   }

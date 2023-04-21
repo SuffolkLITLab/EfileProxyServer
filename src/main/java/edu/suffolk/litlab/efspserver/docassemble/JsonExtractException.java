@@ -2,7 +2,6 @@ package edu.suffolk.litlab.efspserver.docassemble;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
-
 import edu.suffolk.litlab.efspserver.services.FilingError;
 
 public class JsonExtractException extends JsonParseException {
@@ -14,7 +13,7 @@ public class JsonExtractException extends JsonParseException {
     super(p, err.toString());
     this.err = err;
   }
-  
+
   public FilingError getError() {
     return err;
   }

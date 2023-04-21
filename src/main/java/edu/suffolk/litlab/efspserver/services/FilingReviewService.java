@@ -1,32 +1,29 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import static edu.suffolk.litlab.efspserver.services.EndpointReflection.replacePathParam;
 import static edu.suffolk.litlab.efspserver.JsonHelpers.getStringDefault;
+import static edu.suffolk.litlab.efspserver.services.EndpointReflection.replacePathParam;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
-
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
-
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -39,21 +36,20 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.slf4j.Logger;
-import org.slf4j.MDC;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 @Produces({MediaType.APPLICATION_JSON})
 public class FilingReviewService {
 
-  private static Logger log =
-      LoggerFactory.getLogger(FilingReviewService.class);
+  private static Logger log = LoggerFactory.getLogger(FilingReviewService.class);
 
   /** From input accept type to the converter obj. */
   private final Map<String, InterviewToFilingInformationConverter> converterMap;
   /** From court to FilingInterface (could be different on a court to court basis. */
   private final Map<String, EfmFilingInterface> filingInterfaces;
+
   private final Map<String, EfmRestCallbackInterface> callbackInterfaces;
   private final OrgMessageSender msgSender;
   private final DataSource ds;
@@ -77,15 +73,17 @@ public class FilingReviewService {
   @GET
   @Path("/")
   public Response getAll() {
-    return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(FilingReviewService.class)))).build();
+    return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(FilingReviewService.class))))
+        .build();
   }
 
   @GET
   @Path("/courts")
   public Response getCourts(@Context HttpHeaders httpHeaders) throws SQLException {
-    return Response.ok(filingInterfaces.keySet().stream().sorted().collect(Collectors.toList())).build();
+    return Response.ok(filingInterfaces.keySet().stream().sorted().collect(Collectors.toList()))
+        .build();
   }
-  
+
   @GET
   @Path("/courts/{court_id}")
   public Response getEndpointsUnderCourt(@PathParam("court_id") String courtId) {
@@ -97,15 +95,17 @@ public class FilingReviewService {
         subCourtMethods.add(method);
       }
     }
-    var retMap = ef.endPointsToMap(replacePathParam(ef.makeRestEndpoints(subCourtMethods, clazz),
-        Map.of("court_id", courtId)));
+    var retMap =
+        ef.endPointsToMap(
+            replacePathParam(
+                ef.makeRestEndpoints(subCourtMethods, clazz), Map.of("court_id", courtId)));
     return Response.ok(retMap).build();
   }
-  
-  
+
   @GET
   @Path("/courts/{court_id}/filings/{filing_id}/status")
-  public Response getFilingStatus(@Context HttpHeaders httpHeaders,
+  public Response getFilingStatus(
+      @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
       @PathParam("filing_id") String filingId) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getFilingStatus");
@@ -122,14 +122,15 @@ public class FilingReviewService {
     var toRet = filer.getFilingStatus(courtId, filingId, activeToken.get());
     MDCWrappers.removeAllMDCs();
     return toRet;
- }
+  }
 
   /** If 0 is passed for court, search all courts. */
   @GET
   @Path("/courts/{court_id}/filings")
-  public Response getFilingList(@Context HttpHeaders httpHeaders,
+  public Response getFilingList(
+      @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
-      @QueryParam("user_id") String userId, 
+      @QueryParam("user_id") String userId,
       @QueryParam("start_date") String startStr,
       @QueryParam("before_date") String beforeStr) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getFilingList");
@@ -148,8 +149,11 @@ public class FilingReviewService {
       // beforeDate is exclusive!
       return filer.getFilingList(courtId, userId, startDate, beforeDate, activeToken.get());
     } catch (DateTimeParseException ex) {
-      return Response.status(400).entity(
-          "Dates given were incorrect, should be of the form: yyyy-MM-dd (ISO_LOCAL_DATE): " + ex).build();
+      return Response.status(400)
+          .entity(
+              "Dates given were incorrect, should be of the form: yyyy-MM-dd (ISO_LOCAL_DATE): "
+                  + ex)
+          .build();
     } finally {
       MDCWrappers.removeAllMDCs();
     }
@@ -157,9 +161,8 @@ public class FilingReviewService {
 
   @GET
   @Path("/courts/{court_id}/filing/check")
-  public Response checkFilingForReview(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, 
-      String allVars) {
+  public Response checkFilingForReview(
+      @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.checkFilingForReview");
     MediaType mediaType = httpHeaders.getMediaType();
     if (mediaType == null) {
@@ -179,7 +182,8 @@ public class FilingReviewService {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     }
     InfoCollector collector = new NeverSubmitCollector();
-    Result<FilingInformation, FilingError> res = converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
+    Result<FilingInformation, FilingError> res =
+        converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
     if (res.isErr()) {
       log.warn(res.toString());
       log.info("All vars for check, on error:" + allVars);
@@ -201,9 +205,8 @@ public class FilingReviewService {
 
   @POST
   @Path("/courts/{court_id}/filing/fees")
-  public Response calculateFilingFees(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, 
-      String allVars) {
+  public Response calculateFilingFees(
+      @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.calculateFilingFees");
     MediaType mediaType = httpHeaders.getMediaType();
     if (mediaType == null) {
@@ -224,7 +227,8 @@ public class FilingReviewService {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     }
     InfoCollector collector = new FailFastCollector();
-    Result<FilingInformation, FilingError> res = converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
+    Result<FilingInformation, FilingError> res =
+        converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
     if (res.isErr()) {
       log.warn("In fees: " + res.toString());
       MDCWrappers.removeAllMDCs();
@@ -234,16 +238,13 @@ public class FilingReviewService {
     info.setCourtLocation(courtId);
     Result<Response, FilingError> fees = filer.getFilingFees(info, activeToken.get());
     MDCWrappers.removeAllMDCs();
-    return fees.match(
-        err -> Response.status(400).entity(err.toJson()).build(),
-        respon -> respon);
+    return fees.match(err -> Response.status(400).entity(err.toJson()).build(), respon -> respon);
   }
 
   @GET
   @Path("/courts/{court_id}/filing/servicetypes")
-  public Response getServiceTypes(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, 
-      String allVars) {
+  public Response getServiceTypes(
+      @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getServiceTypes");
     MediaType mediaType = httpHeaders.getMediaType();
     if (mediaType == null) {
@@ -264,7 +265,8 @@ public class FilingReviewService {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     }
     InfoCollector collector = new FailFastCollector();
-    Result<FilingInformation, FilingError> res = converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
+    Result<FilingInformation, FilingError> res =
+        converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
     if (res.isErr()) {
       MDCWrappers.removeAllMDCs();
       return Response.status(400).entity(collector.jsonSummary()).build();
@@ -273,16 +275,13 @@ public class FilingReviewService {
     info.setCourtLocation(courtId);
     Result<Response, FilingError> fees = filer.getServiceTypes(info, activeToken.get());
     MDCWrappers.removeAllMDCs();
-    return fees.match(
-        err -> Response.status(400).entity(err.toJson()).build(),
-        respon -> respon);
+    return fees.match(err -> Response.status(400).entity(err.toJson()).build(), respon -> respon);
   }
-
 
   @GET
   @Path("/courts/{court_id}/policy")
-  public Response getPolicy(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId) {
+  public Response getPolicy(
+      @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getPolicy");
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
@@ -301,8 +300,9 @@ public class FilingReviewService {
 
   @POST
   @Path("/courts/{court_id}/filing/status")
-  public Response filingUpdateWebhook(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, 
+  public Response filingUpdateWebhook(
+      @Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId,
       String statusReport) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.filingUpdateWebhook");
     if (!callbackInterfaces.containsKey(courtId)) {
@@ -315,11 +315,11 @@ public class FilingReviewService {
 
   // TODO(brycew): unclear why this API exists on the Tyler side if the same functionality is in
   // ReviewFiling. Just to be ECF compliant? Unclear, but consider removing this code
-  /* 
+  /*
   @POST
   @Path("/courts/{court_id}/filing/serve")
   public Response serveFiling(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, 
+      @PathParam("court_id") String courtId,
       String allVars) {
     return fileOrServe(httpHeaders, jurisdiction, courtId, allVars, EfmFilingInterface.ApiChoice.ServiceApi);
   }
@@ -327,16 +327,19 @@ public class FilingReviewService {
 
   @POST
   @Path("/courts/{court_id}/filings")
-  public Response submitFilingForReview(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, 
-      String allVars) {
+  public Response submitFilingForReview(
+      @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.submitFilingForReview");
     var toRet = fileOrServe(httpHeaders, courtId, allVars, EfmFilingInterface.ApiChoice.FileApi);
     MDCWrappers.removeAllMDCs();
     return toRet;
   }
-  
-  private Response fileOrServe(HttpHeaders httpHeaders, String courtId, String allVars, EfmFilingInterface.ApiChoice choice) {
+
+  private Response fileOrServe(
+      HttpHeaders httpHeaders,
+      String courtId,
+      String allVars,
+      EfmFilingInterface.ApiChoice choice) {
     MediaType mediaType = httpHeaders.getMediaType();
     if (mediaType == null) {
       mediaType = MediaType.valueOf("application/json");
@@ -357,7 +360,8 @@ public class FilingReviewService {
     } catch (SQLException ex) {
       log.error(StdLib.strFromException(ex));
     }
-    Result<FilingInformation, Response> maybeInfo = parseFiling(httpHeaders, allVars, filer, courtId, mediaType);
+    Result<FilingInformation, Response> maybeInfo =
+        parseFiling(httpHeaders, allVars, filer, courtId, mediaType);
     if (maybeInfo.isErr()) {
       return maybeInfo.unwrapErrOrElseThrow();
     }
@@ -369,9 +373,9 @@ public class FilingReviewService {
       return Response.status(500).entity(result.unwrapErrOrElseThrow().toJson()).build();
     }
     // Add this information to the transaction database
-    Person user = result.unwrapOrElseThrow().leadContact; 
+    Person user = result.unwrapOrElseThrow().leadContact;
     if (user == null) {
-      return Response.status(500).entity("Got Tyler submission, but no lead contact?").build(); 
+      return Response.status(500).entity("Got Tyler submission, but no lead contact?").build();
     }
     FilingResult filingResult = result.unwrapOrElseThrow();
     List<UUID> filingIds = filingResult.filingIds;
@@ -392,47 +396,78 @@ public class FilingReviewService {
     String neutralTemplate = getStringDefault(miscInfo, "neutral_contents", "");
     String neutralSubject = getStringDefault(miscInfo, "neutral_subject", "");
 
-    try (Connection conn = ds.getConnection()){
-      // TODO(brycew): this is going to send case type code (i.e. random numbers to the user. 
-      // Should avoid if possible, but would have to return the full info from the Filer object 
-      // TODO(brycew): this also sends "the carroll has received", instead of "the Carrol County Court",
+    try (Connection conn = ds.getConnection()) {
+      // TODO(brycew): this is going to send case type code (i.e. random numbers to the user.
+      // Should avoid if possible, but would have to return the full info from the Filer object
+      // TODO(brycew): this also sends "the carroll has received", instead of "the Carrol County
+      // Court",
       // the filer Object should return the full name of the court if possible, not the id
       UserDatabase ud = new UserDatabase(conn);
-      ud.addToTable(user.getName().getFullName(), user.getId(),
-          phoneNumber, user.getContactInfo().getEmail().orElse(""),
-          filingIds, atRest.get().serverId, activeToken.get(),
-          info.getCaseTypeCode(), courtId, ts, acceptedTemplate, acceptedSubject, rejectedTemplate, rejectedSubject,
-              neutralTemplate, neutralSubject, filingResult.caseTitle);
+      ud.addToTable(
+          user.getName().getFullName(),
+          user.getId(),
+          phoneNumber,
+          user.getContactInfo().getEmail().orElse(""),
+          filingIds,
+          atRest.get().serverId,
+          activeToken.get(),
+          info.getCaseTypeCode(),
+          courtId,
+          ts,
+          acceptedTemplate,
+          acceptedSubject,
+          rejectedTemplate,
+          rejectedSubject,
+          neutralTemplate,
+          neutralSubject,
+          filingResult.caseTitle);
 
-      msgSender.sendConfirmation(user.getContactInfo().getEmail().orElse(""),
-          confirmationTemplate, confirmationSubject,
-          atRest.get().serverId, user.getName().getFullName(), filingResult.courtName, filingIds,
-          filingResult.caseCategoryName, filingResult.caseTitle);
+      msgSender.sendConfirmation(
+          user.getContactInfo().getEmail().orElse(""),
+          confirmationTemplate,
+          confirmationSubject,
+          atRest.get().serverId,
+          user.getName().getFullName(),
+          filingResult.courtName,
+          filingIds,
+          filingResult.caseCategoryName,
+          filingResult.caseTitle);
     } catch (SQLException ex) {
-      log.error("Couldn't add info to the database! Logging here for posterity: "
-                + "%s %s %s %s %s".formatted(user.getName().getFullName(), user.getId(),
-                        phoneNumber, user.getContactInfo().getEmail(),
-                        result, info.getCaseTypeCode(), ts));
+      log.error(
+          "Couldn't add info to the database! Logging here for posterity: "
+              + "%s %s %s %s %s"
+                  .formatted(
+                      user.getName().getFullName(),
+                      user.getId(),
+                      phoneNumber,
+                      user.getContactInfo().getEmail(),
+                      result,
+                      info.getCaseTypeCode(),
+                      ts));
       log.error("Error: " + ex);
       return Response.ok().entity("Submitted, but error saving info to database").build();
     }
     return result.match(
-        err -> Response.serverError().entity(err).build(),
-        n -> Response.ok(filingResult).build()
-    );
+        err -> Response.serverError().entity(err).build(), n -> Response.ok(filingResult).build());
   }
 
-  private Result<FilingInformation, Response> parseFiling(HttpHeaders httpHeaders, String allVars,
-      EfmFilingInterface filer, String courtId, MediaType mediaType) {
+  private Result<FilingInformation, Response> parseFiling(
+      HttpHeaders httpHeaders,
+      String allVars,
+      EfmFilingInterface filer,
+      String courtId,
+      MediaType mediaType) {
     log.trace("Court id: " + courtId);
     log.trace("All vars: " + allVars.substring(0, Integer.min(100, allVars.length() - 1)));
     if (!converterMap.containsKey(mediaType.toString())) {
-      return Result.err(Response.status(415).entity("We only support " + converterMap.keySet()).build());
+      return Result.err(
+          Response.status(415).entity("We only support " + converterMap.keySet()).build());
     }
     Result<FilingInformation, FilingError> maybeInfo =
         converterMap.get(mediaType.toString()).extractInformation(allVars);
     if (maybeInfo.isErr()) {
-      return Result.err(Response.status(400).entity(maybeInfo.unwrapErrOrElseThrow().toJson()).build());
+      return Result.err(
+          Response.status(400).entity(maybeInfo.unwrapErrOrElseThrow().toJson()).build());
     }
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
@@ -441,8 +476,9 @@ public class FilingReviewService {
 
   @GET
   @Path("/courts/{court_id}/filings/{filing_id}")
-  public Response getFilingDetails(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, 
+  public Response getFilingDetails(
+      @Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId,
       @PathParam("filing_id") String filingId) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getFilingDetails");
     try {
@@ -463,7 +499,8 @@ public class FilingReviewService {
 
   @GET
   @Path("/courts/{court_id}/filings/{filing_id}/service/{contact_id}")
-  public Response getFilingService(@Context HttpHeaders httpHeaders,
+  public Response getFilingService(
+      @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
       @PathParam("filing_id") String filingId,
       @PathParam("contact_id") String contactId) {
@@ -484,8 +521,9 @@ public class FilingReviewService {
 
   @DELETE
   @Path("/courts/{court_id}/filings/{filing_id}")
-  public Response cancelFiling(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, 
+  public Response cancelFiling(
+      @Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId,
       @PathParam("filing_id") String filingId) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.cancelFiling");
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
@@ -520,12 +558,11 @@ public class FilingReviewService {
       return Optional.empty();
     }
   }
-  
+
   private Result<EfmFilingInterface, Response> checkFilingInterfaces(String courtId) {
     if (!filingInterfaces.containsKey(courtId)) {
       return Result.err(Response.status(404).entity("Cannot send filing to " + courtId).build());
     }
     return Result.ok(filingInterfaces.get(courtId));
   }
-
 }

@@ -2,30 +2,6 @@ package edu.suffolk.litlab.efspserver.ecf;
 
 import static edu.suffolk.litlab.efspserver.services.EndpointReflection.replacePathParam;
 
-import java.lang.reflect.Method;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.sql.DataSource;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.codes.CaseCategory;
 import edu.suffolk.litlab.efspserver.codes.CaseType;
@@ -45,36 +21,66 @@ import edu.suffolk.litlab.efspserver.codes.ServiceCodeType;
 import edu.suffolk.litlab.efspserver.services.CodesService;
 import edu.suffolk.litlab.efspserver.services.EndpointReflection;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
+import java.lang.reflect.Method;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import javax.sql.DataSource;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Produces({MediaType.APPLICATION_JSON})
 public class EcfCodesService implements CodesService {
   private static Logger log = LoggerFactory.getLogger(EcfCodesService.class);
-  private static final Set<String> underCourtMethodNames = Set.of(
-      "getCourtLocationCodes", "getCategories", "getCaseTypes", 
-      "getNameSuffixes", "getServiceTypes",
-      "getProcedureOrRemedies", "getFilingTypes", "getDamageAmounts",
-      "getDataField", "getDisclaimerRequirements", "getLanguages",
-      "getStates", "getFilingStatuses", "getAllowedFileTypes",
-      "getPartyTypes", "getCaseSubtypes", "getCrossReferences",
-      "getOptionalServices", "getFilingComponents", "getDocumentTypes",
-      "getMotionTypes"
-      );
-  
-  private static final Set<String> underCaseTypeMethodNames = Set.of(
-      "getCaseSubtypes", "getPartyTypes", 
-      "getCrossReferences"
-      );
-  
-  private static final Set<String> underFilingCodeMethodNames = Set.of(
-      "getOptionalServices", "getFilingComponents", "getDocumentTypes",
-      "getMotionTypes"
-      );
+  private static final Set<String> underCourtMethodNames =
+      Set.of(
+          "getCourtLocationCodes",
+          "getCategories",
+          "getCaseTypes",
+          "getNameSuffixes",
+          "getServiceTypes",
+          "getProcedureOrRemedies",
+          "getFilingTypes",
+          "getDamageAmounts",
+          "getDataField",
+          "getDisclaimerRequirements",
+          "getLanguages",
+          "getStates",
+          "getFilingStatuses",
+          "getAllowedFileTypes",
+          "getPartyTypes",
+          "getCaseSubtypes",
+          "getCrossReferences",
+          "getOptionalServices",
+          "getFilingComponents",
+          "getDocumentTypes",
+          "getMotionTypes");
+
+  private static final Set<String> underCaseTypeMethodNames =
+      Set.of("getCaseSubtypes", "getPartyTypes", "getCrossReferences");
+
+  private static final Set<String> underFilingCodeMethodNames =
+      Set.of("getOptionalServices", "getFilingComponents", "getDocumentTypes", "getMotionTypes");
 
   private final DataSource ds;
   private final String jurisdiction;
   private final String env;
   private final EndpointReflection ef;
-  
+
   public EcfCodesService(String jurisdiction, String env, DataSource ds) {
     this.jurisdiction = jurisdiction;
     this.env = env;
@@ -92,16 +98,17 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts")
-  public Response getCourts(@Context HttpHeaders httpHeaders, 
+  public Response getCourts(
+      @Context HttpHeaders httpHeaders,
       @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly,
       @DefaultValue("false") @QueryParam("with_names") boolean withNames) {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       return ServiceHelpers.getCourts(cd, fileableOnly, withNames);
     } catch (SQLException ex) {
       return Response.status(500).entity("SQLException on server!").build();
-    } 
+    }
   }
-  
+
   @GET
   @Path("/courts/{court_id}")
   public Response getCodesUnderCourt(@PathParam("court_id") String courtId) {
@@ -117,8 +124,10 @@ public class EcfCodesService implements CodesService {
         subCourtMethods.add(method);
       }
     }
-    var retMap = ef.endPointsToMap(replacePathParam(ef.makeRestEndpoints(subCourtMethods, clazz),
-        Map.of("court_id", courtId)));
+    var retMap =
+        ef.endPointsToMap(
+            replacePathParam(
+                ef.makeRestEndpoints(subCourtMethods, clazz), Map.of("court_id", courtId)));
     return Response.ok(retMap).build();
   }
 
@@ -138,8 +147,8 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts/{court_id}/case_types/{case_type_id}")
-  public Response getCodesUnderCaseType(@PathParam("court_id") String courtId,
-      @PathParam("case_type_id") String caseTypeId) {
+  public Response getCodesUnderCaseType(
+      @PathParam("court_id") String courtId, @PathParam("case_type_id") String caseTypeId) {
     var errResp = okayCourt(courtId);
     if (errResp.isPresent()) {
       return errResp.get();
@@ -152,15 +161,19 @@ public class EcfCodesService implements CodesService {
         subCaseMethods.add(method);
       }
     }
-    var retMap = ef.endPointsToMap(replacePathParam(ef.makeRestEndpoints(subCaseMethods, clazz),
-        Map.of("court_id", courtId, "case_type_id", caseTypeId)));
+    var retMap =
+        ef.endPointsToMap(
+            replacePathParam(
+                ef.makeRestEndpoints(subCaseMethods, clazz),
+                Map.of("court_id", courtId, "case_type_id", caseTypeId)));
     return Response.ok(retMap).build();
   }
 
   @GET
   @Path("/courts/{court_id}/filing_types/{filing_code_id}")
-  public Response getCodesUnderFilingTypes(@PathParam("court_id") String courtId,
-      @PathParam("filing_code_id") String filingCode) throws SQLException {
+  public Response getCodesUnderFilingTypes(
+      @PathParam("court_id") String courtId, @PathParam("filing_code_id") String filingCode)
+      throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       var errResp = okayCourt(cd, courtId);
       if (errResp.isPresent()) {
@@ -168,7 +181,9 @@ public class EcfCodesService implements CodesService {
       }
       var maybeCode = cd.getFilingTypeWith(courtId, filingCode);
       if (maybeCode.isEmpty()) {
-        return Response.status(404).entity("\"Filing code " + filingCode + " in court " + courtId + " does not exist\"").build();
+        return Response.status(404)
+            .entity("\"Filing code " + filingCode + " in court " + courtId + " does not exist\"")
+            .build();
       }
       Class<?> clazz = this.getClass();
       Method[] methods = clazz.getMethods();
@@ -179,8 +194,12 @@ public class EcfCodesService implements CodesService {
         }
       }
 
-      var retMap = new HashMap<String, Object>(ef.endPointsToMap(replacePathParam(ef.makeRestEndpoints(subCaseMethods, clazz),
-          Map.of("court_id", courtId, "filing_code_id", filingCode))));
+      var retMap =
+          new HashMap<String, Object>(
+              ef.endPointsToMap(
+                  replacePathParam(
+                      ef.makeRestEndpoints(subCaseMethods, clazz),
+                      Map.of("court_id", courtId, "filing_code_id", filingCode))));
       retMap.putAll(maybeCode.get().toMap());
       return Response.ok(retMap).build();
     }
@@ -188,9 +207,11 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts/{court_id}/categories")
-  public Response getCategories(@PathParam("court_id") String courtId,
+  public Response getCategories(
+      @PathParam("court_id") String courtId,
       @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly,
-      @QueryParam("timing") String timing) throws SQLException {
+      @QueryParam("timing") String timing)
+      throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       var errResp = okayCourt(cd, courtId);
       if (errResp.isPresent()) {
@@ -220,12 +241,18 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts/{court_id}/case_types")
-  public Response getCaseTypes(@PathParam("court_id") String courtId,
-      @QueryParam("category_id") String categoryId, @QueryParam("timing") String timing)
+  public Response getCaseTypes(
+      @PathParam("court_id") String courtId,
+      @QueryParam("category_id") String categoryId,
+      @QueryParam("timing") String timing)
       throws SQLException {
-    
+
     if (categoryId == null || categoryId.isBlank()) {
-      return Response.status(400).entity("\"You need to limit the number of case types by providing a category_id: see /categories\"").build();
+      return Response.status(400)
+          .entity(
+              "\"You need to limit the number of case types by providing a category_id: see"
+                  + " /categories\"")
+          .build();
     }
 
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
@@ -263,8 +290,9 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts/{court_id}/case_types/{case_type_id}/case_subtypes")
-  public Response getCaseSubtypes(@PathParam("court_id") String courtId,
-      @PathParam("case_type_id") String caseTypeId) throws SQLException {
+  public Response getCaseSubtypes(
+      @PathParam("court_id") String courtId, @PathParam("case_type_id") String caseTypeId)
+      throws SQLException {
 
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
@@ -290,8 +318,9 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts/{court_id}/procedures_or_remedies")
-  public Response getProcedureOrRemedies(@PathParam("court_id") String courtId,
-      @QueryParam("category_id") String categoryId) throws SQLException {
+  public Response getProcedureOrRemedies(
+      @PathParam("court_id") String courtId, @QueryParam("category_id") String categoryId)
+      throws SQLException {
 
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
@@ -305,9 +334,12 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts/{court_id}/filing_types")
-  public Response getFilingTypes(@PathParam("court_id") String courtId,
-      @QueryParam("category_id") String categoryId, @QueryParam("type_id") String typeId,
-      @QueryParam("initial") boolean initial) throws SQLException {
+  public Response getFilingTypes(
+      @PathParam("court_id") String courtId,
+      @QueryParam("category_id") String categoryId,
+      @QueryParam("type_id") String typeId,
+      @QueryParam("initial") boolean initial)
+      throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
 
       if (!cd.getAllLocations().contains(courtId)) {
@@ -321,8 +353,9 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts/{court_id}/damage_amounts")
-  public Response getDamageAmounts(@PathParam("court_id") String courtId,
-      @QueryParam("category_id") String categoryId) throws SQLException {
+  public Response getDamageAmounts(
+      @PathParam("court_id") String courtId, @QueryParam("category_id") String categoryId)
+      throws SQLException {
 
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
@@ -335,8 +368,8 @@ public class EcfCodesService implements CodesService {
   }
 
   /**
-   * Used for when you need to populate the party types names for
-   * a case search or something similar
+   * Used for when you need to populate the party types names for a case search or something similar
+   *
    * @param courtId
    * @return
    * @throws SQLException
@@ -356,8 +389,9 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts/{court_id}/party_types/{party_type_id}")
-  public Response getPartyTypeFromAll(@PathParam("court_id") String courtId, 
-      @PathParam("party_type_id") String partyTypeId) throws SQLException {
+  public Response getPartyTypeFromAll(
+      @PathParam("court_id") String courtId, @PathParam("party_type_id") String partyTypeId)
+      throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -375,8 +409,9 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts/{court_id}/case_types/{case_type_id}/party_types")
-  public Response getPartyTypes(@PathParam("court_id") String courtId,
-      @PathParam("case_type_id") String caseTypeId) throws SQLException {
+  public Response getPartyTypes(
+      @PathParam("court_id") String courtId, @PathParam("case_type_id") String caseTypeId)
+      throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -389,9 +424,11 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts/{court_id}/case_types/{case_type_id}/party_types/{party_type_id}")
-  public Response getPartyType(@PathParam("court_id") String courtId,
-      @PathParam("case_type_id") String caseTypeId, 
-      @PathParam("party_type_id") String partyTypeId) throws SQLException {
+  public Response getPartyType(
+      @PathParam("court_id") String courtId,
+      @PathParam("case_type_id") String caseTypeId,
+      @PathParam("party_type_id") String partyTypeId)
+      throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -410,8 +447,9 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts/{court_id}/casetypes/{case_type_id}/cross_references")
-  public Response getCrossReferences(@PathParam("court_id") String courtId,
-      @PathParam("case_type_id") String caseTypeId) throws SQLException {
+  public Response getCrossReferences(
+      @PathParam("court_id") String courtId, @PathParam("case_type_id") String caseTypeId)
+      throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -424,8 +462,9 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts/{court_id}/filing_types/{filing_code_id}/document_types")
-  public Response getDocumentTypes(@PathParam("court_id") String courtId,
-      @PathParam("filing_code_id") String filingCodeId) throws SQLException {
+  public Response getDocumentTypes(
+      @PathParam("court_id") String courtId, @PathParam("filing_code_id") String filingCodeId)
+      throws SQLException {
 
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
@@ -439,8 +478,9 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts/{court_id}/filing_types/{filing_code_id}/motion_types")
-  public Response getMotionTypes(@PathParam("court_id") String courtId,
-      @PathParam("filing_code_id") String filingCodeId) throws SQLException {
+  public Response getMotionTypes(
+      @PathParam("court_id") String courtId, @PathParam("filing_code_id") String filingCodeId)
+      throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
 
       if (!cd.getAllLocations().contains(courtId)) {
@@ -479,8 +519,9 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts/{court_id}/filing_types/{filing_code_id}/filing_components")
-  public Response getFilingComponents(@PathParam("court_id") String courtId,
-      @PathParam("filing_code_id") String filingCodeId) throws SQLException {
+  public Response getFilingComponents(
+      @PathParam("court_id") String courtId, @PathParam("filing_code_id") String filingCodeId)
+      throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -493,8 +534,9 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts/{court_id}/filing_types/{filing_code_id}/optional_services")
-  public Response getOptionalServices(@PathParam("court_id") String courtId,
-      @PathParam("filing_code_id") String filingCodeId) throws SQLException {
+  public Response getOptionalServices(
+      @PathParam("court_id") String courtId, @PathParam("filing_code_id") String filingCodeId)
+      throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -507,8 +549,9 @@ public class EcfCodesService implements CodesService {
 
   @GET
   @Path("/courts/{court_id}/countries/{country}/states")
-  public Response getStates(@PathParam("court_id") String courtId, 
-      @PathParam("country") String country) throws SQLException {
+  public Response getStates(
+      @PathParam("court_id") String courtId, @PathParam("country") String country)
+      throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       List<String> stateCodes = cd.getStateCodes(courtId, country);
 
@@ -528,7 +571,7 @@ public class EcfCodesService implements CodesService {
       return Response.ok(languages).build();
     }
   }
-  
+
   @GET
   @Path("/courts/{court_id}/datafields")
   public Response getDataFields(@PathParam("court_id") String courtId) throws SQLException {
@@ -546,8 +589,9 @@ public class EcfCodesService implements CodesService {
   @Path("/courts/{court_id}/datafields/{field_name}")
   // TODO(brycew-later): consider a bulk way of getting multiple codes, will be
   // used heavily in the DA UI
-  public Response getDataField(@PathParam("court_id") String courtId,
-      @PathParam("field_name") String fieldName) throws SQLException {
+  public Response getDataField(
+      @PathParam("court_id") String courtId, @PathParam("field_name") String fieldName)
+      throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -571,7 +615,7 @@ public class EcfCodesService implements CodesService {
       return Response.ok(disclaimers).build();
     }
   }
-  
+
   private Optional<Response> okayCourt(String courtId) {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       return okayCourt(cd, courtId);
@@ -583,9 +627,9 @@ public class EcfCodesService implements CodesService {
 
   private static Optional<Response> okayCourt(CodeDatabase cd, String courtId) {
     if (!cd.getAllLocations().contains(courtId)) {
-      return Optional.of(Response.status(404).entity("\"Court " + courtId + " does not exist\"").build());
+      return Optional.of(
+          Response.status(404).entity("\"Court " + courtId + " does not exist\"").build());
     }
     return Optional.empty();
   }
-
 }

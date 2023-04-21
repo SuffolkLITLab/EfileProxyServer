@@ -2,35 +2,7 @@ package edu.suffolk.litlab.efspserver.services;
 
 import static edu.suffolk.litlab.efspserver.services.EndpointReflection.replacePathParam;
 
-import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.sql.DataSource;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBElement;
-import javax.xml.ws.BindingProvider;
-
-import org.apache.cxf.headers.Header;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.StdLib;
@@ -46,6 +18,26 @@ import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import gov.niem.niem.niem_core._2.CaseType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.TextType;
+import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import javax.sql.DataSource;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBElement;
+import javax.xml.ws.BindingProvider;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseListQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseParticipantType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistresponsemessage_4.CaseListResponseMessageType;
@@ -58,6 +50,10 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryRespons
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.serviceinformationquerymessage_4.ServiceInformationQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.serviceinformationresponsemessage_4.ServiceInformationResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.CourtRecordMDEPort;
+import org.apache.cxf.headers.Header;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import tyler.ecf.extensions.common.CaseAugmentationType;
 import tyler.ecf.extensions.serviceattachcaselistquerymessage.ServiceAttachCaseListQueryMessageType;
 import tyler.ecf.extensions.serviceattachcaselistresponsemessage.ServiceAttachCaseListResponseMessageType;
@@ -69,11 +65,12 @@ import tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEServic
 public class CasesService {
 
   private static Logger log = LoggerFactory.getLogger(CasesService.class);
-  private final CourtRecordMDEService recordFactory;  
-  private final oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.ObjectFactory listObjFac
-        = new oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.ObjectFactory();
+  private final CourtRecordMDEService recordFactory;
+  private final oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.ObjectFactory
+      listObjFac =
+          new oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.ObjectFactory();
   private final oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf =
-          new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+      new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
   private final DataSource codeDs;
   private final DataSource userDs;
   private final String jurisdiction;
@@ -83,12 +80,13 @@ public class CasesService {
   public CasesService(String jurisdiction, String env, DataSource codeDs, DataSource userDs) {
     this.jurisdiction = jurisdiction;
     this.env = env;
-    Optional<CourtRecordMDEService> maybeRecords = SoapClientChooser.getCourtRecordFactory(jurisdiction, env);
+    Optional<CourtRecordMDEService> maybeRecords =
+        SoapClientChooser.getCourtRecordFactory(jurisdiction, env);
     if (maybeRecords.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " for court record factory");
     }
     this.recordFactory = maybeRecords.get();
-    this.codeDs = codeDs; 
+    this.codeDs = codeDs;
     this.userDs = userDs;
     this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/cases");
   }
@@ -96,9 +94,10 @@ public class CasesService {
   @GET
   @Path("/")
   public Response getAll() {
-    return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(CasesService.class)))).build();
+    return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(CasesService.class))))
+        .build();
   }
-  
+
   @GET
   @Path("/courts")
   public Response getCourts() {
@@ -108,7 +107,7 @@ public class CasesService {
       return Response.status(500).entity("database error retrieving all courts!").build();
     }
   }
-  
+
   @GET
   @Path("/courts/{court_id}")
   public Response getEndpointsUnderCourt(@PathParam("court_id") String courtId) {
@@ -120,31 +119,35 @@ public class CasesService {
         subCourtMethods.add(method);
       }
     }
-    var retMap = ef.endPointsToMap(replacePathParam(ef.makeRestEndpoints(subCourtMethods, clazz),
-        Map.of("court_id", courtId)));
+    var retMap =
+        ef.endPointsToMap(
+            replacePathParam(
+                ef.makeRestEndpoints(subCourtMethods, clazz), Map.of("court_id", courtId)));
     return Response.ok(retMap).build();
   }
-  
+
   /**
    * Gets all possible cases associated with either a party's name or a docket number.
-   * 
+   *
    * @throws JsonProcessingException
    */
   @GET
   @Path("/courts/{court_id}/cases")
-  public Response getCaseList(@Context HttpHeaders httpHeaders,
+  public Response getCaseList(
+      @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
       @QueryParam("docket_number") String docketId,
       @QueryParam("business_name") String businessName,
       @QueryParam("first_name") String firstName,
       @QueryParam("middle_name") String middleName,
-      @QueryParam("last_name") String lastName) throws JsonProcessingException {
+      @QueryParam("last_name") String lastName)
+      throws JsonProcessingException {
     MDC.put(MDCWrappers.OPERATION, "CasesService.getCaseList");
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
     }
-    
+
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs)) {
       Optional<CourtLocationInfo> info = cd.getFullLocationInfo(courtId);
       if (info.isEmpty()) {
@@ -152,7 +155,9 @@ public class CasesService {
       }
       DataFieldRow legacyRow = cd.getDataField(courtId, "LegacyLocationCaseSearch");
       if (legacyRow.isvisible && !info.get().initial) {
-        return Response.status(400).entity(courtId + " doesn't allow for subsequent case searches").build();
+        return Response.status(400)
+            .entity(courtId + " doesn't allow for subsequent case searches")
+            .build();
       }
 
       if (courtId.equals("1")) {
@@ -165,7 +170,7 @@ public class CasesService {
       log.error("can't get connection: " + StdLib.strFromException(e));
       return Response.status(500).build();
     }
-    
+
     boolean internalTestTrigger = docketId != null && docketId.equals("abc123SecretTrigger");
     if (internalTestTrigger) {
       firstName = "John";
@@ -198,14 +203,14 @@ public class CasesService {
       var commonCpt = ecfOf.createCaseParticipantType();
       commonCpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
       commonCpt.setCaseParticipantRoleCode(XmlHelper.convertText(""));
-      
+
       CaseParticipantType cpt = listObjFac.createCaseParticipantType();
       cpt.setCaseParticipant(ecfOf.createCaseParticipant(commonCpt));
       query.getCaseListQueryCaseParticipant().add(cpt);
     }
     if (businessName != null) {
       OrganizationType ot = ecfOf.createOrganizationType();
-      ot.setOrganizationName(XmlHelper.convertText(businessName)); 
+      ot.setOrganizationName(XmlHelper.convertText(businessName));
       var commonCpt = ecfOf.createCaseParticipantType();
       commonCpt.setEntityRepresentation(ecfOf.createEntityOrganization(ot));
       commonCpt.setCaseParticipantRoleCode(XmlHelper.convertText(""));
@@ -230,7 +235,8 @@ public class CasesService {
       // for case search / e-filing. So, we'll return an error with the error code, but also any
       // cases that were still present.
       Set<String> cmsConnectionErrors = Set.of("-11", "-15", "-10");
-      if (resp.getError().stream().anyMatch(err -> cmsConnectionErrors.contains(err.getErrorCode().getValue()))) {
+      if (resp.getError().stream()
+          .anyMatch(err -> cmsConnectionErrors.contains(err.getErrorCode().getValue()))) {
         return Response.status(203).entity(resp.getCase()).build();
       }
       return Response.status(400).entity(resp.getError()).build();
@@ -240,8 +246,10 @@ public class CasesService {
 
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}")
-  public Response getCase(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, @PathParam("case_tracking_id") String caseId) {
+  public Response getCase(
+      @Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId,
+      @PathParam("case_tracking_id") String caseId) {
     MDC.put(MDCWrappers.OPERATION, "CasesService.getCase");
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
@@ -272,7 +280,8 @@ public class CasesService {
         // for case search / e-filing. So, we'll return an error with the error code, but also any
         // cases that were still present.
         Set<String> cmsConnectionErrors = Set.of("-11", "-15", "-10");
-        if (resp.getError().stream().anyMatch(err -> cmsConnectionErrors.contains(err.getErrorCode().getValue()))) {
+        if (resp.getError().stream()
+            .anyMatch(err -> cmsConnectionErrors.contains(err.getErrorCode().getValue()))) {
           responseCode = 203;
         } else {
           return Response.status(400).entity(resp.getError()).build();
@@ -282,13 +291,18 @@ public class CasesService {
       if (locationInfo.get().hasprotectedcasetypes) {
         CaseType caseType = resp.getCase().getValue();
         Optional<CaseAugmentationType> caseAug = EcfCaseTypeFactory.getCaseAugmentation(caseType);
-        caseAug.ifPresent(aug -> {
-          if (locationInfo.get().protectedcasetypes.contains(aug.getCaseTypeText().getValue())) {
-            TextType protectedText = XmlHelper.convertText(locationInfo.get().protectedcasereplacementstring);
-            aug.setCaseTypeText(protectedText);
-            caseType.setCaseCategoryText(protectedText);
-          }
-        });
+        caseAug.ifPresent(
+            aug -> {
+              if (locationInfo
+                  .get()
+                  .protectedcasetypes
+                  .contains(aug.getCaseTypeText().getValue())) {
+                TextType protectedText =
+                    XmlHelper.convertText(locationInfo.get().protectedcasereplacementstring);
+                aug.setCaseTypeText(protectedText);
+                caseType.setCaseCategoryText(protectedText);
+              }
+            });
       }
       return Response.status(responseCode).entity(resp.getCase()).build();
     } catch (SQLException e) {
@@ -298,10 +312,9 @@ public class CasesService {
       MDCWrappers.removeAllMDCs();
     }
   }
-  
+
   /**
-   * Tyler says that Getting document isn't supported. This is here to make that clear to
-   * users.
+   * Tyler says that Getting document isn't supported. This is here to make that clear to users.
    *
    * @param httpHeaders
    * @param courtId
@@ -311,14 +324,17 @@ public class CasesService {
   @SuppressWarnings("static-method")
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}/documents")
-  public Response getDocument(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, @PathParam("case_tracking_id") String caseId) {
+  public Response getDocument(
+      @Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId,
+      @PathParam("case_tracking_id") String caseId) {
     return Response.status(405).build();
   }
 
   @GET
   @Path("/courts/{court_id}/service-contacts/{service_contact_id}/cases")
-  public Response getServiceAttachCaseList(@Context HttpHeaders httpHeaders,
+  public Response getServiceAttachCaseList(
+      @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
       @PathParam("service_contact_id") String serviceId) {
     MDC.put(MDCWrappers.OPERATION, "CasesService.getServiceAttachCaseList");
@@ -345,8 +361,10 @@ public class CasesService {
 
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}/service-information")
-  public Response getServiceInformation(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, @PathParam("case_tracking_id") String caseId) {
+  public Response getServiceInformation(
+      @Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId,
+      @PathParam("case_tracking_id") String caseId) {
     MDC.put(MDCWrappers.OPERATION, "CasesService.getServiceInformation");
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
@@ -372,14 +390,17 @@ public class CasesService {
 
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}/service-information-history")
-  public Response getServiceInformationHistory(@Context HttpHeaders httpHeaders,
-      @PathParam("court_id") String courtId, @PathParam("case_tracking_id") String caseId) {
+  public Response getServiceInformationHistory(
+      @Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId,
+      @PathParam("case_tracking_id") String caseId) {
     MDC.put(MDCWrappers.OPERATION, "CasesService.getServiceInformationHistory");
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
       return Response.status(401).build();
     }
-    ServiceInformationHistoryQueryMessageType query = new ServiceInformationHistoryQueryMessageType();
+    ServiceInformationHistoryQueryMessageType query =
+        new ServiceInformationHistoryQueryMessageType();
     EntityType typ = new EntityType();
     JAXBElement<PersonType> elem2 = ecfOf.createEntityPerson(new PersonType());
     typ.setEntityRepresentation(elem2);
@@ -388,7 +409,8 @@ public class CasesService {
     query.setCaseTrackingID(XmlHelper.convertString(caseId));
     query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
-    ServiceInformationHistoryResponseMessageType resp = maybePort.get().getServiceInformationHistory(query);
+    ServiceInformationHistoryResponseMessageType resp =
+        maybePort.get().getServiceInformationHistory(query);
     MDCWrappers.removeAllMDCs();
     if (hasError(resp)) {
       return Response.status(400).entity(resp.getError()).build();
@@ -397,14 +419,16 @@ public class CasesService {
   }
 
   private static boolean hasError(QueryResponseMessageType resp) {
-    return resp.getError().size() > 1 ||
-        (resp.getError().size() == 1 && !resp.getError().get(0).getErrorCode().getValue().equals("0"));
+    return resp.getError().size() > 1
+        || (resp.getError().size() == 1
+            && !resp.getError().get(0).getErrorCode().getValue().equals("0"));
   }
 
   private Optional<CourtRecordMDEPort> setupRecordPort(HttpHeaders httpHeaders) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
     Optional<AtRest> atRest = Optional.empty();
-    String tylerToken = httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
+    String tylerToken =
+        httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
     try (Connection conn = userDs.getConnection()) {
       LoginDatabase ld = new LoginDatabase(conn);
       atRest = ld.getAtRestInfo(apiKey);
@@ -427,13 +451,16 @@ public class CasesService {
     CourtRecordMDEPort port = recordFactory.getCourtRecordMDEPort();
     // Sometimes, getCases takes an incredibly long time. Bump timeout to 90s
     // https://stackoverflow.com/a/7512962/11416267
-    ((BindingProvider) port).getRequestContext().put("com.sun.xml.internal.ws.connect.timeout", 90000);
-    ((BindingProvider) port).getRequestContext().put("com.sun.xml.internal.ws.request.timeout", 90000);
+    ((BindingProvider) port)
+        .getRequestContext()
+        .put("com.sun.xml.internal.ws.connect.timeout", 90000);
+    ((BindingProvider) port)
+        .getRequestContext()
+        .put("com.sun.xml.internal.ws.request.timeout", 90000);
     ServiceHelpers.setupServicePort((BindingProvider) port);
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
     List<Header> headersList = List.of(creds.get().toHeader());
     ctx.put(Header.HEADER_LIST, headersList);
     return Optional.of(port);
   }
-
 }

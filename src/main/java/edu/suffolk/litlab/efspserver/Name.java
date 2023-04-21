@@ -14,8 +14,13 @@ public class Name {
   private String prefix;
 
   /** Default constructor with all members. */
-  public Name(String prefix, String firstName, String middleName, String lastName,
-      String suffix, String maidenName) {
+  public Name(
+      String prefix,
+      String firstName,
+      String middleName,
+      String lastName,
+      String suffix,
+      String maidenName) {
     this.prefix = prefix;
     this.firstName = firstName;
     this.middleName = middleName;
@@ -35,15 +40,17 @@ public class Name {
   /** The full name, with no extra spaces. */
   public String getFullName() {
     return Stream.of(prefix, firstName, middleName, lastName, suffix)
-        .reduce((wd, n) -> {
-          if (n.isBlank()) {
-            return wd;
-          } else if (wd.isBlank()) {
-            return n;
-          } else {
-            return wd + " " + n;
-          }
-        }).get();
+        .reduce(
+            (wd, n) -> {
+              if (n.isBlank()) {
+                return wd;
+              } else if (wd.isBlank()) {
+                return n;
+              } else {
+                return wd + " " + n;
+              }
+            })
+        .get();
   }
 
   public String getFirstName() {
@@ -98,5 +105,4 @@ public class Name {
     personName.setPersonNameSuffixText(wrapName(suffix));
     return personName;
   }
-
 }

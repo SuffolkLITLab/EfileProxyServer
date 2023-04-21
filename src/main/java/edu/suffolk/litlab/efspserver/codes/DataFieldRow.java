@@ -18,10 +18,19 @@ public class DataFieldRow {
   public String location;
 
   /** Constructor directly from Database. */
-  public DataFieldRow(String code, String name, String isvisible, String isrequired,
-      String helptext, String ghosttext, String contextualhelpdata,
-      String validationmessage, String regularexpression, String defaultvalueexpression,
-      String isreadonly, String location) {
+  public DataFieldRow(
+      String code,
+      String name,
+      String isvisible,
+      String isrequired,
+      String helptext,
+      String ghosttext,
+      String contextualhelpdata,
+      String validationmessage,
+      String regularexpression,
+      String defaultvalueexpression,
+      String isreadonly,
+      String location) {
     this.code = code;
     this.name = name;
     this.isvisible = Boolean.parseBoolean(isvisible);
@@ -41,8 +50,9 @@ public class DataFieldRow {
   }
 
   /**
-   * According to the Tyler docs, if some data field is not defined, it defaults to
-   * isVisible=False, and isRequired=False. Everything else will be empty
+   * According to the Tyler docs, if some data field is not defined, it defaults to isVisible=False,
+   * and isRequired=False. Everything else will be empty
+   *
    * @return
    */
   public static DataFieldRow MissingDataField(String name) {
@@ -58,9 +68,8 @@ public class DataFieldRow {
   }
 
   /**
-   * Gets all columns from datafieldconfig table Need to provide the location (1)
-   * and the code (2) of the field. For example, 'adams' and
-   * 'FilingEventCaseParties'
+   * Gets all columns from datafieldconfig table Need to provide the location (1) and the code (2)
+   * of the field. For example, 'adams' and 'FilingEventCaseParties'
    *
    * @return the String to make a SQL PreparedStatement from
    */
@@ -75,9 +84,8 @@ public class DataFieldRow {
         + "validationmessage, regularexpression, defaultvalueexpression, isreadonly, location "
         + "FROM datafieldconfig WHERE domain=? AND location=?";
   }
-  
+
   public static String getAllDataFieldNames() {
     return "SELECT code, name FROM datafieldconfig WHERE domain=? AND location=?";
   }
-
 }

@@ -1,7 +1,10 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.suffolk.litlab.efspserver.db.NewTokens;
 import java.util.Optional;
-
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -9,30 +12,22 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import edu.suffolk.litlab.efspserver.db.NewTokens;
-
 @Path("/authenticate")
 @Produces(MediaType.APPLICATION_JSON)
 public class AuthenticationService {
-  
-  private final static Logger log =
-      LoggerFactory.getLogger(AuthenticationService.class);
-  
+
+  private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
+
   private final SecurityHub security;
-  
+
   public AuthenticationService(SecurityHub security) {
     this.security = security;
   }
-  
+
   @POST
   public Response authenticateUser(@Context HttpHeaders httpHeaders, String loginInfo) {
     MDC.put(MDCWrappers.OPERATION, "AuthenticationService.authenticateUser");
@@ -60,5 +55,4 @@ public class AuthenticationService {
         .map((toks) -> Response.ok(toks).build())
         .orElse(Response.status(403).build());
   }
-
 }

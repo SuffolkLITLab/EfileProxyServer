@@ -24,15 +24,17 @@ public class TylerUserNamePassword {
     this.userName = userName;
     this.password = password;
   }
-  
+
   public String getUserName() {
     return userName;
   }
-  
+
   public Header toHeader() {
     try {
-      return new Header(new QName("urn:tyler:efm:services", "UserNameHeader"),
-          this, new JAXBDataBinding(TylerUserNamePassword.class));
+      return new Header(
+          new QName("urn:tyler:efm:services", "UserNameHeader"),
+          this,
+          new JAXBDataBinding(TylerUserNamePassword.class));
     } catch (JAXBException ex) {
       // We are always passing this class to JAXB. If at any point it would fail,
       // it should be a compile time thing tbh. We don't need the extra overhead
@@ -44,14 +46,12 @@ public class TylerUserNamePassword {
   /**
    * Convenience method to make the Tyler specific SOAP Header.
    *
-   * @param  userName      the email of the user that is sending this request
-   * @param  passwordHash  the auth token (gotten from the AuthenticateUser
-   *                       call).
-   * @return               the Header object to the request context's
-   *                       Header.HEADER_LIST
+   * @param userName the email of the user that is sending this request
+   * @param passwordHash the auth token (gotten from the AuthenticateUser call).
+   * @return the Header object to the request context's Header.HEADER_LIST
    */
   public static Header makeHeader(String userName, String passwordHash) {
-    return (new TylerUserNamePassword(userName, passwordHash)).toHeader(); 
+    return (new TylerUserNamePassword(userName, passwordHash)).toHeader();
   }
 
   public static List<Header> makeHeaderList(AuthenticateResponseType authRes) {

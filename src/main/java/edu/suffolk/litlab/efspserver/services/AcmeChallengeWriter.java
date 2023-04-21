@@ -7,8 +7,8 @@ import java.io.Writer;
 
 public class AcmeChallengeWriter implements AcmeChallengePublisher {
 
-  public final static File TOKEN_FILE= new File("acme_token_file.txt");
-  public final static File CONTENT_FILE= new File("acme_content_file.txt");
+  public static final File TOKEN_FILE = new File("acme_token_file.txt");
+  public static final File CONTENT_FILE = new File("acme_content_file.txt");
 
   @Override
   public boolean setTokenContent(String token, String content) {
