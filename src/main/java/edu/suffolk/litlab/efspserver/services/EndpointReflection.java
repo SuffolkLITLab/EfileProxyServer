@@ -215,7 +215,7 @@ public class EndpointReflection {
     PAYLOAD
   }
 
-  public class Endpoint {
+  public static class Endpoint {
     String uri;
     MethodEnum method;
 
@@ -232,7 +232,7 @@ public class EndpointReflection {
     }
   }
 
-  public class EndpointParameter {
+  public static class EndpointParameter {
     ParameterType parameterType = ParameterType.PAYLOAD;
     String javaType;
     String defaultValue;

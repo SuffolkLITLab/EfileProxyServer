@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver.codes;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class NameAndCode implements Comparable<NameAndCode> {
   String name;
   String code;
@@ -27,6 +29,11 @@ public class NameAndCode implements Comparable<NameAndCode> {
     } else {
       return false;
     }
+  }
+
+  @Override
+  public int hashCode() {
+    return (new HashCodeBuilder()).append(name).append(code).build();
   }
 
   @Override

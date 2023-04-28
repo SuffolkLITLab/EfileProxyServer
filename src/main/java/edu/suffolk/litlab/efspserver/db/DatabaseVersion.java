@@ -45,26 +45,27 @@ public class DatabaseVersion {
 
   public void createTablesIfAbsent(boolean brandNew) throws SQLException {
     String tableExistsQuery = TABLE_EXISTS;
-    PreparedStatement existsSt = userConn.prepareStatement(tableExistsQuery);
-    existsSt.setString(1, "schema_version");
-    ResultSet rs = existsSt.executeQuery();
-    if (!rs.next() || rs.getInt(1) <= 0) {
-      String createSt =
-          """
-          CREATE TABLE schema_version ("version" integer NOT NULL)
-          """;
-      PreparedStatement pst = userConn.prepareStatement(createSt);
-      int retVal = pst.executeUpdate();
-      if (retVal < 0) {
-        log.warn("Issue when creating schema_version: retVal == " + retVal);
+    try (PreparedStatement existsSt = userConn.prepareStatement(tableExistsQuery)) {
+      existsSt.setString(1, "schema_version");
+      ResultSet rs = existsSt.executeQuery();
+      if (!rs.next() || rs.getInt(1) <= 0) {
+        String createSt =
+            """
+            CREATE TABLE schema_version ("version" integer NOT NULL)
+            """;
+        PreparedStatement pst = userConn.prepareStatement(createSt);
+        int retVal = pst.executeUpdate();
+        if (retVal < 0) {
+          log.warn("Issue when creating schema_version: retVal == " + retVal);
+        }
+        if (brandNew) {
+          setSchemaVersion(CURRENT_VERSION);
+        } else {
+          setSchemaVersion(0);
+        }
       }
-      if (brandNew) {
-        setSchemaVersion(CURRENT_VERSION);
-      } else {
-        setSchemaVersion(0);
-      }
+      return;
     }
-    return;
   }
 
   public boolean setSchemaVersion(int newVersion) throws SQLException {

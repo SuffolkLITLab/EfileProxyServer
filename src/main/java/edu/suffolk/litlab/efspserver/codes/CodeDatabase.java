@@ -907,7 +907,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       return false;
     }
     // TODO(brycew): make variant that deletes everything with a specific jurisdiction
-    String deleteFromTableStr = CodeTableConstants.getDeleteFrom(tableName);
+    final String deleteFromTableStr = CodeTableConstants.getDeleteFrom(tableName);
     boolean tableHasCourt = !deleteFromTableStr.isBlank();
     if (!tableHasCourt) {
       log.warn(

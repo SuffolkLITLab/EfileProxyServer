@@ -32,8 +32,8 @@ public class RootService {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getVersionInfo() {
     final var properties = new Properties();
-    try {
-      properties.load(RootService.class.getResourceAsStream("/version.properties"));
+    try (var is = RootService.class.getResourceAsStream("/version.properties")) {
+      properties.load(is);
       return Response.ok("{\"version\": \"" + properties.getProperty("version") + "\"}").build();
     } catch (IOException e) {
       return Response.status(500).entity("Could not load version info").build();
