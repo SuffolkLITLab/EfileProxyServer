@@ -11,7 +11,7 @@
    <!-- NOTE(brycew): removed 361 from the wsu URL, as suggested by https://issues.apache.org/jira/browse/CXF-7402 -->
 	<wsdl:types>
 		<xsd:schema>
-			<xsd:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/MessageWrappers" schemaLocation="MessageWrappers.xsd"/>
+			<xsd:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/MessageWrappers" schemaLocation="ecf-v5-1.xsd"/>
 		</xsd:schema>
 	</wsdl:types>
 	<message name="GetCourtScheduleRequest">
@@ -93,7 +93,7 @@
 				<soap:body use="literal"/>
 			</output>
 		</operation>
-		<operation name="ReserveCourtDate">
+		<!--operation name="ReserveCourtDate">
 			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE/ReserveCourtDate"/>
 			<input>
 				<soap:body use="literal"/>
@@ -101,7 +101,7 @@
 			<output>
 				<soap:body use="literal"/>
 			</output>
-		</operation>
+		</operation-->
 		<operation name="ReserveCourtDateSync">
 			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE/ReserveCourtDateSync"/>
 			<input>

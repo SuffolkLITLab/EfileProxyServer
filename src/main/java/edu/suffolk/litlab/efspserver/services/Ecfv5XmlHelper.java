@@ -1,10 +1,12 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import ecfv5.gov.niem.release.niem.domains.jxdm._6.CourtType;
-import ecfv5.gov.niem.release.niem.niem_core._4.DateType;
-import ecfv5.gov.niem.release.niem.niem_core._4.IdentificationType;
-import ecfv5.gov.niem.release.niem.niem_core._4.TextType;
-import ecfv5.gov.niem.release.niem.proxy.xsd._4.NormalizedString;
+import gov.niem.release.niem.domains.jxdm._6.CourtType;
+import gov.niem.release.niem.niem_core._4.DateType;
+import gov.niem.release.niem.niem_core._4.IdentificationType;
+import gov.niem.release.niem.niem_core._4.TextType;
+import gov.niem.release.niem.proxy.xsd._4.NormalizedString;
+
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -19,18 +21,25 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
+
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 
 public class Ecfv5XmlHelper {
 
-  static final ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory niemCoreObjFac;
-  static final ecfv5.gov.niem.release.niem.proxy.xsd._4.ObjectFactory niemProxyObjFac;
-  static final ecfv5.gov.niem.release.niem.domains.jxdm._6.ObjectFactory jxObjFac;
+  static final gov.niem.release.niem.niem_core._4.ObjectFactory niemCoreObjFac;
+  static final gov.niem.release.niem.proxy.xsd._4.ObjectFactory niemProxyObjFac;
+  static final gov.niem.release.niem.domains.jxdm._6.ObjectFactory jxObjFac;
   static final DatatypeFactory datatypeFac;
 
   static {
-    niemProxyObjFac = new ecfv5.gov.niem.release.niem.proxy.xsd._4.ObjectFactory();
-    niemCoreObjFac = new ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory();
-    jxObjFac = new ecfv5.gov.niem.release.niem.domains.jxdm._6.ObjectFactory();
+    niemProxyObjFac = new gov.niem.release.niem.proxy.xsd._4.ObjectFactory();
+    niemCoreObjFac = new gov.niem.release.niem.niem_core._4.ObjectFactory();
+    jxObjFac = new gov.niem.release.niem.domains.jxdm._6.ObjectFactory();
     try {
       datatypeFac = DatatypeFactory.newInstance();
     } catch (DatatypeConfigurationException e) {
@@ -39,7 +48,37 @@ public class Ecfv5XmlHelper {
     }
   }
 
-  public static ecfv5.gov.niem.release.niem.proxy.xsd._4.DateTime convertProxyDate(
+  public static <T> String objectToXmlStrOrError(T toXml, Class<T> toXmlClazz) {
+    try {
+      return objectToXmlStr(toXml, toXmlClazz);
+    } catch (JAXBException | NullPointerException ex) {
+      return ex.toString() + "(original obj was : " + toXml.toString() + ")";
+    }
+  }
+
+  public static <T> String objectToXmlStr(T toXml, Class<T> toXmlClazz) throws JAXBException {
+    JAXBContext jaxContext =
+        JAXBContext.newInstance(
+            toXmlClazz,
+            /*gov.niem.niem.niem_core._2.ObjectFactory.class,
+            gov.niem.niem.structures._2.ObjectFactory.class,
+            oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
+            oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class */
+            https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ObjectFactory.class,
+            https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.ObjectFactory.class,
+            gov.niem.release.niem.niem_core._4.ObjectFactory.class,
+            gov.niem.release.niem.domains.jxdm._6.ObjectFactory.class);
+    Marshaller mar = jaxContext.createMarshaller();
+    mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+    QName qname = new QName("suffolk.test.objectToXml", "objectToXml");
+    JAXBElement<T> wrappedRoot = new JAXBElement<T>(qname, toXmlClazz, toXml);
+    StringWriter sw = new StringWriter();
+    mar.marshal(wrappedRoot, sw);
+    return sw.toString();
+  }
+
+
+  public static gov.niem.release.niem.proxy.xsd._4.DateTime convertProxyDate(
       LocalDateTime date) {
     GregorianCalendar cal = new GregorianCalendar();
     cal.set(
@@ -73,6 +112,23 @@ public class Ecfv5XmlHelper {
   public static DateType convertDateTime(Instant inst, int fracSecondPrecision) {
     OffsetDateTime op = inst.atOffset(ZoneOffset.UTC);
     return convertCourtReserveDate(op, fracSecondPrecision);
+  }
+
+  public static String amountToString(AmountType amt) {
+    if (amt == null) {
+      return "";
+    }
+    String currencyId = amt.getCurrencyID();
+    String valStr = amt.getValue().toString();
+    if (currencyId == null) {
+      return valStr;
+    }
+    // TODO(brycew): more internationalization
+    if (currencyId.equals("USD")) {
+      return "$" + valStr;
+    } else {
+      return valStr + currencyId;
+    }
   }
 
   /**
@@ -121,7 +177,7 @@ public class Ecfv5XmlHelper {
 
   /////// Wrapper functions: no semantic changes of the input to the output.
 
-  public static ecfv5.gov.niem.release.niem.proxy.xsd._4.Boolean convertBool(boolean value) {
+  public static gov.niem.release.niem.proxy.xsd._4.Boolean convertBool(boolean value) {
     var boolVal = niemProxyObjFac.createBoolean();
     boolVal.setValue(value);
     return boolVal;
@@ -147,7 +203,7 @@ public class Ecfv5XmlHelper {
     return id;
   }
 
-  public static ecfv5.gov.niem.release.niem.proxy.xsd._4.String convertString(String str) {
+  public static gov.niem.release.niem.proxy.xsd._4.String convertString(String str) {
     var outStr = niemProxyObjFac.createString();
     outStr.setValue(str);
     return outStr;

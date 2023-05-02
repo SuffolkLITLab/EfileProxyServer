@@ -3,10 +3,10 @@ package edu.suffolk.litlab.efspserver.services;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.core.Response;
 
 @Path("/.well-known")
 public class AcmeChallengeService implements AcmeChallengePublisher {

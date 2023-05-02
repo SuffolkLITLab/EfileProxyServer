@@ -1,10 +1,10 @@
 
 package gov.niem.niem.niem_core._2;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlType;
 import gov.niem.niem.domains.jxdm._4.ActivityLocationAssociationType;
 import gov.niem.niem.domains.jxdm._4.DocumentCourtAssociationType;
 import gov.niem.niem.domains.jxdm._4.PersonChargeAssociationType;

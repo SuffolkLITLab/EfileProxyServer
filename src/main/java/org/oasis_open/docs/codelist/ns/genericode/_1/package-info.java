@@ -5,5 +5,5 @@
 // Generated on: 2021.04.16 at 04:29:27 PM UTC 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://docs.oasis-open.org/codelist/ns/genericode/1.0/")
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "http://docs.oasis-open.org/codelist/ns/genericode/1.0/")
 package org.oasis_open.docs.codelist.ns.genericode._1;

@@ -20,8 +20,8 @@ import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 import gov.niem.niem.niem_core._2.AddressType;
 import gov.niem.niem.niem_core._2.ProperNameTextType;
 import gov.niem.niem.niem_core._2.StructuredAddressType;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

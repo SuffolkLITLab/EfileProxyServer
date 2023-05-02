@@ -127,10 +127,10 @@ working in. For us it's mostly `illinois-stage`.
       ECF v5, not ECF v4. So just run:
 
       ```bash
-      mvn exec:java@XsdDownloader -Dexec.args="https://jurisdiction-env.tylerhost.net/EFM/Schema/v5/CourtScheduling.wsdl ecf-v5"
+      mvn exec:java@XsdDownloader -Dexec.args="https://jurisdiction-env.tylertech.cloud/EFM/Schema/v5/CourtSchedulingMDE.wsdl ecf-v5"
       ```
 
-      and move all the files to a different resource directory, this time `src/main/resources/wsdl/jurisdiction/v5`.
+      and move all the files to a different resource directory, this time `src/main/resources/wsdl/{tyler_env}/`.
       Don't forget to rename `ecf-v5` to `CourtSchedulingMDE.wsdl`
 
 

@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efspserver;
 
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE_Service;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE_Service;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;

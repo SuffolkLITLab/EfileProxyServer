@@ -6,7 +6,7 @@ import edu.suffolk.litlab.efspserver.services.LoginInterface;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import java.util.Map;
 import java.util.Optional;
-import javax.xml.ws.BindingProvider;
+import jakarta.xml.ws.BindingProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tyler.efm.services.EfmUserService;

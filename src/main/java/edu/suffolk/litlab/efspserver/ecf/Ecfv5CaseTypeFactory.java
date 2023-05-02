@@ -10,24 +10,24 @@ import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertText;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hubspot.algebra.Result;
-import ecfv5.gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType;
-import ecfv5.gov.niem.release.niem.domains.jxdm._6.CaseOfficialType;
-import ecfv5.gov.niem.release.niem.domains.jxdm._6.CourtEventType;
-import ecfv5.gov.niem.release.niem.niem_core._4.AmountType;
-import ecfv5.gov.niem.release.niem.niem_core._4.CaseType;
-import ecfv5.gov.niem.release.niem.niem_core._4.DateType;
-import ecfv5.gov.niem.release.niem.niem_core._4.EntityType;
-import ecfv5.gov.niem.release.niem.niem_core._4.IdentificationType;
-import ecfv5.gov.niem.release.niem.niem_core._4.OrganizationType;
-import ecfv5.gov.niem.release.niem.niem_core._4.PersonType;
-import ecfv5.gov.niem.release.niem.proxy.xsd._4.Decimal;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseOfficialAugmentationType;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventAugmentationType;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.OrganizationAugmentationType;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAugmentationType;
-import ecfv5.tyler.ecf.v5_0.extensions.common.FilingAttorneyEntityType;
-import ecfv5.tyler.ecf.v5_0.extensions.common.FilingPartyEntityType;
-import ecfv5.tyler.ecf.v5_0.extensions.common.FilingReferenceType;
+import gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType;
+import gov.niem.release.niem.domains.jxdm._6.CaseOfficialType;
+import gov.niem.release.niem.domains.jxdm._6.CourtEventType;
+import gov.niem.release.niem.niem_core._4.AmountType;
+import gov.niem.release.niem.niem_core._4.CaseType;
+import gov.niem.release.niem.niem_core._4.DateType;
+import gov.niem.release.niem.niem_core._4.EntityType;
+import gov.niem.release.niem.niem_core._4.IdentificationType;
+import gov.niem.release.niem.niem_core._4.OrganizationType;
+import gov.niem.release.niem.niem_core._4.PersonType;
+import gov.niem.release.niem.proxy.xsd._4.Decimal;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseOfficialAugmentationType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventAugmentationType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.OrganizationAugmentationType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAugmentationType;
+import tyler.ecf.v5_0.extensions.common.FilingAttorneyEntityType;
+import tyler.ecf.v5_0.extensions.common.FilingPartyEntityType;
+import tyler.ecf.v5_0.extensions.common.FilingReferenceType;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.PartyId;
@@ -50,24 +50,24 @@ import org.slf4j.LoggerFactory;
 public class Ecfv5CaseTypeFactory {
   private static Logger log = LoggerFactory.getLogger(Ecfv5CaseTypeFactory.class);
 
-  private final ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory niemObjFac;
-  private final ecfv5.tyler.ecf.v5_0.extensions.common.ObjectFactory tylerObjFac;
-  private final ecfv5.gov.niem.release.niem.domains.jxdm._6.ObjectFactory jxObjFac;
-  private final ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ObjectFactory
+  private final gov.niem.release.niem.niem_core._4.ObjectFactory niemObjFac;
+  private final tyler.ecf.v5_0.extensions.common.ObjectFactory tylerObjFac;
+  private final gov.niem.release.niem.domains.jxdm._6.ObjectFactory jxObjFac;
+  private final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ObjectFactory
       oasisObjFac;
-  private final ecfv5.gov.niem.release.niem.proxy.xsd._4.ObjectFactory proxyObjFac;
-  private final ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.ObjectFactory
+  private final gov.niem.release.niem.proxy.xsd._4.ObjectFactory proxyObjFac;
+  private final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.ObjectFactory
       oasisCivilObjFac;
 
   public Ecfv5CaseTypeFactory() {
-    this.niemObjFac = new ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory();
-    this.tylerObjFac = new ecfv5.tyler.ecf.v5_0.extensions.common.ObjectFactory();
-    this.proxyObjFac = new ecfv5.gov.niem.release.niem.proxy.xsd._4.ObjectFactory();
+    this.niemObjFac = new gov.niem.release.niem.niem_core._4.ObjectFactory();
+    this.tylerObjFac = new tyler.ecf.v5_0.extensions.common.ObjectFactory();
+    this.proxyObjFac = new gov.niem.release.niem.proxy.xsd._4.ObjectFactory();
     this.oasisObjFac =
-        new ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ObjectFactory();
-    this.jxObjFac = new ecfv5.gov.niem.release.niem.domains.jxdm._6.ObjectFactory();
+        new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ObjectFactory();
+    this.jxObjFac = new gov.niem.release.niem.domains.jxdm._6.ObjectFactory();
     this.oasisCivilObjFac =
-        new ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.ObjectFactory();
+        new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.ObjectFactory();
   }
 
   public Result<CaseType, FilingError> createCaseType(

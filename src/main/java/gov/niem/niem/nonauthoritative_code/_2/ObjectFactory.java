@@ -1,7 +1,7 @@
 
 package gov.niem.niem.nonauthoritative_code._2;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**

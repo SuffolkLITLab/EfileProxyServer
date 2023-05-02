@@ -1,7 +1,7 @@
 
 package tyler.efm.services.schema.getpasswordquestionrequest;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**

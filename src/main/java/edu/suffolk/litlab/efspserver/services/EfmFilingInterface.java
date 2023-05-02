@@ -4,7 +4,7 @@ import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import java.time.LocalDate;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 public interface EfmFilingInterface {
   public enum ApiChoice {
