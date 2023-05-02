@@ -8,14 +8,14 @@ import java.time.ZoneOffset;
 
 import org.junit.jupiter.api.Test;
 
-import ecfv5.gov.niem.release.niem.niem_core._4.DateType;
-import edu.suffolk.litlab.efspserver.XmlHelper;
+import gov.niem.release.niem.niem_core._4.DateType;
 
 public class Ecfv5XmlHelperTest {
 
   private static String stringFromXmlDate(DateType date) {
-    String xmlStr = XmlHelper.objectToXmlStrOrError(date, DateType.class);
+    String xmlStr = Ecfv5XmlHelper.objectToXmlStrOrError(date, DateType.class);
 
+    System.out.println(xmlStr);
     // Just grab the string in the date time element.
     return xmlStr.split(":DateTime>")[1].split("</")[0];
   }

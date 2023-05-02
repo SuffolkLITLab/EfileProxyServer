@@ -1,10 +1,10 @@
 
 package tyler.ecf.extensions.serviceinformationhistoryresponsemessage;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlType;
 import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.TextType;
 import org.apache.commons.lang3.builder.ToStringBuilder;

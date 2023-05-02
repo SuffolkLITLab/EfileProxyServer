@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Request;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Request;
 
 /** Most of this class taken from the below blog post: https://dalelane.co.uk/blog/?p=1871 */
 public class EndpointReflection {
@@ -147,8 +147,8 @@ public class EndpointReflection {
 
       // ignore parameters used to access context
       if ((parameter == Request.class)
-          || (parameter == javax.servlet.http.HttpServletResponse.class)
-          || (parameter == javax.servlet.http.HttpServletRequest.class)) {
+          || (parameter == jakarta.servlet.http.HttpServletResponse.class)
+          || (parameter == jakarta.servlet.http.HttpServletRequest.class)) {
         continue;
       }
 

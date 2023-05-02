@@ -1,9 +1,9 @@
 
 package gov.niem.niem.domains.jxdm._4;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlElementDecl;
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlElementDecl;
+import jakarta.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 import gov.niem.niem.ansi_d20._2.AccidentSeverityCodeType;
 import gov.niem.niem.ansi_d20._2.HazMatCodeType;

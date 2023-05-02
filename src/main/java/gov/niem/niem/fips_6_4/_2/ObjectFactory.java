@@ -1,7 +1,7 @@
 
 package gov.niem.niem.fips_6_4._2;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**

@@ -1,2 +1,2 @@
-@javax.xml.bind.annotation.XmlSchema(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingListQueryMessage-4.0", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingListQueryMessage-4.0", elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4;

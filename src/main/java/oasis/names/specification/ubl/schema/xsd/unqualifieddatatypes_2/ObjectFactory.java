@@ -1,7 +1,7 @@
 
 package oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**

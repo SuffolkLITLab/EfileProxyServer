@@ -42,7 +42,7 @@ import tyler.ecf.extensions.servicecallbackmessage.ServiceCallbackMessageType;
 // TODO(brycew): does this need to become multiple different files, one for each jurisdiction? Can't
 // have multiple wsdlLocations
 
-@javax.jws.WebService(
+@jakarta.jws.WebService(
     serviceName = "FilingAssemblyMDEService",
     portName = "FilingAssemblyMDEPort",
     targetNamespace = "urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0",

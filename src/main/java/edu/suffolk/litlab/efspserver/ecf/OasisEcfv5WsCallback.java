@@ -1,29 +1,29 @@
 package edu.suffolk.litlab.efspserver.ecf;
 
-import ecfv5.gov.niem.release.niem.codes.cbrncl._4.CredentialsAuthenticatedCodeSimpleType;
-import ecfv5.gov.niem.release.niem.codes.cbrncl._4.CredentialsAuthenticatedCodeType;
-import ecfv5.gov.niem.release.niem.codes.cbrncl._4.MessageStatusCodeSimpleType;
-import ecfv5.gov.niem.release.niem.codes.cbrncl._4.MessageStatusCodeType;
-import ecfv5.gov.niem.release.niem.codes.cbrncl._4.SystemOperatingModeCodeSimpleType;
-import ecfv5.gov.niem.release.niem.codes.cbrncl._4.SystemOperatingModeCodeType;
-import ecfv5.gov.niem.release.niem.domains.cbrn._4.MessageContentErrorType;
-import ecfv5.gov.niem.release.niem.domains.cbrn._4.MessageErrorType;
-import ecfv5.gov.niem.release.niem.domains.cbrn._4.MessageStatusType;
-import ecfv5.gov.niem.release.niem.niem_core._4.IdentificationType;
-import ecfv5.gov.niem.release.niem.niem_core._4.PersonType;
-import ecfv5.gov.niem.release.niem.proxy.xsd._4.NormalizedString;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.FilingStatusType;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ReviewedDocumentAugmentationType;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ReviewedDocumentType;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.NotifyCourtDateRequestType;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.NotifyCourtDateResponseType;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.NotifyFilingReviewCompleteRequestType;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.NotifyFilingReviewCompleteResponseType;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.payment.PaymentMessageType;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reviewfilingcallback.NotifyFilingReviewCompleteMessageType;
-import ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.filingassemblymde.FilingAssemblyMDE;
+import gov.niem.release.niem.codes.cbrncl._4.CredentialsAuthenticatedCodeSimpleType;
+import gov.niem.release.niem.codes.cbrncl._4.CredentialsAuthenticatedCodeType;
+import gov.niem.release.niem.codes.cbrncl._4.MessageStatusCodeSimpleType;
+import gov.niem.release.niem.codes.cbrncl._4.MessageStatusCodeType;
+import gov.niem.release.niem.codes.cbrncl._4.SystemOperatingModeCodeSimpleType;
+import gov.niem.release.niem.codes.cbrncl._4.SystemOperatingModeCodeType;
+import gov.niem.release.niem.domains.cbrn._4.MessageContentErrorType;
+import gov.niem.release.niem.domains.cbrn._4.MessageErrorType;
+import gov.niem.release.niem.domains.cbrn._4.MessageStatusType;
+import gov.niem.release.niem.niem_core._4.IdentificationType;
+import gov.niem.release.niem.niem_core._4.PersonType;
+import gov.niem.release.niem.proxy.xsd._4.NormalizedString;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.FilingStatusType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ReviewedDocumentAugmentationType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ReviewedDocumentType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.NotifyCourtDateRequestType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.NotifyCourtDateResponseType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.NotifyFilingReviewCompleteRequestType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.NotifyFilingReviewCompleteResponseType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.payment.PaymentMessageType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reviewfilingcallback.NotifyFilingReviewCompleteMessageType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.filingassemblymde.FilingAssemblyMDE;
 import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.XmlHelper;
+import edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.db.Transaction;
@@ -39,13 +39,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.sql.DataSource;
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.CardAccountType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@javax.jws.WebService(
+@jakarta.jws.WebService(
     serviceName = "FilingAssemblyMDEService",
     portName = "FilingAssemblyMDEPort",
     targetNamespace = "urn:tyler:efm:wsdl:WebServicesProfile-Implementation-5.0",
@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
     // https://docs.oracle.com/cd/E13222_01/wls/docs92/webserv/annotations.html
     // wsdlLocation="file:src/main/resources/wsdl/stage/illinois-v5-FilingAssemblyMDE.wsdl",
     endpointInterface =
-        "ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.filingassemblymde.FilingAssemblyMDE")
+        "https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.filingassemblymde.FilingAssemblyMDE")
 public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
   private static Logger log = LoggerFactory.getLogger(OasisEcfFiler.class);
 
@@ -77,12 +77,10 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
   }
 
   private static String chargeToStr(AllowanceChargeType charge) {
-    StringBuilder chargeReason = new StringBuilder();
-    String amountText = XmlHelper.amountToString(charge.getAmount());
-    chargeReason.append(amountText);
-    if (charge.getAllowanceChargeReason() != null) {
-      chargeReason.append(" for ").append(charge.getAllowanceChargeReason().getValue());
-    }
+    StringBuilder chargeReasonStr = new StringBuilder();
+    String amountText = Ecfv5XmlHelper.amountToString(charge.getAmount());
+    chargeReasonStr.append(amountText);
+    chargeReasonStr.append(" for ").append(charge.getAllowanceChargeReason());
     charge.getPaymentMeans().stream()
         .forEach(
             m -> {
@@ -98,10 +96,10 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
                 if (acct.getExpiryDate() != null && acct.getExpiryDate().getValue() != null) {
                   cardInfo += " (exp " + acct.getExpiryDate().getValue().toString() + ")";
                 }
-                chargeReason.append(" paid for using " + cardInfo);
+                chargeReasonStr.append(" paid for using " + cardInfo);
               }
             });
-    return chargeReason.toString();
+    return chargeReasonStr.toString();
   }
 
   private static String documentToStr(ReviewedDocumentType doc) {
@@ -330,7 +328,7 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
     st.setCredentialsAuthenticatedCode(act);
     SystemOperatingModeCodeType mct = new SystemOperatingModeCodeType();
     mct.setValue(SystemOperatingModeCodeSimpleType.OPS);
-    var statusFac = new ecfv5.gov.niem.release.niem.domains.cbrn._4.ObjectFactory();
+    var statusFac = new gov.niem.release.niem.domains.cbrn._4.ObjectFactory();
     st.setSystemOperatingModeAbstract(statusFac.createCredentialsAuthenticatedCode(act));
     st.setResendRequestIndicator(Ecfv5XmlHelper.convertBool(false));
     MessageErrorType okHandling = new MessageErrorType();
