@@ -37,7 +37,8 @@ efspjava_1  |   at edu.suffolk.litlab.efspserver.ecf.OasisEcfFiler.prepareFiling
 This means our generated java classes are out of date, and we'll need to update
 them. This document tries to capture the steps needed to update those generated classes.
 
-Tbh, this is a mess. The rough steps are below.
+Tbh, this is a mess. Some of it is automated in `redo_wsdl.py`, but that doesn't yet do the ECFv5 part.
+So for completion, the rough steps are below.
 
 NOTE: the exact links to the SOAP services in this doc aren't really exact: they're examples.
 So if a link says `https://jurisdiction-env.tylerhost.net/efm/EFMUserService.svc`, feel free to replace
@@ -47,15 +48,15 @@ working in. For us it's mostly `illinois-stage`.
 1. Get your hands on `wsdl2java` from the [CXF project](https://cxf.apache.org/).
 
    You can download the latest CXF `wsdl2java` pre-built binary from
-   [the official website](https://cxf.apache.org/download.html). Download the zip (verifying
-   it as well), and then extract it.
+   [the official website](https://cxf.apache.org/download.html) (make sure it's at least 4.0 or later).
+   Download the zip (verifying it as well), and then extract it.
 
    You can confirm things are working because you should be able to run `bin/wsdl2java -help`
    successfully.
 
    If the pre-built binary doesn't work (might happen if you switch to a new version of Java)
    you can build things from source using [the build instructions](https://github.com/apache/cxf/blob/master/BUILDING.txt).
-   (though I don't recommend it, maven dosen't give user-friendly errors when things go wrong).
+   (though I don't recommend it, maven doesn't give user-friendly errors when things go wrong).
 
    The instructions are to:
 
@@ -171,15 +172,10 @@ working in. For us it's mostly `illinois-stage`.
    * `-d` puts all of the generated java into that directory. This is outside of the project root, so I don't accidentaly
      overwrite anything when running the tool.
 
-   For the CourtSchedulingMDE.wsdl, we need to add a sub package, so it doesn't conflict with the ecfv4 generated files from the other
-   services. This should be able to be done with the `-p` flag in the [`wsdl2java` tool](https://cxf.apache.org/docs/wsdl-to-java.html).
-   However, that flag collapses all of the wsdl namespaces into a single namespace. Generating the java files with the same command above,
-   and running the below script on it to add an additional package works instead.
+   For the CourtSchedulingMDE.wsdl, we need to do some weird things. 90% of the generated files don't conflict, so
+   we can put them in the same namespace fine. However, `oasis.names.specification.ubl.schema.xsd` is somehow the same version, but is different (so
+   running `wsdl2java` over `CourtSchedulingMDE.wsdl` will overwrite the existing version). From what I can tell, we just don't need the newest version,
+   so we can keep using the ecfv4 generated version of the files for now. Just discard the newly generated contents of
+   `src/main/java/oasis/names/specification/ubl/schema/xsd` (making a git commit before, and then `git restore .` to that folder).
 
-   ```bash
-   for fname in `find . -type f`
-   do
-     sed -i 's/import \(gov.niem.release.niem\|https.docs_oasis_open_org\|ietf.params.xml.ns.icalendar_2\|org.w3._2000._09.xmldsig_\|oasis.names.specification.ubl.schema.xsd\|tyler.ecf.v5_0\|un.unece.uncefact.data.specification\)/import ecfv5.\1/g' $fname
-   done
-   ```
 
