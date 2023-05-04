@@ -2,12 +2,6 @@ package edu.suffolk.litlab.efspserver.services;
 
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
-import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
-import javax.sql.DataSource;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -16,6 +10,12 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
+import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -13,6 +13,8 @@
 
   <logger name="org.ehcache.core.EhcacheManager" level="ERROR"/>
   <logger name="org.apache.cxf.wsdl.service.factory" level="WARN"/>
+  <!-- Ignoring "WARN  org.eclipse.jetty.server.handler.ContextHandler - Unimplemented getRequestCharacterEncoding() - use org.eclipse.jetty.servlet.ServletContextHandler" -->
+  <logger name="org.eclipse.jetty.server.handler.ContextHandler" level="ERROR"/>
   <!--logger name="org.eclipse.jetty" level="DEBUG"/-->
 
   <root level="info">

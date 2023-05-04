@@ -5,7 +5,10 @@ import gov.niem.release.niem.niem_core._4.DateType;
 import gov.niem.release.niem.niem_core._4.IdentificationType;
 import gov.niem.release.niem.niem_core._4.TextType;
 import gov.niem.release.niem.proxy.xsd._4.NormalizedString;
-
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -22,12 +25,7 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
-
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
 
 public class Ecfv5XmlHelper {
 
@@ -77,9 +75,7 @@ public class Ecfv5XmlHelper {
     return sw.toString();
   }
 
-
-  public static gov.niem.release.niem.proxy.xsd._4.DateTime convertProxyDate(
-      LocalDateTime date) {
+  public static gov.niem.release.niem.proxy.xsd._4.DateTime convertProxyDate(LocalDateTime date) {
     GregorianCalendar cal = new GregorianCalendar();
     cal.set(
         date.getYear(),

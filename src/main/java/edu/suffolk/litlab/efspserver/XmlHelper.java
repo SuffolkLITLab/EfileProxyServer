@@ -4,14 +4,14 @@ import gov.niem.niem.domains.jxdm._4.CourtType;
 import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.MeasureType;
 import gov.niem.niem.niem_core._2.TextType;
-import java.io.File;
-import java.io.StringWriter;
-import java.time.LocalDate;
-import java.util.GregorianCalendar;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
+import java.io.File;
+import java.io.StringWriter;
+import java.time.LocalDate;
+import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -208,7 +208,7 @@ public class XmlHelper {
             /* ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ObjectFactory.class,
             ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.ObjectFactory.class,
             ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory.class,
-            ecfv5.gov.niem.release.niem.domains.jxdm._6.ObjectFactory.class*/);
+            ecfv5.gov.niem.release.niem.domains.jxdm._6.ObjectFactory.class*/ );
     Marshaller mar = jaxContext.createMarshaller();
     mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
     QName qname = new QName("suffolk.test.objectToXml", "objectToXml");

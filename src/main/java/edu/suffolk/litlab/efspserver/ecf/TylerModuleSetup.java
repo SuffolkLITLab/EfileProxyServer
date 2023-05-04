@@ -287,7 +287,8 @@ public class TylerModuleSetup implements EfmModuleSetup {
     String address =
         baseLocalUrl + "/jurisdictions/" + tylerJurisdiction + ServiceHelpers.ASSEMBLY_PORT;
     log.info("Starting NFRC callback server at " + address);
-    EndpointImpl jaxWsEndpoint = (EndpointImpl) jakarta.xml.ws.Endpoint.publish(address, implementor);
+    EndpointImpl jaxWsEndpoint =
+        (EndpointImpl) jakarta.xml.ws.Endpoint.publish(address, implementor);
     log.info("Wsdl location: " + jaxWsEndpoint.getWsdlLocation());
     log.info("Address : " + jaxWsEndpoint.getAddress());
     log.info("Bean name: " + jaxWsEndpoint.getBeanName());

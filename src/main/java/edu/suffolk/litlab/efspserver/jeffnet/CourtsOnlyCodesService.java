@@ -5,12 +5,6 @@ import static edu.suffolk.litlab.efspserver.services.EndpointReflection.replaceP
 import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.services.CodesService;
 import edu.suffolk.litlab.efspserver.services.EndpointReflection;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -21,6 +15,12 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
