@@ -104,7 +104,7 @@ public class LegalIssuesTaxonomyCodes {
    * A very lazy list-based adjacency directed graph implementation. Each node has parents, and
    * children. All nodes are contained in a map in the parent class.
    */
-  class InternalNode {
+  static class InternalNode {
     String code;
     String title;
     String definition;

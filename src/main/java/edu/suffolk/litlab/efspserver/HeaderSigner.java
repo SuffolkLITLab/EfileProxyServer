@@ -64,9 +64,10 @@ public class HeaderSigner {
 
   private KeyStore loadKeyStore() throws GeneralSecurityException, IOException {
     KeyStore keystore = KeyStore.getInstance("JKS");
-    InputStream is = new FileInputStream(this.pathToKeystore);
-    keystore.load(is, this.x509Password.toCharArray());
-    return keystore;
+    try (InputStream is = new FileInputStream(this.pathToKeystore)) {
+      keystore.load(is, this.x509Password.toCharArray());
+      return keystore;
+    }
   }
 
   private CMSSignedDataGenerator setUpProvider(final KeyStore keystore)
@@ -78,7 +79,9 @@ public class HeaderSigner {
     final List<Certificate> certlist = new ArrayList<Certificate>();
 
     for (int i = 0, length = certchain == null ? 0 : certchain.length; i < length; i++) {
-      certlist.add(certchain[i]);
+      if (certchain[i] != null) {
+        certlist.add(certchain[i]);
+      }
     }
 
     JcaCertStore certstore = new JcaCertStore(certlist);

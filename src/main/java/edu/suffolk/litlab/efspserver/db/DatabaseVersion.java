@@ -45,48 +45,52 @@ public class DatabaseVersion {
 
   public void createTablesIfAbsent(boolean brandNew) throws SQLException {
     String tableExistsQuery = TABLE_EXISTS;
-    PreparedStatement existsSt = userConn.prepareStatement(tableExistsQuery);
-    existsSt.setString(1, "schema_version");
-    ResultSet rs = existsSt.executeQuery();
-    if (!rs.next() || rs.getInt(1) <= 0) {
-      String createSt =
-          """
-          CREATE TABLE schema_version ("version" integer NOT NULL)
-          """;
-      PreparedStatement pst = userConn.prepareStatement(createSt);
-      int retVal = pst.executeUpdate();
-      if (retVal < 0) {
-        log.warn("Issue when creating schema_version: retVal == " + retVal);
+    try (PreparedStatement existsSt = userConn.prepareStatement(tableExistsQuery)) {
+      existsSt.setString(1, "schema_version");
+      ResultSet rs = existsSt.executeQuery();
+      if (!rs.next() || rs.getInt(1) <= 0) {
+        String createSt =
+            """
+            CREATE TABLE schema_version ("version" integer NOT NULL)
+            """;
+        PreparedStatement pst = userConn.prepareStatement(createSt);
+        int retVal = pst.executeUpdate();
+        if (retVal < 0) {
+          log.warn("Issue when creating schema_version: retVal == " + retVal);
+        }
+        if (brandNew) {
+          setSchemaVersion(CURRENT_VERSION);
+        } else {
+          setSchemaVersion(0);
+        }
       }
-      if (brandNew) {
-        setSchemaVersion(CURRENT_VERSION);
-      } else {
-        setSchemaVersion(0);
-      }
+      return;
     }
-    return;
   }
 
   public boolean setSchemaVersion(int newVersion) throws SQLException {
     String deleteSt = "DELETE FROM schema_version";
-    Statement delete = userConn.createStatement();
-    delete.executeUpdate(deleteSt);
+    try (Statement delete = userConn.createStatement()) {
+      delete.executeUpdate(deleteSt);
+    }
     String insertSt = "INSERT INTO schema_version (version) VALUES (?)";
-    PreparedStatement insert = userConn.prepareStatement(insertSt);
-    insert.setInt(1, newVersion);
-    int retVal = insert.executeUpdate();
-    // Only worked it if inserted 1 row (the new version)
-    return retVal > 0;
+    try (PreparedStatement insert = userConn.prepareStatement(insertSt)) {
+      insert.setInt(1, newVersion);
+      int retVal = insert.executeUpdate();
+      // Only worked it if inserted 1 row (the new version)
+      return retVal > 0;
+    }
   }
 
   public int getSchemaVersion() throws SQLException {
     String select = "SELECT version from schema_version";
-    Statement st = userConn.createStatement();
-    ResultSet rs = st.executeQuery(select);
-    while (rs.next()) {
-      return rs.getInt(1);
+    try (Statement st = userConn.createStatement()) {
+      ResultSet rs = st.executeQuery(select);
+      while (rs.next()) {
+        return rs.getInt(1);
+      }
+      return 0;
     }
-    return 0;
   }
 
   public boolean updateToLatest() throws NoSuchAlgorithmException {

@@ -490,11 +490,11 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       caseCategoryName = coreAndExisting.caseCategoryName;
       courtName = coreAndExisting.courtName;
       existingCaseTitle = coreAndExisting.existingCaseTitle;
-      if (!queryType.equals(QueryType.Service)
-          && (info.getPaymentId() == null || info.getPaymentId().isBlank())) {
-        //  collector.addRequired(collector.requestVar("tyler_payment_id", "The ID of the payment
-        // method", "text"));
-      }
+      // if (!queryType.equals(QueryType.Service)
+      //    && (info.getPaymentId() == null || info.getPaymentId().isBlank())) {
+      //  collector.addRequired(collector.requestVar("tyler_payment_id", "The ID of the payment
+      // method", "text"));
+      // }
     } catch (FilingError err) {
       return Result.err(err);
     }

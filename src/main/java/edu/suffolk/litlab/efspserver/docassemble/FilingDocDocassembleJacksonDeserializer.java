@@ -9,6 +9,7 @@ import static edu.suffolk.litlab.efspserver.services.FilingError.malformedInterv
 import static edu.suffolk.litlab.efspserver.services.FilingError.serverError;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import edu.suffolk.litlab.efspserver.FilingAttachment;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.JsonHelpers;
@@ -209,6 +210,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       InterviewVariable nameVar =
           collector.requestVar("filename", "The file name of the filing document", "text");
       collector.addRequired(nameVar);
+      filenameNode = NullNode.getInstance();
     }
     String fileName = (filenameNode != null) ? filenameNode.asText("") : "";
     if (!fileName.endsWith(".pdf")) {

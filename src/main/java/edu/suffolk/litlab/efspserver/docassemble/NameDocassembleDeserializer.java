@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efspserver.docassemble;
 import static edu.suffolk.litlab.efspserver.JsonHelpers.getStringMember;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
@@ -15,6 +16,7 @@ public class NameDocassembleDeserializer {
       InterviewVariable var =
           collector.requestVar("name", "The full name of the person", "IndividualName");
       collector.addRequired(var);
+      node = NullNode.getInstance();
     }
     if (!node.isObject()) {
       FilingError err =

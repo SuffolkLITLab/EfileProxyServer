@@ -520,7 +520,7 @@ public class CodeUpdater {
       log.error(
           "Need to pass in args: downloadIndiv <jurisdiction> <table> <location or blank for"
               + " system>");
-      System.exit(1);
+      return;
     }
 
     if (!jurisdiction.equalsIgnoreCase(args.get(1))) {
