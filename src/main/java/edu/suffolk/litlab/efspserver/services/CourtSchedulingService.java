@@ -7,26 +7,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.hubspot.algebra.Result;
-import gov.niem.release.niem.domains.cbrn._4.MessageContentErrorType;
-import gov.niem.release.niem.domains.cbrn._4.MessageErrorType;
-import gov.niem.release.niem.domains.cbrn._4.MessageStatusType;
-import gov.niem.release.niem.domains.jxdm._6.CourtEventType;
-import gov.niem.release.niem.niem_core._4.CaseType;
-import gov.niem.release.niem.niem_core._4.DateRangeType;
-import gov.niem.release.niem.niem_core._4.DateType;
-import gov.niem.release.niem.niem_core._4.IdentificationType;
-import gov.niem.release.niem.proxy.xsd._4.Duration;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ReserveCourtDateRequestType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ReturnDateRequestType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ReserveCourtDateMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE_Service;
-import tyler.ecf.v5_0.extensions.common.CourtScheduleType;
-import tyler.ecf.v5_0.extensions.reservedateresponse.ReserveDateResponseMessageType;
-import tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
-import tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateResponseMessageType;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
@@ -43,6 +23,33 @@ import edu.suffolk.litlab.efspserver.ecf.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efspserver.ecf.EcfCourtSpecificSerializer;
 import edu.suffolk.litlab.efspserver.ecf.Ecfv5CaseTypeFactory;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
+import gov.niem.release.niem.domains.cbrn._4.MessageContentErrorType;
+import gov.niem.release.niem.domains.cbrn._4.MessageErrorType;
+import gov.niem.release.niem.domains.cbrn._4.MessageStatusType;
+import gov.niem.release.niem.domains.jxdm._6.CourtEventType;
+import gov.niem.release.niem.niem_core._4.CaseType;
+import gov.niem.release.niem.niem_core._4.DateRangeType;
+import gov.niem.release.niem.niem_core._4.DateType;
+import gov.niem.release.niem.niem_core._4.IdentificationType;
+import gov.niem.release.niem.proxy.xsd._4.Duration;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ReserveCourtDateRequestType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ReturnDateRequestType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ReserveCourtDateMessageType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE_Service;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.ws.BindingProvider;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -55,19 +62,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import jakarta.xml.ws.BindingProvider;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.CourtRecordMDEPort;
@@ -75,6 +71,10 @@ import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import tyler.ecf.v5_0.extensions.common.CourtScheduleType;
+import tyler.ecf.v5_0.extensions.reservedateresponse.ReserveDateResponseMessageType;
+import tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
+import tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateResponseMessageType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 
 @Path("/scheduling/")
@@ -84,11 +84,9 @@ public class CourtSchedulingService {
   private static final Logger log = LoggerFactory.getLogger(CourtSchedulingService.class);
 
   private final CourtSchedulingMDE_Service schedFactory;
-  private final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers
-          .ObjectFactory
+  private final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ObjectFactory
       oasisWrapObjFac;
-  private final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate
-          .ObjectFactory
+  private final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ObjectFactory
       reserveDateObjFac;
   private final gov.niem.release.niem.niem_core._4.ObjectFactory niemObjFac;
   private final gov.niem.release.niem.proxy.xsd._4.ObjectFactory proxyObjFac;
@@ -118,11 +116,9 @@ public class CourtSchedulingService {
     this.schedFactory = maybeSchedFactory.get();
     this.converterMap = converterMap;
     this.oasisWrapObjFac =
-        new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers
-            .ObjectFactory();
+        new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ObjectFactory();
     this.reserveDateObjFac =
-        new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate
-            .ObjectFactory();
+        new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ObjectFactory();
     this.niemObjFac = new gov.niem.release.niem.niem_core._4.ObjectFactory();
     this.proxyObjFac = new gov.niem.release.niem.proxy.xsd._4.ObjectFactory();
     Optional<CourtRecordMDEService> maybeCourt =
@@ -342,7 +338,8 @@ public class CourtSchedulingService {
         m.setOutOfStateIndicator(Ecfv5XmlHelper.convertBool(outOfState));
         ReturnDateRequestType r = oasisWrapObjFac.createReturnDateRequestType();
         r.setReturnDateMessage(m);
-        log.info("Full msg: " + Ecfv5XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
+        log.info(
+            "Full msg: " + Ecfv5XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
         ReturnDateResponseMessageType resp =
             maybeServ.get().getReturnDate(r).getReturnDateResponseMessage();
         log.info(
@@ -359,11 +356,13 @@ public class CourtSchedulingService {
             m.setCase(niemObjFac.createCase(ct));
             r.setReturnDateMessage(m);
             log.info(
-                "New full msg: " + Ecfv5XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
+                "New full msg: "
+                    + Ecfv5XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
             resp = maybeServ.get().getReturnDate(r).getReturnDateResponseMessage();
             log.info(
                 "New full resp: "
-                    + Ecfv5XmlHelper.objectToXmlStrOrError(resp, ReturnDateResponseMessageType.class));
+                    + Ecfv5XmlHelper.objectToXmlStrOrError(
+                        resp, ReturnDateResponseMessageType.class));
           }
         }
         // TODO(brycew:) have gotten "451: AmountInControversy is not supported" for Handling error,
@@ -380,11 +379,13 @@ public class CourtSchedulingService {
           m.setCase(niemObjFac.createCase(ct));
           r.setReturnDateMessage(m);
           log.info(
-              "New full msg: " + Ecfv5XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
+              "New full msg: "
+                  + Ecfv5XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
           resp = maybeServ.get().getReturnDate(r).getReturnDateResponseMessage();
           log.info(
               "New full resp: "
-                  + Ecfv5XmlHelper.objectToXmlStrOrError(resp, ReturnDateResponseMessageType.class));
+                  + Ecfv5XmlHelper.objectToXmlStrOrError(
+                      resp, ReturnDateResponseMessageType.class));
         }
         if (hasError(resp)) {
           return Response.status(400).entity(resp.getMessageStatus()).build();
@@ -475,7 +476,8 @@ public class CourtSchedulingService {
     ReserveCourtDateRequestType req = oasisWrapObjFac.createReserveCourtDateRequestType();
     req.setReserveCourtDateMessage(msg);
     log.info(
-        "full REQ: " + Ecfv5XmlHelper.objectToXmlStrOrError(req, ReserveCourtDateRequestType.class));
+        "full REQ: "
+            + Ecfv5XmlHelper.objectToXmlStrOrError(req, ReserveCourtDateRequestType.class));
     ReserveDateResponseMessageType resp =
         maybeServ.get().reserveCourtDateSync(req).getReserveDateResponseMessage();
     log.info(
@@ -494,8 +496,7 @@ public class CourtSchedulingService {
                 })
             .map(
                 aug ->
-                    ((gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType)
-                            aug.getValue())
+                    ((gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType) aug.getValue())
                         .getCaseCourtEvent());
     List<CourtScheduleType> ret = new ArrayList<CourtScheduleType>();
     augEvent.forEach(

@@ -10,6 +10,15 @@ import static edu.suffolk.litlab.efspserver.services.Ecfv5XmlHelper.convertText;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hubspot.algebra.Result;
+import edu.suffolk.litlab.efspserver.FilingDoc;
+import edu.suffolk.litlab.efspserver.FilingInformation;
+import edu.suffolk.litlab.efspserver.PartyId;
+import edu.suffolk.litlab.efspserver.Person;
+import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.PartyType;
+import edu.suffolk.litlab.efspserver.services.FilingError;
+import edu.suffolk.litlab.efspserver.services.InfoCollector;
+import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType;
 import gov.niem.release.niem.domains.jxdm._6.CaseOfficialType;
 import gov.niem.release.niem.domains.jxdm._6.CourtEventType;
@@ -25,18 +34,6 @@ import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseOfficialAu
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventAugmentationType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.OrganizationAugmentationType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAugmentationType;
-import tyler.ecf.v5_0.extensions.common.FilingAttorneyEntityType;
-import tyler.ecf.v5_0.extensions.common.FilingPartyEntityType;
-import tyler.ecf.v5_0.extensions.common.FilingReferenceType;
-import edu.suffolk.litlab.efspserver.FilingDoc;
-import edu.suffolk.litlab.efspserver.FilingInformation;
-import edu.suffolk.litlab.efspserver.PartyId;
-import edu.suffolk.litlab.efspserver.Person;
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
-import edu.suffolk.litlab.efspserver.codes.PartyType;
-import edu.suffolk.litlab.efspserver.services.FilingError;
-import edu.suffolk.litlab.efspserver.services.InfoCollector;
-import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashMap;
@@ -46,6 +43,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tyler.ecf.v5_0.extensions.common.FilingAttorneyEntityType;
+import tyler.ecf.v5_0.extensions.common.FilingPartyEntityType;
+import tyler.ecf.v5_0.extensions.common.FilingReferenceType;
 
 public class Ecfv5CaseTypeFactory {
   private static Logger log = LoggerFactory.getLogger(Ecfv5CaseTypeFactory.class);
