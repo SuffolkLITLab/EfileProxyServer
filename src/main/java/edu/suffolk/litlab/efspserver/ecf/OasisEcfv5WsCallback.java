@@ -12,8 +12,6 @@ import gov.niem.release.niem.codes.cbrncl._4.CredentialsAuthenticatedCodeSimpleT
 import gov.niem.release.niem.codes.cbrncl._4.CredentialsAuthenticatedCodeType;
 import gov.niem.release.niem.codes.cbrncl._4.MessageStatusCodeSimpleType;
 import gov.niem.release.niem.codes.cbrncl._4.MessageStatusCodeType;
-import gov.niem.release.niem.codes.cbrncl._4.SystemOperatingModeCodeSimpleType;
-import gov.niem.release.niem.codes.cbrncl._4.SystemOperatingModeCodeType;
 import gov.niem.release.niem.domains.cbrn._4.MessageContentErrorType;
 import gov.niem.release.niem.domains.cbrn._4.MessageErrorType;
 import gov.niem.release.niem.domains.cbrn._4.MessageStatusType;
@@ -325,8 +323,8 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
     CredentialsAuthenticatedCodeType act = new CredentialsAuthenticatedCodeType();
     act.setValue(CredentialsAuthenticatedCodeSimpleType.AUTHENTICATED);
     st.setCredentialsAuthenticatedCode(act);
-    //SystemOperatingModeCodeType mct = new SystemOperatingModeCodeType();
-    //mct.setValue(SystemOperatingModeCodeSimpleType.OPS);
+    // SystemOperatingModeCodeType mct = new SystemOperatingModeCodeType();
+    // mct.setValue(SystemOperatingModeCodeSimpleType.OPS);
     var statusFac = new gov.niem.release.niem.domains.cbrn._4.ObjectFactory();
     st.setSystemOperatingModeAbstract(statusFac.createCredentialsAuthenticatedCode(act));
     st.setResendRequestIndicator(Ecfv5XmlHelper.convertBool(false));

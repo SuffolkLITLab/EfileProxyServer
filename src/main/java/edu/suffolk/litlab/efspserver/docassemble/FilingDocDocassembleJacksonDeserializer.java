@@ -10,7 +10,6 @@ import static edu.suffolk.litlab.efspserver.services.FilingError.serverError;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
-
 import edu.suffolk.litlab.efspserver.FilingAttachment;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.JsonHelpers;

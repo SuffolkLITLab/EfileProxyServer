@@ -695,10 +695,10 @@ public class EcfCaseTypeFactory {
     // HACK(brycew): hacky: needed because "fees" querys and "service" put the payment stuff in the
     // tyler Aug, but not the review api.
     if (queryType.equals(QueryType.Fees) || queryType.equals(QueryType.Service)) {
-      //if (info.getPaymentId() == null || info.getPaymentId().isBlank()) {
-        //  collector.addRequired(collector.requestVar("tyler_payment_id", "The ID of the payment
-        // method", "text"));
-      //}
+      // if (info.getPaymentId() == null || info.getPaymentId().isBlank()) {
+      //  collector.addRequired(collector.requestVar("tyler_payment_id", "The ID of the payment
+      // method", "text"));
+      // }
       ecfAug.setProviderCharge(PaymentFactory.makeProviderChargeType(info.getPaymentId()));
     }
 
