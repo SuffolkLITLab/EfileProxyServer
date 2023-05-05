@@ -95,8 +95,9 @@ public class AcmeRenewal {
   }
 
   private static KeyPair loadOrCreateUserKeyPair() throws IOException {
-    if (!USER_KEY_FILE.getParentFile().mkdirs()) {
-      throw new IOException("Can't make " + USER_KEY_FILE + " directory");
+    USER_KEY_FILE.getParentFile().mkdirs();
+    if (!USER_KEY_FILE.getParentFile().exists()) {
+      throw new IOException("Could not create the parent file, " + USER_KEY_FILE.getParentFile());
     }
     if (USER_KEY_FILE.exists()) {
       try (FileReader fr = new FileReader(USER_KEY_FILE)) {
