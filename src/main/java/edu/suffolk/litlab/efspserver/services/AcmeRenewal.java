@@ -194,11 +194,17 @@ public class AcmeRenewal {
     AccountBuilder ab = new AccountBuilder().agreeToTermsOfService().useKeyPair(accountKey);
     String email = System.getenv("TYLER_USER_EMAIL");
     if (email != null && !email.isBlank()) {
+      log.info("Using " + email + " for account and contact email");
       ab.addEmail(email);
     }
     Account account = ab.create(session);
+    if (email != null && !email.isBlank()) {
+      if (!account.getContacts().stream().anyMatch(con -> con.toString().equals("mailto:" + email))) {
+        account.modify().addEmail(email).commit();
+      }
+    }
 
-    log.info("Registered a new user, URL: {}", account.getLocation());
+    log.info("Registered a new user, URL: {}, contacts: {}", account.getLocation(), account.getContacts().toString());
     return account;
   }
 
