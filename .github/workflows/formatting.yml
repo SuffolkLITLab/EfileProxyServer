@@ -16,4 +16,4 @@ jobs:
       - name: Format all of the code
         run: |
           wget https://github.com/google/google-java-format/releases/download/v1.16.0/google-java-format-1.16.0-all-deps.jar
-          java -jar google-java-format-1.16.0-all-deps.jar --set-exit-if-changed `find src/main/java/edu/suffolk -name *.java ! -name CodeTableConstants.java ! -name FilingCode.java`
+          java -jar google-java-format-1.16.0-all-deps.jar --dry-run --set-exit-if-changed `find src/main/java/edu/suffolk -name *.java ! -name CodeTableConstants.java ! -name FilingCode.java`
