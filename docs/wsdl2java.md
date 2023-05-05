@@ -1,6 +1,6 @@
 # WSDL2Java: Generating the SOAP code
 
-The proxy server uses SOAP to communicate with Tyler's Efiling Manager servers (EFM). 
+The proxy server uses SOAP to communicate with Tyler's Efiling Manager servers (EFM).
 SOAP describes the procedure calls that can be made to the server using XML. The SOAP library
 that we use, CXF, converts these procedure calls, their arguments, and connections to the EFM,
 into generated Java classes that the proxy can use and call.

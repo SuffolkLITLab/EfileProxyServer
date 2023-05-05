@@ -23,6 +23,7 @@ import edu.suffolk.litlab.efspserver.services.EndpointReflection;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.OPTIONS;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -93,7 +94,7 @@ public class EcfCodesService implements CodesService {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAll() {
     var retMap = ef.endPointsToMap(ef.findRESTEndpoints(List.of(this.getClass())));
-    return Response.ok(retMap).build();
+    return cors(Response.ok(retMap));
   }
 
   @GET
@@ -103,9 +104,9 @@ public class EcfCodesService implements CodesService {
       @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly,
       @DefaultValue("false") @QueryParam("with_names") boolean withNames) {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
-      return ServiceHelpers.getCourts(cd, fileableOnly, withNames);
+      return cors(ServiceHelpers.getCourts(cd, fileableOnly, withNames));
     } catch (SQLException ex) {
-      return Response.status(500).entity("SQLException on server!").build();
+      return cors(Response.status(500).entity("SQLException on server!"));
     }
   }
 
@@ -128,7 +129,7 @@ public class EcfCodesService implements CodesService {
         ef.endPointsToMap(
             replacePathParam(
                 ef.makeRestEndpoints(subCourtMethods, clazz), Map.of("court_id", courtId)));
-    return Response.ok(retMap).build();
+    return cors(Response.ok(retMap));
   }
 
   @GET
@@ -137,11 +138,11 @@ public class EcfCodesService implements CodesService {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       Optional<CourtLocationInfo> info = cd.getFullLocationInfo(courtId);
       if (info.isEmpty()) {
-        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+        return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
       }
-      return Response.ok(info.get()).build();
+      return cors(Response.ok(info.get()));
     } catch (SQLException ex) {
-      return Response.status(500).entity("SQLException on server!").build();
+      return cors(Response.status(500).entity("SQLException on server!"));
     }
   }
 
@@ -166,7 +167,7 @@ public class EcfCodesService implements CodesService {
             replacePathParam(
                 ef.makeRestEndpoints(subCaseMethods, clazz),
                 Map.of("court_id", courtId, "case_type_id", caseTypeId)));
-    return Response.ok(retMap).build();
+    return cors(Response.ok(retMap));
   }
 
   @GET
@@ -181,9 +182,10 @@ public class EcfCodesService implements CodesService {
       }
       var maybeCode = cd.getFilingTypeWith(courtId, filingCode);
       if (maybeCode.isEmpty()) {
-        return Response.status(404)
-            .entity("\"Filing code " + filingCode + " in court " + courtId + " does not exist\"")
-            .build();
+        return cors(
+            Response.status(404)
+                .entity(
+                    "\"Filing code " + filingCode + " in court " + courtId + " does not exist\""));
       }
       Class<?> clazz = this.getClass();
       Method[] methods = clazz.getMethods();
@@ -201,7 +203,7 @@ public class EcfCodesService implements CodesService {
                       ef.makeRestEndpoints(subCaseMethods, clazz),
                       Map.of("court_id", courtId, "filing_code_id", filingCode))));
       retMap.putAll(maybeCode.get().toMap());
-      return Response.ok(retMap).build();
+      return cors(Response.ok(retMap));
     }
   }
 
@@ -219,7 +221,7 @@ public class EcfCodesService implements CodesService {
       }
       if (!fileableOnly) {
         List<CaseCategory> categories = cd.getCaseCategoriesFor(courtId);
-        return Response.ok(categories).build();
+        return cors(Response.ok(categories));
       }
 
       Optional<Boolean> isInitial = Optional.empty();
@@ -235,7 +237,7 @@ public class EcfCodesService implements CodesService {
       }
       log.info("Timing pass along: " + isInitial);
       List<CaseCategory> categories = cd.getFilableCaseCategories(courtId, isInitial);
-      return Response.ok(categories).build();
+      return cors(Response.ok(categories));
     }
   }
 
@@ -248,16 +250,16 @@ public class EcfCodesService implements CodesService {
       throws SQLException {
 
     if (categoryId == null || categoryId.isBlank()) {
-      return Response.status(400)
-          .entity(
-              "\"You need to limit the number of case types by providing a category_id: see"
-                  + " /categories\"")
-          .build();
+      return cors(
+          Response.status(400)
+              .entity(
+                  "\"You need to limit the number of case types by providing a category_id: see"
+                      + " /categories\""));
     }
 
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+        return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
       }
       Optional<Boolean> isInitial = Optional.empty();
       if (timing == null || timing.isBlank()) {
@@ -271,7 +273,7 @@ public class EcfCodesService implements CodesService {
       }
       List<CaseType> caseTypes = cd.getCaseTypesFor(courtId, categoryId, isInitial);
 
-      return Response.ok(caseTypes).build();
+      return cors(Response.ok(caseTypes));
     }
   }
 
@@ -280,11 +282,11 @@ public class EcfCodesService implements CodesService {
   public Response getNameSuffixes(@PathParam("court_id") String courtId) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+        return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
       }
 
       List<NameAndCode> suffixes = cd.getNameSuffixes(courtId);
-      return Response.ok(suffixes).build();
+      return cors(Response.ok(suffixes));
     }
   }
 
@@ -296,11 +298,11 @@ public class EcfCodesService implements CodesService {
 
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+        return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
       }
       List<NameAndCode> caseSubtypes = cd.getCaseSubtypesFor(courtId, caseTypeId);
 
-      return Response.ok(caseSubtypes).build();
+      return cors(Response.ok(caseSubtypes));
     }
   }
 
@@ -309,10 +311,10 @@ public class EcfCodesService implements CodesService {
   public Response getServiceTypes(@PathParam("court_id") String courtId) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+        return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
       }
       List<ServiceCodeType> types = cd.getServiceTypes(courtId);
-      return Response.ok(types).build();
+      return cors(Response.ok(types));
     }
   }
 
@@ -324,11 +326,11 @@ public class EcfCodesService implements CodesService {
 
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+        return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
       }
       List<NameAndCode> procedureRemedies = cd.getProcedureOrRemedy(courtId, categoryId);
 
-      return Response.ok(procedureRemedies).build();
+      return cors(Response.ok(procedureRemedies));
     }
   }
 
@@ -343,11 +345,11 @@ public class EcfCodesService implements CodesService {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
 
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+        return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
       }
       List<FilingCode> filingTypes = cd.getFilingType(courtId, categoryId, typeId, initial);
 
-      return Response.ok(filingTypes).build();
+      return cors(Response.ok(filingTypes));
     }
   }
 
@@ -359,11 +361,11 @@ public class EcfCodesService implements CodesService {
 
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+        return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
       }
       List<NameAndCode> damageAmounts = cd.getDamageAmount(courtId, categoryId);
 
-      return Response.ok(damageAmounts).build();
+      return cors(Response.ok(damageAmounts));
     }
   }
 
@@ -379,11 +381,11 @@ public class EcfCodesService implements CodesService {
   public Response getAllPartyTypes(@PathParam("court_id") String courtId) throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+        return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
       }
       List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, null);
 
-      return Response.ok(partyTypes).build();
+      return cors(Response.ok(partyTypes));
     }
   }
 
@@ -394,16 +396,16 @@ public class EcfCodesService implements CodesService {
       throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+        return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
       }
       List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, null);
       for (PartyType pt : partyTypes) {
         if (pt.code.equals(partyTypeId)) {
-          return Response.ok(pt).build();
+          return cors(Response.ok(pt));
         }
       }
 
-      return Response.status(404).entity("\"No such party type: " + partyTypeId + "\"").build();
+      return cors(Response.status(404).entity("\"No such party type: " + partyTypeId + "\""));
     }
   }
 
@@ -414,11 +416,11 @@ public class EcfCodesService implements CodesService {
       throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+        return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
       }
       List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, caseTypeId);
 
-      return Response.ok(partyTypes).build();
+      return cors(Response.ok(partyTypes));
     }
   }
 
@@ -431,17 +433,17 @@ public class EcfCodesService implements CodesService {
       throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+        return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
       }
 
       List<PartyType> partyTypes = cd.getPartyTypeFor(courtId, caseTypeId);
       for (PartyType pt : partyTypes) {
         if (pt.code.equals(partyTypeId)) {
-          return Response.ok(pt).build();
+          return cors(Response.ok(pt));
         }
       }
 
-      return Response.status(404).entity("\"No such party type: " + partyTypeId + "\"").build();
+      return cors(Response.status(404).entity("\"No such party type: " + partyTypeId + "\""));
     }
   }
 
@@ -452,11 +454,11 @@ public class EcfCodesService implements CodesService {
       throws SQLException {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+        return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
       }
 
       List<CrossReference> refs = cd.getCrossReference(courtId, caseTypeId);
-      return Response.ok(refs).build();
+      return cors(Response.ok(refs));
     }
   }
 
@@ -555,7 +557,7 @@ public class EcfCodesService implements CodesService {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
       List<String> stateCodes = cd.getStateCodes(courtId, country);
 
-      return Response.ok(stateCodes).build();
+      return cors(Response.ok(stateCodes));
     }
   }
 
@@ -568,7 +570,7 @@ public class EcfCodesService implements CodesService {
       }
       List<String> languages = cd.getLanguages(courtId);
 
-      return Response.ok(languages).build();
+      return cors(Response.ok(languages));
     }
   }
 
@@ -581,7 +583,7 @@ public class EcfCodesService implements CodesService {
       }
       var datafields = cd.getDataFieldNames(courtId);
 
-      return Response.ok(datafields).build();
+      return cors(Response.ok(datafields));
     }
   }
 
@@ -598,7 +600,7 @@ public class EcfCodesService implements CodesService {
       }
       DataFieldRow datafieldrow = cd.getDataField(courtId, fieldName);
 
-      return Response.ok(datafieldrow).build();
+      return cors(Response.ok(datafieldrow));
     }
   }
 
@@ -612,7 +614,7 @@ public class EcfCodesService implements CodesService {
       }
       List<Disclaimer> disclaimers = cd.getDisclaimerRequirements(courtId);
 
-      return Response.ok(disclaimers).build();
+      return cors(Response.ok(disclaimers));
     }
   }
 
@@ -631,5 +633,27 @@ public class EcfCodesService implements CodesService {
           Response.status(404).entity("\"Court " + courtId + " does not exist\"").build());
     }
     return Optional.empty();
+  }
+
+  /**
+   * Adds proper CORS headers to all responses to the codes API, which is public
+   *
+   * <p>See https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS and
+   * https://stackoverflow.com/a/28996470/11416267.
+   */
+  private static Response cors(Response.ResponseBuilder rb) {
+    return rb.header("Access-Control-Allow-Origin", "*").build();
+  }
+
+  @OPTIONS
+  @Path("{path : .*}")
+  public Response options() {
+    return Response.ok("")
+        .header("Access-Control-Allow-Origin", "*")
+        .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
+        .header("Access-Control-Allow-Credentials", "true")
+        .header("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD")
+        .header("Access-Control-Max-Age", "1209600")
+        .build();
   }
 }

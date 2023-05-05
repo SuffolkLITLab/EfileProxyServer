@@ -102,7 +102,7 @@ public class CasesService {
   @Path("/courts")
   public Response getCourts() {
     try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
-      return ServiceHelpers.getCourts(cd, false, false);
+      return ServiceHelpers.getCourts(cd, false, false).build();
     } catch (SQLException ex) {
       return Response.status(500).entity("database error retrieving all courts!").build();
     }

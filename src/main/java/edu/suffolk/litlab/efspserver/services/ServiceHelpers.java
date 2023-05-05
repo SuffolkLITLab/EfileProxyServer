@@ -293,30 +293,29 @@ public class ServiceHelpers {
    * @param withNames
    * @return
    */
-  public static Response getCourts(CodeDatabase cd, boolean fileableOnly, boolean withNames) {
+  public static Response.ResponseBuilder getCourts(
+      CodeDatabase cd, boolean fileableOnly, boolean withNames) {
     if (fileableOnly) {
       // 0 and 1 are special "system" courts that have defaults for all courts.
       // They aren't available for filing, so filter out of either query here
       if (withNames) {
         return Response.ok(
-                cd.getFileableLocationNames().stream()
-                    .filter(c -> !c.getCode().equals("0") && !c.getCode().equals("1"))
-                    .sorted()
-                    .collect(Collectors.toList()))
-            .build();
+            cd.getFileableLocationNames().stream()
+                .filter(c -> !c.getCode().equals("0") && !c.getCode().equals("1"))
+                .sorted()
+                .collect(Collectors.toList()));
       } else {
         return Response.ok(
-                cd.getFileableLocations().stream()
-                    .filter(c -> !c.equals("0") && !c.equals("1"))
-                    .sorted()
-                    .collect(Collectors.toList()))
-            .build();
+            cd.getFileableLocations().stream()
+                .filter(c -> !c.equals("0") && !c.equals("1"))
+                .sorted()
+                .collect(Collectors.toList()));
       }
     } else {
       if (withNames) {
-        return Response.ok(cd.getLocationNames()).build();
+        return Response.ok(cd.getLocationNames());
       } else {
-        return Response.ok(cd.getAllLocations()).build();
+        return Response.ok(cd.getAllLocations());
       }
     }
   }
