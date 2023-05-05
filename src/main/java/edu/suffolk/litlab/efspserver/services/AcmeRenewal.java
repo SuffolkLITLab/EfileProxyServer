@@ -9,6 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URI;
+import java.net.URL;
+import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyStore;
@@ -35,6 +37,7 @@ import org.shredzone.acme4j.Account;
 import org.shredzone.acme4j.AccountBuilder;
 import org.shredzone.acme4j.Authorization;
 import org.shredzone.acme4j.Certificate;
+import org.shredzone.acme4j.Login;
 import org.shredzone.acme4j.Order;
 import org.shredzone.acme4j.Session;
 import org.shredzone.acme4j.Status;
@@ -71,6 +74,8 @@ public class AcmeRenewal {
    */
   private static final File USER_KEY_FILE;
 
+  private static final File ACCOUNT_URL_FILE;
+
   private static final File DOMAIN_KEY_FILE;
   private static final File DOMAIN_CSR_FILE;
   private static final File DOMAIN_CHAIN_FILE;
@@ -88,6 +93,7 @@ public class AcmeRenewal {
               + "), only saving cert files inside container!");
     }
     USER_KEY_FILE = new File(prefix + "acme_user.key");
+    ACCOUNT_URL_FILE = new File(prefix + "account_url.txt");
     DOMAIN_KEY_FILE = new File(prefix + "acme_domain.key");
     DOMAIN_CSR_FILE = new File(prefix + "acme_domain.csr");
     DOMAIN_CHAIN_FILE = new File(prefix + "acme_domain-chain.crt");
@@ -95,8 +101,9 @@ public class AcmeRenewal {
   }
 
   private static KeyPair loadOrCreateUserKeyPair() throws IOException {
-    if (!USER_KEY_FILE.getParentFile().mkdirs()) {
-      throw new IOException("Can't make " + USER_KEY_FILE + " directory");
+    USER_KEY_FILE.getParentFile().mkdirs();
+    if (!USER_KEY_FILE.getParentFile().exists()) {
+      throw new IOException("Could not create the parent file, " + USER_KEY_FILE.getParentFile());
     }
     if (USER_KEY_FILE.exists()) {
       try (FileReader fr = new FileReader(USER_KEY_FILE)) {
@@ -185,20 +192,46 @@ public class AcmeRenewal {
   }
 
   public Account findOrRegisterAccount(Session session, KeyPair accountKey) throws AcmeException {
-    URI tos = session.getMetadata().getTermsOfService();
-    if (tos != null) {
-      if (!acceptAgreement(tos)) {
-        throw new AcmeException("Didn't accept terms of service");
+    Login login = null;
+    String email = System.getenv("TYLER_USER_EMAIL");
+    try {
+      String accountUrlStr = Files.readString(ACCOUNT_URL_FILE.toPath());
+      login = session.login(new URL(accountUrlStr), accountKey);
+      log.info("Using existing user, URL: {}", login.getAccountLocation());
+    } catch (IOException ex) {
+      URI tos = session.getMetadata().getTermsOfService();
+      if (tos != null) {
+        if (!acceptAgreement(tos)) {
+          throw new AcmeException("Didn't accept terms of service");
+        }
+      }
+      AccountBuilder ab = new AccountBuilder().agreeToTermsOfService().useKeyPair(accountKey);
+      if (email != null && !email.isBlank()) {
+        log.info("Using " + email + " for account and contact email");
+        ab.addEmail(email);
+      }
+      login = ab.createLogin(session);
+
+      log.info("Registering new user, URL: {}", login.getAccountLocation());
+    }
+    URL accountUrl = login.getAccountLocation();
+    try {
+      Files.writeString(ACCOUNT_URL_FILE.toPath(), accountUrl.toString());
+    } catch (IOException ex) {
+      log.info(
+          "Unable to write out account URL! Please save the text '"
+              + accountUrl.toString()
+              + "' in a file named `account_url.txt`, next to `acme_user.key`");
+    }
+    Account account = login.getAccount();
+    if (email != null && !email.isBlank()) {
+      if (!account.getContacts().stream()
+          .anyMatch(con -> con.toString().equals("mailto:" + email))) {
+        account.modify().addEmail(email).commit();
       }
     }
-    AccountBuilder ab = new AccountBuilder().agreeToTermsOfService().useKeyPair(accountKey);
-    String email = System.getenv("TYLER_USER_EMAIL");
-    if (email != null && !email.isBlank()) {
-      ab.addEmail(email);
-    }
-    Account account = ab.create(session);
-
-    log.info("Registered a new user, URL: {}", account.getLocation());
+    log.info(
+        "Got user, URL: {}, contacts: {}", account.getLocation(), account.getContacts().toString());
     return account;
   }
 
