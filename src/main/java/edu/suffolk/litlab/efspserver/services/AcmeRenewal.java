@@ -92,7 +92,7 @@ public class AcmeRenewal {
               + "), only saving cert files inside container!");
     }
     USER_KEY_FILE = new File(prefix + "acme_user.key");
-    ACCOUNT_URL_FILE = new File(prefix = "account_url.txt");
+    ACCOUNT_URL_FILE = new File(prefix + "account_url.txt");
     DOMAIN_KEY_FILE = new File(prefix + "acme_domain.key");
     DOMAIN_CSR_FILE = new File(prefix + "acme_domain.csr");
     DOMAIN_CHAIN_FILE = new File(prefix + "acme_domain-chain.crt");
