@@ -73,6 +73,7 @@ public class AcmeRenewal {
    * certificates. So we save these certs outside the container to the volume, if it's present.
    */
   private static final File USER_KEY_FILE;
+
   private static final File ACCOUNT_URL_FILE;
 
   private static final File DOMAIN_KEY_FILE;
@@ -217,15 +218,20 @@ public class AcmeRenewal {
     try {
       Files.writeString(ACCOUNT_URL_FILE.toPath(), accountUrl.toString());
     } catch (IOException ex) {
-      log.info("Unable to write out account URL! Please save the text '" + accountUrl.toString() + "' in a file named `account_url.txt`, next to `acme_user.key`");
+      log.info(
+          "Unable to write out account URL! Please save the text '"
+              + accountUrl.toString()
+              + "' in a file named `account_url.txt`, next to `acme_user.key`");
     }
     Account account = login.getAccount();
     if (email != null && !email.isBlank()) {
-      if (!account.getContacts().stream().anyMatch(con -> con.toString().equals("mailto:" + email))) {
+      if (!account.getContacts().stream()
+          .anyMatch(con -> con.toString().equals("mailto:" + email))) {
         account.modify().addEmail(email).commit();
       }
     }
-    log.info("Got user, URL: {}, contacts: {}", account.getLocation(), account.getContacts().toString());
+    log.info(
+        "Got user, URL: {}, contacts: {}", account.getLocation(), account.getContacts().toString());
     return account;
   }
 
