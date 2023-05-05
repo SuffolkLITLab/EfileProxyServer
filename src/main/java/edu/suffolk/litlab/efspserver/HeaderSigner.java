@@ -78,9 +78,11 @@ public class HeaderSigner {
     Certificate[] certchain = keystore.getCertificateChain(alias);
     final List<Certificate> certlist = new ArrayList<Certificate>();
 
-    for (int i = 0, length = certchain == null ? 0 : certchain.length; i < length; i++) {
-      if (certchain[i] != null) {
-        certlist.add(certchain[i]);
+    if (certchain != null) {
+      for (int i = 0, length = certchain.length; i < length; i++) {
+        if (certchain[i] != null) {
+          certlist.add(certchain[i]);
+        }
       }
     }
 
