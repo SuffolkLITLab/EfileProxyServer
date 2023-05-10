@@ -357,13 +357,14 @@ public class CodeUpdater {
     return true;
   }
 
-  public void updateAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
+  /** Returns true if successful, false if not successful */
+  public boolean updateAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
       throws SQLException, IOException, JAXBException, XMLStreamException {
     HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
     if (!downloadSystemTables(baseUrl, cd, signer)) {
       log.warn("System tables didn't update, but we needed them "
           + " to actually figure out new versions");
-      return;
+      return false;
     }
 
     // Drop each of tables that need to be updated
@@ -388,9 +389,9 @@ public class CodeUpdater {
       for (String table : tables) {
         Instant deleteFromTable = Instant.now(Clock.systemUTC());
         if (!cd.deleteFromTable(table, courtLocation)) {
-          log.warn("Couldn't delete from {} at {}, aborting", table, courtLocation);
+          log.error("Couldn't delete from {} at {}, aborting", table, courtLocation);
           cd.getConnection().rollback(sp);
-          return;
+          return false;
         }
         updates = updates.plus(Duration.between(deleteFromTable, Instant.now(Clock.systemUTC())));
       }
@@ -407,22 +408,23 @@ public class CodeUpdater {
       if (!downloadCourtTables(courtLocation, Optional.of(tables), cd, signer, policy.getValue())) {
         log.warn("Failed updating court {}'s tables {}", courtLocation, tables);
         cd.getConnection().rollback(sp);
-        return;
+        return false;
       }
     }
     cd.getConnection().commit();
     cd.getConnection().setAutoCommit(true);
     cd.vacuumAll();
+    return true;
   }
 
   /** Downloads all of the codes from scratch, deleting all of the existing info
    * already in tables.
    */
-  public void downloadAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
+  public boolean downloadAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
       throws SQLException, IOException, JAXBException, XMLStreamException {
     HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
     log.info("Downloading system tables for {}", cd.getDomain());
-    downloadSystemTables(baseUrl, cd, signer);
+    boolean success = downloadSystemTables(baseUrl, cd, signer);
 
     List<String> tablesToDeleteDomain = ncToTableName.entrySet().stream().map((e) -> e.getValue())
         .collect(Collectors.toUnmodifiableList());
@@ -443,12 +445,13 @@ public class CodeUpdater {
     for (var policy: policies.entrySet()) {
       final String location = policy.getKey();
       log.info("Downloading tables for {}", location);
-      downloadCourtTables(location, Optional.empty(), cd, signer, policy.getValue());
+      success &= downloadCourtTables(location, Optional.empty(), cd, signer, policy.getValue());
     }
     log.info("Downloads took: {}, and updates took: {}, soaps took: {}", downloads, updates, soaps);
     cd.getConnection().commit();
     cd.getConnection().setAutoCommit(true);
     cd.vacuumAll();
+    return success;
   }
 
   /** Sets up the WSDL connection to Tyler, used for `getPolicy` to get the URL. */
@@ -478,21 +481,21 @@ public class CodeUpdater {
   }
 
   /** Downloads a single codes zip. For Debugging. */
-  public void downloadIndiv(List<String> args, String jurisdiction, String env) {
+  public boolean downloadIndiv(List<String> args, String jurisdiction, String env) {
     if (args.size() < 2) {
       log.error("Need to pass in args: downloadIndiv <jurisdiction> <table> <location or blank for system>");
       System.exit(1);
     }
 
     if (!jurisdiction.equalsIgnoreCase(args.get(1))) {
-      return;
+      return false;
     }
 
     String table = args.get(2);
     String location = (args.size() == 4) ? args.get(3) : "";
     HeaderSigner hs = new HeaderSigner(this.pathToKeystore, this.x509Password);
     String endpoint = SoapClientChooser.getCodeEndpointRootUrl(jurisdiction, env);
-    downloadAndProcessZip(endpoint + "CodeService/codes/" + table + "/" + location, hs.signedCurrentTime().get(),
+    return downloadAndProcessZip(endpoint + "CodeService/codes/" + table + "/" + location, hs.signedCurrentTime().get(),
           (in) -> {
             String newFile = location.replace(':', '_') + "_" + table + "_test.xml";
             try (FileOutputStream fw = new FileOutputStream(newFile)) {
@@ -506,14 +509,14 @@ public class CodeUpdater {
   }
 
   /** Downloads codes and policies for courts. For Debugging and testing speed improvements. */
-  public void downloadSpeedTest(List<String> args, FilingReviewMDEPort filingPort, String jurisdiction, String env) throws JAXBException {
+  public boolean downloadSpeedTest(List<String> args, FilingReviewMDEPort filingPort, String jurisdiction, String env) throws JAXBException {
     String court = "adams";
     String jurisdictionUse = "illinois";
     if (args.size() >= 2) {
       jurisdictionUse = args.get(1);
     }
     if (!jurisdictionUse.equalsIgnoreCase(jurisdiction)) {
-      return;
+      return false;
     }
     List<String> policyCourts = List.of();
     if (jurisdiction.equalsIgnoreCase("massachusetts")) {
@@ -530,7 +533,7 @@ public class CodeUpdater {
     Optional<String> signedTime = hs.signedCurrentTime();
     if (signedTime.isEmpty()) {
       log.error("Couldn't get signed time to download codeds, skipping all");
-      return;
+      return false;
     }
 
     Instant startPolicy = Instant.now(Clock.systemUTC());
@@ -560,7 +563,7 @@ public class CodeUpdater {
       p = filingPort.getPolicy(m);
     } catch (SOAPFaultException ex) {
       log.warn("Got a SOAP Fault excption when getting the policy for {} in {}: {}", court, jurisdiction, StdLib.strFromException(ex));
-      return;
+      return false;
     }
     var toDownload = p.getRuntimePolicyParameters().getCourtCodelist().stream().map(ccl -> {
       String ecfElem = ccl.getECFElementName().getValue();
@@ -575,10 +578,10 @@ public class CodeUpdater {
     streamDownload(signedTime.get(), court, toDownload.stream().parallel(), Optional.empty());
     Duration parDur = Duration.between(startPar, Instant.now(Clock.systemUTC()));
     log.info("Seq download took: {} Par download took: {}", seqDur, parDur);
-    return;
+    return true;
   }
 
-  public static void executeCommand(CodeDatabase cd, String jurisdiction, String env, List<String> args, 
+  public static boolean executeCommand(CodeDatabase cd, String jurisdiction, String env, List<String> args, 
       String x509Password) {
     SoapX509CallbackHandler.setX509Password(x509Password);
     String command = args.get(0);
@@ -590,20 +593,20 @@ public class CodeUpdater {
           System.getenv("TYLER_USER_PASSWORD")); 
       CodeUpdater cu = new CodeUpdater(System.getenv("PATH_TO_KEYSTORE"), x509Password);
       if (command.equalsIgnoreCase("downloadall")) {
-        cu.downloadAll(codesSite, filingPort, cd);
+        return cu.downloadAll(codesSite, filingPort, cd);
       } else if (command.equalsIgnoreCase("refresh")) {
-        cu.updateAll(codesSite, filingPort, cd);
+        return cu.updateAll(codesSite, filingPort, cd);
       } else if (command.equalsIgnoreCase("downloadIndiv")) {
-        cu.downloadIndiv(args, jurisdiction, env);
+        return cu.downloadIndiv(args, jurisdiction, env);
       } else if (command.equalsIgnoreCase("testDownloadSpeed")) {
-        cu.downloadSpeedTest(args, filingPort, jurisdiction, env);
+        return cu.downloadSpeedTest(args, filingPort, jurisdiction, env);
       } else {
         log.error("Command " + command + " isn't a real command");
-        System.exit(1);
+        return false;
       }
     } catch (SQLException | IOException | JAXBException | XMLStreamException e) {
       log.error("Exception when doing code updating! " + StdLib.strFromException(e));
-      return;
+      return false;
     }
   }
 

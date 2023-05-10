@@ -324,6 +324,10 @@ public class CodeTableConstants {
         Map.entry("vehicletype", makeCourtColumnInfo(List.of(
           new ImmutablePair<>("code", "text"),
           new ImmutablePair<>("name", "text"), 
+          new ImmutablePair<>("efspcode", "text")))),
+        Map.entry("refundreason", makeCourtColumnInfo(List.of(
+          new ImmutablePair<>("code", "text"),
+          new ImmutablePair<>("name", "text"),
           new ImmutablePair<>("efspcode", "text"))))
     );
     for (Map.Entry<String, TableColumns> table : tableColumns.entrySet()) {

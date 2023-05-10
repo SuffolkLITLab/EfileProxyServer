@@ -28,9 +28,8 @@ import org.slf4j.LoggerFactory;
  */
 public class DatabaseVersion {
   
-  final static int CURRENT_VERSION = 5;
-  private static Logger log = 
-      LoggerFactory.getLogger(DatabaseVersion.class);
+  final static int CURRENT_VERSION = 6;
+  private static Logger log = LoggerFactory.getLogger(DatabaseVersion.class);
   private final Connection codeConn;
   private final Connection userConn;
   
@@ -135,6 +134,8 @@ public class DatabaseVersion {
       update3To4();
     } else if (onDiskVersion == 4) {
       update4To5();
+    } else if (onDiskVersion == 5) {
+      update5To6();
     }
     setSchemaVersion(onDiskVersion + 1);
     userConn.commit();
@@ -242,6 +243,22 @@ public class DatabaseVersion {
     try (Statement st = userConn.createStatement()) {
       st.executeUpdate(alterMsgSubjectTones);
       st.executeUpdate(alterMsgSubjects);
+    }
+    userConn.commit();
+  }
+
+  public void update5To6() throws SQLException {
+    final String createRefundReason = 
+        """
+      CREATE TABLE refundreason (
+        "code" text,
+        "name" text,
+        "efspcode" text,
+        "location" text,
+        "domain" text
+      )""";
+    try (Statement st = userConn.createStatement()) {
+      st.executeUpdate(createRefundReason);
     }
     userConn.commit();
   }
