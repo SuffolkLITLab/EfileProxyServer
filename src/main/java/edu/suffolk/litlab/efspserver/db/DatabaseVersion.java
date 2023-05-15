@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DatabaseVersion {
   
-  final static int CURRENT_VERSION = 6;
+  final static int CURRENT_VERSION = 7;
   private static Logger log = LoggerFactory.getLogger(DatabaseVersion.class);
   private final Connection codeConn;
   private final Connection userConn;
@@ -146,6 +146,8 @@ public class DatabaseVersion {
       update4To5();
     } else if (onDiskVersion == 5) {
       update5To6();
+    } else if (onDiskVersion == 6) {
+      update6To7();
     }
     setSchemaVersion(onDiskVersion + 1);
     userConn.commit();
@@ -319,5 +321,26 @@ public class DatabaseVersion {
       st.executeUpdate(createRefundReason);
     }
     userConn.commit();
+  }
+
+  private void update6To7() throws SQLException {
+    // 6 made the table in the wrong database. Idk
+    // how it passed tests.
+    try (Statement st = userConn.createStatement()) {
+      st.executeUpdate("DROP TABLE refundreason");
+    }
+    final String createRefundReason = """
+      CREATE TABLE refundreason (
+        "code" text,
+        "name" text,
+        "efspcode" text,
+        "location" text,
+        "domain" text
+      )""";
+    try (Statement st = codeConn.createStatement()) {
+      st.executeUpdate(createRefundReason);
+    }
+    userConn.commit();
+    codeConn.commit();
   }
 }
