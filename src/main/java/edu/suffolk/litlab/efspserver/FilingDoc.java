@@ -37,13 +37,13 @@ public class FilingDoc {
   private final List<OptionalService> optServices;
   private final Optional<FilingAction> filingAction;
 
-  private final boolean isLeadDoc;
+  private final int seqNum;
 
   public FilingDoc(
       Optional<String> filingCode,
       List<PartyId> filingPartyIds,
       NonEmptyList<FilingAttachment> filingAttachments,
-      boolean isLeadDoc) {
+      int seqNum) {
     this(
         filingCode,
         "",
@@ -58,7 +58,7 @@ public class FilingDoc {
         List.of(),
         List.of(),
         Optional.empty(),
-        isLeadDoc);
+        seqNum);
   }
 
   /** Full constructor, in all it's mess. */
@@ -76,7 +76,7 @@ public class FilingDoc {
       List<String> courtesyCopies,
       List<String> preliminaryCopies,
       Optional<FilingAction> filingAction,
-      boolean isLeadDoc) {
+      int seqNum) {
     this.filingCode = filingCode;
     this.userProvidedDescription = NonEmptyString.create(userProvidedDescription);
     this.filingReferenceNum = filingReferenceNum;
@@ -92,7 +92,7 @@ public class FilingDoc {
     this.courtesyCopies = courtesyCopies;
     this.preliminaryCopies = preliminaryCopies;
     this.filingAction = filingAction;
-    this.isLeadDoc = isLeadDoc;
+    this.seqNum = seqNum;
   }
 
   /** Returns the sum of all of the attachment files lengths. */
@@ -116,8 +116,8 @@ public class FilingDoc {
     return id;
   }
 
-  public boolean isLead() {
-    return isLeadDoc;
+  public int seqNum() {
+    return seqNum;
   }
 
   public List<PartyId> getFilingPartyIds() {

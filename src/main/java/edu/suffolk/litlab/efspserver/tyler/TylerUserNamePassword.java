@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import javax.xml.namespace.QName;
 import org.apache.cxf.headers.Header;
 import org.apache.cxf.jaxb.JAXBDataBinding;
@@ -56,5 +57,18 @@ public class TylerUserNamePassword {
 
   public static List<Header> makeHeaderList(AuthenticateResponseType authRes) {
     return Arrays.asList(makeHeader(authRes.getEmail(), authRes.getPasswordHash()));
+  }
+
+  public static Optional<TylerUserNamePassword> userCredsFromAuthorization(
+      String userColonPassword) {
+    if (userColonPassword == null) {
+      return Optional.empty();
+    }
+    if (!userColonPassword.contains(":")) {
+      return Optional.empty();
+    }
+    String email = userColonPassword.split(":")[0];
+    String password = userColonPassword.split(":")[1];
+    return Optional.of(new TylerUserNamePassword(email, password));
   }
 }

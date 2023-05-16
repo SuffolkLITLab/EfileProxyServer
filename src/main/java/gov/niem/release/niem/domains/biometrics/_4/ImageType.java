@@ -1,6 +1,7 @@
 
 package gov.niem.release.niem.domains.biometrics._4;
 
+import gov.niem.release.niem.niem_core._4.BinaryType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
@@ -19,7 +20,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="ImageType"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://release.niem.gov/niem/niem-core/4.0/}ImageType"&gt;
+ *     &lt;extension base="{http://release.niem.gov/niem/niem-core/4.0/}BinaryType"&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -35,7 +36,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     PhysicalFeatureImageType.class
 })
 public class ImageType
-    extends gov.niem.release.niem.niem_core._4.ImageType
+    extends BinaryType
 {
 
 

@@ -22,7 +22,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://release.niem.gov/niem/niem-core/4.0/}AssociationType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}Statute"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}Statute"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;

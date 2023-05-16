@@ -22,11 +22,11 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="DriverLicenseType"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://release.niem.gov/niem/domains/jxdm/6.0/}DriverLicenseBaseType"&gt;
+ *     &lt;extension base="{http://release.niem.gov/niem/domains/jxdm/6.1/}DriverLicenseBaseType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}DriverLicenseCommercialClassAbstract" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}DriverLicenseWithdrawal" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}DriverLicenseRestriction" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}DriverLicenseCommercialClassAbstract" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}DriverLicenseWithdrawal" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}DriverLicenseRestriction" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -46,7 +46,7 @@ public class DriverLicenseType
     extends DriverLicenseBaseType
 {
 
-    @XmlElementRef(name = "DriverLicenseCommercialClassAbstract", namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", type = JAXBElement.class, required = false)
+    @XmlElementRef(name = "DriverLicenseCommercialClassAbstract", namespace = "http://release.niem.gov/niem/domains/jxdm/6.1/", type = JAXBElement.class, required = false)
     protected JAXBElement<?> driverLicenseCommercialClassAbstract;
     @XmlElement(name = "DriverLicenseWithdrawal")
     protected DriverLicenseWithdrawalType driverLicenseWithdrawal;

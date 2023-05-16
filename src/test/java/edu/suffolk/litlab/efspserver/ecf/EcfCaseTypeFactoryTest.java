@@ -40,7 +40,6 @@ import edu.suffolk.litlab.efspserver.services.InterviewToFilingInformationConver
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.CrossReference;
 import edu.suffolk.litlab.efspserver.tyler.codes.DataFieldRow;
-
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
 
 public class EcfCaseTypeFactoryTest {

@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE" xmlns:wrappers="urn:tyler:ecf:v5.0:extensions:wrappers" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsrmp="http://docs.oasis-open.org/ws-rx/wsrmp/200702" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE">
+	<wsp:UsingPolicy wsdl:required="true"/>
+	<wsp:Policy wsu:Id="MyPolicy">
+		<wsp:ExactlyOne>
+			<wsp:All>
+				<wsoma:OptimizedMimeSerialization xmlns:wsoma="http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization"/>
+				<sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:TransportToken>
+							<wsp:Policy>
+								<sp:HttpsToken RequireClientCertificate="false"/>
+							</wsp:Policy>
+						</sp:TransportToken>
+						<sp:AlgorithmSuite>
+							<wsp:Policy>
+								<sp:Basic256/>
+							</wsp:Policy>
+						</sp:AlgorithmSuite>
+						<sp:Layout>
+							<wsp:Policy>
+								<sp:Lax/>
+							</wsp:Policy>
+						</sp:Layout>
+						<sp:IncludeTimestamp/>
+					</wsp:Policy>
+				</sp:TransportBinding>
+				<sp:EndorsingSupportingTokens xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:X509Token sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+							<wsp:Policy>
+								<sp:WssX509V3Token10/>
+							</wsp:Policy>
+						</sp:X509Token>
+					</wsp:Policy>
+				</sp:EndorsingSupportingTokens>
+				<sp:Wss10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:MustSupportRefKeyIdentifier/>
+						<sp:MustSupportRefIssuerSerial/>
+					</wsp:Policy>
+				</sp:Wss10>
+			</wsp:All>
+		</wsp:ExactlyOne>
+	</wsp:Policy>
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="urn:tyler:ecf:v5.0:extensions:wrappers" schemaLocation="ecf5-full-602d09642dfaa9bc.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	
+	<!-- messages --> 
+	<message name="UpdateDocumentRequest">
+		<part element="wrappers:UpdateDocumentRequest" name="body"/>
+	</message>
+	<message name="UpdateDocumentResponse">
+		<part element="wrappers:UpdateDocumentResponse" name="body"/>
+	</message>
+	
+	<message name="RecordServiceRequest">
+		<part element="wrappers:RecordServiceRequest" name="body"/>
+	</message>
+	<message name="RecordServiceResponse">
+		<part element="wrappers:RecordServiceResponse" name="body"/>
+	</message>
+	
+	<message name="RecordReceiptRequest">
+		<part element="wrappers:RecordReceiptRequest" name="body"/>
+	</message>
+	<message name="RecordReceiptResponse">
+		<part element="wrappers:RecordReceiptResponse" name="body"/>
+	</message>
+	
+	<message name="SecureCaseRequest">
+		<part element="wrappers:SecureCaseRequest" name="body"/>
+	</message>
+	<message name="SecureCaseResponse">
+		<part element="wrappers:SecureCaseResponse" name="body"/>
+	</message>
+	
+	<message name="GetServiceCaseListRequest">
+		<part element="wrappers:GetServiceCaseListRequest" name="body"/> 
+	</message>
+	<message name="GetServiceCaseListResponse">
+		<part element="wrappers:GetServiceCaseListResponse" name="body"/>
+	</message>
+	
+	<message name="GetServiceInformationHistoryRequest">
+		<part element="wrappers:GetServiceInformationHistoryRequest" name="body"/>
+	</message>
+	<message name="GetServiceInformationHistoryResponse">
+		<part element="wrappers:GetServiceInformationHistoryResponse" name="body"/>
+	</message>
+	
+	<message name="GetPartyListRequest">
+		<part element="wrappers:GetPartyListRequest" name="body"/>
+	</message>
+	<message name="GetPartyListResponse">
+		<part element="wrappers:GetPartyListResponse" name="body"/>
+	</message>
+
+	<message name="GetPartyRequest">
+		<part element="wrappers:GetPartyRequest" name="body"/>
+	</message>
+	<message name="GetPartyResponse">
+		<part element="wrappers:GetPartyResponse" name="body"/>
+	</message>
+	
+	<message name="GetCaseHearingsRequest">
+		<part element="wrappers:GetCaseHearingsRequest" name="body"/>
+	</message>
+	<message name="GetCaseHearingsResponse">
+		<part element="wrappers:GetCaseHearingsResponse" name="body"/>
+	</message>	
+	
+	<!-- ports p -->
+	<portType name="TylerCourtRecordMDE">
+		<operation name="UpdateDocument">
+			<input message="tns:UpdateDocumentRequest"/>
+			<output message="tns:UpdateDocumentResponse"/>
+		</operation>
+		
+		<operation name="RecordService">
+			<input message="tns:RecordServiceRequest"/>
+			<output message="tns:RecordServiceResponse"/>
+		</operation>
+		
+		<operation name="RecordReceipt">
+			<input message="tns:RecordReceiptRequest"/>
+			<output message="tns:RecordReceiptResponse"/>
+		</operation>
+		
+		<operation name="SecureCase">
+			<input message="tns:SecureCaseRequest"/>
+			<output message="tns:SecureCaseResponse"/>
+		</operation>
+		
+		<operation name="GetServiceCaseList">
+			<input message="tns:GetServiceCaseListRequest"/>
+			<output message="tns:GetServiceCaseListResponse"/>
+		</operation>
+		
+		<operation name="GetServiceInformationHistory">
+			<input message="tns:GetServiceInformationHistoryRequest"/>
+			<output message="tns:GetServiceInformationHistoryResponse"/>
+		</operation>		
+		
+		<operation name="GetPartyList">
+			<input message="tns:GetPartyListRequest"/>
+			<output message="tns:GetPartyListResponse"/>
+		</operation>
+		
+		<operation name="GetParty">
+			<input message="tns:GetPartyRequest"/>
+			<output message="tns:GetPartyResponse"/>
+		</operation>
+		
+		<operation name="GetCaseHearings">
+			<input message="tns:GetCaseHearingsRequest"/>
+			<output message="tns:GetCaseHearingsResponse"/>
+		</operation>				
+	</portType>
+	
+	<!-- bindings -->
+	<binding name="TylerCourtRecordMDESoap" type="tns:TylerCourtRecordMDE">
+		<wsp:PolicyReference URI="#MyPolicy"/>
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="UpdateDocument">
+			<!-- An operation to update a document on an event. -->
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE/UpdateDocument"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		
+		<operation name="RecordService">
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE/RecordService"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		
+		<operation name="RecordReceipt">
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE/RecordReceipt"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		
+		<operation name="SecureCase">
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE/SecureCase"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		
+		<operation name="GetServiceCaseList">
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE/GetServiceCaseList"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		
+		<operation name="GetServiceInformationHistory">
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE/GetServiceInformationHistory"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+
+		</operation>
+		
+		<operation name="GetPartyList">
+			<!-- An operation to get party list by a filer id -->
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE/GetPartyList"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		
+		<operation name="GetParty">
+			<!-- An operation to get a party by a party id -->
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE/GetParty"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		
+		<operation name="GetCaseHearings">
+			<!-- An operation to get the hearings for a case by the case id -->
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE/GetCaseHearings"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+</definitions>

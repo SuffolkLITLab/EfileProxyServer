@@ -14,8 +14,9 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
  * Generated source version: 3.5.0-SNAPSHOT
  *
  */
+// TODO(brycew): shouldn't hardcode this stage path: should we just remove this annotation?
 @WebServiceClient(name = "ServiceMDEService",
-                  wsdlLocation = "classpath:wsdl/filingreview/ECF-4.0-ServiceMDEService.wsdl",
+                  wsdlLocation = "classpath:wsdl/stage/illinois-ECF-4.0-ServiceMDEService.wsdl",
                   targetNamespace = "urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0")
 public class ServiceMDEService extends Service {
 
@@ -37,9 +38,6 @@ public class ServiceMDEService extends Service {
     public ServiceMDEService(URL wsdlLocation, QName serviceName, WebServiceFeature ... features) {
         super(wsdlLocation, serviceName, features);
     }
-
-
-
 
     /**
      *

@@ -21,9 +21,9 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="JuvenileAbuseNeglectAllegationType"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://release.niem.gov/niem/domains/jxdm/6.0/}ChargeType"&gt;
+ *     &lt;extension base="{http://release.niem.gov/niem/domains/jxdm/6.1/}ChargeType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.0/}AbuseNeglectAllegationCategoryText" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.1/}AbuseNeglectAllegationCategoryText" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;

@@ -28,8 +28,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://release.niem.gov/niem/structures/4.0/}ObjectType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}DrivingRestrictionAbstract" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}DrivingRestrictionEndDate" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}DrivingRestrictionAbstract" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}DrivingRestrictionEndDate" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -51,7 +51,7 @@ public class DrivingRestrictionType
     extends ObjectType
 {
 
-    @XmlElementRef(name = "DrivingRestrictionAbstract", namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", type = JAXBElement.class, required = false)
+    @XmlElementRef(name = "DrivingRestrictionAbstract", namespace = "http://release.niem.gov/niem/domains/jxdm/6.1/", type = JAXBElement.class, required = false)
     protected JAXBElement<?> drivingRestrictionAbstract;
     @XmlElement(name = "DrivingRestrictionEndDate")
     protected DateType drivingRestrictionEndDate;

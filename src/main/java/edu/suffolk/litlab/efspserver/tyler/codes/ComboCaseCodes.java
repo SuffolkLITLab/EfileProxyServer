@@ -18,7 +18,7 @@ public class ComboCaseCodes {
 
   public ComboCaseCodes() {
     this.cat = new CaseCategory("", "", "", "", "", "", "");
-    this.type = new CaseType("", "", "", "", "", "", "", "");
+    this.type = new CaseType("", "", "", "", "", "", "", "", "");
     this.filings = List.of();
     this.partyInfo = Map.of();
   }

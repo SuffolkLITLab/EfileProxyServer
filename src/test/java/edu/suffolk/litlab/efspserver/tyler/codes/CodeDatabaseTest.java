@@ -57,6 +57,7 @@ public class CodeDatabaseTest {
         assertTrue(table.length() <= 63, "table name " + table + " should be <= 63 characters");
       }
     }
+    // TODO(brycew): do the same for 5? Even though Tyler's are very different from ECF's?
   }
 
   private void loadFromXmls() throws Exception {

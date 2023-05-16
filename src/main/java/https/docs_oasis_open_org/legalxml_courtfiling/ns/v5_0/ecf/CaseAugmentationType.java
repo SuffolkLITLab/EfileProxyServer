@@ -3,13 +3,14 @@ package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.domains.jxdm._6.CaseOfficialType;
 import gov.niem.release.niem.niem_core._4.EntityType;
+import gov.niem.release.niem.niem_core._4.IdentificationType;
 import gov.niem.release.niem.niem_core._4.MetadataType;
 import gov.niem.release.niem.niem_core._4.OrganizationAssociationType;
 import gov.niem.release.niem.niem_core._4.PersonAssociationType;
 import gov.niem.release.niem.niem_core._4.PersonOrganizationAssociationType;
 import gov.niem.release.niem.niem_core._4.TextType;
+import gov.niem.release.niem.proxy.xsd._4.Boolean;
 import gov.niem.release.niem.proxy.xsd._4.NormalizedString;
 import gov.niem.release.niem.structures._4.AugmentationType;
 import jakarta.xml.bind.JAXBElement;
@@ -23,8 +24,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * An augmentation type
- * 
  * <p>Java class for CaseAugmentationType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -35,11 +34,12 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *     &lt;extension base="{http://release.niem.gov/niem/structures/4.0/}AugmentationType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseCategoryCode" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseNewIndicator" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseParty" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseShortTitleText" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseTrackingID" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseTypeCode" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}CaseNumberText" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}CaseOfficial" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}CaseNumberText" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Metadata" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}OrganizationAssociation" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}PersonAssociation" maxOccurs="unbounded" minOccurs="0"/&gt;
@@ -63,11 +63,12 @@ public class CaseAugmentationType
 
     @XmlElementRefs({
         @XmlElementRef(name = "CaseCategoryCode", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "CaseNewIndicator", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "CaseParty", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "CaseShortTitleText", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "CaseTrackingID", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "CaseTypeCode", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "CaseNumberText", namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "CaseOfficial", namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "CaseNumberText", namespace = "http://release.niem.gov/niem/domains/jxdm/6.1/", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "Metadata", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "OrganizationAssociation", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "PersonAssociation", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false),
@@ -81,8 +82,8 @@ public class CaseAugmentationType
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "Metadata" is used by two different parts of a schema. See: 
-     * line 33 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-v5-3.xsd
-     * line 65 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-v5-7.xsd
+     * line 33 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf5-full-ea1e0f75b69752b5.xsd
+     * line 65 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf5-full-43381e9aa490c46d.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 
@@ -103,8 +104,8 @@ public class CaseAugmentationType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link CaseOfficialType }{@code >}
      * {@link JAXBElement }{@code <}{@link EntityType }{@code >}
+     * {@link JAXBElement }{@code <}{@link IdentificationType }{@code >}
      * {@link JAXBElement }{@code <}{@link MetadataType }{@code >}
      * {@link JAXBElement }{@code <}{@link OrganizationAssociationType }{@code >}
      * {@link JAXBElement }{@code <}{@link PersonAssociationType }{@code >}
@@ -112,6 +113,7 @@ public class CaseAugmentationType
      * {@link JAXBElement }{@code <}{@link TextType }{@code >}
      * {@link JAXBElement }{@code <}{@link TextType }{@code >}
      * {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     * {@link JAXBElement }{@code <}{@link Boolean }{@code >}
      * {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
      * 
      * 

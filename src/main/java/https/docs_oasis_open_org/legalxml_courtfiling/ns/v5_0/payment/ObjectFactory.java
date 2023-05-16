@@ -2,7 +2,7 @@
 package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.payment;
 
 import javax.xml.namespace.QName;
-import gov.niem.release.niem.niem_core._4.PersonType;
+import gov.niem.release.niem.niem_core._4.EntityType;
 import gov.niem.release.niem.proxy.xsd._4.Boolean;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
@@ -59,16 +59,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link EntityType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link EntityType }{@code >}
      */
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/payment", name = "Payer")
-    public JAXBElement<PersonType> createPayer(PersonType value) {
-        return new JAXBElement<PersonType>(_Payer_QNAME, PersonType.class, null, value);
+    public JAXBElement<EntityType> createPayer(EntityType value) {
+        return new JAXBElement<EntityType>(_Payer_QNAME, EntityType.class, null, value);
     }
 
     /**

@@ -4,12 +4,13 @@ import static edu.suffolk.litlab.efspserver.StdLib.GetEnv;
 
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
+import edu.suffolk.litlab.efspserver.EfmConfiguration;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.StdLib;
+import edu.suffolk.litlab.efspserver.db.LoginDatabase;
+import edu.suffolk.litlab.efspserver.ecf5.CourtSchedulingService;
 import edu.suffolk.litlab.efspserver.ecfcodes.CodeUpdater;
 import edu.suffolk.litlab.efspserver.services.AdminUserService;
-import edu.suffolk.litlab.efspserver.services.CasesService;
-import edu.suffolk.litlab.efspserver.services.CourtSchedulingService;
 import edu.suffolk.litlab.efspserver.services.EfmFilingInterface;
 import edu.suffolk.litlab.efspserver.services.EfmModuleSetup;
 import edu.suffolk.litlab.efspserver.services.EfmRestCallbackInterface;
@@ -24,6 +25,7 @@ import edu.suffolk.litlab.efspserver.services.UpdateCodeVersions;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.tyler.codes.EcfCodesService;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -118,7 +120,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
   }
 
   private static Optional<CreationArgs> createFromEnvVars() {
-    Optional<String> maybeX509Password = GetEnv("X509_PASSWORD");
+    Optional<String> maybeX509Password = StdLib.GetEnv("X509_PASSWORD");
     if (maybeX509Password.isEmpty() || maybeX509Password.orElse("").isBlank()) {
       log.warn("If using Tyler, X509_PASSWORD can't be null. Did you forget to source .env?");
       return Optional.empty();
@@ -126,7 +128,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     CreationArgs args = new CreationArgs();
     args.x509Password = maybeX509Password.get();
 
-    Optional<String> maybeTylerEnv = GetEnv("TYLER_ENV");
+    Optional<String> maybeTylerEnv = StdLib.GetEnv("TYLER_ENV");
     if (maybeTylerEnv.isPresent()) {
       log.info("Using " + maybeTylerEnv.get() + " for TYLER_ENV");
       args.tylerEnv = maybeTylerEnv.get();
@@ -134,8 +136,8 @@ public class TylerModuleSetup implements EfmModuleSetup {
       log.info("Not using any TYLER_ENV, maybe prod?");
     }
 
-    args.pgUser = GetEnv("POSTGRES_USER").orElse("postgres");
-    Optional<String> maybeDbPassword = GetEnv("POSTGRES_PASSWORD");
+    args.pgUser = StdLib.GetEnv("POSTGRES_USER").orElse("postgres");
+    Optional<String> maybeDbPassword = StdLib.GetEnv("POSTGRES_PASSWORD");
     if (maybeDbPassword.isEmpty()) {
       log.warn("You need to define a POSTGRES_PASSWORD");
       return Optional.empty();
@@ -163,6 +165,17 @@ public class TylerModuleSetup implements EfmModuleSetup {
     // I don't quite understand Spring yet
     SoapX509CallbackHandler.setX509Password(x509Password);
 
+    Map<String, String> config = Map.of();
+    try {
+      config = EfmConfiguration.loadConfig();
+    } catch (IOException ex) {
+      log.warn("Couldn't find config with ECF versions");
+    }
+    var ecfVersion =
+        (config.get(getJurisdiction()).equalsIgnoreCase("ecf5"))
+            ? CodeUpdater.ECF_VERSION.V5
+            : CodeUpdater.ECF_VERSION.V4;
+
     log.info("Checking table if absent");
     try (CodeDatabase cd = new CodeDatabase(tylerJurisdiction, tylerEnv, codeDs.getConnection())) {
       cd.createTablesIfAbsent();
@@ -171,7 +184,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
           "All locations for " + this.tylerJurisdiction + "-" + this.tylerEnv + ": " + locations);
       boolean downloadAll = (cd.getAllLocations().size() == 0);
       if (downloadAll) {
-        String testOnlyLocation = StdLib.GetEnv("_TEST_ONLY_LOCATION").orElse("");
+        String testOnlyLocation = GetEnv("_TEST_ONLY_LOCATION").orElse("");
         if (!testOnlyLocation.isBlank()) {
           log.info(
               "Downloading just codes for "
@@ -181,6 +194,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
                   + ": please wait a bit");
           CodeUpdater.executeCommand(
               cd,
+              ecfVersion,
               tylerJurisdiction,
               tylerEnv,
               List.of("replacesome", testOnlyLocation),
@@ -188,7 +202,12 @@ public class TylerModuleSetup implements EfmModuleSetup {
         } else {
           log.info("Downloading all codes for " + tylerJurisdiction + ": please wait a bit");
           CodeUpdater.executeCommand(
-              cd, tylerJurisdiction, tylerEnv, List.of("replaceall"), this.x509Password);
+              cd,
+              ecfVersion,
+              tylerJurisdiction,
+              tylerEnv,
+              List.of("replaceall"),
+              this.x509Password);
         }
       }
     } catch (SQLException e) {
@@ -238,6 +257,25 @@ public class TylerModuleSetup implements EfmModuleSetup {
     return tylerJurisdiction;
   }
 
+  /*
+  public Set<String> getCourts() {
+    try (CodeDatabase cd = new CodeDatabase(tylerJurisdiction, tylerEnv, codeDs.getConnection())) {
+      Set<String> allCourts = new HashSet<String>(cd.getAllLocations());
+      // 0 and 1 are special "system" courts that have defaults for all courts.
+      // They aren't available for filing
+      // TODO(brycew): but don't actually remove 0, which is needed to search all courts at the same
+      // time?
+      // I do hate this interface
+      // allCourts.remove("0");
+      allCourts.remove("1");
+      return allCourts;
+    } catch (SQLException ex) {
+      log.error("SQL error when getting courts to route to Tyler: " + ex);
+      return Set.of();
+    }
+  }
+  */
+
   public Set<String> getCourts() {
     try (CodeDatabase cd = new CodeDatabase(tylerJurisdiction, tylerEnv, codeDs.getConnection())) {
       Set<String> allCourts = new HashSet<String>(cd.getAllLocations());
@@ -269,6 +307,10 @@ public class TylerModuleSetup implements EfmModuleSetup {
         };
 
     EfmFilingInterface filer = new Ecf4Filer(jurisdiction, env, cdSupplier);
+    Supplier<LoginDatabase> ldSupplier =
+        () -> {
+          return LoginDatabase.fromDS(this.userDs);
+        };
 
     for (String court : getCourts()) {
       filingMap.put(court, filer);
@@ -301,14 +343,14 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
     var adminUser =
         new AdminUserService(jurisdiction, env, this.userDs, cdSupplier, passwordChecker);
-    var cases = new CasesService(jurisdiction, env, this.userDs, cdSupplier);
+    var cases = new CasesService(jurisdiction, env, ldSupplier, cdSupplier);
     var codes = new EcfCodesService(jurisdiction, cdSupplier);
     Optional<CourtSchedulingService> courtScheduler = Optional.empty();
-    if (jurisdiction == "illinois") {
-      courtScheduler =
-          Optional.of(
-              new CourtSchedulingService(converterMap, jurisdiction, env, userDs, cdSupplier));
-    }
+    // if (jurisdiction == "illinois") {
+    //  courtScheduler =
+    //      Optional.of(new CourtSchedulingService(converterMap, jurisdiction, env, cdSupplier,
+    // userDs));
+    // }
     var filingReview =
         new FilingReviewService(
             getJurisdiction(), this.userDs, converterMap, filingMap, callbackMap, this.sender);
@@ -340,9 +382,8 @@ public class TylerModuleSetup implements EfmModuleSetup {
         () -> {
           return CodeDatabase.fromDS(getJurisdiction(), this.tylerEnv, this.codeDs);
         };
-
-    OasisEcfWsCallback implementor =
-        new OasisEcfWsCallback(tylerJurisdiction, tylerEnv, cdSupplier, userDs, sender);
+    TylerEcfWsCallback implementor =
+        new TylerEcfWsCallback(tylerJurisdiction, tylerEnv, cdSupplier, userDs, sender);
     String baseLocalUrl = ServiceHelpers.BASE_LOCAL_URL;
     String address =
         baseLocalUrl + "/jurisdictions/" + tylerJurisdiction + ServiceHelpers.ASSEMBLY_PORT;
@@ -352,15 +393,6 @@ public class TylerModuleSetup implements EfmModuleSetup {
     log.info("Wsdl location: " + jaxWsEndpoint.getWsdlLocation());
     log.info("Address : " + jaxWsEndpoint.getAddress());
     log.info("Bean name: " + jaxWsEndpoint.getBeanName());
-
-    OasisEcfv5WsCallback impl2 =
-        new OasisEcfv5WsCallback(tylerJurisdiction, tylerEnv, codeDs, userDs, sender);
-    String v5Address =
-        baseLocalUrl + "/jurisdictions/" + tylerJurisdiction + ServiceHelpers.ASSEMBLY_PORT_V5;
-    EndpointImpl jaxWsV5Endpoint = (EndpointImpl) jakarta.xml.ws.Endpoint.publish(v5Address, impl2);
-    log.info("V5 Wsdl location: " + jaxWsV5Endpoint.getWsdlLocation());
-    log.info("V5 Address : " + jaxWsV5Endpoint.getAddress());
-    log.info("V5 Bean name: " + jaxWsV5Endpoint.getBeanName());
 
     /*
     Endpoint cxfEndpoint = jaxWsEndpoint.getServer().getEndpoint();

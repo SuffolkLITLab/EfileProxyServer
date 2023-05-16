@@ -18,7 +18,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="JuvenilePlacementType"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://release.niem.gov/niem/domains/humanServices/4.0/}PlacementType"&gt;
+ *     &lt;extension base="{http://release.niem.gov/niem/domains/humanServices/4.1/}PlacementType"&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- edited with XMLSpy v2018 sp1 (http://www.altova.com) by Tyler Technologies (Tyler Technologies) --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:civil="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/civil" xmlns:ecf="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" xmlns:niem-xs="http://release.niem.gov/niem/proxy/xsd/4.0/" xmlns:servicetypesrequest="urn:tyler:ecf:v5.0:extensions:servicetypesrequest" xmlns:structures="http://release.niem.gov/niem/structures/4.0/" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:tyler:ecf:v5.0:extensions:servicetypesrequest">
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" schemaLocation="ecf5-full-ea1e0f75b69752b5.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/niem-core/4.0/" schemaLocation="ecf5-full-7af13829a6695741.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/proxy/xsd/4.0/" schemaLocation="ecf5-full-4d179e3e0bd140a9.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/structures/4.0/" schemaLocation="ecf5-full-43381e9aa490c46d.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/civil" schemaLocation="ecf5-full-43e22a9b317738fe.xsd"/>
+	<xs:complexType name="GetServiceTypesMessageType">
+		<xs:annotation>
+			<xs:documentation>Message to retrieve service types for a set of codes.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ecf:RequestMessageType">
+				<xs:sequence>
+					<xs:element maxOccurs="1" minOccurs="1" ref="ecf:CaseTypeCode"/>
+					<xs:element maxOccurs="1" minOccurs="1" ref="ecf:CaseNewIndicator"/>
+					<xs:element maxOccurs="unbounded" minOccurs="1" ref="ecf:RegisterActionDescriptionCode"/>
+					<xs:element maxOccurs="1" minOccurs="0" ref="civil:AmountInControversy"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="servicetypesrequest:GetServiceTypesMessageAugmentationPoint"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="GetServiceTypesMessage" type="servicetypesrequest:GetServiceTypesMessageType">
+		<xs:annotation>
+			<xs:documentation>Message to retrieve service logs for filing/service contact.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element abstract="true" name="GetServiceTypesMessageAugmentationPoint">
+		<xs:annotation>
+			<xs:documentation>An extension point for the enclosing message.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

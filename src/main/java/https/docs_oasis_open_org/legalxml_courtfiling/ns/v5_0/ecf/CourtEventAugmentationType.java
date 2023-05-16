@@ -8,19 +8,15 @@ import gov.niem.release.niem.niem_core._4.DateType;
 import gov.niem.release.niem.niem_core._4.DocumentType;
 import gov.niem.release.niem.niem_core._4.TextType;
 import gov.niem.release.niem.structures._4.AugmentationType;
-import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * An augmentation type
- * 
  * <p>Java class for CourtEventAugmentationType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -31,9 +27,9 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *     &lt;extension base="{http://release.niem.gov/niem/structures/4.0/}AugmentationType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ChildDocket" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ConnectedDocument" minOccurs="0"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CourtEventActor" minOccurs="0"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CourtEventEnteredOnDocketDate"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ConnectedDocument" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CourtEventActor" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CourtEventEnteredOnDocketDate" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CourtEventLocationText" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CourtEventOnBehalfOfActor" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CourtEventTypeCode"/&gt;
@@ -67,10 +63,10 @@ public class CourtEventAugmentationType
     @XmlElement(name = "ChildDocket")
     protected List<CourtEventType> childDocket;
     @XmlElement(name = "ConnectedDocument", nillable = true)
-    protected DocumentType connectedDocument;
+    protected List<DocumentType> connectedDocument;
     @XmlElement(name = "CourtEventActor")
-    protected CourtEventOnBehalfOfActorType courtEventActor;
-    @XmlElement(name = "CourtEventEnteredOnDocketDate", required = true)
+    protected List<CourtEventOnBehalfOfActorType> courtEventActor;
+    @XmlElement(name = "CourtEventEnteredOnDocketDate")
     protected DateType courtEventEnteredOnDocketDate;
     @XmlElement(name = "CourtEventLocationText")
     protected TextType courtEventLocationText;
@@ -78,8 +74,8 @@ public class CourtEventAugmentationType
     protected CourtEventActorType courtEventOnBehalfOfActor;
     @XmlElement(name = "CourtEventTypeCode", required = true)
     protected TextType courtEventTypeCode;
-    @XmlElementRef(name = "CourtLocationCode", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", type = JAXBElement.class, required = false)
-    protected JAXBElement<TextType> courtLocationCode;
+    @XmlElement(name = "CourtLocationCode")
+    protected TextType courtLocationCode;
     @XmlElement(name = "CaseDocketID", namespace = "http://release.niem.gov/niem/niem-core/4.0/")
     protected List<gov.niem.release.niem.proxy.xsd._4.String> caseDocketID;
 
@@ -115,49 +111,59 @@ public class CourtEventAugmentationType
     /**
      * Gets the value of the connectedDocument property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DocumentType }
-     *     
-     */
-    public DocumentType getConnectedDocument() {
-        return connectedDocument;
-    }
-
-    /**
-     * Sets the value of the connectedDocument property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the connectedDocument property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DocumentType }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getConnectedDocument().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link DocumentType }
+     * 
+     * 
      */
-    public void setConnectedDocument(DocumentType value) {
-        this.connectedDocument = value;
+    public List<DocumentType> getConnectedDocument() {
+        if (connectedDocument == null) {
+            connectedDocument = new ArrayList<DocumentType>();
+        }
+        return this.connectedDocument;
     }
 
     /**
      * Gets the value of the courtEventActor property.
      * 
-     * @return
-     *     possible object is
-     *     {@link CourtEventOnBehalfOfActorType }
-     *     
-     */
-    public CourtEventOnBehalfOfActorType getCourtEventActor() {
-        return courtEventActor;
-    }
-
-    /**
-     * Sets the value of the courtEventActor property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the courtEventActor property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link CourtEventOnBehalfOfActorType }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getCourtEventActor().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CourtEventOnBehalfOfActorType }
+     * 
+     * 
      */
-    public void setCourtEventActor(CourtEventOnBehalfOfActorType value) {
-        this.courtEventActor = value;
+    public List<CourtEventOnBehalfOfActorType> getCourtEventActor() {
+        if (courtEventActor == null) {
+            courtEventActor = new ArrayList<CourtEventOnBehalfOfActorType>();
+        }
+        return this.courtEventActor;
     }
 
     /**
@@ -261,11 +267,10 @@ public class CourtEventAugmentationType
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     *     {@link TextType }
      *     
      */
-    public JAXBElement<TextType> getCourtLocationCode() {
+    public TextType getCourtLocationCode() {
         return courtLocationCode;
     }
 
@@ -274,11 +279,10 @@ public class CourtEventAugmentationType
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     *     {@link TextType }
      *     
      */
-    public void setCourtLocationCode(JAXBElement<TextType> value) {
+    public void setCourtLocationCode(TextType value) {
         this.courtLocationCode = value;
     }
 

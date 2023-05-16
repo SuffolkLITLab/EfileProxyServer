@@ -117,7 +117,7 @@ public class OrgMessageSender {
       String messageText,
       String messageUrl,
       String courtName) {
-    return sendMessage(trans, status, statusText, messageText, messageUrl, courtName, null);
+    return sendMessage(trans, status, statusText, messageText, messageUrl, courtName, null, null);
   }
 
   public boolean sendMessage(
@@ -127,7 +127,8 @@ public class OrgMessageSender {
       String messageText,
       String messageUrl,
       String courtName,
-      String theirCaseTitle) {
+      String theirCaseTitle,
+      String chargesText) {
     MessageInfo msgSettings = getSettings(trans.serverId);
     Map<String, Object> templateVars = new HashMap<String, Object>();
     String template = msgSettings.emailResponseTemplate;
@@ -165,6 +166,9 @@ public class OrgMessageSender {
     }
     templateVars.put("status", statusText);
     templateVars.put("message_text", messageText);
+    if (chargesText != null && !chargesText.isBlank()) {
+      templateVars.put("charges_text", chargesText);
+    }
     if (messageUrl != null && !messageUrl.isBlank()) {
       templateVars.put("message_url", messageUrl);
     }

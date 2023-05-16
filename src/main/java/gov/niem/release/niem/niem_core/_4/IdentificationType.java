@@ -8,9 +8,12 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.common.DocumentOptionalServiceType;
+import tyler.ecf.v5_0.extensions.common.DriverLicenseIdentificationType;
 
 
 /**
@@ -28,6 +31,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}IdentificationID" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}IdentificationJurisdiction" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}IdentificationCategoryAbstract" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}IdentificationCategoryDescriptionText" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}IdentificationSourceText" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
@@ -43,7 +47,12 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "identificationID",
     "identificationJurisdiction",
     "identificationCategoryAbstract",
+    "identificationCategoryDescriptionText",
     "identificationSourceText"
+})
+@XmlSeeAlso({
+    DocumentOptionalServiceType.class,
+    DriverLicenseIdentificationType.class
 })
 public class IdentificationType
     extends ObjectType
@@ -55,6 +64,8 @@ public class IdentificationType
     protected JurisdictionType identificationJurisdiction;
     @XmlElementRef(name = "IdentificationCategoryAbstract", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
     protected JAXBElement<?> identificationCategoryAbstract;
+    @XmlElement(name = "IdentificationCategoryDescriptionText")
+    protected TextType identificationCategoryDescriptionText;
     @XmlElement(name = "IdentificationSourceText")
     protected TextType identificationSourceText;
 
@@ -112,6 +123,11 @@ public class IdentificationType
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     *     {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     *     {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     *     {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     *     {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     *     {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
@@ -125,11 +141,40 @@ public class IdentificationType
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     *     {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     *     {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     *     {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     *     {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     *     {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
     public void setIdentificationCategoryAbstract(JAXBElement<?> value) {
         this.identificationCategoryAbstract = value;
+    }
+
+    /**
+     * Gets the value of the identificationCategoryDescriptionText property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TextType }
+     *     
+     */
+    public TextType getIdentificationCategoryDescriptionText() {
+        return identificationCategoryDescriptionText;
+    }
+
+    /**
+     * Sets the value of the identificationCategoryDescriptionText property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TextType }
+     *     
+     */
+    public void setIdentificationCategoryDescriptionText(TextType value) {
+        this.identificationCategoryDescriptionText = value;
     }
 
     /**

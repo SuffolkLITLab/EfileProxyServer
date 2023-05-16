@@ -26,6 +26,7 @@ public class ObjectFactory {
 
     private final static QName _GetCourtScheduleRequestMessage_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/schedulerequest", "GetCourtScheduleRequestMessage");
     private final static QName _GetCourtScheduleRequestMessageAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/schedulerequest", "GetCourtScheduleRequestMessageAugmentationPoint");
+    private final static QName _ScheduleQueryCriteria_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/schedulerequest", "ScheduleQueryCriteria");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.schedulerequest
@@ -40,6 +41,14 @@ public class ObjectFactory {
      */
     public GetCourtScheduleRequestMessageType createGetCourtScheduleRequestMessageType() {
         return new GetCourtScheduleRequestMessageType();
+    }
+
+    /**
+     * Create an instance of {@link ScheduleQueryCriteriaType }
+     * 
+     */
+    public ScheduleQueryCriteriaType createScheduleQueryCriteriaType() {
+        return new ScheduleQueryCriteriaType();
     }
 
     /**
@@ -66,6 +75,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/schedulerequest", name = "GetCourtScheduleRequestMessageAugmentationPoint")
     public JAXBElement<Object> createGetCourtScheduleRequestMessageAugmentationPoint(Object value) {
         return new JAXBElement<Object>(_GetCourtScheduleRequestMessageAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ScheduleQueryCriteriaType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ScheduleQueryCriteriaType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/schedulerequest", name = "ScheduleQueryCriteria")
+    public JAXBElement<ScheduleQueryCriteriaType> createScheduleQueryCriteria(ScheduleQueryCriteriaType value) {
+        return new JAXBElement<ScheduleQueryCriteriaType>(_ScheduleQueryCriteria_QNAME, ScheduleQueryCriteriaType.class, null, value);
     }
 
 }

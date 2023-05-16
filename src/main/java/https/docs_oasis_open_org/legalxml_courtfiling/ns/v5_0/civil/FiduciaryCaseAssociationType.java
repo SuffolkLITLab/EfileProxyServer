@@ -21,7 +21,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="FiduciaryCaseAssociationType"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://release.niem.gov/niem/domains/humanServices/4.0/}PersonCaseAssociationType"&gt;
+ *     &lt;extension base="{http://release.niem.gov/niem/domains/humanServices/4.1/}PersonCaseAssociationType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/civil}FiduciaryTypeCode"/&gt;
  *       &lt;/sequence&gt;

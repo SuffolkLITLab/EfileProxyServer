@@ -56,10 +56,10 @@ public class FilingInformationToJeffNetTest {
     String componentCode = "332";
     String fileName = "quality_check_overlay.pdf";
     InputStream x = this.getClass().getResourceAsStream("/" + fileName); 
-    FilingAttachment fa = new FilingAttachment(fileName, x.readAllBytes(), "5766", componentCode, "The Quality Check Overlay");
+    FilingAttachment fa = new FilingAttachment(fileName, x.readAllBytes(), "5766", componentCode, "The Quality Check Overlay", 1);
     FilingDoc filingDoc = new FilingDoc(Optional.empty(),
         info.getNewPlaintiffs().stream().map(p -> PartyId.CurrentFilingNew(p.getIdString())).collect(
-            Collectors.toList()), NonEmptyList.fromList(fj.data.List.list(fa)).some(), true);
+            Collectors.toList()), NonEmptyList.fromList(fj.data.List.list(fa)).some(), 0);
     info.setFilings(List.of(filingDoc));
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node = mapper.readTree("{\"tyler_filing_type\": \"27967\"}"); 

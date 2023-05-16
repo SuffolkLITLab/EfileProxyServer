@@ -35,7 +35,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   public void oldStyleShouldLoadDocument() throws FilingError, IOException {
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node = mapper.readTree(this.getClass().getResourceAsStream("/filingdocs/old_style_doc.json"));
-    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
     assertTrue(doc.isPresent());
     assertEquals(doc.get().getFilingAttachments().length(), 1);
     assertEquals("6586", doc.get().getFilingAttachments().head().getDocumentTypeFormatStandardName());
@@ -45,7 +45,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   public void oneAttachmentShouldLoadDocument() throws FilingError, IOException {
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node = mapper.readTree(this.getClass().getResourceAsStream("/filingdocs/one_attachment.json"));
-    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
     assertTrue(doc.isPresent());
     assertEquals(doc.get().getFilingAttachments().length(), 1);
     assertEquals("6586", doc.get().getFilingAttachments().head().getDocumentTypeFormatStandardName());
@@ -55,7 +55,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   public void oneEnabledOneDisabledShouldLoadOneAttachment() throws FilingError, IOException {
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node = mapper.readTree(this.getClass().getResourceAsStream("/filingdocs/one_enabled_one_disabled.json"));
-    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
     assertTrue(doc.isPresent());
     assertEquals(doc.get().getFilingAttachments().length(), 1);
     assertEquals("6586", doc.get().getFilingAttachments().head().getDocumentTypeFormatStandardName());
@@ -66,7 +66,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node = mapper.readTree(this.getClass().getResourceAsStream("/filingdocs/fail_no_enabled_attachment.json"));
     try {
-      doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+      doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
       assertTrue("Document shouldn't have parsed!", doc.isEmpty());
     } catch (FilingError err) {
       // okay
@@ -77,7 +77,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   public void shouldFallbackToParentDocIfNoEnabled() throws FilingError, IOException {
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node = mapper.readTree(this.getClass().getResourceAsStream("/filingdocs/fallback_to_upper_doc.json"));
-    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
     assertTrue(doc.isPresent());
     assertEquals(doc.get().getFilingAttachments().length(), 1);
     assertEquals("6586", doc.get().getFilingAttachments().head().getDocumentTypeFormatStandardName());
@@ -88,7 +88,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   public void noDocTypesShouldBeEmptyStrings() throws IOException, FilingError {
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node = mapper.readTree(this.getClass().getResourceAsStream("/filingdocs/fail_missing_doc_types.json"));
-    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
     assertTrue(doc.isPresent());
     assertEquals(doc.get().getFilingAttachments().length(), 1);
     assertEquals("", doc.get().getFilingAttachments().head().getDocumentTypeFormatStandardName());
@@ -98,7 +98,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   public void twoAttachmentsShouldLoadTwoAttachments() throws FilingError, IOException {
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node = mapper.readTree(this.getClass().getResourceAsStream("/filingdocs/two_attachments.json"));
-    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
     assertTrue(doc.isPresent());
     assertEquals(2, doc.get().getFilingAttachments().length());
     assertEquals("6586", doc.get().getFilingAttachments().head().getDocumentTypeFormatStandardName());

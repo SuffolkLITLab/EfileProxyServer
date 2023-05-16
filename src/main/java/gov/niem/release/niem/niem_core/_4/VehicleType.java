@@ -90,6 +90,7 @@ public class VehicleType
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link VMACodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
@@ -103,6 +104,7 @@ public class VehicleType
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link VMACodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
@@ -116,6 +118,7 @@ public class VehicleType
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link VMOCodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
@@ -129,6 +132,7 @@ public class VehicleType
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link VMOCodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */

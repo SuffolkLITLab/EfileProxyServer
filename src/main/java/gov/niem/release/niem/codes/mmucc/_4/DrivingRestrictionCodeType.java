@@ -31,7 +31,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="DrivingRestrictionCodeType"&gt;
  *   &lt;simpleContent&gt;
- *     &lt;extension base="&lt;http://release.niem.gov/niem/codes/mmucc/4.0/&gt;DrivingRestrictionCodeSimpleType"&gt;
+ *     &lt;extension base="&lt;http://release.niem.gov/niem/codes/mmucc/4.1/&gt;DrivingRestrictionCodeSimpleType"&gt;
  *       &lt;attGroup ref="{http://release.niem.gov/niem/structures/4.0/}SimpleObjectAttributeGroup"/&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;

@@ -25,10 +25,10 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _FilingMessageAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing", "FilingMessageAugmentationPoint");
     private final static QName _FilingConnectedDocument_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing", "FilingConnectedDocument");
     private final static QName _FilingLeadDocument_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing", "FilingLeadDocument");
     private final static QName _FilingMessage_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing", "FilingMessage");
-    private final static QName _FilingMessageAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing", "FilingMessageAugmentationPoint");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing
@@ -43,6 +43,19 @@ public class ObjectFactory {
      */
     public FilingMessageType createFilingMessageType() {
         return new FilingMessageType();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing", name = "FilingMessageAugmentationPoint")
+    public JAXBElement<Object> createFilingMessageAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_FilingMessageAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**
@@ -82,19 +95,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing", name = "FilingMessage")
     public JAXBElement<FilingMessageType> createFilingMessage(FilingMessageType value) {
         return new JAXBElement<FilingMessageType>(_FilingMessage_QNAME, FilingMessageType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing", name = "FilingMessageAugmentationPoint")
-    public JAXBElement<Object> createFilingMessageAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_FilingMessageAugmentationPoint_QNAME, Object.class, null, value);
     }
 
 }

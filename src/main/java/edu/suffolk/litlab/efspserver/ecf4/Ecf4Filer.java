@@ -9,7 +9,6 @@ import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.PartyId;
-import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.services.EfmCheckableFilingInterface;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
@@ -19,6 +18,7 @@ import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.tyler.QueryType;
+import edu.suffolk.litlab.efspserver.tyler.TylerCodesSerializer;
 import edu.suffolk.litlab.efspserver.tyler.TylerLogin;
 import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
 import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
@@ -50,7 +50,6 @@ import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
@@ -104,6 +103,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       listObjFac;
   private final tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory detailObjFac;
   private final tyler.ecf.extensions.cancelfilingmessage.ObjectFactory cancelObjFac;
+  private static final tyler.ecf.extensions.common.ObjectFactory tylerObjFac =
+      new tyler.ecf.extensions.common.ObjectFactory();
   private final oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory
       commonObjFac;
   private final gov.niem.niem.niem_core._2.ObjectFactory niemObjFac;
@@ -199,7 +200,11 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         collector.error(err);
       }
 
-      EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo);
+      var allDataFields = cd.getDataFields(locationInfo.code);
+      EcfCourtSpecificSerializer serializer =
+          new EcfCourtSpecificSerializer(cd, locationInfo, allDataFields);
+      TylerCodesSerializer tylerSerializer =
+          new TylerCodesSerializer(cd, locationInfo, allDataFields);
       boolean isInitialFiling =
           info.getPreviousCaseId().isEmpty() && info.getCaseDocketNumber().isEmpty();
       boolean isFirstIndexedFiling = info.getPreviousCaseId().isEmpty();
@@ -214,6 +219,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
           if (resp.getCase().getValue().getCaseTitleText() != null) {
             existingCaseTitle = resp.getCase().getValue().getCaseTitleText().getValue();
           }
+          allCodes = serializer.serializeCaseCodesIndexed(info, collector, resp);
         } else {
           var filingVar =
               collector.requestVar(
@@ -221,44 +227,12 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                   "Could not find the given case id (" + info.getPreviousCaseId().get() + ")",
                   "text");
           collector.addWrong(filingVar);
+          allCodes = new ComboCaseCodes();
         }
-
-        String catCode = resp.getCase().getValue().getCaseCategoryText().getValue();
-        String typeCode =
-            EcfCaseTypeFactory.getCaseAugmentation(resp.getCase().getValue())
-                .get()
-                .getCaseTypeText()
-                .getValue();
-        Map<PartyId, Person> exisitingPartips =
-            EcfCaseTypeFactory.getCaseParticipants(resp.getCase().getValue()).get();
-        List<Optional<String>> maybeFilingCodes =
-            info.getFilings().stream().map(f -> f.getFilingCode()).collect(Collectors.toList());
-        if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
-          InterviewVariable filingVar =
-              collector.requestVar(
-                  "court_bundle[i].filing_type", "What filing type is this?", "text");
-          collector.addRequired(filingVar);
-        }
-        List<String> filingCodeStrs =
-            maybeFilingCodes.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
-        Map<String, Person> newPartyCodes =
-            Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
-                .collect(Collectors.toMap(per -> per.getIdString(), per -> per));
-        Map<String, Person> existingPartyCodes =
-            exisitingPartips.entrySet().stream()
-                .collect(
-                    Collectors.toMap(
-                        ent -> ent.getKey().getIdentificationString(), ent -> ent.getValue()));
-        log.info(
-            "Existing cat, type, and filings: " + catCode + "," + typeCode + "," + filingCodeStrs);
-        allCodes =
-            serializer.serializeCaseCodesIndexed(
-                catCode, typeCode, filingCodeStrs, existingPartyCodes, newPartyCodes, collector);
       } else {
-        allCodes = serializer.serializeCaseCodes(info, collector, isInitialFiling);
+        allCodes = tylerSerializer.serializeCaseCodes(info, collector, isInitialFiling);
       }
       caseCategoryName = allCodes.cat.name;
-      log.info("have all codes");
 
       var coreObjFac =
           new oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory();
@@ -309,13 +283,14 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
               queryType,
               info.getMiscInfo(),
               serializer,
+              tylerSerializer,
               collector,
               serviceContactXmlObjs);
       JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> assembledCase = pair.getLeft();
       log.info("Assembled case");
 
       Map<String, String> crossReferences =
-          serializer.getCrossRefIds(info.getMiscInfo(), collector, allCodes.type.code);
+          tylerSerializer.getCrossRefIds(info.getMiscInfo(), collector, allCodes.type.code);
       for (Map.Entry<String, String> ref : crossReferences.entrySet()) {
         IdentificationType id = niemObjFac.createIdentificationType();
         id.setIdentificationID(Ecf4Helper.convertString(ref.getValue()));
@@ -356,39 +331,23 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
 
       MeasureType maxIndivDocSize =
           policy.getDevelopmentPolicyParameters().getValue().getMaximumAllowedAttachmentSize();
-      long maxSize = Ecf4Helper.sizeMeasureAsBytes(maxIndivDocSize);
-      long cumulativeBytes = 0;
+      long maxEach = Ecf4Helper.sizeMeasureAsBytes(maxIndivDocSize);
+      MeasureType maxTotalDocSize =
+          policy.getDevelopmentPolicyParameters().getValue().getMaximumAllowedMessageSize();
+      long maxTotal = Ecf4Helper.sizeMeasureAsBytes(maxTotalDocSize);
 
       Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, apiToken);
       boolean isIndividual =
           firmPort.map(port -> port.getFirm().getFirm().isIsIndividual()).orElse(true);
       Map<String, Object> filingIdToObj = new HashMap<>();
-      int seqNum = 0;
-      for (FilingDoc filingDoc : info.getFilings()) {
-        long bytes = filingDoc.allAttachmentsLength();
-        if (bytes > maxSize) {
-          FilingError err =
-              FilingError.malformedInterview(
-                  "Document "
-                      + filingDoc
-                          .getDescription()
-                          .map(d -> d.get())
-                          .orElse(filingDoc.getFilingComments())
-                      + " is too big! Must be max "
-                      + maxSize
-                      + ", is "
-                      + bytes);
-          collector.error(err);
-        }
-        cumulativeBytes += bytes;
+      var docs = tylerSerializer.vetFilingDocSize(info.getFilings(), maxEach, maxTotal, collector);
+      for (FilingDoc filingDoc : docs) {
+        FilingCode fc = allCodes.filings.get(filingDoc.seqNum());
 
-        FilingCode fc = allCodes.filings.get(seqNum);
-
-        collector.pushAttributeStack("al_court_bundle[" + seqNum + "]");
-        JAXBElement<DocumentType> result =
+        collector.pushAttributeStack("al_court_bundle[" + filingDoc.seqNum() + "]");
+        DocumentType result =
             serializer.filingDocToXml(
                 filingDoc,
-                seqNum,
                 isInitialFiling,
                 allCodes.cat,
                 allCodes.type,
@@ -397,26 +356,14 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                 info.getMiscInfo(),
                 collector);
         collector.popAttributeStack();
-        filingIdToObj.put(filingDoc.getIdString(), result.getValue());
-        if (filingDoc.isLead()) {
-          cfm.getFilingLeadDocument().add(result);
+        filingIdToObj.put(filingDoc.getIdString(), result);
+        // the 0th doc is the Lead doc by default
+        if (filingDoc.seqNum() == 0) {
+          cfm.getFilingLeadDocument().add(tylerObjFac.createFilingLeadDocument(result));
         } else {
-          cfm.getFilingConnectedDocument().add(result);
+          cfm.getFilingConnectedDocument().add(tylerObjFac.createFilingConnectedDocument(result));
         }
-        seqNum += 1;
         log.info("Added a document to the XML");
-      }
-      MeasureType maxTotalDocSize =
-          policy.getDevelopmentPolicyParameters().getValue().getMaximumAllowedMessageSize();
-      long maxTotal = Ecf4Helper.sizeMeasureAsBytes(maxTotalDocSize);
-      if (cumulativeBytes > maxTotal) {
-        FilingError err =
-            FilingError.malformedInterview(
-                "All Documents combined are too big! Must be max"
-                    + maxSize
-                    + ", are "
-                    + cumulativeBytes);
-        collector.error(err);
       }
       EcfCaseTypeFactory.getCaseAugmentation(assembledCase.getValue())
           .ifPresent(
@@ -427,7 +374,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                             Collectors.toMap(f -> f.getIdString(), f -> f.getFilingPartyIds()));
                 for (var association :
                     ecfCaseFactory.lateStageFilingAssociationAdd(
-                        serializer, filingIdToObj, filingAssociations, pair.getRight())) {
+                        tylerSerializer, filingIdToObj, filingAssociations, pair.getRight())) {
                   aug.getFilingAssociation().add(association);
                 }
               });
@@ -524,12 +471,12 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     var wsOf =
         new oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
             .ObjectFactory();
-    PaymentMessageType pmt =
-        PaymentFactory.makePaymentMessage(info.getPaymentId(), this.jurisdiction);
     ReviewFilingRequestMessageType rfrm = wsOf.createReviewFilingRequestMessageType();
     rfrm.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
     rfrm.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     rfrm.setCoreFilingMessage(cfm);
+    PaymentMessageType pmt =
+        PaymentFactory.makePaymentMessage(info.getPaymentId(), this.jurisdiction);
     rfrm.setPaymentMessage(pmt);
 
     log.debug(Ecf4Helper.objectToXmlStrOrError(rfrm, ReviewFilingRequestMessageType.class));
@@ -686,6 +633,9 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       String submitterId,
       java.time.LocalDate startDate,
       java.time.LocalDate beforeDate,
+      String caseNumber,
+      String envelopeNumber,
+      String filingStatus,
       String apiToken) {
     try {
       List<String> courtIds = getAllLocations();
@@ -695,6 +645,13 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     } catch (SQLException ex) {
       log.error("Couldn't connect to database?" + ex);
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
+    }
+
+    if ((caseNumber != null && !caseNumber.isBlank())
+        || (envelopeNumber != null && !envelopeNumber.isBlank())
+        || (filingStatus != null && !filingStatus.isBlank())) {
+      log.warn(
+          "Case number, envelope number, and filing status aren't supported on ECFv4, only ECFv5");
     }
     log.info(
         "Getting filing list with these params: "
@@ -897,7 +854,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   private Optional<FilingReviewMDEPort> setupFilingPort(String apiToken) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
     if (creds.isEmpty()) {
       return Optional.empty();
     }
@@ -910,7 +868,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   private Optional<ServiceMDEPort> setupServicePort(String apiToken) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
     if (creds.isEmpty()) {
       return Optional.empty();
     }
@@ -923,7 +882,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   private Optional<CourtRecordMDEPort> setupRecordPort(String apiToken) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
     if (creds.isEmpty()) {
       return Optional.empty();
     }

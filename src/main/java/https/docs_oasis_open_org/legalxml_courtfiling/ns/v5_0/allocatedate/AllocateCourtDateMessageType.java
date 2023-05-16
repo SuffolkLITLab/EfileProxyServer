@@ -15,7 +15,7 @@ import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import tyler.ecf.v5_0.extensions.common.AllocateCourtDateAugmentationType;
+import tyler.ecf.v5_0.extensions.common.FilingMessageAugmentationType;
 
 
 /**
@@ -30,9 +30,9 @@ import tyler.ecf.v5_0.extensions.common.AllocateCourtDateAugmentationType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseFilingType"&gt;
  *       &lt;sequence&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/allocatedate}AllocateCourtDateMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Case" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:ietf:params:xml:ns:icalendar-2.0}icalendar" minOccurs="0"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/allocatedate}AllocateCourtDateMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -44,20 +44,50 @@ import tyler.ecf.v5_0.extensions.common.AllocateCourtDateAugmentationType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AllocateCourtDateMessageType", propOrder = {
+    "allocateCourtDateMessageAugmentationPoint",
     "_case",
-    "icalendar",
-    "allocateCourtDateMessageAugmentationPoint"
+    "icalendar"
 })
 public class AllocateCourtDateMessageType
     extends CaseFilingType
 {
 
+    @XmlElementRef(name = "AllocateCourtDateMessageAugmentationPoint", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/allocatedate", type = JAXBElement.class, required = false)
+    protected List<JAXBElement<?>> allocateCourtDateMessageAugmentationPoint;
     @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
     protected JAXBElement<? extends CaseType> _case;
     @XmlElement(namespace = "urn:ietf:params:xml:ns:icalendar-2.0")
     protected IcalendarType icalendar;
-    @XmlElementRef(name = "AllocateCourtDateMessageAugmentationPoint", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/allocatedate", type = JAXBElement.class, required = false)
-    protected List<JAXBElement<?>> allocateCourtDateMessageAugmentationPoint;
+
+    /**
+     * Gets the value of the allocateCourtDateMessageAugmentationPoint property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the allocateCourtDateMessageAugmentationPoint property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getAllocateCourtDateMessageAugmentationPoint().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link JAXBElement }{@code <}{@link FilingMessageAugmentationType }{@code >}
+     * 
+     * 
+     */
+    public List<JAXBElement<?>> getAllocateCourtDateMessageAugmentationPoint() {
+        if (allocateCourtDateMessageAugmentationPoint == null) {
+            allocateCourtDateMessageAugmentationPoint = new ArrayList<JAXBElement<?>>();
+        }
+        return this.allocateCourtDateMessageAugmentationPoint;
+    }
 
     /**
      * Gets the value of the case property.
@@ -107,36 +137,6 @@ public class AllocateCourtDateMessageType
      */
     public void setIcalendar(IcalendarType value) {
         this.icalendar = value;
-    }
-
-    /**
-     * Gets the value of the allocateCourtDateMessageAugmentationPoint property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a <CODE>set</CODE> method for the allocateCourtDateMessageAugmentationPoint property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getAllocateCourtDateMessageAugmentationPoint().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * {@link JAXBElement }{@code <}{@link AllocateCourtDateAugmentationType }{@code >}
-     * 
-     * 
-     */
-    public List<JAXBElement<?>> getAllocateCourtDateMessageAugmentationPoint() {
-        if (allocateCourtDateMessageAugmentationPoint == null) {
-            allocateCourtDateMessageAugmentationPoint = new ArrayList<JAXBElement<?>>();
-        }
-        return this.allocateCourtDateMessageAugmentationPoint;
     }
 
     /**

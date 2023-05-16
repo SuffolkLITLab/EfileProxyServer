@@ -6,21 +6,28 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AdditionalStreetNameType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AgencyNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AliasNameType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BirthplaceNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BlockNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BrandNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BuildingNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CategoryNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CityNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CitySubdivisionNameType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ContractNameType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.EconomicOperatorGroupNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FamilyNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FileNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FirstNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.HolderNameType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MeterNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MiddleNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ModelNameType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OtherNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RegistrationNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RetailEventNameType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RoamingPartnerNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ServiceNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.StreetNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TechnicalNameType;
@@ -49,7 +56,7 @@ import un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.Tex
  * </pre>
  * 
  * <pre>
- * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;A character string that consititues the distinctive designation of a person, place, thing or concept.&lt;/ccts:Definition&gt;
+ * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;A character string that constitutes the distinctive designation of a person, place, thing or concept.&lt;/ccts:Definition&gt;
  * </pre>
  * 
  * <pre>
@@ -80,22 +87,29 @@ import un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.Tex
 @XmlType(name = "NameType")
 @XmlSeeAlso({
     AdditionalStreetNameType.class,
+    AgencyNameType.class,
     AliasNameType.class,
+    BirthplaceNameType.class,
     BlockNameType.class,
     BrandNameType.class,
     BuildingNameType.class,
     CategoryNameType.class,
     CityNameType.class,
     CitySubdivisionNameType.class,
+    ContractNameType.class,
+    EconomicOperatorGroupNameType.class,
     FamilyNameType.class,
     FileNameType.class,
     FirstNameType.class,
     HolderNameType.class,
+    MeterNameType.class,
     MiddleNameType.class,
     ModelNameType.class,
     oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.NameType.class,
+    OtherNameType.class,
     RegistrationNameType.class,
     RetailEventNameType.class,
+    RoamingPartnerNameType.class,
     ServiceNameType.class,
     StreetNameType.class,
     TechnicalNameType.class,

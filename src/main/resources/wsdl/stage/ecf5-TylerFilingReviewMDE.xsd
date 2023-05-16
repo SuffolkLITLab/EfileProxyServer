@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="urn:tyler:ecf:v5.0:extensions:TylerFilingReviewMDE" xmlns:wrappers="urn:tyler:ecf:v5.0:extensions:wrappers" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsrmp="http://docs.oasis-open.org/ws-rx/wsrmp/200702" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:tyler:ecf:v5.0:extensions:TylerFilingReviewMDE">
+	<wsp:UsingPolicy wsdl:required="true"/>
+	<wsp:Policy wsu:Id="MyPolicy">
+		<wsp:ExactlyOne>
+			<wsp:All>
+				<wsoma:OptimizedMimeSerialization xmlns:wsoma="http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization"/>
+				<sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:TransportToken>
+							<wsp:Policy>
+								<sp:HttpsToken RequireClientCertificate="false"/>
+							</wsp:Policy>
+						</sp:TransportToken>
+						<sp:AlgorithmSuite>
+							<wsp:Policy>
+								<sp:Basic256/>
+							</wsp:Policy>
+						</sp:AlgorithmSuite>
+						<sp:Layout>
+							<wsp:Policy>
+								<sp:Lax/>
+							</wsp:Policy>
+						</sp:Layout>
+						<sp:IncludeTimestamp/>
+					</wsp:Policy>
+				</sp:TransportBinding>
+				<sp:EndorsingSupportingTokens xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:X509Token sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+							<wsp:Policy>
+								<sp:WssX509V3Token10/>
+							</wsp:Policy>
+						</sp:X509Token>
+					</wsp:Policy>
+				</sp:EndorsingSupportingTokens>
+				<sp:Wss10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:MustSupportRefKeyIdentifier/>
+						<sp:MustSupportRefIssuerSerial/>
+					</wsp:Policy>
+				</sp:Wss10>
+			</wsp:All>
+		</wsp:ExactlyOne>
+	</wsp:Policy>
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="urn:tyler:ecf:v5.0:extensions:wrappers" schemaLocation="ecf5-full-602d09642dfaa9bc.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	
+	<!-- messages -->
+	<message name="GetBatchListRequest">
+		<part element="wrappers:GetBatchListRequest" name="body"/>
+	</message>
+	<message name="GetBatchListResponse">
+		<part element="wrappers:GetBatchListResponse" name="body"/>		
+	</message>
+	
+	<message name="GetBatchDetailRequest">
+		<part element="wrappers:GetBatchDetailRequest" name="body"/>
+	</message>	
+	<message name="GetBatchDetailResponse">
+		<part element="wrappers:GetBatchDetailResponse" name="body"/>
+	</message>
+	
+	<message name="GetFilingServiceRequest">
+		<part element="wrappers:GetFilingServiceRequest" name="body"/>
+	</message>
+	<message name="GetFilingServiceResponse">
+		<part element="wrappers:GetFilingServiceResponse" name="body"/>
+	</message>
+	
+	<message name="GetServiceTypesRequest">
+		<part element="wrappers:GetServiceTypesRequest" name="body"/>
+	</message>
+	<message name="GetServiceTypesResponse">
+		<part element="wrappers:GetServiceTypesResponse" name="body"/>
+	</message>
+	
+	<!-- ports -->
+	<portType name="TylerFilingReviewMDE">				
+		<operation name="GetBatchList">
+			<input message="tns:GetBatchListRequest"/>
+			<output message="tns:GetBatchListResponse"/>
+		</operation>
+		
+		<operation name="GetBatchDetail">
+			<input message="tns:GetBatchDetailRequest"/>
+			<output message="tns:GetBatchDetailResponse"/>
+		</operation>
+		
+		<operation name="GetFilingService">
+			<input message="tns:GetFilingServiceRequest"/>
+			<output message="tns:GetFilingServiceResponse"/>
+		</operation>
+		
+		<operation name="GetServiceTypes">
+			<input message="tns:GetServiceTypesRequest"/>
+			<output message="tns:GetServiceTypesResponse"/>
+		</operation>
+	</portType>
+	
+	<!-- bindings -->
+	<binding name="TylerFilingReviewMDESoap" type="tns:TylerFilingReviewMDE">
+		<wsp:PolicyReference URI="#MyPolicy"/>
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="GetBatchList">
+			<!-- An operation to get a list of batches for a criteria -->
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerFilingReviewMDE/GetBatchList"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		
+		<operation name="GetBatchDetail">
+			<!-- An operation to get details for a batch -->
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerFilingReviewMDE/GetBatchDetail"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		
+		<operation name="GetFilingService">
+			<!-- An operation to get smtp logs for a service contact -->
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerFilingReviewMDE/GetFilingService"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		
+		<operation name="GetServiceTypes">
+			<!-- An operation to get service types -->
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerFilingReviewMDE/GetServiceTypes"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+</definitions>

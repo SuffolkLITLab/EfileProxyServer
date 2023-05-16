@@ -7,19 +7,26 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BudgetYearNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CalculationSequenceNumericType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ExpectedValueNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FrozenPeriodDaysNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LineCountNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LineNumberNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumCopiesNumericType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumLotsAwardedNumericType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumLotsSubmittedNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumNumberNumericType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumOriginalsNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumPaymentInstructionsNumericType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumValueNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MinimumNumberNumericType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MinimumValueNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MultiplierFactorNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OrderIntervalDaysNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OrderQuantityIncrementNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PackSizeNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReminderSequenceNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ResidentOccupantsNumericType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ResponseNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SequenceNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.WeightNumericType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -77,19 +84,26 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlSeeAlso({
     BudgetYearNumericType.class,
     CalculationSequenceNumericType.class,
+    ExpectedValueNumericType.class,
     FrozenPeriodDaysNumericType.class,
     LineCountNumericType.class,
     LineNumberNumericType.class,
     MaximumCopiesNumericType.class,
+    MaximumLotsAwardedNumericType.class,
+    MaximumLotsSubmittedNumericType.class,
     MaximumNumberNumericType.class,
+    MaximumOriginalsNumericType.class,
     MaximumPaymentInstructionsNumericType.class,
+    MaximumValueNumericType.class,
     MinimumNumberNumericType.class,
+    MinimumValueNumericType.class,
     MultiplierFactorNumericType.class,
     OrderIntervalDaysNumericType.class,
     OrderQuantityIncrementNumericType.class,
     PackSizeNumericType.class,
     ReminderSequenceNumericType.class,
     ResidentOccupantsNumericType.class,
+    ResponseNumericType.class,
     SequenceNumericType.class,
     WeightNumericType.class
 })

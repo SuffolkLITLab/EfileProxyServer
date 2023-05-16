@@ -27,10 +27,10 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://release.niem.gov/niem/structures/4.0/}ObjectType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/biometrics/4.0/}BiometricClassification"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/biometrics/4.0/}BiometricDetailAbstract" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/biometrics/4.0/}BiometricImageAbstract" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/biometrics/4.0/}BiometricCapturer" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/biometrics/4.1/}BiometricClassification"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/biometrics/4.1/}BiometricDetailAbstract" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/biometrics/4.1/}BiometricImageAbstract" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/biometrics/4.1/}BiometricCapturer" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -53,9 +53,9 @@ public class BiometricDataType
 
     @XmlElement(name = "BiometricClassification", required = true)
     protected BiometricClassificationType biometricClassification;
-    @XmlElementRef(name = "BiometricDetailAbstract", namespace = "http://release.niem.gov/niem/domains/biometrics/4.0/", type = JAXBElement.class, required = false)
+    @XmlElementRef(name = "BiometricDetailAbstract", namespace = "http://release.niem.gov/niem/domains/biometrics/4.1/", type = JAXBElement.class, required = false)
     protected List<JAXBElement<?>> biometricDetailAbstract;
-    @XmlElementRef(name = "BiometricImageAbstract", namespace = "http://release.niem.gov/niem/domains/biometrics/4.0/", type = JAXBElement.class, required = false)
+    @XmlElementRef(name = "BiometricImageAbstract", namespace = "http://release.niem.gov/niem/domains/biometrics/4.1/", type = JAXBElement.class, required = false)
     protected List<JAXBElement<?>> biometricImageAbstract;
     @XmlElement(name = "BiometricCapturer")
     protected EntityType biometricCapturer;

@@ -18,6 +18,7 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.common.FilingAssociationType;
 
 
 /**
@@ -47,6 +48,12 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "associationDescriptionText"
 })
 @XmlSeeAlso({
+    FilingAssociationType.class,
+    ViolatedStatuteAssociationType.class,
+    OffenseChargeAssociationType.class,
+    OffenseLocationAssociationType.class,
+    PersonChargeAssociationType.class,
+    PersonBloodAlcoholContentAssociationType.class,
     JuvenilePlacementFacilityAssociationType.class,
     JuvenilePlacementPersonAssociationType.class,
     ParentChildAssociationType.class,
@@ -57,11 +64,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     PersonOrganizationAssociationType.class,
     PersonAssociationType.class,
     RelatedActivityAssociationType.class,
-    ViolatedStatuteAssociationType.class,
-    OffenseChargeAssociationType.class,
-    OffenseLocationAssociationType.class,
-    PersonChargeAssociationType.class,
-    PersonBloodAlcoholContentAssociationType.class,
     PersonCaseAssociationType.class
 })
 public class AssociationType

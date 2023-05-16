@@ -40,6 +40,7 @@ public class CourtsOnlyCodesService extends CodesService {
       return cors(
           Response.ok(
               courts.entrySet().stream()
+                  .sorted()
                   .map(e -> new NameAndCode(e.getValue(), e.getKey()))
                   .collect(Collectors.toList())));
     } else {

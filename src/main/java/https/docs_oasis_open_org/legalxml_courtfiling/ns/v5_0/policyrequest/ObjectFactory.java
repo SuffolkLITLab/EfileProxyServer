@@ -26,6 +26,7 @@ public class ObjectFactory {
 
     private final static QName _GetPolicyRequestMessage_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyrequest", "GetPolicyRequestMessage");
     private final static QName _GetPolicyRequestMessageAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyrequest", "GetPolicyRequestMessageAugmentationPoint");
+    private final static QName _PolicyQueryCriteria_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyrequest", "PolicyQueryCriteria");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyrequest
@@ -40,6 +41,14 @@ public class ObjectFactory {
      */
     public GetPolicyRequestMessageType createGetPolicyRequestMessageType() {
         return new GetPolicyRequestMessageType();
+    }
+
+    /**
+     * Create an instance of {@link PolicyQueryCriteriaType }
+     * 
+     */
+    public PolicyQueryCriteriaType createPolicyQueryCriteriaType() {
+        return new PolicyQueryCriteriaType();
     }
 
     /**
@@ -66,6 +75,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyrequest", name = "GetPolicyRequestMessageAugmentationPoint")
     public JAXBElement<Object> createGetPolicyRequestMessageAugmentationPoint(Object value) {
         return new JAXBElement<Object>(_GetPolicyRequestMessageAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PolicyQueryCriteriaType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PolicyQueryCriteriaType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyrequest", name = "PolicyQueryCriteria")
+    public JAXBElement<PolicyQueryCriteriaType> createPolicyQueryCriteria(PolicyQueryCriteriaType value) {
+        return new JAXBElement<PolicyQueryCriteriaType>(_PolicyQueryCriteria_QNAME, PolicyQueryCriteriaType.class, null, value);
     }
 
 }

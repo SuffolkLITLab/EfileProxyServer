@@ -4,12 +4,15 @@ package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filingstatusreque
 import java.util.ArrayList;
 import java.util.List;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.RequestMessageType;
+import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.common.GetFilingStatusRequestMessageAugmentationType;
 
 
 /**
@@ -24,7 +27,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}RequestMessageType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}CaseTrackingID" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filingstatusrequest}FilingStatusQueryCriteria"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filingstatusrequest}GetFilingStatusRequestMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
@@ -37,40 +40,40 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetFilingStatusRequestMessageType", propOrder = {
-    "caseTrackingID",
+    "filingStatusQueryCriteria",
     "getFilingStatusRequestMessageAugmentationPoint"
 })
 public class GetFilingStatusRequestMessageType
     extends RequestMessageType
 {
 
-    @XmlElement(name = "CaseTrackingID", namespace = "http://release.niem.gov/niem/niem-core/4.0/")
-    protected gov.niem.release.niem.proxy.xsd._4.String caseTrackingID;
-    @XmlElement(name = "GetFilingStatusRequestMessageAugmentationPoint")
-    protected List<Object> getFilingStatusRequestMessageAugmentationPoint;
+    @XmlElement(name = "FilingStatusQueryCriteria", required = true)
+    protected FilingStatusQueryCriteriaType filingStatusQueryCriteria;
+    @XmlElementRef(name = "GetFilingStatusRequestMessageAugmentationPoint", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filingstatusrequest", type = JAXBElement.class, required = false)
+    protected List<JAXBElement<?>> getFilingStatusRequestMessageAugmentationPoint;
 
     /**
-     * Gets the value of the caseTrackingID property.
+     * Gets the value of the filingStatusQueryCriteria property.
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link FilingStatusQueryCriteriaType }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getCaseTrackingID() {
-        return caseTrackingID;
+    public FilingStatusQueryCriteriaType getFilingStatusQueryCriteria() {
+        return filingStatusQueryCriteria;
     }
 
     /**
-     * Sets the value of the caseTrackingID property.
+     * Sets the value of the filingStatusQueryCriteria property.
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link FilingStatusQueryCriteriaType }
      *     
      */
-    public void setCaseTrackingID(gov.niem.release.niem.proxy.xsd._4.String value) {
-        this.caseTrackingID = value;
+    public void setFilingStatusQueryCriteria(FilingStatusQueryCriteriaType value) {
+        this.filingStatusQueryCriteria = value;
     }
 
     /**
@@ -91,13 +94,14 @@ public class GetFilingStatusRequestMessageType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Object }
+     * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link JAXBElement }{@code <}{@link GetFilingStatusRequestMessageAugmentationType }{@code >}
      * 
      * 
      */
-    public List<Object> getGetFilingStatusRequestMessageAugmentationPoint() {
+    public List<JAXBElement<?>> getGetFilingStatusRequestMessageAugmentationPoint() {
         if (getFilingStatusRequestMessageAugmentationPoint == null) {
-            getFilingStatusRequestMessageAugmentationPoint = new ArrayList<Object>();
+            getFilingStatusRequestMessageAugmentationPoint = new ArrayList<JAXBElement<?>>();
         }
         return this.getFilingStatusRequestMessageAugmentationPoint;
     }
@@ -108,7 +112,7 @@ public class GetFilingStatusRequestMessageType
      * 
      */
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
     }
 

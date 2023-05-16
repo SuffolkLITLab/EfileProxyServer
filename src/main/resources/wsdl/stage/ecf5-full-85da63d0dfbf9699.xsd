@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="no"?><!-- edited with XMLSpy v2018 sp1 (x64) (http://www.altova.com) by Tyler Technologies (Tyler Technologies) --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:tyler:ecf:v5.0:extensions:massachusetts" xmlns:clsa="http://reference.niem.gov/niem/specification/code-lists/1.0/code-lists-schema-appinfo/" xmlns:common="urn:tyler:ecf:v5.0:extensions:common" xmlns:ct="http://release.niem.gov/niem/conformanceTargets/3.0/" xmlns:ecf="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" xmlns:j="http://release.niem.gov/niem/domains/jxdm/6.1/" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" xmlns:niem-xs="http://release.niem.gov/niem/proxy/xsd/4.0/" xmlns:structures="http://release.niem.gov/niem/structures/4.0/" xmlns:term="http://release.niem.gov/niem/localTerminology/3.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" ct:conformanceTargets="http://reference.niem.gov/niem/specification/naming-and-design-rules/3.0/#ExtensionSchemaDocument http://reference.niem.gov/niem/specification/code-lists/1.0/#SchemaDocument" elementFormDefault="qualified" targetNamespace="urn:tyler:ecf:v5.0:extensions:massachusetts" version="5.0">
+	<xs:annotation>
+		<xs:documentation> Schema for namespace urn:tyler:ecf:v5.0:extensions:massachusetts</xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="urn:tyler:ecf:v5.0:extensions:common" schemaLocation="ecf5-full-90b994a1b7805590.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" schemaLocation="ecf5-full-ea1e0f75b69752b5.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/niem-core/4.0/" schemaLocation="ecf5-full-7af13829a6695741.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/structures/4.0/" schemaLocation="ecf5-full-43381e9aa490c46d.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/proxy/xsd/4.0/" schemaLocation="ecf5-full-4d179e3e0bd140a9.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/domains/jxdm/6.1/" schemaLocation="ecf5-full-3fca6aa6e33300e4.xsd"/>
+	
+	<xs:complexType name="CaseAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element ref="Component1"/>
+					<xs:element ref="Component2"/>
+					<xs:element ref="Component3"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Component1Type">
+		<xs:sequence>
+			<xs:element ref="common:PartyReference"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Component2Type">
+		<xs:sequence>
+			<xs:element ref="ecf:EntityAssociationTypeCode"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Component3Type">
+		<xs:sequence>
+			<xs:element ref="common:PartyReference"/>
+			<xs:element ref="IsCaseParty"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:element name="Component1" type="Component1Type"/>
+	<xs:element name="Component2" type="Component2Type"/>
+	<xs:element name="Component3" type="Component3Type"/>
+	<xs:element name="IsCaseParty" type="niem-xs:boolean"/>
+	<xs:element name="CaseAugmentation" substitutionGroup="nc:CaseAugmentationPoint" type="CaseAugmentationType"/>
+</xs:schema>

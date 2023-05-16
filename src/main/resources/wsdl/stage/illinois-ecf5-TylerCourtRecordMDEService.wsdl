@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions targetNamespace="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE" xmlns:wsmp="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+	<import namespace="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE" location="ecf5-TylerCourtRecordMDE.xsd"/>
+	<import location="ecf5-full-5af175c0454ab847.xsd" namespace="urn:tyler:ecf:v5.0:extensions:criminal"/>
+	<import location="ecf5-full-85da63d0dfbf9699.xsd" namespace="urn:tyler:ecf:v5.0:extensions:massachusetts"/>
+	<import location="ecf5-full-f80a207221f28385.xsd" namespace="urn:tyler:ecf:v5.0:extensions:taxdelinquency"/>
+	<import location="ecf5-full-domestic.xsd" namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/domestic"/>
+	<import location="ecf5-full-appellate.xsd" namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/appellate"/>
+	<import location="ecf5-full-43e22a9b317738fe.xsd" namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/civil"/>
+
+	<service name="TylerCourtRecordMDEService">
+		<port name="TTylerCourtRecordMDE" binding="wsmp:TylerCourtRecordMDESoap">
+			<soap:address location="https://illinois-stage.tylertech.cloud/efm/v5/tylercourtrecordservice.svc"/>
+		</port>
+	</service>
+</definitions>

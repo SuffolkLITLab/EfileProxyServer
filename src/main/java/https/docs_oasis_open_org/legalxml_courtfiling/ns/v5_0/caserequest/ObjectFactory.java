@@ -27,12 +27,12 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _GetCaseRequestMessageAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest", "GetCaseRequestMessageAugmentationPoint");
     private final static QName _CalendarEventTimeRange_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest", "CalendarEventTimeRange");
     private final static QName _CaseQueryCriteria_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest", "CaseQueryCriteria");
     private final static QName _DocketEntryTimeRange_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest", "DocketEntryTimeRange");
     private final static QName _DocketEntryTypeCodeFilterText_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest", "DocketEntryTypeCodeFilterText");
     private final static QName _GetCaseRequestMessage_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest", "GetCaseRequestMessage");
-    private final static QName _GetCaseRequestMessageAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest", "GetCaseRequestMessageAugmentationPoint");
     private final static QName _IncludeCalendarEventIndicator_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest", "IncludeCalendarEventIndicator");
     private final static QName _IncludeDocketEntryIndicator_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest", "IncludeDocketEntryIndicator");
     private final static QName _IncludeParticipantsIndicator_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest", "IncludeParticipantsIndicator");
@@ -58,6 +58,19 @@ public class ObjectFactory {
      */
     public GetCaseRequestMessageType createGetCaseRequestMessageType() {
         return new GetCaseRequestMessageType();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest", name = "GetCaseRequestMessageAugmentationPoint")
+    public JAXBElement<Object> createGetCaseRequestMessageAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_GetCaseRequestMessageAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**
@@ -123,19 +136,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest", name = "GetCaseRequestMessage")
     public JAXBElement<GetCaseRequestMessageType> createGetCaseRequestMessage(GetCaseRequestMessageType value) {
         return new JAXBElement<GetCaseRequestMessageType>(_GetCaseRequestMessage_QNAME, GetCaseRequestMessageType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest", name = "GetCaseRequestMessageAugmentationPoint")
-    public JAXBElement<Object> createGetCaseRequestMessageAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_GetCaseRequestMessageAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**

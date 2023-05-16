@@ -38,6 +38,9 @@ public interface EfmFilingInterface {
       String submitterId,
       LocalDate startDate,
       LocalDate beforeDate,
+      String caseNumber,
+      String envelopeNumber,
+      String filingStatus,
       String apiToken);
 
   public Response getFilingStatus(String courtId, String filingId, String apiToken);

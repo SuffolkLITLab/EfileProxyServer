@@ -1,12 +1,13 @@
 
 package gov.niem.release.niem.niem_core._4;
 
+import gov.niem.release.niem.codes.unece_rec20._4.LengthCodeType;
+import gov.niem.release.niem.codes.unece_rec20._4.MassCodeType;
 import gov.niem.release.niem.proxy.xsd._4.Decimal;
 import gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
@@ -43,9 +44,9 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "measureUnitAbstract"
 })
 @XmlSeeAlso({
+    SpeedMeasureType.class,
     LengthMeasureType.class,
-    WeightMeasureType.class,
-    SpeedMeasureType.class
+    WeightMeasureType.class
 })
 public class MeasureType
     extends ObjectType
@@ -53,8 +54,8 @@ public class MeasureType
 
     @XmlElementRef(name = "MeasureValueAbstract", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class)
     protected JAXBElement<?> measureValueAbstract;
-    @XmlElement(name = "MeasureUnitAbstract")
-    protected Object measureUnitAbstract;
+    @XmlElementRef(name = "MeasureUnitAbstract", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
+    protected JAXBElement<?> measureUnitAbstract;
 
     /**
      * Gets the value of the measureValueAbstract property.
@@ -89,10 +90,12 @@ public class MeasureType
      * 
      * @return
      *     possible object is
-     *     {@link Object }
+     *     {@link JAXBElement }{@code <}{@link LengthCodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link MassCodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
-    public Object getMeasureUnitAbstract() {
+    public JAXBElement<?> getMeasureUnitAbstract() {
         return measureUnitAbstract;
     }
 
@@ -101,10 +104,12 @@ public class MeasureType
      * 
      * @param value
      *     allowed object is
-     *     {@link Object }
+     *     {@link JAXBElement }{@code <}{@link LengthCodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link MassCodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
-    public void setMeasureUnitAbstract(Object value) {
+    public void setMeasureUnitAbstract(JAXBElement<?> value) {
         this.measureUnitAbstract = value;
     }
 

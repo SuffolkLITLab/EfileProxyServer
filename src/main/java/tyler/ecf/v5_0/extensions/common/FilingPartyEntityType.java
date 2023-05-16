@@ -38,7 +38,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 public class FilingPartyEntityType {
 
     @XmlElement(name = "PartyReference")
-    protected FilingReferenceType partyReference;
+    protected ReferenceType partyReference;
     @XmlElement(name = "PartyIdentification")
     protected IdentificationType partyIdentification;
 
@@ -47,10 +47,10 @@ public class FilingPartyEntityType {
      * 
      * @return
      *     possible object is
-     *     {@link FilingReferenceType }
+     *     {@link ReferenceType }
      *     
      */
-    public FilingReferenceType getPartyReference() {
+    public ReferenceType getPartyReference() {
         return partyReference;
     }
 
@@ -59,10 +59,10 @@ public class FilingPartyEntityType {
      * 
      * @param value
      *     allowed object is
-     *     {@link FilingReferenceType }
+     *     {@link ReferenceType }
      *     
      */
-    public void setPartyReference(FilingReferenceType value) {
+    public void setPartyReference(ReferenceType value) {
         this.partyReference = value;
     }
 

@@ -7,16 +7,12 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import gov.niem.release.niem.domains.jxdm._6.IncidentAugmentationType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseOfficialAugmentationType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentAssociationAugmentationType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentAugmentationType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ItemAugmentationType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.MessageStatusAugmentationType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.OrganizationAssociationAugmentationType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAssociationAugmentationType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonOrganizationAssociationAugmentationType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.RelatedActivityAssociationAugmentationType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ReviewedDocumentAugmentationType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.SignatureAugmentationType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.SubjectAugmentationType;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -32,8 +28,31 @@ import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import tyler.ecf.v5_0.extensions.common.AllocateCourtDateAugmentationType;
-import tyler.ecf.v5_0.extensions.common.ReserveDateAugmentationType;
+import tyler.ecf.v5_0.extensions.common.AddressAugmentationType;
+import tyler.ecf.v5_0.extensions.common.AttachmentAugmentationType;
+import tyler.ecf.v5_0.extensions.common.CaseJudgeAugmentationType;
+import tyler.ecf.v5_0.extensions.common.CaseListQueryCriteriaAugmentationType;
+import tyler.ecf.v5_0.extensions.common.DocumentSecurityAugmentationType;
+import tyler.ecf.v5_0.extensions.common.ElectronicServiceAugmentationType;
+import tyler.ecf.v5_0.extensions.common.FilerAugmentationType;
+import tyler.ecf.v5_0.extensions.common.FilingListQueryCriteriaAugmentationType;
+import tyler.ecf.v5_0.extensions.common.FilingMessageAugmentationType;
+import tyler.ecf.v5_0.extensions.common.FilingStatusAugmentationType;
+import tyler.ecf.v5_0.extensions.common.GetCaseListRequestMessageAugmentationType;
+import tyler.ecf.v5_0.extensions.common.GetCaseRequestAugmentationType;
+import tyler.ecf.v5_0.extensions.common.GetFilingStatusRequestMessageAugmentationType;
+import tyler.ecf.v5_0.extensions.common.GetPolicyResponseMessageAugmentationType;
+import tyler.ecf.v5_0.extensions.common.MatchingFilingAugmentationType;
+import tyler.ecf.v5_0.extensions.common.NotifyDocketingCompleteMessageAugmentationType;
+import tyler.ecf.v5_0.extensions.common.PagingAugmentationType;
+import tyler.ecf.v5_0.extensions.common.PhysicalFeatureAugmentationType;
+import tyler.ecf.v5_0.extensions.common.SchedulingAugmentationType;
+import tyler.ecf.v5_0.extensions.common.StatusDocumentAugmentationType;
+import tyler.ecf.v5_0.extensions.common.VehicleAugmentationType;
+import tyler.ecf.v5_0.extensions.criminal.ChargeAugmentationType;
+import tyler.ecf.v5_0.extensions.criminal.CitationAugmentationType;
+import tyler.ecf.v5_0.extensions.criminal.DispositionAugmentationType;
+import tyler.ecf.v5_0.extensions.criminal.StatuteAugmentationType;
 
 
 /**
@@ -60,31 +79,64 @@ import tyler.ecf.v5_0.extensions.common.ReserveDateAugmentationType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AugmentationType")
 @XmlSeeAlso({
+    AddressAugmentationType.class,
+    AttachmentAugmentationType.class,
+    tyler.ecf.v5_0.extensions.common.CaseAugmentationType.class,
+    CaseJudgeAugmentationType.class,
+    CaseListQueryCriteriaAugmentationType.class,
+    tyler.ecf.v5_0.extensions.common.CaseOfficialAugmentationType.class,
+    tyler.ecf.v5_0.extensions.common.CourtEventAugmentationType.class,
+    tyler.ecf.v5_0.extensions.common.DocumentAugmentationType.class,
+    DocumentSecurityAugmentationType.class,
+    ElectronicServiceAugmentationType.class,
+    FilerAugmentationType.class,
+    FilingListQueryCriteriaAugmentationType.class,
+    FilingStatusAugmentationType.class,
+    GetCaseListRequestMessageAugmentationType.class,
+    GetCaseRequestAugmentationType.class,
+    GetFilingStatusRequestMessageAugmentationType.class,
+    GetPolicyResponseMessageAugmentationType.class,
+    MatchingFilingAugmentationType.class,
+    tyler.ecf.v5_0.extensions.common.MessageStatusAugmentationType.class,
+    NotifyDocketingCompleteMessageAugmentationType.class,
+    tyler.ecf.v5_0.extensions.common.OrganizationAugmentationType.class,
+    PagingAugmentationType.class,
+    tyler.ecf.v5_0.extensions.common.PersonAugmentationType.class,
+    PhysicalFeatureAugmentationType.class,
+    FilingMessageAugmentationType.class,
+    tyler.ecf.v5_0.extensions.common.ReviewedDocumentAugmentationType.class,
+    SchedulingAugmentationType.class,
+    StatusDocumentAugmentationType.class,
+    VehicleAugmentationType.class,
     gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType.class,
     IncidentAugmentationType.class,
     gov.niem.release.niem.domains.jxdm._6.PersonAugmentationType.class,
     gov.niem.release.niem.domains.jxdm._6.OrganizationAugmentationType.class,
-    tyler.ecf.v5_0.extensions.common.CourtEventAugmentationType.class,
-    tyler.ecf.v5_0.extensions.common.CaseAugmentationType.class,
-    ReserveDateAugmentationType.class,
-    AllocateCourtDateAugmentationType.class,
     https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseAugmentationType.class,
-    CaseOfficialAugmentationType.class,
+    https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseOfficialAugmentationType.class,
     https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventAugmentationType.class,
     DocumentAssociationAugmentationType.class,
-    DocumentAugmentationType.class,
+    https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentAugmentationType.class,
     ItemAugmentationType.class,
-    MessageStatusAugmentationType.class,
+    https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.MessageStatusAugmentationType.class,
     OrganizationAssociationAugmentationType.class,
     https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.OrganizationAugmentationType.class,
     PersonAssociationAugmentationType.class,
     https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAugmentationType.class,
     PersonOrganizationAssociationAugmentationType.class,
     RelatedActivityAssociationAugmentationType.class,
-    ReviewedDocumentAugmentationType.class,
+    https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ReviewedDocumentAugmentationType.class,
     SignatureAugmentationType.class,
     SubjectAugmentationType.class,
-    https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.CaseAugmentationType.class
+    https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.CaseAugmentationType.class,
+    ChargeAugmentationType.class,
+    CitationAugmentationType.class,
+    DispositionAugmentationType.class,
+    StatuteAugmentationType.class,
+    https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.domestic.CaseAugmentationType.class,
+    https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.appellate.CaseAugmentationType.class,
+    tyler.ecf.v5_0.extensions.taxdelinquency.CaseAugmentationType.class,
+    tyler.ecf.v5_0.extensions.massachusetts.CaseAugmentationType.class
 })
 public abstract class AugmentationType {
 

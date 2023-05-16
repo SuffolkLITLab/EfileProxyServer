@@ -3,7 +3,6 @@ package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyrequest;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.proxy.xsd._4.NormalizedString;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.RequestMessageType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -25,8 +24,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}RequestMessageType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseTypeCode" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyrequest}GetPolicyRequestMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyrequest}PolicyQueryCriteria"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -38,41 +37,17 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetPolicyRequestMessageType", propOrder = {
-    "caseTypeCode",
-    "getPolicyRequestMessageAugmentationPoint"
+    "getPolicyRequestMessageAugmentationPoint",
+    "policyQueryCriteria"
 })
 public class GetPolicyRequestMessageType
     extends RequestMessageType
 {
 
-    @XmlElement(name = "CaseTypeCode", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf")
-    protected NormalizedString caseTypeCode;
     @XmlElement(name = "GetPolicyRequestMessageAugmentationPoint")
     protected List<Object> getPolicyRequestMessageAugmentationPoint;
-
-    /**
-     * Gets the value of the caseTypeCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link NormalizedString }
-     *     
-     */
-    public NormalizedString getCaseTypeCode() {
-        return caseTypeCode;
-    }
-
-    /**
-     * Sets the value of the caseTypeCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link NormalizedString }
-     *     
-     */
-    public void setCaseTypeCode(NormalizedString value) {
-        this.caseTypeCode = value;
-    }
+    @XmlElement(name = "PolicyQueryCriteria", required = true)
+    protected PolicyQueryCriteriaType policyQueryCriteria;
 
     /**
      * Gets the value of the getPolicyRequestMessageAugmentationPoint property.
@@ -101,6 +76,30 @@ public class GetPolicyRequestMessageType
             getPolicyRequestMessageAugmentationPoint = new ArrayList<Object>();
         }
         return this.getPolicyRequestMessageAugmentationPoint;
+    }
+
+    /**
+     * Gets the value of the policyQueryCriteria property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link PolicyQueryCriteriaType }
+     *     
+     */
+    public PolicyQueryCriteriaType getPolicyQueryCriteria() {
+        return policyQueryCriteria;
+    }
+
+    /**
+     * Sets the value of the policyQueryCriteria property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link PolicyQueryCriteriaType }
+     *     
+     */
+    public void setPolicyQueryCriteria(PolicyQueryCriteriaType value) {
+        this.policyQueryCriteria = value;
     }
 
     /**

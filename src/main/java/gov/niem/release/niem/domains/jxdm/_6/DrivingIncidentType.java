@@ -31,14 +31,14 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://release.niem.gov/niem/niem-core/4.0/}IncidentType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}DrivingAccidentSeverityAbstract" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}DrivingIncidentRecordedSpeedRateMeasure" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}DrivingIncidentHazMatAbstract" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}DrivingIncidentLaserDetectionIndicator" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}DrivingIncidentLegalSpeedRateMeasure" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}DrivingIncidentPassengerQuantityText" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}DrivingIncidentRadarDetectionIndicator" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}DrivingIncidentAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}DrivingAccidentSeverityAbstract" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}DrivingIncidentRecordedSpeedRateMeasure" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}DrivingIncidentHazMatAbstract" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}DrivingIncidentLaserDetectionIndicator" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}DrivingIncidentLegalSpeedRateMeasure" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}DrivingIncidentPassengerQuantityText" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}DrivingIncidentRadarDetectionIndicator" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}DrivingIncidentAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -63,11 +63,11 @@ public class DrivingIncidentType
     extends IncidentType
 {
 
-    @XmlElementRef(name = "DrivingAccidentSeverityAbstract", namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", type = JAXBElement.class, required = false)
+    @XmlElementRef(name = "DrivingAccidentSeverityAbstract", namespace = "http://release.niem.gov/niem/domains/jxdm/6.1/", type = JAXBElement.class, required = false)
     protected JAXBElement<?> drivingAccidentSeverityAbstract;
     @XmlElement(name = "DrivingIncidentRecordedSpeedRateMeasure")
     protected SpeedMeasureType drivingIncidentRecordedSpeedRateMeasure;
-    @XmlElementRef(name = "DrivingIncidentHazMatAbstract", namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", type = JAXBElement.class, required = false)
+    @XmlElementRef(name = "DrivingIncidentHazMatAbstract", namespace = "http://release.niem.gov/niem/domains/jxdm/6.1/", type = JAXBElement.class, required = false)
     protected JAXBElement<?> drivingIncidentHazMatAbstract;
     @XmlElement(name = "DrivingIncidentLaserDetectionIndicator")
     protected Boolean drivingIncidentLaserDetectionIndicator;

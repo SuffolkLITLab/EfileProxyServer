@@ -26,7 +26,7 @@ import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.IEfmFirmService;
 
 public class ServiceHelpers {
-  private static Logger log = LoggerFactory.getLogger(ServiceHelpers.class);
+  private static final Logger log = LoggerFactory.getLogger(ServiceHelpers.class);
 
   /**
    * One of the ways that you can communicate over ECF. For more information, see
@@ -70,19 +70,6 @@ public class ServiceHelpers {
 
     SERVICE_URL = EXTERNAL_URL + ASSEMBLY_PORT;
     REST_CALLBACK_URL = EXTERNAL_URL + "/filingreview/jurisdictions/%s/courts/%s/filing/status";
-  }
-
-  public static Optional<TylerUserNamePassword> userCredsFromAuthorization(
-      String userColonPassword) {
-    if (userColonPassword == null) {
-      return Optional.empty();
-    }
-    if (!userColonPassword.contains(":")) {
-      return Optional.empty();
-    }
-    String email = userColonPassword.split(":")[0];
-    String password = userColonPassword.split(":")[1];
-    return Optional.of(new TylerUserNamePassword(email, password));
   }
 
   /**
@@ -181,7 +168,8 @@ public class ServiceHelpers {
 
   public static Optional<IEfmFirmService> setupFirmPort(
       EfmFirmService firmFactory, String tylerToken) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds from " + tylerToken + "?");
       return Optional.empty();

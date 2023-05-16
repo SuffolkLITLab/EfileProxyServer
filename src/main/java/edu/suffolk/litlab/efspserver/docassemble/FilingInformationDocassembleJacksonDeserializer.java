@@ -425,10 +425,7 @@ public class FilingInformationDocassembleJacksonDeserializer
         collector.pushAttributeStack("al_court_bundle.elements[" + i + "]");
         Optional<FilingDoc> maybeDoc =
             FilingDocDocassembleJacksonDeserializer.fromNode(
-                elems.get(i),
-                varToPartyId,
-                i == 0, // the 0th doc is the Lead doc by default
-                collector);
+                elems.get(i), varToPartyId, filingDocs.size(), collector);
         collector.popAttributeStack();
         maybeDoc.ifPresent(
             doc -> {
@@ -444,6 +441,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
     if (clerkComments != null && clerkComments.isTextual()) {
       String filingComments = clerkComments.asText("");
+      // TODO(brycew): add envelope level comments here
       if (!filingDocs.isEmpty()) {
         filingDocs.get(0).setFilingComments(filingComments);
       }

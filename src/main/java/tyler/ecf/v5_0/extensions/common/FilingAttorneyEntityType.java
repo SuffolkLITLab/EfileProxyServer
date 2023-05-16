@@ -2,6 +2,7 @@
 package tyler.ecf.v5_0.extensions.common;
 
 import gov.niem.release.niem.niem_core._4.IdentificationType;
+import gov.niem.release.niem.niem_core._4.PersonType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -20,6 +21,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}RoleOfPerson" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:common}AttorneyReference" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:common}AttorneyIdentification" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
@@ -32,25 +34,52 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "FilingAttorneyEntityType", propOrder = {
+    "roleOfPerson",
     "attorneyReference",
     "attorneyIdentification"
 })
 public class FilingAttorneyEntityType {
 
+    @XmlElement(name = "RoleOfPerson", namespace = "http://release.niem.gov/niem/niem-core/4.0/", nillable = true)
+    protected PersonType roleOfPerson;
     @XmlElement(name = "AttorneyReference")
-    protected FilingReferenceType attorneyReference;
+    protected ReferenceType attorneyReference;
     @XmlElement(name = "AttorneyIdentification")
     protected IdentificationType attorneyIdentification;
+
+    /**
+     * Gets the value of the roleOfPerson property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link PersonType }
+     *     
+     */
+    public PersonType getRoleOfPerson() {
+        return roleOfPerson;
+    }
+
+    /**
+     * Sets the value of the roleOfPerson property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link PersonType }
+     *     
+     */
+    public void setRoleOfPerson(PersonType value) {
+        this.roleOfPerson = value;
+    }
 
     /**
      * Gets the value of the attorneyReference property.
      * 
      * @return
      *     possible object is
-     *     {@link FilingReferenceType }
+     *     {@link ReferenceType }
      *     
      */
-    public FilingReferenceType getAttorneyReference() {
+    public ReferenceType getAttorneyReference() {
         return attorneyReference;
     }
 
@@ -59,10 +88,10 @@ public class FilingAttorneyEntityType {
      * 
      * @param value
      *     allowed object is
-     *     {@link FilingReferenceType }
+     *     {@link ReferenceType }
      *     
      */
-    public void setAttorneyReference(FilingReferenceType value) {
+    public void setAttorneyReference(ReferenceType value) {
         this.attorneyReference = value;
     }
 

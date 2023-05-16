@@ -16,8 +16,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="QuantityType"&gt;
  *   &lt;simpleContent&gt;
- *     &lt;extension base="&lt;urn:oasis:names:specification:ubl:schema:xsd:UnqualifiedDataTypes-2&gt;QuantityType"&gt;
- *     &lt;/extension&gt;
+ *     &lt;restriction base="&lt;urn:oasis:names:specification:ubl:schema:xsd:UnqualifiedDataTypes-2&gt;QuantityType"&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/simpleContent&gt;
  * &lt;/complexType&gt;
  * </pre>

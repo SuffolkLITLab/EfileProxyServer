@@ -34,11 +34,11 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlType(name = "VcalendarContainedComponentType")
 @XmlSeeAlso({
     VavailabilityType.class,
-    WsCalendarGluonType.class,
-    WsCalendarIntervalType.class,
     VjournalType.class,
     VfreebusyType.class,
     VtimezoneType.class,
+    WsCalendarGluonType.class,
+    WsCalendarIntervalType.class,
     EventTodoComponentType.class
 })
 public class VcalendarContainedComponentType

@@ -1,16 +1,12 @@
 
 package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
 
-import java.util.ArrayList;
-import java.util.List;
 import gov.niem.release.niem.domains.jxdm._6.CourtType;
 import gov.niem.release.niem.niem_core._4.DateType;
 import gov.niem.release.niem.niem_core._4.DocumentType;
-import gov.niem.release.niem.niem_core._4.EntityType;
 import gov.niem.release.niem.niem_core._4.IdentificationType;
 import gov.niem.release.niem.proxy.xsd._4.NormalizedString;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.allocatedate.AllocateCourtDateMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.datecallback.NotifyCourtDateMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.docket.RecordDocketingMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing.FilingMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ReserveCourtDateMessageType;
@@ -22,7 +18,14 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.capturefeesrequest.CaptureFeesMessageType;
+import tyler.ecf.v5_0.extensions.eventcallback.NotifyEventMessageType;
+import tyler.ecf.v5_0.extensions.recordreceipt.RecordReceiptMessageType;
+import tyler.ecf.v5_0.extensions.recordservice.RecordServiceMessageType;
 import tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
+import tyler.ecf.v5_0.extensions.reviewenvelopecallback.NotifyEnvelopeCompleteMessageType;
+import tyler.ecf.v5_0.extensions.updatedocument.UpdateDocumentMessageType;
+import tyler.ecf.v5_0.extensions.updatefeesrequest.UpdateFeesMessageType;
 
 
 /**
@@ -37,10 +40,9 @@ import tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://release.niem.gov/niem/niem-core/4.0/}DocumentType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}DocumentFiler" maxOccurs="unbounded"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}SendingMDELocationID"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ServiceInteractionProfileCode"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}CaseCourt"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}CaseCourt"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}DocumentInformationCutOffDate" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}DocumentPostDate"/&gt;
  *       &lt;/sequence&gt;
@@ -54,7 +56,6 @@ import tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CaseFilingType", propOrder = {
-    "documentFiler",
     "sendingMDELocationID",
     "serviceInteractionProfileCode",
     "caseCourt",
@@ -62,62 +63,37 @@ import tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
     "documentPostDate"
 })
 @XmlSeeAlso({
-    ReturnDateMessageType.class,
-    DocumentStampInformationMessageType.class,
-    FilingMessageType.class,
-    AllocateCourtDateMessageType.class,
+    RecordServiceMessageType.class,
+    CaptureFeesMessageType.class,
     RecordDocketingMessageType.class,
-    RequestMessageType.class,
+    AllocateCourtDateMessageType.class,
+    DocumentStampInformationMessageType.class,
+    RecordReceiptMessageType.class,
+    UpdateDocumentMessageType.class,
     ReserveCourtDateMessageType.class,
-    CallbackMessageType.class,
-    NotifyCourtDateMessageType.class,
-    ResponseMessageType.class
+    UpdateFeesMessageType.class,
+    NotifyEnvelopeCompleteMessageType.class,
+    ReturnDateMessageType.class,
+    FilingMessageType.class,
+    NotifyEventMessageType.class,
+    RequestMessageType.class,
+    ResponseMessageType.class,
+    CallbackMessageType.class
 })
 public class CaseFilingType
     extends DocumentType
 {
 
-    @XmlElement(name = "DocumentFiler", required = true)
-    protected List<EntityType> documentFiler;
     @XmlElement(name = "SendingMDELocationID", required = true)
     protected IdentificationType sendingMDELocationID;
     @XmlElement(name = "ServiceInteractionProfileCode", required = true)
     protected NormalizedString serviceInteractionProfileCode;
-    @XmlElement(name = "CaseCourt", namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", required = true)
+    @XmlElement(name = "CaseCourt", namespace = "http://release.niem.gov/niem/domains/jxdm/6.1/", required = true)
     protected CourtType caseCourt;
     @XmlElement(name = "DocumentInformationCutOffDate", namespace = "http://release.niem.gov/niem/niem-core/4.0/")
     protected DateType documentInformationCutOffDate;
     @XmlElement(name = "DocumentPostDate", namespace = "http://release.niem.gov/niem/niem-core/4.0/", required = true)
     protected DateType documentPostDate;
-
-    /**
-     * Gets the value of the documentFiler property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a <CODE>set</CODE> method for the documentFiler property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getDocumentFiler().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link EntityType }
-     * 
-     * 
-     */
-    public List<EntityType> getDocumentFiler() {
-        if (documentFiler == null) {
-            documentFiler = new ArrayList<EntityType>();
-        }
-        return this.documentFiler;
-    }
 
     /**
      * Gets the value of the sendingMDELocationID property.

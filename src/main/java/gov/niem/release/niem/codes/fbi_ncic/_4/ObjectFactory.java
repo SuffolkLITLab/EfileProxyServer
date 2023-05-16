@@ -30,19 +30,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link VCOCodeType }
-     * 
-     */
-    public VCOCodeType createVCOCodeType() {
-        return new VCOCodeType();
-    }
-
-    /**
      * Create an instance of {@link CountryCodeType }
      * 
      */
     public CountryCodeType createCountryCodeType() {
         return new CountryCodeType();
+    }
+
+    /**
+     * Create an instance of {@link EXLCodeType }
+     * 
+     */
+    public EXLCodeType createEXLCodeType() {
+        return new EXLCodeType();
     }
 
     /**
@@ -59,6 +59,14 @@ public class ObjectFactory {
      */
     public HAIRCodeType createHAIRCodeType() {
         return new HAIRCodeType();
+    }
+
+    /**
+     * Create an instance of {@link PCOCodeType }
+     * 
+     */
+    public PCOCodeType createPCOCodeType() {
+        return new PCOCodeType();
     }
 
     /**
@@ -86,11 +94,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link PCOCodeType }
+     * Create an instance of {@link VCOCodeType }
      * 
      */
-    public PCOCodeType createPCOCodeType() {
-        return new PCOCodeType();
+    public VCOCodeType createVCOCodeType() {
+        return new VCOCodeType();
     }
 
     /**
@@ -115,14 +123,6 @@ public class ObjectFactory {
      */
     public VSTCodeType createVSTCodeType() {
         return new VSTCodeType();
-    }
-
-    /**
-     * Create an instance of {@link EXLCodeType }
-     * 
-     */
-    public EXLCodeType createEXLCodeType() {
-        return new EXLCodeType();
     }
 
 }

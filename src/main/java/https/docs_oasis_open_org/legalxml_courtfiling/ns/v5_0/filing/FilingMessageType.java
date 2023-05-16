@@ -16,6 +16,8 @@ import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.common.FilingMessageAugmentationType;
+import tyler.ecf.v5_0.extensions.common.RecordDocketingMessageAugmentationType;
 
 
 /**
@@ -33,8 +35,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ElectronicServiceInformation" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing}FilingConnectedDocument" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing}FilingLeadDocument" maxOccurs="unbounded"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Case"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing}FilingMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Case"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -49,8 +51,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "electronicServiceInformation",
     "filingConnectedDocument",
     "filingLeadDocument",
-    "_case",
-    "filingMessageAugmentationPoint"
+    "filingMessageAugmentationPoint",
+    "_case"
 })
 public class FilingMessageType
     extends CaseFilingType
@@ -62,10 +64,10 @@ public class FilingMessageType
     protected List<DocumentType> filingConnectedDocument;
     @XmlElement(name = "FilingLeadDocument", required = true, nillable = true)
     protected List<DocumentType> filingLeadDocument;
+    @XmlElementRef(name = "FilingMessageAugmentationPoint", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing", type = JAXBElement.class, required = false)
+    protected List<JAXBElement<?>> filingMessageAugmentationPoint;
     @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class)
     protected JAXBElement<? extends CaseType> _case;
-    @XmlElement(name = "FilingMessageAugmentationPoint")
-    protected List<Object> filingMessageAugmentationPoint;
 
     /**
      * Gets the value of the electronicServiceInformation property.
@@ -155,6 +157,37 @@ public class FilingMessageType
     }
 
     /**
+     * Gets the value of the filingMessageAugmentationPoint property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the filingMessageAugmentationPoint property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getFilingMessageAugmentationPoint().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link JAXBElement }{@code <}{@link FilingMessageAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link RecordDocketingMessageAugmentationType }{@code >}
+     * 
+     * 
+     */
+    public List<JAXBElement<?>> getFilingMessageAugmentationPoint() {
+        if (filingMessageAugmentationPoint == null) {
+            filingMessageAugmentationPoint = new ArrayList<JAXBElement<?>>();
+        }
+        return this.filingMessageAugmentationPoint;
+    }
+
+    /**
      * Gets the value of the case property.
      * 
      * @return
@@ -178,35 +211,6 @@ public class FilingMessageType
      */
     public void setCase(JAXBElement<? extends CaseType> value) {
         this._case = value;
-    }
-
-    /**
-     * Gets the value of the filingMessageAugmentationPoint property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a <CODE>set</CODE> method for the filingMessageAugmentationPoint property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getFilingMessageAugmentationPoint().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Object }
-     * 
-     * 
-     */
-    public List<Object> getFilingMessageAugmentationPoint() {
-        if (filingMessageAugmentationPoint == null) {
-            filingMessageAugmentationPoint = new ArrayList<Object>();
-        }
-        return this.filingMessageAugmentationPoint;
     }
 
     /**

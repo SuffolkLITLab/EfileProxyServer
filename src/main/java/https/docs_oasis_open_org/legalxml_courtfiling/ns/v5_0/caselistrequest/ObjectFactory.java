@@ -25,9 +25,10 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _GetCaseListRequestMessageAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistrequest", "GetCaseListRequestMessageAugmentationPoint");
+    private final static QName _CaseListQueryCriteria_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistrequest", "CaseListQueryCriteria");
     private final static QName _CaseParticipant_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistrequest", "CaseParticipant");
     private final static QName _GetCaseListRequestMessage_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistrequest", "GetCaseListRequestMessage");
-    private final static QName _GetCaseListRequestMessageAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistrequest", "GetCaseListRequestMessageAugmentationPoint");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caselistrequest
@@ -37,11 +38,45 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CaseListQueryCriteriaType }
+     * 
+     */
+    public CaseListQueryCriteriaType createCaseListQueryCriteriaType() {
+        return new CaseListQueryCriteriaType();
+    }
+
+    /**
      * Create an instance of {@link GetCaseListRequestMessageType }
      * 
      */
     public GetCaseListRequestMessageType createGetCaseListRequestMessageType() {
         return new GetCaseListRequestMessageType();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistrequest", name = "GetCaseListRequestMessageAugmentationPoint")
+    public JAXBElement<Object> createGetCaseListRequestMessageAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_GetCaseListRequestMessageAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CaseListQueryCriteriaType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CaseListQueryCriteriaType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistrequest", name = "CaseListQueryCriteria")
+    public JAXBElement<CaseListQueryCriteriaType> createCaseListQueryCriteria(CaseListQueryCriteriaType value) {
+        return new JAXBElement<CaseListQueryCriteriaType>(_CaseListQueryCriteria_QNAME, CaseListQueryCriteriaType.class, null, value);
     }
 
     /**
@@ -68,19 +103,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistrequest", name = "GetCaseListRequestMessage")
     public JAXBElement<GetCaseListRequestMessageType> createGetCaseListRequestMessage(GetCaseListRequestMessageType value) {
         return new JAXBElement<GetCaseListRequestMessageType>(_GetCaseListRequestMessage_QNAME, GetCaseListRequestMessageType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistrequest", name = "GetCaseListRequestMessageAugmentationPoint")
-    public JAXBElement<Object> createGetCaseListRequestMessageAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_GetCaseListRequestMessageAugmentationPoint_QNAME, Object.class, null, value);
     }
 
 }

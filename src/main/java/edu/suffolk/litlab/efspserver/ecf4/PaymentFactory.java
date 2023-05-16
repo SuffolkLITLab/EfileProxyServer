@@ -14,36 +14,38 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.PaymentMe
 import tyler.ecf.extensions.common.ProviderChargeType;
 
 public class PaymentFactory {
+  private static final oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.ObjectFactory
+      ecfObjFac =
+          new oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.ObjectFactory();
+  private static final oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2
+          .ObjectFactory
+      cacObjFac =
+          new oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory();
+  private static final oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2
+          .ObjectFactory
+      cbcObjFac =
+          new oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ObjectFactory();
+  private static final tyler.ecf.extensions.common.ObjectFactory tylerObjFac =
+      new tyler.ecf.extensions.common.ObjectFactory();
+
   public static PaymentMessageType makePaymentMessage(String paymentId, String jurisdiction) {
-    var ecfObjFac =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.ObjectFactory();
     PaymentMessageType pmt = ecfObjFac.createPaymentMessageType();
     pmt.setFeeExceptionReasonCode("");
     pmt.setFeeExceptionSupportingText("");
     pmt.setPayerName("");
     pmt.getAllowanceCharge().add(makeAllowanceChargeType(paymentId, jurisdiction));
-    // TODO(brycew-later): Do these need to be filled? With what?
-    var cacObjFac =
-        new oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory();
     pmt.setAddress(cacObjFac.createAddressType());
     pmt.setPayment(cacObjFac.createPaymentType());
     return pmt;
   }
 
   public static ProviderChargeType makeProviderChargeType(String paymentId, String jurisdiction) {
-    tyler.ecf.extensions.common.ObjectFactory tylerObjFac =
-        new tyler.ecf.extensions.common.ObjectFactory();
     ProviderChargeType pct = tylerObjFac.createProviderChargeType();
     pct.getAllowanceCharge().add(makeAllowanceChargeType(paymentId, jurisdiction));
     return pct;
   }
 
-  private static AllowanceChargeType makeAllowanceChargeType(
-      String paymentId, String jurisdiction) {
-    var cacObjFac =
-        new oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory();
-    var cbcObjFac =
-        new oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ObjectFactory();
+  public static AllowanceChargeType makeAllowanceChargeType(String paymentId, String jurisdiction) {
     AllowanceChargeType act = cacObjFac.createAllowanceChargeType();
     var at = cbcObjFac.createAmountType();
     at.setCurrencyID("USD");
@@ -64,7 +66,6 @@ public class PaymentFactory {
       tct.setBaseUnitMeasure(cbcObjFac.createBaseUnitMeasureType());
       tct.setPerUnitAmount(cbcObjFac.createPerUnitAmountType());
       tct.setTaxExemptionReasonCode(cbcObjFac.createTaxExemptionReasonCodeType());
-      tct.setTaxExemptionReason(cbcObjFac.createTaxExemptionReasonType());
       tct.setTierRange(cbcObjFac.createTierRangeType());
       tct.setTierRatePercent(cbcObjFac.createTierRatePercentType());
       act.getTaxCategory().add(tct);

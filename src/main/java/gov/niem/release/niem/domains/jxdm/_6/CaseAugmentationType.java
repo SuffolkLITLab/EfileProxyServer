@@ -26,13 +26,13 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://release.niem.gov/niem/structures/4.0/}AugmentationType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}CaseCharge" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}CaseCourt" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}CaseCourtEvent" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}CaseJudge" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}CaseLineageCase" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}CaseOfficial" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}CaseOtherEntity" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}CaseCharge" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}CaseCourt" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}CaseCourtEvent" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}CaseJudge" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}CaseLineageCase" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}CaseOfficial" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}CaseOtherEntity" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -65,7 +65,7 @@ public class CaseAugmentationType
     @XmlElement(name = "CaseJudge")
     protected List<CaseOfficialType> caseJudge;
     @XmlElement(name = "CaseLineageCase", nillable = true)
-    protected CaseType caseLineageCase;
+    protected List<CaseType> caseLineageCase;
     @XmlElement(name = "CaseOfficial")
     protected List<CaseOfficialType> caseOfficial;
     @XmlElement(name = "CaseOtherEntity")
@@ -185,25 +185,30 @@ public class CaseAugmentationType
     /**
      * Gets the value of the caseLineageCase property.
      * 
-     * @return
-     *     possible object is
-     *     {@link CaseType }
-     *     
-     */
-    public CaseType getCaseLineageCase() {
-        return caseLineageCase;
-    }
-
-    /**
-     * Sets the value of the caseLineageCase property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the caseLineageCase property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link CaseType }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getCaseLineageCase().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CaseType }
+     * 
+     * 
      */
-    public void setCaseLineageCase(CaseType value) {
-        this.caseLineageCase = value;
+    public List<CaseType> getCaseLineageCase() {
+        if (caseLineageCase == null) {
+            caseLineageCase = new ArrayList<CaseType>();
+        }
+        return this.caseLineageCase;
     }
 
     /**

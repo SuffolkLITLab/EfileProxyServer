@@ -45,8 +45,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "dispositionDescriptionText"
 })
 @XmlSeeAlso({
-    CaseDispositionType.class,
-    ChargeDispositionType.class
+    ChargeDispositionType.class,
+    CaseDispositionType.class
 })
 public class DispositionType
     extends ObjectType

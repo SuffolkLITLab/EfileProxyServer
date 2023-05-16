@@ -6,6 +6,7 @@ import java.util.List;
 import gov.niem.release.niem.niem_core._4.ContactInformationType;
 import gov.niem.release.niem.niem_core._4.IdentificationType;
 import gov.niem.release.niem.niem_core._4.TextType;
+import gov.niem.release.niem.proxy.xsd._4.Boolean;
 import gov.niem.release.niem.structures._4.AugmentationType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -16,8 +17,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * An augmentation type
- * 
  * <p>Java class for OrganizationAugmentationType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -28,6 +27,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *     &lt;extension base="{http://release.niem.gov/niem/structures/4.0/}AugmentationType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseParticipantRoleCode" maxOccurs="unbounded"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CasePartySelfRepresentationIndicator" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ElectronicServiceInformation" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ParticipantID" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}ContactInformation" maxOccurs="unbounded" minOccurs="0"/&gt;
@@ -43,6 +43,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "OrganizationAugmentationType", propOrder = {
     "caseParticipantRoleCode",
+    "casePartySelfRepresentationIndicator",
     "electronicServiceInformation",
     "participantID",
     "contactInformation"
@@ -53,6 +54,8 @@ public class OrganizationAugmentationType
 
     @XmlElement(name = "CaseParticipantRoleCode", required = true)
     protected List<TextType> caseParticipantRoleCode;
+    @XmlElement(name = "CasePartySelfRepresentationIndicator")
+    protected Boolean casePartySelfRepresentationIndicator;
     @XmlElement(name = "ElectronicServiceInformation")
     protected ElectronicServiceInformationType electronicServiceInformation;
     @XmlElement(name = "ParticipantID")
@@ -87,6 +90,30 @@ public class OrganizationAugmentationType
             caseParticipantRoleCode = new ArrayList<TextType>();
         }
         return this.caseParticipantRoleCode;
+    }
+
+    /**
+     * Gets the value of the casePartySelfRepresentationIndicator property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean getCasePartySelfRepresentationIndicator() {
+        return casePartySelfRepresentationIndicator;
+    }
+
+    /**
+     * Sets the value of the casePartySelfRepresentationIndicator property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setCasePartySelfRepresentationIndicator(Boolean value) {
+        this.casePartySelfRepresentationIndicator = value;
     }
 
     /**

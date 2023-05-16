@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtPolicyMDE" xmlns:wsmp="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtPolicyMDE" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+	<import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtPolicyMDE" location="ecf5-CourtPolicyMDE.wsdl"/>
+	<import namespace="urn:tyler:ecf:v5.0:extensions:common" location="ecf5-full-90b994a1b7805590.xsd"/>
+	<service name="CourtPolicyMDEService">
+		<port name="CourtPolicyMDE" binding="wsmp:CourtPolicyMDESoap">
+			<soap:address location="https://illinois-stage.tylertech.cloud/efm/v5/CourtPolicyservice.svc"/>
+		</port>
+	</service>
+</definitions>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+     WS-Calendar Version 1.0
+     Committee Specification 01
+     30 July 2011
+     Source: http://docs.oasis-open.org/ws-calendar/ws-calendar-spec/v1.0/cs01/xsd/
+     Copyright (c) The Calendaring and Scheduling Consortium 2010-2011. All Rights Reserved.
+     Copyright (c) OASIS Open 2010-2011. All Rights Reserved. --><!-- iCalendar link extensions schema is intended to work
+     in conjunction with conformant implementations of
+     IETF RFC 5545 ( http://www.rfc-editor.org/rfc/rfc5545.txt ),
+     the normative specification of iCalendar. --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xcal="urn:ietf:params:xml:ns:icalendar-2.0" elementFormDefault="qualified" targetNamespace="urn:ietf:params:xml:ns:icalendar-2.0">
+	<!--Definition for the LINK extension property for icalendar -->
+	<xs:include schemaLocation="ecf5-full-78f90906f32c9f0a.xsd"/>
+	<!-- ===================== Properties =================================  -->
+	<xs:include schemaLocation="ecf5-full-e9cf45b8faa961b3.xsd"/>
+	<!-- ===================== Properties =================================  -->
+	<xs:include schemaLocation="ecf5-full-9acb70c0b1f40a4f.xsd"/>
+	<!-- =====================================================================
+       3.2 Property parameter definitions
+       ===================================================================== -->
+	<!-- REL defines the type of relationship and may be a predefined value as
+       below or a URI which is globally unique and understood within the context
+       of its use.
+       
+       The standard relation types are:
+             "PARENT"    ; Parent relationship - Default
+             "CHILD"     ; Child relationship
+             "SIBLING"   ; Sibling relationship
+   -->
+	<xs:element name="rel" substitutionGroup="xcal:baseParameter" type="xcal:TextParameterType"/>
+	<!-- =====================================================================
+       3.7 Calendar Properties
+       ===================================================================== -->
+	<xs:complexType mixed="false" name="LinkPropType">
+		<xs:complexContent>
+			<xs:extension base="xcal:BasePropertyType">
+				<xs:choice>
+					<xs:element ref="xcal:uri"/>
+					<xs:element name="uid" type="xs:string"/>
+					<xs:element name="reference" type="xs:string"/>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="link" substitutionGroup="xcal:baseProperty" type="xcal:LinkPropType"/>
+</xs:schema>

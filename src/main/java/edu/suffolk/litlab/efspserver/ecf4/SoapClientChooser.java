@@ -1,6 +1,5 @@
 package edu.suffolk.litlab.efspserver.ecf4;
 
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE_Service;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
@@ -57,6 +56,9 @@ public class SoapClientChooser {
           "illinois-test", "wsdl/test/illinois-v5-CourtSchedulingMDE.wsdl",
           "illinois-prod", "wsdl/prod/illinois-v5-CourtSchedulingMDE.wsdl");
 
+  static final Map<String, String> courtPolicyMDEWsdls =
+      Map.of("illinois-stage", "wsdl/stage/illinois-v5-CourtPolicyMDE.wsdl");
+
   public static Optional<FilingReviewMDEService> getFilingReviewFactory(String wsdlDomain) {
     Optional<URL> url = urlFromString(wsdlDomain, filingReviewMDEWsdls);
     return url.map(u -> new FilingReviewMDEService(u));
@@ -84,16 +86,6 @@ public class SoapClientChooser {
   public static Optional<CourtRecordMDEService> getCourtRecordFactory(
       String jurisdiction, String env) {
     return getCourtRecordFactory(jurisdiction + "-" + env);
-  }
-
-  public static Optional<CourtSchedulingMDE_Service> getCourtSchedulingFactory(String wsdlDomain) {
-    Optional<URL> url = urlFromString(wsdlDomain, courtSchedulingMDEWsdls);
-    return url.map(u -> new CourtSchedulingMDE_Service(u));
-  }
-
-  public static Optional<CourtSchedulingMDE_Service> getCourtSchedulingFactory(
-      String jurisdiction, String env) {
-    return getCourtSchedulingFactory(jurisdiction + "-" + env);
   }
 
   private static Optional<URL> urlFromString(String wsdlDomain, Map<String, String> domainToWsdl) {

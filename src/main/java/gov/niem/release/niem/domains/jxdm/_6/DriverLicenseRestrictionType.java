@@ -18,7 +18,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="DriverLicenseRestrictionType"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://release.niem.gov/niem/domains/jxdm/6.0/}DrivingRestrictionType"&gt;
+ *     &lt;extension base="{http://release.niem.gov/niem/domains/jxdm/6.1/}DrivingRestrictionType"&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;

@@ -24,6 +24,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _DocumentQueryCriteria_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/documentrequest", "DocumentQueryCriteria");
     private final static QName _GetDocumentRequestMessage_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/documentrequest", "GetDocumentRequestMessage");
     private final static QName _GetDocumentRequestMessageAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/documentrequest", "GetDocumentRequestMessageAugmentationPoint");
 
@@ -35,11 +36,32 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DocumentQueryCriteriaType }
+     * 
+     */
+    public DocumentQueryCriteriaType createDocumentQueryCriteriaType() {
+        return new DocumentQueryCriteriaType();
+    }
+
+    /**
      * Create an instance of {@link GetDocumentRequestMessageType }
      * 
      */
     public GetDocumentRequestMessageType createGetDocumentRequestMessageType() {
         return new GetDocumentRequestMessageType();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentQueryCriteriaType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentQueryCriteriaType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/documentrequest", name = "DocumentQueryCriteria")
+    public JAXBElement<DocumentQueryCriteriaType> createDocumentQueryCriteria(DocumentQueryCriteriaType value) {
+        return new JAXBElement<DocumentQueryCriteriaType>(_DocumentQueryCriteria_QNAME, DocumentQueryCriteriaType.class, null, value);
     }
 
     /**

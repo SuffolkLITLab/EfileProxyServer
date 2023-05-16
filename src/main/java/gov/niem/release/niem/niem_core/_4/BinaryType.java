@@ -1,6 +1,7 @@
 
 package gov.niem.release.niem.niem_core._4;
 
+import gov.niem.release.niem.domains.biometrics._4.ImageType;
 import gov.niem.release.niem.proxy.xsd._4.AnyURI;
 import gov.niem.release.niem.proxy.xsd._4.Base64Binary;
 import gov.niem.release.niem.structures._4.ObjectType;

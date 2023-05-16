@@ -25,12 +25,12 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="SystemEventType"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://release.niem.gov/niem/domains/cbrn/4.0/}RemarksComplexObjectType"&gt;
+ *     &lt;extension base="{http://release.niem.gov/niem/domains/cbrn/4.1/}RemarksComplexObjectType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/cbrn/4.0/}SystemEventDateTime"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/cbrn/4.1/}SystemEventDateTime"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}SystemOperatingModeAbstract"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute ref="{http://release.niem.gov/niem/domains/cbrn/4.0/}systemSimulatedIndicator use="required""/&gt;
+ *       &lt;attribute ref="{http://release.niem.gov/niem/domains/cbrn/4.1/}systemSimulatedIndicator use="required""/&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -55,7 +55,7 @@ public class SystemEventType
     protected DateTime systemEventDateTime;
     @XmlElementRef(name = "SystemOperatingModeAbstract", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class)
     protected JAXBElement<?> systemOperatingModeAbstract;
-    @XmlAttribute(name = "systemSimulatedIndicator", namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", required = true)
+    @XmlAttribute(name = "systemSimulatedIndicator", namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", required = true)
     protected boolean systemSimulatedIndicator;
 
     /**

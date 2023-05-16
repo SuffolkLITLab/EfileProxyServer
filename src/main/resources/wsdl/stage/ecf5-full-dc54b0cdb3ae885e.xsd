@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- edited with XMLSpy v2018 sp1 (http://www.altova.com) by Tyler Technologies (Tyler Technologies) --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:batchlistrequest="urn:tyler:ecf:v5.0:extensions:batchlistrequest" xmlns:common="urn:tyler:ecf:v5.0:extensions:common" xmlns:ecf="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" xmlns:j="http://release.niem.gov/niem/domains/jxdm/6.1/" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" xmlns:niem-xs="http://release.niem.gov/niem/proxy/xsd/4.0/" xmlns:structures="http://release.niem.gov/niem/structures/4.0/" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:tyler:ecf:v5.0:extensions:batchlistrequest">
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" schemaLocation="ecf5-full-ea1e0f75b69752b5.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/domains/jxdm/6.1/" schemaLocation="ecf5-full-3fca6aa6e33300e4.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/niem-core/4.0/" schemaLocation="ecf5-full-7af13829a6695741.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/proxy/xsd/4.0/" schemaLocation="ecf5-full-4d179e3e0bd140a9.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/structures/4.0/" schemaLocation="ecf5-full-43381e9aa490c46d.xsd"/>
+	<xs:import namespace="urn:tyler:ecf:v5.0:extensions:common" schemaLocation="ecf5-full-90b994a1b7805590.xsd"/>
+	<xs:complexType name="BatchListQueryCriteriaType">
+		<xs:annotation>
+			<xs:documentation>Criteria limiting the list of batches to be returned.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="structures:ObjectType">
+				<xs:sequence>
+					<xs:element maxOccurs="1" minOccurs="1" ref="nc:DateRange"/>
+					<xs:element maxOccurs="1" minOccurs="0" ref="common:BatchIdentification"/>
+					<xs:element maxOccurs="1" minOccurs="0" ref="common:BatchStatusCode"/>
+					<xs:element maxOccurs="1" minOccurs="0" ref="j:CaseCourt"/>
+					<xs:element maxOccurs="1" minOccurs="0" ref="ecf:CaseCategoryCode"/>
+					<xs:element maxOccurs="1" minOccurs="0" ref="ecf:CaseTypeCode"/>
+					<xs:element maxOccurs="1" minOccurs="0" ref="ecf:RegisterActionDescriptionCode"/>
+					<xs:element maxOccurs="1" minOccurs="1" ref="batchlistrequest:IncludeFirmsBatchIndicator"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetBatchListMessageType">
+		<xs:annotation>
+			<xs:documentation>Message to retrieve batches.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ecf:RequestMessageType">
+				<xs:sequence>
+					<xs:element maxOccurs="1" minOccurs="1" ref="batchlistrequest:BatchListQueryCriteria"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="batchlistrequest:GetBatchListMessageAugmentationPoint"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="GetBatchListMessage" type="batchlistrequest:GetBatchListMessageType">
+		<xs:annotation>
+			<xs:documentation>Message to retrieve batches.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element abstract="true" name="GetBatchListMessageAugmentationPoint">
+		<xs:annotation>
+			<xs:documentation>An extension point for the enclosing message.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="BatchListQueryCriteria" type="batchlistrequest:BatchListQueryCriteriaType"/>
+	<xs:element name="IncludeFirmsBatchIndicator" type="niem-xs:boolean"/>
+</xs:schema>

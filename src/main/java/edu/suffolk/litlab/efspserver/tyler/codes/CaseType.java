@@ -17,6 +17,7 @@ public class CaseType {
 
   public final BigDecimal fee;
   public final String willfileddate;
+  public final String casestreetaddress;
   public final String efspcode;
   public final String location;
 
@@ -27,6 +28,7 @@ public class CaseType {
       String initial,
       String fee,
       String willfileddate,
+      String casestreetaddress,
       String efspcode,
       String location) {
     this.code = code;
@@ -35,6 +37,7 @@ public class CaseType {
     this.initial = Boolean.parseBoolean(initial);
     this.fee = BigDecimal.valueOf(Double.parseDouble(fee));
     this.willfileddate = willfileddate;
+    this.casestreetaddress = casestreetaddress;
     this.efspcode = efspcode;
     this.location = location;
   }
@@ -55,7 +58,8 @@ public class CaseType {
         rs.getString(5),
         rs.getString(6),
         rs.getString(7),
-        rs.getString(8));
+        rs.getString(8),
+        rs.getString(9));
   }
 
   /** Turns the object into a map; attributes can be combined with HATEOS endpoints */
@@ -80,6 +84,7 @@ public class CaseType {
         "true",
         "-1",
         "Bad date",
+        "Bad address",
         "Bade code",
         "Bad loc");
   }
@@ -189,6 +194,8 @@ public class CaseType {
     sb.append(fee);
     sb.append(", ");
     sb.append(willfileddate);
+    sb.append(", ");
+    sb.append(casestreetaddress);
     sb.append(", ");
     sb.append(efspcode);
     sb.append(", ");

@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
 import gov.niem.release.niem.niem_core._4.CaseType;
-import gov.niem.release.niem.niem_core._4.DateType;
 import gov.niem.release.niem.niem_core._4.TextType;
-import gov.niem.release.niem.proxy.xsd._4.Boolean;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -17,6 +15,7 @@ import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.common.FilingMessageAugmentationType;
 
 
 /**
@@ -31,8 +30,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *       &lt;sequence&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseParticipantRoleCode" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Case" minOccurs="0"/&gt;
- *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:returndate}ReturnDate" minOccurs="0"/&gt;
- *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:common}OutOfStateIndicator"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:returndate}ReturnDateMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
@@ -47,8 +44,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlType(name = "ReturnDateMessageType", propOrder = {
     "caseParticipantRoleCode",
     "_case",
-    "returnDate",
-    "outOfStateIndicator",
     "returnDateMessageAugmentationPoint"
 })
 public class ReturnDateMessageType
@@ -59,12 +54,8 @@ public class ReturnDateMessageType
     protected TextType caseParticipantRoleCode;
     @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
     protected JAXBElement<? extends CaseType> _case;
-    @XmlElement(name = "ReturnDate")
-    protected DateType returnDate;
-    @XmlElement(name = "OutOfStateIndicator", namespace = "urn:tyler:ecf:v5.0:extensions:common", required = true)
-    protected Boolean outOfStateIndicator;
-    @XmlElement(name = "ReturnDateMessageAugmentationPoint")
-    protected List<Object> returnDateMessageAugmentationPoint;
+    @XmlElementRef(name = "ReturnDateMessageAugmentationPoint", namespace = "urn:tyler:ecf:v5.0:extensions:returndate", type = JAXBElement.class, required = false)
+    protected List<JAXBElement<?>> returnDateMessageAugmentationPoint;
 
     /**
      * Gets the value of the caseParticipantRoleCode property.
@@ -117,54 +108,6 @@ public class ReturnDateMessageType
     }
 
     /**
-     * Gets the value of the returnDate property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DateType }
-     *     
-     */
-    public DateType getReturnDate() {
-        return returnDate;
-    }
-
-    /**
-     * Sets the value of the returnDate property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DateType }
-     *     
-     */
-    public void setReturnDate(DateType value) {
-        this.returnDate = value;
-    }
-
-    /**
-     * Gets the value of the outOfStateIndicator property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public Boolean getOutOfStateIndicator() {
-        return outOfStateIndicator;
-    }
-
-    /**
-     * Sets the value of the outOfStateIndicator property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setOutOfStateIndicator(Boolean value) {
-        this.outOfStateIndicator = value;
-    }
-
-    /**
      * Gets the value of the returnDateMessageAugmentationPoint property.
      * 
      * <p>
@@ -182,13 +125,14 @@ public class ReturnDateMessageType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Object }
+     * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link JAXBElement }{@code <}{@link FilingMessageAugmentationType }{@code >}
      * 
      * 
      */
-    public List<Object> getReturnDateMessageAugmentationPoint() {
+    public List<JAXBElement<?>> getReturnDateMessageAugmentationPoint() {
         if (returnDateMessageAugmentationPoint == null) {
-            returnDateMessageAugmentationPoint = new ArrayList<Object>();
+            returnDateMessageAugmentationPoint = new ArrayList<JAXBElement<?>>();
         }
         return this.returnDateMessageAugmentationPoint;
     }

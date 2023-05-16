@@ -24,8 +24,9 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _GetFilingStatusRequestMessage_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filingstatusrequest", "GetFilingStatusRequestMessage");
     private final static QName _GetFilingStatusRequestMessageAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filingstatusrequest", "GetFilingStatusRequestMessageAugmentationPoint");
+    private final static QName _FilingStatusQueryCriteria_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filingstatusrequest", "FilingStatusQueryCriteria");
+    private final static QName _GetFilingStatusRequestMessage_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filingstatusrequest", "GetFilingStatusRequestMessage");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filingstatusrequest
@@ -35,24 +36,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FilingStatusQueryCriteriaType }
+     * 
+     */
+    public FilingStatusQueryCriteriaType createFilingStatusQueryCriteriaType() {
+        return new FilingStatusQueryCriteriaType();
+    }
+
+    /**
      * Create an instance of {@link GetFilingStatusRequestMessageType }
      * 
      */
     public GetFilingStatusRequestMessageType createGetFilingStatusRequestMessageType() {
         return new GetFilingStatusRequestMessageType();
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetFilingStatusRequestMessageType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link GetFilingStatusRequestMessageType }{@code >}
-     */
-    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filingstatusrequest", name = "GetFilingStatusRequestMessage")
-    public JAXBElement<GetFilingStatusRequestMessageType> createGetFilingStatusRequestMessage(GetFilingStatusRequestMessageType value) {
-        return new JAXBElement<GetFilingStatusRequestMessageType>(_GetFilingStatusRequestMessage_QNAME, GetFilingStatusRequestMessageType.class, null, value);
     }
 
     /**
@@ -66,6 +62,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filingstatusrequest", name = "GetFilingStatusRequestMessageAugmentationPoint")
     public JAXBElement<Object> createGetFilingStatusRequestMessageAugmentationPoint(Object value) {
         return new JAXBElement<Object>(_GetFilingStatusRequestMessageAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FilingStatusQueryCriteriaType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link FilingStatusQueryCriteriaType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filingstatusrequest", name = "FilingStatusQueryCriteria")
+    public JAXBElement<FilingStatusQueryCriteriaType> createFilingStatusQueryCriteria(FilingStatusQueryCriteriaType value) {
+        return new JAXBElement<FilingStatusQueryCriteriaType>(_FilingStatusQueryCriteria_QNAME, FilingStatusQueryCriteriaType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetFilingStatusRequestMessageType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link GetFilingStatusRequestMessageType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filingstatusrequest", name = "GetFilingStatusRequestMessage")
+    public JAXBElement<GetFilingStatusRequestMessageType> createGetFilingStatusRequestMessage(GetFilingStatusRequestMessageType value) {
+        return new JAXBElement<GetFilingStatusRequestMessageType>(_GetFilingStatusRequestMessage_QNAME, GetFilingStatusRequestMessageType.class, null, value);
     }
 
 }

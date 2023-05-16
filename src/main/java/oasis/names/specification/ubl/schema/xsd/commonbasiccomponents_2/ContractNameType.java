@@ -4,7 +4,7 @@ package oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlType;
-import oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.TextType;
+import oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.NameType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -17,8 +17,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="ContractNameType"&gt;
  *   &lt;simpleContent&gt;
- *     &lt;extension base="&lt;urn:oasis:names:specification:ubl:schema:xsd:UnqualifiedDataTypes-2&gt;TextType"&gt;
- *     &lt;/extension&gt;
+ *     &lt;restriction base="&lt;urn:oasis:names:specification:ubl:schema:xsd:UnqualifiedDataTypes-2&gt;NameType"&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/simpleContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -28,7 +28,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ContractNameType")
 public class ContractNameType
-    extends TextType
+    extends NameType
 {
 
 

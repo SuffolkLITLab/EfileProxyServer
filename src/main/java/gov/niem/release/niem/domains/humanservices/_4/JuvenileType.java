@@ -24,7 +24,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *     &lt;extension base="{http://release.niem.gov/niem/structures/4.0/}ObjectType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}RoleOfPerson"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.0/}JuvenileAugmentationPoint"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.1/}JuvenileAugmentationPoint"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;

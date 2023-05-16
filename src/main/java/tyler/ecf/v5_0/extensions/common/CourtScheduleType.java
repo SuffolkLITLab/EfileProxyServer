@@ -20,8 +20,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:common}ScheduleDayStartTime"/&gt;
- *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:common}ScheduleDayEndTime"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:common}ScheduleDayStartTime" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:common}ScheduleDayEndTime" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -37,9 +37,9 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 })
 public class CourtScheduleType {
 
-    @XmlElement(name = "ScheduleDayStartTime", required = true)
+    @XmlElement(name = "ScheduleDayStartTime")
     protected DateType scheduleDayStartTime;
-    @XmlElement(name = "ScheduleDayEndTime", required = true)
+    @XmlElement(name = "ScheduleDayEndTime")
     protected DateType scheduleDayEndTime;
 
     /**

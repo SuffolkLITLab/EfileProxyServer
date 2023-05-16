@@ -31,6 +31,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _GetPolicyResponseMessageAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", "GetPolicyResponseMessageAugmentationPoint");
     private final static QName _AcceptConfidentialFilingsIndicator_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", "AcceptConfidentialFilingsIndicator");
     private final static QName _AcceptDocumentsRequiringFeesIndicator_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", "AcceptDocumentsRequiringFeesIndicator");
     private final static QName _AcceptMultipleLeadDocumentsIndicator_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", "AcceptMultipleLeadDocumentsIndicator");
@@ -44,7 +45,6 @@ public class ObjectFactory {
     private final static QName _FilerRequiredToServeIndicator_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", "FilerRequiredToServeIndicator");
     private final static QName _FilingFeesMayBeApplicableIndicator_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", "FilingFeesMayBeApplicableIndicator");
     private final static QName _GetPolicyResponseMessage_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", "GetPolicyResponseMessage");
-    private final static QName _GetPolicyResponseMessageAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", "GetPolicyResponseMessageAugmentationPoint");
     private final static QName _MajorDesignElement_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", "MajorDesignElement");
     private final static QName _MajorDesignElementLocationID_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", "MajorDesignElementLocationID");
     private final static QName _MajorDesignElementTypeCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", "MajorDesignElementTypeCode");
@@ -154,6 +154,19 @@ public class ObjectFactory {
      */
     public ExtensionType createExtensionType() {
         return new ExtensionType();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", name = "GetPolicyResponseMessageAugmentationPoint")
+    public JAXBElement<Object> createGetPolicyResponseMessageAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_GetPolicyResponseMessageAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**
@@ -323,19 +336,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", name = "GetPolicyResponseMessage")
     public JAXBElement<GetPolicyResponseMessageType> createGetPolicyResponseMessage(GetPolicyResponseMessageType value) {
         return new JAXBElement<GetPolicyResponseMessageType>(_GetPolicyResponseMessage_QNAME, GetPolicyResponseMessageType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", name = "GetPolicyResponseMessageAugmentationPoint")
-    public JAXBElement<Object> createGetPolicyResponseMessageAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_GetPolicyResponseMessageAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**

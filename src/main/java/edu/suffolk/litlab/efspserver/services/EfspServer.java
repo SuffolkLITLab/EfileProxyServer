@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efspserver.services;
 import static edu.suffolk.litlab.efspserver.StdLib.GetEnv;
 
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import edu.suffolk.litlab.efspserver.EfmConfiguration;
 import edu.suffolk.litlab.efspserver.HttpsCallbackHandler;
 import edu.suffolk.litlab.efspserver.SendMessage;
 import edu.suffolk.litlab.efspserver.StdLib;
@@ -12,7 +13,6 @@ import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.db.MessageSettingsDatabase;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingInformationConverter;
-import edu.suffolk.litlab.efspserver.ecf4.TylerModuleSetup;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetModuleSetup;
 import edu.suffolk.litlab.efspserver.services.acme.AcmeChallengeService;
 import jakarta.ws.rs.core.MediaType;
@@ -217,13 +217,21 @@ public class EfspServer {
       log.error("TOGA_CLIENT_KEYS list should be same size as TYLER_JURSIDICTIONS list.");
       throw new RuntimeException("TOGA_CLIENT_KEYS and TYLER_JURISDICTION mismatch");
     }
+    Map<String, String> config = EfmConfiguration.loadConfig();
     for (int idx = 0; idx < jurisdictions.size(); idx++) {
       String jurisdiction = jurisdictions.get(idx);
       if (jurisdiction.isBlank()) {
         continue;
       }
-      TylerModuleSetup.create(jurisdiction, togaKeys.get(idx), converterMap, codeDs, userDs, sender)
-          .ifPresent(mod -> modules.add(mod));
+      if (config.getOrDefault(jurisdiction, "ecf4").equalsIgnoreCase("ecf5")) {
+        edu.suffolk.litlab.efspserver.ecf5.TylerModuleSetup.create(
+                jurisdiction, togaKeys.get(idx), converterMap, codeDs, userDs, sender)
+            .ifPresent(mod -> modules.add(mod));
+      } else {
+        edu.suffolk.litlab.efspserver.ecf4.TylerModuleSetup.create(
+                jurisdiction, togaKeys.get(idx), converterMap, codeDs, userDs, sender)
+            .ifPresent(mod -> modules.add(mod));
+      }
     }
     JeffNetModuleSetup.create(converterMap, userDs, sender).ifPresent(mod -> modules.add(mod));
     if (modules.isEmpty()) {

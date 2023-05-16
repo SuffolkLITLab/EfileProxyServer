@@ -58,20 +58,20 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "activityDate"
 })
 @XmlSeeAlso({
-    PlacementType.class,
-    PersonDisunionType.class,
-    PersonUnionSeparationType.class,
-    SupervisionType.class,
-    CaseType.class,
     ArrestType.class,
     BookingType.class,
     CourtEventType.class,
     CitationType.class,
     DriverLicenseWithdrawalType.class,
-    IncidentType.class,
     OffenseType.class,
     SentenceType.class,
     TermType.class,
+    SupervisionType.class,
+    IncidentType.class,
+    CaseType.class,
+    PlacementType.class,
+    PersonDisunionType.class,
+    PersonUnionSeparationType.class,
     CourtOrderType.class
 })
 public class ActivityType

@@ -3,8 +3,13 @@ package edu.suffolk.litlab.efspserver;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +17,7 @@ import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -19,6 +25,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.bouncycastle.util.encoders.Hex;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -26,11 +33,21 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * Downloaded the FilingReviewMDE wsdl, necessary for it to run faster. Slightly modified to handle
- * relative paths on the server. Runs like: ``` mvn exec:java@XsdDownloader
+ * Downloads the various EFM SOAP wsdl service files, like FilingReviewMDE. Without this, we have to
+ * point at some external location (a URL for ECF 4, and some dump of files that Tyler gives us for
+ * ECF 5), and everytime we start a MDE Service, it takes ~60 seconds to download all of the other
+ * XSD files associated with it. That's fairly instant when this is downloaded. For ECF 5, that dump
+ * of XSD files that Tyler gives us has relative paths to the other files, but using Window's paths.
+ * We also use this to correct those paths automatically. Slightly modified to handle relative paths
+ * on the server. Runs like:
+ *
+ * <p>```mvn exec:java@XsdDownloader
  * -Dexec.args="https://example.tylertech.cloud/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf"
- * ``` Then move all of the ecf files into src/main/resources/wsdl/, and point the FilingReviewMDE
- * URL to it. <a href="https://github.com/pablod/xsd-downloader">Github here</a>
+ * ```
+ *
+ * <p>Then move all of the ecf files into src/main/resources/wsdl/, and point the FilingReviewMDE
+ * URL to it. Based off of an original <a href="https://github.com/pablod/xsd-downloader">Github
+ * project here</a>
  *
  * @author https://github.com/pablod
  */
@@ -44,8 +61,46 @@ public class XsdDownloader {
 
   private final String downloadPrefix;
 
+  /**
+   * Given a string input (in our case, the contents of the file), generate a hash.
+   *
+   * <p>Necessary because there are multiple places in Tyler's download of ECF 5 where there are
+   * different files with the exact same contents, but different names / locations. Normally this
+   * would be fine, but the location of the files breaks our process (TODO(brycew): don't remember
+   * whether it's wsdl2java, or the java compliation once the code is generated, but it does
+   * definitely break).
+   *
+   * @param str some string
+   * @return the SHA-256 hash over the string.
+   * @throws NoSuchAlgorithmException
+   */
+  private String strToHash(final String str) throws NoSuchAlgorithmException {
+    MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+    String fullHash =
+        new String(Hex.encode(messageDigest.digest(str.getBytes(StandardCharsets.UTF_8))));
+    return fullHash.substring(0, 16);
+  }
+
+  public static String documentToString(Document document) throws TransformerException {
+    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    Transformer transformer = transformerFactory.newTransformer();
+    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+    transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+    DOMSource source = new DOMSource(document);
+    StreamResult result = new StreamResult(new StringWriter());
+    transformer.transform(source, result);
+
+    return result.getWriter().toString();
+  }
+
   private String downloadXsdRecurse(final String xsdUrl, final String pastUrl)
-      throws IOException, ParserConfigurationException, SAXException, TransformerException {
+      throws IOException,
+          ParserConfigurationException,
+          SAXException,
+          TransformerException,
+          NoSuchAlgorithmException {
 
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     dbf.setNamespaceAware(true);
@@ -61,7 +116,7 @@ public class XsdDownloader {
       System.out.println("Download " + xsdUrl + " (past url is " + pastUrl + ")");
       doc = db.parse(xsdUrl);
       workedUrl = xsdUrl;
-    } catch (FileNotFoundException ex) {
+    } catch (FileNotFoundException | MalformedURLException ex) {
       try {
         workedUrl = normalizeUrl(xsdUrl, pastUrl);
       } catch (URISyntaxException e) {
@@ -73,13 +128,14 @@ public class XsdDownloader {
         return workedUrl;
       }
       doc = db.parse(workedUrl);
+      System.out.println(doc.toString());
     }
 
     System.out.println("workedURL: " + workedUrl);
 
     String outputFileName = downloadPrefix;
     if (fileNamesByprocessedUrls.size() > 0) {
-      outputFileName = outputFileName + "-" + fileNamesByprocessedUrls.size();
+      outputFileName = outputFileName + "-" + strToHash(documentToString(doc));
     }
     outputFileName = outputFileName + ".xsd";
     fileNamesByprocessedUrls.put(workedUrl, outputFileName);
@@ -98,11 +154,17 @@ public class XsdDownloader {
   private static String normalizeUrl(String xsdUrl, final String pastUrl)
       throws URISyntaxException {
     String baseUrl = pastUrl.substring(0, pastUrl.lastIndexOf('/') + 1);
+    // The ECF5 schemas use Windows paths?!
+    xsdUrl = xsdUrl.replace('\\', '/');
     return new URI(baseUrl + xsdUrl).normalize().toString();
   }
 
   private void processElementRecurse(final Element node, String pastUrl)
-      throws IOException, ParserConfigurationException, SAXException, TransformerException {
+      throws IOException,
+          ParserConfigurationException,
+          SAXException,
+          TransformerException,
+          NoSuchAlgorithmException {
     NodeList nodeList = node.getChildNodes();
     int len = nodeList.getLength();
     for (int i = 0; i < len; i++) {
@@ -159,7 +221,11 @@ public class XsdDownloader {
     XsdDownloader xsdDownloader = new XsdDownloader(filePrefix);
     try {
       xsdDownloader.downloadXsdRecurse(xsdUrl, "");
-    } catch (IOException | ParserConfigurationException | SAXException | TransformerException e) {
+    } catch (IOException
+        | ParserConfigurationException
+        | SAXException
+        | TransformerException
+        | NoSuchAlgorithmException e) {
       e.printStackTrace();
     }
   }

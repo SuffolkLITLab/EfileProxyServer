@@ -1,15 +1,23 @@
 package edu.suffolk.litlab.efspserver.ecfcodes;
 
+import edu.suffolk.litlab.efspserver.EfmConfiguration;
 import edu.suffolk.litlab.efspserver.HeaderSigner;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
 import edu.suffolk.litlab.efspserver.ecf4.Ecf4Helper;
-import edu.suffolk.litlab.efspserver.ecf4.SoapClientChooser;
+import edu.suffolk.litlab.efspserver.ecf5.Ecf5Helper;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
 import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyrequest.GetPolicyRequestMessageType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyrequest.PolicyQueryCriteriaType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.RuntimePolicyType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.GetPolicyRequestType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.GetPolicyResponseType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDE;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDEService;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.ws.BindingProvider;
 import jakarta.xml.ws.soap.SOAPFaultException;
@@ -73,6 +81,11 @@ import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEServi
 public class CodeUpdater {
   private static final Logger log = LoggerFactory.getLogger(CodeUpdater.class);
 
+  public enum ECF_VERSION {
+    V4,
+    V5;
+  }
+
   // TODO(brycew-later): there's little more info on these mappings and how they combine besides:
   // The name of an ECF element to be substituted by a court-specific codelist or extension
   // Is this actually an XPath? Should figure it out
@@ -129,16 +142,144 @@ public class CodeUpdater {
           Map.entry("tyler:DataFieldConfigCode", "datafieldconfig"),
           Map.entry("tyler:DocumentOptionalService", "optionalservices"));
 
+  public static final Map<String, String> ecf5ElemToTableName =
+      Map.ofEntries(
+          Map.entry("civil:FiduciaryTypeCode", ""),
+          Map.entry("civil:JurisdictionGroundsCode", ""),
+          Map.entry("civil:ReliefTypeCode", ""),
+          Map.entry("cbrn:ErrorCodeText", ""),
+          Map.entry("ecf:CaseCategoryCode", "casecategory"),
+          Map.entry("ecf:CaseParticipantRoleCode", "partytype"),
+          Map.entry("ecf:CaseTypeCode", "casetype"),
+          Map.entry("ecf:CauseOfActionCode", ""),
+          Map.entry("ecf:CourtEventTypeCode", ""),
+          Map.entry("ecf:DocumentRelatedCode", ""),
+          Map.entry("ecf:DocumenTypeCode", "documenttype"),
+          Map.entry("ecf:DocumentDocketingStatusCode", ""),
+          Map.entry("ecf:DocumentReviewStatusCode", ""),
+          Map.entry("ecf:EntityAssociationTypeCode", ""),
+          Map.entry("ecf:FeeExceptionReasonCode", ""),
+          Map.entry("ecf:FilingDocketingStatusCode", ""),
+          Map.entry("ecf:FilingReviewStatusCode", ""),
+          Map.entry("ecf:PersonIdentificationCategoryCode", ""),
+          Map.entry("ecf:RelatedCaseAssociationTypeCode", ""),
+          Map.entry("ecf:ServiceIteractionProfileCode", ""),
+          Map.entry("ecf:SignatureProfileCode", ""),
+          Map.entry("ecf:ServiceStatusCode", ""),
+          // NOTE: this is in the ECF 5 spec, but NOT in Tyler's codes :(
+          // Map.entry("j:RegisterActionDescriptionText", "filing"),
+          Map.entry("ecf:RegisterActionDescriptionCode", "filing"),
+          Map.entry("policyresponse:MajorDesignElementTypeCode", ""),
+          Map.entry("policyresponse:OperationNameCode", ""),
+          Map.entry("biom:BiometricClassificationCategoryCode", ""),
+          Map.entry("hs:ParentChildKinshipCategoryCode", ""),
+          Map.entry("hs:PlacementCategoryCode", ""),
+          Map.entry("hs:AbuseNeglectAllegationCategoryText", ""),
+          Map.entry("j:ChargeDegreeText", ""),
+          Map.entry("j:ChargeEnhancingFactorText", ""),
+          Map.entry("j:ChargeSpecialAllegationText", ""),
+          Map.entry("j:IncidentLevelCode", ""),
+          Map.entry("j:PersonIdentificationCategoryCode", ""),
+          Map.entry("j:ConveyanceColorPrimaryCode", "vehiclecolor"),
+          Map.entry("j:CrashDrivingRestrictionCode", ""),
+          Map.entry("j:DriverAccidentSeverityCode", ""),
+          Map.entry("j:DrivingIncidentHazMatCode", ""),
+          Map.entry("j:DriverLicenseCommercialClassCode", ""),
+          Map.entry("j:JurisdictionNCICLISCode", ""),
+          Map.entry("j:JurisdictionNCICLSTACode", ""),
+          Map.entry("j:OrganizationAlternateNameCategoryCode", ""),
+          Map.entry("j:PersonEthnicityCode", "ethnicity"),
+          Map.entry("j:PersonEyeColorCode", "eyecolor"),
+          Map.entry("j:PersonHairColorCode", "haircolor"),
+          Map.entry("j:PersonRaceCode", "race"),
+          Map.entry("j:PersonSexCode", ""),
+          Map.entry("j:PersonUnionCategoryCode", ""),
+          Map.entry("j:ProtectionOrderConditionCode", ""),
+          Map.entry("j:VehicleMakeCode", "vehiclemake"),
+          Map.entry("j:VehicleModelCode", ""),
+          Map.entry("j:VehicleStyleCode", ""),
+          Map.entry("j:WarrantExtraditionLimitationCode", ""),
+          Map.entry("juvenile:DeliquentActCategoryCode", ""),
+          Map.entry("nc:BinaryFormatText", ""),
+          Map.entry("nc:ContactInformationAvailablilityCode", ""),
+          Map.entry("nc:CurrencyCode", ""),
+          Map.entry("nc:DocumentLanguageCode", ""),
+          Map.entry("nc:IdentificationCategoryDescriptionText", ""),
+          Map.entry("nc:LanguageCode", ""),
+          Map.entry("nc:LengthUnitCode", ""),
+          Map.entry("nc:LocationStateUSPostalServiceCode", ""),
+          Map.entry("nc:LocationCountryName", "country"),
+          Map.entry("nc:PersonCitizenshipFIPS10-4Code", ""),
+          Map.entry("nc:SensitivityText", ""),
+          Map.entry("nc:SpeedUnitCode", ""),
+          Map.entry("nc:WeightUnitCode", ""),
+          Map.entry("nc:PaymentMeansCode", ""),
+          // Tyler specific things, not mentioned in the ECF spec
+          Map.entry("ecf:FilingStatusCode", "filingstatus"),
+          Map.entry("nc:PersonNameSuffixText", "namesuffix"),
+          Map.entry("j:ArrestLocation/nc:LocationName", "arrestlocation"),
+          Map.entry(
+              "j:ArrestAgency/nc:OrganizationIdentification/nc:IdentificationID",
+              "lawenforcementunit"),
+          Map.entry("j:StatuteLevelText", "degree"),
+          Map.entry("nc:LocationState/nc:LocationStateName", "state"),
+          Map.entry("tyler:ServiceTypeCode", "serviceType"),
+          Map.entry("tyler:FilerTypeCode", "filertype"),
+          Map.entry("tyler:ProcedureRemedy/tyler:RemedyCode", "procedureremedy"),
+          Map.entry("tyler:DisclaimerRequirementCode", "disclaimerrequirement"),
+          Map.entry("tyler:ProcedureRemedy/tyler:DamageAmountCode", "damageamount"),
+          Map.entry("tyler:FilingComponentCode", "filingcomponent"),
+          Map.entry("tyler:DocumentOptionalService/nc:IdentificationID", "optionalservice"),
+          Map.entry("tyler:BondTypeCode", "bond"),
+          Map.entry("tyler:CrossReferenceTypeCode", "crossreference"),
+          Map.entry("tyler:GeneralOffenseCode", "generaloffense"),
+          Map.entry("tyler:StatuteTypeCode", "statutetype"),
+          Map.entry("tyler:DriverLicenseTypeCode", "driverlicensetype"),
+          Map.entry("tyler:CaseSubTypeCode", "casesubtype"),
+          Map.entry("tyler:PhaseTypeCode", "chargephase"),
+          Map.entry("tyler:VehicleTypeCode", "vehicletype"),
+          Map.entry("j:StatuteCodeIdentification/nc:IdentificationID", "statute"),
+          Map.entry("tyler:JurisdictionCode", "citationjurisdiction"),
+          Map.entry("nc:VehicleMakeCode", "vehiclemake"),
+          Map.entry("nc:PersonPrimaryLanguage/nc:LanguageCode", "language"),
+          Map.entry("nc:PersonPhysicalFeature/j:PhysicalFeatureCategoryCode", "physicalfeature"));
+
   /**
    * The path to the keystore file, containing the x509 cert used to sign headers to download zips.
    */
   private final String pathToKeystore;
 
   private final String x509Password;
+  private final ECF_VERSION ecfVersion;
 
-  public CodeUpdater(String pathToKeystore, String x509Password) {
+  /**
+   * The association of XML element names to the SQL/EFM table name.
+   *
+   * <p>All genericodes are given with an unique element name. However, most of the time the
+   * genericode lists are refered to by the common name, or the table name, not the element name.
+   * This includes the versions of each genericode lists, which we use to deterimine which
+   * genericodes to download when updating.
+   *
+   * <p>For examples of what keys this map can contain, see: ECF4: -
+   * https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Ref130631847
+   * -
+   * https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Toc118889800
+   * ECF5: -
+   * https://docs.oasis-open.org/legalxml-courtfiling/ecf/v5.0/cs01/ecf-v5.0-cs01.html#_Toc8290963 -
+   * https://docs.oasis-open.org/legalxml-courtfiling/ecf/v5.0/cs01/ecf-v5.0-cs01.html#_Toc8290970.
+   */
+  private Map<String, String> getElemToTable() {
+    if (ecfVersion == ECF_VERSION.V5) {
+      return ecf5ElemToTableName;
+    } else {
+      return ecf4ElemToTableName;
+    }
+  }
+
+  public CodeUpdater(String pathToKeystore, String x509Password, ECF_VERSION ecfVersion) {
     this.pathToKeystore = pathToKeystore;
     this.x509Password = x509Password;
+    this.ecfVersion = ecfVersion;
   }
 
   /**
@@ -194,7 +335,7 @@ public class CodeUpdater {
     }
   }
 
-  private boolean downloadSystemTables(String baseUrl, CodeDatabase cd, HeaderSigner signer)
+  private boolean downloadSystemTables(String baseUrl, CodeDatabaseAPI cd, HeaderSigner signer)
       throws SQLException, IOException, JAXBException {
     Map<String, String> codeUrls =
         Map.of(
@@ -288,15 +429,17 @@ public class CodeUpdater {
    * @param tables
    * @return a map of the actually downloaded codes
    */
-  private static Map<String, DownloadedCodes> streamDownload(
+  private Map<String, DownloadedCodes> streamDownload(
       String authHeader,
       String location,
       Stream<CodeToDownload> courtCodeList,
-      Optional<List<String>> tables) {
+      Optional<List<String>> tables,
+      CodeDatabaseAPI cd) {
     var codeLists = new ConcurrentHashMap<String, DownloadedCodes>();
     courtCodeList.forEach(
         toDownload -> {
-          if (tables.isEmpty() || tables.get().contains(toDownload.tableName)) {
+          String tableName = toDownload.tableName;
+          if (tables.isEmpty() || tables.get().contains(tableName)) {
             try {
               InputStream urlStream = getCodesZip(toDownload.url, authHeader);
               ZipInputStream zip = new ZipInputStream(urlStream);
@@ -314,24 +457,14 @@ public class CodeUpdater {
     return codeLists;
   }
 
-  private static Map<String, CourtPolicyResponseMessageType> streamPolicies(
-      Stream<String> locations, String jurisdiction, FilingReviewMDEPort filingPort) {
-    var policies = new ConcurrentHashMap<String, CourtPolicyResponseMessageType>();
+  private Map<String, Stream<CodeToDownload>> streamPolicies(
+      Stream<String> locations,
+      String jurisdiction,
+      Function<String, Stream<CodeToDownload>> urlGetter) {
+    var policies = new ConcurrentHashMap<String, Stream<CodeToDownload>>();
     locations.forEach(
         location -> {
-          var m = Ecf4Helper.prep(new CourtPolicyQueryMessageType(), location);
-          try {
-            CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
-            policies.put(location, p);
-          } catch (SOAPFaultException ex) {
-            log.warn(
-                "Got a SOAP Fault excption when getting the policy for "
-                    + location
-                    + " in "
-                    + jurisdiction
-                    + ": "
-                    + StdLib.strFromException(ex));
-          }
+          policies.put(location, urlGetter.apply(location));
         });
     return policies;
   }
@@ -346,46 +479,19 @@ public class CodeUpdater {
   private boolean downloadCourtTables(
       String location,
       Optional<List<String>> tables,
-      CodeDatabase cd,
+      CodeDatabaseAPI cd,
       HeaderSigner signer,
-      CourtPolicyResponseMessageType policyResp,
-      String baseUrl)
+      Stream<CodeToDownload> toDownload)
       throws JAXBException, IOException, SQLException {
     log.info("Doing updates for: {}, tables: {}", location, tables);
     Instant downloadStart = Instant.now(Clock.systemUTC());
-    // TODO(brycew-later): check that the effective date is later than today
-    // JAXBElement<?> obj = ccl.getEffectiveDate().getDateRepresentation();
-    Map<String, String> urlMap =
-        policyResp.getRuntimePolicyParameters().getCourtCodelist().stream()
-            .collect(
-                Collectors.toMap(
-                    (cc1) -> ecf4ElemToTableName.get(cc1.getECFElementName().getValue()),
-                    // Tyler gives us URLs w/ spaces, which aren't valid. This makes them valid
-                    (cc1) ->
-                        cc1.getCourtCodelistURI()
-                            .getIdentificationID()
-                            .getValue()
-                            .replace(" ", "%20")));
-    Stream<CodeToDownload> toDownload;
-    if (tables.isEmpty()) {
-      toDownload =
-          urlMap.entrySet().stream().map((ent) -> new CodeToDownload(ent.getKey(), ent.getValue()));
-    } else {
-      toDownload =
-          tables.get().stream()
-              .map(
-                  tableName -> {
-                    String guessUrl = makeCodeUrl(baseUrl, tableName, location);
-                    return new CodeToDownload(tableName, urlMap.getOrDefault(tableName, guessUrl));
-                  });
-    }
     Optional<String> signedTime = signer.signedCurrentTime();
     if (signedTime.isEmpty()) {
       log.error("Couldn't get signed time to download codeds, skipping all");
       return false;
     }
     Map<String, DownloadedCodes> downloaded =
-        streamDownload(signedTime.get(), location, toDownload.parallel(), tables);
+        streamDownload(signedTime.get(), location, toDownload.parallel(), tables, cd);
     downloads = downloads.plus(Duration.between(downloadStart, Instant.now(Clock.systemUTC())));
     log.info("Location: {}: Downloads took: {}", location, downloads);
 
@@ -408,7 +514,8 @@ public class CodeUpdater {
   }
 
   /** Returns true if successful, false if not successful */
-  public boolean updateAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
+  public boolean updateAll(
+      String baseUrl, Function<String, Stream<CodeToDownload>> urlGetter, CodeDatabaseAPI cd)
       throws SQLException, IOException, JAXBException {
     HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
     if (!downloadSystemTables(baseUrl, cd, signer)) {
@@ -459,16 +566,15 @@ public class CodeUpdater {
         "Took {} to remove existing tables",
         Duration.between(startDel, Instant.now(Clock.systemUTC())));
     Instant startPolicy = Instant.now(Clock.systemUTC());
-    Map<String, CourtPolicyResponseMessageType> policies =
-        streamPolicies(versionsToUpdate.keySet().stream().parallel(), cd.getDomain(), filingPort);
+    Map<String, Stream<CodeToDownload>> courtDownloads =
+        streamPolicies(versionsToUpdate.keySet().stream().parallel(), cd.getDomain(), urlGetter);
     soaps = soaps.plus(Duration.between(startPolicy, Instant.now(Clock.systemUTC())));
     log.info("Soaps: {}", soaps);
 
-    for (var policy : policies.entrySet()) {
-      final String courtLocation = policy.getKey();
+    for (var court : courtDownloads.entrySet()) {
+      final String courtLocation = court.getKey();
       final List<String> tables = versionsToUpdate.get(courtLocation);
-      if (!downloadCourtTables(
-          courtLocation, Optional.of(tables), cd, signer, policy.getValue(), baseUrl)) {
+      if (!downloadCourtTables(courtLocation, Optional.of(tables), cd, signer, court.getValue())) {
         log.warn("Failed updating court {}'s tables {}", courtLocation, tables);
         cd.rollback(sp);
         return false;
@@ -483,19 +589,26 @@ public class CodeUpdater {
   /**
    * Downloads all of the codes from scratch, deleting all of the existing info already in tables.
    */
-  public boolean replaceAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
+  public boolean replaceAll(
+      String baseUrl, Function<String, Stream<CodeToDownload>> urlGetter, CodeDatabaseAPI cd)
       throws SQLException, IOException, JAXBException {
-    return replaceSome(baseUrl, filingPort, cd, List.of());
+    return replaceSome(baseUrl, urlGetter, cd, List.of());
   }
 
   public boolean replaceSome(
-      String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd, List<String> locs)
+      String baseUrl,
+      Function<String, Stream<CodeToDownload>> urlGetter,
+      CodeDatabaseAPI cd,
+      List<String> locs)
       throws SQLException, IOException, JAXBException {
     HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
     log.info("Downloading system tables for {}", cd.getDomain());
     boolean success = downloadSystemTables(baseUrl, cd, signer);
 
-    var tablesToDeleteDomain = ecf4ElemToTableName.values();
+    List<String> tablesToDeleteDomain =
+        getElemToTable().entrySet().stream()
+            .map((e) -> e.getValue())
+            .collect(Collectors.toUnmodifiableList());
     for (String table : tablesToDeleteDomain) {
       cd.createTableIfAbsent(table);
       cd.deleteFromTable(table);
@@ -508,18 +621,18 @@ public class CodeUpdater {
     if (locs.isEmpty()) {
       locs = cd.getAllLocations();
     }
-    // Remove the "0" or top level court, which doesn't usually have individual court tables
+    // Remove the "0" or top level court, which doesn't usually have individual
+    // court tables
     locs.remove("0");
     Instant startPolicy = Instant.now(Clock.systemUTC());
-    Map<String, CourtPolicyResponseMessageType> policies =
-        streamPolicies(locs.stream(), cd.getDomain(), filingPort);
+    Map<String, Stream<CodeToDownload>> courtDownloads =
+        streamPolicies(locs.stream(), cd.getDomain(), urlGetter);
     soaps = soaps.plus(Duration.between(startPolicy, Instant.now(Clock.systemUTC())));
     log.info("Soaps: {}", soaps);
-    for (var policy : policies.entrySet()) {
-      final String location = policy.getKey();
+    for (var court : courtDownloads.entrySet()) {
+      final String location = court.getKey();
       log.info("Downloading tables for {}", location);
-      success &=
-          downloadCourtTables(location, Optional.empty(), cd, signer, policy.getValue(), baseUrl);
+      success &= downloadCourtTables(location, Optional.empty(), cd, signer, court.getValue());
     }
     log.info("Downloads took: {}, and updates took: {}, soaps took: {}", downloads, updates, soaps);
     cd.commit();
@@ -528,19 +641,16 @@ public class CodeUpdater {
     return success;
   }
 
-  /** Sets up the WSDL connection to Tyler, used for `getPolicy` to get the URL. */
-  private static FilingReviewMDEPort loginWithTyler(
-      String jurisdiction, String env, String userEmail, String userPassword) {
+  /** Sets up functions for the WSDL connection to Tyler, used for `getPolicy` to get the URL. */
+  private static Function<String, Stream<CodeToDownload>> policyGetter(
+      ECF_VERSION ecfVersion,
+      String jurisdiction,
+      String env,
+      String userEmail,
+      String userPassword) {
     Optional<EfmUserService> userService = TylerUrls.getEfmUserFactory(jurisdiction, env);
     if (userService.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " in Soap chooser for EFMUser");
-    }
-    log.info("Getting filing factory for {} {}", jurisdiction, env);
-    Optional<FilingReviewMDEService> filingFactory =
-        SoapClientChooser.getFilingReviewFactory(jurisdiction, env);
-    if (filingFactory.isEmpty()) {
-      throw new RuntimeException(
-          "Can't find " + jurisdiction + " in Soap Chooser for filing review factory");
     }
     IEfmUserService userPort = userService.get().getBasicHttpBindingIEfmUserService();
     ServiceHelpers.setupServicePort((BindingProvider) userPort);
@@ -549,11 +659,86 @@ public class CodeUpdater {
     authReq.setPassword(userPassword);
     AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
     List<Header> headersList = TylerUserNamePassword.makeHeaderList(authRes);
-    FilingReviewMDEPort filingPort = filingFactory.get().getFilingReviewMDEPort();
-    ServiceHelpers.setupServicePort((BindingProvider) filingPort);
-    Map<String, Object> ctx = ((BindingProvider) filingPort).getRequestContext();
-    ctx.put(Header.HEADER_LIST, headersList);
-    return filingPort;
+
+    log.info("Getting filing factory for {} {}", jurisdiction, env);
+    if (ecfVersion.equals(ECF_VERSION.V4)) {
+      Optional<FilingReviewMDEService> filingFactory =
+          edu.suffolk.litlab.efspserver.ecf4.SoapClientChooser.getFilingReviewFactory(
+              jurisdiction, env);
+      if (filingFactory.isEmpty()) {
+        throw new RuntimeException(
+            "Can't find " + jurisdiction + " in Soap Chooser for filing review factory");
+      }
+      FilingReviewMDEPort filingPort = filingFactory.get().getFilingReviewMDEPort();
+      ServiceHelpers.setupServicePort((BindingProvider) filingPort, headersList);
+      Function<String, Stream<CodeToDownload>> getter =
+          (location) -> {
+            var m = Ecf4Helper.prep(new CourtPolicyQueryMessageType(), location);
+            try {
+              CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
+              return p.getRuntimePolicyParameters().getCourtCodelist().stream()
+                  .map(
+                      ccl -> {
+                        // TODO(brycew-later): check that the effective date is later than today
+                        // JAXBElement<?> obj = ccl.getEffectiveDate().getDateRepresentation();
+                        String ecfElem = ccl.getECFElementName().getValue();
+                        // Tyler gives us URLs w/ spaces, which aren't valid. This makes them
+                        // valid
+                        String url =
+                            ccl.getCourtCodelistURI()
+                                .getIdentificationID()
+                                .getValue()
+                                .replace(" ", "%20");
+                        return new CodeToDownload(ecfElem, url);
+                      });
+            } catch (SOAPFaultException ex) {
+              log.warn(
+                  "Got a SOAP Fault excption when getting the policy for {} in {}: {}",
+                  location,
+                  jurisdiction,
+                  StdLib.strFromException(ex));
+              return Stream.empty();
+            }
+          };
+      return getter;
+    } else {
+      Optional<CourtPolicyMDEService> policyFactory =
+          edu.suffolk.litlab.efspserver.ecf5.SoapClientChooser.getCourtPolicyFactory(
+              jurisdiction, env);
+      if (policyFactory.isEmpty()) {
+        throw new RuntimeException(
+            "Can't find " + jurisdiction + " in Soap Chooser for filing review factory");
+      }
+      CourtPolicyMDE policyPort = policyFactory.get().getCourtPolicyMDE();
+      ServiceHelpers.setupServicePort((BindingProvider) policyPort, headersList);
+      Function<String, Stream<CodeToDownload>> getter =
+          (location) -> {
+            GetPolicyRequestMessageType msg =
+                Ecf5Helper.prep(new GetPolicyRequestMessageType(), location);
+            msg.setPolicyQueryCriteria(new PolicyQueryCriteriaType());
+            GetPolicyRequestType policyRequest = new GetPolicyRequestType();
+            policyRequest.setGetPolicyRequestMessage(msg);
+
+            GetPolicyResponseType p = policyPort.getPolicy(policyRequest);
+            for (var rest : p.getGetPolicyResponseMessage().getRest()) {
+              if (rest.getValue() instanceof RuntimePolicyType runtime) {
+                return runtime.getCodeListExtension().stream()
+                    .filter(
+                        cl -> {
+                          log.info(cl.toString());
+                          return cl.getECFElementNameText() != null;
+                        })
+                    .map(
+                        cl ->
+                            new CodeToDownload(
+                                cl.getECFElementNameText().getValue(),
+                                cl.getExtensionLocationURI().getValue()));
+              }
+            }
+            return Stream.empty();
+          };
+      return getter;
+    }
   }
 
   /** Downloads a single codes zip. For Debugging. */
@@ -590,25 +775,31 @@ public class CodeUpdater {
   }
 
   public static boolean executeCommand(
-      CodeDatabase cd, String jurisdiction, String env, List<String> args, String x509Password) {
+      CodeDatabaseAPI cd,
+      ECF_VERSION ecfVersion,
+      String jurisdiction,
+      String env,
+      List<String> args,
+      String x509Password) {
     SoapX509CallbackHandler.setX509Password(x509Password);
     String command = args.get(0);
     try {
       cd.setAutoCommit(false);
       String codesSite = TylerUrls.getCodeEndpointRootUrl(jurisdiction, env);
-      FilingReviewMDEPort filingPort =
-          loginWithTyler(
+      Function<String, Stream<CodeToDownload>> urlGetter =
+          policyGetter(
+              ecfVersion,
               jurisdiction,
               env,
               System.getenv("TYLER_USER_EMAIL"),
               System.getenv("TYLER_USER_PASSWORD"));
-      CodeUpdater cu = new CodeUpdater(System.getenv("PATH_TO_KEYSTORE"), x509Password);
+      CodeUpdater cu = new CodeUpdater(System.getenv("PATH_TO_KEYSTORE"), x509Password, ecfVersion);
       if (command.equalsIgnoreCase("replaceall")) {
-        return cu.replaceAll(codesSite, filingPort, cd);
+        return cu.replaceAll(codesSite, urlGetter, cd);
       } else if (command.equalsIgnoreCase("replacesome")) {
-        return cu.replaceSome(codesSite, filingPort, cd, args.subList(1, args.size()));
+        return cu.replaceSome(codesSite, urlGetter, cd, args.subList(1, args.size()));
       } else if (command.equalsIgnoreCase("refresh")) {
-        return cu.updateAll(codesSite, filingPort, cd);
+        return cu.updateAll(codesSite, urlGetter, cd);
       } else if (command.equalsIgnoreCase("downloadIndiv")) {
         return cu.downloadIndiv(args, jurisdiction, env);
       } else {
@@ -648,15 +839,15 @@ public class CodeUpdater {
             100);
 
     List<String> jurisdictions = List.of(System.getenv("TYLER_JURISDICTIONS").split(" "));
+    Map<String, String> config = EfmConfiguration.loadConfig();
     String env = System.getenv("TYLER_ENV");
     for (String jurisdiction : jurisdictions) {
       try (Connection conn = ds.getConnection()) {
+        var ecfVersion =
+            (config.get(jurisdiction).equalsIgnoreCase("ecf5")) ? ECF_VERSION.V5 : ECF_VERSION.V4;
+        CodeDatabase cd = new CodeDatabase(jurisdiction, env, conn);
         executeCommand(
-            new CodeDatabase(jurisdiction, env, conn),
-            jurisdiction,
-            env,
-            List.of(args),
-            System.getenv("X509_PASSWORD"));
+            cd, ecfVersion, jurisdiction, env, List.of(args), System.getenv("X509_PASSWORD"));
       }
     }
   }

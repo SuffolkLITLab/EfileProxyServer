@@ -1,6 +1,8 @@
 
 package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
 
+import java.util.ArrayList;
+import java.util.List;
 import gov.niem.release.niem.niem_core._4.IdentificationType;
 import gov.niem.release.niem.proxy.xsd._4.NormalizedString;
 import gov.niem.release.niem.structures._4.AugmentationType;
@@ -13,8 +15,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * An augmentation type
- * 
  * <p>Java class for MessageStatusAugmentationType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -26,7 +26,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *       &lt;sequence&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ServiceRecipientID" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ServiceStatusCode" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}DocumentIdentification"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}DocumentIdentification" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -51,7 +51,7 @@ public class MessageStatusAugmentationType
     @XmlElement(name = "ServiceStatusCode")
     protected NormalizedString serviceStatusCode;
     @XmlElement(name = "DocumentIdentification", namespace = "http://release.niem.gov/niem/niem-core/4.0/", required = true)
-    protected IdentificationType documentIdentification;
+    protected List<IdentificationType> documentIdentification;
 
     /**
      * Gets the value of the serviceRecipientID property.
@@ -104,25 +104,30 @@ public class MessageStatusAugmentationType
     /**
      * Gets the value of the documentIdentification property.
      * 
-     * @return
-     *     possible object is
-     *     {@link IdentificationType }
-     *     
-     */
-    public IdentificationType getDocumentIdentification() {
-        return documentIdentification;
-    }
-
-    /**
-     * Sets the value of the documentIdentification property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the documentIdentification property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link IdentificationType }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getDocumentIdentification().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link IdentificationType }
+     * 
+     * 
      */
-    public void setDocumentIdentification(IdentificationType value) {
-        this.documentIdentification = value;
+    public List<IdentificationType> getDocumentIdentification() {
+        if (documentIdentification == null) {
+            documentIdentification = new ArrayList<IdentificationType>();
+        }
+        return this.documentIdentification;
     }
 
     /**

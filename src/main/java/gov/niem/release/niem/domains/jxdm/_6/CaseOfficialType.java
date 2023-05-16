@@ -4,7 +4,6 @@ package gov.niem.release.niem.domains.jxdm._6;
 import java.util.ArrayList;
 import java.util.List;
 import gov.niem.release.niem.niem_core._4.IdentificationType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseOfficialAugmentationType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -13,6 +12,7 @@ import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.common.CaseJudgeAugmentationType;
 
 
 /**
@@ -25,10 +25,10 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="CaseOfficialType"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://release.niem.gov/niem/domains/jxdm/6.0/}JudicialOfficialType"&gt;
+ *     &lt;extension base="{http://release.niem.gov/niem/domains/jxdm/6.1/}JudicialOfficialType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}CaseOfficialCaseIdentification" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}CaseOfficialAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}CaseOfficialCaseIdentification" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}CaseOfficialAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -49,7 +49,7 @@ public class CaseOfficialType
 
     @XmlElement(name = "CaseOfficialCaseIdentification")
     protected IdentificationType caseOfficialCaseIdentification;
-    @XmlElementRef(name = "CaseOfficialAugmentationPoint", namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", type = JAXBElement.class, required = false)
+    @XmlElementRef(name = "CaseOfficialAugmentationPoint", namespace = "http://release.niem.gov/niem/domains/jxdm/6.1/", type = JAXBElement.class, required = false)
     protected List<JAXBElement<?>> caseOfficialAugmentationPoint;
 
     /**
@@ -94,8 +94,10 @@ public class CaseOfficialType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link CaseOfficialAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseOfficialAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link JAXBElement }{@code <}{@link CaseJudgeAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link tyler.ecf.v5_0.extensions.common.CaseOfficialAugmentationType }{@code >}
      * 
      * 
      */

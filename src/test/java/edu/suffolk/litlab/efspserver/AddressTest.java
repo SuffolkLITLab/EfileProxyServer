@@ -17,7 +17,6 @@ import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.CourtLocationInfo;
-
 import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 import gov.niem.niem.niem_core._2.AddressType;
 import gov.niem.niem.niem_core._2.ProperNameTextType;
@@ -45,7 +44,7 @@ public class AddressTest {
   @Test
   public void addressShouldMakeXml() throws JAXBException, FilingError {
     FailFastCollector collector = new FailFastCollector();
-    JAXBElement<AddressType> addrElem = serializer.serializeNiemContactMeans(addr, collector); 
+    JAXBElement<AddressType> addrElem = serializer.serializeNiemAddress(addr, collector); 
 
     // Should be able to grab the xml str without an exception
     Ecf4Helper.objectToXmlStr(addrElem.getValue(), AddressType.class);
@@ -59,14 +58,6 @@ public class AddressTest {
     assertNotEquals(sat.getLocationCountry().getValue(), null);
     JAXBElement<?> state = sat.getLocationState();
     assertTrue(state.getValue() instanceof ProperNameTextType);
-    
-    tyler.efm.services.schema.common.AddressType tylerAddr =
-        EcfCourtSpecificSerializer.serializeTylerAddress(addr);
-    assertEquals(tylerAddr.getAddressLine1(), "100 Circle Road");
-    assertEquals(tylerAddr.getAddressLine2(), "Apt 2");
-    assertEquals(tylerAddr.getCity(), "Plano");
-    assertEquals(tylerAddr.getState(), "TX");
-    assertEquals(tylerAddr.getCountry(), "US");
   }
   
   @Test

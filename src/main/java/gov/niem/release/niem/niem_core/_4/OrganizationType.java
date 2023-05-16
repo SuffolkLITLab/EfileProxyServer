@@ -6,7 +6,6 @@ import java.util.List;
 import gov.niem.release.niem.domains.jxdm._6.CourtType;
 import gov.niem.release.niem.domains.jxdm._6.EnforcementUnitType;
 import gov.niem.release.niem.structures._4.ObjectType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.OrganizationAugmentationType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -269,8 +268,9 @@ public class OrganizationType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link OrganizationAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.OrganizationAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link JAXBElement }{@code <}{@link tyler.ecf.v5_0.extensions.common.OrganizationAugmentationType }{@code >}
      * 
      * 
      */

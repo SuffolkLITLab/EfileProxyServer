@@ -32,7 +32,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *       &lt;sequence&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Person" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Case" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.0/}PersonCaseAssociationAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.1/}PersonCaseAssociationAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;

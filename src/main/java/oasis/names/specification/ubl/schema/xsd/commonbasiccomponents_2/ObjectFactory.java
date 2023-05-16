@@ -26,13 +26,15 @@ public class ObjectFactory {
 
     private final static QName _AcceptedIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AcceptedIndicator");
     private final static QName _AcceptedVariantsDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AcceptedVariantsDescription");
+    private final static QName _AccessToolsURI_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AccessToolsURI");
     private final static QName _AccountFormatCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AccountFormatCode");
     private final static QName _AccountID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AccountID");
     private final static QName _AccountTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AccountTypeCode");
     private final static QName _AccountingCost_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AccountingCost");
     private final static QName _AccountingCostCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AccountingCostCode");
     private final static QName _ActionCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ActionCode");
-    private final static QName _ActivityCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ActivityCode");
+    private final static QName _ActivityType_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ActivityType");
+    private final static QName _ActivityTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ActivityTypeCode");
     private final static QName _ActualDeliveryDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ActualDeliveryDate");
     private final static QName _ActualDeliveryTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ActualDeliveryTime");
     private final static QName _ActualDespatchDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ActualDespatchDate");
@@ -42,6 +44,7 @@ public class ObjectFactory {
     private final static QName _ActualTemperatureReductionQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ActualTemperatureReductionQuantity");
     private final static QName _AdValoremIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AdValoremIndicator");
     private final static QName _AdditionalAccountID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AdditionalAccountID");
+    private final static QName _AdditionalConditions_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AdditionalConditions");
     private final static QName _AdditionalInformation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AdditionalInformation");
     private final static QName _AdditionalStreetName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AdditionalStreetName");
     private final static QName _AddressFormatCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AddressFormatCode");
@@ -51,6 +54,7 @@ public class ObjectFactory {
     private final static QName _AdvertisementAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AdvertisementAmount");
     private final static QName _AgencyID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AgencyID");
     private final static QName _AgencyName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AgencyName");
+    private final static QName _AgreementTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AgreementTypeCode");
     private final static QName _AirFlowPercent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AirFlowPercent");
     private final static QName _AircraftID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AircraftID");
     private final static QName _AliasName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AliasName");
@@ -66,24 +70,28 @@ public class ObjectFactory {
     private final static QName _ApplicationStatusCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ApplicationStatusCode");
     private final static QName _ApprovalDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ApprovalDate");
     private final static QName _ApprovalStatus_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ApprovalStatus");
+    private final static QName _Article_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Article");
     private final static QName _AttributeID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AttributeID");
     private final static QName _AuctionConstraintIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AuctionConstraintIndicator");
     private final static QName _AuctionURI_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AuctionURI");
     private final static QName _AvailabilityDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AvailabilityDate");
     private final static QName _AvailabilityStatusCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AvailabilityStatusCode");
+    private final static QName _AvailabilityTimePercent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AvailabilityTimePercent");
     private final static QName _AverageAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AverageAmount");
     private final static QName _AverageSubsequentContractAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AverageSubsequentContractAmount");
     private final static QName _AwardDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AwardDate");
+    private final static QName _AwardID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AwardID");
     private final static QName _AwardTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AwardTime");
-    private final static QName _AwardingCriteriaDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AwardingCriteriaDescription");
-    private final static QName _AwardingCriteriaID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AwardingCriteriaID");
-    private final static QName _AwardingCriteriaTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AwardingCriteriaTypeCode");
+    private final static QName _AwardingCriterionDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AwardingCriterionDescription");
+    private final static QName _AwardingCriterionID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AwardingCriterionID");
+    private final static QName _AwardingCriterionTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AwardingCriterionTypeCode");
     private final static QName _AwardingMethodTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "AwardingMethodTypeCode");
     private final static QName _BackOrderAllowedIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BackOrderAllowedIndicator");
     private final static QName _BackorderQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BackorderQuantity");
     private final static QName _BackorderReason_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BackorderReason");
     private final static QName _BalanceAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BalanceAmount");
     private final static QName _BalanceBroughtForwardIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BalanceBroughtForwardIndicator");
+    private final static QName _BarcodeSymbologyID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BarcodeSymbologyID");
     private final static QName _BaseAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BaseAmount");
     private final static QName _BaseQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BaseQuantity");
     private final static QName _BaseUnitMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BaseUnitMeasure");
@@ -91,9 +99,12 @@ public class ObjectFactory {
     private final static QName _BasicConsumedQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BasicConsumedQuantity");
     private final static QName _BatchQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BatchQuantity");
     private final static QName _BestBeforeDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BestBeforeDate");
+    private final static QName _BindingOnBuyerIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BindingOnBuyerIndicator");
     private final static QName _BirthDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BirthDate");
+    private final static QName _BirthplaceName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BirthplaceName");
     private final static QName _BlockName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BlockName");
     private final static QName _BrandName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BrandName");
+    private final static QName _BriefDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BriefDescription");
     private final static QName _BrokerAssignedID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BrokerAssignedID");
     private final static QName _BudgetYearNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BudgetYearNumeric");
     private final static QName _BuildingName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BuildingName");
@@ -103,9 +114,11 @@ public class ObjectFactory {
     private final static QName _BusinessIdentityEvidenceID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BusinessIdentityEvidenceID");
     private final static QName _BuyerEventID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BuyerEventID");
     private final static QName _BuyerProfileURI_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BuyerProfileURI");
+    private final static QName _BuyerReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "BuyerReference");
     private final static QName _CV2ID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CV2ID");
     private final static QName _CalculationExpression_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CalculationExpression");
     private final static QName _CalculationExpressionCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CalculationExpressionCode");
+    private final static QName _CalculationMethodCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CalculationMethodCode");
     private final static QName _CalculationRate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CalculationRate");
     private final static QName _CalculationSequenceNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CalculationSequenceNumeric");
     private final static QName _CallBaseAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CallBaseAmount");
@@ -114,6 +127,7 @@ public class ObjectFactory {
     private final static QName _CallTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CallTime");
     private final static QName _CancellationNote_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CancellationNote");
     private final static QName _CandidateReductionConstraintIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CandidateReductionConstraintIndicator");
+    private final static QName _CandidateStatement_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CandidateStatement");
     private final static QName _CanonicalizationMethod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CanonicalizationMethod");
     private final static QName _CapabilityTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CapabilityTypeCode");
     private final static QName _CardChipCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CardChipCode");
@@ -125,6 +139,7 @@ public class ObjectFactory {
     private final static QName _CategoryName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CategoryName");
     private final static QName _CertificateType_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CertificateType");
     private final static QName _CertificateTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CertificateTypeCode");
+    private final static QName _CertificationLevelDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CertificationLevelDescription");
     private final static QName _ChangeConditions_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ChangeConditions");
     private final static QName _Channel_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Channel");
     private final static QName _ChannelCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ChannelCode");
@@ -134,16 +149,16 @@ public class ObjectFactory {
     private final static QName _ChargeTotalAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ChargeTotalAmount");
     private final static QName _ChargeableQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ChargeableQuantity");
     private final static QName _ChargeableWeightMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ChargeableWeightMeasure");
+    private final static QName _ChildConsignmentQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ChildConsignmentQuantity");
     private final static QName _ChipApplicationID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ChipApplicationID");
     private final static QName _CityName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CityName");
     private final static QName _CitySubdivisionName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CitySubdivisionName");
-    private final static QName _Clause_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Clause");
-    private final static QName _ClauseCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ClauseCode");
     private final static QName _CodeValue_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CodeValue");
     private final static QName _CollaborationPriorityCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CollaborationPriorityCode");
     private final static QName _Comment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Comment");
     private final static QName _CommodityCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CommodityCode");
     private final static QName _CompanyID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CompanyID");
+    private final static QName _CompanyLegalForm_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CompanyLegalForm");
     private final static QName _CompanyLegalFormCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CompanyLegalFormCode");
     private final static QName _CompanyLiquidationStatusCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CompanyLiquidationStatusCode");
     private final static QName _ComparedValueMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ComparedValueMeasure");
@@ -154,10 +169,9 @@ public class ObjectFactory {
     private final static QName _CompletionIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CompletionIndicator");
     private final static QName _Condition_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Condition");
     private final static QName _ConditionCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ConditionCode");
-    private final static QName _ConditionDeviationIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ConditionDeviationIndicator");
-    private final static QName _ConditionValueMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ConditionValueMeasure");
     private final static QName _Conditions_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Conditions");
     private final static QName _ConditionsDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ConditionsDescription");
+    private final static QName _ConfidentialityLevelCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ConfidentialityLevelCode");
     private final static QName _ConsigneeAssignedID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ConsigneeAssignedID");
     private final static QName _ConsignmentQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ConsignmentQuantity");
     private final static QName _ConsignorAssignedID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ConsignorAssignedID");
@@ -176,6 +190,7 @@ public class ObjectFactory {
     private final static QName _ConsumptionTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ConsumptionTypeCode");
     private final static QName _ConsumptionWaterQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ConsumptionWaterQuantity");
     private final static QName _ContainerizedIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ContainerizedIndicator");
+    private final static QName _Content_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Content");
     private final static QName _ContentUnitQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ContentUnitQuantity");
     private final static QName _ContractFolderID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ContractFolderID");
     private final static QName _ContractName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ContractName");
@@ -183,10 +198,11 @@ public class ObjectFactory {
     private final static QName _ContractType_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ContractType");
     private final static QName _ContractTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ContractTypeCode");
     private final static QName _ContractedCarrierAssignedID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ContractedCarrierAssignedID");
-    private final static QName _ContractingPartyTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ContractingPartyTypeCode");
     private final static QName _ContractingSystemCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ContractingSystemCode");
+    private final static QName _ContractingSystemTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ContractingSystemTypeCode");
     private final static QName _CoordinateSystemCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CoordinateSystemCode");
     private final static QName _CopyIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CopyIndicator");
+    private final static QName _CopyQualityTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CopyQualityTypeCode");
     private final static QName _CorporateRegistrationTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CorporateRegistrationTypeCode");
     private final static QName _CorporateStockAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CorporateStockAmount");
     private final static QName _CorrectionAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CorrectionAmount");
@@ -196,7 +212,10 @@ public class ObjectFactory {
     private final static QName _CountrySubentity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CountrySubentity");
     private final static QName _CountrySubentityCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CountrySubentityCode");
     private final static QName _CreditLineAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CreditLineAmount");
+    private final static QName _CreditNoteTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CreditNoteTypeCode");
     private final static QName _CreditedQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CreditedQuantity");
+    private final static QName _CrewQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CrewQuantity");
+    private final static QName _CriterionTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CriterionTypeCode");
     private final static QName _CurrencyCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CurrencyCode");
     private final static QName _CurrentChargeType_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CurrentChargeType");
     private final static QName _CurrentChargeTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "CurrentChargeTypeCode");
@@ -236,19 +255,28 @@ public class ObjectFactory {
     private final static QName _DocumentHash_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "DocumentHash");
     private final static QName _DocumentID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "DocumentID");
     private final static QName _DocumentStatusCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "DocumentStatusCode");
+    private final static QName _DocumentStatusReasonCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "DocumentStatusReasonCode");
+    private final static QName _DocumentStatusReasonDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "DocumentStatusReasonDescription");
     private final static QName _DocumentType_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "DocumentType");
     private final static QName _DocumentTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "DocumentTypeCode");
+    private final static QName _DocumentationFeeAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "DocumentationFeeAmount");
     private final static QName _DueDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "DueDate");
     private final static QName _DurationMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "DurationMeasure");
     private final static QName _Duty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Duty");
     private final static QName _DutyCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "DutyCode");
     private final static QName _EarliestPickupDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EarliestPickupDate");
     private final static QName _EarliestPickupTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EarliestPickupTime");
+    private final static QName _EconomicOperatorGroupName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EconomicOperatorGroupName");
     private final static QName _EconomicOperatorRegistryURI_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EconomicOperatorRegistryURI");
     private final static QName _EffectiveDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EffectiveDate");
     private final static QName _EffectiveTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EffectiveTime");
+    private final static QName _ElectronicCatalogueUsageIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ElectronicCatalogueUsageIndicator");
     private final static QName _ElectronicDeviceDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ElectronicDeviceDescription");
+    private final static QName _ElectronicInvoiceAcceptedIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ElectronicInvoiceAcceptedIndicator");
     private final static QName _ElectronicMail_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ElectronicMail");
+    private final static QName _ElectronicOrderUsageIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ElectronicOrderUsageIndicator");
+    private final static QName _ElectronicPaymentUsageIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ElectronicPaymentUsageIndicator");
+    private final static QName _EmbeddedDocument_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EmbeddedDocument");
     private final static QName _EmbeddedDocumentBinaryObject_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EmbeddedDocumentBinaryObject");
     private final static QName _EmergencyProceduresCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EmergencyProceduresCode");
     private final static QName _EmployeeQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EmployeeQuantity");
@@ -256,7 +284,10 @@ public class ObjectFactory {
     private final static QName _EndDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EndDate");
     private final static QName _EndTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EndTime");
     private final static QName _EndpointID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EndpointID");
+    private final static QName _EndpointURI_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EndpointURI");
+    private final static QName _EnvelopeTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EnvelopeTypeCode");
     private final static QName _EnvironmentalEmissionTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EnvironmentalEmissionTypeCode");
+    private final static QName _EstimatedAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EstimatedAmount");
     private final static QName _EstimatedConsumedQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EstimatedConsumedQuantity");
     private final static QName _EstimatedDeliveryDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EstimatedDeliveryDate");
     private final static QName _EstimatedDeliveryTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EstimatedDeliveryTime");
@@ -264,8 +295,9 @@ public class ObjectFactory {
     private final static QName _EstimatedDespatchTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EstimatedDespatchTime");
     private final static QName _EstimatedOverallContractAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EstimatedOverallContractAmount");
     private final static QName _EstimatedOverallContractQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EstimatedOverallContractQuantity");
-    private final static QName _EvaluationCriteriaTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EvaluationCriteriaTypeCode");
-    private final static QName _EvidenceSuppliedID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EvidenceSuppliedID");
+    private final static QName _EstimatedTimingFurtherPublication_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EstimatedTimingFurtherPublication");
+    private final static QName _EvaluationCriterionTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EvaluationCriterionTypeCode");
+    private final static QName _EvaluationMethodTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EvaluationMethodTypeCode");
     private final static QName _EvidenceTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "EvidenceTypeCode");
     private final static QName _ExceptionResolutionCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExceptionResolutionCode");
     private final static QName _ExceptionStatusCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExceptionStatusCode");
@@ -274,11 +306,17 @@ public class ObjectFactory {
     private final static QName _ExecutionRequirementCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExecutionRequirementCode");
     private final static QName _ExemptionReason_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExemptionReason");
     private final static QName _ExemptionReasonCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExemptionReasonCode");
+    private final static QName _ExpectedAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExpectedAmount");
+    private final static QName _ExpectedCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExpectedCode");
+    private final static QName _ExpectedDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExpectedDescription");
+    private final static QName _ExpectedID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExpectedID");
     private final static QName _ExpectedOperatorQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExpectedOperatorQuantity");
     private final static QName _ExpectedQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExpectedQuantity");
+    private final static QName _ExpectedValueNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExpectedValueNumeric");
     private final static QName _ExpenseCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExpenseCode");
     private final static QName _ExpiryDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExpiryDate");
     private final static QName _ExpiryTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExpiryTime");
+    private final static QName _Expression_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Expression");
     private final static QName _ExpressionCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExpressionCode");
     private final static QName _ExtendedID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ExtendedID");
     private final static QName _Extension_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Extension");
@@ -292,17 +330,22 @@ public class ObjectFactory {
     private final static QName _FirstName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FirstName");
     private final static QName _FirstShipmentAvailibilityDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FirstShipmentAvailibilityDate");
     private final static QName _Floor_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Floor");
+    private final static QName _FollowupContractIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FollowupContractIndicator");
     private final static QName _ForecastPurposeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ForecastPurposeCode");
     private final static QName _ForecastTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ForecastTypeCode");
     private final static QName _FormatCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FormatCode");
+    private final static QName _FormatID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FormatID");
     private final static QName _ForwarderServiceInstructions_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ForwarderServiceInstructions");
     private final static QName _FreeOfChargeIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FreeOfChargeIndicator");
     private final static QName _FreeOnBoardValueAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FreeOnBoardValueAmount");
     private final static QName _FreightForwarderAssignedID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FreightForwarderAssignedID");
     private final static QName _FreightRateClassCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FreightRateClassCode");
     private final static QName _Frequency_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Frequency");
+    private final static QName _FridayAvailabilityIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FridayAvailabilityIndicator");
     private final static QName _FrozenDocumentIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FrozenDocumentIndicator");
     private final static QName _FrozenPeriodDaysNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FrozenPeriodDaysNumeric");
+    private final static QName _FulfilmentIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FulfilmentIndicator");
+    private final static QName _FulfilmentIndicatorTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FulfilmentIndicatorTypeCode");
     private final static QName _FullnessIndicationCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FullnessIndicationCode");
     private final static QName _FullyPaidSharesIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FullyPaidSharesIndicator");
     private final static QName _FundingProgram_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "FundingProgram");
@@ -311,8 +354,11 @@ public class ObjectFactory {
     private final static QName _GenderCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "GenderCode");
     private final static QName _GeneralCargoIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "GeneralCargoIndicator");
     private final static QName _GovernmentAgreementConstraintIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "GovernmentAgreementConstraintIndicator");
+    private final static QName _GrossMassMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "GrossMassMeasure");
+    private final static QName _GrossTonnageMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "GrossTonnageMeasure");
     private final static QName _GrossVolumeMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "GrossVolumeMeasure");
     private final static QName _GrossWeightMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "GrossWeightMeasure");
+    private final static QName _GroupingLots_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "GroupingLots");
     private final static QName _GuaranteeTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "GuaranteeTypeCode");
     private final static QName _GuaranteedDespatchDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "GuaranteedDespatchDate");
     private final static QName _GuaranteedDespatchTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "GuaranteedDespatchTime");
@@ -342,6 +388,7 @@ public class ObjectFactory {
     private final static QName _InformationURI_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "InformationURI");
     private final static QName _InhalationToxicityZoneCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "InhalationToxicityZoneCode");
     private final static QName _InhouseMail_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "InhouseMail");
+    private final static QName _InitiatingPartyIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "InitiatingPartyIndicator");
     private final static QName _InspectionMethodCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "InspectionMethodCode");
     private final static QName _InstallmentDueDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "InstallmentDueDate");
     private final static QName _InstructionID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "InstructionID");
@@ -349,7 +396,6 @@ public class ObjectFactory {
     private final static QName _Instructions_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Instructions");
     private final static QName _InsurancePremiumAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "InsurancePremiumAmount");
     private final static QName _InsuranceValueAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "InsuranceValueAmount");
-    private final static QName _InterestedProcurementLotsID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "InterestedProcurementLotsID");
     private final static QName _InventoryValueAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "InventoryValueAmount");
     private final static QName _InvoiceTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "InvoiceTypeCode");
     private final static QName _InvoicedQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "InvoicedQuantity");
@@ -362,6 +408,7 @@ public class ObjectFactory {
     private final static QName _ItemUpdateRequestIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ItemUpdateRequestIndicator");
     private final static QName _JobTitle_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "JobTitle");
     private final static QName _JourneyID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "JourneyID");
+    private final static QName _JurisdictionLevel_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "JurisdictionLevel");
     private final static QName _Justification_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Justification");
     private final static QName _JustificationDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "JustificationDescription");
     private final static QName _Keyword_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Keyword");
@@ -372,14 +419,18 @@ public class ObjectFactory {
     private final static QName _LatestDeliveryTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LatestDeliveryTime");
     private final static QName _LatestMeterQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LatestMeterQuantity");
     private final static QName _LatestMeterReadingDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LatestMeterReadingDate");
+    private final static QName _LatestMeterReadingMethod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LatestMeterReadingMethod");
+    private final static QName _LatestMeterReadingMethodCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LatestMeterReadingMethodCode");
     private final static QName _LatestPickupDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LatestPickupDate");
     private final static QName _LatestPickupTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LatestPickupTime");
     private final static QName _LatestProposalAcceptanceDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LatestProposalAcceptanceDate");
+    private final static QName _LatestReplyDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LatestReplyDate");
+    private final static QName _LatestReplyTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LatestReplyTime");
+    private final static QName _LatestSecurityClearanceDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LatestSecurityClearanceDate");
     private final static QName _LatitudeDegreesMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LatitudeDegreesMeasure");
     private final static QName _LatitudeDirectionCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LatitudeDirectionCode");
     private final static QName _LatitudeMinutesMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LatitudeMinutesMeasure");
     private final static QName _LeadTimeMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LeadTimeMeasure");
-    private final static QName _LegalForm_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LegalForm");
     private final static QName _LegalReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LegalReference");
     private final static QName _LegalStatusIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LegalStatusIndicator");
     private final static QName _LiabilityAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "LiabilityAmount");
@@ -425,41 +476,51 @@ public class ObjectFactory {
     private final static QName _MaximumAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumAmount");
     private final static QName _MaximumBackorderQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumBackorderQuantity");
     private final static QName _MaximumCopiesNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumCopiesNumeric");
+    private final static QName _MaximumDataLossDurationMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumDataLossDurationMeasure");
+    private final static QName _MaximumIncidentNotificationDurationMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumIncidentNotificationDurationMeasure");
+    private final static QName _MaximumLotsAwardedNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumLotsAwardedNumeric");
+    private final static QName _MaximumLotsSubmittedNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumLotsSubmittedNumeric");
     private final static QName _MaximumMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumMeasure");
     private final static QName _MaximumNumberNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumNumberNumeric");
     private final static QName _MaximumOperatorQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumOperatorQuantity");
     private final static QName _MaximumOrderQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumOrderQuantity");
+    private final static QName _MaximumOriginalsNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumOriginalsNumeric");
     private final static QName _MaximumPaidAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumPaidAmount");
     private final static QName _MaximumPaymentInstructionsNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumPaymentInstructionsNumeric");
+    private final static QName _MaximumPercent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumPercent");
     private final static QName _MaximumQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumQuantity");
-    private final static QName _MaximumTaxExclusiveAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumTaxExclusiveAmount");
-    private final static QName _MaximumTaxInclusiveAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumTaxInclusiveAmount");
     private final static QName _MaximumValue_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumValue");
+    private final static QName _MaximumValueNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumValueNumeric");
     private final static QName _MaximumVariantQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MaximumVariantQuantity");
+    private final static QName _MeanTimeToRecoverDurationMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MeanTimeToRecoverDurationMeasure");
     private final static QName _Measure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Measure");
     private final static QName _MedicalFirstAidGuideCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MedicalFirstAidGuideCode");
+    private final static QName _MessageFormat_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MessageFormat");
     private final static QName _MeterConstant_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MeterConstant");
     private final static QName _MeterConstantCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MeterConstantCode");
     private final static QName _MeterName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MeterName");
     private final static QName _MeterNumber_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MeterNumber");
     private final static QName _MeterReadingComments_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MeterReadingComments");
-    private final static QName _MeterReadingMethod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MeterReadingMethod");
-    private final static QName _MeterReadingMethodCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MeterReadingMethodCode");
     private final static QName _MeterReadingType_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MeterReadingType");
     private final static QName _MeterReadingTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MeterReadingTypeCode");
     private final static QName _MiddleName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MiddleName");
     private final static QName _MimeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MimeCode");
     private final static QName _MinimumAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MinimumAmount");
     private final static QName _MinimumBackorderQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MinimumBackorderQuantity");
+    private final static QName _MinimumDownTimeScheduleDurationMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MinimumDownTimeScheduleDurationMeasure");
     private final static QName _MinimumImprovementBid_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MinimumImprovementBid");
     private final static QName _MinimumInventoryQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MinimumInventoryQuantity");
     private final static QName _MinimumMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MinimumMeasure");
     private final static QName _MinimumNumberNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MinimumNumberNumeric");
     private final static QName _MinimumOrderQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MinimumOrderQuantity");
+    private final static QName _MinimumPercent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MinimumPercent");
     private final static QName _MinimumQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MinimumQuantity");
+    private final static QName _MinimumResponseTimeDurationMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MinimumResponseTimeDurationMeasure");
     private final static QName _MinimumValue_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MinimumValue");
+    private final static QName _MinimumValueNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MinimumValueNumeric");
     private final static QName _MiscellaneousEventTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MiscellaneousEventTypeCode");
     private final static QName _ModelName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ModelName");
+    private final static QName _MondayAvailabilityIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MondayAvailabilityIndicator");
     private final static QName _MonetaryScope_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MonetaryScope");
     private final static QName _MovieTitle_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MovieTitle");
     private final static QName _MultipleOrderQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "MultipleOrderQuantity");
@@ -471,14 +532,19 @@ public class ObjectFactory {
     private final static QName _NatureCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "NatureCode");
     private final static QName _NegotiationDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "NegotiationDescription");
     private final static QName _NetNetWeightMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "NetNetWeightMeasure");
+    private final static QName _NetTonnageMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "NetTonnageMeasure");
     private final static QName _NetVolumeMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "NetVolumeMeasure");
     private final static QName _NetWeightMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "NetWeightMeasure");
     private final static QName _NetworkID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "NetworkID");
+    private final static QName _NoFurtherNegotiationIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "NoFurtherNegotiationIndicator");
     private final static QName _NominationDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "NominationDate");
     private final static QName _NominationTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "NominationTime");
     private final static QName _NormalTemperatureReductionQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "NormalTemperatureReductionQuantity");
     private final static QName _Note_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Note");
+    private final static QName _NoticeLanguageCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "NoticeLanguageCode");
+    private final static QName _NoticeTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "NoticeTypeCode");
     private final static QName _NotificationTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "NotificationTypeCode");
+    private final static QName _OID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OID");
     private final static QName _OccurrenceDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OccurrenceDate");
     private final static QName _OccurrenceTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OccurrenceTime");
     private final static QName _OnCarriageIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OnCarriageIndicator");
@@ -487,7 +553,6 @@ public class ObjectFactory {
     private final static QName _OntologyURI_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OntologyURI");
     private final static QName _OpenTenderID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OpenTenderID");
     private final static QName _OperatingYearsQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OperatingYearsQuantity");
-    private final static QName _OperationStatusCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OperationStatusCode");
     private final static QName _OptionalLineItemIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OptionalLineItemIndicator");
     private final static QName _OptionsDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OptionsDescription");
     private final static QName _OrderIntervalDaysNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OrderIntervalDaysNumeric");
@@ -500,7 +565,9 @@ public class ObjectFactory {
     private final static QName _OrganizationDepartment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OrganizationDepartment");
     private final static QName _OriginalContractingSystemID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OriginalContractingSystemID");
     private final static QName _OriginalJobID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OriginalJobID");
+    private final static QName _OtherConditionsIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OtherConditionsIndicator");
     private final static QName _OtherInstruction_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OtherInstruction");
+    private final static QName _OtherName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OtherName");
     private final static QName _OutstandingQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OutstandingQuantity");
     private final static QName _OutstandingReason_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OutstandingReason");
     private final static QName _OversupplyQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "OversupplyQuantity");
@@ -522,8 +589,12 @@ public class ObjectFactory {
     private final static QName _PartPresentationCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PartPresentationCode");
     private final static QName _PartecipationPercent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PartecipationPercent");
     private final static QName _PartialDeliveryIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PartialDeliveryIndicator");
+    private final static QName _ParticipantID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ParticipantID");
     private final static QName _ParticipationPercent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ParticipationPercent");
     private final static QName _PartyCapacityAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PartyCapacityAmount");
+    private final static QName _PartyType_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PartyType");
+    private final static QName _PartyTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PartyTypeCode");
+    private final static QName _PassengerQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PassengerQuantity");
     private final static QName _Password_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Password");
     private final static QName _PayPerView_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PayPerView");
     private final static QName _PayableAlternativeAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PayableAlternativeAmount");
@@ -533,6 +604,7 @@ public class ObjectFactory {
     private final static QName _PaymentAlternativeCurrencyCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PaymentAlternativeCurrencyCode");
     private final static QName _PaymentChannelCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PaymentChannelCode");
     private final static QName _PaymentCurrencyCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PaymentCurrencyCode");
+    private final static QName _PaymentDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PaymentDescription");
     private final static QName _PaymentDueDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PaymentDueDate");
     private final static QName _PaymentFrequencyCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PaymentFrequencyCode");
     private final static QName _PaymentID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PaymentID");
@@ -544,7 +616,6 @@ public class ObjectFactory {
     private final static QName _PaymentPurposeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PaymentPurposeCode");
     private final static QName _PaymentTermsDetailsURI_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PaymentTermsDetailsURI");
     private final static QName _PenaltyAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PenaltyAmount");
-    private final static QName _PenaltyClauses_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PenaltyClauses");
     private final static QName _PenaltySurchargePercent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PenaltySurchargePercent");
     private final static QName _PerUnitAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PerUnitAmount");
     private final static QName _Percent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Percent");
@@ -558,11 +629,14 @@ public class ObjectFactory {
     private final static QName _PlannedDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PlannedDate");
     private final static QName _PlotIdentification_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PlotIdentification");
     private final static QName _PositionCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PositionCode");
+    private final static QName _PostEventNotificationDurationMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PostEventNotificationDurationMeasure");
     private final static QName _PostalZone_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PostalZone");
     private final static QName _Postbox_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Postbox");
     private final static QName _PowerIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PowerIndicator");
     private final static QName _PreCarriageIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PreCarriageIndicator");
+    private final static QName _PreEventNotificationDurationMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PreEventNotificationDurationMeasure");
     private final static QName _PreferenceCriterionCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PreferenceCriterionCode");
+    private final static QName _PreferredLanguageLocaleCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PreferredLanguageLocaleCode");
     private final static QName _PrepaidAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PrepaidAmount");
     private final static QName _PrepaidIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PrepaidIndicator");
     private final static QName _PrepaidPaymentReferenceID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PrepaidPaymentReferenceID");
@@ -570,6 +644,8 @@ public class ObjectFactory {
     private final static QName _PreviousJobID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PreviousJobID");
     private final static QName _PreviousMeterQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PreviousMeterQuantity");
     private final static QName _PreviousMeterReadingDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PreviousMeterReadingDate");
+    private final static QName _PreviousMeterReadingMethod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PreviousMeterReadingMethod");
+    private final static QName _PreviousMeterReadingMethodCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PreviousMeterReadingMethodCode");
     private final static QName _PreviousVersionID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PreviousVersionID");
     private final static QName _PriceAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PriceAmount");
     private final static QName _PriceChangeReason_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PriceChangeReason");
@@ -583,29 +659,43 @@ public class ObjectFactory {
     private final static QName _PrintQualifier_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PrintQualifier");
     private final static QName _Priority_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Priority");
     private final static QName _PrivacyCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PrivacyCode");
+    private final static QName _PrivatePartyIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PrivatePartyIndicator");
+    private final static QName _PrizeDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PrizeDescription");
+    private final static QName _PrizeIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PrizeIndicator");
     private final static QName _ProcedureCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ProcedureCode");
     private final static QName _ProcessDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ProcessDescription");
     private final static QName _ProcessReason_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ProcessReason");
     private final static QName _ProcessReasonCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ProcessReasonCode");
-    private final static QName _ProcurementProjectLotID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ProcurementProjectLotID");
     private final static QName _ProcurementSubTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ProcurementSubTypeCode");
     private final static QName _ProcurementTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ProcurementTypeCode");
     private final static QName _ProductTraceID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ProductTraceID");
     private final static QName _ProfileExecutionID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ProfileExecutionID");
     private final static QName _ProfileID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ProfileID");
     private final static QName _ProfileStatusCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ProfileStatusCode");
+    private final static QName _ProgressPercent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ProgressPercent");
     private final static QName _PromotionalEventTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PromotionalEventTypeCode");
+    private final static QName _PropertyGroupTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PropertyGroupTypeCode");
+    private final static QName _ProtocolID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ProtocolID");
     private final static QName _ProviderTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ProviderTypeCode");
+    private final static QName _PublicPartyIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PublicPartyIndicator");
+    private final static QName _PublishAwardIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PublishAwardIndicator");
     private final static QName _Purpose_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Purpose");
     private final static QName _PurposeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "PurposeCode");
+    private final static QName _QualificationApplicationTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "QualificationApplicationTypeCode");
     private final static QName _QualityControlCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "QualityControlCode");
     private final static QName _Quantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Quantity");
     private final static QName _QuantityDiscrepancyCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "QuantityDiscrepancyCode");
+    private final static QName _RadioCallSignID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RadioCallSignID");
     private final static QName _RailCarID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RailCarID");
+    private final static QName _Rank_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Rank");
     private final static QName _Rate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Rate");
+    private final static QName _ReceiptAdviceTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ReceiptAdviceTypeCode");
     private final static QName _ReceivedDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ReceivedDate");
+    private final static QName _ReceivedElectronicTenderQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ReceivedElectronicTenderQuantity");
+    private final static QName _ReceivedForeignTenderQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ReceivedForeignTenderQuantity");
     private final static QName _ReceivedQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ReceivedQuantity");
     private final static QName _ReceivedTenderQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ReceivedTenderQuantity");
+    private final static QName _RecurringProcurementIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RecurringProcurementIndicator");
     private final static QName _Reference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Reference");
     private final static QName _ReferenceDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ReferenceDate");
     private final static QName _ReferenceEventCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ReferenceEventCode");
@@ -623,6 +713,7 @@ public class ObjectFactory {
     private final static QName _RegistrationName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RegistrationName");
     private final static QName _RegistrationNationality_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RegistrationNationality");
     private final static QName _RegistrationNationalityID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RegistrationNationalityID");
+    private final static QName _RegulatoryDomain_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RegulatoryDomain");
     private final static QName _RejectActionCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RejectActionCode");
     private final static QName _RejectReason_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RejectReason");
     private final static QName _RejectReasonCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RejectReasonCode");
@@ -633,6 +724,7 @@ public class ObjectFactory {
     private final static QName _Remarks_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Remarks");
     private final static QName _ReminderSequenceNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ReminderSequenceNumeric");
     private final static QName _ReminderTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ReminderTypeCode");
+    private final static QName _RenewalsIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RenewalsIndicator");
     private final static QName _ReplenishmentOwnerDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ReplenishmentOwnerDescription");
     private final static QName _RequestForQuotationLineID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RequestForQuotationLineID");
     private final static QName _RequestedDeliveryDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RequestedDeliveryDate");
@@ -645,6 +737,7 @@ public class ObjectFactory {
     private final static QName _RequiredDeliveryDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RequiredDeliveryDate");
     private final static QName _RequiredDeliveryTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RequiredDeliveryTime");
     private final static QName _RequiredFeeAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RequiredFeeAmount");
+    private final static QName _RequiredResponseMessageLevelCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RequiredResponseMessageLevelCode");
     private final static QName _ResidenceType_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResidenceType");
     private final static QName _ResidenceTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResidenceTypeCode");
     private final static QName _ResidentOccupantsNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResidentOccupantsNumeric");
@@ -652,9 +745,18 @@ public class ObjectFactory {
     private final static QName _ResolutionCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResolutionCode");
     private final static QName _ResolutionDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResolutionDate");
     private final static QName _ResolutionTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResolutionTime");
+    private final static QName _Response_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Response");
+    private final static QName _ResponseAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResponseAmount");
+    private final static QName _ResponseBinaryObject_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResponseBinaryObject");
     private final static QName _ResponseCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResponseCode");
     private final static QName _ResponseDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResponseDate");
+    private final static QName _ResponseID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResponseID");
+    private final static QName _ResponseIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResponseIndicator");
+    private final static QName _ResponseMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResponseMeasure");
+    private final static QName _ResponseNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResponseNumeric");
+    private final static QName _ResponseQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResponseQuantity");
     private final static QName _ResponseTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResponseTime");
+    private final static QName _ResponseURI_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ResponseURI");
     private final static QName _RetailEventName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RetailEventName");
     private final static QName _RetailEventStatusCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RetailEventStatusCode");
     private final static QName _ReturnabilityIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ReturnabilityIndicator");
@@ -666,10 +768,13 @@ public class ObjectFactory {
     private final static QName _RevisionTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RevisionTime");
     private final static QName _RoamingPartnerName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RoamingPartnerName");
     private final static QName _RoleCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RoleCode");
+    private final static QName _RoleDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RoleDescription");
     private final static QName _Room_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Room");
     private final static QName _RoundingAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "RoundingAmount");
     private final static QName _SalesOrderID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SalesOrderID");
     private final static QName _SalesOrderLineID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SalesOrderLineID");
+    private final static QName _SaturdayAvailabilityIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SaturdayAvailabilityIndicator");
+    private final static QName _SchemaURI_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SchemaURI");
     private final static QName _SchemeURI_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SchemeURI");
     private final static QName _SealIssuerTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SealIssuerTypeCode");
     private final static QName _SealStatusCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SealStatusCode");
@@ -681,8 +786,10 @@ public class ObjectFactory {
     private final static QName _SequenceNumberID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SequenceNumberID");
     private final static QName _SequenceNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SequenceNumeric");
     private final static QName _SerialID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SerialID");
+    private final static QName _ServiceInformationPreferenceCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ServiceInformationPreferenceCode");
     private final static QName _ServiceName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ServiceName");
     private final static QName _ServiceNumberCalled_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ServiceNumberCalled");
+    private final static QName _ServiceProviderPartyIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ServiceProviderPartyIndicator");
     private final static QName _ServiceType_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ServiceType");
     private final static QName _ServiceTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ServiceTypeCode");
     private final static QName _SettlementDiscountAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SettlementDiscountAmount");
@@ -691,11 +798,13 @@ public class ObjectFactory {
     private final static QName _ShippingMarks_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ShippingMarks");
     private final static QName _ShippingOrderID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ShippingOrderID");
     private final static QName _ShippingPriorityLevelCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ShippingPriorityLevelCode");
+    private final static QName _ShipsRequirements_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ShipsRequirements");
     private final static QName _ShortQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ShortQuantity");
     private final static QName _ShortageActionCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ShortageActionCode");
     private final static QName _SignatureID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SignatureID");
     private final static QName _SignatureMethod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SignatureMethod");
     private final static QName _SizeTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SizeTypeCode");
+    private final static QName _SocialMediaTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SocialMediaTypeCode");
     private final static QName _SoleProprietorshipIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SoleProprietorshipIndicator");
     private final static QName _SourceCurrencyBaseRate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SourceCurrencyBaseRate");
     private final static QName _SourceCurrencyCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SourceCurrencyCode");
@@ -706,7 +815,7 @@ public class ObjectFactory {
     private final static QName _SpecialSecurityIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SpecialSecurityIndicator");
     private final static QName _SpecialServiceInstructions_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SpecialServiceInstructions");
     private final static QName _SpecialTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SpecialTerms");
-    private final static QName _SpecialTransportRequirments_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SpecialTransportRequirments");
+    private final static QName _SpecialTransportRequirements_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SpecialTransportRequirements");
     private final static QName _SpecificationID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SpecificationID");
     private final static QName _SpecificationTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SpecificationTypeCode");
     private final static QName _SplitConsignmentIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SplitConsignmentIndicator");
@@ -718,17 +827,17 @@ public class ObjectFactory {
     private final static QName _StatusReason_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "StatusReason");
     private final static QName _StatusReasonCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "StatusReasonCode");
     private final static QName _StreetName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "StreetName");
+    private final static QName _SubcontractingConditionsCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SubcontractingConditionsCode");
     private final static QName _SubmissionDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SubmissionDate");
     private final static QName _SubmissionDueDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SubmissionDueDate");
     private final static QName _SubmissionMethodCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SubmissionMethodCode");
     private final static QName _SubscriberID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SubscriberID");
-    private final static QName _SubscriberIDType_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SubscriberIDType");
-    private final static QName _SubscriberIDTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SubscriberIDTypeCode");
+    private final static QName _SubscriberType_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SubscriberType");
     private final static QName _SubscriberTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SubscriberTypeCode");
-    private final static QName _SubscriberTypeIdentifier_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SubscriberTypeIdentifier");
     private final static QName _SubstitutionStatusCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SubstitutionStatusCode");
     private final static QName _SuccessiveSequenceID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SuccessiveSequenceID");
     private final static QName _SummaryDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SummaryDescription");
+    private final static QName _SundayAvailabilityIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SundayAvailabilityIndicator");
     private final static QName _SupplierAssignedAccountID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SupplierAssignedAccountID");
     private final static QName _SupplyChainActivityTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "SupplyChainActivityTypeCode");
     private final static QName _TareWeightMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TareWeightMeasure");
@@ -766,20 +875,23 @@ public class ObjectFactory {
     private final static QName _Telephone_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Telephone");
     private final static QName _TenderEnvelopeID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TenderEnvelopeID");
     private final static QName _TenderEnvelopeTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TenderEnvelopeTypeCode");
+    private final static QName _TenderLanguageLocaleCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TenderLanguageLocaleCode");
     private final static QName _TenderResultCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TenderResultCode");
     private final static QName _TenderTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TenderTypeCode");
     private final static QName _TendererRequirementTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TendererRequirementTypeCode");
+    private final static QName _TendererRoleCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TendererRoleCode");
+    private final static QName _TestIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TestIndicator");
     private final static QName _TestMethod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TestMethod");
     private final static QName _Text_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Text");
     private final static QName _ThirdPartyPayerIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ThirdPartyPayerIndicator");
     private final static QName _ThresholdAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ThresholdAmount");
     private final static QName _ThresholdQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ThresholdQuantity");
     private final static QName _ThresholdValueComparisonCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ThresholdValueComparisonCode");
+    private final static QName _ThursdayAvailabilityIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ThursdayAvailabilityIndicator");
     private final static QName _TierRange_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TierRange");
     private final static QName _TierRatePercent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TierRatePercent");
     private final static QName _TimeAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TimeAmount");
     private final static QName _TimeDeltaDaysQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TimeDeltaDaysQuantity");
-    private final static QName _TimeDeviationIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TimeDeviationIndicator");
     private final static QName _TimeFrequencyCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TimeFrequencyCode");
     private final static QName _TimezoneOffset_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TimezoneOffset");
     private final static QName _TimingComplaint_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TimingComplaint");
@@ -810,27 +922,25 @@ public class ObjectFactory {
     private final static QName _TrainID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TrainID");
     private final static QName _TransactionCurrencyTaxAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransactionCurrencyTaxAmount");
     private final static QName _TransitDirectionCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransitDirectionCode");
+    private final static QName _TranslationTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TranslationTypeCode");
     private final static QName _TransportAuthorizationCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportAuthorizationCode");
     private final static QName _TransportEmergencyCardCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportEmergencyCardCode");
     private final static QName _TransportEquipmentTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportEquipmentTypeCode");
     private final static QName _TransportEventTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportEventTypeCode");
     private final static QName _TransportExecutionPlanReferenceID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportExecutionPlanReferenceID");
+    private final static QName _TransportExecutionStatusCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportExecutionStatusCode");
     private final static QName _TransportHandlingUnitTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportHandlingUnitTypeCode");
     private final static QName _TransportMeansTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportMeansTypeCode");
     private final static QName _TransportModeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportModeCode");
     private final static QName _TransportServiceCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportServiceCode");
-    private final static QName _TransportServiceProviderCancellationIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportServiceProviderCancellationIndicator");
-    private final static QName _TransportServiceProviderCompletionIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportServiceProviderCompletionIndicator");
-    private final static QName _TransportServiceProviderReadyForExecutionIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportServiceProviderReadyForExecutionIndicator");
     private final static QName _TransportServiceProviderRemarks_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportServiceProviderRemarks");
     private final static QName _TransportServiceProviderSpecialTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportServiceProviderSpecialTerms");
-    private final static QName _TransportUserCancellationIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportUserCancellationIndicator");
-    private final static QName _TransportUserCompletionIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportUserCompletionIndicator");
-    private final static QName _TransportUserReadyForExecutionIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportUserReadyForExecutionIndicator");
     private final static QName _TransportUserRemarks_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportUserRemarks");
     private final static QName _TransportUserSpecialTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportUserSpecialTerms");
     private final static QName _TransportationServiceDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportationServiceDescription");
     private final static QName _TransportationServiceDetailsURI_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportationServiceDetailsURI");
+    private final static QName _TransportationStatusTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TransportationStatusTypeCode");
+    private final static QName _TuesdayAvailabilityIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TuesdayAvailabilityIndicator");
     private final static QName _TypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "TypeCode");
     private final static QName _UBLVersionID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "UBLVersionID");
     private final static QName _UNDGCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "UNDGCode");
@@ -843,6 +953,7 @@ public class ObjectFactory {
     private final static QName _ValidateProcess_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ValidateProcess");
     private final static QName _ValidateTool_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ValidateTool");
     private final static QName _ValidateToolVersion_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ValidateToolVersion");
+    private final static QName _ValidatedCriterionPropertyID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ValidatedCriterionPropertyID");
     private final static QName _ValidationDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ValidationDate");
     private final static QName _ValidationResultCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ValidationResultCode");
     private final static QName _ValidationTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ValidationTime");
@@ -850,9 +961,12 @@ public class ObjectFactory {
     private final static QName _ValidityStartDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ValidityStartDate");
     private final static QName _Value_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Value");
     private final static QName _ValueAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ValueAmount");
+    private final static QName _ValueCurrencyCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ValueCurrencyCode");
+    private final static QName _ValueDataTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ValueDataTypeCode");
     private final static QName _ValueMeasure_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ValueMeasure");
     private final static QName _ValueQualifier_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ValueQualifier");
     private final static QName _ValueQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ValueQuantity");
+    private final static QName _ValueUnitCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "ValueUnitCode");
     private final static QName _VarianceQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "VarianceQuantity");
     private final static QName _VariantConstraintIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "VariantConstraintIndicator");
     private final static QName _VariantID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "VariantID");
@@ -860,10 +974,26 @@ public class ObjectFactory {
     private final static QName _VesselID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "VesselID");
     private final static QName _VesselName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "VesselName");
     private final static QName _WarrantyInformation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WarrantyInformation");
+    private final static QName _WebSiteTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WebSiteTypeCode");
     private final static QName _WebsiteURI_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WebsiteURI");
+    private final static QName _WednesdayAvailabilityIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WednesdayAvailabilityIndicator");
+    private final static QName _WeekDayCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WeekDayCode");
+    private final static QName _WeighingDate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WeighingDate");
+    private final static QName _WeighingDeviceID_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WeighingDeviceID");
+    private final static QName _WeighingDeviceType_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WeighingDeviceType");
+    private final static QName _WeighingMethodCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WeighingMethodCode");
+    private final static QName _WeighingTime_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WeighingTime");
     private final static QName _Weight_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "Weight");
     private final static QName _WeightNumeric_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WeightNumeric");
+    private final static QName _WeightScoringMethodologyNote_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WeightScoringMethodologyNote");
+    private final static QName _WeightStatementTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WeightStatementTypeCode");
     private final static QName _WeightingAlgorithmCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WeightingAlgorithmCode");
+    private final static QName _WeightingConsiderationDescription_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WeightingConsiderationDescription");
+    private final static QName _WeightingTypeCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WeightingTypeCode");
+    private final static QName _WithdrawOfferIndicator_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WithdrawOfferIndicator");
+    private final static QName _WithholdingTaxTotalAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WithholdingTaxTotalAmount");
+    private final static QName _WorkPhase_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WorkPhase");
+    private final static QName _WorkPhaseCode_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "WorkPhaseCode");
     private final static QName _XPath_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", "XPath");
 
     /**
@@ -887,6 +1017,14 @@ public class ObjectFactory {
      */
     public AcceptedVariantsDescriptionType createAcceptedVariantsDescriptionType() {
         return new AcceptedVariantsDescriptionType();
+    }
+
+    /**
+     * Create an instance of {@link AccessToolsURIType }
+     * 
+     */
+    public AccessToolsURIType createAccessToolsURIType() {
+        return new AccessToolsURIType();
     }
 
     /**
@@ -938,11 +1076,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ActivityCodeType }
+     * Create an instance of {@link ActivityTypeType }
      * 
      */
-    public ActivityCodeType createActivityCodeType() {
-        return new ActivityCodeType();
+    public ActivityTypeType createActivityTypeType() {
+        return new ActivityTypeType();
+    }
+
+    /**
+     * Create an instance of {@link ActivityTypeCodeType }
+     * 
+     */
+    public ActivityTypeCodeType createActivityTypeCodeType() {
+        return new ActivityTypeCodeType();
     }
 
     /**
@@ -1018,6 +1164,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AdditionalConditionsType }
+     * 
+     */
+    public AdditionalConditionsType createAdditionalConditionsType() {
+        return new AdditionalConditionsType();
+    }
+
+    /**
      * Create an instance of {@link AdditionalInformationType }
      * 
      */
@@ -1087,6 +1241,14 @@ public class ObjectFactory {
      */
     public AgencyNameType createAgencyNameType() {
         return new AgencyNameType();
+    }
+
+    /**
+     * Create an instance of {@link AgreementTypeCodeType }
+     * 
+     */
+    public AgreementTypeCodeType createAgreementTypeCodeType() {
+        return new AgreementTypeCodeType();
     }
 
     /**
@@ -1210,6 +1372,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ArticleType }
+     * 
+     */
+    public ArticleType createArticleType() {
+        return new ArticleType();
+    }
+
+    /**
      * Create an instance of {@link AttributeIDType }
      * 
      */
@@ -1250,6 +1420,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AvailabilityTimePercentType }
+     * 
+     */
+    public AvailabilityTimePercentType createAvailabilityTimePercentType() {
+        return new AvailabilityTimePercentType();
+    }
+
+    /**
      * Create an instance of {@link AverageAmountType }
      * 
      */
@@ -1274,6 +1452,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AwardIDType }
+     * 
+     */
+    public AwardIDType createAwardIDType() {
+        return new AwardIDType();
+    }
+
+    /**
      * Create an instance of {@link AwardTimeType }
      * 
      */
@@ -1282,27 +1468,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AwardingCriteriaDescriptionType }
+     * Create an instance of {@link AwardingCriterionDescriptionType }
      * 
      */
-    public AwardingCriteriaDescriptionType createAwardingCriteriaDescriptionType() {
-        return new AwardingCriteriaDescriptionType();
+    public AwardingCriterionDescriptionType createAwardingCriterionDescriptionType() {
+        return new AwardingCriterionDescriptionType();
     }
 
     /**
-     * Create an instance of {@link AwardingCriteriaIDType }
+     * Create an instance of {@link AwardingCriterionIDType }
      * 
      */
-    public AwardingCriteriaIDType createAwardingCriteriaIDType() {
-        return new AwardingCriteriaIDType();
+    public AwardingCriterionIDType createAwardingCriterionIDType() {
+        return new AwardingCriterionIDType();
     }
 
     /**
-     * Create an instance of {@link AwardingCriteriaTypeCodeType }
+     * Create an instance of {@link AwardingCriterionTypeCodeType }
      * 
      */
-    public AwardingCriteriaTypeCodeType createAwardingCriteriaTypeCodeType() {
-        return new AwardingCriteriaTypeCodeType();
+    public AwardingCriterionTypeCodeType createAwardingCriterionTypeCodeType() {
+        return new AwardingCriterionTypeCodeType();
     }
 
     /**
@@ -1351,6 +1537,14 @@ public class ObjectFactory {
      */
     public BalanceBroughtForwardIndicatorType createBalanceBroughtForwardIndicatorType() {
         return new BalanceBroughtForwardIndicatorType();
+    }
+
+    /**
+     * Create an instance of {@link BarcodeSymbologyIDType }
+     * 
+     */
+    public BarcodeSymbologyIDType createBarcodeSymbologyIDType() {
+        return new BarcodeSymbologyIDType();
     }
 
     /**
@@ -1410,11 +1604,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link BindingOnBuyerIndicatorType }
+     * 
+     */
+    public BindingOnBuyerIndicatorType createBindingOnBuyerIndicatorType() {
+        return new BindingOnBuyerIndicatorType();
+    }
+
+    /**
      * Create an instance of {@link BirthDateType }
      * 
      */
     public BirthDateType createBirthDateType() {
         return new BirthDateType();
+    }
+
+    /**
+     * Create an instance of {@link BirthplaceNameType }
+     * 
+     */
+    public BirthplaceNameType createBirthplaceNameType() {
+        return new BirthplaceNameType();
     }
 
     /**
@@ -1431,6 +1641,14 @@ public class ObjectFactory {
      */
     public BrandNameType createBrandNameType() {
         return new BrandNameType();
+    }
+
+    /**
+     * Create an instance of {@link BriefDescriptionType }
+     * 
+     */
+    public BriefDescriptionType createBriefDescriptionType() {
+        return new BriefDescriptionType();
     }
 
     /**
@@ -1506,6 +1724,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link BuyerReferenceType }
+     * 
+     */
+    public BuyerReferenceType createBuyerReferenceType() {
+        return new BuyerReferenceType();
+    }
+
+    /**
      * Create an instance of {@link CV2IDType }
      * 
      */
@@ -1527,6 +1753,14 @@ public class ObjectFactory {
      */
     public CalculationExpressionCodeType createCalculationExpressionCodeType() {
         return new CalculationExpressionCodeType();
+    }
+
+    /**
+     * Create an instance of {@link CalculationMethodCodeType }
+     * 
+     */
+    public CalculationMethodCodeType createCalculationMethodCodeType() {
+        return new CalculationMethodCodeType();
     }
 
     /**
@@ -1591,6 +1825,14 @@ public class ObjectFactory {
      */
     public CandidateReductionConstraintIndicatorType createCandidateReductionConstraintIndicatorType() {
         return new CandidateReductionConstraintIndicatorType();
+    }
+
+    /**
+     * Create an instance of {@link CandidateStatementType }
+     * 
+     */
+    public CandidateStatementType createCandidateStatementType() {
+        return new CandidateStatementType();
     }
 
     /**
@@ -1682,6 +1924,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CertificationLevelDescriptionType }
+     * 
+     */
+    public CertificationLevelDescriptionType createCertificationLevelDescriptionType() {
+        return new CertificationLevelDescriptionType();
+    }
+
+    /**
      * Create an instance of {@link ChangeConditionsType }
      * 
      */
@@ -1754,6 +2004,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ChildConsignmentQuantityType }
+     * 
+     */
+    public ChildConsignmentQuantityType createChildConsignmentQuantityType() {
+        return new ChildConsignmentQuantityType();
+    }
+
+    /**
      * Create an instance of {@link ChipApplicationIDType }
      * 
      */
@@ -1775,22 +2033,6 @@ public class ObjectFactory {
      */
     public CitySubdivisionNameType createCitySubdivisionNameType() {
         return new CitySubdivisionNameType();
-    }
-
-    /**
-     * Create an instance of {@link ClauseType }
-     * 
-     */
-    public ClauseType createClauseType() {
-        return new ClauseType();
-    }
-
-    /**
-     * Create an instance of {@link ClauseCodeType }
-     * 
-     */
-    public ClauseCodeType createClauseCodeType() {
-        return new ClauseCodeType();
     }
 
     /**
@@ -1831,6 +2073,14 @@ public class ObjectFactory {
      */
     public CompanyIDType createCompanyIDType() {
         return new CompanyIDType();
+    }
+
+    /**
+     * Create an instance of {@link CompanyLegalFormType }
+     * 
+     */
+    public CompanyLegalFormType createCompanyLegalFormType() {
+        return new CompanyLegalFormType();
     }
 
     /**
@@ -1914,22 +2164,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ConditionDeviationIndicatorType }
-     * 
-     */
-    public ConditionDeviationIndicatorType createConditionDeviationIndicatorType() {
-        return new ConditionDeviationIndicatorType();
-    }
-
-    /**
-     * Create an instance of {@link ConditionValueMeasureType }
-     * 
-     */
-    public ConditionValueMeasureType createConditionValueMeasureType() {
-        return new ConditionValueMeasureType();
-    }
-
-    /**
      * Create an instance of {@link ConditionsType }
      * 
      */
@@ -1943,6 +2177,14 @@ public class ObjectFactory {
      */
     public ConditionsDescriptionType createConditionsDescriptionType() {
         return new ConditionsDescriptionType();
+    }
+
+    /**
+     * Create an instance of {@link ConfidentialityLevelCodeType }
+     * 
+     */
+    public ConfidentialityLevelCodeType createConfidentialityLevelCodeType() {
+        return new ConfidentialityLevelCodeType();
     }
 
     /**
@@ -2090,6 +2332,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ContentType }
+     * 
+     */
+    public ContentType createContentType() {
+        return new ContentType();
+    }
+
+    /**
      * Create an instance of {@link ContentUnitQuantityType }
      * 
      */
@@ -2146,19 +2396,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ContractingPartyTypeCodeType }
-     * 
-     */
-    public ContractingPartyTypeCodeType createContractingPartyTypeCodeType() {
-        return new ContractingPartyTypeCodeType();
-    }
-
-    /**
      * Create an instance of {@link ContractingSystemCodeType }
      * 
      */
     public ContractingSystemCodeType createContractingSystemCodeType() {
         return new ContractingSystemCodeType();
+    }
+
+    /**
+     * Create an instance of {@link ContractingSystemTypeCodeType }
+     * 
+     */
+    public ContractingSystemTypeCodeType createContractingSystemTypeCodeType() {
+        return new ContractingSystemTypeCodeType();
     }
 
     /**
@@ -2175,6 +2425,14 @@ public class ObjectFactory {
      */
     public CopyIndicatorType createCopyIndicatorType() {
         return new CopyIndicatorType();
+    }
+
+    /**
+     * Create an instance of {@link CopyQualityTypeCodeType }
+     * 
+     */
+    public CopyQualityTypeCodeType createCopyQualityTypeCodeType() {
+        return new CopyQualityTypeCodeType();
     }
 
     /**
@@ -2250,11 +2508,35 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CreditNoteTypeCodeType }
+     * 
+     */
+    public CreditNoteTypeCodeType createCreditNoteTypeCodeType() {
+        return new CreditNoteTypeCodeType();
+    }
+
+    /**
      * Create an instance of {@link CreditedQuantityType }
      * 
      */
     public CreditedQuantityType createCreditedQuantityType() {
         return new CreditedQuantityType();
+    }
+
+    /**
+     * Create an instance of {@link CrewQuantityType }
+     * 
+     */
+    public CrewQuantityType createCrewQuantityType() {
+        return new CrewQuantityType();
+    }
+
+    /**
+     * Create an instance of {@link CriterionTypeCodeType }
+     * 
+     */
+    public CriterionTypeCodeType createCriterionTypeCodeType() {
+        return new CriterionTypeCodeType();
     }
 
     /**
@@ -2570,6 +2852,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DocumentStatusReasonCodeType }
+     * 
+     */
+    public DocumentStatusReasonCodeType createDocumentStatusReasonCodeType() {
+        return new DocumentStatusReasonCodeType();
+    }
+
+    /**
+     * Create an instance of {@link DocumentStatusReasonDescriptionType }
+     * 
+     */
+    public DocumentStatusReasonDescriptionType createDocumentStatusReasonDescriptionType() {
+        return new DocumentStatusReasonDescriptionType();
+    }
+
+    /**
      * Create an instance of {@link DocumentTypeType }
      * 
      */
@@ -2583,6 +2881,14 @@ public class ObjectFactory {
      */
     public DocumentTypeCodeType createDocumentTypeCodeType() {
         return new DocumentTypeCodeType();
+    }
+
+    /**
+     * Create an instance of {@link DocumentationFeeAmountType }
+     * 
+     */
+    public DocumentationFeeAmountType createDocumentationFeeAmountType() {
+        return new DocumentationFeeAmountType();
     }
 
     /**
@@ -2634,6 +2940,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link EconomicOperatorGroupNameType }
+     * 
+     */
+    public EconomicOperatorGroupNameType createEconomicOperatorGroupNameType() {
+        return new EconomicOperatorGroupNameType();
+    }
+
+    /**
      * Create an instance of {@link EconomicOperatorRegistryURIType }
      * 
      */
@@ -2658,6 +2972,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ElectronicCatalogueUsageIndicatorType }
+     * 
+     */
+    public ElectronicCatalogueUsageIndicatorType createElectronicCatalogueUsageIndicatorType() {
+        return new ElectronicCatalogueUsageIndicatorType();
+    }
+
+    /**
      * Create an instance of {@link ElectronicDeviceDescriptionType }
      * 
      */
@@ -2666,11 +2988,43 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ElectronicInvoiceAcceptedIndicatorType }
+     * 
+     */
+    public ElectronicInvoiceAcceptedIndicatorType createElectronicInvoiceAcceptedIndicatorType() {
+        return new ElectronicInvoiceAcceptedIndicatorType();
+    }
+
+    /**
      * Create an instance of {@link ElectronicMailType }
      * 
      */
     public ElectronicMailType createElectronicMailType() {
         return new ElectronicMailType();
+    }
+
+    /**
+     * Create an instance of {@link ElectronicOrderUsageIndicatorType }
+     * 
+     */
+    public ElectronicOrderUsageIndicatorType createElectronicOrderUsageIndicatorType() {
+        return new ElectronicOrderUsageIndicatorType();
+    }
+
+    /**
+     * Create an instance of {@link ElectronicPaymentUsageIndicatorType }
+     * 
+     */
+    public ElectronicPaymentUsageIndicatorType createElectronicPaymentUsageIndicatorType() {
+        return new ElectronicPaymentUsageIndicatorType();
+    }
+
+    /**
+     * Create an instance of {@link EmbeddedDocumentType }
+     * 
+     */
+    public EmbeddedDocumentType createEmbeddedDocumentType() {
+        return new EmbeddedDocumentType();
     }
 
     /**
@@ -2730,11 +3084,35 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link EndpointURIType }
+     * 
+     */
+    public EndpointURIType createEndpointURIType() {
+        return new EndpointURIType();
+    }
+
+    /**
+     * Create an instance of {@link EnvelopeTypeCodeType }
+     * 
+     */
+    public EnvelopeTypeCodeType createEnvelopeTypeCodeType() {
+        return new EnvelopeTypeCodeType();
+    }
+
+    /**
      * Create an instance of {@link EnvironmentalEmissionTypeCodeType }
      * 
      */
     public EnvironmentalEmissionTypeCodeType createEnvironmentalEmissionTypeCodeType() {
         return new EnvironmentalEmissionTypeCodeType();
+    }
+
+    /**
+     * Create an instance of {@link EstimatedAmountType }
+     * 
+     */
+    public EstimatedAmountType createEstimatedAmountType() {
+        return new EstimatedAmountType();
     }
 
     /**
@@ -2794,19 +3172,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link EvaluationCriteriaTypeCodeType }
+     * Create an instance of {@link EstimatedTimingFurtherPublicationType }
      * 
      */
-    public EvaluationCriteriaTypeCodeType createEvaluationCriteriaTypeCodeType() {
-        return new EvaluationCriteriaTypeCodeType();
+    public EstimatedTimingFurtherPublicationType createEstimatedTimingFurtherPublicationType() {
+        return new EstimatedTimingFurtherPublicationType();
     }
 
     /**
-     * Create an instance of {@link EvidenceSuppliedIDType }
+     * Create an instance of {@link EvaluationCriterionTypeCodeType }
      * 
      */
-    public EvidenceSuppliedIDType createEvidenceSuppliedIDType() {
-        return new EvidenceSuppliedIDType();
+    public EvaluationCriterionTypeCodeType createEvaluationCriterionTypeCodeType() {
+        return new EvaluationCriterionTypeCodeType();
+    }
+
+    /**
+     * Create an instance of {@link EvaluationMethodTypeCodeType }
+     * 
+     */
+    public EvaluationMethodTypeCodeType createEvaluationMethodTypeCodeType() {
+        return new EvaluationMethodTypeCodeType();
     }
 
     /**
@@ -2874,6 +3260,38 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ExpectedAmountType }
+     * 
+     */
+    public ExpectedAmountType createExpectedAmountType() {
+        return new ExpectedAmountType();
+    }
+
+    /**
+     * Create an instance of {@link ExpectedCodeType }
+     * 
+     */
+    public ExpectedCodeType createExpectedCodeType() {
+        return new ExpectedCodeType();
+    }
+
+    /**
+     * Create an instance of {@link ExpectedDescriptionType }
+     * 
+     */
+    public ExpectedDescriptionType createExpectedDescriptionType() {
+        return new ExpectedDescriptionType();
+    }
+
+    /**
+     * Create an instance of {@link ExpectedIDType }
+     * 
+     */
+    public ExpectedIDType createExpectedIDType() {
+        return new ExpectedIDType();
+    }
+
+    /**
      * Create an instance of {@link ExpectedOperatorQuantityType }
      * 
      */
@@ -2887,6 +3305,14 @@ public class ObjectFactory {
      */
     public ExpectedQuantityType createExpectedQuantityType() {
         return new ExpectedQuantityType();
+    }
+
+    /**
+     * Create an instance of {@link ExpectedValueNumericType }
+     * 
+     */
+    public ExpectedValueNumericType createExpectedValueNumericType() {
+        return new ExpectedValueNumericType();
     }
 
     /**
@@ -2911,6 +3337,14 @@ public class ObjectFactory {
      */
     public ExpiryTimeType createExpiryTimeType() {
         return new ExpiryTimeType();
+    }
+
+    /**
+     * Create an instance of {@link ExpressionType }
+     * 
+     */
+    public ExpressionType createExpressionType() {
+        return new ExpressionType();
     }
 
     /**
@@ -3018,6 +3452,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FollowupContractIndicatorType }
+     * 
+     */
+    public FollowupContractIndicatorType createFollowupContractIndicatorType() {
+        return new FollowupContractIndicatorType();
+    }
+
+    /**
      * Create an instance of {@link ForecastPurposeCodeType }
      * 
      */
@@ -3039,6 +3481,14 @@ public class ObjectFactory {
      */
     public FormatCodeType createFormatCodeType() {
         return new FormatCodeType();
+    }
+
+    /**
+     * Create an instance of {@link FormatIDType }
+     * 
+     */
+    public FormatIDType createFormatIDType() {
+        return new FormatIDType();
     }
 
     /**
@@ -3090,6 +3540,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FridayAvailabilityIndicatorType }
+     * 
+     */
+    public FridayAvailabilityIndicatorType createFridayAvailabilityIndicatorType() {
+        return new FridayAvailabilityIndicatorType();
+    }
+
+    /**
      * Create an instance of {@link FrozenDocumentIndicatorType }
      * 
      */
@@ -3103,6 +3561,22 @@ public class ObjectFactory {
      */
     public FrozenPeriodDaysNumericType createFrozenPeriodDaysNumericType() {
         return new FrozenPeriodDaysNumericType();
+    }
+
+    /**
+     * Create an instance of {@link FulfilmentIndicatorType }
+     * 
+     */
+    public FulfilmentIndicatorType createFulfilmentIndicatorType() {
+        return new FulfilmentIndicatorType();
+    }
+
+    /**
+     * Create an instance of {@link FulfilmentIndicatorTypeCodeType }
+     * 
+     */
+    public FulfilmentIndicatorTypeCodeType createFulfilmentIndicatorTypeCodeType() {
+        return new FulfilmentIndicatorTypeCodeType();
     }
 
     /**
@@ -3170,6 +3644,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GrossMassMeasureType }
+     * 
+     */
+    public GrossMassMeasureType createGrossMassMeasureType() {
+        return new GrossMassMeasureType();
+    }
+
+    /**
+     * Create an instance of {@link GrossTonnageMeasureType }
+     * 
+     */
+    public GrossTonnageMeasureType createGrossTonnageMeasureType() {
+        return new GrossTonnageMeasureType();
+    }
+
+    /**
      * Create an instance of {@link GrossVolumeMeasureType }
      * 
      */
@@ -3183,6 +3673,14 @@ public class ObjectFactory {
      */
     public GrossWeightMeasureType createGrossWeightMeasureType() {
         return new GrossWeightMeasureType();
+    }
+
+    /**
+     * Create an instance of {@link GroupingLotsType }
+     * 
+     */
+    public GroupingLotsType createGroupingLotsType() {
+        return new GroupingLotsType();
     }
 
     /**
@@ -3418,6 +3916,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link InitiatingPartyIndicatorType }
+     * 
+     */
+    public InitiatingPartyIndicatorType createInitiatingPartyIndicatorType() {
+        return new InitiatingPartyIndicatorType();
+    }
+
+    /**
      * Create an instance of {@link InspectionMethodCodeType }
      * 
      */
@@ -3471,14 +3977,6 @@ public class ObjectFactory {
      */
     public InsuranceValueAmountType createInsuranceValueAmountType() {
         return new InsuranceValueAmountType();
-    }
-
-    /**
-     * Create an instance of {@link InterestedProcurementLotsIDType }
-     * 
-     */
-    public InterestedProcurementLotsIDType createInterestedProcurementLotsIDType() {
-        return new InterestedProcurementLotsIDType();
     }
 
     /**
@@ -3578,6 +4076,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JurisdictionLevelType }
+     * 
+     */
+    public JurisdictionLevelType createJurisdictionLevelType() {
+        return new JurisdictionLevelType();
+    }
+
+    /**
      * Create an instance of {@link JustificationType }
      * 
      */
@@ -3658,6 +4164,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link LatestMeterReadingMethodType }
+     * 
+     */
+    public LatestMeterReadingMethodType createLatestMeterReadingMethodType() {
+        return new LatestMeterReadingMethodType();
+    }
+
+    /**
+     * Create an instance of {@link LatestMeterReadingMethodCodeType }
+     * 
+     */
+    public LatestMeterReadingMethodCodeType createLatestMeterReadingMethodCodeType() {
+        return new LatestMeterReadingMethodCodeType();
+    }
+
+    /**
      * Create an instance of {@link LatestPickupDateType }
      * 
      */
@@ -3679,6 +4201,30 @@ public class ObjectFactory {
      */
     public LatestProposalAcceptanceDateType createLatestProposalAcceptanceDateType() {
         return new LatestProposalAcceptanceDateType();
+    }
+
+    /**
+     * Create an instance of {@link LatestReplyDateType }
+     * 
+     */
+    public LatestReplyDateType createLatestReplyDateType() {
+        return new LatestReplyDateType();
+    }
+
+    /**
+     * Create an instance of {@link LatestReplyTimeType }
+     * 
+     */
+    public LatestReplyTimeType createLatestReplyTimeType() {
+        return new LatestReplyTimeType();
+    }
+
+    /**
+     * Create an instance of {@link LatestSecurityClearanceDateType }
+     * 
+     */
+    public LatestSecurityClearanceDateType createLatestSecurityClearanceDateType() {
+        return new LatestSecurityClearanceDateType();
     }
 
     /**
@@ -3711,14 +4257,6 @@ public class ObjectFactory {
      */
     public LeadTimeMeasureType createLeadTimeMeasureType() {
         return new LeadTimeMeasureType();
-    }
-
-    /**
-     * Create an instance of {@link LegalFormType }
-     * 
-     */
-    public LegalFormType createLegalFormType() {
-        return new LegalFormType();
     }
 
     /**
@@ -4082,6 +4620,38 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link MaximumDataLossDurationMeasureType }
+     * 
+     */
+    public MaximumDataLossDurationMeasureType createMaximumDataLossDurationMeasureType() {
+        return new MaximumDataLossDurationMeasureType();
+    }
+
+    /**
+     * Create an instance of {@link MaximumIncidentNotificationDurationMeasureType }
+     * 
+     */
+    public MaximumIncidentNotificationDurationMeasureType createMaximumIncidentNotificationDurationMeasureType() {
+        return new MaximumIncidentNotificationDurationMeasureType();
+    }
+
+    /**
+     * Create an instance of {@link MaximumLotsAwardedNumericType }
+     * 
+     */
+    public MaximumLotsAwardedNumericType createMaximumLotsAwardedNumericType() {
+        return new MaximumLotsAwardedNumericType();
+    }
+
+    /**
+     * Create an instance of {@link MaximumLotsSubmittedNumericType }
+     * 
+     */
+    public MaximumLotsSubmittedNumericType createMaximumLotsSubmittedNumericType() {
+        return new MaximumLotsSubmittedNumericType();
+    }
+
+    /**
      * Create an instance of {@link MaximumMeasureType }
      * 
      */
@@ -4114,6 +4684,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link MaximumOriginalsNumericType }
+     * 
+     */
+    public MaximumOriginalsNumericType createMaximumOriginalsNumericType() {
+        return new MaximumOriginalsNumericType();
+    }
+
+    /**
      * Create an instance of {@link MaximumPaidAmountType }
      * 
      */
@@ -4130,27 +4708,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link MaximumPercentType }
+     * 
+     */
+    public MaximumPercentType createMaximumPercentType() {
+        return new MaximumPercentType();
+    }
+
+    /**
      * Create an instance of {@link MaximumQuantityType }
      * 
      */
     public MaximumQuantityType createMaximumQuantityType() {
         return new MaximumQuantityType();
-    }
-
-    /**
-     * Create an instance of {@link MaximumTaxExclusiveAmountType }
-     * 
-     */
-    public MaximumTaxExclusiveAmountType createMaximumTaxExclusiveAmountType() {
-        return new MaximumTaxExclusiveAmountType();
-    }
-
-    /**
-     * Create an instance of {@link MaximumTaxInclusiveAmountType }
-     * 
-     */
-    public MaximumTaxInclusiveAmountType createMaximumTaxInclusiveAmountType() {
-        return new MaximumTaxInclusiveAmountType();
     }
 
     /**
@@ -4162,11 +4732,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link MaximumValueNumericType }
+     * 
+     */
+    public MaximumValueNumericType createMaximumValueNumericType() {
+        return new MaximumValueNumericType();
+    }
+
+    /**
      * Create an instance of {@link MaximumVariantQuantityType }
      * 
      */
     public MaximumVariantQuantityType createMaximumVariantQuantityType() {
         return new MaximumVariantQuantityType();
+    }
+
+    /**
+     * Create an instance of {@link MeanTimeToRecoverDurationMeasureType }
+     * 
+     */
+    public MeanTimeToRecoverDurationMeasureType createMeanTimeToRecoverDurationMeasureType() {
+        return new MeanTimeToRecoverDurationMeasureType();
     }
 
     /**
@@ -4183,6 +4769,14 @@ public class ObjectFactory {
      */
     public MedicalFirstAidGuideCodeType createMedicalFirstAidGuideCodeType() {
         return new MedicalFirstAidGuideCodeType();
+    }
+
+    /**
+     * Create an instance of {@link MessageFormatType }
+     * 
+     */
+    public MessageFormatType createMessageFormatType() {
+        return new MessageFormatType();
     }
 
     /**
@@ -4223,22 +4817,6 @@ public class ObjectFactory {
      */
     public MeterReadingCommentsType createMeterReadingCommentsType() {
         return new MeterReadingCommentsType();
-    }
-
-    /**
-     * Create an instance of {@link MeterReadingMethodType }
-     * 
-     */
-    public MeterReadingMethodType createMeterReadingMethodType() {
-        return new MeterReadingMethodType();
-    }
-
-    /**
-     * Create an instance of {@link MeterReadingMethodCodeType }
-     * 
-     */
-    public MeterReadingMethodCodeType createMeterReadingMethodCodeType() {
-        return new MeterReadingMethodCodeType();
     }
 
     /**
@@ -4290,6 +4868,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link MinimumDownTimeScheduleDurationMeasureType }
+     * 
+     */
+    public MinimumDownTimeScheduleDurationMeasureType createMinimumDownTimeScheduleDurationMeasureType() {
+        return new MinimumDownTimeScheduleDurationMeasureType();
+    }
+
+    /**
      * Create an instance of {@link MinimumImprovementBidType }
      * 
      */
@@ -4330,6 +4916,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link MinimumPercentType }
+     * 
+     */
+    public MinimumPercentType createMinimumPercentType() {
+        return new MinimumPercentType();
+    }
+
+    /**
      * Create an instance of {@link MinimumQuantityType }
      * 
      */
@@ -4338,11 +4932,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link MinimumResponseTimeDurationMeasureType }
+     * 
+     */
+    public MinimumResponseTimeDurationMeasureType createMinimumResponseTimeDurationMeasureType() {
+        return new MinimumResponseTimeDurationMeasureType();
+    }
+
+    /**
      * Create an instance of {@link MinimumValueType }
      * 
      */
     public MinimumValueType createMinimumValueType() {
         return new MinimumValueType();
+    }
+
+    /**
+     * Create an instance of {@link MinimumValueNumericType }
+     * 
+     */
+    public MinimumValueNumericType createMinimumValueNumericType() {
+        return new MinimumValueNumericType();
     }
 
     /**
@@ -4359,6 +4969,14 @@ public class ObjectFactory {
      */
     public ModelNameType createModelNameType() {
         return new ModelNameType();
+    }
+
+    /**
+     * Create an instance of {@link MondayAvailabilityIndicatorType }
+     * 
+     */
+    public MondayAvailabilityIndicatorType createMondayAvailabilityIndicatorType() {
+        return new MondayAvailabilityIndicatorType();
     }
 
     /**
@@ -4450,6 +5068,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link NetTonnageMeasureType }
+     * 
+     */
+    public NetTonnageMeasureType createNetTonnageMeasureType() {
+        return new NetTonnageMeasureType();
+    }
+
+    /**
      * Create an instance of {@link NetVolumeMeasureType }
      * 
      */
@@ -4471,6 +5097,14 @@ public class ObjectFactory {
      */
     public NetworkIDType createNetworkIDType() {
         return new NetworkIDType();
+    }
+
+    /**
+     * Create an instance of {@link NoFurtherNegotiationIndicatorType }
+     * 
+     */
+    public NoFurtherNegotiationIndicatorType createNoFurtherNegotiationIndicatorType() {
+        return new NoFurtherNegotiationIndicatorType();
     }
 
     /**
@@ -4506,11 +5140,35 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link NoticeLanguageCodeType }
+     * 
+     */
+    public NoticeLanguageCodeType createNoticeLanguageCodeType() {
+        return new NoticeLanguageCodeType();
+    }
+
+    /**
+     * Create an instance of {@link NoticeTypeCodeType }
+     * 
+     */
+    public NoticeTypeCodeType createNoticeTypeCodeType() {
+        return new NoticeTypeCodeType();
+    }
+
+    /**
      * Create an instance of {@link NotificationTypeCodeType }
      * 
      */
     public NotificationTypeCodeType createNotificationTypeCodeType() {
         return new NotificationTypeCodeType();
+    }
+
+    /**
+     * Create an instance of {@link OIDType }
+     * 
+     */
+    public OIDType createOIDType() {
+        return new OIDType();
     }
 
     /**
@@ -4575,14 +5233,6 @@ public class ObjectFactory {
      */
     public OperatingYearsQuantityType createOperatingYearsQuantityType() {
         return new OperatingYearsQuantityType();
-    }
-
-    /**
-     * Create an instance of {@link OperationStatusCodeType }
-     * 
-     */
-    public OperationStatusCodeType createOperationStatusCodeType() {
-        return new OperationStatusCodeType();
     }
 
     /**
@@ -4682,11 +5332,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link OtherConditionsIndicatorType }
+     * 
+     */
+    public OtherConditionsIndicatorType createOtherConditionsIndicatorType() {
+        return new OtherConditionsIndicatorType();
+    }
+
+    /**
      * Create an instance of {@link OtherInstructionType }
      * 
      */
     public OtherInstructionType createOtherInstructionType() {
         return new OtherInstructionType();
+    }
+
+    /**
+     * Create an instance of {@link OtherNameType }
+     * 
+     */
+    public OtherNameType createOtherNameType() {
+        return new OtherNameType();
     }
 
     /**
@@ -4858,6 +5524,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ParticipantIDType }
+     * 
+     */
+    public ParticipantIDType createParticipantIDType() {
+        return new ParticipantIDType();
+    }
+
+    /**
      * Create an instance of {@link ParticipationPercentType }
      * 
      */
@@ -4871,6 +5545,30 @@ public class ObjectFactory {
      */
     public PartyCapacityAmountType createPartyCapacityAmountType() {
         return new PartyCapacityAmountType();
+    }
+
+    /**
+     * Create an instance of {@link PartyTypeType }
+     * 
+     */
+    public PartyTypeType createPartyTypeType() {
+        return new PartyTypeType();
+    }
+
+    /**
+     * Create an instance of {@link PartyTypeCodeType }
+     * 
+     */
+    public PartyTypeCodeType createPartyTypeCodeType() {
+        return new PartyTypeCodeType();
+    }
+
+    /**
+     * Create an instance of {@link PassengerQuantityType }
+     * 
+     */
+    public PassengerQuantityType createPassengerQuantityType() {
+        return new PassengerQuantityType();
     }
 
     /**
@@ -4943,6 +5641,14 @@ public class ObjectFactory {
      */
     public PaymentCurrencyCodeType createPaymentCurrencyCodeType() {
         return new PaymentCurrencyCodeType();
+    }
+
+    /**
+     * Create an instance of {@link PaymentDescriptionType }
+     * 
+     */
+    public PaymentDescriptionType createPaymentDescriptionType() {
+        return new PaymentDescriptionType();
     }
 
     /**
@@ -5031,14 +5737,6 @@ public class ObjectFactory {
      */
     public PenaltyAmountType createPenaltyAmountType() {
         return new PenaltyAmountType();
-    }
-
-    /**
-     * Create an instance of {@link PenaltyClausesType }
-     * 
-     */
-    public PenaltyClausesType createPenaltyClausesType() {
-        return new PenaltyClausesType();
     }
 
     /**
@@ -5146,6 +5844,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link PostEventNotificationDurationMeasureType }
+     * 
+     */
+    public PostEventNotificationDurationMeasureType createPostEventNotificationDurationMeasureType() {
+        return new PostEventNotificationDurationMeasureType();
+    }
+
+    /**
      * Create an instance of {@link PostalZoneType }
      * 
      */
@@ -5178,11 +5884,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link PreEventNotificationDurationMeasureType }
+     * 
+     */
+    public PreEventNotificationDurationMeasureType createPreEventNotificationDurationMeasureType() {
+        return new PreEventNotificationDurationMeasureType();
+    }
+
+    /**
      * Create an instance of {@link PreferenceCriterionCodeType }
      * 
      */
     public PreferenceCriterionCodeType createPreferenceCriterionCodeType() {
         return new PreferenceCriterionCodeType();
+    }
+
+    /**
+     * Create an instance of {@link PreferredLanguageLocaleCodeType }
+     * 
+     */
+    public PreferredLanguageLocaleCodeType createPreferredLanguageLocaleCodeType() {
+        return new PreferredLanguageLocaleCodeType();
     }
 
     /**
@@ -5239,6 +5961,22 @@ public class ObjectFactory {
      */
     public PreviousMeterReadingDateType createPreviousMeterReadingDateType() {
         return new PreviousMeterReadingDateType();
+    }
+
+    /**
+     * Create an instance of {@link PreviousMeterReadingMethodType }
+     * 
+     */
+    public PreviousMeterReadingMethodType createPreviousMeterReadingMethodType() {
+        return new PreviousMeterReadingMethodType();
+    }
+
+    /**
+     * Create an instance of {@link PreviousMeterReadingMethodCodeType }
+     * 
+     */
+    public PreviousMeterReadingMethodCodeType createPreviousMeterReadingMethodCodeType() {
+        return new PreviousMeterReadingMethodCodeType();
     }
 
     /**
@@ -5346,6 +6084,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link PrivatePartyIndicatorType }
+     * 
+     */
+    public PrivatePartyIndicatorType createPrivatePartyIndicatorType() {
+        return new PrivatePartyIndicatorType();
+    }
+
+    /**
+     * Create an instance of {@link PrizeDescriptionType }
+     * 
+     */
+    public PrizeDescriptionType createPrizeDescriptionType() {
+        return new PrizeDescriptionType();
+    }
+
+    /**
+     * Create an instance of {@link PrizeIndicatorType }
+     * 
+     */
+    public PrizeIndicatorType createPrizeIndicatorType() {
+        return new PrizeIndicatorType();
+    }
+
+    /**
      * Create an instance of {@link ProcedureCodeType }
      * 
      */
@@ -5375,14 +6137,6 @@ public class ObjectFactory {
      */
     public ProcessReasonCodeType createProcessReasonCodeType() {
         return new ProcessReasonCodeType();
-    }
-
-    /**
-     * Create an instance of {@link ProcurementProjectLotIDType }
-     * 
-     */
-    public ProcurementProjectLotIDType createProcurementProjectLotIDType() {
-        return new ProcurementProjectLotIDType();
     }
 
     /**
@@ -5434,6 +6188,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ProgressPercentType }
+     * 
+     */
+    public ProgressPercentType createProgressPercentType() {
+        return new ProgressPercentType();
+    }
+
+    /**
      * Create an instance of {@link PromotionalEventTypeCodeType }
      * 
      */
@@ -5442,11 +6204,43 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link PropertyGroupTypeCodeType }
+     * 
+     */
+    public PropertyGroupTypeCodeType createPropertyGroupTypeCodeType() {
+        return new PropertyGroupTypeCodeType();
+    }
+
+    /**
+     * Create an instance of {@link ProtocolIDType }
+     * 
+     */
+    public ProtocolIDType createProtocolIDType() {
+        return new ProtocolIDType();
+    }
+
+    /**
      * Create an instance of {@link ProviderTypeCodeType }
      * 
      */
     public ProviderTypeCodeType createProviderTypeCodeType() {
         return new ProviderTypeCodeType();
+    }
+
+    /**
+     * Create an instance of {@link PublicPartyIndicatorType }
+     * 
+     */
+    public PublicPartyIndicatorType createPublicPartyIndicatorType() {
+        return new PublicPartyIndicatorType();
+    }
+
+    /**
+     * Create an instance of {@link PublishAwardIndicatorType }
+     * 
+     */
+    public PublishAwardIndicatorType createPublishAwardIndicatorType() {
+        return new PublishAwardIndicatorType();
     }
 
     /**
@@ -5463,6 +6257,14 @@ public class ObjectFactory {
      */
     public PurposeCodeType createPurposeCodeType() {
         return new PurposeCodeType();
+    }
+
+    /**
+     * Create an instance of {@link QualificationApplicationTypeCodeType }
+     * 
+     */
+    public QualificationApplicationTypeCodeType createQualificationApplicationTypeCodeType() {
+        return new QualificationApplicationTypeCodeType();
     }
 
     /**
@@ -5490,11 +6292,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link RadioCallSignIDType }
+     * 
+     */
+    public RadioCallSignIDType createRadioCallSignIDType() {
+        return new RadioCallSignIDType();
+    }
+
+    /**
      * Create an instance of {@link RailCarIDType }
      * 
      */
     public RailCarIDType createRailCarIDType() {
         return new RailCarIDType();
+    }
+
+    /**
+     * Create an instance of {@link RankType }
+     * 
+     */
+    public RankType createRankType() {
+        return new RankType();
     }
 
     /**
@@ -5506,11 +6324,35 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ReceiptAdviceTypeCodeType }
+     * 
+     */
+    public ReceiptAdviceTypeCodeType createReceiptAdviceTypeCodeType() {
+        return new ReceiptAdviceTypeCodeType();
+    }
+
+    /**
      * Create an instance of {@link ReceivedDateType }
      * 
      */
     public ReceivedDateType createReceivedDateType() {
         return new ReceivedDateType();
+    }
+
+    /**
+     * Create an instance of {@link ReceivedElectronicTenderQuantityType }
+     * 
+     */
+    public ReceivedElectronicTenderQuantityType createReceivedElectronicTenderQuantityType() {
+        return new ReceivedElectronicTenderQuantityType();
+    }
+
+    /**
+     * Create an instance of {@link ReceivedForeignTenderQuantityType }
+     * 
+     */
+    public ReceivedForeignTenderQuantityType createReceivedForeignTenderQuantityType() {
+        return new ReceivedForeignTenderQuantityType();
     }
 
     /**
@@ -5527,6 +6369,14 @@ public class ObjectFactory {
      */
     public ReceivedTenderQuantityType createReceivedTenderQuantityType() {
         return new ReceivedTenderQuantityType();
+    }
+
+    /**
+     * Create an instance of {@link RecurringProcurementIndicatorType }
+     * 
+     */
+    public RecurringProcurementIndicatorType createRecurringProcurementIndicatorType() {
+        return new RecurringProcurementIndicatorType();
     }
 
     /**
@@ -5666,6 +6516,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link RegulatoryDomainType }
+     * 
+     */
+    public RegulatoryDomainType createRegulatoryDomainType() {
+        return new RegulatoryDomainType();
+    }
+
+    /**
      * Create an instance of {@link RejectActionCodeType }
      * 
      */
@@ -5743,6 +6601,14 @@ public class ObjectFactory {
      */
     public ReminderTypeCodeType createReminderTypeCodeType() {
         return new ReminderTypeCodeType();
+    }
+
+    /**
+     * Create an instance of {@link RenewalsIndicatorType }
+     * 
+     */
+    public RenewalsIndicatorType createRenewalsIndicatorType() {
+        return new RenewalsIndicatorType();
     }
 
     /**
@@ -5842,6 +6708,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link RequiredResponseMessageLevelCodeType }
+     * 
+     */
+    public RequiredResponseMessageLevelCodeType createRequiredResponseMessageLevelCodeType() {
+        return new RequiredResponseMessageLevelCodeType();
+    }
+
+    /**
      * Create an instance of {@link ResidenceTypeType }
      * 
      */
@@ -5898,6 +6772,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ResponseType }
+     * 
+     */
+    public ResponseType createResponseType() {
+        return new ResponseType();
+    }
+
+    /**
+     * Create an instance of {@link ResponseAmountType }
+     * 
+     */
+    public ResponseAmountType createResponseAmountType() {
+        return new ResponseAmountType();
+    }
+
+    /**
+     * Create an instance of {@link ResponseBinaryObjectType }
+     * 
+     */
+    public ResponseBinaryObjectType createResponseBinaryObjectType() {
+        return new ResponseBinaryObjectType();
+    }
+
+    /**
      * Create an instance of {@link ResponseCodeType }
      * 
      */
@@ -5914,11 +6812,59 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ResponseIDType }
+     * 
+     */
+    public ResponseIDType createResponseIDType() {
+        return new ResponseIDType();
+    }
+
+    /**
+     * Create an instance of {@link ResponseIndicatorType }
+     * 
+     */
+    public ResponseIndicatorType createResponseIndicatorType() {
+        return new ResponseIndicatorType();
+    }
+
+    /**
+     * Create an instance of {@link ResponseMeasureType }
+     * 
+     */
+    public ResponseMeasureType createResponseMeasureType() {
+        return new ResponseMeasureType();
+    }
+
+    /**
+     * Create an instance of {@link ResponseNumericType }
+     * 
+     */
+    public ResponseNumericType createResponseNumericType() {
+        return new ResponseNumericType();
+    }
+
+    /**
+     * Create an instance of {@link ResponseQuantityType }
+     * 
+     */
+    public ResponseQuantityType createResponseQuantityType() {
+        return new ResponseQuantityType();
+    }
+
+    /**
      * Create an instance of {@link ResponseTimeType }
      * 
      */
     public ResponseTimeType createResponseTimeType() {
         return new ResponseTimeType();
+    }
+
+    /**
+     * Create an instance of {@link ResponseURIType }
+     * 
+     */
+    public ResponseURIType createResponseURIType() {
+        return new ResponseURIType();
     }
 
     /**
@@ -6010,6 +6956,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link RoleDescriptionType }
+     * 
+     */
+    public RoleDescriptionType createRoleDescriptionType() {
+        return new RoleDescriptionType();
+    }
+
+    /**
      * Create an instance of {@link RoomType }
      * 
      */
@@ -6039,6 +6993,22 @@ public class ObjectFactory {
      */
     public SalesOrderLineIDType createSalesOrderLineIDType() {
         return new SalesOrderLineIDType();
+    }
+
+    /**
+     * Create an instance of {@link SaturdayAvailabilityIndicatorType }
+     * 
+     */
+    public SaturdayAvailabilityIndicatorType createSaturdayAvailabilityIndicatorType() {
+        return new SaturdayAvailabilityIndicatorType();
+    }
+
+    /**
+     * Create an instance of {@link SchemaURIType }
+     * 
+     */
+    public SchemaURIType createSchemaURIType() {
+        return new SchemaURIType();
     }
 
     /**
@@ -6130,6 +7100,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ServiceInformationPreferenceCodeType }
+     * 
+     */
+    public ServiceInformationPreferenceCodeType createServiceInformationPreferenceCodeType() {
+        return new ServiceInformationPreferenceCodeType();
+    }
+
+    /**
      * Create an instance of {@link ServiceNameType }
      * 
      */
@@ -6143,6 +7121,14 @@ public class ObjectFactory {
      */
     public ServiceNumberCalledType createServiceNumberCalledType() {
         return new ServiceNumberCalledType();
+    }
+
+    /**
+     * Create an instance of {@link ServiceProviderPartyIndicatorType }
+     * 
+     */
+    public ServiceProviderPartyIndicatorType createServiceProviderPartyIndicatorType() {
+        return new ServiceProviderPartyIndicatorType();
     }
 
     /**
@@ -6210,6 +7196,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ShipsRequirementsType }
+     * 
+     */
+    public ShipsRequirementsType createShipsRequirementsType() {
+        return new ShipsRequirementsType();
+    }
+
+    /**
      * Create an instance of {@link ShortQuantityType }
      * 
      */
@@ -6247,6 +7241,14 @@ public class ObjectFactory {
      */
     public SizeTypeCodeType createSizeTypeCodeType() {
         return new SizeTypeCodeType();
+    }
+
+    /**
+     * Create an instance of {@link SocialMediaTypeCodeType }
+     * 
+     */
+    public SocialMediaTypeCodeType createSocialMediaTypeCodeType() {
+        return new SocialMediaTypeCodeType();
     }
 
     /**
@@ -6330,11 +7332,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SpecialTransportRequirmentsType }
+     * Create an instance of {@link SpecialTransportRequirementsType }
      * 
      */
-    public SpecialTransportRequirmentsType createSpecialTransportRequirmentsType() {
-        return new SpecialTransportRequirmentsType();
+    public SpecialTransportRequirementsType createSpecialTransportRequirementsType() {
+        return new SpecialTransportRequirementsType();
     }
 
     /**
@@ -6426,6 +7428,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link SubcontractingConditionsCodeType }
+     * 
+     */
+    public SubcontractingConditionsCodeType createSubcontractingConditionsCodeType() {
+        return new SubcontractingConditionsCodeType();
+    }
+
+    /**
      * Create an instance of {@link SubmissionDateType }
      * 
      */
@@ -6458,19 +7468,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SubscriberIDTypeType }
+     * Create an instance of {@link SubscriberTypeType }
      * 
      */
-    public SubscriberIDTypeType createSubscriberIDTypeType() {
-        return new SubscriberIDTypeType();
-    }
-
-    /**
-     * Create an instance of {@link SubscriberIDTypeCodeType }
-     * 
-     */
-    public SubscriberIDTypeCodeType createSubscriberIDTypeCodeType() {
-        return new SubscriberIDTypeCodeType();
+    public SubscriberTypeType createSubscriberTypeType() {
+        return new SubscriberTypeType();
     }
 
     /**
@@ -6479,14 +7481,6 @@ public class ObjectFactory {
      */
     public SubscriberTypeCodeType createSubscriberTypeCodeType() {
         return new SubscriberTypeCodeType();
-    }
-
-    /**
-     * Create an instance of {@link SubscriberTypeIdentifierType }
-     * 
-     */
-    public SubscriberTypeIdentifierType createSubscriberTypeIdentifierType() {
-        return new SubscriberTypeIdentifierType();
     }
 
     /**
@@ -6511,6 +7505,14 @@ public class ObjectFactory {
      */
     public SummaryDescriptionType createSummaryDescriptionType() {
         return new SummaryDescriptionType();
+    }
+
+    /**
+     * Create an instance of {@link SundayAvailabilityIndicatorType }
+     * 
+     */
+    public SundayAvailabilityIndicatorType createSundayAvailabilityIndicatorType() {
+        return new SundayAvailabilityIndicatorType();
     }
 
     /**
@@ -6810,6 +7812,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link TenderLanguageLocaleCodeType }
+     * 
+     */
+    public TenderLanguageLocaleCodeType createTenderLanguageLocaleCodeType() {
+        return new TenderLanguageLocaleCodeType();
+    }
+
+    /**
      * Create an instance of {@link TenderResultCodeType }
      * 
      */
@@ -6831,6 +7841,22 @@ public class ObjectFactory {
      */
     public TendererRequirementTypeCodeType createTendererRequirementTypeCodeType() {
         return new TendererRequirementTypeCodeType();
+    }
+
+    /**
+     * Create an instance of {@link TendererRoleCodeType }
+     * 
+     */
+    public TendererRoleCodeType createTendererRoleCodeType() {
+        return new TendererRoleCodeType();
+    }
+
+    /**
+     * Create an instance of {@link TestIndicatorType }
+     * 
+     */
+    public TestIndicatorType createTestIndicatorType() {
+        return new TestIndicatorType();
     }
 
     /**
@@ -6882,6 +7908,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ThursdayAvailabilityIndicatorType }
+     * 
+     */
+    public ThursdayAvailabilityIndicatorType createThursdayAvailabilityIndicatorType() {
+        return new ThursdayAvailabilityIndicatorType();
+    }
+
+    /**
      * Create an instance of {@link TierRangeType }
      * 
      */
@@ -6911,14 +7945,6 @@ public class ObjectFactory {
      */
     public TimeDeltaDaysQuantityType createTimeDeltaDaysQuantityType() {
         return new TimeDeltaDaysQuantityType();
-    }
-
-    /**
-     * Create an instance of {@link TimeDeviationIndicatorType }
-     * 
-     */
-    public TimeDeviationIndicatorType createTimeDeviationIndicatorType() {
-        return new TimeDeviationIndicatorType();
     }
 
     /**
@@ -7162,6 +8188,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link TranslationTypeCodeType }
+     * 
+     */
+    public TranslationTypeCodeType createTranslationTypeCodeType() {
+        return new TranslationTypeCodeType();
+    }
+
+    /**
      * Create an instance of {@link TransportAuthorizationCodeType }
      * 
      */
@@ -7202,6 +8236,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link TransportExecutionStatusCodeType }
+     * 
+     */
+    public TransportExecutionStatusCodeType createTransportExecutionStatusCodeType() {
+        return new TransportExecutionStatusCodeType();
+    }
+
+    /**
      * Create an instance of {@link TransportHandlingUnitTypeCodeType }
      * 
      */
@@ -7234,30 +8276,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link TransportServiceProviderCancellationIndicatorType }
-     * 
-     */
-    public TransportServiceProviderCancellationIndicatorType createTransportServiceProviderCancellationIndicatorType() {
-        return new TransportServiceProviderCancellationIndicatorType();
-    }
-
-    /**
-     * Create an instance of {@link TransportServiceProviderCompletionIndicatorType }
-     * 
-     */
-    public TransportServiceProviderCompletionIndicatorType createTransportServiceProviderCompletionIndicatorType() {
-        return new TransportServiceProviderCompletionIndicatorType();
-    }
-
-    /**
-     * Create an instance of {@link TransportServiceProviderReadyForExecutionIndicatorType }
-     * 
-     */
-    public TransportServiceProviderReadyForExecutionIndicatorType createTransportServiceProviderReadyForExecutionIndicatorType() {
-        return new TransportServiceProviderReadyForExecutionIndicatorType();
-    }
-
-    /**
      * Create an instance of {@link TransportServiceProviderRemarksType }
      * 
      */
@@ -7271,30 +8289,6 @@ public class ObjectFactory {
      */
     public TransportServiceProviderSpecialTermsType createTransportServiceProviderSpecialTermsType() {
         return new TransportServiceProviderSpecialTermsType();
-    }
-
-    /**
-     * Create an instance of {@link TransportUserCancellationIndicatorType }
-     * 
-     */
-    public TransportUserCancellationIndicatorType createTransportUserCancellationIndicatorType() {
-        return new TransportUserCancellationIndicatorType();
-    }
-
-    /**
-     * Create an instance of {@link TransportUserCompletionIndicatorType }
-     * 
-     */
-    public TransportUserCompletionIndicatorType createTransportUserCompletionIndicatorType() {
-        return new TransportUserCompletionIndicatorType();
-    }
-
-    /**
-     * Create an instance of {@link TransportUserReadyForExecutionIndicatorType }
-     * 
-     */
-    public TransportUserReadyForExecutionIndicatorType createTransportUserReadyForExecutionIndicatorType() {
-        return new TransportUserReadyForExecutionIndicatorType();
     }
 
     /**
@@ -7327,6 +8321,22 @@ public class ObjectFactory {
      */
     public TransportationServiceDetailsURIType createTransportationServiceDetailsURIType() {
         return new TransportationServiceDetailsURIType();
+    }
+
+    /**
+     * Create an instance of {@link TransportationStatusTypeCodeType }
+     * 
+     */
+    public TransportationStatusTypeCodeType createTransportationStatusTypeCodeType() {
+        return new TransportationStatusTypeCodeType();
+    }
+
+    /**
+     * Create an instance of {@link TuesdayAvailabilityIndicatorType }
+     * 
+     */
+    public TuesdayAvailabilityIndicatorType createTuesdayAvailabilityIndicatorType() {
+        return new TuesdayAvailabilityIndicatorType();
     }
 
     /**
@@ -7426,6 +8436,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ValidatedCriterionPropertyIDType }
+     * 
+     */
+    public ValidatedCriterionPropertyIDType createValidatedCriterionPropertyIDType() {
+        return new ValidatedCriterionPropertyIDType();
+    }
+
+    /**
      * Create an instance of {@link ValidationDateType }
      * 
      */
@@ -7482,6 +8500,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ValueCurrencyCodeType }
+     * 
+     */
+    public ValueCurrencyCodeType createValueCurrencyCodeType() {
+        return new ValueCurrencyCodeType();
+    }
+
+    /**
+     * Create an instance of {@link ValueDataTypeCodeType }
+     * 
+     */
+    public ValueDataTypeCodeType createValueDataTypeCodeType() {
+        return new ValueDataTypeCodeType();
+    }
+
+    /**
      * Create an instance of {@link ValueMeasureType }
      * 
      */
@@ -7503,6 +8537,14 @@ public class ObjectFactory {
      */
     public ValueQuantityType createValueQuantityType() {
         return new ValueQuantityType();
+    }
+
+    /**
+     * Create an instance of {@link ValueUnitCodeType }
+     * 
+     */
+    public ValueUnitCodeType createValueUnitCodeType() {
+        return new ValueUnitCodeType();
     }
 
     /**
@@ -7562,11 +8604,75 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link WebSiteTypeCodeType }
+     * 
+     */
+    public WebSiteTypeCodeType createWebSiteTypeCodeType() {
+        return new WebSiteTypeCodeType();
+    }
+
+    /**
      * Create an instance of {@link WebsiteURIType }
      * 
      */
     public WebsiteURIType createWebsiteURIType() {
         return new WebsiteURIType();
+    }
+
+    /**
+     * Create an instance of {@link WednesdayAvailabilityIndicatorType }
+     * 
+     */
+    public WednesdayAvailabilityIndicatorType createWednesdayAvailabilityIndicatorType() {
+        return new WednesdayAvailabilityIndicatorType();
+    }
+
+    /**
+     * Create an instance of {@link WeekDayCodeType }
+     * 
+     */
+    public WeekDayCodeType createWeekDayCodeType() {
+        return new WeekDayCodeType();
+    }
+
+    /**
+     * Create an instance of {@link WeighingDateType }
+     * 
+     */
+    public WeighingDateType createWeighingDateType() {
+        return new WeighingDateType();
+    }
+
+    /**
+     * Create an instance of {@link WeighingDeviceIDType }
+     * 
+     */
+    public WeighingDeviceIDType createWeighingDeviceIDType() {
+        return new WeighingDeviceIDType();
+    }
+
+    /**
+     * Create an instance of {@link WeighingDeviceTypeType }
+     * 
+     */
+    public WeighingDeviceTypeType createWeighingDeviceTypeType() {
+        return new WeighingDeviceTypeType();
+    }
+
+    /**
+     * Create an instance of {@link WeighingMethodCodeType }
+     * 
+     */
+    public WeighingMethodCodeType createWeighingMethodCodeType() {
+        return new WeighingMethodCodeType();
+    }
+
+    /**
+     * Create an instance of {@link WeighingTimeType }
+     * 
+     */
+    public WeighingTimeType createWeighingTimeType() {
+        return new WeighingTimeType();
     }
 
     /**
@@ -7586,11 +8692,75 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link WeightScoringMethodologyNoteType }
+     * 
+     */
+    public WeightScoringMethodologyNoteType createWeightScoringMethodologyNoteType() {
+        return new WeightScoringMethodologyNoteType();
+    }
+
+    /**
+     * Create an instance of {@link WeightStatementTypeCodeType }
+     * 
+     */
+    public WeightStatementTypeCodeType createWeightStatementTypeCodeType() {
+        return new WeightStatementTypeCodeType();
+    }
+
+    /**
      * Create an instance of {@link WeightingAlgorithmCodeType }
      * 
      */
     public WeightingAlgorithmCodeType createWeightingAlgorithmCodeType() {
         return new WeightingAlgorithmCodeType();
+    }
+
+    /**
+     * Create an instance of {@link WeightingConsiderationDescriptionType }
+     * 
+     */
+    public WeightingConsiderationDescriptionType createWeightingConsiderationDescriptionType() {
+        return new WeightingConsiderationDescriptionType();
+    }
+
+    /**
+     * Create an instance of {@link WeightingTypeCodeType }
+     * 
+     */
+    public WeightingTypeCodeType createWeightingTypeCodeType() {
+        return new WeightingTypeCodeType();
+    }
+
+    /**
+     * Create an instance of {@link WithdrawOfferIndicatorType }
+     * 
+     */
+    public WithdrawOfferIndicatorType createWithdrawOfferIndicatorType() {
+        return new WithdrawOfferIndicatorType();
+    }
+
+    /**
+     * Create an instance of {@link WithholdingTaxTotalAmountType }
+     * 
+     */
+    public WithholdingTaxTotalAmountType createWithholdingTaxTotalAmountType() {
+        return new WithholdingTaxTotalAmountType();
+    }
+
+    /**
+     * Create an instance of {@link WorkPhaseType }
+     * 
+     */
+    public WorkPhaseType createWorkPhaseType() {
+        return new WorkPhaseType();
+    }
+
+    /**
+     * Create an instance of {@link WorkPhaseCodeType }
+     * 
+     */
+    public WorkPhaseCodeType createWorkPhaseCodeType() {
+        return new WorkPhaseCodeType();
     }
 
     /**
@@ -7625,6 +8795,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "AcceptedVariantsDescription")
     public JAXBElement<AcceptedVariantsDescriptionType> createAcceptedVariantsDescription(AcceptedVariantsDescriptionType value) {
         return new JAXBElement<AcceptedVariantsDescriptionType>(_AcceptedVariantsDescription_QNAME, AcceptedVariantsDescriptionType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AccessToolsURIType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link AccessToolsURIType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "AccessToolsURI")
+    public JAXBElement<AccessToolsURIType> createAccessToolsURI(AccessToolsURIType value) {
+        return new JAXBElement<AccessToolsURIType>(_AccessToolsURI_QNAME, AccessToolsURIType.class, null, value);
     }
 
     /**
@@ -7706,16 +8889,29 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ActivityCodeType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link ActivityTypeType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link ActivityCodeType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link ActivityTypeType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ActivityCode")
-    public JAXBElement<ActivityCodeType> createActivityCode(ActivityCodeType value) {
-        return new JAXBElement<ActivityCodeType>(_ActivityCode_QNAME, ActivityCodeType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ActivityType")
+    public JAXBElement<ActivityTypeType> createActivityType(ActivityTypeType value) {
+        return new JAXBElement<ActivityTypeType>(_ActivityType_QNAME, ActivityTypeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ActivityTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ActivityTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ActivityTypeCode")
+    public JAXBElement<ActivityTypeCodeType> createActivityTypeCode(ActivityTypeCodeType value) {
+        return new JAXBElement<ActivityTypeCodeType>(_ActivityTypeCode_QNAME, ActivityTypeCodeType.class, null, value);
     }
 
     /**
@@ -7836,6 +9032,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AdditionalConditionsType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link AdditionalConditionsType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "AdditionalConditions")
+    public JAXBElement<AdditionalConditionsType> createAdditionalConditions(AdditionalConditionsType value) {
+        return new JAXBElement<AdditionalConditionsType>(_AdditionalConditions_QNAME, AdditionalConditionsType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link AdditionalInformationType }{@code >}
      * 
      * @param value
@@ -7950,6 +9159,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "AgencyName")
     public JAXBElement<AgencyNameType> createAgencyName(AgencyNameType value) {
         return new JAXBElement<AgencyNameType>(_AgencyName_QNAME, AgencyNameType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AgreementTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link AgreementTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "AgreementTypeCode")
+    public JAXBElement<AgreementTypeCodeType> createAgreementTypeCode(AgreementTypeCodeType value) {
+        return new JAXBElement<AgreementTypeCodeType>(_AgreementTypeCode_QNAME, AgreementTypeCodeType.class, null, value);
     }
 
     /**
@@ -8148,6 +9370,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ArticleType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ArticleType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "Article")
+    public JAXBElement<ArticleType> createArticle(ArticleType value) {
+        return new JAXBElement<ArticleType>(_Article_QNAME, ArticleType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link AttributeIDType }{@code >}
      * 
      * @param value
@@ -8213,6 +9448,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AvailabilityTimePercentType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link AvailabilityTimePercentType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "AvailabilityTimePercent")
+    public JAXBElement<AvailabilityTimePercentType> createAvailabilityTimePercent(AvailabilityTimePercentType value) {
+        return new JAXBElement<AvailabilityTimePercentType>(_AvailabilityTimePercent_QNAME, AvailabilityTimePercentType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link AverageAmountType }{@code >}
      * 
      * @param value
@@ -8252,6 +9500,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AwardIDType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link AwardIDType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "AwardID")
+    public JAXBElement<AwardIDType> createAwardID(AwardIDType value) {
+        return new JAXBElement<AwardIDType>(_AwardID_QNAME, AwardIDType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link AwardTimeType }{@code >}
      * 
      * @param value
@@ -8265,42 +9526,42 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link AwardingCriteriaDescriptionType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link AwardingCriterionDescriptionType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link AwardingCriteriaDescriptionType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link AwardingCriterionDescriptionType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "AwardingCriteriaDescription")
-    public JAXBElement<AwardingCriteriaDescriptionType> createAwardingCriteriaDescription(AwardingCriteriaDescriptionType value) {
-        return new JAXBElement<AwardingCriteriaDescriptionType>(_AwardingCriteriaDescription_QNAME, AwardingCriteriaDescriptionType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "AwardingCriterionDescription")
+    public JAXBElement<AwardingCriterionDescriptionType> createAwardingCriterionDescription(AwardingCriterionDescriptionType value) {
+        return new JAXBElement<AwardingCriterionDescriptionType>(_AwardingCriterionDescription_QNAME, AwardingCriterionDescriptionType.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link AwardingCriteriaIDType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link AwardingCriterionIDType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link AwardingCriteriaIDType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link AwardingCriterionIDType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "AwardingCriteriaID")
-    public JAXBElement<AwardingCriteriaIDType> createAwardingCriteriaID(AwardingCriteriaIDType value) {
-        return new JAXBElement<AwardingCriteriaIDType>(_AwardingCriteriaID_QNAME, AwardingCriteriaIDType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "AwardingCriterionID")
+    public JAXBElement<AwardingCriterionIDType> createAwardingCriterionID(AwardingCriterionIDType value) {
+        return new JAXBElement<AwardingCriterionIDType>(_AwardingCriterionID_QNAME, AwardingCriterionIDType.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link AwardingCriteriaTypeCodeType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link AwardingCriterionTypeCodeType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link AwardingCriteriaTypeCodeType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link AwardingCriterionTypeCodeType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "AwardingCriteriaTypeCode")
-    public JAXBElement<AwardingCriteriaTypeCodeType> createAwardingCriteriaTypeCode(AwardingCriteriaTypeCodeType value) {
-        return new JAXBElement<AwardingCriteriaTypeCodeType>(_AwardingCriteriaTypeCode_QNAME, AwardingCriteriaTypeCodeType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "AwardingCriterionTypeCode")
+    public JAXBElement<AwardingCriterionTypeCodeType> createAwardingCriterionTypeCode(AwardingCriterionTypeCodeType value) {
+        return new JAXBElement<AwardingCriterionTypeCodeType>(_AwardingCriterionTypeCode_QNAME, AwardingCriterionTypeCodeType.class, null, value);
     }
 
     /**
@@ -8379,6 +9640,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "BalanceBroughtForwardIndicator")
     public JAXBElement<BalanceBroughtForwardIndicatorType> createBalanceBroughtForwardIndicator(BalanceBroughtForwardIndicatorType value) {
         return new JAXBElement<BalanceBroughtForwardIndicatorType>(_BalanceBroughtForwardIndicator_QNAME, BalanceBroughtForwardIndicatorType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link BarcodeSymbologyIDType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link BarcodeSymbologyIDType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "BarcodeSymbologyID")
+    public JAXBElement<BarcodeSymbologyIDType> createBarcodeSymbologyID(BarcodeSymbologyIDType value) {
+        return new JAXBElement<BarcodeSymbologyIDType>(_BarcodeSymbologyID_QNAME, BarcodeSymbologyIDType.class, null, value);
     }
 
     /**
@@ -8473,6 +9747,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link BindingOnBuyerIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link BindingOnBuyerIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "BindingOnBuyerIndicator")
+    public JAXBElement<BindingOnBuyerIndicatorType> createBindingOnBuyerIndicator(BindingOnBuyerIndicatorType value) {
+        return new JAXBElement<BindingOnBuyerIndicatorType>(_BindingOnBuyerIndicator_QNAME, BindingOnBuyerIndicatorType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link BirthDateType }{@code >}
      * 
      * @param value
@@ -8483,6 +9770,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "BirthDate")
     public JAXBElement<BirthDateType> createBirthDate(BirthDateType value) {
         return new JAXBElement<BirthDateType>(_BirthDate_QNAME, BirthDateType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link BirthplaceNameType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link BirthplaceNameType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "BirthplaceName")
+    public JAXBElement<BirthplaceNameType> createBirthplaceName(BirthplaceNameType value) {
+        return new JAXBElement<BirthplaceNameType>(_BirthplaceName_QNAME, BirthplaceNameType.class, null, value);
     }
 
     /**
@@ -8509,6 +9809,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "BrandName")
     public JAXBElement<BrandNameType> createBrandName(BrandNameType value) {
         return new JAXBElement<BrandNameType>(_BrandName_QNAME, BrandNameType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link BriefDescriptionType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link BriefDescriptionType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "BriefDescription")
+    public JAXBElement<BriefDescriptionType> createBriefDescription(BriefDescriptionType value) {
+        return new JAXBElement<BriefDescriptionType>(_BriefDescription_QNAME, BriefDescriptionType.class, null, value);
     }
 
     /**
@@ -8629,6 +9942,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link BuyerReferenceType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link BuyerReferenceType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "BuyerReference")
+    public JAXBElement<BuyerReferenceType> createBuyerReference(BuyerReferenceType value) {
+        return new JAXBElement<BuyerReferenceType>(_BuyerReference_QNAME, BuyerReferenceType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link CV2IDType }{@code >}
      * 
      * @param value
@@ -8665,6 +9991,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "CalculationExpressionCode")
     public JAXBElement<CalculationExpressionCodeType> createCalculationExpressionCode(CalculationExpressionCodeType value) {
         return new JAXBElement<CalculationExpressionCodeType>(_CalculationExpressionCode_QNAME, CalculationExpressionCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CalculationMethodCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CalculationMethodCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "CalculationMethodCode")
+    public JAXBElement<CalculationMethodCodeType> createCalculationMethodCode(CalculationMethodCodeType value) {
+        return new JAXBElement<CalculationMethodCodeType>(_CalculationMethodCode_QNAME, CalculationMethodCodeType.class, null, value);
     }
 
     /**
@@ -8769,6 +10108,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "CandidateReductionConstraintIndicator")
     public JAXBElement<CandidateReductionConstraintIndicatorType> createCandidateReductionConstraintIndicator(CandidateReductionConstraintIndicatorType value) {
         return new JAXBElement<CandidateReductionConstraintIndicatorType>(_CandidateReductionConstraintIndicator_QNAME, CandidateReductionConstraintIndicatorType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CandidateStatementType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CandidateStatementType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "CandidateStatement")
+    public JAXBElement<CandidateStatementType> createCandidateStatement(CandidateStatementType value) {
+        return new JAXBElement<CandidateStatementType>(_CandidateStatement_QNAME, CandidateStatementType.class, null, value);
     }
 
     /**
@@ -8915,6 +10267,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CertificationLevelDescriptionType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CertificationLevelDescriptionType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "CertificationLevelDescription")
+    public JAXBElement<CertificationLevelDescriptionType> createCertificationLevelDescription(CertificationLevelDescriptionType value) {
+        return new JAXBElement<CertificationLevelDescriptionType>(_CertificationLevelDescription_QNAME, CertificationLevelDescriptionType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ChangeConditionsType }{@code >}
      * 
      * @param value
@@ -9032,6 +10397,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ChildConsignmentQuantityType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ChildConsignmentQuantityType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ChildConsignmentQuantity")
+    public JAXBElement<ChildConsignmentQuantityType> createChildConsignmentQuantity(ChildConsignmentQuantityType value) {
+        return new JAXBElement<ChildConsignmentQuantityType>(_ChildConsignmentQuantity_QNAME, ChildConsignmentQuantityType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ChipApplicationIDType }{@code >}
      * 
      * @param value
@@ -9068,32 +10446,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "CitySubdivisionName")
     public JAXBElement<CitySubdivisionNameType> createCitySubdivisionName(CitySubdivisionNameType value) {
         return new JAXBElement<CitySubdivisionNameType>(_CitySubdivisionName_QNAME, CitySubdivisionNameType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ClauseType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link ClauseType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "Clause")
-    public JAXBElement<ClauseType> createClause(ClauseType value) {
-        return new JAXBElement<ClauseType>(_Clause_QNAME, ClauseType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ClauseCodeType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link ClauseCodeType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ClauseCode")
-    public JAXBElement<ClauseCodeType> createClauseCode(ClauseCodeType value) {
-        return new JAXBElement<ClauseCodeType>(_ClauseCode_QNAME, ClauseCodeType.class, null, value);
     }
 
     /**
@@ -9159,6 +10511,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "CompanyID")
     public JAXBElement<CompanyIDType> createCompanyID(CompanyIDType value) {
         return new JAXBElement<CompanyIDType>(_CompanyID_QNAME, CompanyIDType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CompanyLegalFormType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CompanyLegalFormType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "CompanyLegalForm")
+    public JAXBElement<CompanyLegalFormType> createCompanyLegalForm(CompanyLegalFormType value) {
+        return new JAXBElement<CompanyLegalFormType>(_CompanyLegalForm_QNAME, CompanyLegalFormType.class, null, value);
     }
 
     /**
@@ -9292,32 +10657,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ConditionDeviationIndicatorType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link ConditionDeviationIndicatorType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ConditionDeviationIndicator")
-    public JAXBElement<ConditionDeviationIndicatorType> createConditionDeviationIndicator(ConditionDeviationIndicatorType value) {
-        return new JAXBElement<ConditionDeviationIndicatorType>(_ConditionDeviationIndicator_QNAME, ConditionDeviationIndicatorType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ConditionValueMeasureType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link ConditionValueMeasureType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ConditionValueMeasure")
-    public JAXBElement<ConditionValueMeasureType> createConditionValueMeasure(ConditionValueMeasureType value) {
-        return new JAXBElement<ConditionValueMeasureType>(_ConditionValueMeasure_QNAME, ConditionValueMeasureType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ConditionsType }{@code >}
      * 
      * @param value
@@ -9341,6 +10680,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ConditionsDescription")
     public JAXBElement<ConditionsDescriptionType> createConditionsDescription(ConditionsDescriptionType value) {
         return new JAXBElement<ConditionsDescriptionType>(_ConditionsDescription_QNAME, ConditionsDescriptionType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ConfidentialityLevelCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ConfidentialityLevelCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ConfidentialityLevelCode")
+    public JAXBElement<ConfidentialityLevelCodeType> createConfidentialityLevelCode(ConfidentialityLevelCodeType value) {
+        return new JAXBElement<ConfidentialityLevelCodeType>(_ConfidentialityLevelCode_QNAME, ConfidentialityLevelCodeType.class, null, value);
     }
 
     /**
@@ -9578,6 +10930,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ContentType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ContentType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "Content")
+    public JAXBElement<ContentType> createContent(ContentType value) {
+        return new JAXBElement<ContentType>(_Content_QNAME, ContentType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ContentUnitQuantityType }{@code >}
      * 
      * @param value
@@ -9669,19 +11034,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ContractingPartyTypeCodeType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link ContractingPartyTypeCodeType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ContractingPartyTypeCode")
-    public JAXBElement<ContractingPartyTypeCodeType> createContractingPartyTypeCode(ContractingPartyTypeCodeType value) {
-        return new JAXBElement<ContractingPartyTypeCodeType>(_ContractingPartyTypeCode_QNAME, ContractingPartyTypeCodeType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ContractingSystemCodeType }{@code >}
      * 
      * @param value
@@ -9692,6 +11044,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ContractingSystemCode")
     public JAXBElement<ContractingSystemCodeType> createContractingSystemCode(ContractingSystemCodeType value) {
         return new JAXBElement<ContractingSystemCodeType>(_ContractingSystemCode_QNAME, ContractingSystemCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ContractingSystemTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ContractingSystemTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ContractingSystemTypeCode")
+    public JAXBElement<ContractingSystemTypeCodeType> createContractingSystemTypeCode(ContractingSystemTypeCodeType value) {
+        return new JAXBElement<ContractingSystemTypeCodeType>(_ContractingSystemTypeCode_QNAME, ContractingSystemTypeCodeType.class, null, value);
     }
 
     /**
@@ -9718,6 +11083,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "CopyIndicator")
     public JAXBElement<CopyIndicatorType> createCopyIndicator(CopyIndicatorType value) {
         return new JAXBElement<CopyIndicatorType>(_CopyIndicator_QNAME, CopyIndicatorType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CopyQualityTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CopyQualityTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "CopyQualityTypeCode")
+    public JAXBElement<CopyQualityTypeCodeType> createCopyQualityTypeCode(CopyQualityTypeCodeType value) {
+        return new JAXBElement<CopyQualityTypeCodeType>(_CopyQualityTypeCode_QNAME, CopyQualityTypeCodeType.class, null, value);
     }
 
     /**
@@ -9838,6 +11216,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CreditNoteTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CreditNoteTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "CreditNoteTypeCode")
+    public JAXBElement<CreditNoteTypeCodeType> createCreditNoteTypeCode(CreditNoteTypeCodeType value) {
+        return new JAXBElement<CreditNoteTypeCodeType>(_CreditNoteTypeCode_QNAME, CreditNoteTypeCodeType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link CreditedQuantityType }{@code >}
      * 
      * @param value
@@ -9848,6 +11239,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "CreditedQuantity")
     public JAXBElement<CreditedQuantityType> createCreditedQuantity(CreditedQuantityType value) {
         return new JAXBElement<CreditedQuantityType>(_CreditedQuantity_QNAME, CreditedQuantityType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CrewQuantityType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CrewQuantityType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "CrewQuantity")
+    public JAXBElement<CrewQuantityType> createCrewQuantity(CrewQuantityType value) {
+        return new JAXBElement<CrewQuantityType>(_CrewQuantity_QNAME, CrewQuantityType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CriterionTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CriterionTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "CriterionTypeCode")
+    public JAXBElement<CriterionTypeCodeType> createCriterionTypeCode(CriterionTypeCodeType value) {
+        return new JAXBElement<CriterionTypeCodeType>(_CriterionTypeCode_QNAME, CriterionTypeCodeType.class, null, value);
     }
 
     /**
@@ -10358,6 +11775,32 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentStatusReasonCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentStatusReasonCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "DocumentStatusReasonCode")
+    public JAXBElement<DocumentStatusReasonCodeType> createDocumentStatusReasonCode(DocumentStatusReasonCodeType value) {
+        return new JAXBElement<DocumentStatusReasonCodeType>(_DocumentStatusReasonCode_QNAME, DocumentStatusReasonCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentStatusReasonDescriptionType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentStatusReasonDescriptionType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "DocumentStatusReasonDescription")
+    public JAXBElement<DocumentStatusReasonDescriptionType> createDocumentStatusReasonDescription(DocumentStatusReasonDescriptionType value) {
+        return new JAXBElement<DocumentStatusReasonDescriptionType>(_DocumentStatusReasonDescription_QNAME, DocumentStatusReasonDescriptionType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link DocumentTypeType }{@code >}
      * 
      * @param value
@@ -10381,6 +11824,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "DocumentTypeCode")
     public JAXBElement<DocumentTypeCodeType> createDocumentTypeCode(DocumentTypeCodeType value) {
         return new JAXBElement<DocumentTypeCodeType>(_DocumentTypeCode_QNAME, DocumentTypeCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentationFeeAmountType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentationFeeAmountType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "DocumentationFeeAmount")
+    public JAXBElement<DocumentationFeeAmountType> createDocumentationFeeAmount(DocumentationFeeAmountType value) {
+        return new JAXBElement<DocumentationFeeAmountType>(_DocumentationFeeAmount_QNAME, DocumentationFeeAmountType.class, null, value);
     }
 
     /**
@@ -10462,6 +11918,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EconomicOperatorGroupNameType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link EconomicOperatorGroupNameType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "EconomicOperatorGroupName")
+    public JAXBElement<EconomicOperatorGroupNameType> createEconomicOperatorGroupName(EconomicOperatorGroupNameType value) {
+        return new JAXBElement<EconomicOperatorGroupNameType>(_EconomicOperatorGroupName_QNAME, EconomicOperatorGroupNameType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link EconomicOperatorRegistryURIType }{@code >}
      * 
      * @param value
@@ -10501,6 +11970,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ElectronicCatalogueUsageIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ElectronicCatalogueUsageIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ElectronicCatalogueUsageIndicator")
+    public JAXBElement<ElectronicCatalogueUsageIndicatorType> createElectronicCatalogueUsageIndicator(ElectronicCatalogueUsageIndicatorType value) {
+        return new JAXBElement<ElectronicCatalogueUsageIndicatorType>(_ElectronicCatalogueUsageIndicator_QNAME, ElectronicCatalogueUsageIndicatorType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ElectronicDeviceDescriptionType }{@code >}
      * 
      * @param value
@@ -10514,6 +11996,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ElectronicInvoiceAcceptedIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ElectronicInvoiceAcceptedIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ElectronicInvoiceAcceptedIndicator")
+    public JAXBElement<ElectronicInvoiceAcceptedIndicatorType> createElectronicInvoiceAcceptedIndicator(ElectronicInvoiceAcceptedIndicatorType value) {
+        return new JAXBElement<ElectronicInvoiceAcceptedIndicatorType>(_ElectronicInvoiceAcceptedIndicator_QNAME, ElectronicInvoiceAcceptedIndicatorType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ElectronicMailType }{@code >}
      * 
      * @param value
@@ -10524,6 +12019,45 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ElectronicMail")
     public JAXBElement<ElectronicMailType> createElectronicMail(ElectronicMailType value) {
         return new JAXBElement<ElectronicMailType>(_ElectronicMail_QNAME, ElectronicMailType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ElectronicOrderUsageIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ElectronicOrderUsageIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ElectronicOrderUsageIndicator")
+    public JAXBElement<ElectronicOrderUsageIndicatorType> createElectronicOrderUsageIndicator(ElectronicOrderUsageIndicatorType value) {
+        return new JAXBElement<ElectronicOrderUsageIndicatorType>(_ElectronicOrderUsageIndicator_QNAME, ElectronicOrderUsageIndicatorType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ElectronicPaymentUsageIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ElectronicPaymentUsageIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ElectronicPaymentUsageIndicator")
+    public JAXBElement<ElectronicPaymentUsageIndicatorType> createElectronicPaymentUsageIndicator(ElectronicPaymentUsageIndicatorType value) {
+        return new JAXBElement<ElectronicPaymentUsageIndicatorType>(_ElectronicPaymentUsageIndicator_QNAME, ElectronicPaymentUsageIndicatorType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EmbeddedDocumentType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link EmbeddedDocumentType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "EmbeddedDocument")
+    public JAXBElement<EmbeddedDocumentType> createEmbeddedDocument(EmbeddedDocumentType value) {
+        return new JAXBElement<EmbeddedDocumentType>(_EmbeddedDocument_QNAME, EmbeddedDocumentType.class, null, value);
     }
 
     /**
@@ -10618,6 +12152,32 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EndpointURIType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link EndpointURIType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "EndpointURI")
+    public JAXBElement<EndpointURIType> createEndpointURI(EndpointURIType value) {
+        return new JAXBElement<EndpointURIType>(_EndpointURI_QNAME, EndpointURIType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EnvelopeTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link EnvelopeTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "EnvelopeTypeCode")
+    public JAXBElement<EnvelopeTypeCodeType> createEnvelopeTypeCode(EnvelopeTypeCodeType value) {
+        return new JAXBElement<EnvelopeTypeCodeType>(_EnvelopeTypeCode_QNAME, EnvelopeTypeCodeType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link EnvironmentalEmissionTypeCodeType }{@code >}
      * 
      * @param value
@@ -10628,6 +12188,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "EnvironmentalEmissionTypeCode")
     public JAXBElement<EnvironmentalEmissionTypeCodeType> createEnvironmentalEmissionTypeCode(EnvironmentalEmissionTypeCodeType value) {
         return new JAXBElement<EnvironmentalEmissionTypeCodeType>(_EnvironmentalEmissionTypeCode_QNAME, EnvironmentalEmissionTypeCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EstimatedAmountType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link EstimatedAmountType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "EstimatedAmount")
+    public JAXBElement<EstimatedAmountType> createEstimatedAmount(EstimatedAmountType value) {
+        return new JAXBElement<EstimatedAmountType>(_EstimatedAmount_QNAME, EstimatedAmountType.class, null, value);
     }
 
     /**
@@ -10722,29 +12295,42 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link EvaluationCriteriaTypeCodeType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link EstimatedTimingFurtherPublicationType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link EvaluationCriteriaTypeCodeType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link EstimatedTimingFurtherPublicationType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "EvaluationCriteriaTypeCode")
-    public JAXBElement<EvaluationCriteriaTypeCodeType> createEvaluationCriteriaTypeCode(EvaluationCriteriaTypeCodeType value) {
-        return new JAXBElement<EvaluationCriteriaTypeCodeType>(_EvaluationCriteriaTypeCode_QNAME, EvaluationCriteriaTypeCodeType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "EstimatedTimingFurtherPublication")
+    public JAXBElement<EstimatedTimingFurtherPublicationType> createEstimatedTimingFurtherPublication(EstimatedTimingFurtherPublicationType value) {
+        return new JAXBElement<EstimatedTimingFurtherPublicationType>(_EstimatedTimingFurtherPublication_QNAME, EstimatedTimingFurtherPublicationType.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link EvidenceSuppliedIDType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link EvaluationCriterionTypeCodeType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link EvidenceSuppliedIDType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link EvaluationCriterionTypeCodeType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "EvidenceSuppliedID")
-    public JAXBElement<EvidenceSuppliedIDType> createEvidenceSuppliedID(EvidenceSuppliedIDType value) {
-        return new JAXBElement<EvidenceSuppliedIDType>(_EvidenceSuppliedID_QNAME, EvidenceSuppliedIDType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "EvaluationCriterionTypeCode")
+    public JAXBElement<EvaluationCriterionTypeCodeType> createEvaluationCriterionTypeCode(EvaluationCriterionTypeCodeType value) {
+        return new JAXBElement<EvaluationCriterionTypeCodeType>(_EvaluationCriterionTypeCode_QNAME, EvaluationCriterionTypeCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EvaluationMethodTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link EvaluationMethodTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "EvaluationMethodTypeCode")
+    public JAXBElement<EvaluationMethodTypeCodeType> createEvaluationMethodTypeCode(EvaluationMethodTypeCodeType value) {
+        return new JAXBElement<EvaluationMethodTypeCodeType>(_EvaluationMethodTypeCode_QNAME, EvaluationMethodTypeCodeType.class, null, value);
     }
 
     /**
@@ -10852,6 +12438,58 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ExpectedAmountType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ExpectedAmountType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ExpectedAmount")
+    public JAXBElement<ExpectedAmountType> createExpectedAmount(ExpectedAmountType value) {
+        return new JAXBElement<ExpectedAmountType>(_ExpectedAmount_QNAME, ExpectedAmountType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ExpectedCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ExpectedCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ExpectedCode")
+    public JAXBElement<ExpectedCodeType> createExpectedCode(ExpectedCodeType value) {
+        return new JAXBElement<ExpectedCodeType>(_ExpectedCode_QNAME, ExpectedCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ExpectedDescriptionType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ExpectedDescriptionType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ExpectedDescription")
+    public JAXBElement<ExpectedDescriptionType> createExpectedDescription(ExpectedDescriptionType value) {
+        return new JAXBElement<ExpectedDescriptionType>(_ExpectedDescription_QNAME, ExpectedDescriptionType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ExpectedIDType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ExpectedIDType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ExpectedID")
+    public JAXBElement<ExpectedIDType> createExpectedID(ExpectedIDType value) {
+        return new JAXBElement<ExpectedIDType>(_ExpectedID_QNAME, ExpectedIDType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ExpectedOperatorQuantityType }{@code >}
      * 
      * @param value
@@ -10875,6 +12513,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ExpectedQuantity")
     public JAXBElement<ExpectedQuantityType> createExpectedQuantity(ExpectedQuantityType value) {
         return new JAXBElement<ExpectedQuantityType>(_ExpectedQuantity_QNAME, ExpectedQuantityType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ExpectedValueNumericType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ExpectedValueNumericType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ExpectedValueNumeric")
+    public JAXBElement<ExpectedValueNumericType> createExpectedValueNumeric(ExpectedValueNumericType value) {
+        return new JAXBElement<ExpectedValueNumericType>(_ExpectedValueNumeric_QNAME, ExpectedValueNumericType.class, null, value);
     }
 
     /**
@@ -10914,6 +12565,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ExpiryTime")
     public JAXBElement<ExpiryTimeType> createExpiryTime(ExpiryTimeType value) {
         return new JAXBElement<ExpiryTimeType>(_ExpiryTime_QNAME, ExpiryTimeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ExpressionType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ExpressionType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "Expression")
+    public JAXBElement<ExpressionType> createExpression(ExpressionType value) {
+        return new JAXBElement<ExpressionType>(_Expression_QNAME, ExpressionType.class, null, value);
     }
 
     /**
@@ -11086,6 +12750,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FollowupContractIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link FollowupContractIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "FollowupContractIndicator")
+    public JAXBElement<FollowupContractIndicatorType> createFollowupContractIndicator(FollowupContractIndicatorType value) {
+        return new JAXBElement<FollowupContractIndicatorType>(_FollowupContractIndicator_QNAME, FollowupContractIndicatorType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ForecastPurposeCodeType }{@code >}
      * 
      * @param value
@@ -11122,6 +12799,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "FormatCode")
     public JAXBElement<FormatCodeType> createFormatCode(FormatCodeType value) {
         return new JAXBElement<FormatCodeType>(_FormatCode_QNAME, FormatCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FormatIDType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link FormatIDType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "FormatID")
+    public JAXBElement<FormatIDType> createFormatID(FormatIDType value) {
+        return new JAXBElement<FormatIDType>(_FormatID_QNAME, FormatIDType.class, null, value);
     }
 
     /**
@@ -11203,6 +12893,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FridayAvailabilityIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link FridayAvailabilityIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "FridayAvailabilityIndicator")
+    public JAXBElement<FridayAvailabilityIndicatorType> createFridayAvailabilityIndicator(FridayAvailabilityIndicatorType value) {
+        return new JAXBElement<FridayAvailabilityIndicatorType>(_FridayAvailabilityIndicator_QNAME, FridayAvailabilityIndicatorType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link FrozenDocumentIndicatorType }{@code >}
      * 
      * @param value
@@ -11226,6 +12929,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "FrozenPeriodDaysNumeric")
     public JAXBElement<FrozenPeriodDaysNumericType> createFrozenPeriodDaysNumeric(FrozenPeriodDaysNumericType value) {
         return new JAXBElement<FrozenPeriodDaysNumericType>(_FrozenPeriodDaysNumeric_QNAME, FrozenPeriodDaysNumericType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FulfilmentIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link FulfilmentIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "FulfilmentIndicator")
+    public JAXBElement<FulfilmentIndicatorType> createFulfilmentIndicator(FulfilmentIndicatorType value) {
+        return new JAXBElement<FulfilmentIndicatorType>(_FulfilmentIndicator_QNAME, FulfilmentIndicatorType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FulfilmentIndicatorTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link FulfilmentIndicatorTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "FulfilmentIndicatorTypeCode")
+    public JAXBElement<FulfilmentIndicatorTypeCodeType> createFulfilmentIndicatorTypeCode(FulfilmentIndicatorTypeCodeType value) {
+        return new JAXBElement<FulfilmentIndicatorTypeCodeType>(_FulfilmentIndicatorTypeCode_QNAME, FulfilmentIndicatorTypeCodeType.class, null, value);
     }
 
     /**
@@ -11333,6 +13062,32 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GrossMassMeasureType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link GrossMassMeasureType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "GrossMassMeasure")
+    public JAXBElement<GrossMassMeasureType> createGrossMassMeasure(GrossMassMeasureType value) {
+        return new JAXBElement<GrossMassMeasureType>(_GrossMassMeasure_QNAME, GrossMassMeasureType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GrossTonnageMeasureType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link GrossTonnageMeasureType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "GrossTonnageMeasure")
+    public JAXBElement<GrossTonnageMeasureType> createGrossTonnageMeasure(GrossTonnageMeasureType value) {
+        return new JAXBElement<GrossTonnageMeasureType>(_GrossTonnageMeasure_QNAME, GrossTonnageMeasureType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GrossVolumeMeasureType }{@code >}
      * 
      * @param value
@@ -11356,6 +13111,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "GrossWeightMeasure")
     public JAXBElement<GrossWeightMeasureType> createGrossWeightMeasure(GrossWeightMeasureType value) {
         return new JAXBElement<GrossWeightMeasureType>(_GrossWeightMeasure_QNAME, GrossWeightMeasureType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GroupingLotsType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link GroupingLotsType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "GroupingLots")
+    public JAXBElement<GroupingLotsType> createGroupingLots(GroupingLotsType value) {
+        return new JAXBElement<GroupingLotsType>(_GroupingLots_QNAME, GroupingLotsType.class, null, value);
     }
 
     /**
@@ -11736,6 +13504,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InitiatingPartyIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link InitiatingPartyIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "InitiatingPartyIndicator")
+    public JAXBElement<InitiatingPartyIndicatorType> createInitiatingPartyIndicator(InitiatingPartyIndicatorType value) {
+        return new JAXBElement<InitiatingPartyIndicatorType>(_InitiatingPartyIndicator_QNAME, InitiatingPartyIndicatorType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link InspectionMethodCodeType }{@code >}
      * 
      * @param value
@@ -11824,19 +13605,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "InsuranceValueAmount")
     public JAXBElement<InsuranceValueAmountType> createInsuranceValueAmount(InsuranceValueAmountType value) {
         return new JAXBElement<InsuranceValueAmountType>(_InsuranceValueAmount_QNAME, InsuranceValueAmountType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InterestedProcurementLotsIDType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link InterestedProcurementLotsIDType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "InterestedProcurementLotsID")
-    public JAXBElement<InterestedProcurementLotsIDType> createInterestedProcurementLotsID(InterestedProcurementLotsIDType value) {
-        return new JAXBElement<InterestedProcurementLotsIDType>(_InterestedProcurementLotsID_QNAME, InterestedProcurementLotsIDType.class, null, value);
     }
 
     /**
@@ -11996,6 +13764,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link JurisdictionLevelType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link JurisdictionLevelType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "JurisdictionLevel")
+    public JAXBElement<JurisdictionLevelType> createJurisdictionLevel(JurisdictionLevelType value) {
+        return new JAXBElement<JurisdictionLevelType>(_JurisdictionLevel_QNAME, JurisdictionLevelType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link JustificationType }{@code >}
      * 
      * @param value
@@ -12126,6 +13907,32 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LatestMeterReadingMethodType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link LatestMeterReadingMethodType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "LatestMeterReadingMethod")
+    public JAXBElement<LatestMeterReadingMethodType> createLatestMeterReadingMethod(LatestMeterReadingMethodType value) {
+        return new JAXBElement<LatestMeterReadingMethodType>(_LatestMeterReadingMethod_QNAME, LatestMeterReadingMethodType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LatestMeterReadingMethodCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link LatestMeterReadingMethodCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "LatestMeterReadingMethodCode")
+    public JAXBElement<LatestMeterReadingMethodCodeType> createLatestMeterReadingMethodCode(LatestMeterReadingMethodCodeType value) {
+        return new JAXBElement<LatestMeterReadingMethodCodeType>(_LatestMeterReadingMethodCode_QNAME, LatestMeterReadingMethodCodeType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link LatestPickupDateType }{@code >}
      * 
      * @param value
@@ -12162,6 +13969,45 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "LatestProposalAcceptanceDate")
     public JAXBElement<LatestProposalAcceptanceDateType> createLatestProposalAcceptanceDate(LatestProposalAcceptanceDateType value) {
         return new JAXBElement<LatestProposalAcceptanceDateType>(_LatestProposalAcceptanceDate_QNAME, LatestProposalAcceptanceDateType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LatestReplyDateType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link LatestReplyDateType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "LatestReplyDate")
+    public JAXBElement<LatestReplyDateType> createLatestReplyDate(LatestReplyDateType value) {
+        return new JAXBElement<LatestReplyDateType>(_LatestReplyDate_QNAME, LatestReplyDateType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LatestReplyTimeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link LatestReplyTimeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "LatestReplyTime")
+    public JAXBElement<LatestReplyTimeType> createLatestReplyTime(LatestReplyTimeType value) {
+        return new JAXBElement<LatestReplyTimeType>(_LatestReplyTime_QNAME, LatestReplyTimeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LatestSecurityClearanceDateType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link LatestSecurityClearanceDateType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "LatestSecurityClearanceDate")
+    public JAXBElement<LatestSecurityClearanceDateType> createLatestSecurityClearanceDate(LatestSecurityClearanceDateType value) {
+        return new JAXBElement<LatestSecurityClearanceDateType>(_LatestSecurityClearanceDate_QNAME, LatestSecurityClearanceDateType.class, null, value);
     }
 
     /**
@@ -12214,19 +14060,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "LeadTimeMeasure")
     public JAXBElement<LeadTimeMeasureType> createLeadTimeMeasure(LeadTimeMeasureType value) {
         return new JAXBElement<LeadTimeMeasureType>(_LeadTimeMeasure_QNAME, LeadTimeMeasureType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link LegalFormType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link LegalFormType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "LegalForm")
-    public JAXBElement<LegalFormType> createLegalForm(LegalFormType value) {
-        return new JAXBElement<LegalFormType>(_LegalForm_QNAME, LegalFormType.class, null, value);
     }
 
     /**
@@ -12815,6 +14648,58 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MaximumDataLossDurationMeasureType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MaximumDataLossDurationMeasureType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MaximumDataLossDurationMeasure")
+    public JAXBElement<MaximumDataLossDurationMeasureType> createMaximumDataLossDurationMeasure(MaximumDataLossDurationMeasureType value) {
+        return new JAXBElement<MaximumDataLossDurationMeasureType>(_MaximumDataLossDurationMeasure_QNAME, MaximumDataLossDurationMeasureType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MaximumIncidentNotificationDurationMeasureType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MaximumIncidentNotificationDurationMeasureType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MaximumIncidentNotificationDurationMeasure")
+    public JAXBElement<MaximumIncidentNotificationDurationMeasureType> createMaximumIncidentNotificationDurationMeasure(MaximumIncidentNotificationDurationMeasureType value) {
+        return new JAXBElement<MaximumIncidentNotificationDurationMeasureType>(_MaximumIncidentNotificationDurationMeasure_QNAME, MaximumIncidentNotificationDurationMeasureType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MaximumLotsAwardedNumericType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MaximumLotsAwardedNumericType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MaximumLotsAwardedNumeric")
+    public JAXBElement<MaximumLotsAwardedNumericType> createMaximumLotsAwardedNumeric(MaximumLotsAwardedNumericType value) {
+        return new JAXBElement<MaximumLotsAwardedNumericType>(_MaximumLotsAwardedNumeric_QNAME, MaximumLotsAwardedNumericType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MaximumLotsSubmittedNumericType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MaximumLotsSubmittedNumericType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MaximumLotsSubmittedNumeric")
+    public JAXBElement<MaximumLotsSubmittedNumericType> createMaximumLotsSubmittedNumeric(MaximumLotsSubmittedNumericType value) {
+        return new JAXBElement<MaximumLotsSubmittedNumericType>(_MaximumLotsSubmittedNumeric_QNAME, MaximumLotsSubmittedNumericType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link MaximumMeasureType }{@code >}
      * 
      * @param value
@@ -12867,6 +14752,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MaximumOriginalsNumericType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MaximumOriginalsNumericType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MaximumOriginalsNumeric")
+    public JAXBElement<MaximumOriginalsNumericType> createMaximumOriginalsNumeric(MaximumOriginalsNumericType value) {
+        return new JAXBElement<MaximumOriginalsNumericType>(_MaximumOriginalsNumeric_QNAME, MaximumOriginalsNumericType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link MaximumPaidAmountType }{@code >}
      * 
      * @param value
@@ -12893,6 +14791,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MaximumPercentType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MaximumPercentType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MaximumPercent")
+    public JAXBElement<MaximumPercentType> createMaximumPercent(MaximumPercentType value) {
+        return new JAXBElement<MaximumPercentType>(_MaximumPercent_QNAME, MaximumPercentType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link MaximumQuantityType }{@code >}
      * 
      * @param value
@@ -12903,32 +14814,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MaximumQuantity")
     public JAXBElement<MaximumQuantityType> createMaximumQuantity(MaximumQuantityType value) {
         return new JAXBElement<MaximumQuantityType>(_MaximumQuantity_QNAME, MaximumQuantityType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link MaximumTaxExclusiveAmountType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link MaximumTaxExclusiveAmountType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MaximumTaxExclusiveAmount")
-    public JAXBElement<MaximumTaxExclusiveAmountType> createMaximumTaxExclusiveAmount(MaximumTaxExclusiveAmountType value) {
-        return new JAXBElement<MaximumTaxExclusiveAmountType>(_MaximumTaxExclusiveAmount_QNAME, MaximumTaxExclusiveAmountType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link MaximumTaxInclusiveAmountType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link MaximumTaxInclusiveAmountType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MaximumTaxInclusiveAmount")
-    public JAXBElement<MaximumTaxInclusiveAmountType> createMaximumTaxInclusiveAmount(MaximumTaxInclusiveAmountType value) {
-        return new JAXBElement<MaximumTaxInclusiveAmountType>(_MaximumTaxInclusiveAmount_QNAME, MaximumTaxInclusiveAmountType.class, null, value);
     }
 
     /**
@@ -12945,6 +14830,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MaximumValueNumericType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MaximumValueNumericType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MaximumValueNumeric")
+    public JAXBElement<MaximumValueNumericType> createMaximumValueNumeric(MaximumValueNumericType value) {
+        return new JAXBElement<MaximumValueNumericType>(_MaximumValueNumeric_QNAME, MaximumValueNumericType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link MaximumVariantQuantityType }{@code >}
      * 
      * @param value
@@ -12955,6 +14853,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MaximumVariantQuantity")
     public JAXBElement<MaximumVariantQuantityType> createMaximumVariantQuantity(MaximumVariantQuantityType value) {
         return new JAXBElement<MaximumVariantQuantityType>(_MaximumVariantQuantity_QNAME, MaximumVariantQuantityType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MeanTimeToRecoverDurationMeasureType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MeanTimeToRecoverDurationMeasureType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MeanTimeToRecoverDurationMeasure")
+    public JAXBElement<MeanTimeToRecoverDurationMeasureType> createMeanTimeToRecoverDurationMeasure(MeanTimeToRecoverDurationMeasureType value) {
+        return new JAXBElement<MeanTimeToRecoverDurationMeasureType>(_MeanTimeToRecoverDurationMeasure_QNAME, MeanTimeToRecoverDurationMeasureType.class, null, value);
     }
 
     /**
@@ -12981,6 +14892,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MedicalFirstAidGuideCode")
     public JAXBElement<MedicalFirstAidGuideCodeType> createMedicalFirstAidGuideCode(MedicalFirstAidGuideCodeType value) {
         return new JAXBElement<MedicalFirstAidGuideCodeType>(_MedicalFirstAidGuideCode_QNAME, MedicalFirstAidGuideCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MessageFormatType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MessageFormatType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MessageFormat")
+    public JAXBElement<MessageFormatType> createMessageFormat(MessageFormatType value) {
+        return new JAXBElement<MessageFormatType>(_MessageFormat_QNAME, MessageFormatType.class, null, value);
     }
 
     /**
@@ -13046,32 +14970,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MeterReadingComments")
     public JAXBElement<MeterReadingCommentsType> createMeterReadingComments(MeterReadingCommentsType value) {
         return new JAXBElement<MeterReadingCommentsType>(_MeterReadingComments_QNAME, MeterReadingCommentsType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link MeterReadingMethodType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link MeterReadingMethodType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MeterReadingMethod")
-    public JAXBElement<MeterReadingMethodType> createMeterReadingMethod(MeterReadingMethodType value) {
-        return new JAXBElement<MeterReadingMethodType>(_MeterReadingMethod_QNAME, MeterReadingMethodType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link MeterReadingMethodCodeType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link MeterReadingMethodCodeType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MeterReadingMethodCode")
-    public JAXBElement<MeterReadingMethodCodeType> createMeterReadingMethodCode(MeterReadingMethodCodeType value) {
-        return new JAXBElement<MeterReadingMethodCodeType>(_MeterReadingMethodCode_QNAME, MeterReadingMethodCodeType.class, null, value);
     }
 
     /**
@@ -13153,6 +15051,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MinimumDownTimeScheduleDurationMeasureType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MinimumDownTimeScheduleDurationMeasureType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MinimumDownTimeScheduleDurationMeasure")
+    public JAXBElement<MinimumDownTimeScheduleDurationMeasureType> createMinimumDownTimeScheduleDurationMeasure(MinimumDownTimeScheduleDurationMeasureType value) {
+        return new JAXBElement<MinimumDownTimeScheduleDurationMeasureType>(_MinimumDownTimeScheduleDurationMeasure_QNAME, MinimumDownTimeScheduleDurationMeasureType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link MinimumImprovementBidType }{@code >}
      * 
      * @param value
@@ -13218,6 +15129,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MinimumPercentType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MinimumPercentType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MinimumPercent")
+    public JAXBElement<MinimumPercentType> createMinimumPercent(MinimumPercentType value) {
+        return new JAXBElement<MinimumPercentType>(_MinimumPercent_QNAME, MinimumPercentType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link MinimumQuantityType }{@code >}
      * 
      * @param value
@@ -13231,6 +15155,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MinimumResponseTimeDurationMeasureType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MinimumResponseTimeDurationMeasureType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MinimumResponseTimeDurationMeasure")
+    public JAXBElement<MinimumResponseTimeDurationMeasureType> createMinimumResponseTimeDurationMeasure(MinimumResponseTimeDurationMeasureType value) {
+        return new JAXBElement<MinimumResponseTimeDurationMeasureType>(_MinimumResponseTimeDurationMeasure_QNAME, MinimumResponseTimeDurationMeasureType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link MinimumValueType }{@code >}
      * 
      * @param value
@@ -13241,6 +15178,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MinimumValue")
     public JAXBElement<MinimumValueType> createMinimumValue(MinimumValueType value) {
         return new JAXBElement<MinimumValueType>(_MinimumValue_QNAME, MinimumValueType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MinimumValueNumericType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MinimumValueNumericType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MinimumValueNumeric")
+    public JAXBElement<MinimumValueNumericType> createMinimumValueNumeric(MinimumValueNumericType value) {
+        return new JAXBElement<MinimumValueNumericType>(_MinimumValueNumeric_QNAME, MinimumValueNumericType.class, null, value);
     }
 
     /**
@@ -13267,6 +15217,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ModelName")
     public JAXBElement<ModelNameType> createModelName(ModelNameType value) {
         return new JAXBElement<ModelNameType>(_ModelName_QNAME, ModelNameType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MondayAvailabilityIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MondayAvailabilityIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "MondayAvailabilityIndicator")
+    public JAXBElement<MondayAvailabilityIndicatorType> createMondayAvailabilityIndicator(MondayAvailabilityIndicatorType value) {
+        return new JAXBElement<MondayAvailabilityIndicatorType>(_MondayAvailabilityIndicator_QNAME, MondayAvailabilityIndicatorType.class, null, value);
     }
 
     /**
@@ -13413,6 +15376,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link NetTonnageMeasureType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link NetTonnageMeasureType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "NetTonnageMeasure")
+    public JAXBElement<NetTonnageMeasureType> createNetTonnageMeasure(NetTonnageMeasureType value) {
+        return new JAXBElement<NetTonnageMeasureType>(_NetTonnageMeasure_QNAME, NetTonnageMeasureType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link NetVolumeMeasureType }{@code >}
      * 
      * @param value
@@ -13449,6 +15425,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "NetworkID")
     public JAXBElement<NetworkIDType> createNetworkID(NetworkIDType value) {
         return new JAXBElement<NetworkIDType>(_NetworkID_QNAME, NetworkIDType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link NoFurtherNegotiationIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link NoFurtherNegotiationIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "NoFurtherNegotiationIndicator")
+    public JAXBElement<NoFurtherNegotiationIndicatorType> createNoFurtherNegotiationIndicator(NoFurtherNegotiationIndicatorType value) {
+        return new JAXBElement<NoFurtherNegotiationIndicatorType>(_NoFurtherNegotiationIndicator_QNAME, NoFurtherNegotiationIndicatorType.class, null, value);
     }
 
     /**
@@ -13504,6 +15493,32 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link NoticeLanguageCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link NoticeLanguageCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "NoticeLanguageCode")
+    public JAXBElement<NoticeLanguageCodeType> createNoticeLanguageCode(NoticeLanguageCodeType value) {
+        return new JAXBElement<NoticeLanguageCodeType>(_NoticeLanguageCode_QNAME, NoticeLanguageCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link NoticeTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link NoticeTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "NoticeTypeCode")
+    public JAXBElement<NoticeTypeCodeType> createNoticeTypeCode(NoticeTypeCodeType value) {
+        return new JAXBElement<NoticeTypeCodeType>(_NoticeTypeCode_QNAME, NoticeTypeCodeType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link NotificationTypeCodeType }{@code >}
      * 
      * @param value
@@ -13514,6 +15529,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "NotificationTypeCode")
     public JAXBElement<NotificationTypeCodeType> createNotificationTypeCode(NotificationTypeCodeType value) {
         return new JAXBElement<NotificationTypeCodeType>(_NotificationTypeCode_QNAME, NotificationTypeCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link OIDType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link OIDType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "OID")
+    public JAXBElement<OIDType> createOID(OIDType value) {
+        return new JAXBElement<OIDType>(_OID_QNAME, OIDType.class, null, value);
     }
 
     /**
@@ -13618,19 +15646,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "OperatingYearsQuantity")
     public JAXBElement<OperatingYearsQuantityType> createOperatingYearsQuantity(OperatingYearsQuantityType value) {
         return new JAXBElement<OperatingYearsQuantityType>(_OperatingYearsQuantity_QNAME, OperatingYearsQuantityType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link OperationStatusCodeType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link OperationStatusCodeType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "OperationStatusCode")
-    public JAXBElement<OperationStatusCodeType> createOperationStatusCode(OperationStatusCodeType value) {
-        return new JAXBElement<OperationStatusCodeType>(_OperationStatusCode_QNAME, OperationStatusCodeType.class, null, value);
     }
 
     /**
@@ -13790,6 +15805,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link OtherConditionsIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link OtherConditionsIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "OtherConditionsIndicator")
+    public JAXBElement<OtherConditionsIndicatorType> createOtherConditionsIndicator(OtherConditionsIndicatorType value) {
+        return new JAXBElement<OtherConditionsIndicatorType>(_OtherConditionsIndicator_QNAME, OtherConditionsIndicatorType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link OtherInstructionType }{@code >}
      * 
      * @param value
@@ -13800,6 +15828,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "OtherInstruction")
     public JAXBElement<OtherInstructionType> createOtherInstruction(OtherInstructionType value) {
         return new JAXBElement<OtherInstructionType>(_OtherInstruction_QNAME, OtherInstructionType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link OtherNameType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link OtherNameType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "OtherName")
+    public JAXBElement<OtherNameType> createOtherName(OtherNameType value) {
+        return new JAXBElement<OtherNameType>(_OtherName_QNAME, OtherNameType.class, null, value);
     }
 
     /**
@@ -14076,6 +16117,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ParticipantIDType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ParticipantIDType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ParticipantID")
+    public JAXBElement<ParticipantIDType> createParticipantID(ParticipantIDType value) {
+        return new JAXBElement<ParticipantIDType>(_ParticipantID_QNAME, ParticipantIDType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ParticipationPercentType }{@code >}
      * 
      * @param value
@@ -14099,6 +16153,45 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PartyCapacityAmount")
     public JAXBElement<PartyCapacityAmountType> createPartyCapacityAmount(PartyCapacityAmountType value) {
         return new JAXBElement<PartyCapacityAmountType>(_PartyCapacityAmount_QNAME, PartyCapacityAmountType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PartyTypeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PartyTypeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PartyType")
+    public JAXBElement<PartyTypeType> createPartyType(PartyTypeType value) {
+        return new JAXBElement<PartyTypeType>(_PartyType_QNAME, PartyTypeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PartyTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PartyTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PartyTypeCode")
+    public JAXBElement<PartyTypeCodeType> createPartyTypeCode(PartyTypeCodeType value) {
+        return new JAXBElement<PartyTypeCodeType>(_PartyTypeCode_QNAME, PartyTypeCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PassengerQuantityType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PassengerQuantityType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PassengerQuantity")
+    public JAXBElement<PassengerQuantityType> createPassengerQuantity(PassengerQuantityType value) {
+        return new JAXBElement<PassengerQuantityType>(_PassengerQuantity_QNAME, PassengerQuantityType.class, null, value);
     }
 
     /**
@@ -14216,6 +16309,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PaymentCurrencyCode")
     public JAXBElement<PaymentCurrencyCodeType> createPaymentCurrencyCode(PaymentCurrencyCodeType value) {
         return new JAXBElement<PaymentCurrencyCodeType>(_PaymentCurrencyCode_QNAME, PaymentCurrencyCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PaymentDescriptionType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PaymentDescriptionType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PaymentDescription")
+    public JAXBElement<PaymentDescriptionType> createPaymentDescription(PaymentDescriptionType value) {
+        return new JAXBElement<PaymentDescriptionType>(_PaymentDescription_QNAME, PaymentDescriptionType.class, null, value);
     }
 
     /**
@@ -14359,19 +16465,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PenaltyAmount")
     public JAXBElement<PenaltyAmountType> createPenaltyAmount(PenaltyAmountType value) {
         return new JAXBElement<PenaltyAmountType>(_PenaltyAmount_QNAME, PenaltyAmountType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link PenaltyClausesType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link PenaltyClausesType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PenaltyClauses")
-    public JAXBElement<PenaltyClausesType> createPenaltyClauses(PenaltyClausesType value) {
-        return new JAXBElement<PenaltyClausesType>(_PenaltyClauses_QNAME, PenaltyClausesType.class, null, value);
     }
 
     /**
@@ -14544,6 +16637,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PostEventNotificationDurationMeasureType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PostEventNotificationDurationMeasureType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PostEventNotificationDurationMeasure")
+    public JAXBElement<PostEventNotificationDurationMeasureType> createPostEventNotificationDurationMeasure(PostEventNotificationDurationMeasureType value) {
+        return new JAXBElement<PostEventNotificationDurationMeasureType>(_PostEventNotificationDurationMeasure_QNAME, PostEventNotificationDurationMeasureType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link PostalZoneType }{@code >}
      * 
      * @param value
@@ -14596,6 +16702,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PreEventNotificationDurationMeasureType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PreEventNotificationDurationMeasureType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PreEventNotificationDurationMeasure")
+    public JAXBElement<PreEventNotificationDurationMeasureType> createPreEventNotificationDurationMeasure(PreEventNotificationDurationMeasureType value) {
+        return new JAXBElement<PreEventNotificationDurationMeasureType>(_PreEventNotificationDurationMeasure_QNAME, PreEventNotificationDurationMeasureType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link PreferenceCriterionCodeType }{@code >}
      * 
      * @param value
@@ -14606,6 +16725,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PreferenceCriterionCode")
     public JAXBElement<PreferenceCriterionCodeType> createPreferenceCriterionCode(PreferenceCriterionCodeType value) {
         return new JAXBElement<PreferenceCriterionCodeType>(_PreferenceCriterionCode_QNAME, PreferenceCriterionCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PreferredLanguageLocaleCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PreferredLanguageLocaleCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PreferredLanguageLocaleCode")
+    public JAXBElement<PreferredLanguageLocaleCodeType> createPreferredLanguageLocaleCode(PreferredLanguageLocaleCodeType value) {
+        return new JAXBElement<PreferredLanguageLocaleCodeType>(_PreferredLanguageLocaleCode_QNAME, PreferredLanguageLocaleCodeType.class, null, value);
     }
 
     /**
@@ -14697,6 +16829,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PreviousMeterReadingDate")
     public JAXBElement<PreviousMeterReadingDateType> createPreviousMeterReadingDate(PreviousMeterReadingDateType value) {
         return new JAXBElement<PreviousMeterReadingDateType>(_PreviousMeterReadingDate_QNAME, PreviousMeterReadingDateType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PreviousMeterReadingMethodType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PreviousMeterReadingMethodType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PreviousMeterReadingMethod")
+    public JAXBElement<PreviousMeterReadingMethodType> createPreviousMeterReadingMethod(PreviousMeterReadingMethodType value) {
+        return new JAXBElement<PreviousMeterReadingMethodType>(_PreviousMeterReadingMethod_QNAME, PreviousMeterReadingMethodType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PreviousMeterReadingMethodCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PreviousMeterReadingMethodCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PreviousMeterReadingMethodCode")
+    public JAXBElement<PreviousMeterReadingMethodCodeType> createPreviousMeterReadingMethodCode(PreviousMeterReadingMethodCodeType value) {
+        return new JAXBElement<PreviousMeterReadingMethodCodeType>(_PreviousMeterReadingMethodCode_QNAME, PreviousMeterReadingMethodCodeType.class, null, value);
     }
 
     /**
@@ -14869,6 +17027,45 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PrivatePartyIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PrivatePartyIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PrivatePartyIndicator")
+    public JAXBElement<PrivatePartyIndicatorType> createPrivatePartyIndicator(PrivatePartyIndicatorType value) {
+        return new JAXBElement<PrivatePartyIndicatorType>(_PrivatePartyIndicator_QNAME, PrivatePartyIndicatorType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PrizeDescriptionType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PrizeDescriptionType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PrizeDescription")
+    public JAXBElement<PrizeDescriptionType> createPrizeDescription(PrizeDescriptionType value) {
+        return new JAXBElement<PrizeDescriptionType>(_PrizeDescription_QNAME, PrizeDescriptionType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PrizeIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PrizeIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PrizeIndicator")
+    public JAXBElement<PrizeIndicatorType> createPrizeIndicator(PrizeIndicatorType value) {
+        return new JAXBElement<PrizeIndicatorType>(_PrizeIndicator_QNAME, PrizeIndicatorType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ProcedureCodeType }{@code >}
      * 
      * @param value
@@ -14918,19 +17115,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ProcessReasonCode")
     public JAXBElement<ProcessReasonCodeType> createProcessReasonCode(ProcessReasonCodeType value) {
         return new JAXBElement<ProcessReasonCodeType>(_ProcessReasonCode_QNAME, ProcessReasonCodeType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ProcurementProjectLotIDType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link ProcurementProjectLotIDType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ProcurementProjectLotID")
-    public JAXBElement<ProcurementProjectLotIDType> createProcurementProjectLotID(ProcurementProjectLotIDType value) {
-        return new JAXBElement<ProcurementProjectLotIDType>(_ProcurementProjectLotID_QNAME, ProcurementProjectLotIDType.class, null, value);
     }
 
     /**
@@ -15012,6 +17196,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ProgressPercentType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ProgressPercentType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ProgressPercent")
+    public JAXBElement<ProgressPercentType> createProgressPercent(ProgressPercentType value) {
+        return new JAXBElement<ProgressPercentType>(_ProgressPercent_QNAME, ProgressPercentType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link PromotionalEventTypeCodeType }{@code >}
      * 
      * @param value
@@ -15025,6 +17222,32 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PropertyGroupTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PropertyGroupTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PropertyGroupTypeCode")
+    public JAXBElement<PropertyGroupTypeCodeType> createPropertyGroupTypeCode(PropertyGroupTypeCodeType value) {
+        return new JAXBElement<PropertyGroupTypeCodeType>(_PropertyGroupTypeCode_QNAME, PropertyGroupTypeCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ProtocolIDType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ProtocolIDType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ProtocolID")
+    public JAXBElement<ProtocolIDType> createProtocolID(ProtocolIDType value) {
+        return new JAXBElement<ProtocolIDType>(_ProtocolID_QNAME, ProtocolIDType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ProviderTypeCodeType }{@code >}
      * 
      * @param value
@@ -15035,6 +17258,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ProviderTypeCode")
     public JAXBElement<ProviderTypeCodeType> createProviderTypeCode(ProviderTypeCodeType value) {
         return new JAXBElement<ProviderTypeCodeType>(_ProviderTypeCode_QNAME, ProviderTypeCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PublicPartyIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PublicPartyIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PublicPartyIndicator")
+    public JAXBElement<PublicPartyIndicatorType> createPublicPartyIndicator(PublicPartyIndicatorType value) {
+        return new JAXBElement<PublicPartyIndicatorType>(_PublicPartyIndicator_QNAME, PublicPartyIndicatorType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PublishAwardIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PublishAwardIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PublishAwardIndicator")
+    public JAXBElement<PublishAwardIndicatorType> createPublishAwardIndicator(PublishAwardIndicatorType value) {
+        return new JAXBElement<PublishAwardIndicatorType>(_PublishAwardIndicator_QNAME, PublishAwardIndicatorType.class, null, value);
     }
 
     /**
@@ -15061,6 +17310,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "PurposeCode")
     public JAXBElement<PurposeCodeType> createPurposeCode(PurposeCodeType value) {
         return new JAXBElement<PurposeCodeType>(_PurposeCode_QNAME, PurposeCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link QualificationApplicationTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link QualificationApplicationTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "QualificationApplicationTypeCode")
+    public JAXBElement<QualificationApplicationTypeCodeType> createQualificationApplicationTypeCode(QualificationApplicationTypeCodeType value) {
+        return new JAXBElement<QualificationApplicationTypeCodeType>(_QualificationApplicationTypeCode_QNAME, QualificationApplicationTypeCodeType.class, null, value);
     }
 
     /**
@@ -15103,6 +17365,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RadioCallSignIDType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link RadioCallSignIDType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "RadioCallSignID")
+    public JAXBElement<RadioCallSignIDType> createRadioCallSignID(RadioCallSignIDType value) {
+        return new JAXBElement<RadioCallSignIDType>(_RadioCallSignID_QNAME, RadioCallSignIDType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link RailCarIDType }{@code >}
      * 
      * @param value
@@ -15113,6 +17388,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "RailCarID")
     public JAXBElement<RailCarIDType> createRailCarID(RailCarIDType value) {
         return new JAXBElement<RailCarIDType>(_RailCarID_QNAME, RailCarIDType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RankType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link RankType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "Rank")
+    public JAXBElement<RankType> createRank(RankType value) {
+        return new JAXBElement<RankType>(_Rank_QNAME, RankType.class, null, value);
     }
 
     /**
@@ -15129,6 +17417,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ReceiptAdviceTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ReceiptAdviceTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ReceiptAdviceTypeCode")
+    public JAXBElement<ReceiptAdviceTypeCodeType> createReceiptAdviceTypeCode(ReceiptAdviceTypeCodeType value) {
+        return new JAXBElement<ReceiptAdviceTypeCodeType>(_ReceiptAdviceTypeCode_QNAME, ReceiptAdviceTypeCodeType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ReceivedDateType }{@code >}
      * 
      * @param value
@@ -15139,6 +17440,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ReceivedDate")
     public JAXBElement<ReceivedDateType> createReceivedDate(ReceivedDateType value) {
         return new JAXBElement<ReceivedDateType>(_ReceivedDate_QNAME, ReceivedDateType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ReceivedElectronicTenderQuantityType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ReceivedElectronicTenderQuantityType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ReceivedElectronicTenderQuantity")
+    public JAXBElement<ReceivedElectronicTenderQuantityType> createReceivedElectronicTenderQuantity(ReceivedElectronicTenderQuantityType value) {
+        return new JAXBElement<ReceivedElectronicTenderQuantityType>(_ReceivedElectronicTenderQuantity_QNAME, ReceivedElectronicTenderQuantityType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ReceivedForeignTenderQuantityType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ReceivedForeignTenderQuantityType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ReceivedForeignTenderQuantity")
+    public JAXBElement<ReceivedForeignTenderQuantityType> createReceivedForeignTenderQuantity(ReceivedForeignTenderQuantityType value) {
+        return new JAXBElement<ReceivedForeignTenderQuantityType>(_ReceivedForeignTenderQuantity_QNAME, ReceivedForeignTenderQuantityType.class, null, value);
     }
 
     /**
@@ -15165,6 +17492,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ReceivedTenderQuantity")
     public JAXBElement<ReceivedTenderQuantityType> createReceivedTenderQuantity(ReceivedTenderQuantityType value) {
         return new JAXBElement<ReceivedTenderQuantityType>(_ReceivedTenderQuantity_QNAME, ReceivedTenderQuantityType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RecurringProcurementIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link RecurringProcurementIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "RecurringProcurementIndicator")
+    public JAXBElement<RecurringProcurementIndicatorType> createRecurringProcurementIndicator(RecurringProcurementIndicatorType value) {
+        return new JAXBElement<RecurringProcurementIndicatorType>(_RecurringProcurementIndicator_QNAME, RecurringProcurementIndicatorType.class, null, value);
     }
 
     /**
@@ -15389,6 +17729,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RegulatoryDomainType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link RegulatoryDomainType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "RegulatoryDomain")
+    public JAXBElement<RegulatoryDomainType> createRegulatoryDomain(RegulatoryDomainType value) {
+        return new JAXBElement<RegulatoryDomainType>(_RegulatoryDomain_QNAME, RegulatoryDomainType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link RejectActionCodeType }{@code >}
      * 
      * @param value
@@ -15516,6 +17869,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ReminderTypeCode")
     public JAXBElement<ReminderTypeCodeType> createReminderTypeCode(ReminderTypeCodeType value) {
         return new JAXBElement<ReminderTypeCodeType>(_ReminderTypeCode_QNAME, ReminderTypeCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RenewalsIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link RenewalsIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "RenewalsIndicator")
+    public JAXBElement<RenewalsIndicatorType> createRenewalsIndicator(RenewalsIndicatorType value) {
+        return new JAXBElement<RenewalsIndicatorType>(_RenewalsIndicator_QNAME, RenewalsIndicatorType.class, null, value);
     }
 
     /**
@@ -15675,6 +18041,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RequiredResponseMessageLevelCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link RequiredResponseMessageLevelCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "RequiredResponseMessageLevelCode")
+    public JAXBElement<RequiredResponseMessageLevelCodeType> createRequiredResponseMessageLevelCode(RequiredResponseMessageLevelCodeType value) {
+        return new JAXBElement<RequiredResponseMessageLevelCodeType>(_RequiredResponseMessageLevelCode_QNAME, RequiredResponseMessageLevelCodeType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ResidenceTypeType }{@code >}
      * 
      * @param value
@@ -15766,6 +18145,45 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ResponseType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ResponseType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "Response")
+    public JAXBElement<ResponseType> createResponse(ResponseType value) {
+        return new JAXBElement<ResponseType>(_Response_QNAME, ResponseType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ResponseAmountType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ResponseAmountType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ResponseAmount")
+    public JAXBElement<ResponseAmountType> createResponseAmount(ResponseAmountType value) {
+        return new JAXBElement<ResponseAmountType>(_ResponseAmount_QNAME, ResponseAmountType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ResponseBinaryObjectType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ResponseBinaryObjectType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ResponseBinaryObject")
+    public JAXBElement<ResponseBinaryObjectType> createResponseBinaryObject(ResponseBinaryObjectType value) {
+        return new JAXBElement<ResponseBinaryObjectType>(_ResponseBinaryObject_QNAME, ResponseBinaryObjectType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ResponseCodeType }{@code >}
      * 
      * @param value
@@ -15792,6 +18210,71 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ResponseIDType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ResponseIDType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ResponseID")
+    public JAXBElement<ResponseIDType> createResponseID(ResponseIDType value) {
+        return new JAXBElement<ResponseIDType>(_ResponseID_QNAME, ResponseIDType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ResponseIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ResponseIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ResponseIndicator")
+    public JAXBElement<ResponseIndicatorType> createResponseIndicator(ResponseIndicatorType value) {
+        return new JAXBElement<ResponseIndicatorType>(_ResponseIndicator_QNAME, ResponseIndicatorType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ResponseMeasureType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ResponseMeasureType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ResponseMeasure")
+    public JAXBElement<ResponseMeasureType> createResponseMeasure(ResponseMeasureType value) {
+        return new JAXBElement<ResponseMeasureType>(_ResponseMeasure_QNAME, ResponseMeasureType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ResponseNumericType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ResponseNumericType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ResponseNumeric")
+    public JAXBElement<ResponseNumericType> createResponseNumeric(ResponseNumericType value) {
+        return new JAXBElement<ResponseNumericType>(_ResponseNumeric_QNAME, ResponseNumericType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ResponseQuantityType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ResponseQuantityType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ResponseQuantity")
+    public JAXBElement<ResponseQuantityType> createResponseQuantity(ResponseQuantityType value) {
+        return new JAXBElement<ResponseQuantityType>(_ResponseQuantity_QNAME, ResponseQuantityType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ResponseTimeType }{@code >}
      * 
      * @param value
@@ -15802,6 +18285,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ResponseTime")
     public JAXBElement<ResponseTimeType> createResponseTime(ResponseTimeType value) {
         return new JAXBElement<ResponseTimeType>(_ResponseTime_QNAME, ResponseTimeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ResponseURIType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ResponseURIType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ResponseURI")
+    public JAXBElement<ResponseURIType> createResponseURI(ResponseURIType value) {
+        return new JAXBElement<ResponseURIType>(_ResponseURI_QNAME, ResponseURIType.class, null, value);
     }
 
     /**
@@ -15948,6 +18444,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RoleDescriptionType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link RoleDescriptionType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "RoleDescription")
+    public JAXBElement<RoleDescriptionType> createRoleDescription(RoleDescriptionType value) {
+        return new JAXBElement<RoleDescriptionType>(_RoleDescription_QNAME, RoleDescriptionType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link RoomType }{@code >}
      * 
      * @param value
@@ -15997,6 +18506,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "SalesOrderLineID")
     public JAXBElement<SalesOrderLineIDType> createSalesOrderLineID(SalesOrderLineIDType value) {
         return new JAXBElement<SalesOrderLineIDType>(_SalesOrderLineID_QNAME, SalesOrderLineIDType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SaturdayAvailabilityIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link SaturdayAvailabilityIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "SaturdayAvailabilityIndicator")
+    public JAXBElement<SaturdayAvailabilityIndicatorType> createSaturdayAvailabilityIndicator(SaturdayAvailabilityIndicatorType value) {
+        return new JAXBElement<SaturdayAvailabilityIndicatorType>(_SaturdayAvailabilityIndicator_QNAME, SaturdayAvailabilityIndicatorType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SchemaURIType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link SchemaURIType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "SchemaURI")
+    public JAXBElement<SchemaURIType> createSchemaURI(SchemaURIType value) {
+        return new JAXBElement<SchemaURIType>(_SchemaURI_QNAME, SchemaURIType.class, null, value);
     }
 
     /**
@@ -16143,6 +18678,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ServiceInformationPreferenceCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ServiceInformationPreferenceCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ServiceInformationPreferenceCode")
+    public JAXBElement<ServiceInformationPreferenceCodeType> createServiceInformationPreferenceCode(ServiceInformationPreferenceCodeType value) {
+        return new JAXBElement<ServiceInformationPreferenceCodeType>(_ServiceInformationPreferenceCode_QNAME, ServiceInformationPreferenceCodeType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ServiceNameType }{@code >}
      * 
      * @param value
@@ -16166,6 +18714,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ServiceNumberCalled")
     public JAXBElement<ServiceNumberCalledType> createServiceNumberCalled(ServiceNumberCalledType value) {
         return new JAXBElement<ServiceNumberCalledType>(_ServiceNumberCalled_QNAME, ServiceNumberCalledType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ServiceProviderPartyIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ServiceProviderPartyIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ServiceProviderPartyIndicator")
+    public JAXBElement<ServiceProviderPartyIndicatorType> createServiceProviderPartyIndicator(ServiceProviderPartyIndicatorType value) {
+        return new JAXBElement<ServiceProviderPartyIndicatorType>(_ServiceProviderPartyIndicator_QNAME, ServiceProviderPartyIndicatorType.class, null, value);
     }
 
     /**
@@ -16273,6 +18834,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ShipsRequirementsType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ShipsRequirementsType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ShipsRequirements")
+    public JAXBElement<ShipsRequirementsType> createShipsRequirements(ShipsRequirementsType value) {
+        return new JAXBElement<ShipsRequirementsType>(_ShipsRequirements_QNAME, ShipsRequirementsType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ShortQuantityType }{@code >}
      * 
      * @param value
@@ -16335,6 +18909,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "SizeTypeCode")
     public JAXBElement<SizeTypeCodeType> createSizeTypeCode(SizeTypeCodeType value) {
         return new JAXBElement<SizeTypeCodeType>(_SizeTypeCode_QNAME, SizeTypeCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SocialMediaTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link SocialMediaTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "SocialMediaTypeCode")
+    public JAXBElement<SocialMediaTypeCodeType> createSocialMediaTypeCode(SocialMediaTypeCodeType value) {
+        return new JAXBElement<SocialMediaTypeCodeType>(_SocialMediaTypeCode_QNAME, SocialMediaTypeCodeType.class, null, value);
     }
 
     /**
@@ -16468,16 +19055,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link SpecialTransportRequirmentsType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link SpecialTransportRequirementsType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link SpecialTransportRequirmentsType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link SpecialTransportRequirementsType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "SpecialTransportRequirments")
-    public JAXBElement<SpecialTransportRequirmentsType> createSpecialTransportRequirments(SpecialTransportRequirmentsType value) {
-        return new JAXBElement<SpecialTransportRequirmentsType>(_SpecialTransportRequirments_QNAME, SpecialTransportRequirmentsType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "SpecialTransportRequirements")
+    public JAXBElement<SpecialTransportRequirementsType> createSpecialTransportRequirements(SpecialTransportRequirementsType value) {
+        return new JAXBElement<SpecialTransportRequirementsType>(_SpecialTransportRequirements_QNAME, SpecialTransportRequirementsType.class, null, value);
     }
 
     /**
@@ -16624,6 +19211,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SubcontractingConditionsCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link SubcontractingConditionsCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "SubcontractingConditionsCode")
+    public JAXBElement<SubcontractingConditionsCodeType> createSubcontractingConditionsCode(SubcontractingConditionsCodeType value) {
+        return new JAXBElement<SubcontractingConditionsCodeType>(_SubcontractingConditionsCode_QNAME, SubcontractingConditionsCodeType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link SubmissionDateType }{@code >}
      * 
      * @param value
@@ -16676,29 +19276,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link SubscriberIDTypeType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link SubscriberTypeType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link SubscriberIDTypeType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link SubscriberTypeType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "SubscriberIDType")
-    public JAXBElement<SubscriberIDTypeType> createSubscriberIDType(SubscriberIDTypeType value) {
-        return new JAXBElement<SubscriberIDTypeType>(_SubscriberIDType_QNAME, SubscriberIDTypeType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link SubscriberIDTypeCodeType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link SubscriberIDTypeCodeType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "SubscriberIDTypeCode")
-    public JAXBElement<SubscriberIDTypeCodeType> createSubscriberIDTypeCode(SubscriberIDTypeCodeType value) {
-        return new JAXBElement<SubscriberIDTypeCodeType>(_SubscriberIDTypeCode_QNAME, SubscriberIDTypeCodeType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "SubscriberType")
+    public JAXBElement<SubscriberTypeType> createSubscriberType(SubscriberTypeType value) {
+        return new JAXBElement<SubscriberTypeType>(_SubscriberType_QNAME, SubscriberTypeType.class, null, value);
     }
 
     /**
@@ -16712,19 +19299,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "SubscriberTypeCode")
     public JAXBElement<SubscriberTypeCodeType> createSubscriberTypeCode(SubscriberTypeCodeType value) {
         return new JAXBElement<SubscriberTypeCodeType>(_SubscriberTypeCode_QNAME, SubscriberTypeCodeType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link SubscriberTypeIdentifierType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link SubscriberTypeIdentifierType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "SubscriberTypeIdentifier")
-    public JAXBElement<SubscriberTypeIdentifierType> createSubscriberTypeIdentifier(SubscriberTypeIdentifierType value) {
-        return new JAXBElement<SubscriberTypeIdentifierType>(_SubscriberTypeIdentifier_QNAME, SubscriberTypeIdentifierType.class, null, value);
     }
 
     /**
@@ -16764,6 +19338,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "SummaryDescription")
     public JAXBElement<SummaryDescriptionType> createSummaryDescription(SummaryDescriptionType value) {
         return new JAXBElement<SummaryDescriptionType>(_SummaryDescription_QNAME, SummaryDescriptionType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SundayAvailabilityIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link SundayAvailabilityIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "SundayAvailabilityIndicator")
+    public JAXBElement<SundayAvailabilityIndicatorType> createSundayAvailabilityIndicator(SundayAvailabilityIndicatorType value) {
+        return new JAXBElement<SundayAvailabilityIndicatorType>(_SundayAvailabilityIndicator_QNAME, SundayAvailabilityIndicatorType.class, null, value);
     }
 
     /**
@@ -17248,6 +19835,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TenderLanguageLocaleCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TenderLanguageLocaleCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TenderLanguageLocaleCode")
+    public JAXBElement<TenderLanguageLocaleCodeType> createTenderLanguageLocaleCode(TenderLanguageLocaleCodeType value) {
+        return new JAXBElement<TenderLanguageLocaleCodeType>(_TenderLanguageLocaleCode_QNAME, TenderLanguageLocaleCodeType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TenderResultCodeType }{@code >}
      * 
      * @param value
@@ -17284,6 +19884,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TendererRequirementTypeCode")
     public JAXBElement<TendererRequirementTypeCodeType> createTendererRequirementTypeCode(TendererRequirementTypeCodeType value) {
         return new JAXBElement<TendererRequirementTypeCodeType>(_TendererRequirementTypeCode_QNAME, TendererRequirementTypeCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TendererRoleCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TendererRoleCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TendererRoleCode")
+    public JAXBElement<TendererRoleCodeType> createTendererRoleCode(TendererRoleCodeType value) {
+        return new JAXBElement<TendererRoleCodeType>(_TendererRoleCode_QNAME, TendererRoleCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TestIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TestIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TestIndicator")
+    public JAXBElement<TestIndicatorType> createTestIndicator(TestIndicatorType value) {
+        return new JAXBElement<TestIndicatorType>(_TestIndicator_QNAME, TestIndicatorType.class, null, value);
     }
 
     /**
@@ -17365,6 +19991,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ThursdayAvailabilityIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ThursdayAvailabilityIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ThursdayAvailabilityIndicator")
+    public JAXBElement<ThursdayAvailabilityIndicatorType> createThursdayAvailabilityIndicator(ThursdayAvailabilityIndicatorType value) {
+        return new JAXBElement<ThursdayAvailabilityIndicatorType>(_ThursdayAvailabilityIndicator_QNAME, ThursdayAvailabilityIndicatorType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TierRangeType }{@code >}
      * 
      * @param value
@@ -17414,19 +20053,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TimeDeltaDaysQuantity")
     public JAXBElement<TimeDeltaDaysQuantityType> createTimeDeltaDaysQuantity(TimeDeltaDaysQuantityType value) {
         return new JAXBElement<TimeDeltaDaysQuantityType>(_TimeDeltaDaysQuantity_QNAME, TimeDeltaDaysQuantityType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TimeDeviationIndicatorType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TimeDeviationIndicatorType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TimeDeviationIndicator")
-    public JAXBElement<TimeDeviationIndicatorType> createTimeDeviationIndicator(TimeDeviationIndicatorType value) {
-        return new JAXBElement<TimeDeviationIndicatorType>(_TimeDeviationIndicator_QNAME, TimeDeviationIndicatorType.class, null, value);
     }
 
     /**
@@ -17820,6 +20446,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TranslationTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TranslationTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TranslationTypeCode")
+    public JAXBElement<TranslationTypeCodeType> createTranslationTypeCode(TranslationTypeCodeType value) {
+        return new JAXBElement<TranslationTypeCodeType>(_TranslationTypeCode_QNAME, TranslationTypeCodeType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TransportAuthorizationCodeType }{@code >}
      * 
      * @param value
@@ -17885,6 +20524,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportExecutionStatusCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportExecutionStatusCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TransportExecutionStatusCode")
+    public JAXBElement<TransportExecutionStatusCodeType> createTransportExecutionStatusCode(TransportExecutionStatusCodeType value) {
+        return new JAXBElement<TransportExecutionStatusCodeType>(_TransportExecutionStatusCode_QNAME, TransportExecutionStatusCodeType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TransportHandlingUnitTypeCodeType }{@code >}
      * 
      * @param value
@@ -17937,45 +20589,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TransportServiceProviderCancellationIndicatorType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TransportServiceProviderCancellationIndicatorType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TransportServiceProviderCancellationIndicator")
-    public JAXBElement<TransportServiceProviderCancellationIndicatorType> createTransportServiceProviderCancellationIndicator(TransportServiceProviderCancellationIndicatorType value) {
-        return new JAXBElement<TransportServiceProviderCancellationIndicatorType>(_TransportServiceProviderCancellationIndicator_QNAME, TransportServiceProviderCancellationIndicatorType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TransportServiceProviderCompletionIndicatorType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TransportServiceProviderCompletionIndicatorType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TransportServiceProviderCompletionIndicator")
-    public JAXBElement<TransportServiceProviderCompletionIndicatorType> createTransportServiceProviderCompletionIndicator(TransportServiceProviderCompletionIndicatorType value) {
-        return new JAXBElement<TransportServiceProviderCompletionIndicatorType>(_TransportServiceProviderCompletionIndicator_QNAME, TransportServiceProviderCompletionIndicatorType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TransportServiceProviderReadyForExecutionIndicatorType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TransportServiceProviderReadyForExecutionIndicatorType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TransportServiceProviderReadyForExecutionIndicator")
-    public JAXBElement<TransportServiceProviderReadyForExecutionIndicatorType> createTransportServiceProviderReadyForExecutionIndicator(TransportServiceProviderReadyForExecutionIndicatorType value) {
-        return new JAXBElement<TransportServiceProviderReadyForExecutionIndicatorType>(_TransportServiceProviderReadyForExecutionIndicator_QNAME, TransportServiceProviderReadyForExecutionIndicatorType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TransportServiceProviderRemarksType }{@code >}
      * 
      * @param value
@@ -17999,45 +20612,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TransportServiceProviderSpecialTerms")
     public JAXBElement<TransportServiceProviderSpecialTermsType> createTransportServiceProviderSpecialTerms(TransportServiceProviderSpecialTermsType value) {
         return new JAXBElement<TransportServiceProviderSpecialTermsType>(_TransportServiceProviderSpecialTerms_QNAME, TransportServiceProviderSpecialTermsType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TransportUserCancellationIndicatorType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TransportUserCancellationIndicatorType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TransportUserCancellationIndicator")
-    public JAXBElement<TransportUserCancellationIndicatorType> createTransportUserCancellationIndicator(TransportUserCancellationIndicatorType value) {
-        return new JAXBElement<TransportUserCancellationIndicatorType>(_TransportUserCancellationIndicator_QNAME, TransportUserCancellationIndicatorType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TransportUserCompletionIndicatorType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TransportUserCompletionIndicatorType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TransportUserCompletionIndicator")
-    public JAXBElement<TransportUserCompletionIndicatorType> createTransportUserCompletionIndicator(TransportUserCompletionIndicatorType value) {
-        return new JAXBElement<TransportUserCompletionIndicatorType>(_TransportUserCompletionIndicator_QNAME, TransportUserCompletionIndicatorType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TransportUserReadyForExecutionIndicatorType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TransportUserReadyForExecutionIndicatorType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TransportUserReadyForExecutionIndicator")
-    public JAXBElement<TransportUserReadyForExecutionIndicatorType> createTransportUserReadyForExecutionIndicator(TransportUserReadyForExecutionIndicatorType value) {
-        return new JAXBElement<TransportUserReadyForExecutionIndicatorType>(_TransportUserReadyForExecutionIndicator_QNAME, TransportUserReadyForExecutionIndicatorType.class, null, value);
     }
 
     /**
@@ -18090,6 +20664,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TransportationServiceDetailsURI")
     public JAXBElement<TransportationServiceDetailsURIType> createTransportationServiceDetailsURI(TransportationServiceDetailsURIType value) {
         return new JAXBElement<TransportationServiceDetailsURIType>(_TransportationServiceDetailsURI_QNAME, TransportationServiceDetailsURIType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportationStatusTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportationStatusTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TransportationStatusTypeCode")
+    public JAXBElement<TransportationStatusTypeCodeType> createTransportationStatusTypeCode(TransportationStatusTypeCodeType value) {
+        return new JAXBElement<TransportationStatusTypeCodeType>(_TransportationStatusTypeCode_QNAME, TransportationStatusTypeCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TuesdayAvailabilityIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TuesdayAvailabilityIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "TuesdayAvailabilityIndicator")
+    public JAXBElement<TuesdayAvailabilityIndicatorType> createTuesdayAvailabilityIndicator(TuesdayAvailabilityIndicatorType value) {
+        return new JAXBElement<TuesdayAvailabilityIndicatorType>(_TuesdayAvailabilityIndicator_QNAME, TuesdayAvailabilityIndicatorType.class, null, value);
     }
 
     /**
@@ -18249,6 +20849,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ValidatedCriterionPropertyIDType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ValidatedCriterionPropertyIDType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ValidatedCriterionPropertyID")
+    public JAXBElement<ValidatedCriterionPropertyIDType> createValidatedCriterionPropertyID(ValidatedCriterionPropertyIDType value) {
+        return new JAXBElement<ValidatedCriterionPropertyIDType>(_ValidatedCriterionPropertyID_QNAME, ValidatedCriterionPropertyIDType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ValidationDateType }{@code >}
      * 
      * @param value
@@ -18340,6 +20953,32 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ValueCurrencyCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ValueCurrencyCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ValueCurrencyCode")
+    public JAXBElement<ValueCurrencyCodeType> createValueCurrencyCode(ValueCurrencyCodeType value) {
+        return new JAXBElement<ValueCurrencyCodeType>(_ValueCurrencyCode_QNAME, ValueCurrencyCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ValueDataTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ValueDataTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ValueDataTypeCode")
+    public JAXBElement<ValueDataTypeCodeType> createValueDataTypeCode(ValueDataTypeCodeType value) {
+        return new JAXBElement<ValueDataTypeCodeType>(_ValueDataTypeCode_QNAME, ValueDataTypeCodeType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ValueMeasureType }{@code >}
      * 
      * @param value
@@ -18376,6 +21015,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ValueQuantity")
     public JAXBElement<ValueQuantityType> createValueQuantity(ValueQuantityType value) {
         return new JAXBElement<ValueQuantityType>(_ValueQuantity_QNAME, ValueQuantityType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ValueUnitCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ValueUnitCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "ValueUnitCode")
+    public JAXBElement<ValueUnitCodeType> createValueUnitCode(ValueUnitCodeType value) {
+        return new JAXBElement<ValueUnitCodeType>(_ValueUnitCode_QNAME, ValueUnitCodeType.class, null, value);
     }
 
     /**
@@ -18470,6 +21122,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WebSiteTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WebSiteTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WebSiteTypeCode")
+    public JAXBElement<WebSiteTypeCodeType> createWebSiteTypeCode(WebSiteTypeCodeType value) {
+        return new JAXBElement<WebSiteTypeCodeType>(_WebSiteTypeCode_QNAME, WebSiteTypeCodeType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link WebsiteURIType }{@code >}
      * 
      * @param value
@@ -18480,6 +21145,97 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WebsiteURI")
     public JAXBElement<WebsiteURIType> createWebsiteURI(WebsiteURIType value) {
         return new JAXBElement<WebsiteURIType>(_WebsiteURI_QNAME, WebsiteURIType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WednesdayAvailabilityIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WednesdayAvailabilityIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WednesdayAvailabilityIndicator")
+    public JAXBElement<WednesdayAvailabilityIndicatorType> createWednesdayAvailabilityIndicator(WednesdayAvailabilityIndicatorType value) {
+        return new JAXBElement<WednesdayAvailabilityIndicatorType>(_WednesdayAvailabilityIndicator_QNAME, WednesdayAvailabilityIndicatorType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WeekDayCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WeekDayCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WeekDayCode")
+    public JAXBElement<WeekDayCodeType> createWeekDayCode(WeekDayCodeType value) {
+        return new JAXBElement<WeekDayCodeType>(_WeekDayCode_QNAME, WeekDayCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WeighingDateType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WeighingDateType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WeighingDate")
+    public JAXBElement<WeighingDateType> createWeighingDate(WeighingDateType value) {
+        return new JAXBElement<WeighingDateType>(_WeighingDate_QNAME, WeighingDateType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WeighingDeviceIDType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WeighingDeviceIDType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WeighingDeviceID")
+    public JAXBElement<WeighingDeviceIDType> createWeighingDeviceID(WeighingDeviceIDType value) {
+        return new JAXBElement<WeighingDeviceIDType>(_WeighingDeviceID_QNAME, WeighingDeviceIDType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WeighingDeviceTypeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WeighingDeviceTypeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WeighingDeviceType")
+    public JAXBElement<WeighingDeviceTypeType> createWeighingDeviceType(WeighingDeviceTypeType value) {
+        return new JAXBElement<WeighingDeviceTypeType>(_WeighingDeviceType_QNAME, WeighingDeviceTypeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WeighingMethodCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WeighingMethodCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WeighingMethodCode")
+    public JAXBElement<WeighingMethodCodeType> createWeighingMethodCode(WeighingMethodCodeType value) {
+        return new JAXBElement<WeighingMethodCodeType>(_WeighingMethodCode_QNAME, WeighingMethodCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WeighingTimeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WeighingTimeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WeighingTime")
+    public JAXBElement<WeighingTimeType> createWeighingTime(WeighingTimeType value) {
+        return new JAXBElement<WeighingTimeType>(_WeighingTime_QNAME, WeighingTimeType.class, null, value);
     }
 
     /**
@@ -18509,6 +21265,32 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WeightScoringMethodologyNoteType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WeightScoringMethodologyNoteType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WeightScoringMethodologyNote")
+    public JAXBElement<WeightScoringMethodologyNoteType> createWeightScoringMethodologyNote(WeightScoringMethodologyNoteType value) {
+        return new JAXBElement<WeightScoringMethodologyNoteType>(_WeightScoringMethodologyNote_QNAME, WeightScoringMethodologyNoteType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WeightStatementTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WeightStatementTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WeightStatementTypeCode")
+    public JAXBElement<WeightStatementTypeCodeType> createWeightStatementTypeCode(WeightStatementTypeCodeType value) {
+        return new JAXBElement<WeightStatementTypeCodeType>(_WeightStatementTypeCode_QNAME, WeightStatementTypeCodeType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link WeightingAlgorithmCodeType }{@code >}
      * 
      * @param value
@@ -18519,6 +21301,84 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WeightingAlgorithmCode")
     public JAXBElement<WeightingAlgorithmCodeType> createWeightingAlgorithmCode(WeightingAlgorithmCodeType value) {
         return new JAXBElement<WeightingAlgorithmCodeType>(_WeightingAlgorithmCode_QNAME, WeightingAlgorithmCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WeightingConsiderationDescriptionType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WeightingConsiderationDescriptionType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WeightingConsiderationDescription")
+    public JAXBElement<WeightingConsiderationDescriptionType> createWeightingConsiderationDescription(WeightingConsiderationDescriptionType value) {
+        return new JAXBElement<WeightingConsiderationDescriptionType>(_WeightingConsiderationDescription_QNAME, WeightingConsiderationDescriptionType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WeightingTypeCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WeightingTypeCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WeightingTypeCode")
+    public JAXBElement<WeightingTypeCodeType> createWeightingTypeCode(WeightingTypeCodeType value) {
+        return new JAXBElement<WeightingTypeCodeType>(_WeightingTypeCode_QNAME, WeightingTypeCodeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WithdrawOfferIndicatorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WithdrawOfferIndicatorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WithdrawOfferIndicator")
+    public JAXBElement<WithdrawOfferIndicatorType> createWithdrawOfferIndicator(WithdrawOfferIndicatorType value) {
+        return new JAXBElement<WithdrawOfferIndicatorType>(_WithdrawOfferIndicator_QNAME, WithdrawOfferIndicatorType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WithholdingTaxTotalAmountType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WithholdingTaxTotalAmountType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WithholdingTaxTotalAmount")
+    public JAXBElement<WithholdingTaxTotalAmountType> createWithholdingTaxTotalAmount(WithholdingTaxTotalAmountType value) {
+        return new JAXBElement<WithholdingTaxTotalAmountType>(_WithholdingTaxTotalAmount_QNAME, WithholdingTaxTotalAmountType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WorkPhaseType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WorkPhaseType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WorkPhase")
+    public JAXBElement<WorkPhaseType> createWorkPhase(WorkPhaseType value) {
+        return new JAXBElement<WorkPhaseType>(_WorkPhase_QNAME, WorkPhaseType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WorkPhaseCodeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WorkPhaseCodeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", name = "WorkPhaseCode")
+    public JAXBElement<WorkPhaseCodeType> createWorkPhaseCode(WorkPhaseCodeType value) {
+        return new JAXBElement<WorkPhaseCodeType>(_WorkPhaseCode_QNAME, WorkPhaseCodeType.class, null, value);
     }
 
     /**

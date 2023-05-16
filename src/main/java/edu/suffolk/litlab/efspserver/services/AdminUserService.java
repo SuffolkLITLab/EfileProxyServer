@@ -69,13 +69,13 @@ import tyler.efm.services.schema.updateuserresponse.UpdateUserResponseType;
 import tyler.efm.services.schema.userlistresponse.UserListResponseType;
 
 /**
- * Covers all of the FirmUserManagement and UserService operations. * User Service *
- * AuthenticateUser * ChangePassword * ResetPassword * GetUser (User Service) * UpdateUser (User
- * Service) * GetNotificationPreferences * UpdateNotificationPreferences * SelfResendActivationEmail
- * * Firm User Management * RegisterUser: PUT on /users * AddUserRole: POST on /users/{id}/role *
- * GetUser: GET on /users/{id} * GetUserList: GET on /users * RemoveUser: DELETE on /users/{id} *
- * RemoveUserRole: DELETE on /users/{id}/role * ResendActivationEmail * ResetUserPassword *
- * UpdateUser: POST on /users/{id} * GetNotificationPreferencesList
+ * Covers all of the FirmUserManagement and UserService operations. - User Service - ChangePassword
+ * - ResetPassword - GetUser (User Service) - UpdateUser (User Service) - GetNotificationPreferences
+ * - UpdateNotificationPreferences - SelfResendActivationEmail - Firm User Management -
+ * RegisterUser: PUT on /users - AddUserRole: POST on /users/{id}/role - GetUser: GET on /users/{id}
+ * - GetUserList: GET on /users - RemoveUser: DELETE on /users/{id} - RemoveUserRole: DELETE on
+ * /users/{id}/role - ResendActivationEmail - ResetUserPassword - UpdateUser: POST on /users/{id} -
+ * GetNotificationPreferencesList
  *
  * @author brycew
  */
@@ -253,7 +253,6 @@ public class AdminUserService {
         return Response.status(401).build();
       }
 
-      // The "1" is the default for all courts. There's no way to enforce court specific passwords
       Result<NullValue, String> passwordGood = passwordChecker.apply(params.newPassword);
       if (passwordGood.isErr()) {
         return Response.status(400)
@@ -411,7 +410,7 @@ public class AdminUserService {
         return Response.status(401, userRes.getError().getErrorText()).build();
       }
 
-      UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser);
+      UpdateUserRequestType updateReq = makeUpdateUserReq(userRes.getUser(), updatedUser);
       UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
       if (TylerErrorCodes.checkErrors(updateResp.getError())) {
         return Response.status(401).entity(updateResp.getError().getErrorText()).build();
@@ -449,7 +448,7 @@ public class AdminUserService {
         return Response.status(401, userRes.getError().getErrorText()).build();
       }
 
-      UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser);
+      UpdateUserRequestType updateReq = makeUpdateUserReq(userRes.getUser(), updatedUser);
       UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
       if (TylerErrorCodes.checkErrors(updateResp.getError())) {
         return Response.status(401).entity(updateResp.getError().getErrorText()).build();
@@ -461,21 +460,24 @@ public class AdminUserService {
     }
   }
 
-  private static UpdateUserRequestType updateUser(UserType existingUser, UserType updatedUser) {
-    if (updatedUser.getEmail() != null) {
-      existingUser.setEmail(updatedUser.getEmail());
+  private static UpdateUserRequestType makeUpdateUserReq(UserType baseUser, UserType extendedUser) {
+    if (extendedUser.getEmail() != null) {
+      baseUser.setEmail(extendedUser.getEmail());
     }
-    if (updatedUser.getFirstName() != null) {
-      existingUser.setFirstName(updatedUser.getFirstName());
+    if (extendedUser.getFirstName() != null) {
+      baseUser.setFirstName(extendedUser.getFirstName());
     }
-    if (updatedUser.getMiddleName() != null) {
-      existingUser.setMiddleName(updatedUser.getMiddleName());
+    if (extendedUser.getMiddleName() != null) {
+      baseUser.setMiddleName(extendedUser.getMiddleName());
     }
-    if (updatedUser.getLastName() != null) {
-      existingUser.setLastName(updatedUser.getLastName());
+    if (extendedUser.getLastName() != null) {
+      baseUser.setLastName(extendedUser.getLastName());
+    }
+    if (extendedUser.getUserID() != null) {
+      baseUser.setUserID(extendedUser.getUserID());
     }
     UpdateUserRequestType updateReq = new UpdateUserRequestType();
-    updateReq.setUser(existingUser);
+    updateReq.setUser(baseUser);
     return updateReq;
   }
 
@@ -744,7 +746,7 @@ public class AdminUserService {
             httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
         MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
         Optional<TylerUserNamePassword> creds =
-            ServiceHelpers.userCredsFromAuthorization(tylerToken);
+            TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
         if (creds.isEmpty()) {
           return Optional.empty();
         }

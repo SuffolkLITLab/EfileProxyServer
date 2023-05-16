@@ -202,6 +202,7 @@ public class FirmAttorneyAndServiceService {
     // number?
     // Won't in IL at least. If it does, this whole system is poorly defined
     try (CodeDatabase cd = cdSupplier.get()) {
+      // TODO(brycew): this should be 0 for Texas?
       DataFieldRow row = cd.getDataField("1", "GlobalAttorneyNumber");
       if (row.isrequired && attorney.getBarNumber().isBlank()) {
         return Response.status(400).entity("Bar number required").build();

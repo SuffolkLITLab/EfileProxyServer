@@ -131,7 +131,10 @@ public class FilingReviewService {
       @PathParam("court_id") String courtId,
       @QueryParam("user_id") String userId,
       @QueryParam("start_date") String startStr,
-      @QueryParam("before_date") String beforeStr) {
+      @QueryParam("before_date") String beforeStr,
+      @QueryParam("case_number") String caseNumber,
+      @QueryParam("envelope_number") String envelopeNumber,
+      @QueryParam("filing_status") String filingStatus) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getFilingList");
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
@@ -146,7 +149,15 @@ public class FilingReviewService {
       LocalDate startDate = (startStr != null) ? LocalDate.parse(startStr) : null;
       LocalDate beforeDate = (beforeStr != null) ? LocalDate.parse(beforeStr) : null;
       // beforeDate is exclusive!
-      return filer.getFilingList(courtId, userId, startDate, beforeDate, activeToken.get());
+      return filer.getFilingList(
+          courtId,
+          userId,
+          startDate,
+          beforeDate,
+          caseNumber,
+          envelopeNumber,
+          filingStatus,
+          activeToken.get());
     } catch (DateTimeParseException ex) {
       return Response.status(400)
           .entity(
@@ -549,6 +560,7 @@ public class FilingReviewService {
       if (orgToken == null || orgToken.isBlank()) {
         return Optional.empty();
       }
+      MDC.put(MDCWrappers.USER_ID, ld.makeHash(orgToken));
       return Optional.of(orgToken);
     } catch (SQLException ex) {
       log.error(StdLib.strFromException(ex));

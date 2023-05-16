@@ -1,10 +1,12 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import edu.suffolk.litlab.efspserver.EfmConfiguration;
 import edu.suffolk.litlab.efspserver.Monitor;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
 import edu.suffolk.litlab.efspserver.ecfcodes.CodeUpdater;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -50,12 +52,24 @@ public class UpdateCodeVersions implements Job {
     String pgPassword = dataMap.getString("POSTGRES_PASSWORD");
 
     boolean success = true;
-    try (Connection conn =
-            DatabaseCreator.makeSingleConnection(pgDb, pgFullUrl, pgUser, pgPassword);
-        CodeDatabase cd = new CodeDatabase(jurisdiction, env, conn)) {
-      success = CodeUpdater.executeCommand(cd, jurisdiction, env, List.of("refresh"), x509Password);
-    } catch (SQLException e) {
-      log.error("Couldn't connect to Codes db from Job Executor: " + StdLib.strFromException(e));
+    try {
+      Map<String, String> config = EfmConfiguration.loadConfig();
+      var ecfVersion =
+          (config.get(jurisdiction).equalsIgnoreCase("ecf5"))
+              ? CodeUpdater.ECF_VERSION.V5
+              : CodeUpdater.ECF_VERSION.V4;
+      try (Connection conn =
+              DatabaseCreator.makeSingleConnection(pgDb, pgFullUrl, pgUser, pgPassword);
+          CodeDatabase cd = new CodeDatabase(jurisdiction, env, conn)) {
+        success =
+            CodeUpdater.executeCommand(
+                cd, ecfVersion, jurisdiction, env, List.of("refresh"), x509Password);
+      } catch (SQLException e) {
+        log.error("Couldn't connect to Codes db from Job Executor: " + StdLib.strFromException(e));
+        success = false;
+      }
+    } catch (IOException ex) {
+      log.error("Couldn't open EfmConfiguration: " + StdLib.strFromException(ex));
       success = false;
     }
     if (!success) {

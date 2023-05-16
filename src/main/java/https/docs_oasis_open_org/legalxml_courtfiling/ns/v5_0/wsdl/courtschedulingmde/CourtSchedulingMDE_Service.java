@@ -1,6 +1,5 @@
 package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import javax.xml.namespace.QName;
 import jakarta.xml.ws.WebEndpoint;
@@ -19,21 +18,8 @@ import jakarta.xml.ws.Service;
                   targetNamespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE")
 public class CourtSchedulingMDE_Service extends Service {
 
-    public final static URL WSDL_LOCATION;
-
     public final static QName SERVICE = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE", "CourtSchedulingMDE");
     public final static QName CourtSchedulingMDEPort = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/WSDL/CourtSchedulingMDE", "CourtSchedulingMDEPort");
-    static {
-        URL url = null;
-        try {
-            url = new URL("file:illinois-CourtSchedulingMDE.wsdl");
-        } catch (MalformedURLException e) {
-            java.util.logging.Logger.getLogger(CourtSchedulingMDE_Service.class.getName())
-                .log(java.util.logging.Level.INFO,
-                     "Can not initialize the default wsdl from {0}", "file:illinois-CourtSchedulingMDE.wsdl");
-        }
-        WSDL_LOCATION = url;
-    }
 
     public CourtSchedulingMDE_Service(URL wsdlLocation) {
         super(wsdlLocation, SERVICE);
@@ -43,14 +29,6 @@ public class CourtSchedulingMDE_Service extends Service {
         super(wsdlLocation, serviceName);
     }
 
-    public CourtSchedulingMDE_Service() {
-        super(WSDL_LOCATION, SERVICE);
-    }
-
-    public CourtSchedulingMDE_Service(WebServiceFeature ... features) {
-        super(WSDL_LOCATION, SERVICE, features);
-    }
-
     public CourtSchedulingMDE_Service(URL wsdlLocation, WebServiceFeature ... features) {
         super(wsdlLocation, SERVICE, features);
     }
@@ -58,9 +36,6 @@ public class CourtSchedulingMDE_Service extends Service {
     public CourtSchedulingMDE_Service(URL wsdlLocation, QName serviceName, WebServiceFeature ... features) {
         super(wsdlLocation, serviceName, features);
     }
-
-
-
 
     /**
      *

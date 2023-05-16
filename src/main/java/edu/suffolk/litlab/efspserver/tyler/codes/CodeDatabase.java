@@ -668,12 +668,10 @@ public class CodeDatabase extends CodeDatabaseAPI {
   }
 
   public void vacuumAll() {
-    try {
-      String vacuum = CodeTableConstants.vacuumAnalyzeAll();
-      try (PreparedStatement vacuumSt = conn.prepareStatement(vacuum)) {
-        log.info("Full vacuum statement: " + vacuumSt.toString());
-        vacuumSt.executeUpdate();
-      }
+    String vacuum = CodeTableConstants.vacuumAnalyzeAll();
+    try (PreparedStatement vacuumSt = conn.prepareStatement(vacuum)) {
+      log.info("Full vacuum statement: " + vacuumSt.toString());
+      vacuumSt.executeUpdate();
     } catch (SQLException ex) {
       log.error("Error when vacuuming in " + this.tylerDomain + ": " + StdLib.strFromException(ex));
     }

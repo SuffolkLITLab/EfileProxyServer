@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+     Electronic Court Filing Web Services Service Interaction Profile Version 5.0
+     Committee Specification Draft 01 / Public Review Draft 01
+     12 February 2019
+     Copyright (c) OASIS Open 2019. All Rights Reserved.
+     Source: https://docs.oasis-open.org/legalxml-courtfiling/ecf-webservices/v5.0/csprd01/schema/
+     Latest version of narrative specification: https://docs.oasis-open.org/legalxml-courtfiling/ecf-webservices/v5.0/ecf-webservices-v5.0.html
+     TC IPR Statement: https://www.oasis-open.org/committees/legalxml-courtfiling/ipr.php 
+--><definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/FilingAssemblyMDE" xmlns:wrappers="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/wrappers" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsrmp="http://docs.oasis-open.org/ws-rx/wsrmp/200702" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/FilingAssemblyMDE">
+	<!-- The list of operations supported by the Filing Assembly MDE. -->
+	<wsp:UsingPolicy wsdl:required="true"/>
+	<wsp:Policy wsu:Id="MyPolicy">
+		<wsrmp:RMAssertion/>
+	</wsp:Policy>
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/wrappers" schemaLocation="ecf5-full-bc4df19763eade9e.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<!-- messages -->
+	<message name="NotifyCourtDateRequest">
+		<part element="wrappers:NotifyCourtDateRequest" name="body"/>
+	</message>
+	<message name="NotifyCourtDateResponse">
+		<part element="wrappers:NotifyCourtDateResponse" name="body"/>
+	</message>
+	<message name="NotifyFilingReviewCompleteRequest">
+		<part element="wrappers:NotifyFilingReviewCompleteRequest" name="body"/>
+	</message>
+	<message name="NotifyFilingReviewCompleteResponse">
+		<part element="wrappers:NotifyFilingReviewCompleteResponse" name="body"/>
+	</message>
+	<!-- ports -->
+	<portType name="FilingAssemblyMDE">
+		<operation name="NotifyCourtDate">
+			<input message="tns:NotifyCourtDateRequest"/>
+			<output message="tns:NotifyCourtDateResponse"/>
+		</operation>
+		<operation name="NotifyFilingReviewComplete">
+			<input message="tns:NotifyFilingReviewCompleteRequest"/>
+			<output message="tns:NotifyFilingReviewCompleteResponse"/>
+		</operation>
+	</portType>
+	<!-- bindings -->
+	<binding name="FilingAssemblyMDESoap" type="tns:FilingAssemblyMDE">
+		<wsp:PolicyReference URI="#MyPolicy"/>
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="NotifyCourtDate">
+			<!-- An operaiton that is the asynchronous callback to an AllocateCourtDate or ReserveCourtDate operation to notify a court date has been confirmed. -->
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/FilingAssemblyMDE/NotifyCourtDate"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="NotifyFilingReviewComplete">
+			<!-- An operation that is the asynchrnous callback in response to a ReviewFiling operation to notify a filing has completed clerk review. -->
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/FilingAssemblyMDE/NotifyFilingReviewComplete"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<!-- services not defined here...defined in an implementation-specific WSDL that imports this one -->
+</definitions>

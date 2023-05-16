@@ -25,8 +25,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}RequestMessageType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing}FilingMessage"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/feesrequest}GetFeesCalculationRequestMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing}FilingMessage" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -38,41 +38,17 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetFeesCalculationRequestMessageType", propOrder = {
-    "filingMessage",
-    "getFeesCalculationRequestMessageAugmentationPoint"
+    "getFeesCalculationRequestMessageAugmentationPoint",
+    "filingMessage"
 })
 public class GetFeesCalculationRequestMessageType
     extends RequestMessageType
 {
 
-    @XmlElement(name = "FilingMessage", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing", required = true)
-    protected FilingMessageType filingMessage;
     @XmlElement(name = "GetFeesCalculationRequestMessageAugmentationPoint")
     protected List<Object> getFeesCalculationRequestMessageAugmentationPoint;
-
-    /**
-     * Gets the value of the filingMessage property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link FilingMessageType }
-     *     
-     */
-    public FilingMessageType getFilingMessage() {
-        return filingMessage;
-    }
-
-    /**
-     * Sets the value of the filingMessage property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link FilingMessageType }
-     *     
-     */
-    public void setFilingMessage(FilingMessageType value) {
-        this.filingMessage = value;
-    }
+    @XmlElement(name = "FilingMessage", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing", required = true)
+    protected List<FilingMessageType> filingMessage;
 
     /**
      * Gets the value of the getFeesCalculationRequestMessageAugmentationPoint property.
@@ -101,6 +77,35 @@ public class GetFeesCalculationRequestMessageType
             getFeesCalculationRequestMessageAugmentationPoint = new ArrayList<Object>();
         }
         return this.getFeesCalculationRequestMessageAugmentationPoint;
+    }
+
+    /**
+     * Gets the value of the filingMessage property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the filingMessage property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getFilingMessage().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link FilingMessageType }
+     * 
+     * 
+     */
+    public List<FilingMessageType> getFilingMessage() {
+        if (filingMessage == null) {
+            filingMessage = new ArrayList<FilingMessageType>();
+        }
+        return this.filingMessage;
     }
 
     /**

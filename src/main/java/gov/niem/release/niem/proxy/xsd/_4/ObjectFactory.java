@@ -38,27 +38,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link String }
+     * Create an instance of {@link NormalizedString }
      * 
      */
-    public String createString() {
-        return new String();
-    }
-
-    /**
-     * Create an instance of {@link Decimal }
-     * 
-     */
-    public Decimal createDecimal() {
-        return new Decimal();
-    }
-
-    /**
-     * Create an instance of {@link Base64Binary }
-     * 
-     */
-    public Base64Binary createBase64Binary() {
-        return new Base64Binary();
+    public NormalizedString createNormalizedString() {
+        return new NormalizedString();
     }
 
     /**
@@ -67,6 +51,22 @@ public class ObjectFactory {
      */
     public AnyURI createAnyURI() {
         return new AnyURI();
+    }
+
+    /**
+     * Create an instance of {@link Time }
+     * 
+     */
+    public Time createTime() {
+        return new Time();
+    }
+
+    /**
+     * Create an instance of {@link Decimal }
+     * 
+     */
+    public Decimal createDecimal() {
+        return new Decimal();
     }
 
     /**
@@ -86,27 +86,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GYear }
+     * Create an instance of {@link String }
      * 
      */
-    public GYear createGYear() {
-        return new GYear();
+    public String createString() {
+        return new String();
     }
 
     /**
-     * Create an instance of {@link Time }
+     * Create an instance of {@link Base64Binary }
      * 
      */
-    public Time createTime() {
-        return new Time();
-    }
-
-    /**
-     * Create an instance of {@link NormalizedString }
-     * 
-     */
-    public NormalizedString createNormalizedString() {
-        return new NormalizedString();
+    public Base64Binary createBase64Binary() {
+        return new Base64Binary();
     }
 
     /**
@@ -115,6 +107,14 @@ public class ObjectFactory {
      */
     public Duration createDuration() {
         return new Duration();
+    }
+
+    /**
+     * Create an instance of {@link GYear }
+     * 
+     */
+    public GYear createGYear() {
+        return new GYear();
     }
 
 }

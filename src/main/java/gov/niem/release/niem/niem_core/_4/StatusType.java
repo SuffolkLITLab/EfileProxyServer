@@ -2,6 +2,7 @@
 package gov.niem.release.niem.niem_core._4;
 
 import gov.niem.release.niem.structures._4.ObjectType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentStatusType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.FilingStatusType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -12,6 +13,7 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.common.BatchStatusType;
 
 
 /**
@@ -45,6 +47,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "statusDate"
 })
 @XmlSeeAlso({
+    BatchStatusType.class,
+    DocumentStatusType.class,
     FilingStatusType.class
 })
 public class StatusType

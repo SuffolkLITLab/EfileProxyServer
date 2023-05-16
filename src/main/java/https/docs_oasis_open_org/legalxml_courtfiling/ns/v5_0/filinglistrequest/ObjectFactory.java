@@ -24,6 +24,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _FilingListQueryCriteria_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filinglistrequest", "FilingListQueryCriteria");
     private final static QName _GetFilingListRequestMessage_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filinglistrequest", "GetFilingListRequestMessage");
     private final static QName _GetFilingListRequestMessageAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filinglistrequest", "GetFilingListRequestMessageAugmentationPoint");
 
@@ -35,11 +36,32 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FilingListQueryCriteriaType }
+     * 
+     */
+    public FilingListQueryCriteriaType createFilingListQueryCriteriaType() {
+        return new FilingListQueryCriteriaType();
+    }
+
+    /**
      * Create an instance of {@link GetFilingListRequestMessageType }
      * 
      */
     public GetFilingListRequestMessageType createGetFilingListRequestMessageType() {
         return new GetFilingListRequestMessageType();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FilingListQueryCriteriaType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link FilingListQueryCriteriaType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filinglistrequest", name = "FilingListQueryCriteria")
+    public JAXBElement<FilingListQueryCriteriaType> createFilingListQueryCriteria(FilingListQueryCriteriaType value) {
+        return new JAXBElement<FilingListQueryCriteriaType>(_FilingListQueryCriteria_QNAME, FilingListQueryCriteriaType.class, null, value);
     }
 
     /**

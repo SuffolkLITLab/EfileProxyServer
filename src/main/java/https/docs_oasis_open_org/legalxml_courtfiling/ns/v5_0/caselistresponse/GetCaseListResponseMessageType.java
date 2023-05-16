@@ -28,8 +28,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ResponseMessageType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Case" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistresponse}GetCaseListResponseMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Case" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -41,17 +41,46 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetCaseListResponseMessageType", propOrder = {
-    "_case",
-    "getCaseListResponseMessageAugmentationPoint"
+    "getCaseListResponseMessageAugmentationPoint",
+    "_case"
 })
 public class GetCaseListResponseMessageType
     extends ResponseMessageType
 {
 
-    @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
-    protected List<JAXBElement<? extends CaseType>> _case;
     @XmlElement(name = "GetCaseListResponseMessageAugmentationPoint")
     protected List<Object> getCaseListResponseMessageAugmentationPoint;
+    @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
+    protected List<JAXBElement<? extends CaseType>> _case;
+
+    /**
+     * Gets the value of the getCaseListResponseMessageAugmentationPoint property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the getCaseListResponseMessageAugmentationPoint property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getGetCaseListResponseMessageAugmentationPoint().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Object }
+     * 
+     * 
+     */
+    public List<Object> getGetCaseListResponseMessageAugmentationPoint() {
+        if (getCaseListResponseMessageAugmentationPoint == null) {
+            getCaseListResponseMessageAugmentationPoint = new ArrayList<Object>();
+        }
+        return this.getCaseListResponseMessageAugmentationPoint;
+    }
 
     /**
      * Gets the value of the case property.
@@ -81,35 +110,6 @@ public class GetCaseListResponseMessageType
             _case = new ArrayList<JAXBElement<? extends CaseType>>();
         }
         return this._case;
-    }
-
-    /**
-     * Gets the value of the getCaseListResponseMessageAugmentationPoint property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a <CODE>set</CODE> method for the getCaseListResponseMessageAugmentationPoint property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getGetCaseListResponseMessageAugmentationPoint().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Object }
-     * 
-     * 
-     */
-    public List<Object> getGetCaseListResponseMessageAugmentationPoint() {
-        if (getCaseListResponseMessageAugmentationPoint == null) {
-            getCaseListResponseMessageAugmentationPoint = new ArrayList<Object>();
-        }
-        return this.getCaseListResponseMessageAugmentationPoint;
     }
 
     /**

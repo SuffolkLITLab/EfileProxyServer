@@ -38,19 +38,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link VelocityCodeType }
-     * 
-     */
-    public VelocityCodeType createVelocityCodeType() {
-        return new VelocityCodeType();
-    }
-
-    /**
      * Create an instance of {@link MassCodeType }
      * 
      */
     public MassCodeType createMassCodeType() {
         return new MassCodeType();
+    }
+
+    /**
+     * Create an instance of {@link VelocityCodeType }
+     * 
+     */
+    public VelocityCodeType createVelocityCodeType() {
+        return new VelocityCodeType();
     }
 
 }

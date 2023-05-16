@@ -19,6 +19,7 @@ import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.common.FilerAugmentationType;
 
 
 /**
@@ -239,6 +240,7 @@ public class PersonType
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link EYECodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
@@ -252,6 +254,7 @@ public class PersonType
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link EYECodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
@@ -265,6 +268,7 @@ public class PersonType
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link HAIRCodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
@@ -278,6 +282,7 @@ public class PersonType
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link HAIRCodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
@@ -473,6 +478,7 @@ public class PersonType
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link SEXCodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
@@ -486,6 +492,7 @@ public class PersonType
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link SEXCodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
@@ -586,6 +593,8 @@ public class PersonType
      * {@link JAXBElement }{@code <}{@link gov.niem.release.niem.domains.jxdm._6.PersonAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link JAXBElement }{@code <}{@link FilerAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link tyler.ecf.v5_0.extensions.common.PersonAugmentationType }{@code >}
      * 
      * 
      */

@@ -14,6 +14,7 @@ import jakarta.xml.bind.annotation.XmlElementRefs;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.common.GetPolicyResponseMessageAugmentationType;
 
 
 /**
@@ -30,9 +31,9 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *       &lt;sequence&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Metadata" maxOccurs="unbounded"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse}DevelopmentPolicy"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse}GetPolicyResponseMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse}PolicyVersionID"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse}RuntimePolicy"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse}GetPolicyResponseMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -53,9 +54,9 @@ public class GetPolicyResponseMessageType
     @XmlElementRefs({
         @XmlElementRef(name = "Metadata", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "DevelopmentPolicy", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "GetPolicyResponseMessageAugmentationPoint", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "PolicyVersionID", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "RuntimePolicy", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "GetPolicyResponseMessageAugmentationPoint", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", type = JAXBElement.class, required = false)
+        @XmlElementRef(name = "RuntimePolicy", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse", type = JAXBElement.class, required = false)
     })
     protected List<JAXBElement<?>> rest;
 
@@ -65,8 +66,8 @@ public class GetPolicyResponseMessageType
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "Metadata" is used by two different parts of a schema. See: 
-     * line 61 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-v5-52.xsd
-     * line 25 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-v5-7.xsd
+     * line 67 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf5-full-ce2b15e0e59d017e.xsd
+     * line 25 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf5-full-43381e9aa490c46d.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 
@@ -92,6 +93,7 @@ public class GetPolicyResponseMessageType
      * {@link JAXBElement }{@code <}{@link DevelopmentPolicyType }{@code >}
      * {@link JAXBElement }{@code <}{@link RuntimePolicyType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link JAXBElement }{@code <}{@link GetPolicyResponseMessageAugmentationType }{@code >}
      * 
      * 
      */
