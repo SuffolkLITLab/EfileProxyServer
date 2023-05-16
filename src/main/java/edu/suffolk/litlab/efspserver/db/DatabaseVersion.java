@@ -25,8 +25,8 @@ import org.slf4j.LoggerFactory;
  * @author brycew
  */
 public class DatabaseVersion {
-  
-  final static int CURRENT_VERSION = 7;
+
+  static final int CURRENT_VERSION = 7;
   private static Logger log = LoggerFactory.getLogger(DatabaseVersion.class);
   private final Connection codeConn;
   private final Connection userConn;
@@ -308,7 +308,7 @@ public class DatabaseVersion {
   }
 
   public void update5To6() throws SQLException {
-    final String createRefundReason = 
+    final String createRefundReason =
         """
       CREATE TABLE refundreason (
         "code" text,
@@ -329,7 +329,8 @@ public class DatabaseVersion {
     try (Statement st = userConn.createStatement()) {
       st.executeUpdate("DROP TABLE refundreason");
     }
-    final String createRefundReason = """
+    final String createRefundReason =
+        """
       CREATE TABLE refundreason (
         "code" text,
         "name" text,

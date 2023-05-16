@@ -35,7 +35,8 @@ public class UpdateCodeVersions implements Job {
     try (Connection conn =
             DatabaseCreator.makeSingleConnection(pgDb, pgFullUrl, pgUser, pgPassword);
         CodeDatabase cd = new CodeDatabase(jurisdiction, env, conn)) {
-      boolean success = CodeUpdater.executeCommand(cd, jurisdiction, env, List.of("refresh"), x509Password);
+      boolean success =
+          CodeUpdater.executeCommand(cd, jurisdiction, env, List.of("refresh"), x509Password);
       if (!success) {
         // TODO(brycew): send email to admin!
       }
