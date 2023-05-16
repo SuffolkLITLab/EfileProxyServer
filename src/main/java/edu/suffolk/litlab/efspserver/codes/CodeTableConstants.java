@@ -251,17 +251,6 @@ public class CodeTableConstants {
           new ImmutablePair<String, String>("code", "text"),
           new ImmutablePair<String, String>("name", "text"), 
           new ImmutablePair<String, String>("efspcode", "text")))),
-        Map.entry("optionalservices", makeCourtColumnInfo(List.of(
-          new ImmutablePair<String, String>("code", "varchar(40)"),
-          new ImmutablePair<String, String>("name", "text"),
-          new ImmutablePair<String, String>("displayorder", "integer"), 
-          new ImmutablePair<String, String>("fee", "text"),
-          //new ImmutablePair<String, String>("filingcodeid", "varchar(40)"),
-          new ImmutablePair<String, String>("multiplier", "boolean"),
-          new ImmutablePair<String, String>("altfeedesc", "text"),
-          new ImmutablePair<String, String>("hasfeeprompt", "boolean"),
-          new ImmutablePair<String, String>("feeprompttext", "text"),
-          new ImmutablePair<String, String>("efspcode", "text")))),
         Map.entry("partytype", makeCourtColumnInfo(List.of(
           new ImmutablePair<String, String>("code", "varchar(40)"), 
           new ImmutablePair<String, String>("name", "text"),
