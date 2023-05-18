@@ -62,7 +62,7 @@ public class EcfCaseTypeFactoryTest {
     when(cd.getLanguages("not_real")).thenReturn(List.of("English", "Polish", "Spanish"));
     when(cd.getDataField(eq("not_real"), anyString())).thenReturn(DataFieldRow.MissingDataField(""));
     when(cd.getDataField(eq("not_real"), eq("PartyGender"))).thenReturn(
-        new DataFieldRow("PartyGender", "Party Gender", "True", "False", "", "", "", "", "", "", "", ""));
+        new DataFieldRow("PartyGender", "Party Gender", true, false, "", "", "", "", "", "", false, ""));
     collector = new FailFastCollector();
   }
 
