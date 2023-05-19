@@ -301,7 +301,9 @@ public class CodeUpdater {
               zip.getNextEntry();
               XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
               XMLStreamReader sr = xmlInputFactory.createXMLStreamReader(zip);
-              codeLists.put(toDownload.tableName, new DownloadedCodes(toDownload.tableName, location, sr, urlStream));
+              codeLists.put(
+                  toDownload.tableName,
+                  new DownloadedCodes(toDownload.tableName, location, sr, urlStream));
             } catch (IOException | XMLStreamException e) {
               log.error(StdLib.strFromException(e));
             }
@@ -351,20 +353,29 @@ public class CodeUpdater {
     Instant downloadStart = Instant.now(Clock.systemUTC());
     // TODO(brycew-later): check that the effective date is later than today
     // JAXBElement<?> obj = ccl.getEffectiveDate().getDateRepresentation();
-    Map<String, String> urlMap = policyResp.getRuntimePolicyParameters().getCourtCodelist().stream().collect(Collectors.toMap(
-      (cc1) -> ncToTableName.get(cc1.getECFElementName().getValue()),
-      // Tyler gives us URLs w/ spaces, which aren't valid. This makes them valid
-      (cc1) -> cc1.getCourtCodelistURI().getIdentificationID().getValue().replace(" ", "%20")));
+    Map<String, String> urlMap =
+        policyResp.getRuntimePolicyParameters().getCourtCodelist().stream()
+            .collect(
+                Collectors.toMap(
+                    (cc1) -> ncToTableName.get(cc1.getECFElementName().getValue()),
+                    // Tyler gives us URLs w/ spaces, which aren't valid. This makes them valid
+                    (cc1) ->
+                        cc1.getCourtCodelistURI()
+                            .getIdentificationID()
+                            .getValue()
+                            .replace(" ", "%20")));
     Stream<CodeToDownload> toDownload;
     if (tables.isEmpty()) {
-      toDownload = urlMap.entrySet().stream().map((ent) -> new CodeToDownload(ent.getKey(), ent.getValue()));
+      toDownload =
+          urlMap.entrySet().stream().map((ent) -> new CodeToDownload(ent.getKey(), ent.getValue()));
     } else {
-      toDownload = tables.get().stream().map(
-        tableName -> {
-          String guessUrl = makeCodeUrl(baseUrl, tableName, location);
-          return new CodeToDownload(tableName, urlMap.getOrDefault(tableName, guessUrl));
-        }
-      );
+      toDownload =
+          tables.get().stream()
+              .map(
+                  tableName -> {
+                    String guessUrl = makeCodeUrl(baseUrl, tableName, location);
+                    return new CodeToDownload(tableName, urlMap.getOrDefault(tableName, guessUrl));
+                  });
     }
     Optional<String> signedTime = signer.signedCurrentTime();
     if (signedTime.isEmpty()) {
@@ -450,7 +461,8 @@ public class CodeUpdater {
     for (var policy : policies.entrySet()) {
       final String courtLocation = policy.getKey();
       final List<String> tables = versionsToUpdate.get(courtLocation);
-      if (!downloadCourtTables(courtLocation, Optional.of(tables), cd, signer, policy.getValue(), baseUrl)) {
+      if (!downloadCourtTables(
+          courtLocation, Optional.of(tables), cd, signer, policy.getValue(), baseUrl)) {
         log.warn("Failed updating court {}'s tables {}", courtLocation, tables);
         cd.getConnection().rollback(sp);
         return false;
@@ -490,7 +502,8 @@ public class CodeUpdater {
     for (var policy : policies.entrySet()) {
       final String location = policy.getKey();
       log.info("Downloading tables for {}", location);
-      success &= downloadCourtTables(location, Optional.empty(), cd, signer, policy.getValue(), baseUrl);
+      success &=
+          downloadCourtTables(location, Optional.empty(), cd, signer, policy.getValue(), baseUrl);
     }
     log.info("Downloads took: {}, and updates took: {}, soaps took: {}", downloads, updates, soaps);
     cd.getConnection().commit();
@@ -591,8 +604,8 @@ public class CodeUpdater {
   }
 
   /**
-   * Run with: `mvn exec:java@CodeUpdater -Dexec.args="refresh"` 
-   * TODO(#111): use with this System property and class to try to fix parallel unmarshalling
+   * Run with: `mvn exec:java@CodeUpdater -Dexec.args="refresh"` TODO(#111): use with this System
+   * property and class to try to fix parallel unmarshalling
    * -Djava.util.concurrent.ForkJoinPool.common.threadFactory=edu.suffolk.litlab.efspserver.JAXBForkJoinWorkerThreadFactory
    * \ https://stackoverflow.com/a/57551188/11416267
    */
