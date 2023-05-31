@@ -58,7 +58,7 @@ public class TransformType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the content property.
      * 
      * <p>
@@ -70,9 +70,9 @@ public class TransformType {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
      * {@link Object }
      * {@link String }
-     * {@link JAXBElement }{@code <}{@link String }{@code >}
      * {@link Element }
      * 
      * 

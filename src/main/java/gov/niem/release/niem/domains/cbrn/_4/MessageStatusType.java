@@ -6,7 +6,6 @@ import java.util.List;
 import gov.niem.release.niem.codes.cbrncl._4.CredentialsAuthenticatedCodeType;
 import gov.niem.release.niem.codes.cbrncl._4.MessageStatusCodeType;
 import gov.niem.release.niem.proxy.xsd._4.Boolean;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.MessageStatusAugmentationType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -27,14 +26,14 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="MessageStatusType"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://release.niem.gov/niem/domains/cbrn/4.0/}SystemEventType"&gt;
+ *     &lt;extension base="{http://release.niem.gov/niem/domains/cbrn/4.1/}SystemEventType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/cbrn/4.0/}CredentialsAuthenticatedCode"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/cbrn/4.0/}MessageStatusCode"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/cbrn/4.0/}MessageContentError" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/cbrn/4.0/}MessageHandlingError"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/cbrn/4.0/}ResendRequestIndicator"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/cbrn/4.0/}MessageStatusAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/cbrn/4.1/}CredentialsAuthenticatedCode"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/cbrn/4.1/}MessageStatusCode"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/cbrn/4.1/}MessageContentError" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/cbrn/4.1/}MessageHandlingError"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/cbrn/4.1/}ResendRequestIndicator"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/cbrn/4.1/}MessageStatusAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -67,7 +66,7 @@ public class MessageStatusType
     protected MessageErrorType messageHandlingError;
     @XmlElement(name = "ResendRequestIndicator", required = true)
     protected Boolean resendRequestIndicator;
-    @XmlElementRef(name = "MessageStatusAugmentationPoint", namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", type = JAXBElement.class, required = false)
+    @XmlElementRef(name = "MessageStatusAugmentationPoint", namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", type = JAXBElement.class, required = false)
     protected List<JAXBElement<?>> messageStatusAugmentationPoint;
 
     /**
@@ -213,8 +212,9 @@ public class MessageStatusType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link MessageStatusAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.MessageStatusAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link JAXBElement }{@code <}{@link tyler.ecf.v5_0.extensions.common.MessageStatusAugmentationType }{@code >}
      * 
      * 
      */

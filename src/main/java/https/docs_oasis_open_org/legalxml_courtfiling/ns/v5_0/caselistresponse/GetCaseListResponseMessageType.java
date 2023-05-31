@@ -3,14 +3,11 @@ package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caselistresponse;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
 import gov.niem.release.niem.niem_core._4.CaseType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
-import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
@@ -28,8 +25,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ResponseMessageType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Case" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistresponse}GetCaseListResponseMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Case" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -41,47 +38,17 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetCaseListResponseMessageType", propOrder = {
-    "_case",
-    "getCaseListResponseMessageAugmentationPoint"
+    "getCaseListResponseMessageAugmentationPoint",
+    "_case"
 })
 public class GetCaseListResponseMessageType
     extends ResponseMessageType
 {
 
-    @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
-    protected List<JAXBElement<? extends CaseType>> _case;
     @XmlElement(name = "GetCaseListResponseMessageAugmentationPoint")
     protected List<Object> getCaseListResponseMessageAugmentationPoint;
-
-    /**
-     * Gets the value of the case property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a <CODE>set</CODE> method for the case property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getCase().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
-     * {@link JAXBElement }{@code <}{@link CaseType }{@code >}
-     * 
-     * 
-     */
-    public List<JAXBElement<? extends CaseType>> getCase() {
-        if (_case == null) {
-            _case = new ArrayList<JAXBElement<? extends CaseType>>();
-        }
-        return this._case;
-    }
+    @XmlElement(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", nillable = true)
+    protected List<CaseType> _case;
 
     /**
      * Gets the value of the getCaseListResponseMessageAugmentationPoint property.
@@ -110,6 +77,35 @@ public class GetCaseListResponseMessageType
             getCaseListResponseMessageAugmentationPoint = new ArrayList<Object>();
         }
         return this.getCaseListResponseMessageAugmentationPoint;
+    }
+
+    /**
+     * Gets the value of the case property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the case property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getCase().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CaseType }
+     * 
+     * 
+     */
+    public List<CaseType> getCase() {
+        if (_case == null) {
+            _case = new ArrayList<CaseType>();
+        }
+        return this._case;
     }
 
     /**

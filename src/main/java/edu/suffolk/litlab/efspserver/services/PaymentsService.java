@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.suffolk.litlab.efspserver.RandomString;
-import edu.suffolk.litlab.efspserver.SoapClientChooser;
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -89,25 +89,24 @@ public class PaymentsService {
       String env,
       String togaKey,
       String togaUrl,
-      DataSource codeDs,
+      Supplier<CodeDatabase> cdSupplier,
       DataSource userDs) {
     this.callbackToUsUrl =
         ServiceHelpers.EXTERNAL_URL + "/jurisdictions/" + jurisdiction + "/payments/toga-account";
     this.jurisdiction = jurisdiction;
-    this.env = env;
     // Will generated 21 character long transaction ids, the max length.
     this.transactionIdGen = new RandomString(21);
     this.togaKey = togaKey;
     this.togaUrl = togaUrl;
     this.tempAccounts = new HashMap<String, TempAccount>();
-    var maybeFirmFactory = SoapClientChooser.getEfmFirmFactory(jurisdiction, env);
+    var maybeFirmFactory = TylerUrls.getEfmFirmFactory(jurisdiction, env);
     if (maybeFirmFactory.isPresent()) {
       this.firmFactory = maybeFirmFactory.get();
     } else {
       throw new RuntimeException(
           jurisdiction + "-" + env + " not in SoapClientChooser for EFMFirm");
     }
-    this.codeDs = codeDs;
+    this.cdSupplier = cdSupplier;
     this.userDs = userDs;
   }
 
@@ -252,7 +251,7 @@ public class PaymentsService {
         new tyler.efm.services.schema.getpaymentaccountlistrequest.ObjectFactory()
             .createGetPaymentAccountListRequestType();
     if (courtId != null && !courtId.isBlank()) {
-      try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
+      try (CodeDatabase cd = cdSupplier.get()) {
         if (!cd.getAllLocations().contains(courtId)) {
           return Response.status(404).entity("Court does not exist " + courtId).build();
         }
@@ -628,8 +627,7 @@ public class PaymentsService {
   private final String togaKey;
   private final String togaUrl;
   private final EfmFirmService firmFactory;
-  private final DataSource codeDs;
+  private final Supplier<CodeDatabase> cdSupplier;
   private final DataSource userDs;
   private final String jurisdiction;
-  private final String env;
 }

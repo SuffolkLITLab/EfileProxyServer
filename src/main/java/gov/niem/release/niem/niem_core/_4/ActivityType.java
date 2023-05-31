@@ -1,7 +1,6 @@
 
 package gov.niem.release.niem.niem_core._4;
 
-import gov.niem.release.niem.domains.humanservices._4.PlacementType;
 import gov.niem.release.niem.domains.jxdm._6.ArrestType;
 import gov.niem.release.niem.domains.jxdm._6.BookingType;
 import gov.niem.release.niem.domains.jxdm._6.CitationType;
@@ -58,21 +57,20 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "activityDate"
 })
 @XmlSeeAlso({
-    PlacementType.class,
-    PersonDisunionType.class,
-    PersonUnionSeparationType.class,
-    SupervisionType.class,
     CaseType.class,
     ArrestType.class,
     BookingType.class,
     CourtEventType.class,
     CitationType.class,
     DriverLicenseWithdrawalType.class,
-    IncidentType.class,
     OffenseType.class,
     SentenceType.class,
     TermType.class,
-    CourtOrderType.class
+    SupervisionType.class,
+    CourtOrderType.class,
+    PersonDisunionType.class,
+    PersonUnionSeparationType.class,
+    IncidentType.class
 })
 public class ActivityType
     extends ObjectType

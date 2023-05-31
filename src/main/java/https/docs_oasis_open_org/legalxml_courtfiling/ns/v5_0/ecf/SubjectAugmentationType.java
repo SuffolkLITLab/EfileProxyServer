@@ -14,8 +14,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * An augmentation type
- * 
  * <p>Java class for SubjectAugmentationType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -25,9 +23,9 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://release.niem.gov/niem/structures/4.0/}AugmentationType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/biometrics/4.0/}Biometric" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/biometrics/4.1/}Biometric" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}SubjectWarrantIssuedIndicator" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}RapSheetTransactionControlIdentification" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}RapSheetTransactionControlIdentification" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -47,11 +45,11 @@ public class SubjectAugmentationType
     extends AugmentationType
 {
 
-    @XmlElement(name = "Biometric", namespace = "http://release.niem.gov/niem/domains/biometrics/4.0/")
+    @XmlElement(name = "Biometric", namespace = "http://release.niem.gov/niem/domains/biometrics/4.1/")
     protected BiometricDataType biometric;
     @XmlElement(name = "SubjectWarrantIssuedIndicator")
     protected Boolean subjectWarrantIssuedIndicator;
-    @XmlElement(name = "RapSheetTransactionControlIdentification", namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/")
+    @XmlElement(name = "RapSheetTransactionControlIdentification", namespace = "http://release.niem.gov/niem/domains/jxdm/6.1/")
     protected IdentificationType rapSheetTransactionControlIdentification;
 
     /**

@@ -18,7 +18,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="FingerprintImageType"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://release.niem.gov/niem/domains/biometrics/4.0/}ImageType"&gt;
+ *     &lt;extension base="{http://release.niem.gov/niem/domains/biometrics/4.1/}ImageType"&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;

@@ -1,6 +1,5 @@
 package edu.suffolk.litlab.efspserver.db;
 
-import edu.suffolk.litlab.efspserver.codes.CodeTableConstants;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,17 +10,13 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MessageSettingsDatabase implements DatabaseInterface {
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeTableConstants;
+
+public class MessageSettingsDatabase extends Database {
   private static Logger log = LoggerFactory.getLogger(MessageSettingsDatabase.class);
 
-  private final Connection conn;
-
   public MessageSettingsDatabase(Connection conn) {
-    this.conn = conn;
-  }
-
-  public Connection getConnection() {
-    return conn;
+    super(conn);
   }
 
   @Override

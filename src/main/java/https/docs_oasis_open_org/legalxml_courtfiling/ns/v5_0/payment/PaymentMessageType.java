@@ -3,7 +3,7 @@ package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.payment;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.niem_core._4.PersonType;
+import gov.niem.release.niem.niem_core._4.EntityType;
 import gov.niem.release.niem.niem_core._4.TextType;
 import gov.niem.release.niem.proxy.xsd._4.Boolean;
 import gov.niem.release.niem.structures._4.ObjectType;
@@ -78,7 +78,7 @@ public class PaymentMessageType
     @XmlElement(name = "CorrectedPaymentIndicator", required = true)
     protected Boolean correctedPaymentIndicator;
     @XmlElement(name = "Payer", required = true)
-    protected PersonType payer;
+    protected EntityType payer;
 
     /**
      * Gets the value of the address property.
@@ -258,10 +258,10 @@ public class PaymentMessageType
      * 
      * @return
      *     possible object is
-     *     {@link PersonType }
+     *     {@link EntityType }
      *     
      */
-    public PersonType getPayer() {
+    public EntityType getPayer() {
         return payer;
     }
 
@@ -270,10 +270,10 @@ public class PaymentMessageType
      * 
      * @param value
      *     allowed object is
-     *     {@link PersonType }
+     *     {@link EntityType }
      *     
      */
-    public void setPayer(PersonType value) {
+    public void setPayer(EntityType value) {
         this.payer = value;
     }
 

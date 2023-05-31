@@ -14,7 +14,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 /**
  * 
  * <pre>
- * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Component xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;ccts:ComponentType&gt;ABIE&lt;/ccts:ComponentType&gt;&lt;ccts:DictionaryEntryName&gt;Energy Water Supply. Details&lt;/ccts:DictionaryEntryName&gt;&lt;ccts:Definition/&gt;&lt;ccts:ObjectClass&gt;Energy Water Supply&lt;/ccts:ObjectClass&gt;&lt;/ccts:Component&gt;
+ * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Component xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;ccts:ComponentType&gt;ABIE&lt;/ccts:ComponentType&gt;&lt;ccts:DictionaryEntryName&gt;Energy Water Supply. Details&lt;/ccts:DictionaryEntryName&gt;&lt;ccts:Definition&gt;A class to describe the supply (and therefore consumption) of an amount of energy or water.&lt;/ccts:Definition&gt;&lt;ccts:ObjectClass&gt;Energy Water Supply&lt;/ccts:ObjectClass&gt;&lt;/ccts:Component&gt;
  * </pre>
  * 
  * 
@@ -30,7 +30,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *         &lt;element ref="{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}ConsumptionReport" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}EnergyTaxReport" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}ConsumptionAverage" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}EnergyWaterCorrection" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}EnergyWaterConsumptionCorrection" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -44,7 +44,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "consumptionReport",
     "energyTaxReport",
     "consumptionAverage",
-    "energyWaterCorrection"
+    "energyWaterConsumptionCorrection"
 })
 public class EnergyWaterSupplyType {
 
@@ -54,20 +54,20 @@ public class EnergyWaterSupplyType {
     protected List<EnergyTaxReportType> energyTaxReport;
     @XmlElement(name = "ConsumptionAverage")
     protected List<ConsumptionAverageType> consumptionAverage;
-    @XmlElement(name = "EnergyWaterCorrection")
-    protected List<CorrectionType> energyWaterCorrection;
+    @XmlElement(name = "EnergyWaterConsumptionCorrection")
+    protected List<ConsumptionCorrectionType> energyWaterConsumptionCorrection;
 
     /**
      * 
      * <pre>
-     * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Component xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;ccts:ComponentType&gt;ASBIE&lt;/ccts:ComponentType&gt;&lt;ccts:DictionaryEntryName&gt;Energy Water Supply. Consumption Report&lt;/ccts:DictionaryEntryName&gt;&lt;ccts:Definition&gt;Staticstisc about the consumers consumption and the development in comsumption.&lt;/ccts:Definition&gt;&lt;ccts:Cardinality&gt;0..n&lt;/ccts:Cardinality&gt;&lt;ccts:ObjectClass&gt;Energy Water Supply&lt;/ccts:ObjectClass&gt;&lt;ccts:PropertyTerm&gt;Consumption Report&lt;/ccts:PropertyTerm&gt;&lt;ccts:AssociatedObjectClass&gt;Consumption Report&lt;/ccts:AssociatedObjectClass&gt;&lt;/ccts:Component&gt;
+     * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Component xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;ccts:ComponentType&gt;ASBIE&lt;/ccts:ComponentType&gt;&lt;ccts:DictionaryEntryName&gt;Energy Water Supply. Consumption Report&lt;/ccts:DictionaryEntryName&gt;&lt;ccts:Definition&gt;An amount of energy or water consumed.&lt;/ccts:Definition&gt;&lt;ccts:Cardinality&gt;0..n&lt;/ccts:Cardinality&gt;&lt;ccts:ObjectClass&gt;Energy Water Supply&lt;/ccts:ObjectClass&gt;&lt;ccts:PropertyTerm&gt;Consumption Report&lt;/ccts:PropertyTerm&gt;&lt;ccts:AssociatedObjectClass&gt;Consumption Report&lt;/ccts:AssociatedObjectClass&gt;&lt;ccts:RepresentationTerm&gt;Consumption Report&lt;/ccts:RepresentationTerm&gt;&lt;/ccts:Component&gt;
      * </pre>
      * Gets the value of the consumptionReport property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the consumptionReport property.
      * 
      * <p>
@@ -93,14 +93,14 @@ public class EnergyWaterSupplyType {
     /**
      * 
      * <pre>
-     * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Component xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;ccts:ComponentType&gt;ASBIE&lt;/ccts:ComponentType&gt;&lt;ccts:DictionaryEntryName&gt;Energy Water Supply. Energy Tax Report&lt;/ccts:DictionaryEntryName&gt;&lt;ccts:Definition&gt;A report of energy taxes.&lt;/ccts:Definition&gt;&lt;ccts:Cardinality&gt;0..n&lt;/ccts:Cardinality&gt;&lt;ccts:ObjectClass&gt;Energy Water Supply&lt;/ccts:ObjectClass&gt;&lt;ccts:PropertyTerm&gt;Energy Tax Report&lt;/ccts:PropertyTerm&gt;&lt;ccts:AssociatedObjectClass&gt;Energy Tax Report&lt;/ccts:AssociatedObjectClass&gt;&lt;/ccts:Component&gt;
+     * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Component xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;ccts:ComponentType&gt;ASBIE&lt;/ccts:ComponentType&gt;&lt;ccts:DictionaryEntryName&gt;Energy Water Supply. Energy Tax Report&lt;/ccts:DictionaryEntryName&gt;&lt;ccts:Definition&gt;A tax on the consumption of energy or water.&lt;/ccts:Definition&gt;&lt;ccts:Cardinality&gt;0..n&lt;/ccts:Cardinality&gt;&lt;ccts:ObjectClass&gt;Energy Water Supply&lt;/ccts:ObjectClass&gt;&lt;ccts:PropertyTerm&gt;Energy Tax Report&lt;/ccts:PropertyTerm&gt;&lt;ccts:AssociatedObjectClass&gt;Energy Tax Report&lt;/ccts:AssociatedObjectClass&gt;&lt;ccts:RepresentationTerm&gt;Energy Tax Report&lt;/ccts:RepresentationTerm&gt;&lt;/ccts:Component&gt;
      * </pre>
      * Gets the value of the energyTaxReport property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the energyTaxReport property.
      * 
      * <p>
@@ -126,14 +126,14 @@ public class EnergyWaterSupplyType {
     /**
      * 
      * <pre>
-     * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Component xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;ccts:ComponentType&gt;ASBIE&lt;/ccts:ComponentType&gt;&lt;ccts:DictionaryEntryName&gt;Energy Water Supply. Consumption Average&lt;/ccts:DictionaryEntryName&gt;&lt;ccts:Definition&gt;The Average price included VAT.&lt;/ccts:Definition&gt;&lt;ccts:Cardinality&gt;0..n&lt;/ccts:Cardinality&gt;&lt;ccts:ObjectClass&gt;Energy Water Supply&lt;/ccts:ObjectClass&gt;&lt;ccts:PropertyTerm&gt;Consumption Average&lt;/ccts:PropertyTerm&gt;&lt;ccts:AssociatedObjectClass&gt;Consumption Average&lt;/ccts:AssociatedObjectClass&gt;&lt;/ccts:Component&gt;
+     * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Component xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;ccts:ComponentType&gt;ASBIE&lt;/ccts:ComponentType&gt;&lt;ccts:DictionaryEntryName&gt;Energy Water Supply. Consumption Average&lt;/ccts:DictionaryEntryName&gt;&lt;ccts:Definition&gt;A consumption average.&lt;/ccts:Definition&gt;&lt;ccts:Cardinality&gt;0..n&lt;/ccts:Cardinality&gt;&lt;ccts:ObjectClass&gt;Energy Water Supply&lt;/ccts:ObjectClass&gt;&lt;ccts:PropertyTerm&gt;Consumption Average&lt;/ccts:PropertyTerm&gt;&lt;ccts:AssociatedObjectClass&gt;Consumption Average&lt;/ccts:AssociatedObjectClass&gt;&lt;ccts:RepresentationTerm&gt;Consumption Average&lt;/ccts:RepresentationTerm&gt;&lt;/ccts:Component&gt;
      * </pre>
      * Gets the value of the consumptionAverage property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the consumptionAverage property.
      * 
      * <p>
@@ -159,34 +159,34 @@ public class EnergyWaterSupplyType {
     /**
      * 
      * <pre>
-     * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Component xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;ccts:ComponentType&gt;ASBIE&lt;/ccts:ComponentType&gt;&lt;ccts:DictionaryEntryName&gt;Energy Water Supply. Energy Water_ Correction. Correction&lt;/ccts:DictionaryEntryName&gt;&lt;ccts:Definition&gt;The Statement of correction, for examples heating correction.&lt;/ccts:Definition&gt;&lt;ccts:Cardinality&gt;0..n&lt;/ccts:Cardinality&gt;&lt;ccts:ObjectClass&gt;Energy Water Supply&lt;/ccts:ObjectClass&gt;&lt;ccts:PropertyTermQualifier&gt;Energy Water&lt;/ccts:PropertyTermQualifier&gt;&lt;ccts:PropertyTerm&gt;Correction&lt;/ccts:PropertyTerm&gt;&lt;ccts:AssociatedObjectClass&gt;Correction&lt;/ccts:AssociatedObjectClass&gt;&lt;/ccts:Component&gt;
+     * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Component xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;ccts:ComponentType&gt;ASBIE&lt;/ccts:ComponentType&gt;&lt;ccts:DictionaryEntryName&gt;Energy Water Supply. Energy Water_ Consumption Correction. Consumption Correction&lt;/ccts:DictionaryEntryName&gt;&lt;ccts:Definition&gt;Describes any corrections or adjustments to the supply of energy or water.&lt;/ccts:Definition&gt;&lt;ccts:Cardinality&gt;0..n&lt;/ccts:Cardinality&gt;&lt;ccts:ObjectClass&gt;Energy Water Supply&lt;/ccts:ObjectClass&gt;&lt;ccts:PropertyTermQualifier&gt;Energy Water&lt;/ccts:PropertyTermQualifier&gt;&lt;ccts:PropertyTerm&gt;Consumption Correction&lt;/ccts:PropertyTerm&gt;&lt;ccts:AssociatedObjectClass&gt;Consumption Correction&lt;/ccts:AssociatedObjectClass&gt;&lt;ccts:RepresentationTerm&gt;Consumption Correction&lt;/ccts:RepresentationTerm&gt;&lt;/ccts:Component&gt;
      * </pre>
-     * Gets the value of the energyWaterCorrection property.
+     * Gets the value of the energyWaterConsumptionCorrection property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the energyWaterCorrection property.
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the energyWaterConsumptionCorrection property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getEnergyWaterCorrection().add(newItem);
+     *    getEnergyWaterConsumptionCorrection().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link CorrectionType }
+     * {@link ConsumptionCorrectionType }
      * 
      * 
      */
-    public List<CorrectionType> getEnergyWaterCorrection() {
-        if (energyWaterCorrection == null) {
-            energyWaterCorrection = new ArrayList<CorrectionType>();
+    public List<ConsumptionCorrectionType> getEnergyWaterConsumptionCorrection() {
+        if (energyWaterConsumptionCorrection == null) {
+            energyWaterConsumptionCorrection = new ArrayList<ConsumptionCorrectionType>();
         }
-        return this.energyWaterCorrection;
+        return this.energyWaterConsumptionCorrection;
     }
 
     /**

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:tyler:ecf:v5.0:extensions:returndateresponse" xmlns:clsa="http://reference.niem.gov/niem/specification/code-lists/1.0/code-lists-schema-appinfo/" xmlns:ct="http://release.niem.gov/niem/conformanceTargets/3.0/" xmlns:ecf="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" xmlns:j="http://release.niem.gov/niem/domains/jxdm/6.1/" xmlns:local="local" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" xmlns:ns1="urn:tyler:ecf:v5.0:extensions:returndate" xmlns:returnresponse="urn:tyler:ecf:v5.0:extensions:returndateresponse" xmlns:term="http://release.niem.gov/niem/localTerminology/3.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" ct:conformanceTargets="http://reference.niem.gov/niem/specification/naming-and-design-rules/3.0/#ExtensionSchemaDocument http://reference.niem.gov/niem/specification/code-lists/1.0/#SchemaDocument" elementFormDefault="qualified" targetNamespace="urn:tyler:ecf:v5.0:extensions:returndateresponse" version="5.0">
+	<xs:annotation>
+		<xs:documentation> Schema for namespace urn:tyler:ecf:v5.0:extensions:returndateresponse</xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" schemaLocation="ecf5-full-ea1e0f75b69752b5.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/domains/jxdm/6.1/" schemaLocation="ecf5-full-3fca6aa6e33300e4.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/niem-core/4.0/" schemaLocation="ecf5-full-7af13829a6695741.xsd"/>
+
+	<xs:complexType name="ReturnDateResponseMessageType">
+		<xs:complexContent>
+			<xs:extension base="ecf:ResponseMessageType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="nc:Case"/>
+					<xs:element minOccurs="0" ref="returnresponse:ReturnDate"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="returnresponse:ReturnDateResponseMessageAugmentationPoint"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ReturnDateResponseMessage" nillable="false" type="returnresponse:ReturnDateResponseMessageType"/>
+	<xs:element abstract="true" name="ReturnDateResponseMessageAugmentationPoint">
+		<xs:annotation>
+			<xs:documentation>An augmentation</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ReturnDate" type="nc:DateType"/>
+</xs:schema>

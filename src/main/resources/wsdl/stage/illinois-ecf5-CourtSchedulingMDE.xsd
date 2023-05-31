@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+     Electronic Court Filing Web Services Service Interaction Profile Version 5.0
+     Committee Specification Draft 01 / Public Review Draft 01
+     12 February 2019
+     Copyright (c) OASIS Open 2019. All Rights Reserved.
+     Source: https://docs.oasis-open.org/legalxml-courtfiling/ecf-webservices/v5.0/csprd01/schema/
+     Latest version of narrative specification: https://docs.oasis-open.org/legalxml-courtfiling/ecf-webservices/v5.0/ecf-webservices-v5.0.html
+     TC IPR Statement: https://www.oasis-open.org/committees/legalxml-courtfiling/ipr.php 
+--><definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtSchedulingMDE" xmlns:wrappers="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/wrappers" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsrmp="http://docs.oasis-open.org/ws-rx/wsrmp/200702" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtSchedulingMDE">
+	<!-- The Court Scheduling MDE is to provide the capability for the filer to submit a request a hearing or calendar date (CourtScheduletQueryMessage) along with the electronic document filing.  This is because many court document filings are made specifically to schedule hearings or conference meetings. The MDE provides the ability for the court to respond to the request (allocateCourtDate).  And it also allows for the participant to query the court calendar for a specific date and/or time (CourtScheduletQueryMessage). -->
+	<wsp:UsingPolicy wsdl:required="true"/>
+	<wsp:Policy wsu:Id="MyPolicy">
+		<wsrmp:RMAssertion/>
+	</wsp:Policy>
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/wrappers" schemaLocation="ecf5-full-bc4df19763eade9e.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<!-- messages -->
+	<message name="GetCourtScheduleRequest">
+		<part element="wrappers:GetCourtScheduleRequest" name="body"/>
+	</message>
+	<message name="GetCourtScheduleResponse">
+		<part element="wrappers:GetCourtScheduleResponse" name="body"/>
+	</message>
+	<message name="NotifyCourtDateRequest">
+		<part element="wrappers:NotifyCourtDateRequest" name="body"/>
+	</message>
+	<message name="NotifyCourtDateResponse">
+		<part element="wrappers:NotifyCourtDateResponse" name="body"/>
+	</message>
+	<message name="ReserveCourtDateRequest">
+		<part element="wrappers:ReserveCourtDateRequest" name="body"/>
+	</message>
+	<message name="ReserveCourtDateResponse">
+		<part element="wrappers:ReserveCourtDateResponse" name="body"/>
+	</message>
+	<message name="RequestCourtDateRequest">
+		<part element="wrappers:RequestCourtDateRequest" name="body"/>
+	</message>
+	<message name="RequestCourtDateResponse">
+		<part element="wrappers:RequestCourtDateResponse" name="body"/>
+	</message>
+	<!-- ports -->
+	<portType name="CourtSchedulingMDE">
+		<operation name="GetCourtSchedule">
+			<input message="tns:GetCourtScheduleRequest"/>
+			<output message="tns:GetCourtScheduleResponse"/>
+		</operation>
+		<operation name="NotifyCourtDate">
+			<input message="tns:NotifyCourtDateRequest"/>
+			<output message="tns:NotifyCourtDateResponse"/>
+		</operation>
+		<operation name="ReserveCourtDate">
+			<input message="tns:ReserveCourtDateRequest"/>
+			<output message="tns:ReserveCourtDateResponse"/>
+		</operation>
+		<operation name="RequestCourtDate">
+			<input message="tns:RequestCourtDateRequest"/>
+			<output message="tns:RequestCourtDateResponse"/>
+		</operation>
+	</portType>
+	<!-- bindings -->
+	<binding name="CourtSchedulingMDESoap" type="tns:CourtSchedulingMDE">
+		<wsp:PolicyReference URI="#MyPolicy"/>
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="GetCourtSchedule">
+			<!-- An operation to query for a schedule of upcoming court events -->
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtSchedulingMDE/GetCourtSchedule"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="NotifyCourtDate">
+			<!-- An operaiton to notify a court date has been confirmed. -->
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtSchedulingMDE/NotifyCourtDate"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="ReserveCourtDate">
+			<!-- An operation to reserve a court date. -->
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtSchedulingMDE/ReserveCourtDate"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="RequestCourtDate">
+			<!-- An operation to request a list of available court dates. -->
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtSchedulingMDE/RequestCourtDate"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<!-- services not defined here...defined in an implementation-specific WSDL that imports this one -->
+</definitions>

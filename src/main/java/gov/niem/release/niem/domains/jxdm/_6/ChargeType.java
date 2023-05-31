@@ -3,16 +3,19 @@ package gov.niem.release.niem.domains.jxdm._6;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.domains.humanservices._4.JuvenileAbuseNeglectAllegationType;
 import gov.niem.release.niem.niem_core._4.TextType;
 import gov.niem.release.niem.structures._4.ObjectType;
+import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.criminal.ChargeAugmentationType;
+import tyler.ecf.v5_0.extensions.criminal.ChargeHistoryType;
 
 
 /**
@@ -27,17 +30,17 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://release.niem.gov/niem/structures/4.0/}ObjectType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}ChargeDegreeText" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}ChargeDescriptionText" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}ChargeDisposition" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}ChargeEnhancingAllegationCharge" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}ChargeEnhancingFactor" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}ChargeQualifierText" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}ChargeSequenceID" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}ChargeSeverityLevel" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}ChargeSpecialAllegationText" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}ChargeStatute" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}ChargeAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}ChargeDegreeText" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}ChargeDescriptionText" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}ChargeDisposition" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}ChargeEnhancingAllegationCharge" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}ChargeEnhancingFactor" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}ChargeQualifierText" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}ChargeSequenceID" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}ChargeSeverityLevel" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}ChargeSpecialAllegationText" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}ChargeStatute" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}ChargeAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -62,7 +65,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "chargeAugmentationPoint"
 })
 @XmlSeeAlso({
-    JuvenileAbuseNeglectAllegationType.class
+    ChargeHistoryType.class
 })
 public class ChargeType
     extends ObjectType
@@ -88,8 +91,8 @@ public class ChargeType
     protected TextType chargeSpecialAllegationText;
     @XmlElement(name = "ChargeStatute", nillable = true)
     protected StatuteType chargeStatute;
-    @XmlElement(name = "ChargeAugmentationPoint")
-    protected List<Object> chargeAugmentationPoint;
+    @XmlElementRef(name = "ChargeAugmentationPoint", namespace = "http://release.niem.gov/niem/domains/jxdm/6.1/", type = JAXBElement.class, required = false)
+    protected List<JAXBElement<?>> chargeAugmentationPoint;
 
     /**
      * Gets the value of the chargeDegreeText property.
@@ -349,13 +352,14 @@ public class ChargeType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Object }
+     * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link JAXBElement }{@code <}{@link ChargeAugmentationType }{@code >}
      * 
      * 
      */
-    public List<Object> getChargeAugmentationPoint() {
+    public List<JAXBElement<?>> getChargeAugmentationPoint() {
         if (chargeAugmentationPoint == null) {
-            chargeAugmentationPoint = new ArrayList<Object>();
+            chargeAugmentationPoint = new ArrayList<JAXBElement<?>>();
         }
         return this.chargeAugmentationPoint;
     }

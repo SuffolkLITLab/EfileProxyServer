@@ -41,7 +41,7 @@ public class LoginDatabaseTest {
   
   @AfterEach
   public void tearDown() throws SQLException {
-    ld.getConnection().close();
+    ld.close();
   }
   
   @Test

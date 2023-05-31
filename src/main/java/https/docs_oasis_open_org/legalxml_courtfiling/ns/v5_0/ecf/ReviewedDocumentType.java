@@ -25,7 +25,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://release.niem.gov/niem/niem-core/4.0/}DocumentType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ReviewedDocumentAugmentationPoint" maxOccurs="unbounded"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ReviewedDocumentAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -43,7 +43,7 @@ public class ReviewedDocumentType
     extends DocumentType
 {
 
-    @XmlElementRef(name = "ReviewedDocumentAugmentationPoint", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", type = JAXBElement.class)
+    @XmlElementRef(name = "ReviewedDocumentAugmentationPoint", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", type = JAXBElement.class, required = false)
     protected List<JAXBElement<?>> reviewedDocumentAugmentationPoint;
 
     /**
@@ -64,8 +64,9 @@ public class ReviewedDocumentType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link ReviewedDocumentAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ReviewedDocumentAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link JAXBElement }{@code <}{@link tyler.ecf.v5_0.extensions.common.ReviewedDocumentAugmentationType }{@code >}
      * 
      * 
      */

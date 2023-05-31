@@ -27,5 +27,5 @@ public abstract class EfmCheckableFilingInterface implements EfmFilingInterface 
    * @return Same return type as {@link sendFiling}
    */
   public abstract Result<FilingResult, FilingError> submitFilingIfReady(
-      FilingInformation info, InfoCollector collector, String apiToken, ApiChoice chocie);
+      FilingInformation info, InfoCollector collector, String apiToken, ApiChoice choice);
 }

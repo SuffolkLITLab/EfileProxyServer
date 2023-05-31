@@ -3,7 +3,6 @@ package gov.niem.release.niem.domains.biometrics._4;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.niem_core._4.IdentificationType;
 import gov.niem.release.niem.niem_core._4.TextType;
 import gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -26,8 +25,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://release.niem.gov/niem/structures/4.0/}ObjectType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/biometrics/4.0/}DNALocusIdentification" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/biometrics/4.0/}DNAAlleleCall1Text" maxOccurs="2"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/biometrics/4.1/}DNALocusReferenceID" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/biometrics/4.1/}DNAAlleleCall1Text" maxOccurs="2"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -39,45 +38,45 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "DNASTRProfileType", propOrder = {
-    "dnaLocusIdentification",
+    "dnaLocusReferenceID",
     "dnaAlleleCall1Text"
 })
 public class DNASTRProfileType
     extends ObjectType
 {
 
-    @XmlElement(name = "DNALocusIdentification")
-    protected List<IdentificationType> dnaLocusIdentification;
+    @XmlElement(name = "DNALocusReferenceID")
+    protected List<Integer1To999Type> dnaLocusReferenceID;
     @XmlElement(name = "DNAAlleleCall1Text", required = true)
     protected List<TextType> dnaAlleleCall1Text;
 
     /**
-     * Gets the value of the dnaLocusIdentification property.
+     * Gets the value of the dnaLocusReferenceID property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a <CODE>set</CODE> method for the dnaLocusIdentification property.
+     * This is why there is not a <CODE>set</CODE> method for the dnaLocusReferenceID property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getDNALocusIdentification().add(newItem);
+     *    getDNALocusReferenceID().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link IdentificationType }
+     * {@link Integer1To999Type }
      * 
      * 
      */
-    public List<IdentificationType> getDNALocusIdentification() {
-        if (dnaLocusIdentification == null) {
-            dnaLocusIdentification = new ArrayList<IdentificationType>();
+    public List<Integer1To999Type> getDNALocusReferenceID() {
+        if (dnaLocusReferenceID == null) {
+            dnaLocusReferenceID = new ArrayList<Integer1To999Type>();
         }
-        return this.dnaLocusIdentification;
+        return this.dnaLocusReferenceID;
     }
 
     /**

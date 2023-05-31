@@ -1,13 +1,13 @@
 
 package oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlSchemaType;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.XmlValue;
-import javax.xml.datatype.XMLGregorianCalendar;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ActualDeliveryTimeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ActualDespatchTimeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ActualPickupTimeType;
@@ -25,6 +25,7 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IssueTim
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LastRevisionTimeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatestDeliveryTimeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatestPickupTimeType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatestReplyTimeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ManufactureTimeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.NominationTimeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OccurrenceTimeType;
@@ -39,6 +40,7 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.Revision
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SourceForecastIssueTimeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.StartTimeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ValidationTimeType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.WeighingTimeType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -62,7 +64,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * </pre>
  * 
  * <pre>
- * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;The instance of time that occurs every day.&lt;/ccts:Definition&gt;
+ * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;An instance of time that occurs every day.&lt;/ccts:Definition&gt;
  * </pre>
  * 
  * <pre>
@@ -111,6 +113,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     LastRevisionTimeType.class,
     LatestDeliveryTimeType.class,
     LatestPickupTimeType.class,
+    LatestReplyTimeType.class,
     ManufactureTimeType.class,
     NominationTimeType.class,
     OccurrenceTimeType.class,
@@ -124,7 +127,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     RevisionTimeType.class,
     SourceForecastIssueTimeType.class,
     StartTimeType.class,
-    ValidationTimeType.class
+    ValidationTimeType.class,
+    WeighingTimeType.class
 })
 public class TimeType {
 

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+     Electronic Court Filing Web Services Service Interaction Profile Version 5.0
+     Committee Specification Draft 01 / Public Review Draft 01
+     12 February 2019
+     Copyright (c) OASIS Open 2019. All Rights Reserved.
+     Source: https://docs.oasis-open.org/legalxml-courtfiling/ecf-webservices/v5.0/csprd01/schema/
+     Latest version of narrative specification: https://docs.oasis-open.org/legalxml-courtfiling/ecf-webservices/v5.0/ecf-webservices-v5.0.html
+     TC IPR Statement: https://www.oasis-open.org/committees/legalxml-courtfiling/ipr.php 
+--><definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtRecordMDE" xmlns:wrappers="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/wrappers" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsrmp="http://docs.oasis-open.org/ws-rx/wsrmp/200702" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtRecordMDE">
+	<!-- The list of operations supported by the Court Record MDE. -->
+	<wsp:UsingPolicy wsdl:required="true"/>
+	<wsp:Policy wsu:Id="BasicHttpBinding_CourtPolicyMDEService_policy">
+		<wsp:ExactlyOne>
+			<wsp:All>
+				<wsoma:OptimizedMimeSerialization xmlns:wsoma="http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization"/>
+				<sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:TransportToken>
+							<wsp:Policy>
+								<sp:HttpsToken RequireClientCertificate="false"/>
+							</wsp:Policy>
+						</sp:TransportToken>
+						<sp:AlgorithmSuite>
+							<wsp:Policy>
+								<sp:Basic256/>
+							</wsp:Policy>
+						</sp:AlgorithmSuite>
+						<sp:Layout>
+							<wsp:Policy>
+								<sp:Lax/>
+							</wsp:Policy>
+						</sp:Layout>
+						<sp:IncludeTimestamp/>
+					</wsp:Policy>
+				</sp:TransportBinding>
+				<sp:EndorsingSupportingTokens xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:X509Token sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+							<wsp:Policy>
+								<sp:WssX509V3Token10/>
+							</wsp:Policy>
+						</sp:X509Token>
+					</wsp:Policy>
+				</sp:EndorsingSupportingTokens>
+				<sp:Wss10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:MustSupportRefKeyIdentifier/>
+						<sp:MustSupportRefIssuerSerial/>
+					</wsp:Policy>
+				</sp:Wss10>
+			</wsp:All>
+		</wsp:ExactlyOne>
+	</wsp:Policy>
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/wrappers" schemaLocation="ecf5-full-bc4df19763eade9e.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<!-- messages -->
+	<message name="AllocateCourtDateRequest">
+		<part element="wrappers:AllocateCourtDateRequest" name="body"/>
+	</message>
+	<message name="AllocateCourtDateResponse">
+		<part element="wrappers:AllocateCourtDateResponse" name="body"/>
+	</message>
+	<message name="DocumentStampInformationRequest">
+		<part element="wrappers:DocumentStampInformationRequest" name="body"/>
+	</message>
+	<message name="DocumentStampInformationResponse">
+		<part element="wrappers:DocumentStampInformationResponse" name="body"/>
+	</message>
+	<message name="GetCaseRequest">
+		<part element="wrappers:GetCaseRequest" name="body"/>
+	</message>
+	<message name="GetCaseResponse">
+		<part element="wrappers:GetCaseResponse" name="body"/>
+	</message>
+	<message name="GetCaseListRequest">
+		<part element="wrappers:GetCaseListRequest" name="body"/>
+	</message>
+	<message name="GetCaseListResponse">
+		<part element="wrappers:GetCaseListResponse" name="body"/>
+	</message>
+	<message name="GetDocumentRequest">
+		<part element="wrappers:GetDocumentRequest" name="body"/>
+	</message>
+	<message name="GetDocumentResponse">
+		<part element="wrappers:GetDocumentResponse" name="body"/>
+	</message>
+	<message name="GetServiceInformationRequest">
+		<part element="wrappers:GetServiceInformationRequest" name="body"/>
+	</message>
+	<message name="GetServiceInformationResponse">
+		<part element="wrappers:GetServiceInformationResponse" name="body"/>
+	</message>
+	<message name="RecordDocketingRequest">
+		<part element="wrappers:RecordDocketingRequest" name="body"/>
+	</message>
+	<message name="RecordDocketingResponse">
+		<part element="wrappers:RecordDocketingResponse" name="body"/>
+	</message>
+	<!-- ports -->
+	<portType name="CourtRecordMDE">
+		<operation name="AllocateCourtDate">
+			<input message="tns:AllocateCourtDateRequest"/>
+			<output message="tns:AllocateCourtDateResponse"/>
+		</operation>
+		<operation name="DocumentStampInformation">
+			<input message="tns:DocumentStampInformationRequest"/>
+			<output message="tns:DocumentStampInformationResponse"/>
+		</operation>
+		<operation name="GetCase">
+			<input message="tns:GetCaseRequest"/>
+			<output message="tns:GetCaseResponse"/>
+		</operation>
+		<operation name="GetCaseList">
+			<input message="tns:GetCaseListRequest"/>
+			<output message="tns:GetCaseListResponse"/>
+		</operation>
+		<operation name="GetDocument">
+			<input message="tns:GetDocumentRequest"/>
+			<output message="tns:GetDocumentResponse"/>
+		</operation>
+		<operation name="GetServiceInformation">
+			<input message="tns:GetServiceInformationRequest"/>
+			<output message="tns:GetServiceInformationResponse"/>
+		</operation>
+		<operation name="RecordDocketing">
+			<input message="tns:RecordDocketingRequest"/>
+			<output message="tns:RecordDocketingResponse"/>
+		</operation>
+	</portType>
+	<!-- bindings -->
+	<binding name="CourtRecordMDESoap" type="tns:CourtRecordMDE">
+		<wsp:PolicyReference URI="#BasicHttpBinding_CourtPolicyMDEService_policy"/>
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="AllocateCourtDate">
+			<!-- An operation to request a court date. -->
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtRecordMDE/AllocateCourtDate"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="DocumentStampInformation">
+			<!-- An operation that is a query for the information to be included on document stamps.  This operation is implemented by the system responsible for providing the document stamp information.  The operation is invoked by the system responsible for performing the stamping. -->
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtRecordMDE/DocumentStampInformation"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetCase">
+			<!-- An operation to query information on a case. -->
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtRecordMDE/GetCase"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetCaseList">
+			<!-- An operation to query a list of cases that match a set of criteria. -->
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtRecordMDE/GetCaseList"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetDocument">
+			<!-- An peration to query for a document. -->
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtRecordMDE/GetDocument"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetServiceInformation">
+			<!-- An operation to query for contact information required to serve a document. -->
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtRecordMDE/GetServiceInformation"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="RecordDocketing">
+			<!-- An operation to record and docket a court filing in a court record system. -->
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtRecordMDE/RecordDocketing"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<!-- services not defined here...defined in an implementation-specific WSDL that imports this one -->
+</definitions>

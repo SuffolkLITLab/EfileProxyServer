@@ -1,10 +1,15 @@
 package edu.suffolk.litlab.efspserver;
 
+import java.nio.charset.StandardCharsets;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +28,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.bouncycastle.util.encoders.Hex;
 import org.xml.sax.SAXException;
+
+import javax.xml.transform.OutputKeys;
 
 /**
  * Downloaded the FilingReviewMDE wsdl, necessary for it to run faster. Slightly modified to handle
@@ -44,8 +52,28 @@ public class XsdDownloader {
 
   private final String downloadPrefix;
 
+  private String strToHash(final String str) throws NoSuchAlgorithmException {
+      MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+      String fullHash = new String(Hex.encode(messageDigest.digest(str.getBytes(StandardCharsets.UTF_8))));
+      return fullHash.substring(0, 16);
+  }
+
+  public static String documentToString(Document document) throws TransformerException {
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+        DOMSource source = new DOMSource(document);
+        StreamResult result = new StreamResult(new StringWriter());
+        transformer.transform(source, result);
+
+        return result.getWriter().toString();
+    }
+
   private String downloadXsdRecurse(final String xsdUrl, final String pastUrl)
-      throws IOException, ParserConfigurationException, SAXException, TransformerException {
+      throws IOException, ParserConfigurationException, SAXException, TransformerException, NoSuchAlgorithmException {
 
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     dbf.setNamespaceAware(true);
@@ -61,7 +89,7 @@ public class XsdDownloader {
       System.out.println("Download " + xsdUrl + " (past url is " + pastUrl + ")");
       doc = db.parse(xsdUrl);
       workedUrl = xsdUrl;
-    } catch (FileNotFoundException ex) {
+    } catch (FileNotFoundException | MalformedURLException ex) {
       try {
         workedUrl = normalizeUrl(xsdUrl, pastUrl);
       } catch (URISyntaxException e) {
@@ -73,13 +101,15 @@ public class XsdDownloader {
         return workedUrl;
       }
       doc = db.parse(workedUrl);
+      System.out.println(doc.toString());
     }
 
     System.out.println("workedURL: " + workedUrl);
 
+
     String outputFileName = downloadPrefix;
     if (fileNamesByprocessedUrls.size() > 0) {
-      outputFileName = outputFileName + "-" + fileNamesByprocessedUrls.size();
+      outputFileName = outputFileName + "-" + strToHash(documentToString(doc));
     }
     outputFileName = outputFileName + ".xsd";
     fileNamesByprocessedUrls.put(workedUrl, outputFileName);
@@ -98,11 +128,13 @@ public class XsdDownloader {
   private static String normalizeUrl(String xsdUrl, final String pastUrl)
       throws URISyntaxException {
     String baseUrl = pastUrl.substring(0, pastUrl.lastIndexOf('/') + 1);
+    // The ECF5 schemas use Windows paths?!
+    xsdUrl = xsdUrl.replace('\\', '/');
     return new URI(baseUrl + xsdUrl).normalize().toString();
   }
 
   private void processElementRecurse(final Element node, String pastUrl)
-      throws IOException, ParserConfigurationException, SAXException, TransformerException {
+      throws IOException, ParserConfigurationException, SAXException, TransformerException, NoSuchAlgorithmException {
     NodeList nodeList = node.getChildNodes();
     int len = nodeList.getLength();
     for (int i = 0; i < len; i++) {
@@ -159,7 +191,7 @@ public class XsdDownloader {
     XsdDownloader xsdDownloader = new XsdDownloader(filePrefix);
     try {
       xsdDownloader.downloadXsdRecurse(xsdUrl, "");
-    } catch (IOException | ParserConfigurationException | SAXException | TransformerException e) {
+    } catch (IOException | ParserConfigurationException | SAXException | TransformerException | NoSuchAlgorithmException e) {
       e.printStackTrace();
     }
   }

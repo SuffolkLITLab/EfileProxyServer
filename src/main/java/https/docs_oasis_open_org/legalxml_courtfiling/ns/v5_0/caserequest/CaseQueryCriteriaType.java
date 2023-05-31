@@ -1,7 +1,10 @@
 
 package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caserequest;
 
+import java.util.ArrayList;
+import java.util.List;
 import gov.niem.release.niem.niem_core._4.DateRangeType;
+import gov.niem.release.niem.niem_core._4.IdentificationType;
 import gov.niem.release.niem.niem_core._4.TextType;
 import gov.niem.release.niem.proxy.xsd._4.Boolean;
 import gov.niem.release.niem.structures._4.ObjectType;
@@ -14,7 +17,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * Criteria limiting the case information to be returned.
+ * Criteria limiting the list of cases to be returned.
  * 
  * <p>Java class for CaseQueryCriteriaType complex type.
  * 
@@ -27,11 +30,13 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *       &lt;sequence&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest}CalendarEventTimeRange" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest}DocketEntryTimeRange" minOccurs="0"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest}DocketEntryTypeCodeFilterText"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest}DocketEntryTypeCodeFilterText" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest}IncludeCalendarEventIndicator"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest}IncludeDocketEntryIndicator"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest}IncludeParticipantsIndicator"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CourtEventTypeCode"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseTrackingID" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CourtEventTypeCode" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}CaseNumberText"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -49,7 +54,9 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "includeCalendarEventIndicator",
     "includeDocketEntryIndicator",
     "includeParticipantsIndicator",
-    "courtEventTypeCode"
+    "caseTrackingID",
+    "courtEventTypeCode",
+    "caseNumberText"
 })
 public class CaseQueryCriteriaType
     extends ObjectType
@@ -59,16 +66,20 @@ public class CaseQueryCriteriaType
     protected DateRangeType calendarEventTimeRange;
     @XmlElement(name = "DocketEntryTimeRange")
     protected DateRangeType docketEntryTimeRange;
-    @XmlElement(name = "DocketEntryTypeCodeFilterText", required = true)
-    protected TextType docketEntryTypeCodeFilterText;
+    @XmlElement(name = "DocketEntryTypeCodeFilterText")
+    protected List<TextType> docketEntryTypeCodeFilterText;
     @XmlElement(name = "IncludeCalendarEventIndicator", required = true)
     protected Boolean includeCalendarEventIndicator;
     @XmlElement(name = "IncludeDocketEntryIndicator", required = true)
     protected Boolean includeDocketEntryIndicator;
     @XmlElement(name = "IncludeParticipantsIndicator", required = true)
     protected Boolean includeParticipantsIndicator;
-    @XmlElement(name = "CourtEventTypeCode", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", required = true)
-    protected TextType courtEventTypeCode;
+    @XmlElement(name = "CaseTrackingID", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf")
+    protected IdentificationType caseTrackingID;
+    @XmlElement(name = "CourtEventTypeCode", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf")
+    protected List<TextType> courtEventTypeCode;
+    @XmlElement(name = "CaseNumberText", namespace = "http://release.niem.gov/niem/domains/jxdm/6.1/", required = true)
+    protected TextType caseNumberText;
 
     /**
      * Gets the value of the calendarEventTimeRange property.
@@ -121,25 +132,30 @@ public class CaseQueryCriteriaType
     /**
      * Gets the value of the docketEntryTypeCodeFilterText property.
      * 
-     * @return
-     *     possible object is
-     *     {@link TextType }
-     *     
-     */
-    public TextType getDocketEntryTypeCodeFilterText() {
-        return docketEntryTypeCodeFilterText;
-    }
-
-    /**
-     * Sets the value of the docketEntryTypeCodeFilterText property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the docketEntryTypeCodeFilterText property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link TextType }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getDocketEntryTypeCodeFilterText().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link TextType }
+     * 
+     * 
      */
-    public void setDocketEntryTypeCodeFilterText(TextType value) {
-        this.docketEntryTypeCodeFilterText = value;
+    public List<TextType> getDocketEntryTypeCodeFilterText() {
+        if (docketEntryTypeCodeFilterText == null) {
+            docketEntryTypeCodeFilterText = new ArrayList<TextType>();
+        }
+        return this.docketEntryTypeCodeFilterText;
     }
 
     /**
@@ -215,27 +231,80 @@ public class CaseQueryCriteriaType
     }
 
     /**
+     * Gets the value of the caseTrackingID property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link IdentificationType }
+     *     
+     */
+    public IdentificationType getCaseTrackingID() {
+        return caseTrackingID;
+    }
+
+    /**
+     * Sets the value of the caseTrackingID property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link IdentificationType }
+     *     
+     */
+    public void setCaseTrackingID(IdentificationType value) {
+        this.caseTrackingID = value;
+    }
+
+    /**
      * Gets the value of the courtEventTypeCode property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the courtEventTypeCode property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getCourtEventTypeCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link TextType }
+     * 
+     * 
+     */
+    public List<TextType> getCourtEventTypeCode() {
+        if (courtEventTypeCode == null) {
+            courtEventTypeCode = new ArrayList<TextType>();
+        }
+        return this.courtEventTypeCode;
+    }
+
+    /**
+     * Gets the value of the caseNumberText property.
      * 
      * @return
      *     possible object is
      *     {@link TextType }
      *     
      */
-    public TextType getCourtEventTypeCode() {
-        return courtEventTypeCode;
+    public TextType getCaseNumberText() {
+        return caseNumberText;
     }
 
     /**
-     * Sets the value of the courtEventTypeCode property.
+     * Sets the value of the caseNumberText property.
      * 
      * @param value
      *     allowed object is
      *     {@link TextType }
      *     
      */
-    public void setCourtEventTypeCode(TextType value) {
-        this.courtEventTypeCode = value;
+    public void setCaseNumberText(TextType value) {
+        this.caseNumberText = value;
     }
 
     /**

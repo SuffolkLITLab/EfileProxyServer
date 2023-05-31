@@ -4,12 +4,14 @@ package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reviewfilingcallb
 import java.util.ArrayList;
 import java.util.List;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CallbackMessageType;
+import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.common.FilingMessageAugmentationType;
 
 
 /**
@@ -42,8 +44,8 @@ public class NotifyFilingReviewCompleteMessageType
     extends CallbackMessageType
 {
 
-    @XmlElement(name = "NotifyFilingReviewCompleteMessageAugmentationPoint")
-    protected List<Object> notifyFilingReviewCompleteMessageAugmentationPoint;
+    @XmlElementRef(name = "NotifyFilingReviewCompleteMessageAugmentationPoint", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/reviewfilingcallback", type = JAXBElement.class, required = false)
+    protected List<JAXBElement<?>> notifyFilingReviewCompleteMessageAugmentationPoint;
 
     /**
      * Gets the value of the notifyFilingReviewCompleteMessageAugmentationPoint property.
@@ -63,13 +65,14 @@ public class NotifyFilingReviewCompleteMessageType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Object }
+     * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link JAXBElement }{@code <}{@link FilingMessageAugmentationType }{@code >}
      * 
      * 
      */
-    public List<Object> getNotifyFilingReviewCompleteMessageAugmentationPoint() {
+    public List<JAXBElement<?>> getNotifyFilingReviewCompleteMessageAugmentationPoint() {
         if (notifyFilingReviewCompleteMessageAugmentationPoint == null) {
-            notifyFilingReviewCompleteMessageAugmentationPoint = new ArrayList<Object>();
+            notifyFilingReviewCompleteMessageAugmentationPoint = new ArrayList<JAXBElement<?>>();
         }
         return this.notifyFilingReviewCompleteMessageAugmentationPoint;
     }

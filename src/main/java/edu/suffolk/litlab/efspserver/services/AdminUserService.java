@@ -3,15 +3,14 @@ package edu.suffolk.litlab.efspserver.services;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
 
-import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
-import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
-import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
-import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
+import edu.suffolk.litlab.efspserver.tyler.TylerLogin;
+import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
+import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.tyler.codes.CourtLocationInfo;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
@@ -25,17 +24,22 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.ws.BindingProvider;
 import java.net.URI;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
+
 import javax.sql.DataSource;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+
+import com.hubspot.algebra.NullValue;
+import com.hubspot.algebra.Result;
+
 import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.EfmUserService;
 import tyler.efm.services.IEfmFirmService;
@@ -67,13 +71,26 @@ import tyler.efm.services.schema.updateuserresponse.UpdateUserResponseType;
 import tyler.efm.services.schema.userlistresponse.UserListResponseType;
 
 /**
- * Covers all of the FirmUserManagement and UserService operations. * User Service *
- * AuthenticateUser * ChangePassword * ResetPassword * GetUser (User Service) * UpdateUser (User
- * Service) * GetNotificationPreferences * UpdateNotificationPreferences * SelfResendActivationEmail
- * * Firm User Management * RegisterUser: PUT on /users * AddUserRole: POST on /users/{id}/role *
- * GetUser: GET on /users/{id} * GetUserList: GET on /users * RemoveUser: DELETE on /users/{id} *
- * RemoveUserRole: DELETE on /users/{id}/role * ResendActivationEmail * ResetUserPassword *
- * UpdateUser: POST on /users/{id} * GetNotificationPreferencesList
+ * Covers all of the FirmUserManagement and UserService operations.
+ * - User Service
+ * - ChangePassword
+ * - ResetPassword 
+ * - GetUser (User Service) 
+ * - UpdateUser (User Service)
+ * - GetNotificationPreferences 
+ * - UpdateNotificationPreferences
+ * - SelfResendActivationEmail
+ * - Firm User Management 
+ * - RegisterUser: PUT on /users 
+ * - AddUserRole: POST on /users/{id}/role
+ * - GetUser: GET on /users/{id}
+ * - GetUserList: GET on /users 
+ * - RemoveUser: DELETE on /users/{id}
+ * - RemoveUserRole: DELETE on /users/{id}/role
+ * - ResendActivationEmail 
+ * - ResetUserPassword
+ * - UpdateUser: POST on /users/{id}
+ * - GetNotificationPreferencesList
  *
  * @author brycew
  */
@@ -84,16 +101,16 @@ public class AdminUserService {
 
   private final EfmUserService userFactory;
   private final EfmFirmService firmFactory;
-  private final DataSource codeDs;
   private final DataSource userDs;
+  private final Function<String, Result<NullValue, String>> passwordChecker;
+  private final Supplier<CodeDatabase> cdSupplier;
   private final String jurisdiction;
-  private final String env;
 
-  public AdminUserService(String jurisdiction, String env, DataSource codeDs, DataSource userDs) {
+  public AdminUserService(String jurisdiction, String env, DataSource userDs, Supplier<CodeDatabase> cdSupplier, Function<String, Result<NullValue, String>> passwordChecker) {
     this.jurisdiction = jurisdiction;
-    this.env = env;
+    this.passwordChecker = passwordChecker;
     Optional<EfmUserService> maybeUserFactory =
-        SoapClientChooser.getEfmUserFactory(jurisdiction, env);
+        TylerUrls.getEfmUserFactory(jurisdiction, env);
     if (maybeUserFactory.isEmpty()) {
       throw new RuntimeException(
           "Can't find " + jurisdiction + " in the SoapClientChooser for EfmUser");
@@ -101,13 +118,13 @@ public class AdminUserService {
     this.userFactory = maybeUserFactory.get();
     ;
     Optional<EfmFirmService> maybeFirmFactory =
-        SoapClientChooser.getEfmFirmFactory(jurisdiction, env);
+        TylerUrls.getEfmFirmFactory(jurisdiction, env);
     if (maybeFirmFactory.isEmpty()) {
       throw new RuntimeException(
           "Can't find " + jurisdiction + " in the SoapClientChooser for EfmFirm factory");
     }
     this.firmFactory = maybeFirmFactory.get();
-    this.codeDs = codeDs;
+    this.cdSupplier = cdSupplier;
     this.userDs = userDs;
   }
 
@@ -248,15 +265,9 @@ public class AdminUserService {
         return Response.status(401).build();
       }
 
-      // The "1" is the default for all courts. There's no way to enforce court specific passwords
-      DataFieldRow globalPasswordRow = DataFieldRow.MissingDataField("GlobalPassword");
-      try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
-        globalPasswordRow = cd.getDataField("1", "GlobalPassword");
-      } catch (SQLException e) {
-        log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
-      }
-      if (!passwordOk(globalPasswordRow, params.newPassword)) {
-        return Response.status(400).entity(globalPasswordRow.validationmessage).build();
+      Result<NullValue, String> passwordGood = passwordChecker.apply(params.newPassword);
+      if (passwordGood.isErr()) {
+        return Response.status(400).entity(passwordGood.expectErr("invalid internal state")).build();
       }
       ResetUserPasswordRequestType resetReq = new ResetUserPasswordRequestType();
       resetReq.setUserID(id);
@@ -287,16 +298,9 @@ public class AdminUserService {
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
-      // The "1" is the default for all courts. There's no way to enforce court specific passwords
-      DataFieldRow globalPasswordRow = DataFieldRow.MissingDataField("GlobalPassword");
-      try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
-        globalPasswordRow = cd.getDataField("1", "GlobalPassword");
-      } catch (SQLException e) {
-        log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
-      }
-
-      if (!passwordOk(globalPasswordRow, params.newPassword)) {
-        return Response.status(400).entity(globalPasswordRow.validationmessage).build();
+      Result<NullValue, String> passwordGood = passwordChecker.apply(params.newPassword);
+      if (passwordGood.isErr()) {
+        return Response.status(400).entity(passwordGood.expectErr("invalid internal state")).build();
       }
       ChangePasswordRequestType change = new ChangePasswordRequestType();
       change.setOldPassword(params.currentPassword);
@@ -637,7 +641,7 @@ public class AdminUserService {
       }
 
       // The "1" is the default for all courts. There's no way to enforce court specific passwords
-      try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
+      try (CodeDatabase cd = cdSupplier.get()) {
         Optional<CourtLocationInfo> system = cd.getFullLocationInfo("0");
         if (system.isPresent()) {
           if (regType.equals(RegistrationType.INDIVIDUAL)
@@ -647,15 +651,16 @@ public class AdminUserService {
                 .build();
           }
         }
-        DataFieldRow globalPasswordRow = cd.getDataField("1", "GlobalPassword");
-        // The "1" is the default for all courts. There's no way to enforce court specific passwords
-        if (!passwordOk(globalPasswordRow, req.getPassword())) {
-          return Response.status(400).entity(globalPasswordRow.validationmessage).build();
-        }
       } catch (SQLException e) {
         log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
         return Response.status(500).build();
       }
+
+      Result<NullValue, String> passwordGood = passwordChecker.apply(req.getPassword());
+      if (passwordGood.isErr()) {
+        return Response.status(400).entity(passwordGood.expectErr("invalid internal state")).build();
+      }
+
 
       RegistrationResponseType regResp = port.get().registerUser(req);
       log.info(
@@ -719,13 +724,6 @@ public class AdminUserService {
     }
   }
 
-  private static boolean passwordOk(DataFieldRow row, String password) {
-    if (row.isvisible && row.isrequired && password != null && !password.isEmpty()) {
-      return row.matchRegex(password);
-    }
-    return true;
-  }
-
   /** Default needsSoapHeader to True: most ops need Tyler Authentication in the SOAP header. */
   private Optional<IEfmUserService> setupUserPort(HttpHeaders httpHeaders) {
     return setupUserPort(httpHeaders, true);
@@ -741,8 +739,7 @@ public class AdminUserService {
   private Optional<IEfmUserService> setupUserPort(
       HttpHeaders httpHeaders, boolean needsSoapHeader) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
-    try (Connection conn = userDs.getConnection()) {
-      LoginDatabase ld = new LoginDatabase(conn);
+    try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
       Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
       if (atRest.isEmpty()) {
         return Optional.empty();
@@ -753,7 +750,7 @@ public class AdminUserService {
             httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
         MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
         Optional<TylerUserNamePassword> creds =
-            ServiceHelpers.userCredsFromAuthorization(tylerToken);
+            TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
         if (creds.isEmpty()) {
           return Optional.empty();
         }

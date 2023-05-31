@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- edited with XMLSpy v2018 sp1 (http://www.altova.com) by Tyler Technologies (Tyler Technologies) --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:ecf="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" xmlns:fees="urn:tyler:ecf:v5.0:extensions:capturefeesrequest" xmlns:filing="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" xmlns:niem-xs="http://release.niem.gov/niem/proxy/xsd/4.0/" xmlns:structures="http://release.niem.gov/niem/structures/4.0/" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:tyler:ecf:v5.0:extensions:capturefeesrequest">
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" schemaLocation="ecf5-full-ea1e0f75b69752b5.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing" schemaLocation="ecf5-full-849389af5da1be59.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/niem-core/4.0/" schemaLocation="ecf5-full-7af13829a6695741.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/proxy/xsd/4.0/" schemaLocation="ecf5-full-4d179e3e0bd140a9.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/structures/4.0/" schemaLocation="ecf5-full-43381e9aa490c46d.xsd"/>
+	<xs:import namespace="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" schemaLocation="ecf5-full-afe0703e358907a0.xsd"/>
+	<xs:complexType name="CaptureFeesMessageType">
+		<xs:annotation>
+			<xs:documentation>Message to capture fees.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ecf:CaseFilingType">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="fees:CaptureFeesMessageAugmentationPoint"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CaptureFeesMessage" type="fees:CaptureFeesMessageType">
+		<xs:annotation>
+			<xs:documentation>Message resulting from capturing fees on an envelope.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element abstract="true" name="CaptureFeesMessageAugmentationPoint">
+		<xs:annotation>
+			<xs:documentation>An extension point for the enclosing message.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

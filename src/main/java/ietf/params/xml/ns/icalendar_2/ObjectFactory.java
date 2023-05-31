@@ -128,15 +128,6 @@ public class ObjectFactory {
     private final static QName _VcalendarContainedComponent_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "vcalendarContainedComponent");
     private final static QName _Available_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "available");
     private final static QName _BaseComponent_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "baseComponent");
-    private final static QName _Gap_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "gap");
-    private final static QName _Granularity_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "granularity");
-    private final static QName _Tolerance_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "tolerance");
-    private final static QName _Gluon_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "gluon");
-    private final static QName _Interval_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "interval");
-    private final static QName _XWsCalendarAttach_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "x-wsCalendar-attach");
-    private final static QName _XWscalendarType_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "x-wscalendar-type");
-    private final static QName _Artifact_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "artifact");
-    private final static QName _ArtifactBase_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "artifactBase");
     private final static QName _Vevent_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "vevent");
     private final static QName _Vtodo_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "vtodo");
     private final static QName _Vjournal_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "vjournal");
@@ -147,6 +138,15 @@ public class ObjectFactory {
     private final static QName _Valarm_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "valarm");
     private final static QName _Icalendar_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "icalendar");
     private final static QName _Vcalendar_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "vcalendar");
+    private final static QName _Gap_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "gap");
+    private final static QName _Granularity_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "granularity");
+    private final static QName _Tolerance_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "tolerance");
+    private final static QName _Gluon_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "gluon");
+    private final static QName _Interval_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "interval");
+    private final static QName _XWsCalendarAttach_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "x-wsCalendar-attach");
+    private final static QName _XWscalendarType_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "x-wscalendar-type");
+    private final static QName _Artifact_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "artifact");
+    private final static QName _ArtifactBase_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "artifactBase");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ietf.params.xml.ns.icalendar_2
@@ -820,62 +820,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DurationParameterType }
-     * 
-     */
-    public DurationParameterType createDurationParameterType() {
-        return new DurationParameterType();
-    }
-
-    /**
-     * Create an instance of {@link TolerancePropType }
-     * 
-     */
-    public TolerancePropType createTolerancePropType() {
-        return new TolerancePropType();
-    }
-
-    /**
-     * Create an instance of {@link WsCalendarGluonType }
-     * 
-     */
-    public WsCalendarGluonType createWsCalendarGluonType() {
-        return new WsCalendarGluonType();
-    }
-
-    /**
-     * Create an instance of {@link WsCalendarIntervalType }
-     * 
-     */
-    public WsCalendarIntervalType createWsCalendarIntervalType() {
-        return new WsCalendarIntervalType();
-    }
-
-    /**
-     * Create an instance of {@link WsCalendarAttachType }
-     * 
-     */
-    public WsCalendarAttachType createWsCalendarAttachType() {
-        return new WsCalendarAttachType();
-    }
-
-    /**
-     * Create an instance of {@link WsCalendarTypeType }
-     * 
-     */
-    public WsCalendarTypeType createWsCalendarTypeType() {
-        return new WsCalendarTypeType();
-    }
-
-    /**
-     * Create an instance of {@link ArtifactType }
-     * 
-     */
-    public ArtifactType createArtifactType() {
-        return new ArtifactType();
-    }
-
-    /**
      * Create an instance of {@link VeventType }
      * 
      */
@@ -953,6 +897,62 @@ public class ObjectFactory {
      */
     public VcalendarType createVcalendarType() {
         return new VcalendarType();
+    }
+
+    /**
+     * Create an instance of {@link DurationParameterType }
+     * 
+     */
+    public DurationParameterType createDurationParameterType() {
+        return new DurationParameterType();
+    }
+
+    /**
+     * Create an instance of {@link TolerancePropType }
+     * 
+     */
+    public TolerancePropType createTolerancePropType() {
+        return new TolerancePropType();
+    }
+
+    /**
+     * Create an instance of {@link WsCalendarGluonType }
+     * 
+     */
+    public WsCalendarGluonType createWsCalendarGluonType() {
+        return new WsCalendarGluonType();
+    }
+
+    /**
+     * Create an instance of {@link WsCalendarIntervalType }
+     * 
+     */
+    public WsCalendarIntervalType createWsCalendarIntervalType() {
+        return new WsCalendarIntervalType();
+    }
+
+    /**
+     * Create an instance of {@link WsCalendarAttachType }
+     * 
+     */
+    public WsCalendarAttachType createWsCalendarAttachType() {
+        return new WsCalendarAttachType();
+    }
+
+    /**
+     * Create an instance of {@link WsCalendarTypeType }
+     * 
+     */
+    public WsCalendarTypeType createWsCalendarTypeType() {
+        return new WsCalendarTypeType();
+    }
+
+    /**
+     * Create an instance of {@link ArtifactType }
+     * 
+     */
+    public ArtifactType createArtifactType() {
+        return new ArtifactType();
     }
 
     /**
@@ -1108,22 +1108,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ToleranceValueType }
-     * 
-     */
-    public ToleranceValueType createToleranceValueType() {
-        return new ToleranceValueType();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfGluonContainedComponents }
-     * 
-     */
-    public ArrayOfGluonContainedComponents createArrayOfGluonContainedComponents() {
-        return new ArrayOfGluonContainedComponents();
-    }
-
-    /**
      * Create an instance of {@link ArrayOfVcalendarContainedComponents }
      * 
      */
@@ -1161,6 +1145,22 @@ public class ObjectFactory {
      */
     public AlarmComponentType createAlarmComponentType() {
         return new AlarmComponentType();
+    }
+
+    /**
+     * Create an instance of {@link ToleranceValueType }
+     * 
+     */
+    public ToleranceValueType createToleranceValueType() {
+        return new ToleranceValueType();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfGluonContainedComponents }
+     * 
+     */
+    public ArrayOfGluonContainedComponents createArrayOfGluonContainedComponents() {
+        return new ArrayOfGluonContainedComponents();
     }
 
     /**
@@ -2490,123 +2490,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DurationParameterType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link DurationParameterType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "gap", substitutionHeadNamespace = "urn:ietf:params:xml:ns:icalendar-2.0", substitutionHeadName = "baseParameter")
-    public JAXBElement<DurationParameterType> createGap(DurationParameterType value) {
-        return new JAXBElement<DurationParameterType>(_Gap_QNAME, DurationParameterType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DurationPropType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link DurationPropType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "granularity", substitutionHeadNamespace = "urn:ietf:params:xml:ns:icalendar-2.0", substitutionHeadName = "baseProperty")
-    public JAXBElement<DurationPropType> createGranularity(DurationPropType value) {
-        return new JAXBElement<DurationPropType>(_Granularity_QNAME, DurationPropType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TolerancePropType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TolerancePropType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "tolerance", substitutionHeadNamespace = "urn:ietf:params:xml:ns:icalendar-2.0", substitutionHeadName = "baseProperty")
-    public JAXBElement<TolerancePropType> createTolerance(TolerancePropType value) {
-        return new JAXBElement<TolerancePropType>(_Tolerance_QNAME, TolerancePropType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link WsCalendarGluonType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link WsCalendarGluonType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "gluon", substitutionHeadNamespace = "urn:ietf:params:xml:ns:icalendar-2.0", substitutionHeadName = "vcalendarContainedComponent")
-    public JAXBElement<WsCalendarGluonType> createGluon(WsCalendarGluonType value) {
-        return new JAXBElement<WsCalendarGluonType>(_Gluon_QNAME, WsCalendarGluonType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link WsCalendarIntervalType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link WsCalendarIntervalType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "interval", substitutionHeadNamespace = "urn:ietf:params:xml:ns:icalendar-2.0", substitutionHeadName = "vcalendarContainedComponent")
-    public JAXBElement<WsCalendarIntervalType> createInterval(WsCalendarIntervalType value) {
-        return new JAXBElement<WsCalendarIntervalType>(_Interval_QNAME, WsCalendarIntervalType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link WsCalendarAttachType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link WsCalendarAttachType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "x-wsCalendar-attach", substitutionHeadNamespace = "urn:ietf:params:xml:ns:icalendar-2.0", substitutionHeadName = "baseProperty")
-    public JAXBElement<WsCalendarAttachType> createXWsCalendarAttach(WsCalendarAttachType value) {
-        return new JAXBElement<WsCalendarAttachType>(_XWsCalendarAttach_QNAME, WsCalendarAttachType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link WsCalendarTypeType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link WsCalendarTypeType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "x-wscalendar-type", substitutionHeadNamespace = "urn:ietf:params:xml:ns:icalendar-2.0", substitutionHeadName = "baseProperty")
-    public JAXBElement<WsCalendarTypeType> createXWscalendarType(WsCalendarTypeType value) {
-        return new JAXBElement<WsCalendarTypeType>(_XWscalendarType_QNAME, WsCalendarTypeType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ArtifactType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link ArtifactType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "artifact")
-    public JAXBElement<ArtifactType> createArtifact(ArtifactType value) {
-        return new JAXBElement<ArtifactType>(_Artifact_QNAME, ArtifactType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ArtifactBaseType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link ArtifactBaseType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "artifactBase")
-    public JAXBElement<ArtifactBaseType> createArtifactBase(ArtifactBaseType value) {
-        return new JAXBElement<ArtifactBaseType>(_ArtifactBase_QNAME, ArtifactBaseType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link VeventType }{@code >}
      * 
      * @param value
@@ -2734,6 +2617,123 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "vcalendar")
     public JAXBElement<VcalendarType> createVcalendar(VcalendarType value) {
         return new JAXBElement<VcalendarType>(_Vcalendar_QNAME, VcalendarType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DurationParameterType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DurationParameterType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "gap", substitutionHeadNamespace = "urn:ietf:params:xml:ns:icalendar-2.0", substitutionHeadName = "baseParameter")
+    public JAXBElement<DurationParameterType> createGap(DurationParameterType value) {
+        return new JAXBElement<DurationParameterType>(_Gap_QNAME, DurationParameterType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DurationPropType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DurationPropType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "granularity", substitutionHeadNamespace = "urn:ietf:params:xml:ns:icalendar-2.0", substitutionHeadName = "baseProperty")
+    public JAXBElement<DurationPropType> createGranularity(DurationPropType value) {
+        return new JAXBElement<DurationPropType>(_Granularity_QNAME, DurationPropType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TolerancePropType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TolerancePropType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "tolerance", substitutionHeadNamespace = "urn:ietf:params:xml:ns:icalendar-2.0", substitutionHeadName = "baseProperty")
+    public JAXBElement<TolerancePropType> createTolerance(TolerancePropType value) {
+        return new JAXBElement<TolerancePropType>(_Tolerance_QNAME, TolerancePropType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WsCalendarGluonType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WsCalendarGluonType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "gluon", substitutionHeadNamespace = "urn:ietf:params:xml:ns:icalendar-2.0", substitutionHeadName = "vcalendarContainedComponent")
+    public JAXBElement<WsCalendarGluonType> createGluon(WsCalendarGluonType value) {
+        return new JAXBElement<WsCalendarGluonType>(_Gluon_QNAME, WsCalendarGluonType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WsCalendarIntervalType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WsCalendarIntervalType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "interval", substitutionHeadNamespace = "urn:ietf:params:xml:ns:icalendar-2.0", substitutionHeadName = "vcalendarContainedComponent")
+    public JAXBElement<WsCalendarIntervalType> createInterval(WsCalendarIntervalType value) {
+        return new JAXBElement<WsCalendarIntervalType>(_Interval_QNAME, WsCalendarIntervalType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WsCalendarAttachType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WsCalendarAttachType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "x-wsCalendar-attach", substitutionHeadNamespace = "urn:ietf:params:xml:ns:icalendar-2.0", substitutionHeadName = "baseProperty")
+    public JAXBElement<WsCalendarAttachType> createXWsCalendarAttach(WsCalendarAttachType value) {
+        return new JAXBElement<WsCalendarAttachType>(_XWsCalendarAttach_QNAME, WsCalendarAttachType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WsCalendarTypeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WsCalendarTypeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "x-wscalendar-type", substitutionHeadNamespace = "urn:ietf:params:xml:ns:icalendar-2.0", substitutionHeadName = "baseProperty")
+    public JAXBElement<WsCalendarTypeType> createXWscalendarType(WsCalendarTypeType value) {
+        return new JAXBElement<WsCalendarTypeType>(_XWscalendarType_QNAME, WsCalendarTypeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ArtifactType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ArtifactType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "artifact")
+    public JAXBElement<ArtifactType> createArtifact(ArtifactType value) {
+        return new JAXBElement<ArtifactType>(_Artifact_QNAME, ArtifactType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ArtifactBaseType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ArtifactBaseType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:ietf:params:xml:ns:icalendar-2.0", name = "artifactBase")
+    public JAXBElement<ArtifactBaseType> createArtifactBase(ArtifactBaseType value) {
+        return new JAXBElement<ArtifactBaseType>(_ArtifactBase_QNAME, ArtifactBaseType.class, null, value);
     }
 
 }

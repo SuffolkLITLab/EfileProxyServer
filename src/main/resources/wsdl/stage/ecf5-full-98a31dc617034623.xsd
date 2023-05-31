@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:tyler:ecf:v5.0:extensions:casehearingrequest" xmlns:ecf="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" xmlns:j="http://release.niem.gov/niem/domains/jxdm/6.1/" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" targetNamespace="urn:tyler:ecf:v5.0:extensions:casehearingrequest">
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" schemaLocation="ecf5-full-ea1e0f75b69752b5.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/domains/jxdm/6.1/" schemaLocation="ecf5-full-3fca6aa6e33300e4.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/niem-core/4.0/" schemaLocation="ecf5-full-7af13829a6695741.xsd"/>
+	<xs:complexType name="GetCaseHearingsMessageType">
+		<xs:complexContent>
+			<xs:extension base="ecf:RequestMessageType">
+				<xs:sequence>
+					<xs:element maxOccurs="1" minOccurs="1" ref="ecf:CaseTrackingID"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="GetCaseHearingsMessage" type="GetCaseHearingsMessageType"/>
+</xs:schema>

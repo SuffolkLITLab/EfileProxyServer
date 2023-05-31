@@ -159,6 +159,7 @@ public class ItemType
      *     {@link JAXBElement }{@code <}{@link VCOCodeType }{@code >}
      *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
@@ -172,6 +173,7 @@ public class ItemType
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link VCOCodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}

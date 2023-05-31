@@ -25,8 +25,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ResponseMessageType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/serviceinformationresponse}ServiceRecipient" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/serviceinformationresponse}GetServiceInformationResponseMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/serviceinformationresponse}ServiceRecipient" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -38,46 +38,17 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetServiceInformationResponseMessageType", propOrder = {
-    "serviceRecipient",
-    "getServiceInformationResponseMessageAugmentationPoint"
+    "getServiceInformationResponseMessageAugmentationPoint",
+    "serviceRecipient"
 })
 public class GetServiceInformationResponseMessageType
     extends ResponseMessageType
 {
 
-    @XmlElement(name = "ServiceRecipient")
-    protected List<EntityType> serviceRecipient;
     @XmlElement(name = "GetServiceInformationResponseMessageAugmentationPoint")
     protected List<Object> getServiceInformationResponseMessageAugmentationPoint;
-
-    /**
-     * Gets the value of the serviceRecipient property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a <CODE>set</CODE> method for the serviceRecipient property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getServiceRecipient().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link EntityType }
-     * 
-     * 
-     */
-    public List<EntityType> getServiceRecipient() {
-        if (serviceRecipient == null) {
-            serviceRecipient = new ArrayList<EntityType>();
-        }
-        return this.serviceRecipient;
-    }
+    @XmlElement(name = "ServiceRecipient")
+    protected List<EntityType> serviceRecipient;
 
     /**
      * Gets the value of the getServiceInformationResponseMessageAugmentationPoint property.
@@ -106,6 +77,35 @@ public class GetServiceInformationResponseMessageType
             getServiceInformationResponseMessageAugmentationPoint = new ArrayList<Object>();
         }
         return this.getServiceInformationResponseMessageAugmentationPoint;
+    }
+
+    /**
+     * Gets the value of the serviceRecipient property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the serviceRecipient property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getServiceRecipient().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link EntityType }
+     * 
+     * 
+     */
+    public List<EntityType> getServiceRecipient() {
+        if (serviceRecipient == null) {
+            serviceRecipient = new ArrayList<EntityType>();
+        }
+        return this.serviceRecipient;
     }
 
     /**

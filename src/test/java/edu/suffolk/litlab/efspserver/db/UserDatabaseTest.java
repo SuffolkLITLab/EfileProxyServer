@@ -38,7 +38,7 @@ public class UserDatabaseTest {
   
   @AfterEach
   public void tearDown() throws SQLException {
-    ud.getConnection().close();
+    ud.close();
   }
 
   @Test

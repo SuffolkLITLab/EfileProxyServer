@@ -4,6 +4,8 @@ package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.documentresponse;
 import java.util.ArrayList;
 import java.util.List;
 import gov.niem.release.niem.niem_core._4.DocumentType;
+import gov.niem.release.niem.niem_core._4.IdentificationType;
+import gov.niem.release.niem.niem_core._4.TextType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -25,9 +27,10 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ResponseMessageType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}CaseTrackingID"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Document" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/documentresponse}GetDocumentResponseMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseTrackingID" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}CaseNumberText"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Document"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -39,68 +42,23 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetDocumentResponseMessageType", propOrder = {
+    "getDocumentResponseMessageAugmentationPoint",
     "caseTrackingID",
-    "document",
-    "getDocumentResponseMessageAugmentationPoint"
+    "caseNumberText",
+    "document"
 })
 public class GetDocumentResponseMessageType
     extends ResponseMessageType
 {
 
-    @XmlElement(name = "CaseTrackingID", namespace = "http://release.niem.gov/niem/niem-core/4.0/", required = true)
-    protected gov.niem.release.niem.proxy.xsd._4.String caseTrackingID;
-    @XmlElement(name = "Document", namespace = "http://release.niem.gov/niem/niem-core/4.0/", nillable = true)
-    protected DocumentType document;
     @XmlElement(name = "GetDocumentResponseMessageAugmentationPoint")
     protected List<Object> getDocumentResponseMessageAugmentationPoint;
-
-    /**
-     * Gets the value of the caseTrackingID property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
-     *     
-     */
-    public gov.niem.release.niem.proxy.xsd._4.String getCaseTrackingID() {
-        return caseTrackingID;
-    }
-
-    /**
-     * Sets the value of the caseTrackingID property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
-     *     
-     */
-    public void setCaseTrackingID(gov.niem.release.niem.proxy.xsd._4.String value) {
-        this.caseTrackingID = value;
-    }
-
-    /**
-     * Gets the value of the document property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DocumentType }
-     *     
-     */
-    public DocumentType getDocument() {
-        return document;
-    }
-
-    /**
-     * Sets the value of the document property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DocumentType }
-     *     
-     */
-    public void setDocument(DocumentType value) {
-        this.document = value;
-    }
+    @XmlElement(name = "CaseTrackingID", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf")
+    protected List<IdentificationType> caseTrackingID;
+    @XmlElement(name = "CaseNumberText", namespace = "http://release.niem.gov/niem/domains/jxdm/6.1/", required = true)
+    protected TextType caseNumberText;
+    @XmlElement(name = "Document", namespace = "http://release.niem.gov/niem/niem-core/4.0/", required = true)
+    protected DocumentType document;
 
     /**
      * Gets the value of the getDocumentResponseMessageAugmentationPoint property.
@@ -132,12 +90,89 @@ public class GetDocumentResponseMessageType
     }
 
     /**
+     * Gets the value of the caseTrackingID property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the caseTrackingID property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getCaseTrackingID().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link IdentificationType }
+     * 
+     * 
+     */
+    public List<IdentificationType> getCaseTrackingID() {
+        if (caseTrackingID == null) {
+            caseTrackingID = new ArrayList<IdentificationType>();
+        }
+        return this.caseTrackingID;
+    }
+
+    /**
+     * Gets the value of the caseNumberText property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TextType }
+     *     
+     */
+    public TextType getCaseNumberText() {
+        return caseNumberText;
+    }
+
+    /**
+     * Sets the value of the caseNumberText property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TextType }
+     *     
+     */
+    public void setCaseNumberText(TextType value) {
+        this.caseNumberText = value;
+    }
+
+    /**
+     * Gets the value of the document property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link DocumentType }
+     *     
+     */
+    public DocumentType getDocument() {
+        return document;
+    }
+
+    /**
+     * Sets the value of the document property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DocumentType }
+     *     
+     */
+    public void setDocument(DocumentType value) {
+        this.document = value;
+    }
+
+    /**
      * Generates a String representation of the contents of this type.
      * This is an extension method, produced by the 'ts' xjc plugin
      * 
      */
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
     }
 

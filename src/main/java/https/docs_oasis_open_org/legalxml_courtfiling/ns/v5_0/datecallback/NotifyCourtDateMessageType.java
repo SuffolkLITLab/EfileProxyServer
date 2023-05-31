@@ -3,15 +3,12 @@ package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.datecallback;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
 import gov.niem.release.niem.niem_core._4.CaseType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
 import ietf.params.xml.ns.icalendar_2.IcalendarType;
-import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
@@ -29,9 +26,9 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseFilingType"&gt;
  *       &lt;sequence&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/datecallback}NotifyCourtDateMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Case" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:ietf:params:xml:ns:icalendar-2.0}icalendar" minOccurs="0"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/datecallback}NotifyCourtDateMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -43,70 +40,20 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "NotifyCourtDateMessageType", propOrder = {
+    "notifyCourtDateMessageAugmentationPoint",
     "_case",
-    "icalendar",
-    "notifyCourtDateMessageAugmentationPoint"
+    "icalendar"
 })
 public class NotifyCourtDateMessageType
     extends CaseFilingType
 {
 
-    @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
-    protected JAXBElement<? extends CaseType> _case;
-    @XmlElement(namespace = "urn:ietf:params:xml:ns:icalendar-2.0")
-    protected IcalendarType icalendar;
     @XmlElement(name = "NotifyCourtDateMessageAugmentationPoint")
     protected List<Object> notifyCourtDateMessageAugmentationPoint;
-
-    /**
-     * Gets the value of the case property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
-     *     
-     */
-    public JAXBElement<? extends CaseType> getCase() {
-        return _case;
-    }
-
-    /**
-     * Sets the value of the case property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
-     *     
-     */
-    public void setCase(JAXBElement<? extends CaseType> value) {
-        this._case = value;
-    }
-
-    /**
-     * Gets the value of the icalendar property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link IcalendarType }
-     *     
-     */
-    public IcalendarType getIcalendar() {
-        return icalendar;
-    }
-
-    /**
-     * Sets the value of the icalendar property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link IcalendarType }
-     *     
-     */
-    public void setIcalendar(IcalendarType value) {
-        this.icalendar = value;
-    }
+    @XmlElement(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", nillable = true)
+    protected CaseType _case;
+    @XmlElement(namespace = "urn:ietf:params:xml:ns:icalendar-2.0")
+    protected IcalendarType icalendar;
 
     /**
      * Gets the value of the notifyCourtDateMessageAugmentationPoint property.
@@ -135,6 +82,54 @@ public class NotifyCourtDateMessageType
             notifyCourtDateMessageAugmentationPoint = new ArrayList<Object>();
         }
         return this.notifyCourtDateMessageAugmentationPoint;
+    }
+
+    /**
+     * Gets the value of the case property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CaseType }
+     *     
+     */
+    public CaseType getCase() {
+        return _case;
+    }
+
+    /**
+     * Sets the value of the case property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CaseType }
+     *     
+     */
+    public void setCase(CaseType value) {
+        this._case = value;
+    }
+
+    /**
+     * Gets the value of the icalendar property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link IcalendarType }
+     *     
+     */
+    public IcalendarType getIcalendar() {
+        return icalendar;
+    }
+
+    /**
+     * Sets the value of the icalendar property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link IcalendarType }
+     *     
+     */
+    public void setIcalendar(IcalendarType value) {
+        this.icalendar = value;
     }
 
     /**

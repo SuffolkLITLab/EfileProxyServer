@@ -2,18 +2,10 @@ package edu.suffolk.litlab.efspserver.jeffnet;
 
 import static edu.suffolk.litlab.efspserver.services.EndpointReflection.replacePathParam;
 
-import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.services.CodesService;
 import edu.suffolk.litlab.efspserver.services.EndpointReflection;
-import jakarta.ws.rs.DefaultValue;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
+import edu.suffolk.litlab.efspserver.tyler.codes.NameAndCode;
 import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -24,8 +16,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Produces({MediaType.APPLICATION_JSON})
-public class CourtsOnlyCodesService implements CodesService {
+public class CourtsOnlyCodesService extends CodesService {
   private static Logger log = LoggerFactory.getLogger(CourtsOnlyCodesService.class);
 
   private final Map<String, String> courts; // map court code names to full names
@@ -38,35 +29,25 @@ public class CourtsOnlyCodesService implements CodesService {
     this.courts = courts;
   }
 
-  @GET
-  @Path("/")
-  @Produces(MediaType.APPLICATION_JSON)
   public Response getAll() {
     var retMap = ef.endPointsToMap(ef.findRESTEndpoints(List.of(this.getClass())));
-    return Response.ok(retMap).build();
+    return cors(Response.ok(retMap));
   }
 
-  @GET
-  @Path("/courts")
   public Response getCourts(
-      @Context HttpHeaders httpHeaders,
-      @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly,
-      @DefaultValue("false") @QueryParam("with_names") boolean withNames) {
+      HttpHeaders httpHeaders, boolean fileableOnly, boolean withNames) {
     // Assume all fileable.
     if (withNames) {
-      return Response.ok(
-              courts.entrySet().stream()
+      return cors(Response.ok(
+              courts.entrySet().stream().sorted()
                   .map(e -> new NameAndCode(e.getValue(), e.getKey()))
-                  .collect(Collectors.toList()))
-          .build();
+                  .collect(Collectors.toList())));
     } else {
-      return Response.ok(courts.keySet().stream().sorted().collect(Collectors.toList())).build();
+      return cors(Response.ok(courts.keySet().stream().sorted().collect(Collectors.toList())));
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}")
-  public Response getCodesUnderCourt(@PathParam("court_id") String courtId) {
+  public Response getCodesUnderCourt(String courtId) {
     var errResp = okayCourt(courtId);
     if (errResp.isPresent()) {
       log.info("Wrong court queried?: " + courtId + " in jurisdiction " + jurisdiction);
@@ -84,19 +65,16 @@ public class CourtsOnlyCodesService implements CodesService {
         ef.endPointsToMap(
             replacePathParam(
                 ef.makeRestEndpoints(subCourtMethods, clazz), Map.of("court_id", courtId)));
-    return Response.ok(retMap).build();
+    return cors(Response.ok(retMap));
   }
 
-  @GET
-  @Path("/courts/{court_id}/codes")
-  public Response getCourtLocationCodes(@PathParam("court_id") String courtId) {
+  public Response getCourtLocationCodes(String courtId) {
     if (this.courts.containsKey(courtId)) {
-      return Response.ok(
-              Map.of("name", this.courts.get(courtId), "code", courtId, "efmType", "jeffnet"))
-          .build();
+      return cors(Response.ok(
+              Map.of("name", this.courts.get(courtId), "code", courtId, "efmType", "jeffnet")));
     } else {
       log.info("Wrong court queried?: " + courtId + " in jurisdiction " + jurisdiction);
-      return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+      return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
     }
   }
 
@@ -105,7 +83,7 @@ public class CourtsOnlyCodesService implements CodesService {
       return Optional.empty();
     } else {
       return Optional.of(
-          Response.status(404).entity("\"Court " + courtId + " does not exist\"").build());
+          cors(Response.status(404).entity("\"Court " + courtId + " does not exist\"")));
     }
   }
 }

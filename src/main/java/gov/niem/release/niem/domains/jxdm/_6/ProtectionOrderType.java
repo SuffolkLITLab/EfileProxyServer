@@ -24,11 +24,11 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="ProtectionOrderType"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://release.niem.gov/niem/domains/jxdm/6.0/}CourtOrderType"&gt;
+ *     &lt;extension base="{http://release.niem.gov/niem/domains/jxdm/6.1/}CourtOrderType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}ProtectionOrderRestrictedPerson"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}ProtectionOrderConditionText"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}ProtectionOrderConditionAbstract"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}ProtectionOrderRestrictedPerson"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}ProtectionOrderConditionText"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}ProtectionOrderConditionAbstract"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -52,7 +52,7 @@ public class ProtectionOrderType
     protected PersonType protectionOrderRestrictedPerson;
     @XmlElement(name = "ProtectionOrderConditionText", required = true)
     protected TextType protectionOrderConditionText;
-    @XmlElementRef(name = "ProtectionOrderConditionAbstract", namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", type = JAXBElement.class)
+    @XmlElementRef(name = "ProtectionOrderConditionAbstract", namespace = "http://release.niem.gov/niem/domains/jxdm/6.1/", type = JAXBElement.class)
     protected JAXBElement<?> protectionOrderConditionAbstract;
 
     /**

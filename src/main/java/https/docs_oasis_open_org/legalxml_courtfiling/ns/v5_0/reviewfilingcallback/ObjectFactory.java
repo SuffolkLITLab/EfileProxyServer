@@ -24,8 +24,8 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _NotifyFilingReviewCompleteMessage_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/reviewfilingcallback", "NotifyFilingReviewCompleteMessage");
     private final static QName _NotifyFilingReviewCompleteMessageAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/reviewfilingcallback", "NotifyFilingReviewCompleteMessageAugmentationPoint");
+    private final static QName _NotifyFilingReviewCompleteMessage_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/reviewfilingcallback", "NotifyFilingReviewCompleteMessage");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reviewfilingcallback
@@ -43,19 +43,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link NotifyFilingReviewCompleteMessageType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link NotifyFilingReviewCompleteMessageType }{@code >}
-     */
-    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/reviewfilingcallback", name = "NotifyFilingReviewCompleteMessage")
-    public JAXBElement<NotifyFilingReviewCompleteMessageType> createNotifyFilingReviewCompleteMessage(NotifyFilingReviewCompleteMessageType value) {
-        return new JAXBElement<NotifyFilingReviewCompleteMessageType>(_NotifyFilingReviewCompleteMessage_QNAME, NotifyFilingReviewCompleteMessageType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
      * 
      * @param value
@@ -66,6 +53,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/reviewfilingcallback", name = "NotifyFilingReviewCompleteMessageAugmentationPoint")
     public JAXBElement<Object> createNotifyFilingReviewCompleteMessageAugmentationPoint(Object value) {
         return new JAXBElement<Object>(_NotifyFilingReviewCompleteMessageAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link NotifyFilingReviewCompleteMessageType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link NotifyFilingReviewCompleteMessageType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/reviewfilingcallback", name = "NotifyFilingReviewCompleteMessage")
+    public JAXBElement<NotifyFilingReviewCompleteMessageType> createNotifyFilingReviewCompleteMessage(NotifyFilingReviewCompleteMessageType value) {
+        return new JAXBElement<NotifyFilingReviewCompleteMessageType>(_NotifyFilingReviewCompleteMessage_QNAME, NotifyFilingReviewCompleteMessageType.class, null, value);
     }
 
 }

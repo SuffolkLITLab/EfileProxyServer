@@ -23,7 +23,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://release.niem.gov/niem/niem-core/4.0/}StatusType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}FilingStatusCode"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}FilingDocketingStatusCode" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}FilingReviewStatusCode"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -35,37 +36,64 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "FilingStatusType", propOrder = {
-    "filingStatusCode"
+    "filingDocketingStatusCode",
+    "filingReviewStatusCode"
 })
 public class FilingStatusType
     extends StatusType
 {
 
-    @XmlElement(name = "FilingStatusCode", required = true)
-    protected NormalizedString filingStatusCode;
+    @XmlElement(name = "FilingDocketingStatusCode")
+    protected NormalizedString filingDocketingStatusCode;
+    @XmlElement(name = "FilingReviewStatusCode", required = true)
+    protected NormalizedString filingReviewStatusCode;
 
     /**
-     * Gets the value of the filingStatusCode property.
+     * Gets the value of the filingDocketingStatusCode property.
      * 
      * @return
      *     possible object is
      *     {@link NormalizedString }
      *     
      */
-    public NormalizedString getFilingStatusCode() {
-        return filingStatusCode;
+    public NormalizedString getFilingDocketingStatusCode() {
+        return filingDocketingStatusCode;
     }
 
     /**
-     * Sets the value of the filingStatusCode property.
+     * Sets the value of the filingDocketingStatusCode property.
      * 
      * @param value
      *     allowed object is
      *     {@link NormalizedString }
      *     
      */
-    public void setFilingStatusCode(NormalizedString value) {
-        this.filingStatusCode = value;
+    public void setFilingDocketingStatusCode(NormalizedString value) {
+        this.filingDocketingStatusCode = value;
+    }
+
+    /**
+     * Gets the value of the filingReviewStatusCode property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link NormalizedString }
+     *     
+     */
+    public NormalizedString getFilingReviewStatusCode() {
+        return filingReviewStatusCode;
+    }
+
+    /**
+     * Sets the value of the filingReviewStatusCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NormalizedString }
+     *     
+     */
+    public void setFilingReviewStatusCode(NormalizedString value) {
+        this.filingReviewStatusCode = value;
     }
 
     /**

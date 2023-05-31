@@ -25,8 +25,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ResponseMessageType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{urn:ietf:params:xml:ns:icalendar-2.0}icalendar" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/scheduleresponse}GetCourtScheduleResponseMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:ietf:params:xml:ns:icalendar-2.0}icalendar" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -38,41 +38,17 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetCourtScheduleResponseMessageType", propOrder = {
-    "icalendar",
-    "getCourtScheduleResponseMessageAugmentationPoint"
+    "getCourtScheduleResponseMessageAugmentationPoint",
+    "icalendar"
 })
 public class GetCourtScheduleResponseMessageType
     extends ResponseMessageType
 {
 
-    @XmlElement(namespace = "urn:ietf:params:xml:ns:icalendar-2.0")
-    protected IcalendarType icalendar;
     @XmlElement(name = "GetCourtScheduleResponseMessageAugmentationPoint")
     protected List<Object> getCourtScheduleResponseMessageAugmentationPoint;
-
-    /**
-     * Gets the value of the icalendar property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link IcalendarType }
-     *     
-     */
-    public IcalendarType getIcalendar() {
-        return icalendar;
-    }
-
-    /**
-     * Sets the value of the icalendar property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link IcalendarType }
-     *     
-     */
-    public void setIcalendar(IcalendarType value) {
-        this.icalendar = value;
-    }
+    @XmlElement(namespace = "urn:ietf:params:xml:ns:icalendar-2.0")
+    protected IcalendarType icalendar;
 
     /**
      * Gets the value of the getCourtScheduleResponseMessageAugmentationPoint property.
@@ -101,6 +77,30 @@ public class GetCourtScheduleResponseMessageType
             getCourtScheduleResponseMessageAugmentationPoint = new ArrayList<Object>();
         }
         return this.getCourtScheduleResponseMessageAugmentationPoint;
+    }
+
+    /**
+     * Gets the value of the icalendar property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link IcalendarType }
+     *     
+     */
+    public IcalendarType getIcalendar() {
+        return icalendar;
+    }
+
+    /**
+     * Sets the value of the icalendar property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link IcalendarType }
+     *     
+     */
+    public void setIcalendar(IcalendarType value) {
+        this.icalendar = value;
     }
 
     /**

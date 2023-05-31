@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- edited with XMLSpy v2018 sp1 (http://www.altova.com) by Tyler Technologies (Tyler Technologies) --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:batchdetailresponse="urn:tyler:ecf:v5.0:extensions:batchdetailresponse" xmlns:common="urn:tyler:ecf:v5.0:extensions:common" xmlns:ecf="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" xmlns:niem-xs="http://release.niem.gov/niem/proxy/xsd/4.0/" xmlns:structures="http://release.niem.gov/niem/structures/4.0/" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:tyler:ecf:v5.0:extensions:batchdetailresponse">
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" schemaLocation="ecf5-full-ea1e0f75b69752b5.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/niem-core/4.0/" schemaLocation="ecf5-full-7af13829a6695741.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/proxy/xsd/4.0/" schemaLocation="ecf5-full-4d179e3e0bd140a9.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/structures/4.0/" schemaLocation="ecf5-full-43381e9aa490c46d.xsd"/>
+	<xs:import namespace="urn:tyler:ecf:v5.0:extensions:common" schemaLocation="ecf5-full-90b994a1b7805590.xsd"/>
+	<xs:complexType name="GetBatchDetailResponseMessageType">
+		<xs:annotation>
+			<xs:documentation>Message to return batch detail.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ecf:ResponseMessageType">
+				<xs:sequence>
+					<xs:element maxOccurs="1" minOccurs="0" ref="common:BatchStatus"/>
+					<xs:element maxOccurs="1" minOccurs="0" ref="common:HearingSchedule"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="common:Envelope"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="batchdetailresponse:GetBatchDetailResponseMessageAugmentationPoint"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="GetBatchDetailResponseMessage" type="batchdetailresponse:GetBatchDetailResponseMessageType">
+		<xs:annotation>
+			<xs:documentation>Message to retrieve batches.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element abstract="true" name="GetBatchDetailResponseMessageAugmentationPoint">
+		<xs:annotation>
+			<xs:documentation>An extension point for the enclosing message.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

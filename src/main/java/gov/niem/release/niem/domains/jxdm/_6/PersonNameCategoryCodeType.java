@@ -31,7 +31,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="PersonNameCategoryCodeType"&gt;
  *   &lt;simpleContent&gt;
- *     &lt;extension base="&lt;http://release.niem.gov/niem/domains/jxdm/6.0/&gt;PersonNameCategoryCodeSimpleType"&gt;
+ *     &lt;extension base="&lt;http://release.niem.gov/niem/domains/jxdm/6.1/&gt;PersonNameCategoryCodeSimpleType"&gt;
  *       &lt;attGroup ref="{http://release.niem.gov/niem/structures/4.0/}SimpleObjectAttributeGroup"/&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;

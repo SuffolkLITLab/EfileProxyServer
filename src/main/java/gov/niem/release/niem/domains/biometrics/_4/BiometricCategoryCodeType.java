@@ -31,7 +31,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="BiometricCategoryCodeType"&gt;
  *   &lt;simpleContent&gt;
- *     &lt;extension base="&lt;http://release.niem.gov/niem/domains/biometrics/4.0/&gt;BiometricCategoryCodeSimpleType"&gt;
+ *     &lt;extension base="&lt;http://release.niem.gov/niem/domains/biometrics/4.1/&gt;BiometricCategoryCodeSimpleType"&gt;
  *       &lt;attGroup ref="{http://release.niem.gov/niem/structures/4.0/}SimpleObjectAttributeGroup"/&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;

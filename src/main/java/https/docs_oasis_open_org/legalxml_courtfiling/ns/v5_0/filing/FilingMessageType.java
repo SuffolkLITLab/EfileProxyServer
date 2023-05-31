@@ -3,7 +3,6 @@ package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
 import gov.niem.release.niem.niem_core._4.CaseType;
 import gov.niem.release.niem.niem_core._4.DocumentType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
@@ -16,6 +15,8 @@ import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.common.FilingMessageAugmentationType;
+import tyler.ecf.v5_0.extensions.common.RecordDocketingMessageAugmentationType;
 
 
 /**
@@ -33,8 +34,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ElectronicServiceInformation" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing}FilingConnectedDocument" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing}FilingLeadDocument" maxOccurs="unbounded"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Case"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing}FilingMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Case"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -49,8 +50,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "electronicServiceInformation",
     "filingConnectedDocument",
     "filingLeadDocument",
-    "_case",
-    "filingMessageAugmentationPoint"
+    "filingMessageAugmentationPoint",
+    "_case"
 })
 public class FilingMessageType
     extends CaseFilingType
@@ -62,10 +63,10 @@ public class FilingMessageType
     protected List<DocumentType> filingConnectedDocument;
     @XmlElement(name = "FilingLeadDocument", required = true, nillable = true)
     protected List<DocumentType> filingLeadDocument;
-    @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class)
-    protected JAXBElement<? extends CaseType> _case;
-    @XmlElement(name = "FilingMessageAugmentationPoint")
-    protected List<Object> filingMessageAugmentationPoint;
+    @XmlElementRef(name = "FilingMessageAugmentationPoint", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing", type = JAXBElement.class, required = false)
+    protected List<JAXBElement<?>> filingMessageAugmentationPoint;
+    @XmlElement(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", required = true, nillable = true)
+    protected CaseType _case;
 
     /**
      * Gets the value of the electronicServiceInformation property.
@@ -155,32 +156,6 @@ public class FilingMessageType
     }
 
     /**
-     * Gets the value of the case property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
-     *     
-     */
-    public JAXBElement<? extends CaseType> getCase() {
-        return _case;
-    }
-
-    /**
-     * Sets the value of the case property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
-     *     
-     */
-    public void setCase(JAXBElement<? extends CaseType> value) {
-        this._case = value;
-    }
-
-    /**
      * Gets the value of the filingMessageAugmentationPoint property.
      * 
      * <p>
@@ -198,15 +173,41 @@ public class FilingMessageType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Object }
+     * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link JAXBElement }{@code <}{@link FilingMessageAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link RecordDocketingMessageAugmentationType }{@code >}
      * 
      * 
      */
-    public List<Object> getFilingMessageAugmentationPoint() {
+    public List<JAXBElement<?>> getFilingMessageAugmentationPoint() {
         if (filingMessageAugmentationPoint == null) {
-            filingMessageAugmentationPoint = new ArrayList<Object>();
+            filingMessageAugmentationPoint = new ArrayList<JAXBElement<?>>();
         }
         return this.filingMessageAugmentationPoint;
+    }
+
+    /**
+     * Gets the value of the case property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CaseType }
+     *     
+     */
+    public CaseType getCase() {
+        return _case;
+    }
+
+    /**
+     * Sets the value of the case property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CaseType }
+     *     
+     */
+    public void setCase(CaseType value) {
+        this._case = value;
     }
 
     /**

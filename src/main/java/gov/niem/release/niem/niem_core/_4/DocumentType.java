@@ -4,13 +4,10 @@ package gov.niem.release.niem.niem_core._4;
 import java.util.ArrayList;
 import java.util.List;
 import gov.niem.release.niem.codes.iso_639_3._4.LanguageCodeType;
-import gov.niem.release.niem.domains.humanservices._4.DependencyPetitionType;
 import gov.niem.release.niem.domains.jxdm._6.AppellateCaseNoticeType;
 import gov.niem.release.niem.structures._4.ObjectType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentAugmentationType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentRenditionType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.MatchingFilingType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ReviewedDocumentType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -21,6 +18,9 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.common.DocumentSecurityAugmentationType;
+import tyler.ecf.v5_0.extensions.common.FilingType;
+import tyler.ecf.v5_0.extensions.common.StatusDocumentAugmentationType;
 
 
 /**
@@ -44,7 +44,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}DocumentIdentification" maxOccurs="unbounded"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}DocumentReceivedDate" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}DocumentSequenceID" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}DocumentStatus" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}DocumentTitleText" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}DocumentLanguageAbstract" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}DocumentSubmitter" minOccurs="0"/&gt;
@@ -69,17 +68,15 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "documentIdentification",
     "documentReceivedDate",
     "documentSequenceID",
-    "documentStatus",
     "documentTitleText",
     "documentLanguageAbstract",
     "documentSubmitter",
     "documentAugmentationPoint"
 })
 @XmlSeeAlso({
-    DependencyPetitionType.class,
+    FilingType.class,
     AppellateCaseNoticeType.class,
     DocumentRenditionType.class,
-    MatchingFilingType.class,
     ReviewedDocumentType.class,
     CaseFilingType.class
 })
@@ -105,8 +102,6 @@ public class DocumentType
     protected DateType documentReceivedDate;
     @XmlElement(name = "DocumentSequenceID")
     protected gov.niem.release.niem.proxy.xsd._4.String documentSequenceID;
-    @XmlElement(name = "DocumentStatus")
-    protected StatusType documentStatus;
     @XmlElement(name = "DocumentTitleText")
     protected TextType documentTitleText;
     @XmlElementRef(name = "DocumentLanguageAbstract", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
@@ -344,30 +339,6 @@ public class DocumentType
     }
 
     /**
-     * Gets the value of the documentStatus property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link StatusType }
-     *     
-     */
-    public StatusType getDocumentStatus() {
-        return documentStatus;
-    }
-
-    /**
-     * Sets the value of the documentStatus property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link StatusType }
-     *     
-     */
-    public void setDocumentStatus(StatusType value) {
-        this.documentStatus = value;
-    }
-
-    /**
      * Gets the value of the documentTitleText property.
      * 
      * @return
@@ -459,8 +430,11 @@ public class DocumentType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link DocumentAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link JAXBElement }{@code <}{@link tyler.ecf.v5_0.extensions.common.DocumentAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link DocumentSecurityAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link StatusDocumentAugmentationType }{@code >}
      * 
      * 
      */

@@ -25,7 +25,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://release.niem.gov/niem/niem-core/4.0/}DocumentType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/cbrn/4.0/}MultimediaDataMIMEKindText" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/cbrn/4.1/}MultimediaDataMIMEKindText" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ColorRelevantIndicator" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}DocumentRenditionHash" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}DocumentSignature" minOccurs="0"/&gt;
@@ -53,7 +53,7 @@ public class DocumentRenditionType
     extends DocumentType
 {
 
-    @XmlElement(name = "MultimediaDataMIMEKindText", namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/")
+    @XmlElement(name = "MultimediaDataMIMEKindText", namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/")
     protected gov.niem.release.niem.proxy.xsd._4.String multimediaDataMIMEKindText;
     @XmlElement(name = "ColorRelevantIndicator")
     protected Boolean colorRelevantIndicator;

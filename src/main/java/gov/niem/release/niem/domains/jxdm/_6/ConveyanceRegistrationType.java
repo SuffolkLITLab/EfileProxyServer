@@ -23,10 +23,10 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="ConveyanceRegistrationType"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://release.niem.gov/niem/domains/jxdm/6.0/}ItemRegistrationType"&gt;
+ *     &lt;extension base="{http://release.niem.gov/niem/domains/jxdm/6.1/}ItemRegistrationType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}ConveyanceRegistrationPlateIdentification" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}ConveyanceRegistrationPlateCategoryAbstract" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}ConveyanceRegistrationPlateIdentification" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.1/}ConveyanceRegistrationPlateCategoryAbstract" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -47,7 +47,7 @@ public class ConveyanceRegistrationType
 
     @XmlElement(name = "ConveyanceRegistrationPlateIdentification")
     protected IdentificationType conveyanceRegistrationPlateIdentification;
-    @XmlElementRef(name = "ConveyanceRegistrationPlateCategoryAbstract", namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", type = JAXBElement.class, required = false)
+    @XmlElementRef(name = "ConveyanceRegistrationPlateCategoryAbstract", namespace = "http://release.niem.gov/niem/domains/jxdm/6.1/", type = JAXBElement.class, required = false)
     protected JAXBElement<?> conveyanceRegistrationPlateCategoryAbstract;
 
     /**

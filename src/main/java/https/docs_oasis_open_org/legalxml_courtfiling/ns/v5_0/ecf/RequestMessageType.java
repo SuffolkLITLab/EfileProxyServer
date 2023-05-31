@@ -9,6 +9,7 @@ import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.feesrequest.GetFee
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filinglistrequest.GetFilingListRequestMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filingstatusrequest.GetFilingStatusRequestMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyrequest.GetPolicyRequestMessageType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.requestdaterequest.RequestCourtDateRequestMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.schedulerequest.GetCourtScheduleRequestMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.serviceinformationrequest.GetServiceInformationRequestMessageType;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -43,16 +44,17 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "RequestMessageType")
 @XmlSeeAlso({
-    GetCaseRequestMessageType.class,
     GetFilingStatusRequestMessageType.class,
     CancelFilingMessageType.class,
-    GetFeesCalculationRequestMessageType.class,
-    GetServiceInformationRequestMessageType.class,
-    GetDocumentRequestMessageType.class,
-    GetCourtScheduleRequestMessageType.class,
     GetCaseListRequestMessageType.class,
+    GetDocumentRequestMessageType.class,
     GetFilingListRequestMessageType.class,
-    GetPolicyRequestMessageType.class
+    RequestCourtDateRequestMessageType.class,
+    GetPolicyRequestMessageType.class,
+    GetFeesCalculationRequestMessageType.class,
+    GetCaseRequestMessageType.class,
+    GetServiceInformationRequestMessageType.class,
+    GetCourtScheduleRequestMessageType.class
 })
 public class RequestMessageType
     extends CaseFilingType

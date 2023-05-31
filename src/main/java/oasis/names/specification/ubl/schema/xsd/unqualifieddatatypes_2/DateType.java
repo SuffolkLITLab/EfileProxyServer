@@ -1,13 +1,13 @@
 
 package oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlSchemaType;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.XmlValue;
-import javax.xml.datatype.XMLGregorianCalendar;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ActualDeliveryDateType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ActualDespatchDateType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ActualPickupDateType;
@@ -34,6 +34,8 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatestDe
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatestMeterReadingDateType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatestPickupDateType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatestProposalAcceptanceDateType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatestReplyDateType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatestSecurityClearanceDateType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ManufactureDateType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.NominationDateType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OccurrenceDateType;
@@ -60,6 +62,7 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.Submissi
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxPointDateType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ValidationDateType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ValidityStartDateType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.WeighingDateType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -142,6 +145,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     LatestMeterReadingDateType.class,
     LatestPickupDateType.class,
     LatestProposalAcceptanceDateType.class,
+    LatestReplyDateType.class,
+    LatestSecurityClearanceDateType.class,
     ManufactureDateType.class,
     NominationDateType.class,
     OccurrenceDateType.class,
@@ -167,7 +172,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     SubmissionDueDateType.class,
     TaxPointDateType.class,
     ValidationDateType.class,
-    ValidityStartDateType.class
+    ValidityStartDateType.class,
+    WeighingDateType.class
 })
 public class DateType {
 

@@ -31,20 +31,20 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _CredentialsAuthenticatedCode_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "CredentialsAuthenticatedCode");
-    private final static QName _ErrorCodeDescriptionText_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "ErrorCodeDescriptionText");
-    private final static QName _ErrorCodeText_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "ErrorCodeText");
-    private final static QName _ErrorDescription_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "ErrorDescription");
-    private final static QName _ErrorNodeName_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "ErrorNodeName");
-    private final static QName _MessageContentError_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "MessageContentError");
-    private final static QName _MessageHandlingError_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "MessageHandlingError");
-    private final static QName _MessageStatus_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "MessageStatus");
-    private final static QName _MessageStatusAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "MessageStatusAugmentationPoint");
-    private final static QName _MessageStatusCode_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "MessageStatusCode");
-    private final static QName _MultimediaDataMIMEKindText_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "MultimediaDataMIMEKindText");
-    private final static QName _ResendRequestIndicator_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "ResendRequestIndicator");
-    private final static QName _SystemEventDateTime_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "SystemEventDateTime");
-    private final static QName _SystemOperatingModeCode_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "SystemOperatingModeCode");
+    private final static QName _MessageStatusAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.1/", "MessageStatusAugmentationPoint");
+    private final static QName _CredentialsAuthenticatedCode_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.1/", "CredentialsAuthenticatedCode");
+    private final static QName _ErrorCodeDescriptionText_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.1/", "ErrorCodeDescriptionText");
+    private final static QName _ErrorCodeText_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.1/", "ErrorCodeText");
+    private final static QName _ErrorDescription_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.1/", "ErrorDescription");
+    private final static QName _ErrorNodeName_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.1/", "ErrorNodeName");
+    private final static QName _MessageContentError_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.1/", "MessageContentError");
+    private final static QName _MessageHandlingError_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.1/", "MessageHandlingError");
+    private final static QName _MessageStatus_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.1/", "MessageStatus");
+    private final static QName _MessageStatusCode_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.1/", "MessageStatusCode");
+    private final static QName _MultimediaDataMIMEKindText_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.1/", "MultimediaDataMIMEKindText");
+    private final static QName _ResendRequestIndicator_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.1/", "ResendRequestIndicator");
+    private final static QName _SystemEventDateTime_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.1/", "SystemEventDateTime");
+    private final static QName _SystemOperatingModeCode_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.1/", "SystemOperatingModeCode");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: gov.niem.release.niem.domains.cbrn._4
@@ -94,6 +94,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", name = "MessageStatusAugmentationPoint")
+    public JAXBElement<Object> createMessageStatusAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_MessageStatusAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link CredentialsAuthenticatedCodeType }{@code >}
      * 
      * @param value
@@ -101,7 +114,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link CredentialsAuthenticatedCodeType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "CredentialsAuthenticatedCode")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", name = "CredentialsAuthenticatedCode")
     public JAXBElement<CredentialsAuthenticatedCodeType> createCredentialsAuthenticatedCode(CredentialsAuthenticatedCodeType value) {
         return new JAXBElement<CredentialsAuthenticatedCodeType>(_CredentialsAuthenticatedCode_QNAME, CredentialsAuthenticatedCodeType.class, null, value);
     }
@@ -114,7 +127,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "ErrorCodeDescriptionText")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", name = "ErrorCodeDescriptionText")
     public JAXBElement<TextType> createErrorCodeDescriptionText(TextType value) {
         return new JAXBElement<TextType>(_ErrorCodeDescriptionText_QNAME, TextType.class, null, value);
     }
@@ -127,7 +140,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "ErrorCodeText")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", name = "ErrorCodeText")
     public JAXBElement<TextType> createErrorCodeText(TextType value) {
         return new JAXBElement<TextType>(_ErrorCodeText_QNAME, TextType.class, null, value);
     }
@@ -140,7 +153,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link MessageErrorType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "ErrorDescription")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", name = "ErrorDescription")
     public JAXBElement<MessageErrorType> createErrorDescription(MessageErrorType value) {
         return new JAXBElement<MessageErrorType>(_ErrorDescription_QNAME, MessageErrorType.class, null, value);
     }
@@ -153,7 +166,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "ErrorNodeName")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", name = "ErrorNodeName")
     public JAXBElement<TextType> createErrorNodeName(TextType value) {
         return new JAXBElement<TextType>(_ErrorNodeName_QNAME, TextType.class, null, value);
     }
@@ -166,7 +179,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link MessageContentErrorType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "MessageContentError")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", name = "MessageContentError")
     public JAXBElement<MessageContentErrorType> createMessageContentError(MessageContentErrorType value) {
         return new JAXBElement<MessageContentErrorType>(_MessageContentError_QNAME, MessageContentErrorType.class, null, value);
     }
@@ -179,7 +192,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link MessageErrorType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "MessageHandlingError")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", name = "MessageHandlingError")
     public JAXBElement<MessageErrorType> createMessageHandlingError(MessageErrorType value) {
         return new JAXBElement<MessageErrorType>(_MessageHandlingError_QNAME, MessageErrorType.class, null, value);
     }
@@ -192,22 +205,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link MessageStatusType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "MessageStatus")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", name = "MessageStatus")
     public JAXBElement<MessageStatusType> createMessageStatus(MessageStatusType value) {
         return new JAXBElement<MessageStatusType>(_MessageStatus_QNAME, MessageStatusType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "MessageStatusAugmentationPoint")
-    public JAXBElement<Object> createMessageStatusAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_MessageStatusAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**
@@ -218,7 +218,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link MessageStatusCodeType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "MessageStatusCode")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", name = "MessageStatusCode")
     public JAXBElement<MessageStatusCodeType> createMessageStatusCode(MessageStatusCodeType value) {
         return new JAXBElement<MessageStatusCodeType>(_MessageStatusCode_QNAME, MessageStatusCodeType.class, null, value);
     }
@@ -231,7 +231,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "MultimediaDataMIMEKindText")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", name = "MultimediaDataMIMEKindText")
     public JAXBElement<String> createMultimediaDataMIMEKindText(String value) {
         return new JAXBElement<String>(_MultimediaDataMIMEKindText_QNAME, String.class, null, value);
     }
@@ -244,7 +244,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "ResendRequestIndicator")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", name = "ResendRequestIndicator")
     public JAXBElement<Boolean> createResendRequestIndicator(Boolean value) {
         return new JAXBElement<Boolean>(_ResendRequestIndicator_QNAME, Boolean.class, null, value);
     }
@@ -257,7 +257,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link DateTime }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "SystemEventDateTime")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", name = "SystemEventDateTime")
     public JAXBElement<DateTime> createSystemEventDateTime(DateTime value) {
         return new JAXBElement<DateTime>(_SystemEventDateTime_QNAME, DateTime.class, null, value);
     }
@@ -270,7 +270,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link SystemOperatingModeCodeType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "SystemOperatingModeCode", substitutionHeadNamespace = "http://release.niem.gov/niem/niem-core/4.0/", substitutionHeadName = "SystemOperatingModeAbstract")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", name = "SystemOperatingModeCode", substitutionHeadNamespace = "http://release.niem.gov/niem/niem-core/4.0/", substitutionHeadName = "SystemOperatingModeAbstract")
     public JAXBElement<SystemOperatingModeCodeType> createSystemOperatingModeCode(SystemOperatingModeCodeType value) {
         return new JAXBElement<SystemOperatingModeCodeType>(_SystemOperatingModeCode_QNAME, SystemOperatingModeCodeType.class, null, value);
     }

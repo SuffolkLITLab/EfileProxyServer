@@ -4,7 +4,6 @@ package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
 import javax.xml.namespace.QName;
 import gov.niem.release.niem.domains.jxdm._6.CourtEventType;
 import gov.niem.release.niem.niem_core._4.DateType;
-import gov.niem.release.niem.niem_core._4.DocumentType;
 import gov.niem.release.niem.niem_core._4.EntityType;
 import gov.niem.release.niem.niem_core._4.IdentificationType;
 import gov.niem.release.niem.niem_core._4.StatusType;
@@ -33,45 +32,59 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _CourtLocationCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CourtLocationCode");
+    private final static QName _ReviewedDocumentAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "ReviewedDocumentAugmentationPoint");
     private final static QName _AffectedParticipant_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "AffectedParticipant");
     private final static QName _CaseAugmentation_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CaseAugmentation");
     private final static QName _CaseCategoryCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CaseCategoryCode");
     private final static QName _CaseCauseOfActionCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CaseCauseOfActionCode");
     private final static QName _CaseFiling_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CaseFiling");
+    private final static QName _CaseNewIndicator_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CaseNewIndicator");
     private final static QName _CaseOfficialAugmentation_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CaseOfficialAugmentation");
     private final static QName _CaseParticipantRoleCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CaseParticipantRoleCode");
     private final static QName _CaseParty_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CaseParty");
+    private final static QName _CasePartySelfRepresentationIndicator_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CasePartySelfRepresentationIndicator");
     private final static QName _CaseRepresentedParty_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CaseRepresentedParty");
     private final static QName _CaseShortTitleText_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CaseShortTitleText");
+    private final static QName _CaseTrackingID_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CaseTrackingID");
     private final static QName _CaseTypeCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CaseTypeCode");
     private final static QName _CauseOfActionCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CauseOfActionCode");
     private final static QName _ChildDocket_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "ChildDocket");
     private final static QName _ColorRelevantIndicator_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "ColorRelevantIndicator");
     private final static QName _ConnectedDocument_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "ConnectedDocument");
+    private final static QName _ConnectedDocumentReview_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "ConnectedDocumentReview");
     private final static QName _CourtEventActor_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CourtEventActor");
     private final static QName _CourtEventAugmentation_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CourtEventAugmentation");
     private final static QName _CourtEventEnteredOnDocketDate_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CourtEventEnteredOnDocketDate");
     private final static QName _CourtEventLocationText_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CourtEventLocationText");
     private final static QName _CourtEventOnBehalfOfActor_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CourtEventOnBehalfOfActor");
     private final static QName _CourtEventTypeCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CourtEventTypeCode");
+    private final static QName _CourtLocationCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CourtLocationCode");
+    private final static QName _Document_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "Document");
+    private final static QName _DocumentAddedInReviewIndicator_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "DocumentAddedInReviewIndicator");
     private final static QName _DocumentAssociationAugmentation_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "DocumentAssociationAugmentation");
     private final static QName _DocumentAugmentation_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "DocumentAugmentation");
+    private final static QName _DocumentDocketingStatusCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "DocumentDocketingStatusCode");
     private final static QName _DocumentFiler_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "DocumentFiler");
     private final static QName _DocumentRelatedCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "DocumentRelatedCode");
     private final static QName _DocumentRendition_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "DocumentRendition");
     private final static QName _DocumentRenditionHash_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "DocumentRenditionHash");
+    private final static QName _DocumentReviewDisposition_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "DocumentReviewDisposition");
     private final static QName _DocumentReviewStatus_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "DocumentReviewStatus");
+    private final static QName _DocumentReviewStatusCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "DocumentReviewStatusCode");
     private final static QName _DocumentReviewer_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "DocumentReviewer");
     private final static QName _DocumentSignature_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "DocumentSignature");
+    private final static QName _DocumentStatus_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "DocumentStatus");
+    private final static QName _DocumentTypeCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "DocumentTypeCode");
     private final static QName _ElectronicServiceInformation_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "ElectronicServiceInformation");
     private final static QName _EntityAssociationTypeCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "EntityAssociationTypeCode");
     private final static QName _FeeExceptionReasonCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "FeeExceptionReasonCode");
     private final static QName _FeeExceptionSupportingText_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "FeeExceptionSupportingText");
     private final static QName _FilingCompletionDate_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "FilingCompletionDate");
+    private final static QName _FilingDocketingStatusCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "FilingDocketingStatusCode");
+    private final static QName _FilingReviewStatusCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "FilingReviewStatusCode");
     private final static QName _FilingStatus_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "FilingStatus");
-    private final static QName _FilingStatusCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "FilingStatusCode");
     private final static QName _ItemAugmentation_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "ItemAugmentation");
+    private final static QName _LeadDocumentReview_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "LeadDocumentReview");
     private final static QName _MatchingFiling_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "MatchingFiling");
     private final static QName _MessageStatusAugmentation_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "MessageStatusAugmentation");
     private final static QName _OrganizationAssociationAugmentation_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "OrganizationAssociationAugmentation");
@@ -88,10 +101,8 @@ public class ObjectFactory {
     private final static QName _RegisterActionDescriptionCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "RegisterActionDescriptionCode");
     private final static QName _RelatedCaseAssociationTypeCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "RelatedCaseAssociationTypeCode");
     private final static QName _RelationActivityAssociationAugmentation_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "RelationActivityAssociationAugmentation");
-    private final static QName _ReviewedConnectedDocument_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "ReviewedConnectedDocument");
+    private final static QName _ReviewedDocument_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "ReviewedDocument");
     private final static QName _ReviewedDocumentAugmentation_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "ReviewedDocumentAugmentation");
-    private final static QName _ReviewedDocumentAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "ReviewedDocumentAugmentationPoint");
-    private final static QName _ReviewedLeadDocument_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "ReviewedLeadDocument");
     private final static QName _SealDocumentIndicator_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "SealDocumentIndicator");
     private final static QName _SendingMDELocationID_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "SendingMDELocationID");
     private final static QName _ServiceInteractionProfileCode_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "ServiceInteractionProfileCode");
@@ -136,6 +147,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DocumentReviewType }
+     * 
+     */
+    public DocumentReviewType createDocumentReviewType() {
+        return new DocumentReviewType();
+    }
+
+    /**
      * Create an instance of {@link CourtEventOnBehalfOfActorType }
      * 
      */
@@ -157,6 +176,14 @@ public class ObjectFactory {
      */
     public CourtEventActorType createCourtEventActorType() {
         return new CourtEventActorType();
+    }
+
+    /**
+     * Create an instance of {@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType }
+     * 
+     */
+    public https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType createDocumentType() {
+        return new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType();
     }
 
     /**
@@ -184,11 +211,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DocumentReviewDispositionType }
+     * 
+     */
+    public DocumentReviewDispositionType createDocumentReviewDispositionType() {
+        return new DocumentReviewDispositionType();
+    }
+
+    /**
      * Create an instance of {@link DocumentSignatureType }
      * 
      */
     public DocumentSignatureType createDocumentSignatureType() {
         return new DocumentSignatureType();
+    }
+
+    /**
+     * Create an instance of {@link DocumentStatusType }
+     * 
+     */
+    public DocumentStatusType createDocumentStatusType() {
+        return new DocumentStatusType();
     }
 
     /**
@@ -344,16 +387,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
      */
-    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "CourtLocationCode")
-    public JAXBElement<TextType> createCourtLocationCode(TextType value) {
-        return new JAXBElement<TextType>(_CourtLocationCode_QNAME, TextType.class, null, value);
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "ReviewedDocumentAugmentationPoint")
+    public JAXBElement<Object> createReviewedDocumentAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_ReviewedDocumentAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**
@@ -422,6 +465,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "CaseNewIndicator")
+    public JAXBElement<Boolean> createCaseNewIndicator(Boolean value) {
+        return new JAXBElement<Boolean>(_CaseNewIndicator_QNAME, Boolean.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link CaseOfficialAugmentationType }{@code >}
      * 
      * @param value
@@ -429,7 +485,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link CaseOfficialAugmentationType }{@code >}
      */
-    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "CaseOfficialAugmentation", substitutionHeadNamespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", substitutionHeadName = "CaseOfficialAugmentationPoint")
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "CaseOfficialAugmentation", substitutionHeadNamespace = "http://release.niem.gov/niem/domains/jxdm/6.1/", substitutionHeadName = "CaseOfficialAugmentationPoint")
     public JAXBElement<CaseOfficialAugmentationType> createCaseOfficialAugmentation(CaseOfficialAugmentationType value) {
         return new JAXBElement<CaseOfficialAugmentationType>(_CaseOfficialAugmentation_QNAME, CaseOfficialAugmentationType.class, null, value);
     }
@@ -461,6 +517,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "CasePartySelfRepresentationIndicator")
+    public JAXBElement<Boolean> createCasePartySelfRepresentationIndicator(Boolean value) {
+        return new JAXBElement<Boolean>(_CasePartySelfRepresentationIndicator_QNAME, Boolean.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link EntityType }{@code >}
      * 
      * @param value
@@ -484,6 +553,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "CaseShortTitleText")
     public JAXBElement<TextType> createCaseShortTitleText(TextType value) {
         return new JAXBElement<TextType>(_CaseShortTitleText_QNAME, TextType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link IdentificationType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link IdentificationType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "CaseTrackingID")
+    public JAXBElement<IdentificationType> createCaseTrackingID(IdentificationType value) {
+        return new JAXBElement<IdentificationType>(_CaseTrackingID_QNAME, IdentificationType.class, null, value);
     }
 
     /**
@@ -539,16 +621,29 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link gov.niem.release.niem.niem_core._4.DocumentType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link gov.niem.release.niem.niem_core._4.DocumentType }{@code >}
      */
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "ConnectedDocument")
-    public JAXBElement<DocumentType> createConnectedDocument(DocumentType value) {
-        return new JAXBElement<DocumentType>(_ConnectedDocument_QNAME, DocumentType.class, null, value);
+    public JAXBElement<gov.niem.release.niem.niem_core._4.DocumentType> createConnectedDocument(gov.niem.release.niem.niem_core._4.DocumentType value) {
+        return new JAXBElement<gov.niem.release.niem.niem_core._4.DocumentType>(_ConnectedDocument_QNAME, gov.niem.release.niem.niem_core._4.DocumentType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentReviewType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentReviewType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "ConnectedDocumentReview")
+    public JAXBElement<DocumentReviewType> createConnectedDocumentReview(DocumentReviewType value) {
+        return new JAXBElement<DocumentReviewType>(_ConnectedDocumentReview_QNAME, DocumentReviewType.class, null, value);
     }
 
     /**
@@ -572,7 +667,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link CourtEventAugmentationType }{@code >}
      */
-    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "CourtEventAugmentation", substitutionHeadNamespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", substitutionHeadName = "CourtEventAugmentationPoint")
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "CourtEventAugmentation", substitutionHeadNamespace = "http://release.niem.gov/niem/domains/jxdm/6.1/", substitutionHeadName = "CourtEventAugmentationPoint")
     public JAXBElement<CourtEventAugmentationType> createCourtEventAugmentation(CourtEventAugmentationType value) {
         return new JAXBElement<CourtEventAugmentationType>(_CourtEventAugmentation_QNAME, CourtEventAugmentationType.class, null, value);
     }
@@ -630,6 +725,45 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "CourtLocationCode")
+    public JAXBElement<TextType> createCourtLocationCode(TextType value) {
+        return new JAXBElement<TextType>(_CourtLocationCode_QNAME, TextType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "Document")
+    public JAXBElement<https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType> createDocument(https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType value) {
+        return new JAXBElement<https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType>(_Document_QNAME, https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "DocumentAddedInReviewIndicator")
+    public JAXBElement<Boolean> createDocumentAddedInReviewIndicator(Boolean value) {
+        return new JAXBElement<Boolean>(_DocumentAddedInReviewIndicator_QNAME, Boolean.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link DocumentAssociationAugmentationType }{@code >}
      * 
      * @param value
@@ -653,6 +787,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "DocumentAugmentation", substitutionHeadNamespace = "http://release.niem.gov/niem/niem-core/4.0/", substitutionHeadName = "DocumentAugmentationPoint")
     public JAXBElement<DocumentAugmentationType> createDocumentAugmentation(DocumentAugmentationType value) {
         return new JAXBElement<DocumentAugmentationType>(_DocumentAugmentation_QNAME, DocumentAugmentationType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "DocumentDocketingStatusCode")
+    public JAXBElement<NormalizedString> createDocumentDocketingStatusCode(NormalizedString value) {
+        return new JAXBElement<NormalizedString>(_DocumentDocketingStatusCode_QNAME, NormalizedString.class, null, value);
     }
 
     /**
@@ -708,6 +855,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentReviewDispositionType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentReviewDispositionType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "DocumentReviewDisposition")
+    public JAXBElement<DocumentReviewDispositionType> createDocumentReviewDisposition(DocumentReviewDispositionType value) {
+        return new JAXBElement<DocumentReviewDispositionType>(_DocumentReviewDisposition_QNAME, DocumentReviewDispositionType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link StatusType }{@code >}
      * 
      * @param value
@@ -718,6 +878,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "DocumentReviewStatus")
     public JAXBElement<StatusType> createDocumentReviewStatus(StatusType value) {
         return new JAXBElement<StatusType>(_DocumentReviewStatus_QNAME, StatusType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "DocumentReviewStatusCode")
+    public JAXBElement<NormalizedString> createDocumentReviewStatusCode(NormalizedString value) {
+        return new JAXBElement<NormalizedString>(_DocumentReviewStatusCode_QNAME, NormalizedString.class, null, value);
     }
 
     /**
@@ -744,6 +917,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "DocumentSignature")
     public JAXBElement<DocumentSignatureType> createDocumentSignature(DocumentSignatureType value) {
         return new JAXBElement<DocumentSignatureType>(_DocumentSignature_QNAME, DocumentSignatureType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentStatusType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentStatusType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "DocumentStatus")
+    public JAXBElement<DocumentStatusType> createDocumentStatus(DocumentStatusType value) {
+        return new JAXBElement<DocumentStatusType>(_DocumentStatus_QNAME, DocumentStatusType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "DocumentTypeCode")
+    public JAXBElement<TextType> createDocumentTypeCode(TextType value) {
+        return new JAXBElement<TextType>(_DocumentTypeCode_QNAME, TextType.class, null, value);
     }
 
     /**
@@ -812,6 +1011,32 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "FilingDocketingStatusCode")
+    public JAXBElement<NormalizedString> createFilingDocketingStatusCode(NormalizedString value) {
+        return new JAXBElement<NormalizedString>(_FilingDocketingStatusCode_QNAME, NormalizedString.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "FilingReviewStatusCode")
+    public JAXBElement<NormalizedString> createFilingReviewStatusCode(NormalizedString value) {
+        return new JAXBElement<NormalizedString>(_FilingReviewStatusCode_QNAME, NormalizedString.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link FilingStatusType }{@code >}
      * 
      * @param value
@@ -825,19 +1050,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link NormalizedString }{@code >}
-     */
-    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "FilingStatusCode")
-    public JAXBElement<NormalizedString> createFilingStatusCode(NormalizedString value) {
-        return new JAXBElement<NormalizedString>(_FilingStatusCode_QNAME, NormalizedString.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ItemAugmentationType }{@code >}
      * 
      * @param value
@@ -848,6 +1060,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "ItemAugmentation", substitutionHeadNamespace = "http://release.niem.gov/niem/niem-core/4.0/", substitutionHeadName = "ItemAugmentationPoint")
     public JAXBElement<ItemAugmentationType> createItemAugmentation(ItemAugmentationType value) {
         return new JAXBElement<ItemAugmentationType>(_ItemAugmentation_QNAME, ItemAugmentationType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentReviewType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentReviewType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "LeadDocumentReview")
+    public JAXBElement<DocumentReviewType> createLeadDocumentReview(DocumentReviewType value) {
+        return new JAXBElement<DocumentReviewType>(_LeadDocumentReview_QNAME, DocumentReviewType.class, null, value);
     }
 
     /**
@@ -871,7 +1096,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link MessageStatusAugmentationType }{@code >}
      */
-    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "MessageStatusAugmentation", substitutionHeadNamespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", substitutionHeadName = "MessageStatusAugmentationPoint")
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "MessageStatusAugmentation", substitutionHeadNamespace = "http://release.niem.gov/niem/domains/cbrn/4.1/", substitutionHeadName = "MessageStatusAugmentationPoint")
     public JAXBElement<MessageStatusAugmentationType> createMessageStatusAugmentation(MessageStatusAugmentationType value) {
         return new JAXBElement<MessageStatusAugmentationType>(_MessageStatusAugmentation_QNAME, MessageStatusAugmentationType.class, null, value);
     }
@@ -1066,9 +1291,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link ReviewedDocumentType }{@code >}
      */
-    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "ReviewedConnectedDocument")
-    public JAXBElement<ReviewedDocumentType> createReviewedConnectedDocument(ReviewedDocumentType value) {
-        return new JAXBElement<ReviewedDocumentType>(_ReviewedConnectedDocument_QNAME, ReviewedDocumentType.class, null, value);
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "ReviewedDocument")
+    public JAXBElement<ReviewedDocumentType> createReviewedDocument(ReviewedDocumentType value) {
+        return new JAXBElement<ReviewedDocumentType>(_ReviewedDocument_QNAME, ReviewedDocumentType.class, null, value);
     }
 
     /**
@@ -1082,32 +1307,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "ReviewedDocumentAugmentation", substitutionHeadNamespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", substitutionHeadName = "ReviewedDocumentAugmentationPoint")
     public JAXBElement<ReviewedDocumentAugmentationType> createReviewedDocumentAugmentation(ReviewedDocumentAugmentationType value) {
         return new JAXBElement<ReviewedDocumentAugmentationType>(_ReviewedDocumentAugmentation_QNAME, ReviewedDocumentAugmentationType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "ReviewedDocumentAugmentationPoint")
-    public JAXBElement<Object> createReviewedDocumentAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_ReviewedDocumentAugmentationPoint_QNAME, Object.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ReviewedDocumentType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link ReviewedDocumentType }{@code >}
-     */
-    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "ReviewedLeadDocument")
-    public JAXBElement<ReviewedDocumentType> createReviewedLeadDocument(ReviewedDocumentType value) {
-        return new JAXBElement<ReviewedDocumentType>(_ReviewedLeadDocument_QNAME, ReviewedDocumentType.class, null, value);
     }
 
     /**
@@ -1222,7 +1421,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link SubjectAugmentationType }{@code >}
      */
-    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "SubjectAugmentation", substitutionHeadNamespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", substitutionHeadName = "SubjectAugmentationPoint")
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "SubjectAugmentation", substitutionHeadNamespace = "http://release.niem.gov/niem/domains/jxdm/6.1/", substitutionHeadName = "SubjectAugmentationPoint")
     public JAXBElement<SubjectAugmentationType> createSubjectAugmentation(SubjectAugmentationType value) {
         return new JAXBElement<SubjectAugmentationType>(_SubjectAugmentation_QNAME, SubjectAugmentationType.class, null, value);
     }

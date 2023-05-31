@@ -3,16 +3,14 @@ package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
 import gov.niem.release.niem.niem_core._4.CaseType;
 import gov.niem.release.niem.niem_core._4.DateType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.docketcallback.NotifyDocketingCompleteMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reviewfilingcallback.NotifyFilingReviewCompleteMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.stampinformationcallback.NotifyDocumentStampInformationMessageType;
-import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -31,10 +29,10 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseFilingType"&gt;
  *       &lt;sequence&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ConnectedDocumentReview" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}FilingCompletionDate" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}FilingStatus"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ReviewedConnectedDocument" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ReviewedLeadDocument" maxOccurs="unbounded"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}LeadDocumentReview" maxOccurs="unbounded"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Case"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
@@ -47,30 +45,61 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CallbackMessageType", propOrder = {
+    "connectedDocumentReview",
     "filingCompletionDate",
     "filingStatus",
-    "reviewedConnectedDocument",
-    "reviewedLeadDocument",
+    "leadDocumentReview",
     "_case"
 })
 @XmlSeeAlso({
     NotifyDocumentStampInformationMessageType.class,
-    NotifyFilingReviewCompleteMessageType.class
+    NotifyFilingReviewCompleteMessageType.class,
+    MatchingFilingType.class,
+    NotifyDocketingCompleteMessageType.class
 })
 public class CallbackMessageType
     extends CaseFilingType
 {
 
+    @XmlElement(name = "ConnectedDocumentReview")
+    protected List<DocumentReviewType> connectedDocumentReview;
     @XmlElement(name = "FilingCompletionDate")
     protected DateType filingCompletionDate;
     @XmlElement(name = "FilingStatus", required = true)
     protected FilingStatusType filingStatus;
-    @XmlElement(name = "ReviewedConnectedDocument", nillable = true)
-    protected List<ReviewedDocumentType> reviewedConnectedDocument;
-    @XmlElement(name = "ReviewedLeadDocument", required = true, nillable = true)
-    protected List<ReviewedDocumentType> reviewedLeadDocument;
-    @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class)
-    protected JAXBElement<? extends CaseType> _case;
+    @XmlElement(name = "LeadDocumentReview", required = true)
+    protected List<DocumentReviewType> leadDocumentReview;
+    @XmlElement(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", required = true, nillable = true)
+    protected CaseType _case;
+
+    /**
+     * Gets the value of the connectedDocumentReview property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the connectedDocumentReview property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getConnectedDocumentReview().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link DocumentReviewType }
+     * 
+     * 
+     */
+    public List<DocumentReviewType> getConnectedDocumentReview() {
+        if (connectedDocumentReview == null) {
+            connectedDocumentReview = new ArrayList<DocumentReviewType>();
+        }
+        return this.connectedDocumentReview;
+    }
 
     /**
      * Gets the value of the filingCompletionDate property.
@@ -121,61 +150,32 @@ public class CallbackMessageType
     }
 
     /**
-     * Gets the value of the reviewedConnectedDocument property.
+     * Gets the value of the leadDocumentReview property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a <CODE>set</CODE> method for the reviewedConnectedDocument property.
+     * This is why there is not a <CODE>set</CODE> method for the leadDocumentReview property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getReviewedConnectedDocument().add(newItem);
+     *    getLeadDocumentReview().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link ReviewedDocumentType }
+     * {@link DocumentReviewType }
      * 
      * 
      */
-    public List<ReviewedDocumentType> getReviewedConnectedDocument() {
-        if (reviewedConnectedDocument == null) {
-            reviewedConnectedDocument = new ArrayList<ReviewedDocumentType>();
+    public List<DocumentReviewType> getLeadDocumentReview() {
+        if (leadDocumentReview == null) {
+            leadDocumentReview = new ArrayList<DocumentReviewType>();
         }
-        return this.reviewedConnectedDocument;
-    }
-
-    /**
-     * Gets the value of the reviewedLeadDocument property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a <CODE>set</CODE> method for the reviewedLeadDocument property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getReviewedLeadDocument().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ReviewedDocumentType }
-     * 
-     * 
-     */
-    public List<ReviewedDocumentType> getReviewedLeadDocument() {
-        if (reviewedLeadDocument == null) {
-            reviewedLeadDocument = new ArrayList<ReviewedDocumentType>();
-        }
-        return this.reviewedLeadDocument;
+        return this.leadDocumentReview;
     }
 
     /**
@@ -183,11 +183,10 @@ public class CallbackMessageType
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
+     *     {@link CaseType }
      *     
      */
-    public JAXBElement<? extends CaseType> getCase() {
+    public CaseType getCase() {
         return _case;
     }
 
@@ -196,11 +195,10 @@ public class CallbackMessageType
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
+     *     {@link CaseType }
      *     
      */
-    public void setCase(JAXBElement<? extends CaseType> value) {
+    public void setCase(CaseType value) {
         this._case = value;
     }
 

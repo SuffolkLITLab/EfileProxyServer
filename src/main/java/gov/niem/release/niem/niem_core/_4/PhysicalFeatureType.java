@@ -51,6 +51,7 @@ public class PhysicalFeatureType
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link SMTCodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
@@ -64,6 +65,7 @@ public class PhysicalFeatureType
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link SMTCodeType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link TextType }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */

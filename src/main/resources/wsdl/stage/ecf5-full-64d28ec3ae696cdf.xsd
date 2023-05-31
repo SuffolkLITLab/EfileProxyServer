@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- edited with XMLSpy v2018 sp1 (http://www.altova.com) by Tyler Technologies (Tyler Technologies) --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:batchlistresponse="urn:tyler:ecf:v5.0:extensions:batchlistresponse" xmlns:common="urn:tyler:ecf:v5.0:extensions:common" xmlns:ecf="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" xmlns:niem-xs="http://release.niem.gov/niem/proxy/xsd/4.0/" xmlns:structures="http://release.niem.gov/niem/structures/4.0/" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:tyler:ecf:v5.0:extensions:batchlistresponse">
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" schemaLocation="ecf5-full-ea1e0f75b69752b5.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/niem-core/4.0/" schemaLocation="ecf5-full-7af13829a6695741.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/proxy/xsd/4.0/" schemaLocation="ecf5-full-4d179e3e0bd140a9.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/structures/4.0/" schemaLocation="ecf5-full-43381e9aa490c46d.xsd"/>
+	<xs:import namespace="urn:tyler:ecf:v5.0:extensions:common" schemaLocation="ecf5-full-90b994a1b7805590.xsd"/>
+	<xs:complexType name="BatchType">
+		<xs:complexContent>
+			<xs:extension base="structures:ObjectType">
+				<xs:sequence>
+					<xs:element maxOccurs="1" minOccurs="1" ref="common:BatchIdentification"/>
+					<xs:element maxOccurs="1" minOccurs="1" ref="common:BatchStatus"/>
+					<xs:element maxOccurs="1" minOccurs="0" ref="common:HearingSchedule"/>
+					<xs:element maxOccurs="1" minOccurs="1" ref="nc:DocumentFiledDate"/>
+					<xs:element maxOccurs="unbounded" minOccurs="1" ref="common:Envelope"/>
+					<xs:element maxOccurs="1" minOccurs="0" ref="batchlistresponse:BatchSize"/>
+					<xs:element maxOccurs="1" minOccurs="0" ref="batchlistresponse:TotalFees"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetBatchListResponseMessageType">
+		<xs:annotation>
+			<xs:documentation>Message to return batches.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ecf:ResponseMessageType">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="batchlistresponse:Batch"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="batchlistresponse:GetBatchListResponseMessageAugmentationPoint"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="GetBatchListResponseMessage" type="batchlistresponse:GetBatchListResponseMessageType">
+		<xs:annotation>
+			<xs:documentation>Message to retrieve batches.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element abstract="true" name="GetBatchListResponseMessageAugmentationPoint">
+		<xs:annotation>
+			<xs:documentation>An extension point for the enclosing message.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="Batch" type="batchlistresponse:BatchType"/>
+	<xs:element name="TotalFees" type="nc:AmountType"/>
+	<xs:element name="BatchSize" type="nc:NonNegativeDecimalType"/>
+</xs:schema>

@@ -6,7 +6,6 @@ import edu.suffolk.litlab.efspserver.db.MessageInfo;
 import edu.suffolk.litlab.efspserver.db.MessageSettingsDatabase;
 import edu.suffolk.litlab.efspserver.db.Transaction;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -78,8 +77,7 @@ public class OrgMessageSender {
 
   public MessageInfo getSettings(UUID serverId) {
     Optional<MessageInfo> maybeInfo = Optional.empty();
-    try (Connection conn = ds.getConnection()) {
-      var md = new MessageSettingsDatabase(conn);
+    try (var md = new MessageSettingsDatabase(ds.getConnection())) {
       maybeInfo = md.findMessageInfo(serverId);
     } catch (SQLException ex) {
       log.error("Couldn't connect to message db: using defaults: " + StdLib.strFromException(ex));

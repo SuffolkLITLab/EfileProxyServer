@@ -13,8 +13,6 @@ import gov.niem.release.niem.domains.biometrics._4.DNASampleType;
 import gov.niem.release.niem.domains.cbrn._4.MessageContentErrorType;
 import gov.niem.release.niem.domains.cbrn._4.MessageErrorType;
 import gov.niem.release.niem.domains.cbrn._4.RemarksComplexObjectType;
-import gov.niem.release.niem.domains.humanservices._4.ChildType;
-import gov.niem.release.niem.domains.humanservices._4.JuvenileType;
 import gov.niem.release.niem.domains.jxdm._6.ChargeEnhancingFactorType;
 import gov.niem.release.niem.domains.jxdm._6.ChargeType;
 import gov.niem.release.niem.domains.jxdm._6.CourtAppearanceType;
@@ -39,7 +37,6 @@ import gov.niem.release.niem.niem_core._4.CountryType;
 import gov.niem.release.niem.niem_core._4.DateRangeType;
 import gov.niem.release.niem.niem_core._4.DateType;
 import gov.niem.release.niem.niem_core._4.DispositionType;
-import gov.niem.release.niem.niem_core._4.DocumentType;
 import gov.niem.release.niem.niem_core._4.EntityType;
 import gov.niem.release.niem.niem_core._4.FacilityType;
 import gov.niem.release.niem.niem_core._4.FullTelephoneNumberType;
@@ -66,13 +63,19 @@ import gov.niem.release.niem.niem_core._4.StateType;
 import gov.niem.release.niem.niem_core._4.StatusType;
 import gov.niem.release.niem.niem_core._4.StreetType;
 import gov.niem.release.niem.niem_core._4.TelephoneNumberType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caselistrequest.CaseListQueryCriteriaType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caserequest.CaseQueryCriteriaType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.DecedentEstateCaseType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.documentrequest.DocumentQueryCriteriaType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventActorType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventOnBehalfOfActorType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentReviewDispositionType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentReviewType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentSignatureType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ElectronicServiceInformationType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filinglistrequest.FilingListQueryCriteriaType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filingstatusrequest.FilingStatusQueryCriteriaType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.payment.PaymentMessageType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyrequest.PolicyQueryCriteriaType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.DevelopmentPolicyType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.ExtensionType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.MajorDesignElementType;
@@ -81,11 +84,14 @@ import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.Sup
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.SupportedOperationsType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.SupportedServiceInteractionProfilesType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.SupportedSignatureProfilesType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.requestdateresponse.CourtDateType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.schedulerequest.ScheduleQueryCriteriaType;
+import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAnyAttribute;
 import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlID;
 import jakarta.xml.bind.annotation.XmlIDREF;
 import jakarta.xml.bind.annotation.XmlSchemaType;
@@ -95,7 +101,20 @@ import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import tyler.ecf.v5_0.extensions.common.FilingReferenceType;
+import tyler.ecf.v5_0.extensions.common.AddressAugmentationType;
+import tyler.ecf.v5_0.extensions.common.AttachmentAugmentationType;
+import tyler.ecf.v5_0.extensions.common.CaseListQueryCriteriaAugmentationType;
+import tyler.ecf.v5_0.extensions.common.ElectronicServiceAugmentationType;
+import tyler.ecf.v5_0.extensions.common.FilingListQueryCriteriaAugmentationType;
+import tyler.ecf.v5_0.extensions.common.FilingStatusAugmentationType;
+import tyler.ecf.v5_0.extensions.common.MatchingFilingAugmentationType;
+import tyler.ecf.v5_0.extensions.common.PagingAugmentationType;
+import tyler.ecf.v5_0.extensions.common.PhysicalFeatureAugmentationType;
+import tyler.ecf.v5_0.extensions.common.ReferenceType;
+import tyler.ecf.v5_0.extensions.common.VehicleAugmentationType;
+import tyler.ecf.v5_0.extensions.criminal.CitationAugmentationType;
+import tyler.ecf.v5_0.extensions.criminal.DispositionAugmentationType;
+import tyler.ecf.v5_0.extensions.criminal.StatuteAugmentationType;
 
 
 /**
@@ -129,22 +148,53 @@ import tyler.ecf.v5_0.extensions.common.FilingReferenceType;
 })
 @XmlSeeAlso({
     DateType.class,
-    ChildType.class,
-    JuvenileType.class,
-    PersonType.class,
-    FacilityType.class,
-    IdentificationType.class,
+    AmountType.class,
+    ReferenceType.class,
     AddressType.class,
+    IdentificationType.class,
     EntityType.class,
+    FilingStatusQueryCriteriaType.class,
+    CourtDateType.class,
+    MessageErrorType.class,
+    MessageContentErrorType.class,
+    RemarksComplexObjectType.class,
+    CaseListQueryCriteriaType.class,
+    DocumentQueryCriteriaType.class,
+    LocationType.class,
+    EnforcementOfficialType.class,
+    SubjectType.class,
+    ChargeEnhancingFactorType.class,
+    SeverityLevelType.class,
+    StatuteType.class,
+    CourtAppearanceType.class,
+    JudicialOfficialType.class,
+    ScheduleDayType.class,
+    OrganizationType.class,
+    ItemValueType.class,
+    JudicialOfficialBarMembershipType.class,
+    OrganizationAlternateNameType.class,
+    PersonType.class,
+    RegisteredOffenderType.class,
+    JurisdictionType.class,
+    DriverLicenseBaseType.class,
+    DrivingRestrictionType.class,
+    ItemRegistrationType.class,
+    FilingListQueryCriteriaType.class,
+    DocumentReviewType.class,
+    CourtEventOnBehalfOfActorType.class,
+    CourtEventActorType.class,
+    https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType.class,
+    DocumentReviewDispositionType.class,
+    DocumentSignatureType.class,
+    ElectronicServiceInformationType.class,
+    StatusType.class,
+    DispositionType.class,
     ContactInformationType.class,
     TelephoneNumberType.class,
     DateRangeType.class,
-    AmountType.class,
     FullTelephoneNumberType.class,
-    JurisdictionType.class,
-    LocationType.class,
+    InsuranceType.class,
     InternationalTelephoneNumberType.class,
-    ItemValueType.class,
     CountryType.class,
     StateType.class,
     StreetType.class,
@@ -155,38 +205,13 @@ import tyler.ecf.v5_0.extensions.common.FilingReferenceType;
     PersonNameType.class,
     PhysicalFeatureType.class,
     PersonLanguageType.class,
+    FacilityType.class,
     ItemType.class,
-    ObligationType.class,
-    ScheduleDayType.class,
-    ScheduleType.class,
-    MeasureType.class,
-    CaseQueryCriteriaType.class,
-    ChargeType.class,
-    EnforcementOfficialType.class,
-    SubjectType.class,
-    DispositionType.class,
-    ChargeEnhancingFactorType.class,
-    SeverityLevelType.class,
-    StatuteType.class,
-    CourtAppearanceType.class,
-    JudicialOfficialType.class,
-    OrganizationType.class,
-    JudicialOfficialBarMembershipType.class,
-    OrganizationAlternateNameType.class,
-    RegisteredOffenderType.class,
     ActivityType.class,
-    DriverLicenseBaseType.class,
-    DrivingRestrictionType.class,
-    ItemRegistrationType.class,
-    FilingReferenceType.class,
-    MessageErrorType.class,
-    MessageContentErrorType.class,
-    RemarksComplexObjectType.class,
-    BiometricDataType.class,
-    BiometricClassificationType.class,
-    DNASTRProfileType.class,
-    DNASampleType.class,
-    BinaryType.class,
+    MeasureType.class,
+    ObligationType.class,
+    ScheduleType.class,
+    PolicyQueryCriteriaType.class,
     DevelopmentPolicyType.class,
     MajorDesignElementType.class,
     RuntimePolicyType.class,
@@ -195,20 +220,21 @@ import tyler.ecf.v5_0.extensions.common.FilingReferenceType;
     SupportedServiceInteractionProfilesType.class,
     SupportedSignatureProfilesType.class,
     ExtensionType.class,
-    CourtEventOnBehalfOfActorType.class,
-    CourtEventActorType.class,
-    DocumentSignatureType.class,
-    ElectronicServiceInformationType.class,
-    StatusType.class,
-    InsuranceType.class,
-    DecedentEstateCaseType.class,
+    CaseQueryCriteriaType.class,
+    gov.niem.release.niem.niem_core._4.DocumentType.class,
+    ScheduleQueryCriteriaType.class,
     PaymentMessageType.class,
-    DocumentType.class
+    BiometricDataType.class,
+    BiometricClassificationType.class,
+    DNASTRProfileType.class,
+    DNASampleType.class,
+    BinaryType.class,
+    ChargeType.class
 })
 public abstract class ObjectType {
 
-    @XmlElement(name = "ObjectAugmentationPoint")
-    protected List<Object> objectAugmentationPoint;
+    @XmlElementRef(name = "ObjectAugmentationPoint", namespace = "http://release.niem.gov/niem/structures/4.0/", type = JAXBElement.class, required = false)
+    protected List<JAXBElement<?>> objectAugmentationPoint;
     @XmlAttribute(name = "id", namespace = "http://release.niem.gov/niem/structures/4.0/")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
@@ -250,13 +276,26 @@ public abstract class ObjectType {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Object }
+     * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link JAXBElement }{@code <}{@link AddressAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link AttachmentAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link CaseListQueryCriteriaAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ElectronicServiceAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link FilingListQueryCriteriaAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link FilingStatusAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link MatchingFilingAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link PagingAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link PhysicalFeatureAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link VehicleAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link CitationAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link DispositionAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link StatuteAugmentationType }{@code >}
      * 
      * 
      */
-    public List<Object> getObjectAugmentationPoint() {
+    public List<JAXBElement<?>> getObjectAugmentationPoint() {
         if (objectAugmentationPoint == null) {
-            objectAugmentationPoint = new ArrayList<Object>();
+            objectAugmentationPoint = new ArrayList<JAXBElement<?>>();
         }
         return this.objectAugmentationPoint;
     }

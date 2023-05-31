@@ -37,10 +37,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
-import edu.suffolk.litlab.efspserver.codes.FilingComponent;
-import edu.suffolk.litlab.efspserver.codes.OptionalServiceCode;
-import edu.suffolk.litlab.efspserver.codes.PartyType;
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.tyler.codes.FilingComponent;
+import edu.suffolk.litlab.efspserver.tyler.codes.OptionalServiceCode;
+import edu.suffolk.litlab.efspserver.tyler.codes.PartyType;
 
 public class DatabaseVersionTest {
   private final static Logger log = 

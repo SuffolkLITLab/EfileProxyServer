@@ -40,7 +40,33 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _Case_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "Case");
+    private final static QName _IdentificationCategoryAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "IdentificationCategoryAbstract");
+    private final static QName _CaseAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "CaseAugmentationPoint");
+    private final static QName _DocumentAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "DocumentAugmentationPoint");
+    private final static QName _PersonAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonAugmentationPoint");
+    private final static QName _MeasureUnitAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "MeasureUnitAbstract");
+    private final static QName _OrganizationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "OrganizationAugmentationPoint");
+    private final static QName _PersonEyeColorAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonEyeColorAbstract");
+    private final static QName _PersonHairColorAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonHairColorAbstract");
+    private final static QName _PersonSexAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonSexAbstract");
+    private final static QName _PhysicalFeatureCategoryAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PhysicalFeatureCategoryAbstract");
+    private final static QName _ItemColorAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ItemColorAbstract");
+    private final static QName _VehicleMakeAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "VehicleMakeAbstract");
+    private final static QName _VehicleModelAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "VehicleModelAbstract");
+    private final static QName _SystemOperatingModeAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "SystemOperatingModeAbstract");
+    private final static QName _IncidentAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "IncidentAugmentationPoint");
+    private final static QName _JurisdictionAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "JurisdictionAbstract");
+    private final static QName _StateRepresentation_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "StateRepresentation");
+    private final static QName _PersonEthnicityAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonEthnicityAbstract");
+    private final static QName _PersonNameCategoryAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonNameCategoryAbstract");
+    private final static QName _PersonRaceAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonRaceAbstract");
+    private final static QName _ItemStyleAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ItemStyleAbstract");
+    private final static QName _DocumentAssociationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "DocumentAssociationAugmentationPoint");
+    private final static QName _ItemAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ItemAugmentationPoint");
+    private final static QName _OrganizationAssociationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "OrganizationAssociationAugmentationPoint");
+    private final static QName _PersonAssociationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonAssociationAugmentationPoint");
+    private final static QName _PersonOrganizationAssociationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonOrganizationAssociationAugmentationPoint");
+    private final static QName _RelatedActivityAssociationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "RelatedActivityAssociationAugmentationPoint");
     private final static QName _Activity_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "Activity");
     private final static QName _ActivityDate_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ActivityDate");
     private final static QName _ActivityDescriptionText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ActivityDescriptionText");
@@ -65,12 +91,11 @@ public class ObjectFactory {
     private final static QName _BinarySizeValue_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "BinarySizeValue");
     private final static QName _BinaryURI_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "BinaryURI");
     private final static QName _CapabilityDescriptionText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "CapabilityDescriptionText");
-    private final static QName _CaseAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "CaseAugmentationPoint");
+    private final static QName _Case_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "Case");
     private final static QName _CaseDisposition_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "CaseDisposition");
     private final static QName _CaseDispositionFinalDate_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "CaseDispositionFinalDate");
     private final static QName _CaseDocketID_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "CaseDocketID");
     private final static QName _CaseTitleText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "CaseTitleText");
-    private final static QName _CaseTrackingID_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "CaseTrackingID");
     private final static QName _ContactAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ContactAbstract");
     private final static QName _ContactEmailID_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ContactEmailID");
     private final static QName _ContactMeansAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ContactMeansAbstract");
@@ -84,7 +109,6 @@ public class ObjectFactory {
     private final static QName _ContactResponder_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ContactResponder");
     private final static QName _ContactTelephoneNumber_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ContactTelephoneNumber");
     private final static QName _ConveyanceColorPrimaryText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ConveyanceColorPrimaryText");
-    private final static QName _ItemColorAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ItemColorAbstract");
     private final static QName _CountryRepresentation_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "CountryRepresentation");
     private final static QName _CurrencyAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "CurrencyAbstract");
     private final static QName _CurrencyCode_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "CurrencyCode");
@@ -99,8 +123,6 @@ public class ObjectFactory {
     private final static QName _DispositionDescriptionText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "DispositionDescriptionText");
     private final static QName _Document_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "Document");
     private final static QName _DocumentAssociation_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "DocumentAssociation");
-    private final static QName _DocumentAssociationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "DocumentAssociationAugmentationPoint");
-    private final static QName _DocumentAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "DocumentAugmentationPoint");
     private final static QName _DocumentCategoryAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "DocumentCategoryAbstract");
     private final static QName _DocumentCategoryText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "DocumentCategoryText");
     private final static QName _DocumentDescriptionText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "DocumentDescriptionText");
@@ -115,7 +137,6 @@ public class ObjectFactory {
     private final static QName _DocumentReceivedDate_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "DocumentReceivedDate");
     private final static QName _DocumentSequenceID_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "DocumentSequenceID");
     private final static QName _DocumentSoftwareName_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "DocumentSoftwareName");
-    private final static QName _DocumentStatus_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "DocumentStatus");
     private final static QName _DocumentSubmitter_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "DocumentSubmitter");
     private final static QName _DocumentTitleText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "DocumentTitleText");
     private final static QName _EffectiveDate_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "EffectiveDate");
@@ -132,11 +153,10 @@ public class ObjectFactory {
     private final static QName _FinancialObligationExemptionAmount_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "FinancialObligationExemptionAmount");
     private final static QName _FullTelephoneNumber_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "FullTelephoneNumber");
     private final static QName _TelephoneNumberAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "TelephoneNumberAbstract");
-    private final static QName _IdentificationCategoryAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "IdentificationCategoryAbstract");
+    private final static QName _IdentificationCategoryDescriptionText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "IdentificationCategoryDescriptionText");
     private final static QName _IdentificationID_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "IdentificationID");
     private final static QName _IdentificationJurisdiction_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "IdentificationJurisdiction");
     private final static QName _IdentificationSourceText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "IdentificationSourceText");
-    private final static QName _IncidentAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "IncidentAugmentationPoint");
     private final static QName _IncidentLocation_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "IncidentLocation");
     private final static QName _Insurance_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "Insurance");
     private final static QName _InsuranceActiveIndicator_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "InsuranceActiveIndicator");
@@ -144,16 +164,13 @@ public class ObjectFactory {
     private final static QName _InsuranceCoverageCategoryAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "InsuranceCoverageCategoryAbstract");
     private final static QName _InsuranceCoverageCategoryText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "InsuranceCoverageCategoryText");
     private final static QName _InternationalTelephoneNumber_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "InternationalTelephoneNumber");
-    private final static QName _ItemAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ItemAugmentationPoint");
     private final static QName _ItemColorDescriptionText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ItemColorDescriptionText");
     private final static QName _ItemDescriptionText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ItemDescriptionText");
     private final static QName _ItemModelYearDate_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ItemModelYearDate");
     private final static QName _ItemOtherIdentification_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ItemOtherIdentification");
-    private final static QName _ItemStyleAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ItemStyleAbstract");
     private final static QName _ItemStyleText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ItemStyleText");
     private final static QName _ItemValue_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ItemValue");
     private final static QName _ItemValueAmount_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ItemValueAmount");
-    private final static QName _JurisdictionAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "JurisdictionAbstract");
     private final static QName _JurisdictionText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "JurisdictionText");
     private final static QName _LanguageAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "LanguageAbstract");
     private final static QName _LanguageCode_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "LanguageCode");
@@ -172,13 +189,11 @@ public class ObjectFactory {
     private final static QName _LocationPostalExtensionCode_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "LocationPostalExtensionCode");
     private final static QName _LocationState_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "LocationState");
     private final static QName _LocationStateName_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "LocationStateName");
-    private final static QName _StateRepresentation_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "StateRepresentation");
     private final static QName _LocationStateUSPostalServiceCode_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "LocationStateUSPostalServiceCode");
     private final static QName _LocationStreet_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "LocationStreet");
     private final static QName _MeasureDecimalValue_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "MeasureDecimalValue");
     private final static QName _MeasurePointAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "MeasurePointAbstract");
     private final static QName _MeasureValueAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "MeasureValueAbstract");
-    private final static QName _MeasureUnitAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "MeasureUnitAbstract");
     private final static QName _Metadata_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "Metadata");
     private final static QName _NANPTelephoneNumber_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "NANPTelephoneNumber");
     private final static QName _ObligationCategoryText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ObligationCategoryText");
@@ -194,8 +209,6 @@ public class ObjectFactory {
     private final static QName _ObligationRequirementDescriptionText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ObligationRequirementDescriptionText");
     private final static QName _Organization_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "Organization");
     private final static QName _OrganizationAssociation_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "OrganizationAssociation");
-    private final static QName _OrganizationAssociationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "OrganizationAssociationAugmentationPoint");
-    private final static QName _OrganizationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "OrganizationAugmentationPoint");
     private final static QName _OrganizationIdentification_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "OrganizationIdentification");
     private final static QName _OrganizationLocation_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "OrganizationLocation");
     private final static QName _OrganizationName_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "OrganizationName");
@@ -205,8 +218,6 @@ public class ObjectFactory {
     private final static QName _OrganizationUnitName_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "OrganizationUnitName");
     private final static QName _Person_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "Person");
     private final static QName _PersonAssociation_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonAssociation");
-    private final static QName _PersonAssociationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonAssociationAugmentationPoint");
-    private final static QName _PersonAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonAugmentationPoint");
     private final static QName _PersonBirthDate_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonBirthDate");
     private final static QName _PersonCapability_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonCapability");
     private final static QName _PersonCitizenshipAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonCitizenshipAbstract");
@@ -215,28 +226,21 @@ public class ObjectFactory {
     private final static QName _PersonDisunion_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonDisunion");
     private final static QName _PersonDisunionDecreeIndicator_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonDisunionDecreeIndicator");
     private final static QName _PersonEmploymentAssociation_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonEmploymentAssociation");
-    private final static QName _PersonEthnicityAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonEthnicityAbstract");
     private final static QName _PersonEthnicityText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonEthnicityText");
-    private final static QName _PersonEyeColorAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonEyeColorAbstract");
     private final static QName _PersonFullName_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonFullName");
     private final static QName _PersonGivenName_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonGivenName");
-    private final static QName _PersonHairColorAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonHairColorAbstract");
     private final static QName _PersonHeightMeasure_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonHeightMeasure");
     private final static QName _PersonLanguageEnglishIndicator_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonLanguageEnglishIndicator");
     private final static QName _PersonMaidenName_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonMaidenName");
     private final static QName _PersonMiddleName_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonMiddleName");
     private final static QName _PersonName_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonName");
-    private final static QName _PersonNameCategoryAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonNameCategoryAbstract");
     private final static QName _PersonNamePrefixText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonNamePrefixText");
     private final static QName _PersonNameSuffixText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonNameSuffixText");
     private final static QName _PersonOrganizationAssociation_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonOrganizationAssociation");
-    private final static QName _PersonOrganizationAssociationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonOrganizationAssociationAugmentationPoint");
     private final static QName _PersonOtherIdentification_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonOtherIdentification");
     private final static QName _PersonPhysicalFeature_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonPhysicalFeature");
     private final static QName _PersonPrimaryLanguage_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonPrimaryLanguage");
-    private final static QName _PersonRaceAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonRaceAbstract");
     private final static QName _PersonRaceText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonRaceText");
-    private final static QName _PersonSexAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonSexAbstract");
     private final static QName _PersonStateIdentification_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonStateIdentification");
     private final static QName _PersonSurName_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonSurName");
     private final static QName _PersonTaxIdentification_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonTaxIdentification");
@@ -246,9 +250,7 @@ public class ObjectFactory {
     private final static QName _PersonUnionLocation_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonUnionLocation");
     private final static QName _PersonUnionSeparation_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonUnionSeparation");
     private final static QName _PersonWeightMeasure_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonWeightMeasure");
-    private final static QName _PhysicalFeatureCategoryAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PhysicalFeatureCategoryAbstract");
     private final static QName _PrimaryDocument_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PrimaryDocument");
-    private final static QName _RelatedActivityAssociationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "RelatedActivityAssociationAugmentationPoint");
     private final static QName _RoleOfAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "RoleOfAbstract");
     private final static QName _RoleOfItem_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "RoleOfItem");
     private final static QName _RoleOfOrganization_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "RoleOfOrganization");
@@ -275,7 +277,6 @@ public class ObjectFactory {
     private final static QName _StreetPredirectionalText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "StreetPredirectionalText");
     private final static QName _SupervisionCustodyStatus_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "SupervisionCustodyStatus");
     private final static QName _SupervisionFacility_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "SupervisionFacility");
-    private final static QName _SystemOperatingModeAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "SystemOperatingModeAbstract");
     private final static QName _TelephoneAreaCodeID_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "TelephoneAreaCodeID");
     private final static QName _TelephoneCountryCodeID_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "TelephoneCountryCodeID");
     private final static QName _TelephoneExchangeID_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "TelephoneExchangeID");
@@ -286,8 +287,6 @@ public class ObjectFactory {
     private final static QName _Vehicle_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "Vehicle");
     private final static QName _VehicleAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "VehicleAugmentationPoint");
     private final static QName _VehicleIdentification_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "VehicleIdentification");
-    private final static QName _VehicleMakeAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "VehicleMakeAbstract");
-    private final static QName _VehicleModelAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "VehicleModelAbstract");
     private final static QName _WeightUnitAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "WeightUnitAbstract");
     private final static QName _WeightUnitCode_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "WeightUnitCode");
 
@@ -315,59 +314,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CaseType }
+     * Create an instance of {@link VehicleType }
      * 
      */
-    public CaseType createCaseType() {
-        return new CaseType();
+    public VehicleType createVehicleType() {
+        return new VehicleType();
     }
 
     /**
-     * Create an instance of {@link IncidentType }
+     * Create an instance of {@link AmountType }
      * 
      */
-    public IncidentType createIncidentType() {
-        return new IncidentType();
-    }
-
-    /**
-     * Create an instance of {@link OrganizationType }
-     * 
-     */
-    public OrganizationType createOrganizationType() {
-        return new OrganizationType();
-    }
-
-    /**
-     * Create an instance of {@link PersonType }
-     * 
-     */
-    public PersonType createPersonType() {
-        return new PersonType();
-    }
-
-    /**
-     * Create an instance of {@link FacilityType }
-     * 
-     */
-    public FacilityType createFacilityType() {
-        return new FacilityType();
-    }
-
-    /**
-     * Create an instance of {@link ActivityType }
-     * 
-     */
-    public ActivityType createActivityType() {
-        return new ActivityType();
-    }
-
-    /**
-     * Create an instance of {@link DispositionType }
-     * 
-     */
-    public DispositionType createDispositionType() {
-        return new DispositionType();
+    public AmountType createAmountType() {
+        return new AmountType();
     }
 
     /**
@@ -379,11 +338,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link StatusType }
+     * Create an instance of {@link NonNegativeDecimalType }
      * 
      */
-    public StatusType createStatusType() {
-        return new StatusType();
+    public NonNegativeDecimalType createNonNegativeDecimalType() {
+        return new NonNegativeDecimalType();
     }
 
     /**
@@ -395,11 +354,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link BinaryType }
+     * Create an instance of {@link DispositionType }
      * 
      */
-    public BinaryType createBinaryType() {
-        return new BinaryType();
+    public DispositionType createDispositionType() {
+        return new DispositionType();
+    }
+
+    /**
+     * Create an instance of {@link DocumentType }
+     * 
+     */
+    public DocumentType createDocumentType() {
+        return new DocumentType();
+    }
+
+    /**
+     * Create an instance of {@link OrganizationType }
+     * 
+     */
+    public OrganizationType createOrganizationType() {
+        return new OrganizationType();
     }
 
     /**
@@ -411,11 +386,115 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link NonNegativeDecimalType }
+     * Create an instance of {@link CaseType }
      * 
      */
-    public NonNegativeDecimalType createNonNegativeDecimalType() {
-        return new NonNegativeDecimalType();
+    public CaseType createCaseType() {
+        return new CaseType();
+    }
+
+    /**
+     * Create an instance of {@link LocationType }
+     * 
+     */
+    public LocationType createLocationType() {
+        return new LocationType();
+    }
+
+    /**
+     * Create an instance of {@link ScheduleDayType }
+     * 
+     */
+    public ScheduleDayType createScheduleDayType() {
+        return new ScheduleDayType();
+    }
+
+    /**
+     * Create an instance of {@link SpeedMeasureType }
+     * 
+     */
+    public SpeedMeasureType createSpeedMeasureType() {
+        return new SpeedMeasureType();
+    }
+
+    /**
+     * Create an instance of {@link ItemType }
+     * 
+     */
+    public ItemType createItemType() {
+        return new ItemType();
+    }
+
+    /**
+     * Create an instance of {@link OffenseLevelCodeType }
+     * 
+     */
+    public OffenseLevelCodeType createOffenseLevelCodeType() {
+        return new OffenseLevelCodeType();
+    }
+
+    /**
+     * Create an instance of {@link ItemValueType }
+     * 
+     */
+    public ItemValueType createItemValueType() {
+        return new ItemValueType();
+    }
+
+    /**
+     * Create an instance of {@link PersonNameCategoryCodeType }
+     * 
+     */
+    public PersonNameCategoryCodeType createPersonNameCategoryCodeType() {
+        return new PersonNameCategoryCodeType();
+    }
+
+    /**
+     * Create an instance of {@link PersonType }
+     * 
+     */
+    public PersonType createPersonType() {
+        return new PersonType();
+    }
+
+    /**
+     * Create an instance of {@link JurisdictionType }
+     * 
+     */
+    public JurisdictionType createJurisdictionType() {
+        return new JurisdictionType();
+    }
+
+    /**
+     * Create an instance of {@link SupervisionType }
+     * 
+     */
+    public SupervisionType createSupervisionType() {
+        return new SupervisionType();
+    }
+
+    /**
+     * Create an instance of {@link StatusType }
+     * 
+     */
+    public StatusType createStatusType() {
+        return new StatusType();
+    }
+
+    /**
+     * Create an instance of {@link ActivityType }
+     * 
+     */
+    public ActivityType createActivityType() {
+        return new ActivityType();
+    }
+
+    /**
+     * Create an instance of {@link BinaryType }
+     * 
+     */
+    public BinaryType createBinaryType() {
+        return new BinaryType();
     }
 
     /**
@@ -459,14 +538,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DocumentType }
-     * 
-     */
-    public DocumentType createDocumentType() {
-        return new DocumentType();
-    }
-
-    /**
      * Create an instance of {@link DocumentAssociationType }
      * 
      */
@@ -483,14 +554,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ItemType }
-     * 
-     */
-    public ItemType createItemType() {
-        return new ItemType();
-    }
-
-    /**
      * Create an instance of {@link ProperNameTextType }
      * 
      */
@@ -499,35 +562,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AmountType }
-     * 
-     */
-    public AmountType createAmountType() {
-        return new AmountType();
-    }
-
-    /**
      * Create an instance of {@link FullTelephoneNumberType }
      * 
      */
     public FullTelephoneNumberType createFullTelephoneNumberType() {
         return new FullTelephoneNumberType();
-    }
-
-    /**
-     * Create an instance of {@link JurisdictionType }
-     * 
-     */
-    public JurisdictionType createJurisdictionType() {
-        return new JurisdictionType();
-    }
-
-    /**
-     * Create an instance of {@link LocationType }
-     * 
-     */
-    public LocationType createLocationType() {
-        return new LocationType();
     }
 
     /**
@@ -544,14 +583,6 @@ public class ObjectFactory {
      */
     public InternationalTelephoneNumberType createInternationalTelephoneNumberType() {
         return new InternationalTelephoneNumberType();
-    }
-
-    /**
-     * Create an instance of {@link ItemValueType }
-     * 
-     */
-    public ItemValueType createItemValueType() {
-        return new ItemValueType();
     }
 
     /**
@@ -731,11 +762,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link VehicleType }
+     * Create an instance of {@link FacilityType }
      * 
      */
-    public VehicleType createVehicleType() {
-        return new VehicleType();
+    public FacilityType createFacilityType() {
+        return new FacilityType();
     }
 
     /**
@@ -755,11 +786,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ImageType }
+     * Create an instance of {@link IncidentType }
      * 
      */
-    public ImageType createImageType() {
-        return new ImageType();
+    public IncidentType createIncidentType() {
+        return new IncidentType();
     }
 
     /**
@@ -787,35 +818,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link OffenseLevelCodeType }
-     * 
-     */
-    public OffenseLevelCodeType createOffenseLevelCodeType() {
-        return new OffenseLevelCodeType();
-    }
-
-    /**
-     * Create an instance of {@link PersonNameCategoryCodeType }
-     * 
-     */
-    public PersonNameCategoryCodeType createPersonNameCategoryCodeType() {
-        return new PersonNameCategoryCodeType();
-    }
-
-    /**
      * Create an instance of {@link RelatedActivityAssociationType }
      * 
      */
     public RelatedActivityAssociationType createRelatedActivityAssociationType() {
         return new RelatedActivityAssociationType();
-    }
-
-    /**
-     * Create an instance of {@link ScheduleDayType }
-     * 
-     */
-    public ScheduleDayType createScheduleDayType() {
-        return new ScheduleDayType();
     }
 
     /**
@@ -827,32 +834,354 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SpeedMeasureType }
-     * 
-     */
-    public SpeedMeasureType createSpeedMeasureType() {
-        return new SpeedMeasureType();
-    }
-
-    /**
-     * Create an instance of {@link SupervisionType }
-     * 
-     */
-    public SupervisionType createSupervisionType() {
-        return new SupervisionType();
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link CaseType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link CaseType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "Case")
-    public JAXBElement<CaseType> createCase(CaseType value) {
-        return new JAXBElement<CaseType>(_Case_QNAME, CaseType.class, null, value);
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "IdentificationCategoryAbstract")
+    public JAXBElement<Object> createIdentificationCategoryAbstract(Object value) {
+        return new JAXBElement<Object>(_IdentificationCategoryAbstract_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "CaseAugmentationPoint")
+    public JAXBElement<Object> createCaseAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_CaseAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "DocumentAugmentationPoint")
+    public JAXBElement<Object> createDocumentAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_DocumentAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonAugmentationPoint")
+    public JAXBElement<Object> createPersonAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_PersonAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "MeasureUnitAbstract")
+    public JAXBElement<Object> createMeasureUnitAbstract(Object value) {
+        return new JAXBElement<Object>(_MeasureUnitAbstract_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "OrganizationAugmentationPoint")
+    public JAXBElement<Object> createOrganizationAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_OrganizationAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonEyeColorAbstract")
+    public JAXBElement<Object> createPersonEyeColorAbstract(Object value) {
+        return new JAXBElement<Object>(_PersonEyeColorAbstract_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonHairColorAbstract")
+    public JAXBElement<Object> createPersonHairColorAbstract(Object value) {
+        return new JAXBElement<Object>(_PersonHairColorAbstract_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonSexAbstract")
+    public JAXBElement<Object> createPersonSexAbstract(Object value) {
+        return new JAXBElement<Object>(_PersonSexAbstract_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PhysicalFeatureCategoryAbstract")
+    public JAXBElement<Object> createPhysicalFeatureCategoryAbstract(Object value) {
+        return new JAXBElement<Object>(_PhysicalFeatureCategoryAbstract_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "ItemColorAbstract")
+    public JAXBElement<Object> createItemColorAbstract(Object value) {
+        return new JAXBElement<Object>(_ItemColorAbstract_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "VehicleMakeAbstract")
+    public JAXBElement<Object> createVehicleMakeAbstract(Object value) {
+        return new JAXBElement<Object>(_VehicleMakeAbstract_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "VehicleModelAbstract")
+    public JAXBElement<Object> createVehicleModelAbstract(Object value) {
+        return new JAXBElement<Object>(_VehicleModelAbstract_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "SystemOperatingModeAbstract")
+    public JAXBElement<Object> createSystemOperatingModeAbstract(Object value) {
+        return new JAXBElement<Object>(_SystemOperatingModeAbstract_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "IncidentAugmentationPoint")
+    public JAXBElement<Object> createIncidentAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_IncidentAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "JurisdictionAbstract")
+    public JAXBElement<Object> createJurisdictionAbstract(Object value) {
+        return new JAXBElement<Object>(_JurisdictionAbstract_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "StateRepresentation")
+    public JAXBElement<Object> createStateRepresentation(Object value) {
+        return new JAXBElement<Object>(_StateRepresentation_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonEthnicityAbstract")
+    public JAXBElement<Object> createPersonEthnicityAbstract(Object value) {
+        return new JAXBElement<Object>(_PersonEthnicityAbstract_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonNameCategoryAbstract")
+    public JAXBElement<Object> createPersonNameCategoryAbstract(Object value) {
+        return new JAXBElement<Object>(_PersonNameCategoryAbstract_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonRaceAbstract")
+    public JAXBElement<Object> createPersonRaceAbstract(Object value) {
+        return new JAXBElement<Object>(_PersonRaceAbstract_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "ItemStyleAbstract")
+    public JAXBElement<Object> createItemStyleAbstract(Object value) {
+        return new JAXBElement<Object>(_ItemStyleAbstract_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "DocumentAssociationAugmentationPoint")
+    public JAXBElement<Object> createDocumentAssociationAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_DocumentAssociationAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "ItemAugmentationPoint")
+    public JAXBElement<Object> createItemAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_ItemAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "OrganizationAssociationAugmentationPoint")
+    public JAXBElement<Object> createOrganizationAssociationAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_OrganizationAssociationAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonAssociationAugmentationPoint")
+    public JAXBElement<Object> createPersonAssociationAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_PersonAssociationAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonOrganizationAssociationAugmentationPoint")
+    public JAXBElement<Object> createPersonOrganizationAssociationAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_PersonOrganizationAssociationAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "RelatedActivityAssociationAugmentationPoint")
+    public JAXBElement<Object> createRelatedActivityAssociationAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_RelatedActivityAssociationAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1168,16 +1497,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link CaseType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link CaseType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "CaseAugmentationPoint")
-    public JAXBElement<Object> createCaseAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_CaseAugmentationPoint_QNAME, Object.class, null, value);
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "Case")
+    public JAXBElement<CaseType> createCase(CaseType value) {
+        return new JAXBElement<CaseType>(_Case_QNAME, CaseType.class, null, value);
     }
 
     /**
@@ -1230,19 +1559,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "CaseTitleText")
     public JAXBElement<TextType> createCaseTitleText(TextType value) {
         return new JAXBElement<TextType>(_CaseTitleText_QNAME, TextType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "CaseTrackingID")
-    public JAXBElement<String> createCaseTrackingID(String value) {
-        return new JAXBElement<String>(_CaseTrackingID_QNAME, String.class, null, value);
     }
 
     /**
@@ -1412,19 +1728,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "ConveyanceColorPrimaryText", substitutionHeadNamespace = "http://release.niem.gov/niem/niem-core/4.0/", substitutionHeadName = "ItemColorAbstract")
     public JAXBElement<TextType> createConveyanceColorPrimaryText(TextType value) {
         return new JAXBElement<TextType>(_ConveyanceColorPrimaryText_QNAME, TextType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "ItemColorAbstract")
-    public JAXBElement<Object> createItemColorAbstract(Object value) {
-        return new JAXBElement<Object>(_ItemColorAbstract_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1617,32 +1920,6 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "DocumentAssociationAugmentationPoint")
-    public JAXBElement<Object> createDocumentAssociationAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_DocumentAssociationAugmentationPoint_QNAME, Object.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "DocumentAugmentationPoint")
-    public JAXBElement<Object> createDocumentAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_DocumentAugmentationPoint_QNAME, Object.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "DocumentCategoryAbstract")
     public JAXBElement<Object> createDocumentCategoryAbstract(Object value) {
         return new JAXBElement<Object>(_DocumentCategoryAbstract_QNAME, Object.class, null, value);
@@ -1815,19 +2092,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "DocumentSoftwareName")
     public JAXBElement<SoftwareNameType> createDocumentSoftwareName(SoftwareNameType value) {
         return new JAXBElement<SoftwareNameType>(_DocumentSoftwareName_QNAME, SoftwareNameType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link StatusType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link StatusType }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "DocumentStatus")
-    public JAXBElement<StatusType> createDocumentStatus(StatusType value) {
-        return new JAXBElement<StatusType>(_DocumentStatus_QNAME, StatusType.class, null, value);
     }
 
     /**
@@ -2039,16 +2303,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "IdentificationCategoryAbstract")
-    public JAXBElement<Object> createIdentificationCategoryAbstract(Object value) {
-        return new JAXBElement<Object>(_IdentificationCategoryAbstract_QNAME, Object.class, null, value);
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "IdentificationCategoryDescriptionText")
+    public JAXBElement<TextType> createIdentificationCategoryDescriptionText(TextType value) {
+        return new JAXBElement<TextType>(_IdentificationCategoryDescriptionText_QNAME, TextType.class, null, value);
     }
 
     /**
@@ -2088,19 +2352,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "IdentificationSourceText")
     public JAXBElement<TextType> createIdentificationSourceText(TextType value) {
         return new JAXBElement<TextType>(_IdentificationSourceText_QNAME, TextType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "IncidentAugmentationPoint")
-    public JAXBElement<Object> createIncidentAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_IncidentAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2195,19 +2446,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "ItemAugmentationPoint")
-    public JAXBElement<Object> createItemAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_ItemAugmentationPoint_QNAME, Object.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
      * 
      * @param value
@@ -2260,19 +2498,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "ItemStyleAbstract")
-    public JAXBElement<Object> createItemStyleAbstract(Object value) {
-        return new JAXBElement<Object>(_ItemStyleAbstract_QNAME, Object.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
      * 
      * @param value
@@ -2309,19 +2534,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "ItemValueAmount")
     public JAXBElement<AmountType> createItemValueAmount(AmountType value) {
         return new JAXBElement<AmountType>(_ItemValueAmount_QNAME, AmountType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "JurisdictionAbstract")
-    public JAXBElement<Object> createJurisdictionAbstract(Object value) {
-        return new JAXBElement<Object>(_JurisdictionAbstract_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2559,19 +2771,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "StateRepresentation")
-    public JAXBElement<Object> createStateRepresentation(Object value) {
-        return new JAXBElement<Object>(_StateRepresentation_QNAME, Object.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link USStateCodeType }{@code >}
      * 
      * @param value
@@ -2634,19 +2833,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "MeasureValueAbstract")
     public JAXBElement<Object> createMeasureValueAbstract(Object value) {
         return new JAXBElement<Object>(_MeasureValueAbstract_QNAME, Object.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "MeasureUnitAbstract")
-    public JAXBElement<Object> createMeasureUnitAbstract(Object value) {
-        return new JAXBElement<Object>(_MeasureUnitAbstract_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2845,32 +3031,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "OrganizationAssociationAugmentationPoint")
-    public JAXBElement<Object> createOrganizationAssociationAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_OrganizationAssociationAugmentationPoint_QNAME, Object.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "OrganizationAugmentationPoint")
-    public JAXBElement<Object> createOrganizationAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_OrganizationAugmentationPoint_QNAME, Object.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link IdentificationType }{@code >}
      * 
      * @param value
@@ -2988,32 +3148,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonAssociationAugmentationPoint")
-    public JAXBElement<Object> createPersonAssociationAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_PersonAssociationAugmentationPoint_QNAME, Object.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonAugmentationPoint")
-    public JAXBElement<Object> createPersonAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_PersonAugmentationPoint_QNAME, Object.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link DateType }{@code >}
      * 
      * @param value
@@ -3118,19 +3252,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonEthnicityAbstract")
-    public JAXBElement<Object> createPersonEthnicityAbstract(Object value) {
-        return new JAXBElement<Object>(_PersonEthnicityAbstract_QNAME, Object.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
      * 
      * @param value
@@ -3141,19 +3262,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonEthnicityText", substitutionHeadNamespace = "http://release.niem.gov/niem/niem-core/4.0/", substitutionHeadName = "PersonEthnicityAbstract")
     public JAXBElement<TextType> createPersonEthnicityText(TextType value) {
         return new JAXBElement<TextType>(_PersonEthnicityText_QNAME, TextType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonEyeColorAbstract")
-    public JAXBElement<Object> createPersonEyeColorAbstract(Object value) {
-        return new JAXBElement<Object>(_PersonEyeColorAbstract_QNAME, Object.class, null, value);
     }
 
     /**
@@ -3180,19 +3288,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonGivenName")
     public JAXBElement<PersonNameTextType> createPersonGivenName(PersonNameTextType value) {
         return new JAXBElement<PersonNameTextType>(_PersonGivenName_QNAME, PersonNameTextType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonHairColorAbstract")
-    public JAXBElement<Object> createPersonHairColorAbstract(Object value) {
-        return new JAXBElement<Object>(_PersonHairColorAbstract_QNAME, Object.class, null, value);
     }
 
     /**
@@ -3261,19 +3356,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonNameCategoryAbstract")
-    public JAXBElement<Object> createPersonNameCategoryAbstract(Object value) {
-        return new JAXBElement<Object>(_PersonNameCategoryAbstract_QNAME, Object.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
      * 
      * @param value
@@ -3310,19 +3392,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonOrganizationAssociation")
     public JAXBElement<PersonOrganizationAssociationType> createPersonOrganizationAssociation(PersonOrganizationAssociationType value) {
         return new JAXBElement<PersonOrganizationAssociationType>(_PersonOrganizationAssociation_QNAME, PersonOrganizationAssociationType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonOrganizationAssociationAugmentationPoint")
-    public JAXBElement<Object> createPersonOrganizationAssociationAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_PersonOrganizationAssociationAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**
@@ -3365,19 +3434,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonRaceAbstract")
-    public JAXBElement<Object> createPersonRaceAbstract(Object value) {
-        return new JAXBElement<Object>(_PersonRaceAbstract_QNAME, Object.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
      * 
      * @param value
@@ -3388,19 +3444,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonRaceText", substitutionHeadNamespace = "http://release.niem.gov/niem/niem-core/4.0/", substitutionHeadName = "PersonRaceAbstract")
     public JAXBElement<TextType> createPersonRaceText(TextType value) {
         return new JAXBElement<TextType>(_PersonRaceText_QNAME, TextType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PersonSexAbstract")
-    public JAXBElement<Object> createPersonSexAbstract(Object value) {
-        return new JAXBElement<Object>(_PersonSexAbstract_QNAME, Object.class, null, value);
     }
 
     /**
@@ -3521,19 +3564,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PhysicalFeatureCategoryAbstract")
-    public JAXBElement<Object> createPhysicalFeatureCategoryAbstract(Object value) {
-        return new JAXBElement<Object>(_PhysicalFeatureCategoryAbstract_QNAME, Object.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link DocumentType }{@code >}
      * 
      * @param value
@@ -3544,19 +3574,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "PrimaryDocument")
     public JAXBElement<DocumentType> createPrimaryDocument(DocumentType value) {
         return new JAXBElement<DocumentType>(_PrimaryDocument_QNAME, DocumentType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "RelatedActivityAssociationAugmentationPoint")
-    public JAXBElement<Object> createRelatedActivityAssociationAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_RelatedActivityAssociationAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**
@@ -3898,19 +3915,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "SystemOperatingModeAbstract")
-    public JAXBElement<Object> createSystemOperatingModeAbstract(Object value) {
-        return new JAXBElement<Object>(_SystemOperatingModeAbstract_QNAME, Object.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      * 
      * @param value
@@ -4038,32 +4042,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "VehicleIdentification")
     public JAXBElement<IdentificationType> createVehicleIdentification(IdentificationType value) {
         return new JAXBElement<IdentificationType>(_VehicleIdentification_QNAME, IdentificationType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "VehicleMakeAbstract")
-    public JAXBElement<Object> createVehicleMakeAbstract(Object value) {
-        return new JAXBElement<Object>(_VehicleMakeAbstract_QNAME, Object.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "VehicleModelAbstract")
-    public JAXBElement<Object> createVehicleModelAbstract(Object value) {
-        return new JAXBElement<Object>(_VehicleModelAbstract_QNAME, Object.class, null, value);
     }
 
     /**

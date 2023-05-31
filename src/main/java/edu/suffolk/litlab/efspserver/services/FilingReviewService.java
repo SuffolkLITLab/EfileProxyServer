@@ -24,7 +24,6 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.lang.reflect.Method;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -350,8 +349,7 @@ public class FilingReviewService {
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
     Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     Optional<AtRest> atRest = Optional.empty();
-    try (Connection conn = ds.getConnection()) {
-      LoginDatabase ld = new LoginDatabase(conn);
+    try (LoginDatabase ld = new LoginDatabase(ds.getConnection())) {
       atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
       if (activeToken.isEmpty() || atRest.isEmpty()) {
         return Response.status(401).entity("Not logged in to file with " + courtId).build();
@@ -395,13 +393,12 @@ public class FilingReviewService {
     String neutralTemplate = getStringDefault(miscInfo, "neutral_contents", "");
     String neutralSubject = getStringDefault(miscInfo, "neutral_subject", "");
 
-    try (Connection conn = ds.getConnection()) {
+    try (UserDatabase ud = new UserDatabase(ds.getConnection())) {
       // TODO(brycew): this is going to send case type code (i.e. random numbers to the user.
       // Should avoid if possible, but would have to return the full info from the Filer object
       // TODO(brycew): this also sends "the carroll has received", instead of "the Carrol County
       // Court",
       // the filer Object should return the full name of the court if possible, not the id
-      UserDatabase ud = new UserDatabase(conn);
       ud.addToTable(
           user.getName().getFullName(),
           user.getId(),
@@ -543,8 +540,7 @@ public class FilingReviewService {
 
   private Optional<String> getActiveToken(HttpHeaders httpHeaders, String orgHeaderKey) {
     String serverKey = httpHeaders.getHeaderString("X-API-KEY");
-    try (Connection conn = ds.getConnection()) {
-      LoginDatabase ld = new LoginDatabase(conn);
+    try (LoginDatabase ld = new LoginDatabase(ds.getConnection())) {
       Optional<AtRest> atRest = ld.getAtRestInfo(serverKey);
       if (atRest.isEmpty()) {
         return Optional.empty();

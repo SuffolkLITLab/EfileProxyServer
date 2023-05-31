@@ -3,7 +3,6 @@ package tyler.ecf.v5_0.extensions.common;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.niem_core._4.IdentificationType;
 import gov.niem.release.niem.niem_core._4.TextType;
 import gov.niem.release.niem.structures._4.AugmentationType;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -30,7 +29,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:common}CourtRoom" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:common}CourtStreet" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:common}CourtCityStateZip" minOccurs="0"/&gt;
- *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:common}HearingIdentification" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:common}FilingCode" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:common}MotionTypeCode" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -46,7 +46,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "courtRoom",
     "courtStreet",
     "courtCityStateZip",
-    "hearingIdentification"
+    "filingCode",
+    "motionTypeCode"
 })
 public class CourtEventAugmentationType
     extends AugmentationType
@@ -60,8 +61,10 @@ public class CourtEventAugmentationType
     protected TextType courtStreet;
     @XmlElement(name = "CourtCityStateZip")
     protected TextType courtCityStateZip;
-    @XmlElement(name = "HearingIdentification")
-    protected IdentificationType hearingIdentification;
+    @XmlElement(name = "FilingCode")
+    protected TextType filingCode;
+    @XmlElement(name = "MotionTypeCode")
+    protected TextType motionTypeCode;
 
     /**
      * Gets the value of the courtSchedule property.
@@ -165,27 +168,51 @@ public class CourtEventAugmentationType
     }
 
     /**
-     * Gets the value of the hearingIdentification property.
+     * Gets the value of the filingCode property.
      * 
      * @return
      *     possible object is
-     *     {@link IdentificationType }
+     *     {@link TextType }
      *     
      */
-    public IdentificationType getHearingIdentification() {
-        return hearingIdentification;
+    public TextType getFilingCode() {
+        return filingCode;
     }
 
     /**
-     * Sets the value of the hearingIdentification property.
+     * Sets the value of the filingCode property.
      * 
      * @param value
      *     allowed object is
-     *     {@link IdentificationType }
+     *     {@link TextType }
      *     
      */
-    public void setHearingIdentification(IdentificationType value) {
-        this.hearingIdentification = value;
+    public void setFilingCode(TextType value) {
+        this.filingCode = value;
+    }
+
+    /**
+     * Gets the value of the motionTypeCode property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TextType }
+     *     
+     */
+    public TextType getMotionTypeCode() {
+        return motionTypeCode;
+    }
+
+    /**
+     * Sets the value of the motionTypeCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TextType }
+     *     
+     */
+    public void setMotionTypeCode(TextType value) {
+        this.motionTypeCode = value;
     }
 
     /**

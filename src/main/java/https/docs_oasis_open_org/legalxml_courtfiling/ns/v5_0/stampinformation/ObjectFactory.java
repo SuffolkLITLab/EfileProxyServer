@@ -24,8 +24,8 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _DocumentStampInformationMessage_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/stampinformation", "DocumentStampInformationMessage");
     private final static QName _DocumentStampInformationMessageAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/stampinformation", "DocumentStampInformationMessageAugmentationPoint");
+    private final static QName _DocumentStampInformationMessage_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/stampinformation", "DocumentStampInformationMessage");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.stampinformation
@@ -43,19 +43,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentStampInformationMessageType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentStampInformationMessageType }{@code >}
-     */
-    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/stampinformation", name = "DocumentStampInformationMessage")
-    public JAXBElement<DocumentStampInformationMessageType> createDocumentStampInformationMessage(DocumentStampInformationMessageType value) {
-        return new JAXBElement<DocumentStampInformationMessageType>(_DocumentStampInformationMessage_QNAME, DocumentStampInformationMessageType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
      * 
      * @param value
@@ -66,6 +53,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/stampinformation", name = "DocumentStampInformationMessageAugmentationPoint")
     public JAXBElement<Object> createDocumentStampInformationMessageAugmentationPoint(Object value) {
         return new JAXBElement<Object>(_DocumentStampInformationMessageAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentStampInformationMessageType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentStampInformationMessageType }{@code >}
+     */
+    @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/stampinformation", name = "DocumentStampInformationMessage")
+    public JAXBElement<DocumentStampInformationMessageType> createDocumentStampInformationMessage(DocumentStampInformationMessageType value) {
+        return new JAXBElement<DocumentStampInformationMessageType>(_DocumentStampInformationMessage_QNAME, DocumentStampInformationMessageType.class, null, value);
     }
 
 }

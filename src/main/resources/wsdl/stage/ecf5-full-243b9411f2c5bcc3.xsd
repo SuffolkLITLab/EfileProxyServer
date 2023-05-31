@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="no"?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:tyler:ecf:v5.0:extensions:servicecallback" xmlns:clsa="http://reference.niem.gov/niem/specification/code-lists/1.0/code-lists-schema-appinfo/" xmlns:common="urn:tyler:ecf:v5.0:extensions:common" xmlns:ct="http://release.niem.gov/niem/conformanceTargets/3.0/" xmlns:ecf="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" xmlns:structures="http://release.niem.gov/niem/structures/4.0/" xmlns:term="http://release.niem.gov/niem/localTerminology/3.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" ct:conformanceTargets="http://reference.niem.gov/niem/specification/naming-and-design-rules/3.0/#ExtensionSchemaDocument http://reference.niem.gov/niem/specification/code-lists/1.0/#SchemaDocument" elementFormDefault="qualified" targetNamespace="urn:tyler:ecf:v5.0:extensions:servicecallback" version="5.0">
+	<xs:annotation>
+		<xs:documentation> Schema for namespace https://www.tylertech.com/efm/ecf/v5/servicecallback</xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" schemaLocation="ecf5-full-ea1e0f75b69752b5.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/niem-core/4.0/" schemaLocation="ecf5-full-7af13829a6695741.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/structures/4.0/" schemaLocation="ecf5-full-43381e9aa490c46d.xsd"/>
+	<xs:import namespace="urn:tyler:ecf:v5.0:extensions:common" schemaLocation="ecf5-full-90b994a1b7805590.xsd"/>
+	<xs:complexType name="NotifyServiceCompleteMessageType">
+		<xs:annotation>
+			<xs:documentation>The asynchronous message from the Filing Review MDE to the Filing Assembly MDE conveying information concerning the service actions on the documents submitted for filing in a ReviewFilingMessage.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ecf:CallbackMessageType">
+				<xs:sequence>
+					<xs:element maxOccurs="1" minOccurs="1" ref="ecf:ElectronicServiceInformation"/>
+					<xs:element maxOccurs="1" minOccurs="1" ref="common:ServiceDate"/>
+					<xs:element ref="common:SubmitterInformation"/>
+					<xs:element ref="common:RecipientInformation"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="NotifyServiceCompleteMessageAugmentationPoint"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="NotifyServiceCompleteMessage" type="NotifyServiceCompleteMessageType">
+		<xs:annotation>
+			<xs:documentation>The asynchronous message from the Filing Review MDE to the Filing Assembly MDE conveying information concerning the service actions on the documents submitted for filing in a ReviewFilingMessage.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element abstract="true" name="NotifyServiceCompleteMessageAugmentationPoint">
+		<xs:annotation>
+			<xs:documentation>An extension point for the enclosing message.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

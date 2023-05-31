@@ -3,8 +3,6 @@ package gov.niem.release.niem.niem_core._4;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
-import gov.niem.release.niem.domains.humanservices._4.JuvenileCaseType;
 import gov.niem.release.niem.domains.jxdm._6.AppellateCaseType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -15,6 +13,7 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.common.SchedulingAugmentationType;
 
 
 /**
@@ -30,7 +29,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *     &lt;extension base="{http://release.niem.gov/niem/niem-core/4.0/}ActivityType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}CaseTitleText" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}CaseTrackingID" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}CaseAugmentationPoint" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
@@ -44,12 +42,9 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CaseType", propOrder = {
     "caseTitleText",
-    "caseTrackingID",
     "caseAugmentationPoint"
 })
 @XmlSeeAlso({
-    ChildSupportEnforcementCaseType.class,
-    JuvenileCaseType.class,
     AppellateCaseType.class
 })
 public class CaseType
@@ -58,8 +53,6 @@ public class CaseType
 
     @XmlElement(name = "CaseTitleText")
     protected TextType caseTitleText;
-    @XmlElement(name = "CaseTrackingID")
-    protected gov.niem.release.niem.proxy.xsd._4.String caseTrackingID;
     @XmlElementRef(name = "CaseAugmentationPoint", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class)
     protected List<JAXBElement<?>> caseAugmentationPoint;
 
@@ -88,30 +81,6 @@ public class CaseType
     }
 
     /**
-     * Gets the value of the caseTrackingID property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
-     *     
-     */
-    public gov.niem.release.niem.proxy.xsd._4.String getCaseTrackingID() {
-        return caseTrackingID;
-    }
-
-    /**
-     * Sets the value of the caseTrackingID property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
-     *     
-     */
-    public void setCaseTrackingID(gov.niem.release.niem.proxy.xsd._4.String value) {
-        this.caseTrackingID = value;
-    }
-
-    /**
      * Gets the value of the caseAugmentationPoint property.
      * 
      * <p>
@@ -130,10 +99,12 @@ public class CaseType
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link JAXBElement }{@code <}{@link gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType }{@code >}
-     * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.CaseAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
      * {@link JAXBElement }{@code <}{@link tyler.ecf.v5_0.extensions.common.CaseAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link SchedulingAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link tyler.ecf.v5_0.extensions.massachusetts.CaseAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link tyler.ecf.v5_0.extensions.taxdelinquency.CaseAugmentationType }{@code >}
      * 
      * 
      */
@@ -150,7 +121,7 @@ public class CaseType
      * 
      */
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
     }
 

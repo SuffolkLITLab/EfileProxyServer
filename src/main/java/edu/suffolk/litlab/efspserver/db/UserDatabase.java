@@ -1,6 +1,5 @@
 package edu.suffolk.litlab.efspserver.db;
 
-import edu.suffolk.litlab.efspserver.codes.CodeTableConstants;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +12,8 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeTableConstants;
+
 /**
  * Very similar to the CodeDatabase, but for user data, kept at a minimum.
  *
@@ -21,17 +22,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author brycew
  */
-public class UserDatabase implements DatabaseInterface {
+public class UserDatabase extends Database {
   private static Logger log = LoggerFactory.getLogger(UserDatabase.class);
 
-  private final Connection conn;
-
   public UserDatabase(Connection conn) {
-    this.conn = conn;
-  }
-
-  public Connection getConnection() {
-    return conn;
+    super(conn);
   }
 
   /** Creates the userdatabase table if it doesn't exist yet. */

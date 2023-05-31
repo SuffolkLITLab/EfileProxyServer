@@ -24,7 +24,10 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.Declared
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DeclaredCustomsValueAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DeclaredForCarriageValueAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DeclaredStatisticsValueAmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DocumentationFeeAmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.EstimatedAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.EstimatedOverallContractAmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ExpectedAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FaceValueAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FeeAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FreeOnBoardValueAmountType;
@@ -39,8 +42,6 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MarketVa
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumAdvertisementAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumPaidAmountType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumTaxExclusiveAmountType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumTaxInclusiveAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MinimumAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaidAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PartyCapacityAmountType;
@@ -52,6 +53,7 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PerUnitA
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PrepaidAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PriceAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RequiredFeeAmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ResponseAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RoundingAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SettlementDiscountAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxAmountType;
@@ -72,6 +74,7 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TotalTas
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TotalTaxAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransactionCurrencyTaxAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ValueAmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.WithholdingTaxTotalAmountType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -95,7 +98,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * </pre>
  * 
  * <pre>
- * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;A number of monetary units specified in a currency where the unit of the currency is explicit or implied.&lt;/ccts:Definition&gt;
+ * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;A number of monetary units specified using a given unit of currency.&lt;/ccts:Definition&gt;
  * </pre>
  * 
  * <pre>
@@ -110,8 +113,9 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="AmountType"&gt;
  *   &lt;simpleContent&gt;
- *     &lt;extension base="&lt;urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2&gt;AmountType"&gt;
- *     &lt;/extension&gt;
+ *     &lt;restriction base="&lt;urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2&gt;AmountType"&gt;
+ *       &lt;attribute name="currencyID" use="required" type="{http://www.w3.org/2001/XMLSchema}normalizedString" /&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/simpleContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -141,7 +145,10 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     DeclaredCustomsValueAmountType.class,
     DeclaredForCarriageValueAmountType.class,
     DeclaredStatisticsValueAmountType.class,
+    DocumentationFeeAmountType.class,
+    EstimatedAmountType.class,
     EstimatedOverallContractAmountType.class,
+    ExpectedAmountType.class,
     FaceValueAmountType.class,
     FeeAmountType.class,
     FreeOnBoardValueAmountType.class,
@@ -156,8 +163,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     MaximumAdvertisementAmountType.class,
     MaximumAmountType.class,
     MaximumPaidAmountType.class,
-    MaximumTaxExclusiveAmountType.class,
-    MaximumTaxInclusiveAmountType.class,
     MinimumAmountType.class,
     PaidAmountType.class,
     PartyCapacityAmountType.class,
@@ -169,6 +174,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     PrepaidAmountType.class,
     PriceAmountType.class,
     RequiredFeeAmountType.class,
+    ResponseAmountType.class,
     RoundingAmountType.class,
     SettlementDiscountAmountType.class,
     TaxAmountType.class,
@@ -188,7 +194,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     TotalTaskAmountType.class,
     TotalTaxAmountType.class,
     TransactionCurrencyTaxAmountType.class,
-    ValueAmountType.class
+    ValueAmountType.class,
+    WithholdingTaxTotalAmountType.class
 })
 public class AmountType
     extends un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.AmountType

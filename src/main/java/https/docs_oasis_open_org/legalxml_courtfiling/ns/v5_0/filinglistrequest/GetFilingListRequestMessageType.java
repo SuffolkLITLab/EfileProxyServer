@@ -3,14 +3,10 @@ package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filinglistrequest
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.niem_core._4.DateRangeType;
-import gov.niem.release.niem.niem_core._4.EntityType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.RequestMessageType;
-import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElementRef;
-import jakarta.xml.bind.annotation.XmlElementRefs;
+import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
@@ -28,9 +24,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}RequestMessageType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}CaseTrackingID" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}DateRange" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}DocumentSubmitter" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filinglistrequest}FilingListQueryCriteria"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filinglistrequest}GetFilingListRequestMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
@@ -43,60 +37,69 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetFilingListRequestMessageType", propOrder = {
-    "rest"
+    "filingListQueryCriteria",
+    "getFilingListRequestMessageAugmentationPoint"
 })
 public class GetFilingListRequestMessageType
     extends RequestMessageType
 {
 
-    @XmlElementRefs({
-        @XmlElementRef(name = "CaseTrackingID", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "DateRange", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "DocumentSubmitter", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "GetFilingListRequestMessageAugmentationPoint", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filinglistrequest", type = JAXBElement.class, required = false)
-    })
-    protected List<JAXBElement<?>> rest;
+    @XmlElement(name = "FilingListQueryCriteria", required = true)
+    protected FilingListQueryCriteriaType filingListQueryCriteria;
+    @XmlElement(name = "GetFilingListRequestMessageAugmentationPoint")
+    protected List<Object> getFilingListRequestMessageAugmentationPoint;
 
     /**
-     * Gets the rest of the content model. 
+     * Gets the value of the filingListQueryCriteria property.
      * 
-     * <p>
-     * You are getting this "catch-all" property because of the following reason: 
-     * The field name "DocumentSubmitter" is used by two different parts of a schema. See: 
-     * line 13 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-v5-46.xsd
-     * line 284 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-v5-5.xsd
-     * <p>
-     * To get rid of this property, apply a property customization to one 
-     * of both of the following declarations to change their names: 
-     * Gets the value of the rest property.
+     * @return
+     *     possible object is
+     *     {@link FilingListQueryCriteriaType }
+     *     
+     */
+    public FilingListQueryCriteriaType getFilingListQueryCriteria() {
+        return filingListQueryCriteria;
+    }
+
+    /**
+     * Sets the value of the filingListQueryCriteria property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FilingListQueryCriteriaType }
+     *     
+     */
+    public void setFilingListQueryCriteria(FilingListQueryCriteriaType value) {
+        this.filingListQueryCriteria = value;
+    }
+
+    /**
+     * Gets the value of the getFilingListRequestMessageAugmentationPoint property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a <CODE>set</CODE> method for the rest property.
+     * This is why there is not a <CODE>set</CODE> method for the getFilingListRequestMessageAugmentationPoint property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getRest().add(newItem);
+     *    getGetFilingListRequestMessageAugmentationPoint().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link DateRangeType }{@code >}
-     * {@link JAXBElement }{@code <}{@link EntityType }{@code >}
-     * {@link JAXBElement }{@code <}{@link gov.niem.release.niem.proxy.xsd._4.String }{@code >}
-     * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link Object }
      * 
      * 
      */
-    public List<JAXBElement<?>> getRest() {
-        if (rest == null) {
-            rest = new ArrayList<JAXBElement<?>>();
+    public List<Object> getGetFilingListRequestMessageAugmentationPoint() {
+        if (getFilingListRequestMessageAugmentationPoint == null) {
+            getFilingListRequestMessageAugmentationPoint = new ArrayList<Object>();
         }
-        return this.rest;
+        return this.getFilingListRequestMessageAugmentationPoint;
     }
 
     /**
@@ -105,7 +108,7 @@ public class GetFilingListRequestMessageType
      * 
      */
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
     }
 

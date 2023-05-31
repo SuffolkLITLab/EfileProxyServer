@@ -4,18 +4,17 @@ import static edu.suffolk.litlab.efspserver.StdLib.GetEnv;
 
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.XmlHelper;
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
-import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
+import edu.suffolk.litlab.efspserver.tyler.TylerLogin;
+import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import gov.niem.niem.niem_core._2.EntityType;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.ws.BindingProvider;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -120,19 +119,6 @@ public class ServiceHelpers {
     tylerToHttp.put("169", 422); // Invalid birthdate
     tylerToHttp.put("170", 422); // Invalid password (when making an account? TODO(brycew))
     tylerToHttp.put("344", 422); // Doesn't handle cross references
-  }
-
-  public static Optional<TylerUserNamePassword> userCredsFromAuthorization(
-      String userColonPassword) {
-    if (userColonPassword == null) {
-      return Optional.empty();
-    }
-    if (!userColonPassword.contains(":")) {
-      return Optional.empty();
-    }
-    String email = userColonPassword.split(":")[0];
-    String password = userColonPassword.split(":")[1];
-    return Optional.of(new TylerUserNamePassword(email, password));
   }
 
   /**
@@ -249,8 +235,7 @@ public class ServiceHelpers {
       boolean needsSoapHeader,
       String jurisdiction) {
     String activeToken = httpHeaders.getHeaderString("X-API-KEY");
-    try (Connection conn = userDs.getConnection()) {
-      LoginDatabase ld = new LoginDatabase(conn);
+    try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
       Optional<AtRest> atRest = ld.getAtRestInfo(activeToken);
       if (atRest.isEmpty()) {
         log.warn("Couldn't find server api key");
@@ -273,7 +258,7 @@ public class ServiceHelpers {
 
   public static Optional<IEfmFirmService> setupFirmPort(
       EfmFirmService firmFactory, String tylerToken) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
+    Optional<TylerUserNamePassword> creds = TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds from " + tylerToken + "?");
       return Optional.empty();

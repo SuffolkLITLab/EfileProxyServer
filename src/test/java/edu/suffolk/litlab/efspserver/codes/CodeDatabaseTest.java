@@ -21,6 +21,14 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
 import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
+import edu.suffolk.litlab.efspserver.ecfcodes.CodeUpdater;
+import edu.suffolk.litlab.efspserver.tyler.codes.CaseCategory;
+import edu.suffolk.litlab.efspserver.tyler.codes.CaseType;
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeTableConstants;
+import edu.suffolk.litlab.efspserver.tyler.codes.CourtLocationInfo;
+import edu.suffolk.litlab.efspserver.tyler.codes.OptionalServiceCode;
+import edu.suffolk.litlab.efspserver.tyler.codes.ServiceCodeType;
 
 public class CodeDatabaseTest {
   private static Logger log = 
@@ -48,13 +56,14 @@ public class CodeDatabaseTest {
   
   @Test
   public void allNamespacesMapToTables() {
-    for (String table : CodeUpdater.ncToTableName.values()) {
+    for (String table : CodeUpdater.ecf4ElemToTableName.values()) {
       if (!table.equalsIgnoreCase("optionalservices")) {
         assertNotEquals(CodeTableConstants.getTableColumns(table).size(),
             0, "Expected " + table + " to exist");
         assertTrue(table.length() <= 63, "table name " + table + " should be <= 63 characters");
       }
     }
+    // TODO(brycew): do the same for 5? Even though Tyler's are very different from ECF's?
   }
 
   private void loadFromXmls() throws Exception {

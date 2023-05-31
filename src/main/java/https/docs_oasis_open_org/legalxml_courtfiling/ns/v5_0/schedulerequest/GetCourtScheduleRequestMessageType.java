@@ -3,10 +3,6 @@ package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.schedulerequest;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.domains.jxdm._6.JudicialOfficialType;
-import gov.niem.release.niem.niem_core._4.DateRangeType;
-import gov.niem.release.niem.niem_core._4.TextType;
-import gov.niem.release.niem.proxy.xsd._4.NormalizedString;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.RequestMessageType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -28,12 +24,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}RequestMessageType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseTypeCode" minOccurs="0"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CourtEventTypeCode" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}CourtAdministrativeUnitText" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/jxdm/6.0/}Judge" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}DateRange" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/schedulerequest}GetCourtScheduleRequestMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/schedulerequest}ScheduleQueryCriteria"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -45,149 +37,17 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetCourtScheduleRequestMessageType", propOrder = {
-    "caseTypeCode",
-    "courtEventTypeCode",
-    "courtAdministrativeUnitText",
-    "judge",
-    "dateRange",
-    "getCourtScheduleRequestMessageAugmentationPoint"
+    "getCourtScheduleRequestMessageAugmentationPoint",
+    "scheduleQueryCriteria"
 })
 public class GetCourtScheduleRequestMessageType
     extends RequestMessageType
 {
 
-    @XmlElement(name = "CaseTypeCode", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf")
-    protected NormalizedString caseTypeCode;
-    @XmlElement(name = "CourtEventTypeCode", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf")
-    protected TextType courtEventTypeCode;
-    @XmlElement(name = "CourtAdministrativeUnitText", namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/")
-    protected TextType courtAdministrativeUnitText;
-    @XmlElement(name = "Judge", namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/")
-    protected JudicialOfficialType judge;
-    @XmlElement(name = "DateRange", namespace = "http://release.niem.gov/niem/niem-core/4.0/")
-    protected DateRangeType dateRange;
     @XmlElement(name = "GetCourtScheduleRequestMessageAugmentationPoint")
     protected List<Object> getCourtScheduleRequestMessageAugmentationPoint;
-
-    /**
-     * Gets the value of the caseTypeCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link NormalizedString }
-     *     
-     */
-    public NormalizedString getCaseTypeCode() {
-        return caseTypeCode;
-    }
-
-    /**
-     * Sets the value of the caseTypeCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link NormalizedString }
-     *     
-     */
-    public void setCaseTypeCode(NormalizedString value) {
-        this.caseTypeCode = value;
-    }
-
-    /**
-     * Gets the value of the courtEventTypeCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TextType }
-     *     
-     */
-    public TextType getCourtEventTypeCode() {
-        return courtEventTypeCode;
-    }
-
-    /**
-     * Sets the value of the courtEventTypeCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TextType }
-     *     
-     */
-    public void setCourtEventTypeCode(TextType value) {
-        this.courtEventTypeCode = value;
-    }
-
-    /**
-     * Gets the value of the courtAdministrativeUnitText property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TextType }
-     *     
-     */
-    public TextType getCourtAdministrativeUnitText() {
-        return courtAdministrativeUnitText;
-    }
-
-    /**
-     * Sets the value of the courtAdministrativeUnitText property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TextType }
-     *     
-     */
-    public void setCourtAdministrativeUnitText(TextType value) {
-        this.courtAdministrativeUnitText = value;
-    }
-
-    /**
-     * Gets the value of the judge property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link JudicialOfficialType }
-     *     
-     */
-    public JudicialOfficialType getJudge() {
-        return judge;
-    }
-
-    /**
-     * Sets the value of the judge property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link JudicialOfficialType }
-     *     
-     */
-    public void setJudge(JudicialOfficialType value) {
-        this.judge = value;
-    }
-
-    /**
-     * Gets the value of the dateRange property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DateRangeType }
-     *     
-     */
-    public DateRangeType getDateRange() {
-        return dateRange;
-    }
-
-    /**
-     * Sets the value of the dateRange property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DateRangeType }
-     *     
-     */
-    public void setDateRange(DateRangeType value) {
-        this.dateRange = value;
-    }
+    @XmlElement(name = "ScheduleQueryCriteria", required = true)
+    protected ScheduleQueryCriteriaType scheduleQueryCriteria;
 
     /**
      * Gets the value of the getCourtScheduleRequestMessageAugmentationPoint property.
@@ -216,6 +76,30 @@ public class GetCourtScheduleRequestMessageType
             getCourtScheduleRequestMessageAugmentationPoint = new ArrayList<Object>();
         }
         return this.getCourtScheduleRequestMessageAugmentationPoint;
+    }
+
+    /**
+     * Gets the value of the scheduleQueryCriteria property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ScheduleQueryCriteriaType }
+     *     
+     */
+    public ScheduleQueryCriteriaType getScheduleQueryCriteria() {
+        return scheduleQueryCriteria;
+    }
+
+    /**
+     * Sets the value of the scheduleQueryCriteria property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ScheduleQueryCriteriaType }
+     *     
+     */
+    public void setScheduleQueryCriteria(ScheduleQueryCriteriaType value) {
+        this.scheduleQueryCriteria = value;
     }
 
     /**

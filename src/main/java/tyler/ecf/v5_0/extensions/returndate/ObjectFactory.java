@@ -2,7 +2,6 @@
 package tyler.ecf.v5_0.extensions.returndate;
 
 import javax.xml.namespace.QName;
-import gov.niem.release.niem.niem_core._4.DateType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
@@ -25,9 +24,8 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _ReturnDate_QNAME = new QName("urn:tyler:ecf:v5.0:extensions:returndate", "ReturnDate");
-    private final static QName _ReturnDateMessage_QNAME = new QName("urn:tyler:ecf:v5.0:extensions:returndate", "ReturnDateMessage");
     private final static QName _ReturnDateMessageAugmentationPoint_QNAME = new QName("urn:tyler:ecf:v5.0:extensions:returndate", "ReturnDateMessageAugmentationPoint");
+    private final static QName _ReturnDateMessage_QNAME = new QName("urn:tyler:ecf:v5.0:extensions:returndate", "ReturnDateMessage");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: tyler.ecf.v5_0.extensions.returndate
@@ -45,16 +43,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DateType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link DateType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:tyler:ecf:v5.0:extensions:returndate", name = "ReturnDate")
-    public JAXBElement<DateType> createReturnDate(DateType value) {
-        return new JAXBElement<DateType>(_ReturnDate_QNAME, DateType.class, null, value);
+    @XmlElementDecl(namespace = "urn:tyler:ecf:v5.0:extensions:returndate", name = "ReturnDateMessageAugmentationPoint")
+    public JAXBElement<Object> createReturnDateMessageAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_ReturnDateMessageAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**
@@ -68,19 +66,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:tyler:ecf:v5.0:extensions:returndate", name = "ReturnDateMessage")
     public JAXBElement<ReturnDateMessageType> createReturnDateMessage(ReturnDateMessageType value) {
         return new JAXBElement<ReturnDateMessageType>(_ReturnDateMessage_QNAME, ReturnDateMessageType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:tyler:ecf:v5.0:extensions:returndate", name = "ReturnDateMessageAugmentationPoint")
-    public JAXBElement<Object> createReturnDateMessageAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_ReturnDateMessageAugmentationPoint_QNAME, Object.class, null, value);
     }
 
 }

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="no"?><!-- edited with XMLSpy v2018 sp1 (x64) (http://www.altova.com) by Tyler Technologies (Tyler Technologies) --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:tyler:ecf:v5.0:extensions:criminal" xmlns:clsa="http://reference.niem.gov/niem/specification/code-lists/1.0/code-lists-schema-appinfo/" xmlns:ct="http://release.niem.gov/niem/conformanceTargets/3.0/" xmlns:ecf="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" xmlns:j="http://release.niem.gov/niem/domains/jxdm/6.1/" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" xmlns:niem-xs="http://release.niem.gov/niem/proxy/xsd/4.0/" xmlns:structures="http://release.niem.gov/niem/structures/4.0/" xmlns:term="http://release.niem.gov/niem/localTerminology/3.0/" xmlns:tyler="urn:tyler:ecf:v5.0:extensions:common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:tyler:ecf:v5.0:extensions:criminal">
+	<xs:annotation>
+		<xs:documentation> Schema for namespace https://www.tylertech.com/efm/ecf/v5/criminal</xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" schemaLocation="ecf5-full-ea1e0f75b69752b5.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/niem-core/4.0/" schemaLocation="ecf5-full-7af13829a6695741.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/structures/4.0/" schemaLocation="ecf5-full-43381e9aa490c46d.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/proxy/xsd/4.0/" schemaLocation="ecf5-full-4d179e3e0bd140a9.xsd"/>
+	<xs:import namespace="urn:tyler:ecf:v5.0:extensions:common" schemaLocation="ecf5-full-90b994a1b7805590.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/domains/jxdm/6.1/" schemaLocation="ecf5-full-3fca6aa6e33300e4.xsd"/>
+	<xs:element name="AdditionalStatute" type="j:StatuteType"/>
+	<xs:element name="AppearanceRequiredText" type="nc:TextType"/>
+	<xs:element name="Bond" type="BondType"/>
+	<xs:element name="BondAmount" type="nc:AmountType"/>
+	<xs:complexType name="BondType">
+		<xs:sequence>
+			<xs:element ref="BondTypeCode"/>
+			<xs:element ref="BondAmount"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="BondTypeCode" type="nc:TextType"/>
+	<xs:element name="ChargeAugmentation" substitutionGroup="j:ChargeAugmentationPoint" type="ChargeAugmentationType"/>
+	<xs:complexType name="ChargeAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="TrackingNumber"/>
+					<xs:element ref="OffenseDate"/>
+					<xs:element minOccurs="0" ref="DateOnOrAboutIndicator"/>
+					<xs:element minOccurs="0" ref="TimeOnOrAboutIndicator"/>
+					<xs:element minOccurs="0" ref="Bond"/>
+					<xs:element minOccurs="0" ref="FineAmount"/>
+					<xs:element minOccurs="0" ref="PhaseTypeCode"/>
+					<xs:element minOccurs="0" ref="SequenceNumber"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="AdditionalStatute"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="ChargeHistory"/>
+					<xs:element minOccurs="0" ref="Plea"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ChargeHistory" type="ChargeHistoryType"/>
+	<xs:element name="ChargeHistoryIdentification" type="nc:IdentificationType"/>
+	<xs:complexType name="ChargeHistoryType">
+		<xs:complexContent>
+			<xs:extension base="j:ChargeType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="ChargeHistoryIdentification"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CitationAugmentation" substitutionGroup="structures:ObjectAugmentationPoint" type="CitationAugmentationType"/>
+	<xs:complexType name="CitationAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:any minOccurs="0" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DateOnOrAboutIndicator" type="niem-xs:boolean"/>
+	<xs:element name="DispositionAugmentation" substitutionGroup="structures:ObjectAugmentationPoint" type="DispositionAugmentationType"/>
+	<xs:complexType name="DispositionAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="DispositionIdentification"/>
+					<xs:element minOccurs="0" ref="j:Judge"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DispositionIdentification" type="nc:IdentificationType"/>
+	<xs:element name="FineAmount" type="nc:AmountType"/>
+	<xs:element name="GeneralOffenseCode" type="nc:TextType"/>
+	<xs:element name="IncidentNotationText" type="nc:TextType"/>
+	<xs:element name="JuryTrialDemandDate" type="nc:DateType"/>
+	<xs:element name="JuryTrialDemandIndicator" type="niem-xs:boolean"/>
+	<xs:element name="LocalOrdinanceIndicator" type="niem-xs:boolean"/>
+	<xs:element name="LocalOrdinanceNumberText" type="nc:TextType"/>
+	<xs:element name="OffenseDate" type="nc:DateType"/>
+	<xs:element name="PhaseTypeCode" type="nc:TextType"/>
+	<xs:element name="Plea" type="PleaType"/>
+	<xs:element name="PleaDate" type="nc:DateType"/>
+	<xs:element name="PleaDescriptionText" type="nc:TextType"/>
+	<xs:element name="PleaIdentification" type="nc:IdentificationType"/>
+	<xs:complexType name="PleaType">
+		<xs:sequence>
+			<xs:element minOccurs="0" ref="PleaIdentification"/>
+			<xs:element minOccurs="0" ref="PleaDescriptionText"/>
+			<xs:element minOccurs="0" ref="PleaDate"/>
+			<xs:element minOccurs="0" ref="j:Judge"/>
+			<xs:element minOccurs="0" ref="JuryTrialDemandIndicator"/>
+			<xs:element minOccurs="0" ref="JuryTrialDemandDate"/>
+			<xs:element minOccurs="0" ref="SpeedyTrialDemandIndicator"/>
+			<xs:element minOccurs="0" ref="SpeedyTrialDemandDate"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="ReleaseNotes" type="nc:TextType"/>
+	<xs:element name="SequenceNumber" type="nc:TextType"/>
+	<xs:element name="SpeedyTrialDemandDate" type="nc:DateType"/>
+	<xs:element name="SpeedyTrialDemandIndicator" type="niem-xs:boolean"/>
+	<xs:element name="StatuteAugmentation" substitutionGroup="structures:ObjectAugmentationPoint" type="StatuteAugmentationType"/>
+	<xs:complexType name="StatuteAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="GeneralOffenseCode"/>
+					<xs:element minOccurs="0" ref="StatuteTypeCode"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="StatuteTypeCode" type="nc:TextType"/>
+	<xs:element name="TimeOnOrAboutIndicator" type="niem-xs:boolean"/>
+	<xs:element name="TotalAmount" type="nc:AmountType"/>
+	<xs:element name="TrackingNumber" type="nc:TextType"/>
+</xs:schema>

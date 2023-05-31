@@ -3,17 +3,16 @@ package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caselistrequest;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.niem_core._4.DateRangeType;
-import gov.niem.release.niem.niem_core._4.EntityType;
-import gov.niem.release.niem.niem_core._4.StatusType;
-import gov.niem.release.niem.niem_core._4.TextType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.RequestMessageType;
+import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.common.GetCaseListRequestMessageAugmentationType;
 
 
 /**
@@ -28,10 +27,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}RequestMessageType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistrequest}CaseParticipant" minOccurs="0"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}CaseCategoryCode" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}ActivityStatus" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}DateRange" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistrequest}CaseListQueryCriteria"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistrequest}GetCaseListRequestMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
@@ -44,121 +40,40 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetCaseListRequestMessageType", propOrder = {
-    "caseParticipant",
-    "caseCategoryCode",
-    "activityStatus",
-    "dateRange",
+    "caseListQueryCriteria",
     "getCaseListRequestMessageAugmentationPoint"
 })
 public class GetCaseListRequestMessageType
     extends RequestMessageType
 {
 
-    @XmlElement(name = "CaseParticipant")
-    protected EntityType caseParticipant;
-    @XmlElement(name = "CaseCategoryCode", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf")
-    protected TextType caseCategoryCode;
-    @XmlElement(name = "ActivityStatus", namespace = "http://release.niem.gov/niem/niem-core/4.0/")
-    protected StatusType activityStatus;
-    @XmlElement(name = "DateRange", namespace = "http://release.niem.gov/niem/niem-core/4.0/")
-    protected DateRangeType dateRange;
-    @XmlElement(name = "GetCaseListRequestMessageAugmentationPoint")
-    protected List<Object> getCaseListRequestMessageAugmentationPoint;
+    @XmlElement(name = "CaseListQueryCriteria", required = true)
+    protected CaseListQueryCriteriaType caseListQueryCriteria;
+    @XmlElementRef(name = "GetCaseListRequestMessageAugmentationPoint", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistrequest", type = JAXBElement.class, required = false)
+    protected List<JAXBElement<?>> getCaseListRequestMessageAugmentationPoint;
 
     /**
-     * Gets the value of the caseParticipant property.
+     * Gets the value of the caseListQueryCriteria property.
      * 
      * @return
      *     possible object is
-     *     {@link EntityType }
+     *     {@link CaseListQueryCriteriaType }
      *     
      */
-    public EntityType getCaseParticipant() {
-        return caseParticipant;
+    public CaseListQueryCriteriaType getCaseListQueryCriteria() {
+        return caseListQueryCriteria;
     }
 
     /**
-     * Sets the value of the caseParticipant property.
+     * Sets the value of the caseListQueryCriteria property.
      * 
      * @param value
      *     allowed object is
-     *     {@link EntityType }
+     *     {@link CaseListQueryCriteriaType }
      *     
      */
-    public void setCaseParticipant(EntityType value) {
-        this.caseParticipant = value;
-    }
-
-    /**
-     * Gets the value of the caseCategoryCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TextType }
-     *     
-     */
-    public TextType getCaseCategoryCode() {
-        return caseCategoryCode;
-    }
-
-    /**
-     * Sets the value of the caseCategoryCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TextType }
-     *     
-     */
-    public void setCaseCategoryCode(TextType value) {
-        this.caseCategoryCode = value;
-    }
-
-    /**
-     * Gets the value of the activityStatus property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link StatusType }
-     *     
-     */
-    public StatusType getActivityStatus() {
-        return activityStatus;
-    }
-
-    /**
-     * Sets the value of the activityStatus property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link StatusType }
-     *     
-     */
-    public void setActivityStatus(StatusType value) {
-        this.activityStatus = value;
-    }
-
-    /**
-     * Gets the value of the dateRange property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DateRangeType }
-     *     
-     */
-    public DateRangeType getDateRange() {
-        return dateRange;
-    }
-
-    /**
-     * Sets the value of the dateRange property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DateRangeType }
-     *     
-     */
-    public void setDateRange(DateRangeType value) {
-        this.dateRange = value;
+    public void setCaseListQueryCriteria(CaseListQueryCriteriaType value) {
+        this.caseListQueryCriteria = value;
     }
 
     /**
@@ -179,13 +94,14 @@ public class GetCaseListRequestMessageType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Object }
+     * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link JAXBElement }{@code <}{@link GetCaseListRequestMessageAugmentationType }{@code >}
      * 
      * 
      */
-    public List<Object> getGetCaseListRequestMessageAugmentationPoint() {
+    public List<JAXBElement<?>> getGetCaseListRequestMessageAugmentationPoint() {
         if (getCaseListRequestMessageAugmentationPoint == null) {
-            getCaseListRequestMessageAugmentationPoint = new ArrayList<Object>();
+            getCaseListRequestMessageAugmentationPoint = new ArrayList<JAXBElement<?>>();
         }
         return this.getCaseListRequestMessageAugmentationPoint;
     }

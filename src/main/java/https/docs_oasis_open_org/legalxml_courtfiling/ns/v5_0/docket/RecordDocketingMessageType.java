@@ -7,7 +7,7 @@ import gov.niem.release.niem.niem_core._4.CaseType;
 import gov.niem.release.niem.niem_core._4.TextType;
 import gov.niem.release.niem.proxy.xsd._4.Boolean;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ReviewedDocumentType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentReviewType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing.FilingMessageType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -31,11 +31,11 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *       &lt;sequence&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/docket}CorrectedCase" minOccurs="0"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/docket}FilingReviewCommentsText" minOccurs="0"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/docket}SealCaseIndicator" minOccurs="0"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ReviewedConnectedDocument" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ReviewedLeadDocument" maxOccurs="unbounded"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing}FilingMessage"/&gt;
  *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/docket}RecordDocketingMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/docket}SealCaseIndicator" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ConnectedDocumentReview" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}LeadDocumentReview" maxOccurs="unbounded"/&gt;
+ *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing}FilingMessage"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -49,11 +49,11 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlType(name = "RecordDocketingMessageType", propOrder = {
     "correctedCase",
     "filingReviewCommentsText",
+    "recordDocketingMessageAugmentationPoint",
     "sealCaseIndicator",
-    "reviewedConnectedDocument",
-    "reviewedLeadDocument",
-    "filingMessage",
-    "recordDocketingMessageAugmentationPoint"
+    "connectedDocumentReview",
+    "leadDocumentReview",
+    "filingMessage"
 })
 public class RecordDocketingMessageType
     extends CaseFilingType
@@ -63,16 +63,16 @@ public class RecordDocketingMessageType
     protected CaseType correctedCase;
     @XmlElement(name = "FilingReviewCommentsText")
     protected TextType filingReviewCommentsText;
-    @XmlElement(name = "SealCaseIndicator")
-    protected Boolean sealCaseIndicator;
-    @XmlElement(name = "ReviewedConnectedDocument", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", nillable = true)
-    protected List<ReviewedDocumentType> reviewedConnectedDocument;
-    @XmlElement(name = "ReviewedLeadDocument", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", required = true, nillable = true)
-    protected List<ReviewedDocumentType> reviewedLeadDocument;
-    @XmlElement(name = "FilingMessage", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing", required = true)
-    protected FilingMessageType filingMessage;
     @XmlElement(name = "RecordDocketingMessageAugmentationPoint")
     protected List<Object> recordDocketingMessageAugmentationPoint;
+    @XmlElement(name = "SealCaseIndicator")
+    protected Boolean sealCaseIndicator;
+    @XmlElement(name = "ConnectedDocumentReview", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf")
+    protected List<DocumentReviewType> connectedDocumentReview;
+    @XmlElement(name = "LeadDocumentReview", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", required = true)
+    protected List<DocumentReviewType> leadDocumentReview;
+    @XmlElement(name = "FilingMessage", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing", required = true)
+    protected FilingMessageType filingMessage;
 
     /**
      * Gets the value of the correctedCase property.
@@ -123,112 +123,6 @@ public class RecordDocketingMessageType
     }
 
     /**
-     * Gets the value of the sealCaseIndicator property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public Boolean getSealCaseIndicator() {
-        return sealCaseIndicator;
-    }
-
-    /**
-     * Sets the value of the sealCaseIndicator property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setSealCaseIndicator(Boolean value) {
-        this.sealCaseIndicator = value;
-    }
-
-    /**
-     * Gets the value of the reviewedConnectedDocument property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a <CODE>set</CODE> method for the reviewedConnectedDocument property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getReviewedConnectedDocument().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ReviewedDocumentType }
-     * 
-     * 
-     */
-    public List<ReviewedDocumentType> getReviewedConnectedDocument() {
-        if (reviewedConnectedDocument == null) {
-            reviewedConnectedDocument = new ArrayList<ReviewedDocumentType>();
-        }
-        return this.reviewedConnectedDocument;
-    }
-
-    /**
-     * Gets the value of the reviewedLeadDocument property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a <CODE>set</CODE> method for the reviewedLeadDocument property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getReviewedLeadDocument().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ReviewedDocumentType }
-     * 
-     * 
-     */
-    public List<ReviewedDocumentType> getReviewedLeadDocument() {
-        if (reviewedLeadDocument == null) {
-            reviewedLeadDocument = new ArrayList<ReviewedDocumentType>();
-        }
-        return this.reviewedLeadDocument;
-    }
-
-    /**
-     * Gets the value of the filingMessage property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link FilingMessageType }
-     *     
-     */
-    public FilingMessageType getFilingMessage() {
-        return filingMessage;
-    }
-
-    /**
-     * Sets the value of the filingMessage property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link FilingMessageType }
-     *     
-     */
-    public void setFilingMessage(FilingMessageType value) {
-        this.filingMessage = value;
-    }
-
-    /**
      * Gets the value of the recordDocketingMessageAugmentationPoint property.
      * 
      * <p>
@@ -255,6 +149,112 @@ public class RecordDocketingMessageType
             recordDocketingMessageAugmentationPoint = new ArrayList<Object>();
         }
         return this.recordDocketingMessageAugmentationPoint;
+    }
+
+    /**
+     * Gets the value of the sealCaseIndicator property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean getSealCaseIndicator() {
+        return sealCaseIndicator;
+    }
+
+    /**
+     * Sets the value of the sealCaseIndicator property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setSealCaseIndicator(Boolean value) {
+        this.sealCaseIndicator = value;
+    }
+
+    /**
+     * Gets the value of the connectedDocumentReview property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the connectedDocumentReview property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getConnectedDocumentReview().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link DocumentReviewType }
+     * 
+     * 
+     */
+    public List<DocumentReviewType> getConnectedDocumentReview() {
+        if (connectedDocumentReview == null) {
+            connectedDocumentReview = new ArrayList<DocumentReviewType>();
+        }
+        return this.connectedDocumentReview;
+    }
+
+    /**
+     * Gets the value of the leadDocumentReview property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the leadDocumentReview property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getLeadDocumentReview().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link DocumentReviewType }
+     * 
+     * 
+     */
+    public List<DocumentReviewType> getLeadDocumentReview() {
+        if (leadDocumentReview == null) {
+            leadDocumentReview = new ArrayList<DocumentReviewType>();
+        }
+        return this.leadDocumentReview;
+    }
+
+    /**
+     * Gets the value of the filingMessage property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FilingMessageType }
+     *     
+     */
+    public FilingMessageType getFilingMessage() {
+        return filingMessage;
+    }
+
+    /**
+     * Sets the value of the filingMessage property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FilingMessageType }
+     *     
+     */
+    public void setFilingMessage(FilingMessageType value) {
+        this.filingMessage = value;
     }
 
     /**
