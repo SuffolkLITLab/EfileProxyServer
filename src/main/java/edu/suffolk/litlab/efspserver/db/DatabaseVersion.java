@@ -329,6 +329,10 @@ public class DatabaseVersion {
     try (Statement st = userConn.createStatement()) {
       st.executeUpdate("DROP TABLE refundreason");
     }
+    // There were a few manual patches that need to be considered
+    try (Statement st = codeConn.createStatement()) {
+      st.executeUpdate("DROP TABLE refundreason");
+    }
     final String createRefundReason =
         """
       CREATE TABLE refundreason (
