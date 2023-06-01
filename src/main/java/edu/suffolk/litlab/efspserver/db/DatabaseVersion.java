@@ -327,11 +327,11 @@ public class DatabaseVersion {
     // 6 made the table in the wrong database. Idk
     // how it passed tests.
     try (Statement st = userConn.createStatement()) {
-      st.executeUpdate("DROP TABLE refundreason");
+      st.executeUpdate("DROP TABLE IF EXISTS refundreason");
     }
     // There were a few manual patches that need to be considered
     try (Statement st = codeConn.createStatement()) {
-      st.executeUpdate("DROP TABLE refundreason");
+      st.executeUpdate("DROP TABLE IF EXISTS refundreason");
     }
     final String createRefundReason =
         """
