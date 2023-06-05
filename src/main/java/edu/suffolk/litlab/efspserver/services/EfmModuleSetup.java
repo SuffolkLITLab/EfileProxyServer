@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import edu.suffolk.litlab.efspserver.StdLib;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -8,8 +9,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import edu.suffolk.litlab.efspserver.StdLib;
 
 /** Each module has a jurisdiction it's associated too, and a set of courts that it can handle. */
 public interface EfmModuleSetup {

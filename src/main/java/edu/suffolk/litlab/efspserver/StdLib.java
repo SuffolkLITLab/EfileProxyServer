@@ -3,7 +3,6 @@ package edu.suffolk.litlab.efspserver;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Optional;
-
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import org.slf4j.Logger;

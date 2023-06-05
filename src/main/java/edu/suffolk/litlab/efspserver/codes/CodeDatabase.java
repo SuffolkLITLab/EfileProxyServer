@@ -275,7 +275,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
               CaseCategory newCat = new CaseCategory(rs);
               return Optional.of(newCat);
             } else {
-              log.error("No categories for code " + caseCatCode + " at " + courtLocationId);
+              log.warn("No categories for code " + caseCatCode + " at " + courtLocationId);
               return Optional.empty();
             }
           }
@@ -1008,7 +1008,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
               CourtLocationInfo info = new CourtLocationInfo(rs);
               return Optional.of(info);
             } else {
-              log.error("CourtLocation " + courtId + " not found!");
+              log.warn("CourtLocation " + courtId + " not found!");
               return Optional.empty();
             }
           }

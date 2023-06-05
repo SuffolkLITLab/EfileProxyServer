@@ -101,8 +101,7 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
         return Response.status(500).build();
       }
     } catch (SQLException e) {
-      log.error("Couldn't connect to the SQL database to get the transaction: ");
-      log.error(e.toString());
+      log.error("Couldn't connect to the SQL database to get the transaction: \n" + e.toString());
       return Response.status(500).build();
     }
   }

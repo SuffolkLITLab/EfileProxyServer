@@ -91,7 +91,7 @@ public class MessageSettingsService {
       try {
         node = mapper.readTree(newInfoStr);
       } catch (JsonProcessingException e) {
-        log.error("You need to pass a JSON string");
+        log.error("You need to pass a JSON string to /settings; we got " + newInfoStr);
         MDCWrappers.removeAllMDCs();
         return Response.status(400).build();
       }
@@ -108,7 +108,7 @@ public class MessageSettingsService {
       MDCWrappers.removeAllMDCs();
       return Response.status(200).build();
     } catch (SQLException ex) {
-      log.error("Error when trying to update settings: " + ex);
+      log.error("Error when trying to update settings: " + StdLib.strFromException(ex));
       MDCWrappers.removeAllMDCs();
       return Response.status(500).build();
     }
