@@ -134,19 +134,6 @@ public class SendMessage {
     this.twilioSendingNumber = twilioSendingNumber;
   }
 
-  /** Main just for testing. */
-  public static void main(String[] args) throws IOException {
-    HashMap<String, Object> context = new HashMap<String, Object>();
-    context.put("name", "Suffolk LIT Lab Test");
-    System.out.println("\n" + System.getenv("SMTP_SERVER") + "\n");
-
-    /*
-     sendEmail("test@sender.example.com", "Test email", "test@recipient.example.com",
-     "Hello, {{ name }}. message body", context);
-    */
-    // sendSms("+1.........", "Hello {{ name }}", context);
-  }
-
   /**
    * Send an email, respecting method specified in environment variable EMAIL_METHOD ("smtp" or
    * "sendgrid")
@@ -289,5 +276,18 @@ public class SendMessage {
   public static boolean isValidPhoneNumber(String phoneNumber) {
     // TODO(brycew-later): what format does Twilio need numbers in?
     return true;
+  }
+
+  /** Main just for testing. */
+  public static void main(String[] args) throws IOException {
+    HashMap<String, Object> context = new HashMap<String, Object>();
+    context.put("name", "Suffolk LIT Lab Test");
+    System.out.println("\n" + System.getenv("SMTP_SERVER") + "\n");
+
+    /*
+     sendEmail("test@sender.example.com", "Test email", "test@recipient.example.com",
+     "Hello, {{ name }}. message body", context);
+    */
+    // sendSms("+1.........", "Hello {{ name }}", context);
   }
 }

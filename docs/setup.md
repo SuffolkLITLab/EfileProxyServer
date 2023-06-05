@@ -66,7 +66,6 @@ docassemble server to communicate with the proxy, you can see
 [config.example](config.example) for documentation on those values.
 
 **Note** that it can take at least 30-40 minutes to download and start Docassemble on a midrange laptop.
-(TODO(brycew): do we want a way install all of the "stuff" into the Docassemble container?)
 
 ## Local Development
 

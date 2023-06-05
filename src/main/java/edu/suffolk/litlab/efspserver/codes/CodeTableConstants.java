@@ -19,9 +19,6 @@ public class CodeTableConstants {
   private static final Map<String, String> deleteFromQueries = new HashMap<>();
   private static final Map<String, String> deleteAllJurisdictionFromQueries = new HashMap<>();
 
-  // TODO(brycew-later): the types are confusing here: some are only ever ints,
-  // but are coded as normalizedStrings in the XML. Unclear what to make ints in
-  // the DB.
   static {
     List<Pair<String, String>> locationColumns = new ArrayList<Pair<String, String>>();
     locationColumns.add(new ImmutablePair<String, String>("code", "text"));

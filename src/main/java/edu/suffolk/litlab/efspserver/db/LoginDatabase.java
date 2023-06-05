@@ -233,16 +233,16 @@ public class LoginDatabase implements DatabaseInterface {
       }
       // TODO(brycew): feels hacky, but we don't want an additional column to the db for each new
       // jurisdiction
-      String permissionsName = orgName;
-      if (orgName.contains("-")) {
-        permissionsName = orgName.split("-")[0];
-      }
       if (!loginFunctions.containsKey(orgName)) {
         log.error(
             "There is no " + orgName + " to login to: loginFunctions: " + loginFunctions.keySet());
         return Optional.empty();
       }
 
+      String permissionsName = orgName;
+      if (orgName.contains("-")) {
+        permissionsName = orgName.split("-")[0];
+      }
       if (!atRest.enabled.containsKey(permissionsName) || !atRest.enabled.get(permissionsName)) {
         log.error(
             "There is no " + permissionsName + " to login to: enabled map: " + atRest.enabled);
@@ -251,7 +251,7 @@ public class LoginDatabase implements DatabaseInterface {
       Optional<Map<String, String>> maybeNewTokens =
           loginFunctions.get(orgName).apply(loginInfo.get(orgName));
       if (maybeNewTokens.isEmpty()) {
-        log.error("Couldn't login to " + orgName);
+        log.warn("Couldn't login to " + orgName);
         return Optional.empty();
       }
       log.info("New tokens: " + maybeNewTokens.get());
