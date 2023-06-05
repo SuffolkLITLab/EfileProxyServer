@@ -2,16 +2,7 @@
 package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
 
 import gov.niem.release.niem.domains.cbrn._4.MessageStatusType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caselistresponse.GetCaseListResponseMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caseresponse.GetCaseResponseMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.documentresponse.GetDocumentResponseMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.feesresponse.GetFeesCalculationResponseMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filinglistresponse.GetFilingListResponseMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filingstatusresponse.GetFilingStatusResponseMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.GetPolicyResponseMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.requestdateresponse.RequestCourtDateResponseMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.scheduleresponse.GetCourtScheduleResponseMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.serviceinformationresponse.GetServiceInformationResponseMessageType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -19,6 +10,18 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.batchdetailresponse.GetBatchDetailResponseMessageType;
+import tyler.ecf.v5_0.extensions.batchlistresponse.GetBatchListResponseMessageType;
+import tyler.ecf.v5_0.extensions.capturefeesresponse.CaptureFeesResponseMessageType;
+import tyler.ecf.v5_0.extensions.casehearingresponse.GetCaseHearingsResponseMessageType;
+import tyler.ecf.v5_0.extensions.filingserviceresponse.GetFilingServiceResponseMessageType;
+import tyler.ecf.v5_0.extensions.partylistresponse.GetPartyListResponseMessageType;
+import tyler.ecf.v5_0.extensions.partyresponse.GetPartyResponseMessageType;
+import tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateResponseMessageType;
+import tyler.ecf.v5_0.extensions.servicecaselistresponse.GetServiceCaseListResponseMessageType;
+import tyler.ecf.v5_0.extensions.serviceinformationhistoryresponse.GetServiceInformationHistoryResponseMessageType;
+import tyler.ecf.v5_0.extensions.servicetypesresponse.GetServiceTypesResponseMessageType;
+import tyler.ecf.v5_0.extensions.updatefeesresponse.UpdateFeesResponseMessageType;
 
 
 /**
@@ -48,16 +51,19 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "messageStatus"
 })
 @XmlSeeAlso({
-    GetFilingStatusResponseMessageType.class,
-    GetCourtScheduleResponseMessageType.class,
-    RequestCourtDateResponseMessageType.class,
-    GetCaseResponseMessageType.class,
-    GetCaseListResponseMessageType.class,
+    GetServiceInformationHistoryResponseMessageType.class,
+    GetPartyResponseMessageType.class,
+    GetBatchListResponseMessageType.class,
+    GetServiceCaseListResponseMessageType.class,
+    CaptureFeesResponseMessageType.class,
+    UpdateFeesResponseMessageType.class,
+    GetCaseHearingsResponseMessageType.class,
+    GetFilingServiceResponseMessageType.class,
+    GetBatchDetailResponseMessageType.class,
+    GetServiceTypesResponseMessageType.class,
     GetPolicyResponseMessageType.class,
-    GetFilingListResponseMessageType.class,
-    GetDocumentResponseMessageType.class,
-    GetServiceInformationResponseMessageType.class,
-    GetFeesCalculationResponseMessageType.class
+    ReturnDateResponseMessageType.class,
+    GetPartyListResponseMessageType.class
 })
 public class ResponseMessageType
     extends CaseFilingType

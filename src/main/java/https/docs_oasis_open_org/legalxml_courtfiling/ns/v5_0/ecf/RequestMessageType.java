@@ -1,23 +1,26 @@
 
 package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
 
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.cancel.CancelFilingMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caselistrequest.GetCaseListRequestMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caserequest.GetCaseRequestMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.documentrequest.GetDocumentRequestMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.feesrequest.GetFeesCalculationRequestMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filinglistrequest.GetFilingListRequestMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filingstatusrequest.GetFilingStatusRequestMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyrequest.GetPolicyRequestMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.requestdaterequest.RequestCourtDateRequestMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.schedulerequest.GetCourtScheduleRequestMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.serviceinformationrequest.GetServiceInformationRequestMessageType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.batchdetailrequest.GetBatchDetailMessageType;
+import tyler.ecf.v5_0.extensions.batchlistrequest.GetBatchListMessageType;
+import tyler.ecf.v5_0.extensions.casehearingrequest.GetCaseHearingsMessageType;
+import tyler.ecf.v5_0.extensions.filingservicerequest.GetFilingServiceMessageType;
+import tyler.ecf.v5_0.extensions.partylistrequest.GetPartyListMessageType;
+import tyler.ecf.v5_0.extensions.partyrequest.GetPartyMessageType;
+import tyler.ecf.v5_0.extensions.securecase.SecureCaseMessageType;
+import tyler.ecf.v5_0.extensions.servicecaselist.GetServiceCaseListMessageType;
+import tyler.ecf.v5_0.extensions.serviceinformationhistory.GetServiceInformationHistoryMessageType;
+import tyler.ecf.v5_0.extensions.servicetypesrequest.GetServiceTypesMessageType;
 
 
 /**
@@ -44,17 +47,20 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "RequestMessageType")
 @XmlSeeAlso({
+    GetBatchDetailMessageType.class,
     GetFilingStatusRequestMessageType.class,
-    CancelFilingMessageType.class,
+    GetServiceCaseListMessageType.class,
+    GetBatchListMessageType.class,
     GetCaseListRequestMessageType.class,
-    GetDocumentRequestMessageType.class,
-    GetFilingListRequestMessageType.class,
+    GetPartyListMessageType.class,
+    SecureCaseMessageType.class,
     RequestCourtDateRequestMessageType.class,
-    GetPolicyRequestMessageType.class,
-    GetFeesCalculationRequestMessageType.class,
+    GetFilingServiceMessageType.class,
+    GetServiceInformationHistoryMessageType.class,
+    GetServiceTypesMessageType.class,
+    GetCaseHearingsMessageType.class,
     GetCaseRequestMessageType.class,
-    GetServiceInformationRequestMessageType.class,
-    GetCourtScheduleRequestMessageType.class
+    GetPartyMessageType.class
 })
 public class RequestMessageType
     extends CaseFilingType

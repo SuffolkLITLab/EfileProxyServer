@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,8 +71,7 @@ public class EcfCodesService extends CodesService {
     return cors(Response.ok(retMap));
   }
 
-  public Response getCourts(
-      HttpHeaders httpHeaders, boolean fileableOnly, boolean withNames) {
+  public Response getCourts(HttpHeaders httpHeaders, boolean fileableOnly, boolean withNames) {
     try (CodeDatabase cd = cdSupplier.get()) {
       return cors(ServiceHelpers.getCourts(cd, fileableOnly, withNames));
     } catch (SQLException ex) {

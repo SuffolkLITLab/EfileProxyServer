@@ -56,9 +56,8 @@ public class SoapClientChooser {
           "illinois-test", "wsdl/test/illinois-v5-CourtSchedulingMDE.wsdl",
           "illinois-prod", "wsdl/prod/illinois-v5-CourtSchedulingMDE.wsdl");
 
-  static final Map<String, String> courtPolicyMDEWsdls = 
-      Map.of(
-          "illinois-stage", "wsdl/stage/illinois-v5-CourtPolicyMDE.wsdl");
+  static final Map<String, String> courtPolicyMDEWsdls =
+      Map.of("illinois-stage", "wsdl/stage/illinois-v5-CourtPolicyMDE.wsdl");
 
   public static Optional<FilingReviewMDEService> getFilingReviewFactory(String wsdlDomain) {
     Optional<URL> url = urlFromString(wsdlDomain, filingReviewMDEWsdls);

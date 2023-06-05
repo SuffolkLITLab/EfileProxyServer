@@ -7,7 +7,6 @@ import edu.suffolk.litlab.efspserver.RandomString;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.services.MDCWrappers;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeTableConstants;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -56,6 +55,17 @@ public class LoginDatabase extends Database {
       this.digest = MessageDigest.getInstance("SHA-256");
     } catch (NoSuchAlgorithmException ex) {
       throw new AssertionError(ex);
+    }
+  }
+
+  public static LoginDatabase fromDS(DataSource ds) {
+    try {
+      LoginDatabase cd = new LoginDatabase(ds.getConnection());
+      return cd;
+    } catch (SQLException e) {
+      log.error(
+          "In LoginDatabase constructor, can't get connection: " + StdLib.strFromException(e));
+      throw new RuntimeException(e);
     }
   }
 
@@ -294,5 +304,4 @@ public class LoginDatabase extends Database {
       System.out.println("Using tyler: " + tylerBool + " and using jeffnet: " + jeffnetBool);
     }
   }
-
 }

@@ -6,14 +6,12 @@ import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
 import edu.suffolk.litlab.efspserver.ecfcodes.CodeUpdater;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -56,7 +54,10 @@ public class UpdateCodeVersions implements Job {
     boolean success = true;
     try {
       Map<String, String> config = EfmConfiguration.loadConfig();
-      var ecfVersion = (config.get(jurisdiction).equalsIgnoreCase("ecf5")) ? CodeUpdater.ECF_VERSION.V5: CodeUpdater.ECF_VERSION.V4;
+      var ecfVersion =
+          (config.get(jurisdiction).equalsIgnoreCase("ecf5"))
+              ? CodeUpdater.ECF_VERSION.V5
+              : CodeUpdater.ECF_VERSION.V4;
       try (Connection conn =
               DatabaseCreator.makeSingleConnection(pgDb, pgFullUrl, pgUser, pgPassword);
           CodeDatabase cd = new CodeDatabase(jurisdiction, env, conn)) {

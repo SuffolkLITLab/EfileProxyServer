@@ -7,7 +7,6 @@ import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPor
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
@@ -30,7 +29,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
-
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,8 +82,7 @@ public class FirmAttorneyAndServiceService {
   public FirmAttorneyAndServiceService(
       String jurisdiction, String env, DataSource userDs, Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
-    Optional<EfmFirmService> maybeFirmFactory =
-        TylerUrls.getEfmFirmFactory(jurisdiction, env);
+    Optional<EfmFirmService> maybeFirmFactory = TylerUrls.getEfmFirmFactory(jurisdiction, env);
     if (maybeFirmFactory.isPresent()) {
       this.firmFactory = maybeFirmFactory.get();
     } else {

@@ -61,6 +61,7 @@ public class ObjectFactory {
     private final static QName _PersonNameCategoryAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonNameCategoryAbstract");
     private final static QName _PersonRaceAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "PersonRaceAbstract");
     private final static QName _ItemStyleAbstract_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ItemStyleAbstract");
+    private final static QName _Case_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "Case");
     private final static QName _DocumentAssociationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "DocumentAssociationAugmentationPoint");
     private final static QName _ItemAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "ItemAugmentationPoint");
     private final static QName _OrganizationAssociationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "OrganizationAssociationAugmentationPoint");
@@ -91,7 +92,6 @@ public class ObjectFactory {
     private final static QName _BinarySizeValue_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "BinarySizeValue");
     private final static QName _BinaryURI_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "BinaryURI");
     private final static QName _CapabilityDescriptionText_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "CapabilityDescriptionText");
-    private final static QName _Case_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "Case");
     private final static QName _CaseDisposition_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "CaseDisposition");
     private final static QName _CaseDispositionFinalDate_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "CaseDispositionFinalDate");
     private final static QName _CaseDocketID_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "CaseDocketID");
@@ -474,6 +474,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link IncidentType }
+     * 
+     */
+    public IncidentType createIncidentType() {
+        return new IncidentType();
+    }
+
+    /**
+     * Create an instance of {@link FacilityType }
+     * 
+     */
+    public FacilityType createFacilityType() {
+        return new FacilityType();
+    }
+
+    /**
      * Create an instance of {@link StatusType }
      * 
      */
@@ -762,14 +778,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FacilityType }
-     * 
-     */
-    public FacilityType createFacilityType() {
-        return new FacilityType();
-    }
-
-    /**
      * Create an instance of {@link AssociationType }
      * 
      */
@@ -783,14 +791,6 @@ public class ObjectFactory {
      */
     public ConveyanceType createConveyanceType() {
         return new ConveyanceType();
-    }
-
-    /**
-     * Create an instance of {@link IncidentType }
-     * 
-     */
-    public IncidentType createIncidentType() {
-        return new IncidentType();
     }
 
     /**
@@ -1104,6 +1104,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "ItemStyleAbstract")
     public JAXBElement<Object> createItemStyleAbstract(Object value) {
         return new JAXBElement<Object>(_ItemStyleAbstract_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CaseType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CaseType }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "Case")
+    public JAXBElement<CaseType> createCase(CaseType value) {
+        return new JAXBElement<CaseType>(_Case_QNAME, CaseType.class, null, value);
     }
 
     /**
@@ -1494,19 +1507,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "CapabilityDescriptionText")
     public JAXBElement<TextType> createCapabilityDescriptionText(TextType value) {
         return new JAXBElement<TextType>(_CapabilityDescriptionText_QNAME, TextType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link CaseType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link CaseType }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/niem-core/4.0/", name = "Case")
-    public JAXBElement<CaseType> createCase(CaseType value) {
-        return new JAXBElement<CaseType>(_Case_QNAME, CaseType.class, null, value);
     }
 
     /**

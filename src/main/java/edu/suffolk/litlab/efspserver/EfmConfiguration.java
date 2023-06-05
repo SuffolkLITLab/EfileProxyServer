@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Properties;
 
 public class EfmConfiguration {
-  
+
   public static Map<String, String> loadConfig() throws IOException {
     Properties properties = new Properties();
     try (var inStream = EfmConfiguration.class.getResourceAsStream("/efms.properties")) {
@@ -15,7 +15,7 @@ public class EfmConfiguration {
       }
     }
     Map<String, String> map = new HashMap<>();
-    for (String key: properties.stringPropertyNames()) {
+    for (String key : properties.stringPropertyNames()) {
       if (key.startsWith("efmversion.")) {
         String value = properties.getProperty(key);
         map.put(key.split("\\.")[1], value);

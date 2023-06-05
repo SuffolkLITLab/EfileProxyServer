@@ -258,7 +258,8 @@ public class ServiceHelpers {
 
   public static Optional<IEfmFirmService> setupFirmPort(
       EfmFirmService firmFactory, String tylerToken) {
-    Optional<TylerUserNamePassword> creds = TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds from " + tylerToken + "?");
       return Optional.empty();

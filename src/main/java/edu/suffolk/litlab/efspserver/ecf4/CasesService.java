@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.sql.DataSource;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseListQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseParticipantType;
@@ -68,7 +68,8 @@ public class CasesService extends CasesServiceAPI {
   private final String jurisdiction;
   private final EndpointReflection ef;
 
-  public CasesService(String jurisdiction, String env, DataSource userDs, Supplier<CodeDatabase> cdSupplier) {
+  public CasesService(
+      String jurisdiction, String env, DataSource userDs, Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
     Optional<CourtRecordMDEService> maybeRecords =
         SoapClientChooser.getCourtRecordFactory(jurisdiction, env);
@@ -210,10 +211,7 @@ public class CasesService extends CasesServiceAPI {
   }
 
   @Override
-  public Response getCase(
-      HttpHeaders httpHeaders,
-      String courtId,
-      String caseId) {
+  public Response getCase(HttpHeaders httpHeaders, String courtId, String caseId) {
     MDC.put(MDCWrappers.OPERATION, "CasesService.getCase");
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
@@ -277,22 +275,15 @@ public class CasesService extends CasesServiceAPI {
     }
   }
 
-  /**
-   * Tyler says that Getting document isn't supported. This is here to make that clear to users.
-   */
+  /** Tyler says that Getting document isn't supported. This is here to make that clear to users. */
   @Override
-  public Response getDocument(
-      HttpHeaders httpHeaders,
-      String courtId,
-      String caseId) {
+  public Response getDocument(HttpHeaders httpHeaders, String courtId, String caseId) {
     return Response.status(405).build();
   }
 
   @Override
   public Response getServiceAttachCaseList(
-      HttpHeaders httpHeaders,
-      String courtId,
-      String serviceId) {
+      HttpHeaders httpHeaders, String courtId, String serviceId) {
     MDC.put(MDCWrappers.OPERATION, "CasesService.getServiceAttachCaseList");
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
@@ -316,10 +307,7 @@ public class CasesService extends CasesServiceAPI {
   }
 
   @Override
-  public Response getServiceInformation(
-      HttpHeaders httpHeaders,
-      String courtId,
-      String caseId) {
+  public Response getServiceInformation(HttpHeaders httpHeaders, String courtId, String caseId) {
     MDC.put(MDCWrappers.OPERATION, "CasesService.getServiceInformation");
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
@@ -345,9 +333,7 @@ public class CasesService extends CasesServiceAPI {
 
   @Override
   public Response getServiceInformationHistory(
-      HttpHeaders httpHeaders,
-      String courtId,
-      String caseId) {
+      HttpHeaders httpHeaders, String courtId, String caseId) {
     MDC.put(MDCWrappers.OPERATION, "CasesService.getServiceInformationHistory");
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
@@ -394,7 +380,8 @@ public class CasesService extends CasesServiceAPI {
       log.error(StdLib.strFromException(ex));
       return Optional.empty();
     }
-    Optional<TylerUserNamePassword> creds = TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds?");
       MDCWrappers.removeAllMDCs();

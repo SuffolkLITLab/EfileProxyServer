@@ -1,6 +1,11 @@
 
 package gov.niem.release.niem.niem_core._4;
 
+import gov.niem.release.niem.domains.humanservices._4.JuvenileGangAssociationType;
+import gov.niem.release.niem.domains.humanservices._4.JuvenilePlacementFacilityAssociationType;
+import gov.niem.release.niem.domains.humanservices._4.JuvenilePlacementPersonAssociationType;
+import gov.niem.release.niem.domains.humanservices._4.ParentChildAssociationType;
+import gov.niem.release.niem.domains.humanservices._4.PersonCaseAssociationType;
 import gov.niem.release.niem.domains.jxdm._6.OffenseChargeAssociationType;
 import gov.niem.release.niem.domains.jxdm._6.OffenseLocationAssociationType;
 import gov.niem.release.niem.domains.jxdm._6.PersonBloodAlcoholContentAssociationType;
@@ -49,12 +54,17 @@ import tyler.ecf.v5_0.extensions.common.FilingAssociationType;
     OffenseLocationAssociationType.class,
     PersonChargeAssociationType.class,
     PersonBloodAlcoholContentAssociationType.class,
+    JuvenilePlacementFacilityAssociationType.class,
+    JuvenilePlacementPersonAssociationType.class,
+    ParentChildAssociationType.class,
+    JuvenileGangAssociationType.class,
     DocumentAssociationType.class,
     OrganizationAssociationType.class,
     PersonEmploymentAssociationType.class,
     PersonOrganizationAssociationType.class,
     PersonAssociationType.class,
-    RelatedActivityAssociationType.class
+    RelatedActivityAssociationType.class,
+    PersonCaseAssociationType.class
 })
 public class AssociationType
     extends gov.niem.release.niem.structures._4.AssociationType

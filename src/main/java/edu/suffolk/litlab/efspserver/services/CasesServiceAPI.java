@@ -1,14 +1,14 @@
 package edu.suffolk.litlab.efspserver.services;
 
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Produces(MediaType.APPLICATION_JSON)
 public abstract class CasesServiceAPI {
@@ -27,12 +27,12 @@ public abstract class CasesServiceAPI {
 
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}/documents")
-  public abstract Response getDocument(@Context HttpHeaders httpHeaders,
-        @PathParam("court_id") String courtId, @PathParam("case_tracking_id") String caseId);
+  public abstract Response getDocument(
+      @Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId,
+      @PathParam("case_tracking_id") String caseId);
 
-  /**
-   * Gets all possible cases associated with either a party's name or a docket number.
-   */
+  /** Gets all possible cases associated with either a party's name or a docket number. */
   @GET
   @Path("/courts/{court_id}/cases")
   public abstract Response getCaseList(
@@ -43,7 +43,7 @@ public abstract class CasesServiceAPI {
       @QueryParam("first_name") String firstName,
       @QueryParam("middle_name") String middleName,
       @QueryParam("last_name") String lastName);
-  
+
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}")
   public abstract Response getCase(

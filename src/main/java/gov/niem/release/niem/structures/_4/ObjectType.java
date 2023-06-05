@@ -13,6 +13,8 @@ import gov.niem.release.niem.domains.biometrics._4.DNASampleType;
 import gov.niem.release.niem.domains.cbrn._4.MessageContentErrorType;
 import gov.niem.release.niem.domains.cbrn._4.MessageErrorType;
 import gov.niem.release.niem.domains.cbrn._4.RemarksComplexObjectType;
+import gov.niem.release.niem.domains.humanservices._4.ChildType;
+import gov.niem.release.niem.domains.humanservices._4.JuvenileType;
 import gov.niem.release.niem.domains.jxdm._6.ChargeEnhancingFactorType;
 import gov.niem.release.niem.domains.jxdm._6.ChargeType;
 import gov.niem.release.niem.domains.jxdm._6.CourtAppearanceType;
@@ -65,17 +67,14 @@ import gov.niem.release.niem.niem_core._4.StreetType;
 import gov.niem.release.niem.niem_core._4.TelephoneNumberType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caselistrequest.CaseListQueryCriteriaType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caserequest.CaseQueryCriteriaType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.documentrequest.DocumentQueryCriteriaType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.DecedentEstateCaseType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventActorType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventOnBehalfOfActorType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentReviewDispositionType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentReviewType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentSignatureType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ElectronicServiceInformationType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filinglistrequest.FilingListQueryCriteriaType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filingstatusrequest.FilingStatusQueryCriteriaType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.payment.PaymentMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyrequest.PolicyQueryCriteriaType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.DevelopmentPolicyType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.ExtensionType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.MajorDesignElementType;
@@ -84,8 +83,6 @@ import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.Sup
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.SupportedOperationsType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.SupportedServiceInteractionProfilesType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.SupportedSignatureProfilesType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.requestdateresponse.CourtDateType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.schedulerequest.ScheduleQueryCriteriaType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -101,6 +98,9 @@ import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.batchdetailrequest.BatchDetailQueryCriteriaType;
+import tyler.ecf.v5_0.extensions.batchlistrequest.BatchListQueryCriteriaType;
+import tyler.ecf.v5_0.extensions.batchlistresponse.BatchType;
 import tyler.ecf.v5_0.extensions.common.AddressAugmentationType;
 import tyler.ecf.v5_0.extensions.common.AttachmentAugmentationType;
 import tyler.ecf.v5_0.extensions.common.CaseListQueryCriteriaAugmentationType;
@@ -153,13 +153,14 @@ import tyler.ecf.v5_0.extensions.criminal.StatuteAugmentationType;
     AddressType.class,
     IdentificationType.class,
     EntityType.class,
+    BatchDetailQueryCriteriaType.class,
     FilingStatusQueryCriteriaType.class,
-    CourtDateType.class,
+    BatchListQueryCriteriaType.class,
+    BatchType.class,
     MessageErrorType.class,
     MessageContentErrorType.class,
     RemarksComplexObjectType.class,
     CaseListQueryCriteriaType.class,
-    DocumentQueryCriteriaType.class,
     LocationType.class,
     EnforcementOfficialType.class,
     SubjectType.class,
@@ -179,7 +180,9 @@ import tyler.ecf.v5_0.extensions.criminal.StatuteAugmentationType;
     DriverLicenseBaseType.class,
     DrivingRestrictionType.class,
     ItemRegistrationType.class,
-    FilingListQueryCriteriaType.class,
+    ChildType.class,
+    JuvenileType.class,
+    FacilityType.class,
     DocumentReviewType.class,
     CourtEventOnBehalfOfActorType.class,
     CourtEventActorType.class,
@@ -205,13 +208,12 @@ import tyler.ecf.v5_0.extensions.criminal.StatuteAugmentationType;
     PersonNameType.class,
     PhysicalFeatureType.class,
     PersonLanguageType.class,
-    FacilityType.class,
-    ItemType.class,
     ActivityType.class,
+    ItemType.class,
     MeasureType.class,
     ObligationType.class,
     ScheduleType.class,
-    PolicyQueryCriteriaType.class,
+    DecedentEstateCaseType.class,
     DevelopmentPolicyType.class,
     MajorDesignElementType.class,
     RuntimePolicyType.class,
@@ -221,14 +223,12 @@ import tyler.ecf.v5_0.extensions.criminal.StatuteAugmentationType;
     SupportedSignatureProfilesType.class,
     ExtensionType.class,
     CaseQueryCriteriaType.class,
-    gov.niem.release.niem.niem_core._4.DocumentType.class,
-    ScheduleQueryCriteriaType.class,
-    PaymentMessageType.class,
     BiometricDataType.class,
     BiometricClassificationType.class,
     DNASTRProfileType.class,
     DNASampleType.class,
     BinaryType.class,
+    gov.niem.release.niem.niem_core._4.DocumentType.class,
     ChargeType.class
 })
 public abstract class ObjectType {

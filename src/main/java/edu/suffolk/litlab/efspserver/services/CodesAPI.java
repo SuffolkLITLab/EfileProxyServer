@@ -4,8 +4,8 @@ import java.util.List;
 
 public interface CodesAPI {
   /**
-   * The domain (the juristiction + environment, e.g. illinois-stage)
-   * that this database is working over.
+   * The domain (the juristiction + environment, e.g. illinois-stage) that this database is working
+   * over.
    */
   public abstract String getDomain();
 

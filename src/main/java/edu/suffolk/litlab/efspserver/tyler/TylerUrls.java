@@ -3,10 +3,8 @@ package edu.suffolk.litlab.efspserver.tyler;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.EfmUserService;
 

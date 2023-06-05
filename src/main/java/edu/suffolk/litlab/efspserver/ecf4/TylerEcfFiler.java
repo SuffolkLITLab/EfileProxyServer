@@ -109,7 +109,8 @@ public class TylerEcfFiler extends EfmCheckableFilingInterface {
   private final ServiceMDEService serviceFactory;
   private static final PolicyCacher policyCacher = new PolicyCacher();
 
-  public TylerEcfFiler(String jurisdiction, String env, DataSource codesDs, Supplier<CodeDatabase> cdSupplier) {
+  public TylerEcfFiler(
+      String jurisdiction, String env, DataSource codesDs, Supplier<CodeDatabase> cdSupplier) {
     this.cdSupplier = cdSupplier;
     TylerLogin login = new TylerLogin(jurisdiction, env);
     this.headerKey = login.getHeaderKey();
@@ -900,7 +901,8 @@ public class TylerEcfFiler extends EfmCheckableFilingInterface {
   }
 
   private Optional<FilingReviewMDEPort> setupFilingPort(String apiToken) {
-    Optional<TylerUserNamePassword> creds = TylerUserNamePassword.userCredsFromAuthorization(apiToken);
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
     if (creds.isEmpty()) {
       return Optional.empty();
     }
@@ -913,7 +915,8 @@ public class TylerEcfFiler extends EfmCheckableFilingInterface {
   }
 
   private Optional<ServiceMDEPort> setupServicePort(String apiToken) {
-    Optional<TylerUserNamePassword> creds = TylerUserNamePassword.userCredsFromAuthorization(apiToken);
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
     if (creds.isEmpty()) {
       return Optional.empty();
     }
@@ -926,7 +929,8 @@ public class TylerEcfFiler extends EfmCheckableFilingInterface {
   }
 
   private Optional<CourtRecordMDEPort> setupRecordPort(String apiToken) {
-    Optional<TylerUserNamePassword> creds = TylerUserNamePassword.userCredsFromAuthorization(apiToken);
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
     if (creds.isEmpty()) {
       return Optional.empty();
     }

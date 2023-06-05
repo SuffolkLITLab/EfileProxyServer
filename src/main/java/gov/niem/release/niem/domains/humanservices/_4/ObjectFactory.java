@@ -30,33 +30,33 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _AbuseNeglectAllegationCategoryText_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "AbuseNeglectAllegationCategoryText");
-    private final static QName _BiologicalParentDeterminationDescriptionText_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "BiologicalParentDeterminationDescriptionText");
-    private final static QName _Child_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "Child");
-    private final static QName _ChildSupportEnforcementCase_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "ChildSupportEnforcementCase");
-    private final static QName _DelinquentAct_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "DelinquentAct");
-    private final static QName _DependencyPetition_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "DependencyPetition");
-    private final static QName _GangOrganization_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "GangOrganization");
-    private final static QName _Juvenile_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "Juvenile");
-    private final static QName _JuvenileAbuseNeglectAllegation_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "JuvenileAbuseNeglectAllegation");
-    private final static QName _JuvenileAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "JuvenileAugmentationPoint");
-    private final static QName _JuvenileCase_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "JuvenileCase");
-    private final static QName _JuvenilePlacement_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "JuvenilePlacement");
-    private final static QName _JuvenilePlacementFacilityAssociation_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "JuvenilePlacementFacilityAssociation");
-    private final static QName _JuvenilePlacementPersonAssociation_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "JuvenilePlacementPersonAssociation");
-    private final static QName _Parent_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "Parent");
-    private final static QName _ParentChildAssociation_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "ParentChildAssociation");
-    private final static QName _ParentChildKinshipCategoryAbstract_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "ParentChildKinshipCategoryAbstract");
-    private final static QName _ParentChildKinshipCategoryCode_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "ParentChildKinshipCategoryCode");
-    private final static QName _PersonCaseAssociation_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "PersonCaseAssociation");
-    private final static QName _PersonCaseAssociationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "PersonCaseAssociationAugmentationPoint");
-    private final static QName _PlacementAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "PlacementAugmentationPoint");
-    private final static QName _PlacementCategoryAbstract_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "PlacementCategoryAbstract");
-    private final static QName _PlacementCategoryCode_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "PlacementCategoryCode");
-    private final static QName _PlacementFacility_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "PlacementFacility");
-    private final static QName _PlacementPerson_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "PlacementPerson");
-    private final static QName _StateDisbursementIndicator_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "StateDisbursementIndicator");
-    private final static QName _SupportingGroundsDescriptionText_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.0/", "SupportingGroundsDescriptionText");
+    private final static QName _AbuseNeglectAllegationCategoryText_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "AbuseNeglectAllegationCategoryText");
+    private final static QName _BiologicalParentDeterminationDescriptionText_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "BiologicalParentDeterminationDescriptionText");
+    private final static QName _Child_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "Child");
+    private final static QName _ChildSupportEnforcementCase_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "ChildSupportEnforcementCase");
+    private final static QName _DelinquentAct_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "DelinquentAct");
+    private final static QName _DependencyPetition_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "DependencyPetition");
+    private final static QName _GangOrganization_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "GangOrganization");
+    private final static QName _Juvenile_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "Juvenile");
+    private final static QName _JuvenileAbuseNeglectAllegation_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "JuvenileAbuseNeglectAllegation");
+    private final static QName _JuvenileAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "JuvenileAugmentationPoint");
+    private final static QName _JuvenileCase_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "JuvenileCase");
+    private final static QName _JuvenilePlacement_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "JuvenilePlacement");
+    private final static QName _JuvenilePlacementFacilityAssociation_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "JuvenilePlacementFacilityAssociation");
+    private final static QName _JuvenilePlacementPersonAssociation_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "JuvenilePlacementPersonAssociation");
+    private final static QName _Parent_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "Parent");
+    private final static QName _ParentChildAssociation_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "ParentChildAssociation");
+    private final static QName _ParentChildKinshipCategoryAbstract_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "ParentChildKinshipCategoryAbstract");
+    private final static QName _ParentChildKinshipCategoryCode_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "ParentChildKinshipCategoryCode");
+    private final static QName _PersonCaseAssociation_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "PersonCaseAssociation");
+    private final static QName _PersonCaseAssociationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "PersonCaseAssociationAugmentationPoint");
+    private final static QName _PlacementAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "PlacementAugmentationPoint");
+    private final static QName _PlacementCategoryAbstract_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "PlacementCategoryAbstract");
+    private final static QName _PlacementCategoryCode_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "PlacementCategoryCode");
+    private final static QName _PlacementFacility_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "PlacementFacility");
+    private final static QName _PlacementPerson_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "PlacementPerson");
+    private final static QName _StateDisbursementIndicator_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "StateDisbursementIndicator");
+    private final static QName _SupportingGroundsDescriptionText_QNAME = new QName("http://release.niem.gov/niem/domains/humanServices/4.1/", "SupportingGroundsDescriptionText");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: gov.niem.release.niem.domains.humanservices._4
@@ -193,7 +193,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "AbuseNeglectAllegationCategoryText")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "AbuseNeglectAllegationCategoryText")
     public JAXBElement<TextType> createAbuseNeglectAllegationCategoryText(TextType value) {
         return new JAXBElement<TextType>(_AbuseNeglectAllegationCategoryText_QNAME, TextType.class, null, value);
     }
@@ -206,7 +206,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "BiologicalParentDeterminationDescriptionText")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "BiologicalParentDeterminationDescriptionText")
     public JAXBElement<TextType> createBiologicalParentDeterminationDescriptionText(TextType value) {
         return new JAXBElement<TextType>(_BiologicalParentDeterminationDescriptionText_QNAME, TextType.class, null, value);
     }
@@ -219,7 +219,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link ChildType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "Child")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "Child")
     public JAXBElement<ChildType> createChild(ChildType value) {
         return new JAXBElement<ChildType>(_Child_QNAME, ChildType.class, null, value);
     }
@@ -232,7 +232,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "ChildSupportEnforcementCase", substitutionHeadNamespace = "http://release.niem.gov/niem/niem-core/4.0/", substitutionHeadName = "Case")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "ChildSupportEnforcementCase", substitutionHeadNamespace = "http://release.niem.gov/niem/niem-core/4.0/", substitutionHeadName = "Case")
     public JAXBElement<ChildSupportEnforcementCaseType> createChildSupportEnforcementCase(ChildSupportEnforcementCaseType value) {
         return new JAXBElement<ChildSupportEnforcementCaseType>(_ChildSupportEnforcementCase_QNAME, ChildSupportEnforcementCaseType.class, null, value);
     }
@@ -245,7 +245,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link IncidentType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "DelinquentAct")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "DelinquentAct")
     public JAXBElement<IncidentType> createDelinquentAct(IncidentType value) {
         return new JAXBElement<IncidentType>(_DelinquentAct_QNAME, IncidentType.class, null, value);
     }
@@ -258,7 +258,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link DependencyPetitionType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "DependencyPetition")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "DependencyPetition")
     public JAXBElement<DependencyPetitionType> createDependencyPetition(DependencyPetitionType value) {
         return new JAXBElement<DependencyPetitionType>(_DependencyPetition_QNAME, DependencyPetitionType.class, null, value);
     }
@@ -271,7 +271,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link OrganizationType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "GangOrganization")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "GangOrganization")
     public JAXBElement<OrganizationType> createGangOrganization(OrganizationType value) {
         return new JAXBElement<OrganizationType>(_GangOrganization_QNAME, OrganizationType.class, null, value);
     }
@@ -284,7 +284,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link JuvenileType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "Juvenile")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "Juvenile")
     public JAXBElement<JuvenileType> createJuvenile(JuvenileType value) {
         return new JAXBElement<JuvenileType>(_Juvenile_QNAME, JuvenileType.class, null, value);
     }
@@ -297,7 +297,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link JuvenileAbuseNeglectAllegationType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "JuvenileAbuseNeglectAllegation")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "JuvenileAbuseNeglectAllegation")
     public JAXBElement<JuvenileAbuseNeglectAllegationType> createJuvenileAbuseNeglectAllegation(JuvenileAbuseNeglectAllegationType value) {
         return new JAXBElement<JuvenileAbuseNeglectAllegationType>(_JuvenileAbuseNeglectAllegation_QNAME, JuvenileAbuseNeglectAllegationType.class, null, value);
     }
@@ -310,7 +310,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "JuvenileAugmentationPoint")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "JuvenileAugmentationPoint")
     public JAXBElement<Object> createJuvenileAugmentationPoint(Object value) {
         return new JAXBElement<Object>(_JuvenileAugmentationPoint_QNAME, Object.class, null, value);
     }
@@ -323,7 +323,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link JuvenileCaseType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "JuvenileCase")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "JuvenileCase")
     public JAXBElement<JuvenileCaseType> createJuvenileCase(JuvenileCaseType value) {
         return new JAXBElement<JuvenileCaseType>(_JuvenileCase_QNAME, JuvenileCaseType.class, null, value);
     }
@@ -336,7 +336,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link JuvenilePlacementType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "JuvenilePlacement")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "JuvenilePlacement")
     public JAXBElement<JuvenilePlacementType> createJuvenilePlacement(JuvenilePlacementType value) {
         return new JAXBElement<JuvenilePlacementType>(_JuvenilePlacement_QNAME, JuvenilePlacementType.class, null, value);
     }
@@ -349,7 +349,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link JuvenilePlacementFacilityAssociationType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "JuvenilePlacementFacilityAssociation")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "JuvenilePlacementFacilityAssociation")
     public JAXBElement<JuvenilePlacementFacilityAssociationType> createJuvenilePlacementFacilityAssociation(JuvenilePlacementFacilityAssociationType value) {
         return new JAXBElement<JuvenilePlacementFacilityAssociationType>(_JuvenilePlacementFacilityAssociation_QNAME, JuvenilePlacementFacilityAssociationType.class, null, value);
     }
@@ -362,7 +362,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link JuvenilePlacementPersonAssociationType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "JuvenilePlacementPersonAssociation")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "JuvenilePlacementPersonAssociation")
     public JAXBElement<JuvenilePlacementPersonAssociationType> createJuvenilePlacementPersonAssociation(JuvenilePlacementPersonAssociationType value) {
         return new JAXBElement<JuvenilePlacementPersonAssociationType>(_JuvenilePlacementPersonAssociation_QNAME, JuvenilePlacementPersonAssociationType.class, null, value);
     }
@@ -375,7 +375,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "Parent")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "Parent")
     public JAXBElement<PersonType> createParent(PersonType value) {
         return new JAXBElement<PersonType>(_Parent_QNAME, PersonType.class, null, value);
     }
@@ -388,7 +388,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link ParentChildAssociationType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "ParentChildAssociation")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "ParentChildAssociation")
     public JAXBElement<ParentChildAssociationType> createParentChildAssociation(ParentChildAssociationType value) {
         return new JAXBElement<ParentChildAssociationType>(_ParentChildAssociation_QNAME, ParentChildAssociationType.class, null, value);
     }
@@ -401,7 +401,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "ParentChildKinshipCategoryAbstract")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "ParentChildKinshipCategoryAbstract")
     public JAXBElement<Object> createParentChildKinshipCategoryAbstract(Object value) {
         return new JAXBElement<Object>(_ParentChildKinshipCategoryAbstract_QNAME, Object.class, null, value);
     }
@@ -414,7 +414,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link ParentChildKinshipCategoryCodeType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "ParentChildKinshipCategoryCode", substitutionHeadNamespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", substitutionHeadName = "ParentChildKinshipCategoryAbstract")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "ParentChildKinshipCategoryCode", substitutionHeadNamespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", substitutionHeadName = "ParentChildKinshipCategoryAbstract")
     public JAXBElement<ParentChildKinshipCategoryCodeType> createParentChildKinshipCategoryCode(ParentChildKinshipCategoryCodeType value) {
         return new JAXBElement<ParentChildKinshipCategoryCodeType>(_ParentChildKinshipCategoryCode_QNAME, ParentChildKinshipCategoryCodeType.class, null, value);
     }
@@ -427,7 +427,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link PersonCaseAssociationType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "PersonCaseAssociation")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "PersonCaseAssociation")
     public JAXBElement<PersonCaseAssociationType> createPersonCaseAssociation(PersonCaseAssociationType value) {
         return new JAXBElement<PersonCaseAssociationType>(_PersonCaseAssociation_QNAME, PersonCaseAssociationType.class, null, value);
     }
@@ -440,7 +440,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "PersonCaseAssociationAugmentationPoint")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "PersonCaseAssociationAugmentationPoint")
     public JAXBElement<Object> createPersonCaseAssociationAugmentationPoint(Object value) {
         return new JAXBElement<Object>(_PersonCaseAssociationAugmentationPoint_QNAME, Object.class, null, value);
     }
@@ -453,7 +453,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "PlacementAugmentationPoint")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "PlacementAugmentationPoint")
     public JAXBElement<Object> createPlacementAugmentationPoint(Object value) {
         return new JAXBElement<Object>(_PlacementAugmentationPoint_QNAME, Object.class, null, value);
     }
@@ -466,7 +466,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "PlacementCategoryAbstract")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "PlacementCategoryAbstract")
     public JAXBElement<Object> createPlacementCategoryAbstract(Object value) {
         return new JAXBElement<Object>(_PlacementCategoryAbstract_QNAME, Object.class, null, value);
     }
@@ -479,7 +479,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link PlacementLocationCodeType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "PlacementCategoryCode", substitutionHeadNamespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", substitutionHeadName = "PlacementCategoryAbstract")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "PlacementCategoryCode", substitutionHeadNamespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", substitutionHeadName = "PlacementCategoryAbstract")
     public JAXBElement<PlacementLocationCodeType> createPlacementCategoryCode(PlacementLocationCodeType value) {
         return new JAXBElement<PlacementLocationCodeType>(_PlacementCategoryCode_QNAME, PlacementLocationCodeType.class, null, value);
     }
@@ -492,7 +492,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link FacilityType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "PlacementFacility")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "PlacementFacility")
     public JAXBElement<FacilityType> createPlacementFacility(FacilityType value) {
         return new JAXBElement<FacilityType>(_PlacementFacility_QNAME, FacilityType.class, null, value);
     }
@@ -505,7 +505,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "PlacementPerson")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "PlacementPerson")
     public JAXBElement<PersonType> createPlacementPerson(PersonType value) {
         return new JAXBElement<PersonType>(_PlacementPerson_QNAME, PersonType.class, null, value);
     }
@@ -518,7 +518,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "StateDisbursementIndicator")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "StateDisbursementIndicator")
     public JAXBElement<Boolean> createStateDisbursementIndicator(Boolean value) {
         return new JAXBElement<Boolean>(_StateDisbursementIndicator_QNAME, Boolean.class, null, value);
     }
@@ -531,7 +531,7 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
      */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", name = "SupportingGroundsDescriptionText")
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", name = "SupportingGroundsDescriptionText")
     public JAXBElement<TextType> createSupportingGroundsDescriptionText(TextType value) {
         return new JAXBElement<TextType>(_SupportingGroundsDescriptionText_QNAME, TextType.class, null, value);
     }

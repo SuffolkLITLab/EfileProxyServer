@@ -3,12 +3,12 @@ package edu.suffolk.litlab.efspserver.ecf5;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE_Service;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDEService;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtrecordmde.CourtRecordMDEService;
-
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tyler.ecf.v5_0.extensions.tylercourtrecordmde.TylerCourtRecordMDEService;
 
 /**
  * Handles working in multiple Tyler Jurisdictions. Needs to have all of the WSDL files hardcoded
@@ -37,8 +37,7 @@ public class SoapClientChooser {
           "indiana-stage", "wsdl/stage/indiana-ECF-4.0-FilingReviewMDEService.wsdl");
 
   static final Map<String, String> courtRecordMDEWsdls =
-      Map.of(
-          "illinois-stage", "wsdl/stage/illinois-ecf5-CourtRecordMDEService.wsdl");
+      Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-CourtRecordMDEService.wsdl");
 
   static final Map<String, String> courtSchedulingMDEWsdls =
       Map.of(
@@ -46,9 +45,11 @@ public class SoapClientChooser {
           "illinois-test", "wsdl/test/illinois-v5-CourtSchedulingMDE.wsdl",
           "illinois-prod", "wsdl/prod/illinois-v5-CourtSchedulingMDE.wsdl");
 
-  static final Map<String, String> courtPolicyMDEWsdls = 
-      Map.of(
-          "illinois-stage", "wsdl/stage/illinois-ecf5-CourtPolicyMDEService.wsdl");
+  static final Map<String, String> courtPolicyMDEWsdls =
+      Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-CourtPolicyMDEService.wsdl");
+
+  static final Map<String, String> tylerCourtRecordMDEWsdls =
+      Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-CourtPolicyMDEService.wsdl");
 
   /*
   public static Optional<FilingReviewMDEService> getFilingReviewFactory(String wsdlDomain) {
@@ -81,6 +82,16 @@ public class SoapClientChooser {
     return getCourtRecordFactory(jurisdiction + "-" + env);
   }
 
+  public static Optional<TylerCourtRecordMDEService> getTylerCourtRecordFactory(String wsdlDomain) {
+    Optional<URL> url = urlFromString(wsdlDomain, courtRecordMDEWsdls);
+    return url.map(u -> new TylerCourtRecordMDEService(u));
+  }
+
+  public static Optional<TylerCourtRecordMDEService> getTylerCourtRecordFactory(
+      String jurisdiction, String env) {
+    return getTylerCourtRecordFactory(jurisdiction + "-" + env);
+  }
+
   public static Optional<CourtSchedulingMDE_Service> getCourtSchedulingFactory(String wsdlDomain) {
     Optional<URL> url = urlFromString(wsdlDomain, courtSchedulingMDEWsdls);
     return url.map(u -> new CourtSchedulingMDE_Service(u));
@@ -94,13 +105,12 @@ public class SoapClientChooser {
   public static Optional<CourtPolicyMDEService> getCourtPolicyFactory(String wsdlDomain) {
     Optional<URL> url = urlFromString(wsdlDomain, courtPolicyMDEWsdls);
     return url.map(u -> new CourtPolicyMDEService(u));
-
   }
 
-  public static Optional<CourtPolicyMDEService> getCourtPolicyFactory(String jurisdiction, String env) {
+  public static Optional<CourtPolicyMDEService> getCourtPolicyFactory(
+      String jurisdiction, String env) {
     return getCourtPolicyFactory(jurisdiction + "-" + env);
   }
-
 
   private static Optional<URL> urlFromString(String wsdlDomain, Map<String, String> domainToWsdl) {
     if (!domainToWsdl.containsKey(wsdlDomain)) {

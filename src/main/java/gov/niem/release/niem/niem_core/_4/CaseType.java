@@ -3,6 +3,8 @@ package gov.niem.release.niem.niem_core._4;
 
 import java.util.ArrayList;
 import java.util.List;
+import gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
+import gov.niem.release.niem.domains.humanservices._4.JuvenileCaseType;
 import gov.niem.release.niem.domains.jxdm._6.AppellateCaseType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -45,7 +47,9 @@ import tyler.ecf.v5_0.extensions.common.SchedulingAugmentationType;
     "caseAugmentationPoint"
 })
 @XmlSeeAlso({
-    AppellateCaseType.class
+    AppellateCaseType.class,
+    ChildSupportEnforcementCaseType.class,
+    JuvenileCaseType.class
 })
 public class CaseType
     extends ActivityType
@@ -99,6 +103,7 @@ public class CaseType
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link JAXBElement }{@code <}{@link gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.CaseAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
      * {@link JAXBElement }{@code <}{@link tyler.ecf.v5_0.extensions.common.CaseAugmentationType }{@code >}

@@ -16,8 +16,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * An augmentation type
- * 
  * <p>Java class for CaseAugmentationType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.

@@ -34,12 +34,13 @@ public class CourtsOnlyCodesService extends CodesService {
     return cors(Response.ok(retMap));
   }
 
-  public Response getCourts(
-      HttpHeaders httpHeaders, boolean fileableOnly, boolean withNames) {
+  public Response getCourts(HttpHeaders httpHeaders, boolean fileableOnly, boolean withNames) {
     // Assume all fileable.
     if (withNames) {
-      return cors(Response.ok(
-              courts.entrySet().stream().sorted()
+      return cors(
+          Response.ok(
+              courts.entrySet().stream()
+                  .sorted()
                   .map(e -> new NameAndCode(e.getValue(), e.getKey()))
                   .collect(Collectors.toList())));
     } else {
@@ -70,7 +71,8 @@ public class CourtsOnlyCodesService extends CodesService {
 
   public Response getCourtLocationCodes(String courtId) {
     if (this.courts.containsKey(courtId)) {
-      return cors(Response.ok(
+      return cors(
+          Response.ok(
               Map.of("name", this.courts.get(courtId), "code", courtId, "efmType", "jeffnet")));
     } else {
       log.info("Wrong court queried?: " + courtId + " in jurisdiction " + jurisdiction);

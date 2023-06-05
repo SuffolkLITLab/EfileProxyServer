@@ -1,12 +1,11 @@
 package edu.suffolk.litlab.efspserver.ecf5;
 
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.GetPolicyRequestType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.GetPolicyResponseType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyrequest.GetPolicyRequestMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyrequest.PolicyQueryCriteriaType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.GetPolicyResponseMessageType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.GetPolicyRequestType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.GetPolicyResponseType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDE;
-
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,8 +19,7 @@ public class PolicyCacher {
     this.lastFlushed = LocalDateTime.now();
   }
 
-  public GetPolicyResponseMessageType getPolicyFor(
-      CourtPolicyMDE policyPort, String courtId) {
+  public GetPolicyResponseMessageType getPolicyFor(CourtPolicyMDE policyPort, String courtId) {
     if (needToFlushCache()) {
       flushCache();
     }
@@ -33,7 +31,9 @@ public class PolicyCacher {
       var msg = new GetPolicyRequestMessageType();
       msg.setCaseCourt(Ecf5Helper.convertCourt(courtId));
       msg.setSendingMDELocationID(Ecf5Helper.convertId("https://efile.suffolklitlab.org"));
-      msg.setServiceInteractionProfileCode(Ecf5Helper.convertNormalizedString("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-5.0"));
+      msg.setServiceInteractionProfileCode(
+          Ecf5Helper.convertNormalizedString(
+              "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-5.0"));
       msg.setDocumentPostDate(Ecf5Helper.convertNow());
       msg.getDocumentIdentification().add(Ecf5Helper.convertId("1", "FilingAssembly", "messageID"));
       PolicyQueryCriteriaType pqct = new PolicyQueryCriteriaType();

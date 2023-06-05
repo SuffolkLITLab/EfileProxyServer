@@ -27,8 +27,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://release.niem.gov/niem/niem-core/4.0/}ActivityType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.0/}PlacementCategoryAbstract" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.0/}PlacementAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.1/}PlacementCategoryAbstract" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.1/}PlacementAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -50,7 +50,7 @@ public class PlacementType
     extends ActivityType
 {
 
-    @XmlElementRef(name = "PlacementCategoryAbstract", namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", type = JAXBElement.class, required = false)
+    @XmlElementRef(name = "PlacementCategoryAbstract", namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", type = JAXBElement.class, required = false)
     protected JAXBElement<?> placementCategoryAbstract;
     @XmlElement(name = "PlacementAugmentationPoint")
     protected List<Object> placementAugmentationPoint;

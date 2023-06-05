@@ -3,6 +3,7 @@ package gov.niem.release.niem.domains.jxdm._6;
 
 import java.util.ArrayList;
 import java.util.List;
+import gov.niem.release.niem.domains.humanservices._4.JuvenileAbuseNeglectAllegationType;
 import gov.niem.release.niem.niem_core._4.TextType;
 import gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.JAXBElement;
@@ -65,6 +66,7 @@ import tyler.ecf.v5_0.extensions.criminal.ChargeHistoryType;
     "chargeAugmentationPoint"
 })
 @XmlSeeAlso({
+    JuvenileAbuseNeglectAllegationType.class,
     ChargeHistoryType.class
 })
 public class ChargeType

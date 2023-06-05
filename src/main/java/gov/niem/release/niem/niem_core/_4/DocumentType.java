@@ -4,6 +4,7 @@ package gov.niem.release.niem.niem_core._4;
 import java.util.ArrayList;
 import java.util.List;
 import gov.niem.release.niem.codes.iso_639_3._4.LanguageCodeType;
+import gov.niem.release.niem.domains.humanservices._4.DependencyPetitionType;
 import gov.niem.release.niem.domains.jxdm._6.AppellateCaseNoticeType;
 import gov.niem.release.niem.structures._4.ObjectType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
@@ -76,6 +77,7 @@ import tyler.ecf.v5_0.extensions.common.StatusDocumentAugmentationType;
 @XmlSeeAlso({
     FilingType.class,
     AppellateCaseNoticeType.class,
+    DependencyPetitionType.class,
     DocumentRenditionType.class,
     ReviewedDocumentType.class,
     CaseFilingType.class

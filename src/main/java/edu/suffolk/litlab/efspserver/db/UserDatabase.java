@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.db;
 
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeTableConstants;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,8 +12,6 @@ import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import edu.suffolk.litlab.efspserver.tyler.codes.CodeTableConstants;
 
 /**
  * Very similar to the CodeDatabase, but for user data, kept at a minimum.

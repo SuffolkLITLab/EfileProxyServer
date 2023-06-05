@@ -3,6 +3,8 @@ package edu.suffolk.litlab.efspserver.services;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
 
+import com.hubspot.algebra.NullValue;
+import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
@@ -30,16 +32,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
 import javax.sql.DataSource;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-
-import com.hubspot.algebra.NullValue;
-import com.hubspot.algebra.Result;
-
 import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.EfmUserService;
 import tyler.efm.services.IEfmFirmService;
@@ -71,26 +68,13 @@ import tyler.efm.services.schema.updateuserresponse.UpdateUserResponseType;
 import tyler.efm.services.schema.userlistresponse.UserListResponseType;
 
 /**
- * Covers all of the FirmUserManagement and UserService operations.
- * - User Service
- * - ChangePassword
- * - ResetPassword 
- * - GetUser (User Service) 
- * - UpdateUser (User Service)
- * - GetNotificationPreferences 
- * - UpdateNotificationPreferences
- * - SelfResendActivationEmail
- * - Firm User Management 
- * - RegisterUser: PUT on /users 
- * - AddUserRole: POST on /users/{id}/role
- * - GetUser: GET on /users/{id}
- * - GetUserList: GET on /users 
- * - RemoveUser: DELETE on /users/{id}
- * - RemoveUserRole: DELETE on /users/{id}/role
- * - ResendActivationEmail 
- * - ResetUserPassword
- * - UpdateUser: POST on /users/{id}
- * - GetNotificationPreferencesList
+ * Covers all of the FirmUserManagement and UserService operations. - User Service - ChangePassword
+ * - ResetPassword - GetUser (User Service) - UpdateUser (User Service) - GetNotificationPreferences
+ * - UpdateNotificationPreferences - SelfResendActivationEmail - Firm User Management -
+ * RegisterUser: PUT on /users - AddUserRole: POST on /users/{id}/role - GetUser: GET on /users/{id}
+ * - GetUserList: GET on /users - RemoveUser: DELETE on /users/{id} - RemoveUserRole: DELETE on
+ * /users/{id}/role - ResendActivationEmail - ResetUserPassword - UpdateUser: POST on /users/{id} -
+ * GetNotificationPreferencesList
  *
  * @author brycew
  */
@@ -106,19 +90,22 @@ public class AdminUserService {
   private final Supplier<CodeDatabase> cdSupplier;
   private final String jurisdiction;
 
-  public AdminUserService(String jurisdiction, String env, DataSource userDs, Supplier<CodeDatabase> cdSupplier, Function<String, Result<NullValue, String>> passwordChecker) {
+  public AdminUserService(
+      String jurisdiction,
+      String env,
+      DataSource userDs,
+      Supplier<CodeDatabase> cdSupplier,
+      Function<String, Result<NullValue, String>> passwordChecker) {
     this.jurisdiction = jurisdiction;
     this.passwordChecker = passwordChecker;
-    Optional<EfmUserService> maybeUserFactory =
-        TylerUrls.getEfmUserFactory(jurisdiction, env);
+    Optional<EfmUserService> maybeUserFactory = TylerUrls.getEfmUserFactory(jurisdiction, env);
     if (maybeUserFactory.isEmpty()) {
       throw new RuntimeException(
           "Can't find " + jurisdiction + " in the SoapClientChooser for EfmUser");
     }
     this.userFactory = maybeUserFactory.get();
     ;
-    Optional<EfmFirmService> maybeFirmFactory =
-        TylerUrls.getEfmFirmFactory(jurisdiction, env);
+    Optional<EfmFirmService> maybeFirmFactory = TylerUrls.getEfmFirmFactory(jurisdiction, env);
     if (maybeFirmFactory.isEmpty()) {
       throw new RuntimeException(
           "Can't find " + jurisdiction + " in the SoapClientChooser for EfmFirm factory");

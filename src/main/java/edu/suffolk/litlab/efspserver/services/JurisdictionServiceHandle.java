@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import edu.suffolk.litlab.efspserver.ecf5.CourtSchedulingService;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -11,14 +12,11 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.suffolk.litlab.efspserver.ecf4.CasesService;
-import edu.suffolk.litlab.efspserver.ecf5.CourtSchedulingService;
-
 public class JurisdictionServiceHandle {
   private static Logger log = LoggerFactory.getLogger(JurisdictionServiceHandle.class);
 
   private final Optional<AdminUserService> adminUser;
-  private final Optional<CasesService> cases;
+  private final Optional<CasesServiceAPI> cases;
   private final Optional<CodesService> codes;
   private final Optional<CourtSchedulingService> courtScheduling;
   private final FilingReviewService filingReview;
@@ -29,7 +27,7 @@ public class JurisdictionServiceHandle {
   public JurisdictionServiceHandle(
       String jurisdiction,
       AdminUserService au,
-      CasesService c,
+      CasesServiceAPI c,
       CodesService codes,
       CourtSchedulingService cs,
       FilingReviewService fr,
@@ -49,7 +47,7 @@ public class JurisdictionServiceHandle {
   public JurisdictionServiceHandle(
       String jurisdiction,
       AdminUserService au,
-      CasesService c,
+      CasesServiceAPI c,
       CodesService codes,
       Optional<CourtSchedulingService> cs,
       FilingReviewService fr,
@@ -94,7 +92,7 @@ public class JurisdictionServiceHandle {
   private JurisdictionServiceHandle(
       String jurisdiction,
       Optional<AdminUserService> adminUser,
-      Optional<CasesService> cases,
+      Optional<CasesServiceAPI> cases,
       Optional<CodesService> codes,
       Optional<CourtSchedulingService> courtScheduling,
       FilingReviewService filingReview,
@@ -149,7 +147,7 @@ public class JurisdictionServiceHandle {
   }
 
   @Path("/cases")
-  public CasesService getCasesService() {
+  public CasesServiceAPI getCasesService() {
     return cases.orElse(null);
   }
 

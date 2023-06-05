@@ -3,6 +3,7 @@ package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.requestdatereques
 
 import java.util.ArrayList;
 import java.util.List;
+import gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
 import gov.niem.release.niem.niem_core._4.CaseType;
 import gov.niem.release.niem.niem_core._4.DateRangeType;
 import gov.niem.release.niem.niem_core._4.TextType;
@@ -59,8 +60,8 @@ public class RequestCourtDateRequestMessageType
 
     @XmlElement(name = "CaseParticipantRoleCode", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf")
     protected TextType caseParticipantRoleCode;
-    @XmlElement(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", nillable = true)
-    protected CaseType _case;
+    @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
+    protected JAXBElement<? extends CaseType> _case;
     @XmlElementRef(name = "RequestCourtDateRequestMessageAugmentationPoint", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/requestdaterequest", type = JAXBElement.class, required = false)
     protected List<JAXBElement<?>> requestCourtDateRequestMessageAugmentationPoint;
     @XmlElement(name = "EstimatedDuration", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/reservedate")
@@ -97,10 +98,11 @@ public class RequestCourtDateRequestMessageType
      * 
      * @return
      *     possible object is
-     *     {@link CaseType }
+     *     {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
      *     
      */
-    public CaseType getCase() {
+    public JAXBElement<? extends CaseType> getCase() {
         return _case;
     }
 
@@ -109,10 +111,11 @@ public class RequestCourtDateRequestMessageType
      * 
      * @param value
      *     allowed object is
-     *     {@link CaseType }
+     *     {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
      *     
      */
-    public void setCase(CaseType value) {
+    public void setCase(JAXBElement<? extends CaseType> value) {
         this._case = value;
     }
 

@@ -1,16 +1,11 @@
 package edu.suffolk.litlab.efspserver.ecf5;
 
 import static edu.suffolk.litlab.efspserver.JsonHelpers.isNull;
-import static edu.suffolk.litlab.efspserver.ecf5.Ecfv5XmlHelper.convertBool;
-import static edu.suffolk.litlab.efspserver.ecf5.Ecfv5XmlHelper.convertDateTime;
 import static edu.suffolk.litlab.efspserver.ecf5.Ecfv5XmlHelper.convertId;
-import static edu.suffolk.litlab.efspserver.ecf5.Ecfv5XmlHelper.convertNormalized;
-import static edu.suffolk.litlab.efspserver.ecf5.Ecfv5XmlHelper.convertString;
 import static edu.suffolk.litlab.efspserver.ecf5.Ecfv5XmlHelper.convertText;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hubspot.algebra.Result;
-import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
@@ -21,33 +16,19 @@ import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.ComboCaseCodes;
 import edu.suffolk.litlab.efspserver.tyler.codes.PartyType;
-import gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType;
-import gov.niem.release.niem.domains.jxdm._6.CaseOfficialType;
-import gov.niem.release.niem.domains.jxdm._6.CourtEventType;
-import gov.niem.release.niem.niem_core._4.AmountType;
 import gov.niem.release.niem.niem_core._4.CaseType;
-import gov.niem.release.niem.niem_core._4.DateType;
 import gov.niem.release.niem.niem_core._4.EntityType;
-import gov.niem.release.niem.niem_core._4.IdentificationType;
 import gov.niem.release.niem.niem_core._4.OrganizationType;
 import gov.niem.release.niem.niem_core._4.PersonType;
-import gov.niem.release.niem.proxy.xsd._4.Decimal;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseOfficialAugmentationType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventAugmentationType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.OrganizationAugmentationType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAugmentationType;
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tyler.ecf.v5_0.extensions.common.FilingAttorneyEntityType;
-import tyler.ecf.v5_0.extensions.common.FilingPartyEntityType;
-import tyler.ecf.v5_0.extensions.common.FilingReferenceType;
 
 public class Ecfv5CaseTypeFactory {
   private static Logger log = LoggerFactory.getLogger(Ecfv5CaseTypeFactory.class);
@@ -72,6 +53,31 @@ public class Ecfv5CaseTypeFactory {
         new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.ObjectFactory();
   }
 
+  public static Optional<
+          https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseAugmentationType>
+      getEcfCaseAugmentation(CaseType caseType) {
+    for (var casePoint : caseType.getCaseAugmentationPoint()) {
+      if (casePoint.getValue()
+          instanceof
+          https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseAugmentationType
+          ecfType) {
+        return Optional.of(ecfType);
+      }
+    }
+    return Optional.empty();
+  }
+
+  public static Optional<tyler.ecf.v5_0.extensions.common.CaseAugmentationType>
+      getTylerCaseAugmentation(CaseType caseType) {
+    for (var casePoint : caseType.getCaseAugmentationPoint()) {
+      if (casePoint.getValue()
+          instanceof tyler.ecf.v5_0.extensions.common.CaseAugmentationType tylerType) {
+        return Optional.of(tylerType);
+      }
+    }
+    return Optional.empty();
+  }
+
   public Result<CaseType, FilingError> createCaseType(
       FilingInformation info,
       ComboCaseCodes allCodes,
@@ -92,8 +98,8 @@ public class Ecfv5CaseTypeFactory {
 
     CaseType ct = niemObjFac.createCaseType();
 
-    return null; 
-    /* 
+    return null;
+    /*
     info.getPreviousCaseId().ifPresent(id -> ct.setCaseTrackingID(convertString(id)));
 
     // TODO(#47): Time Zones

@@ -13,12 +13,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
- * The endpoints for the court specific configurations that clients need to use
- * to file properly. "Codes" is short for genericodes, a XML standard that ECF uses
- * to communicate these configurations to EFSPs, and we use it to refer to any such
- * court configurations.
- * 
- * 
+ * The endpoints for the court specific configurations that clients need to use to file properly.
+ * "Codes" is short for genericodes, a XML standard that ECF uses to communicate these
+ * configurations to EFSPs, and we use it to refer to any such court configurations.
  */
 @Produces({MediaType.APPLICATION_JSON})
 public abstract class CodesService {
@@ -30,7 +27,8 @@ public abstract class CodesService {
 
   @GET
   @Path("/courts")
-  public abstract Response getCourts(@Context HttpHeaders httpHeaders,
+  public abstract Response getCourts(
+      @Context HttpHeaders httpHeaders,
       @DefaultValue("false") @QueryParam("fileable_only") boolean fileable,
       @DefaultValue("false") @QueryParam("with_names") boolean withNames);
 

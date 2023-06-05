@@ -3,7 +3,6 @@ package edu.suffolk.litlab.efspserver.services;
 import static edu.suffolk.litlab.efspserver.StdLib.GetEnv;
 
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
-
 import edu.suffolk.litlab.efspserver.EfmConfiguration;
 import edu.suffolk.litlab.efspserver.HttpsCallbackHandler;
 import edu.suffolk.litlab.efspserver.SendMessage;
@@ -217,10 +216,12 @@ public class EfspServer {
         continue;
       }
       if (config.getOrDefault(jurisdiction, "ecf4").equalsIgnoreCase("ecf5")) {
-        edu.suffolk.litlab.efspserver.ecf5.TylerModuleSetup.create(jurisdiction, togaKeys.get(idx), converterMap, codeDs, userDs, sender)
+        edu.suffolk.litlab.efspserver.ecf5.TylerModuleSetup.create(
+                jurisdiction, togaKeys.get(idx), converterMap, codeDs, userDs, sender)
             .ifPresent(mod -> modules.add(mod));
       } else {
-        edu.suffolk.litlab.efspserver.ecf4.TylerModuleSetup.create(jurisdiction, togaKeys.get(idx), converterMap, codeDs, userDs, sender)
+        edu.suffolk.litlab.efspserver.ecf4.TylerModuleSetup.create(
+                jurisdiction, togaKeys.get(idx), converterMap, codeDs, userDs, sender)
             .ifPresent(mod -> modules.add(mod));
       }
     }

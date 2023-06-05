@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
-
 import javax.sql.DataSource;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.CardAccountType;
@@ -268,9 +267,9 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
                 "Filing ID " + filingId + " not found"));
         return reply;
       }
-      String statusText = null; //reviewedFilingStatusText(revFiling, trans.get());
-      String messageText = null; //reviewedFilingMessageText(revFiling, trans.get());
-      UpdateMessageStatus status = null; //reviewedFilingStatusCode(revFiling);
+      String statusText = null; // reviewedFilingStatusText(revFiling, trans.get());
+      String messageText = null; // reviewedFilingMessageText(revFiling, trans.get());
+      UpdateMessageStatus status = null; // reviewedFilingStatusCode(revFiling);
       String courtName =
           trans.get().courtId.substring(0, 1).toUpperCase() + trans.get().courtId.substring(1);
       try (CodeDatabase cd = cdSupplier.get()) {

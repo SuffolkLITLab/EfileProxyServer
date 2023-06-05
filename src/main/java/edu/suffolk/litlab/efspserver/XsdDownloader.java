@@ -1,6 +1,5 @@
 package edu.suffolk.litlab.efspserver;
 
-import java.nio.charset.StandardCharsets;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -8,6 +7,7 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -24,14 +25,12 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.bouncycastle.util.encoders.Hex;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.bouncycastle.util.encoders.Hex;
 import org.xml.sax.SAXException;
-
-import javax.xml.transform.OutputKeys;
 
 /**
  * Downloaded the FilingReviewMDE wsdl, necessary for it to run faster. Slightly modified to handle
@@ -53,27 +52,32 @@ public class XsdDownloader {
   private final String downloadPrefix;
 
   private String strToHash(final String str) throws NoSuchAlgorithmException {
-      MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-      String fullHash = new String(Hex.encode(messageDigest.digest(str.getBytes(StandardCharsets.UTF_8))));
-      return fullHash.substring(0, 16);
+    MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+    String fullHash =
+        new String(Hex.encode(messageDigest.digest(str.getBytes(StandardCharsets.UTF_8))));
+    return fullHash.substring(0, 16);
   }
 
   public static String documentToString(Document document) throws TransformerException {
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    Transformer transformer = transformerFactory.newTransformer();
+    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+    transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-        DOMSource source = new DOMSource(document);
-        StreamResult result = new StreamResult(new StringWriter());
-        transformer.transform(source, result);
+    DOMSource source = new DOMSource(document);
+    StreamResult result = new StreamResult(new StringWriter());
+    transformer.transform(source, result);
 
-        return result.getWriter().toString();
-    }
+    return result.getWriter().toString();
+  }
 
   private String downloadXsdRecurse(final String xsdUrl, final String pastUrl)
-      throws IOException, ParserConfigurationException, SAXException, TransformerException, NoSuchAlgorithmException {
+      throws IOException,
+          ParserConfigurationException,
+          SAXException,
+          TransformerException,
+          NoSuchAlgorithmException {
 
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     dbf.setNamespaceAware(true);
@@ -106,7 +110,6 @@ public class XsdDownloader {
 
     System.out.println("workedURL: " + workedUrl);
 
-
     String outputFileName = downloadPrefix;
     if (fileNamesByprocessedUrls.size() > 0) {
       outputFileName = outputFileName + "-" + strToHash(documentToString(doc));
@@ -134,7 +137,11 @@ public class XsdDownloader {
   }
 
   private void processElementRecurse(final Element node, String pastUrl)
-      throws IOException, ParserConfigurationException, SAXException, TransformerException, NoSuchAlgorithmException {
+      throws IOException,
+          ParserConfigurationException,
+          SAXException,
+          TransformerException,
+          NoSuchAlgorithmException {
     NodeList nodeList = node.getChildNodes();
     int len = nodeList.getLength();
     for (int i = 0; i < len; i++) {
@@ -191,7 +198,11 @@ public class XsdDownloader {
     XsdDownloader xsdDownloader = new XsdDownloader(filePrefix);
     try {
       xsdDownloader.downloadXsdRecurse(xsdUrl, "");
-    } catch (IOException | ParserConfigurationException | SAXException | TransformerException | NoSuchAlgorithmException e) {
+    } catch (IOException
+        | ParserConfigurationException
+        | SAXException
+        | TransformerException
+        | NoSuchAlgorithmException e) {
       e.printStackTrace();
     }
   }

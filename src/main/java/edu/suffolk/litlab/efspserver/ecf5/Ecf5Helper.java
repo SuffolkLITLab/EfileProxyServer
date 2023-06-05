@@ -1,5 +1,17 @@
 package edu.suffolk.litlab.efspserver.ecf5;
 
+import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
+import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
+import gov.niem.release.niem.domains.jxdm._6.CourtType;
+import gov.niem.release.niem.niem_core._4.DateType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDE;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDEService;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.ws.BindingProvider;
+import java.io.StringWriter;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -7,27 +19,14 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-
+import javax.xml.namespace.QName;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
-import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
-
-import javax.xml.datatype.DatatypeFactory;
-
-import gov.niem.release.niem.domains.jxdm._6.CourtType;
-import gov.niem.release.niem.niem_core._4.DateType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDE;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDEService;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.ws.BindingProvider;
 
 public class Ecf5Helper {
   private static Logger log = LoggerFactory.getLogger(Ecf5Helper.class);
@@ -77,14 +76,18 @@ public class Ecf5Helper {
     return textType;
   }
 
-  public static gov.niem.release.niem.niem_core._4.PersonNameTextType convertPersonText(String name) {
-    gov.niem.release.niem.niem_core._4.PersonNameTextType nameTextType = niemCoreObjFac.createPersonNameTextType();
+  public static gov.niem.release.niem.niem_core._4.PersonNameTextType convertPersonText(
+      String name) {
+    gov.niem.release.niem.niem_core._4.PersonNameTextType nameTextType =
+        niemCoreObjFac.createPersonNameTextType();
     nameTextType.setValue(name);
     return nameTextType;
   }
 
-  public static gov.niem.release.niem.proxy.xsd._4.NormalizedString convertNormalizedString(String str) {
-    gov.niem.release.niem.proxy.xsd._4.NormalizedString outStr = niemProxyObjFac.createNormalizedString();
+  public static gov.niem.release.niem.proxy.xsd._4.NormalizedString convertNormalizedString(
+      String str) {
+    gov.niem.release.niem.proxy.xsd._4.NormalizedString outStr =
+        niemProxyObjFac.createNormalizedString();
     outStr.setValue(str);
     return outStr;
   }
@@ -95,7 +98,8 @@ public class Ecf5Helper {
     return id;
   }
 
-  public static gov.niem.release.niem.niem_core._4.IdentificationType convertId(String idStr, String source, String categoryDesc) {
+  public static gov.niem.release.niem.niem_core._4.IdentificationType convertId(
+      String idStr, String source, String categoryDesc) {
     var id = niemCoreObjFac.createIdentificationType();
     id.setIdentificationID(convertString(idStr));
     id.setIdentificationSourceText(convertText(source));
@@ -109,8 +113,10 @@ public class Ecf5Helper {
     return court;
   }
 
-  public static Optional<CourtPolicyMDE> setupPolicyPort(CourtPolicyMDEService policyServFactory, String tylerToken) {
-    Optional<TylerUserNamePassword> creds = TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
+  public static Optional<CourtPolicyMDE> setupPolicyPort(
+      CourtPolicyMDEService policyServFactory, String tylerToken) {
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds from " + tylerToken + "?");
       return Optional.empty();
@@ -177,7 +183,6 @@ public class Ecf5Helper {
     mar.marshal(wrappedRoot, sw);
     return sw.toString();
   }
-
 
   /**
    * Sets up a connection to Tyler's SOAP API WITHOUT any Auth headers, but does handle the X.509

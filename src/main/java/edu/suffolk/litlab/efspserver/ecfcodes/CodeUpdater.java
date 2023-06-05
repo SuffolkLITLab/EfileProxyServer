@@ -1,5 +1,18 @@
 package edu.suffolk.litlab.efspserver.ecfcodes;
 
+import edu.suffolk.litlab.efspserver.EfmConfiguration;
+import edu.suffolk.litlab.efspserver.HeaderSigner;
+import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
+import edu.suffolk.litlab.efspserver.StdLib;
+import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
+import edu.suffolk.litlab.efspserver.ecf4.SoapClientChooser;
+import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
+import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
+import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.ws.BindingProvider;
+import jakarta.xml.ws.soap.SOAPFaultException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,32 +36,16 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipInputStream;
-
 import javax.sql.DataSource;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
-import org.apache.cxf.headers.Header;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import edu.suffolk.litlab.efspserver.EfmConfiguration;
-import edu.suffolk.litlab.efspserver.HeaderSigner;
-import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
-import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
-import edu.suffolk.litlab.efspserver.ecf4.SoapClientChooser;
-import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
-import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
-import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
-import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.ws.BindingProvider;
-import jakarta.xml.ws.soap.SOAPFaultException;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtPolicyResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingReviewMDEPort;
+import org.apache.cxf.headers.Header;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tyler.efm.services.EfmUserService;
 import tyler.efm.services.IEfmUserService;
 import tyler.efm.services.schema.authenticaterequest.AuthenticateRequestType;
@@ -81,163 +78,163 @@ public class CodeUpdater {
     V5;
   }
 
-    // TODO(brycew-later): there's little more info on these mappings and how they combine besides:
-    // The name of an ECF element to be substituted by a court-specific codelist or extension
-    // Is this actually an XPath? Should figure it out
-  public static final Map<String, String> ecf4ElemToTableName = Map.ofEntries(
-    Map.entry("cext:BondTypeText", "bond"),
-    Map.entry("cext:Charge/cext:ChargeStatute/j:StatuteLevelText", "degree"),
-    Map.entry("cext:Charge\\cext:ChargePhaseText", "chargephase"),
-    Map.entry("cext:GeneralOffenseText", "generaloffense"),
-    Map.entry("cext:StatuteTypeText", "statutetype"),
-    Map.entry(
-        "cext:Charge/cext:ChargeStatute/j:StatuteCodeIdentification/nc:IdentificationID",
-        "statute"),
-    Map.entry("ecf:CaseParticipantRoleCode", "partytype"),
-    Map.entry("ecf:FilingStatusCode", "filingstatus"),
-    Map.entry("ecf:ServiceRecipientID/nc:IdentificationSourceText", "servicetype"),
-    Map.entry(
-        "ecf:PersonDriverLicense/nc:DriverLicenseIdentification/nc:IdentificationCategoryText",
-        "driverlicensetype"),
-    Map.entry("j:/ArrestCharge/j:ArrestLocation/nc:LocationName", "arrestlocation"),
-    Map.entry("j:RegisterActionDescriptionText", "filing"),
-    Map.entry(
-        "j:ArrestOfficial/j:EnforcementOfficialUnit/nc:OrganizationIdentification/nc:IdentificationID",
-        "lawenforcementunit"),
-    Map.entry(
-        "j:Citation\\nc:ActivityIdentification\\tyler:JurisdictionCode", "citationjurisdiction"),
-    Map.entry("nc:CaseCategoryText", "casecategory"),
-    Map.entry("nc:LocationCountryName", "country"),
-    Map.entry("nc:BinaryFormatStandardName", "documenttype"),
-    Map.entry("nc:BinaryCategoryText", "filingcomponent"),
-    Map.entry("nc:LocationStateName", "state"),
-    Map.entry("nc:PersonNameSuffixText", "namesuffix"),
-    Map.entry("nc:BinaryLocationURI", "filetype"),
-    Map.entry("nc:DocumentIdentification/nc:IdentificationSourceText", "crossreference"),
-    Map.entry("nc:PrimaryLanguage\\nc:LanguageCode", "language"),
-    Map.entry(
-        "nc:PersonPhysicalFeature\\nc:PhysicalFeatureCategoryCode", "physicalfeature"),
-    Map.entry("nc:PersonHairColorCode", "haircolor"),
-    Map.entry("nc:PersonEyeColorCode", "eyecolor"),
-    Map.entry("nc:PersonEthnicityText", "ethnicity"),
-    Map.entry("nc:PersonRaceText", "race"),
-    Map.entry("nc:VehicleMakeCode", "vehiclemake"),
-    Map.entry("nc:VehicleColorPrimaryCode", "vehiclecolor"),
-    Map.entry("tyler:CaseTypeText", "casetype"),
-    Map.entry("tyler:DamageAmountCode", "damageamount"),
-    Map.entry("tyler:DisclaimerRequirementCode", "disclaimerrequirement"),
-    Map.entry("tyler:FilerTypeText", "filertype"),
-    Map.entry("tyler:CaseSubTypeText", "casesubtype"),
-    Map.entry("tyler:VehicleTypeCode", "vehicletype"),
-    Map.entry("tyler:MotionTypeCode", "motiontype"),
-    Map.entry("tyler:QuestionCode", "question"),
-    Map.entry("tyler:AnswerCode", "answer"),
-    Map.entry("tyler:RemedyCode", "procedureremedy"),
-    Map.entry("tyler:DataFieldConfigCode", "datafieldconfig"),
-    Map.entry("tyler:DocumentOptionalService", "optionalservices")
-  );
+  // TODO(brycew-later): there's little more info on these mappings and how they combine besides:
+  // The name of an ECF element to be substituted by a court-specific codelist or extension
+  // Is this actually an XPath? Should figure it out
+  public static final Map<String, String> ecf4ElemToTableName =
+      Map.ofEntries(
+          Map.entry("cext:BondTypeText", "bond"),
+          Map.entry("cext:Charge/cext:ChargeStatute/j:StatuteLevelText", "degree"),
+          Map.entry("cext:Charge\\cext:ChargePhaseText", "chargephase"),
+          Map.entry("cext:GeneralOffenseText", "generaloffense"),
+          Map.entry("cext:StatuteTypeText", "statutetype"),
+          Map.entry(
+              "cext:Charge/cext:ChargeStatute/j:StatuteCodeIdentification/nc:IdentificationID",
+              "statute"),
+          Map.entry("ecf:CaseParticipantRoleCode", "partytype"),
+          Map.entry("ecf:FilingStatusCode", "filingstatus"),
+          Map.entry("ecf:ServiceRecipientID/nc:IdentificationSourceText", "servicetype"),
+          Map.entry(
+              "ecf:PersonDriverLicense/nc:DriverLicenseIdentification/nc:IdentificationCategoryText",
+              "driverlicensetype"),
+          Map.entry("j:/ArrestCharge/j:ArrestLocation/nc:LocationName", "arrestlocation"),
+          Map.entry("j:RegisterActionDescriptionText", "filing"),
+          Map.entry(
+              "j:ArrestOfficial/j:EnforcementOfficialUnit/nc:OrganizationIdentification/nc:IdentificationID",
+              "lawenforcementunit"),
+          Map.entry(
+              "j:Citation\\nc:ActivityIdentification\\tyler:JurisdictionCode",
+              "citationjurisdiction"),
+          Map.entry("nc:CaseCategoryText", "casecategory"),
+          Map.entry("nc:LocationCountryName", "country"),
+          Map.entry("nc:BinaryFormatStandardName", "documenttype"),
+          Map.entry("nc:BinaryCategoryText", "filingcomponent"),
+          Map.entry("nc:LocationStateName", "state"),
+          Map.entry("nc:PersonNameSuffixText", "namesuffix"),
+          Map.entry("nc:BinaryLocationURI", "filetype"),
+          Map.entry("nc:DocumentIdentification/nc:IdentificationSourceText", "crossreference"),
+          Map.entry("nc:PrimaryLanguage\\nc:LanguageCode", "language"),
+          Map.entry("nc:PersonPhysicalFeature\\nc:PhysicalFeatureCategoryCode", "physicalfeature"),
+          Map.entry("nc:PersonHairColorCode", "haircolor"),
+          Map.entry("nc:PersonEyeColorCode", "eyecolor"),
+          Map.entry("nc:PersonEthnicityText", "ethnicity"),
+          Map.entry("nc:PersonRaceText", "race"),
+          Map.entry("nc:VehicleMakeCode", "vehiclemake"),
+          Map.entry("nc:VehicleColorPrimaryCode", "vehiclecolor"),
+          Map.entry("tyler:CaseTypeText", "casetype"),
+          Map.entry("tyler:DamageAmountCode", "damageamount"),
+          Map.entry("tyler:DisclaimerRequirementCode", "disclaimerrequirement"),
+          Map.entry("tyler:FilerTypeText", "filertype"),
+          Map.entry("tyler:CaseSubTypeText", "casesubtype"),
+          Map.entry("tyler:VehicleTypeCode", "vehicletype"),
+          Map.entry("tyler:MotionTypeCode", "motiontype"),
+          Map.entry("tyler:QuestionCode", "question"),
+          Map.entry("tyler:AnswerCode", "answer"),
+          Map.entry("tyler:RemedyCode", "procedureremedy"),
+          Map.entry("tyler:DataFieldConfigCode", "datafieldconfig"),
+          Map.entry("tyler:DocumentOptionalService", "optionalservices"));
 
-  public static final Map<String, String> ecf5ElemToTableName = Map.ofEntries(
-    Map.entry("civil:FiduciaryTypeCode", ""),
-    Map.entry("civil:JurisdictionGroundsCode", ""),
-    Map.entry("civil:ReliefTypeCode", ""),
-    Map.entry("cbrn:ErrorCodeText", ""),
-    Map.entry("ecf:CaseCategoryCode", "casecategory"),
-    Map.entry("ecf:CaseParticipantRoleCode", "partytype"),
-    Map.entry("ecf:CaseTypeCode", "casetype"),
-    Map.entry("ecf:CauseOfActionCode", ""),
-    Map.entry("ecf:CourtEventTypeCode", ""),
-    Map.entry("ecf:DocumentRelatedCode", ""),
-    Map.entry("ecf:DocumenTypeCode", "documenttype"),
-    Map.entry("ecf:DocumentDocketingStatusCode", ""),
-    Map.entry("ecf:DocumentReviewStatusCode", ""),
-    Map.entry("ecf:EntityAssociationTypeCode", ""),
-    Map.entry("ecf:FeeExceptionReasonCode", ""),
-    Map.entry("ecf:FilingDocketingStatusCode", ""),
-    Map.entry("ecf:FilingReviewStatusCode", ""),
-    Map.entry("ecf:PersonIdentificationCategoryCode", ""),
-    Map.entry("ecf:RelatedCaseAssociationTypeCode", ""),
-    Map.entry("ecf:ServiceIteractionProfileCode", ""),
-    Map.entry("ecf:SignatureProfileCode", ""),
-    Map.entry("ecf:ServiceStatusCode", ""),
-    // NOTE: this is in the ECF 5 spec, but NOT in Tyler's codes :(
-    // Map.entry("j:RegisterActionDescriptionText", "filing"),
-    Map.entry("ecf:RegisterActionDescriptionCode", "filing"),
-    Map.entry("policyresponse:MajorDesignElementTypeCode", ""),
-    Map.entry("policyresponse:OperationNameCode", ""),
-    Map.entry("biom:BiometricClassificationCategoryCode", ""),
-    Map.entry("hs:ParentChildKinshipCategoryCode", ""),
-    Map.entry("hs:PlacementCategoryCode", ""),
-    Map.entry("hs:AbuseNeglectAllegationCategoryText", ""),
-    Map.entry("j:ChargeDegreeText", ""),
-    Map.entry("j:ChargeEnhancingFactorText", ""),
-    Map.entry("j:ChargeSpecialAllegationText", ""),
-    Map.entry("j:IncidentLevelCode", ""),
-    Map.entry("j:PersonIdentificationCategoryCode", ""),
-    Map.entry("j:ConveyanceColorPrimaryCode", ""),
-    Map.entry("j:CrashDrivingRestrictionCode", ""),
-    Map.entry("j:DriverAccidentSeverityCode", ""),
-    Map.entry("j:DrivingIncidentHazMatCode", ""),
-    Map.entry("j:DriverLicenseCommercialClassCode", ""),
-    Map.entry("j:JurisdictionNCICLISCode", ""),
-    Map.entry("j:JurisdictionNCICLSTACode", ""),
-    Map.entry("j:OrganizationAlternateNameCategoryCode", ""),
-    Map.entry("j:PersonEthnicityCode", "ethnicity"),
-    Map.entry("j:PersonEyeColorCode", "eyecolor"),
-    Map.entry("j:PersonHairColorCode", "haircolor"),
-    Map.entry("j:PersonRaceCode", "race"),
-    Map.entry("j:PersonSexCode", ""),
-    Map.entry("j:PersonUnionCategoryCode", ""),
-    Map.entry("j:ProtectionOrderConditionCode", ""),
-    Map.entry("j:VehicleMakeCode", "vehiclemake"),
-    Map.entry("j:VehicleModelCode", ""),
-    Map.entry("j:VehicleStyleCode", ""),
-    Map.entry("j:WarrantExtraditionLimitationCode", ""),
-    Map.entry("juvenile:DeliquentActCategoryCode", ""),
-    Map.entry("nc:BinaryFormatText", ""),
-    Map.entry("nc:ContactInformationAvailablilityCode", ""),
-    Map.entry("nc:CurrencyCode", ""),
-    Map.entry("nc:DocumentLanguageCode", ""),
-    Map.entry("nc:IdentificationCategoryDescriptionText", ""),
-    Map.entry("nc:LanguageCode", ""),
-    Map.entry("nc:LengthUnitCode", ""),
-    Map.entry("nc:LocationStateUSPostalServiceCode", ""),
-    Map.entry("nc:LocationCountryName", "country"),
-    Map.entry("nc:PersonCitizenshipFIPS10-4Code", ""),
-    Map.entry("nc:SensitivityText", ""),
-    Map.entry("nc:SpeedUnitCode", ""),
-    Map.entry("nc:WeightUnitCode", ""),
-    Map.entry("nc:PaymentMeansCode", ""),
-    // Tyler specific things, not mentioned in the ECF spec
-    Map.entry("ecf:FilingStatusCode", "filingstatus"),
-    Map.entry("nc:PersonNameSuffixText", "namesuffix"),
-    Map.entry("j:ArrestLocation/nc:LocationName", "arrestlocation"),
-    Map.entry("j:ArrestAgency/nc:OrganizationIdentification/nc:IdentificationID", "lawenforcementunit"),
-    Map.entry("j:StatuteLevelText", "degree"),
-    Map.entry("nc:LocationState/nc:LocationStateName", "state"),
-    Map.entry("tyler:ServiceTypeCode", "serviceType"),
-    Map.entry("tyler:FilerTypeCode", "filertype"),
-    Map.entry("tyler:ProcedureRemedy/tyler:RemedyCode", "procedureremedy"),
-    Map.entry("tyler:DisclaimerRequirementCode", "disclaimerrequirement"),
-    Map.entry("tyler:ProcedureRemedy/tyler:DamageAmountCode", "damageamount"),
-    Map.entry("tyler:FilingComponentCode", "filingcomponent"),
-    Map.entry("tyler:DocumentOptionalService/nc:IdentificationID", "optionalservice"),
-    Map.entry("tyler:BondTypeCode", "bond"),
-    Map.entry("tyler:CrossReferenceTypeCode", "crossreference"),
-    Map.entry("tyler:GeneralOffenseCode", "generaloffense"),
-    Map.entry("tyler:StatuteTypeCode", "statutetype"),
-    Map.entry("tyler:DriverLicenseTypeCode", "driverlicensetype"),
-    Map.entry("tyler:CaseSubTypeCode", "casesubtype"),
-    Map.entry("tyler:PhaseTypeCode", "chargephase"),
-    Map.entry("tyler:VehicleTypeCode", "vehicletype"),
-    Map.entry("j:StatuteCodeIdentification/nc:IdentificationID", "statute"),
-    Map.entry("j:ConveyanceColorPrimaryCode", "vehiclecolor"),
-    Map.entry("tyler:JurisdictionCode", "citationjurisdiction"),
-    Map.entry("nc:VehicleMakeCode", "vehiclemake"),
-    Map.entry("nc:PersonPrimaryLanguage/nc:LanguageCode", "language"),
-    Map.entry("nc:PersonPhysicalFeature/j:PhysicalFeatureCategoryCode", "physicalfeature")
-  );
-
+  public static final Map<String, String> ecf5ElemToTableName =
+      Map.ofEntries(
+          Map.entry("civil:FiduciaryTypeCode", ""),
+          Map.entry("civil:JurisdictionGroundsCode", ""),
+          Map.entry("civil:ReliefTypeCode", ""),
+          Map.entry("cbrn:ErrorCodeText", ""),
+          Map.entry("ecf:CaseCategoryCode", "casecategory"),
+          Map.entry("ecf:CaseParticipantRoleCode", "partytype"),
+          Map.entry("ecf:CaseTypeCode", "casetype"),
+          Map.entry("ecf:CauseOfActionCode", ""),
+          Map.entry("ecf:CourtEventTypeCode", ""),
+          Map.entry("ecf:DocumentRelatedCode", ""),
+          Map.entry("ecf:DocumenTypeCode", "documenttype"),
+          Map.entry("ecf:DocumentDocketingStatusCode", ""),
+          Map.entry("ecf:DocumentReviewStatusCode", ""),
+          Map.entry("ecf:EntityAssociationTypeCode", ""),
+          Map.entry("ecf:FeeExceptionReasonCode", ""),
+          Map.entry("ecf:FilingDocketingStatusCode", ""),
+          Map.entry("ecf:FilingReviewStatusCode", ""),
+          Map.entry("ecf:PersonIdentificationCategoryCode", ""),
+          Map.entry("ecf:RelatedCaseAssociationTypeCode", ""),
+          Map.entry("ecf:ServiceIteractionProfileCode", ""),
+          Map.entry("ecf:SignatureProfileCode", ""),
+          Map.entry("ecf:ServiceStatusCode", ""),
+          // NOTE: this is in the ECF 5 spec, but NOT in Tyler's codes :(
+          // Map.entry("j:RegisterActionDescriptionText", "filing"),
+          Map.entry("ecf:RegisterActionDescriptionCode", "filing"),
+          Map.entry("policyresponse:MajorDesignElementTypeCode", ""),
+          Map.entry("policyresponse:OperationNameCode", ""),
+          Map.entry("biom:BiometricClassificationCategoryCode", ""),
+          Map.entry("hs:ParentChildKinshipCategoryCode", ""),
+          Map.entry("hs:PlacementCategoryCode", ""),
+          Map.entry("hs:AbuseNeglectAllegationCategoryText", ""),
+          Map.entry("j:ChargeDegreeText", ""),
+          Map.entry("j:ChargeEnhancingFactorText", ""),
+          Map.entry("j:ChargeSpecialAllegationText", ""),
+          Map.entry("j:IncidentLevelCode", ""),
+          Map.entry("j:PersonIdentificationCategoryCode", ""),
+          Map.entry("j:ConveyanceColorPrimaryCode", "vehiclecolor"),
+          Map.entry("j:CrashDrivingRestrictionCode", ""),
+          Map.entry("j:DriverAccidentSeverityCode", ""),
+          Map.entry("j:DrivingIncidentHazMatCode", ""),
+          Map.entry("j:DriverLicenseCommercialClassCode", ""),
+          Map.entry("j:JurisdictionNCICLISCode", ""),
+          Map.entry("j:JurisdictionNCICLSTACode", ""),
+          Map.entry("j:OrganizationAlternateNameCategoryCode", ""),
+          Map.entry("j:PersonEthnicityCode", "ethnicity"),
+          Map.entry("j:PersonEyeColorCode", "eyecolor"),
+          Map.entry("j:PersonHairColorCode", "haircolor"),
+          Map.entry("j:PersonRaceCode", "race"),
+          Map.entry("j:PersonSexCode", ""),
+          Map.entry("j:PersonUnionCategoryCode", ""),
+          Map.entry("j:ProtectionOrderConditionCode", ""),
+          Map.entry("j:VehicleMakeCode", "vehiclemake"),
+          Map.entry("j:VehicleModelCode", ""),
+          Map.entry("j:VehicleStyleCode", ""),
+          Map.entry("j:WarrantExtraditionLimitationCode", ""),
+          Map.entry("juvenile:DeliquentActCategoryCode", ""),
+          Map.entry("nc:BinaryFormatText", ""),
+          Map.entry("nc:ContactInformationAvailablilityCode", ""),
+          Map.entry("nc:CurrencyCode", ""),
+          Map.entry("nc:DocumentLanguageCode", ""),
+          Map.entry("nc:IdentificationCategoryDescriptionText", ""),
+          Map.entry("nc:LanguageCode", ""),
+          Map.entry("nc:LengthUnitCode", ""),
+          Map.entry("nc:LocationStateUSPostalServiceCode", ""),
+          Map.entry("nc:LocationCountryName", "country"),
+          Map.entry("nc:PersonCitizenshipFIPS10-4Code", ""),
+          Map.entry("nc:SensitivityText", ""),
+          Map.entry("nc:SpeedUnitCode", ""),
+          Map.entry("nc:WeightUnitCode", ""),
+          Map.entry("nc:PaymentMeansCode", ""),
+          // Tyler specific things, not mentioned in the ECF spec
+          Map.entry("ecf:FilingStatusCode", "filingstatus"),
+          Map.entry("nc:PersonNameSuffixText", "namesuffix"),
+          Map.entry("j:ArrestLocation/nc:LocationName", "arrestlocation"),
+          Map.entry(
+              "j:ArrestAgency/nc:OrganizationIdentification/nc:IdentificationID",
+              "lawenforcementunit"),
+          Map.entry("j:StatuteLevelText", "degree"),
+          Map.entry("nc:LocationState/nc:LocationStateName", "state"),
+          Map.entry("tyler:ServiceTypeCode", "serviceType"),
+          Map.entry("tyler:FilerTypeCode", "filertype"),
+          Map.entry("tyler:ProcedureRemedy/tyler:RemedyCode", "procedureremedy"),
+          Map.entry("tyler:DisclaimerRequirementCode", "disclaimerrequirement"),
+          Map.entry("tyler:ProcedureRemedy/tyler:DamageAmountCode", "damageamount"),
+          Map.entry("tyler:FilingComponentCode", "filingcomponent"),
+          Map.entry("tyler:DocumentOptionalService/nc:IdentificationID", "optionalservice"),
+          Map.entry("tyler:BondTypeCode", "bond"),
+          Map.entry("tyler:CrossReferenceTypeCode", "crossreference"),
+          Map.entry("tyler:GeneralOffenseCode", "generaloffense"),
+          Map.entry("tyler:StatuteTypeCode", "statutetype"),
+          Map.entry("tyler:DriverLicenseTypeCode", "driverlicensetype"),
+          Map.entry("tyler:CaseSubTypeCode", "casesubtype"),
+          Map.entry("tyler:PhaseTypeCode", "chargephase"),
+          Map.entry("tyler:VehicleTypeCode", "vehicletype"),
+          Map.entry("j:StatuteCodeIdentification/nc:IdentificationID", "statute"),
+          Map.entry("tyler:JurisdictionCode", "citationjurisdiction"),
+          Map.entry("nc:VehicleMakeCode", "vehiclemake"),
+          Map.entry("nc:PersonPrimaryLanguage/nc:LanguageCode", "language"),
+          Map.entry("nc:PersonPhysicalFeature/j:PhysicalFeatureCategoryCode", "physicalfeature"));
 
   /**
    * The path to the keystore file, containing the x509 cert used to sign headers to download zips.
@@ -249,19 +246,19 @@ public class CodeUpdater {
 
   /**
    * The association of XML element names to the SQL/EFM table name.
-   * 
-   * All genericodes are given with an unique element name. However, most of the time
-   * the genericode lists are refered to by the common name, or the table name, not the element
-   * name. This includes the versions of each genericode lists, which we use to deterimine which
+   *
+   * <p>All genericodes are given with an unique element name. However, most of the time the
+   * genericode lists are refered to by the common name, or the table name, not the element name.
+   * This includes the versions of each genericode lists, which we use to deterimine which
    * genericodes to download when updating.
-   * 
-   * For examples of what keys this map can contain, see:
-   * ECF4:
-   * - https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Ref130631847
-   * - https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Toc118889800
-   * ECF5:
-   * - https://docs.oasis-open.org/legalxml-courtfiling/ecf/v5.0/cs01/ecf-v5.0-cs01.html#_Toc8290963
-   * - https://docs.oasis-open.org/legalxml-courtfiling/ecf/v5.0/cs01/ecf-v5.0-cs01.html#_Toc8290970.
+   *
+   * <p>For examples of what keys this map can contain, see: ECF4: -
+   * https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Ref130631847
+   * -
+   * https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Toc118889800
+   * ECF5: -
+   * https://docs.oasis-open.org/legalxml-courtfiling/ecf/v5.0/cs01/ecf-v5.0-cs01.html#_Toc8290963 -
+   * https://docs.oasis-open.org/legalxml-courtfiling/ecf/v5.0/cs01/ecf-v5.0-cs01.html#_Toc8290970.
    */
   private Map<String, String> getElemToTable() {
     if (ecfVersion == ECF_VERSION.V5) {
@@ -463,20 +460,23 @@ public class CodeUpdater {
             var m = ServiceHelpers.prep(new CourtPolicyQueryMessageType(), location);
             try {
               CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
-              policies.put(location, p.getRuntimePolicyParameters().getCourtCodelist().stream()
-                .map(
-                  ccl -> {
-                    // TODO(brycew-later): check that the effective date is later than today
-                    // JAXBElement<?> obj = ccl.getEffectiveDate().getDateRepresentation();
-                    String ecfElem = ccl.getECFElementName().getValue();
-                    // Tyler gives us URLs w/ spaces, which aren't valid. This makes them valid
-                    String url =
-                       ccl.getCourtCodelistURI()
-                           .getIdentificationID()
-                           .getValue()
-                           .replace(" ", "%20");
-                    return new CodeToDownload(ecfElem, url);
-                }));
+              policies.put(
+                  location,
+                  p.getRuntimePolicyParameters().getCourtCodelist().stream()
+                      .map(
+                          ccl -> {
+                            // TODO(brycew-later): check that the effective date is later than today
+                            // JAXBElement<?> obj = ccl.getEffectiveDate().getDateRepresentation();
+                            String ecfElem = ccl.getECFElementName().getValue();
+                            // Tyler gives us URLs w/ spaces, which aren't valid. This makes them
+                            // valid
+                            String url =
+                                ccl.getCourtCodelistURI()
+                                    .getIdentificationID()
+                                    .getValue()
+                                    .replace(" ", "%20");
+                            return new CodeToDownload(ecfElem, url);
+                          }));
             } catch (SOAPFaultException ex) {
               log.warn(
                   "Got a SOAP Fault excption when getting the policy for "
@@ -592,7 +592,7 @@ public class CodeUpdater {
     soaps = soaps.plus(Duration.between(startPolicy, Instant.now(Clock.systemUTC())));
     log.info("Soaps: {}", soaps);
 
-    for (var court: courtDownloads.entrySet()) {
+    for (var court : courtDownloads.entrySet()) {
       final String courtLocation = court.getKey();
       final List<String> tables = versionsToUpdate.get(courtLocation);
       if (!downloadCourtTables(courtLocation, Optional.of(tables), cd, signer, court.getValue())) {
@@ -645,7 +645,7 @@ public class CodeUpdater {
         streamPolicies(locs.stream(), cd.getDomain(), filingPort);
     soaps = soaps.plus(Duration.between(startPolicy, Instant.now(Clock.systemUTC())));
     log.info("Soaps: {}", soaps);
-    for (var court: courtDownloads.entrySet()) {
+    for (var court : courtDownloads.entrySet()) {
       final String location = court.getKey();
       log.info("Downloading tables for {}", location);
       success &= downloadCourtTables(location, Optional.empty(), cd, signer, court.getValue());
@@ -719,7 +719,12 @@ public class CodeUpdater {
   }
 
   public static boolean executeCommand(
-      CodeDatabaseAPI cd, ECF_VERSION ecfVersion, String jurisdiction, String env, List<String> args, String x509Password) {
+      CodeDatabaseAPI cd,
+      ECF_VERSION ecfVersion,
+      String jurisdiction,
+      String env,
+      List<String> args,
+      String x509Password) {
     SoapX509CallbackHandler.setX509Password(x509Password);
     String command = args.get(0);
     try {
@@ -776,15 +781,11 @@ public class CodeUpdater {
     String env = System.getenv("TYLER_ENV");
     for (String jurisdiction : jurisdictions) {
       try (Connection conn = ds.getConnection()) {
-        var ecfVersion = (config.get(jurisdiction).equalsIgnoreCase("ecf5")) ? ECF_VERSION.V5: ECF_VERSION.V4;
+        var ecfVersion =
+            (config.get(jurisdiction).equalsIgnoreCase("ecf5")) ? ECF_VERSION.V5 : ECF_VERSION.V4;
         CodeDatabase cd = new CodeDatabase(jurisdiction, env, conn);
         executeCommand(
-            cd,
-            ecfVersion,
-            jurisdiction,
-            env,
-            List.of(args),
-            System.getenv("X509_PASSWORD"));
+            cd, ecfVersion, jurisdiction, env, List.of(args), System.getenv("X509_PASSWORD"));
       }
     }
   }

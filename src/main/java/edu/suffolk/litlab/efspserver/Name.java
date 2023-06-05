@@ -1,11 +1,10 @@
 package edu.suffolk.litlab.efspserver;
 
+import edu.suffolk.litlab.efspserver.ecf5.Ecf5Helper;
 import gov.niem.niem.niem_core._2.ObjectFactory;
 import gov.niem.niem.niem_core._2.PersonNameTextType;
 import gov.niem.niem.niem_core._2.PersonNameType;
 import java.util.stream.Stream;
-
-import edu.suffolk.litlab.efspserver.ecf5.Ecf5Helper;
 
 public class Name {
   private String firstName;
@@ -110,15 +109,15 @@ public class Name {
 
   /** Returns the PersonNameType Niem 4.0 XML object from this Name. */
   public gov.niem.release.niem.niem_core._4.PersonNameType getNameTypeEcf5() {
-    gov.niem.release.niem.niem_core._4.ObjectFactory of = new gov.niem.release.niem.niem_core._4.ObjectFactory();
+    gov.niem.release.niem.niem_core._4.ObjectFactory of =
+        new gov.niem.release.niem.niem_core._4.ObjectFactory();
     gov.niem.release.niem.niem_core._4.PersonNameType personName = of.createPersonNameType();
     personName.setPersonGivenName(Ecf5Helper.convertPersonText(firstName));
     personName.setPersonMaidenName(Ecf5Helper.convertPersonText(maidenName));
     personName.setPersonMiddleName(Ecf5Helper.convertPersonText(middleName));
     personName.setPersonSurName(Ecf5Helper.convertPersonText(lastName));
-    personName.setPersonNamePrefixText(Ecf5Helper.convertPersonText(prefix));
-    personName.setPersonNameSuffixText(Ecf5Helper.convertPersonText(suffix));
+    personName.setPersonNamePrefixText(Ecf5Helper.convertText(prefix));
+    personName.setPersonNameSuffixText(Ecf5Helper.convertText(suffix));
     return personName;
   }
-
 }

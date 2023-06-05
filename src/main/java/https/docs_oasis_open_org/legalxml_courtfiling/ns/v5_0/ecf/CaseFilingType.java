@@ -7,7 +7,6 @@ import gov.niem.release.niem.niem_core._4.DocumentType;
 import gov.niem.release.niem.niem_core._4.IdentificationType;
 import gov.niem.release.niem.proxy.xsd._4.NormalizedString;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.allocatedate.AllocateCourtDateMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.datecallback.NotifyCourtDateMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.docket.RecordDocketingMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing.FilingMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ReserveCourtDateMessageType;
@@ -19,8 +18,14 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import tyler.ecf.v5_0.extensions.capturefeesrequest.CaptureFeesMessageType;
+import tyler.ecf.v5_0.extensions.eventcallback.NotifyEventMessageType;
 import tyler.ecf.v5_0.extensions.recordreceipt.RecordReceiptMessageType;
+import tyler.ecf.v5_0.extensions.recordservice.RecordServiceMessageType;
 import tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
+import tyler.ecf.v5_0.extensions.reviewenvelopecallback.NotifyEnvelopeCompleteMessageType;
+import tyler.ecf.v5_0.extensions.updatedocument.UpdateDocumentMessageType;
+import tyler.ecf.v5_0.extensions.updatefeesrequest.UpdateFeesMessageType;
 
 
 /**
@@ -58,17 +63,22 @@ import tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
     "documentPostDate"
 })
 @XmlSeeAlso({
-    NotifyCourtDateMessageType.class,
+    RecordServiceMessageType.class,
+    CaptureFeesMessageType.class,
     RecordDocketingMessageType.class,
     AllocateCourtDateMessageType.class,
     DocumentStampInformationMessageType.class,
     RecordReceiptMessageType.class,
+    UpdateDocumentMessageType.class,
     ReserveCourtDateMessageType.class,
+    UpdateFeesMessageType.class,
+    NotifyEnvelopeCompleteMessageType.class,
     ReturnDateMessageType.class,
     FilingMessageType.class,
-    CallbackMessageType.class,
+    NotifyEventMessageType.class,
+    RequestMessageType.class,
     ResponseMessageType.class,
-    RequestMessageType.class
+    CallbackMessageType.class
 })
 public class CaseFilingType
     extends DocumentType

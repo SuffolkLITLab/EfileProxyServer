@@ -3,6 +3,7 @@ package tyler.ecf.v5_0.extensions.recordreceipt;
 
 import java.util.ArrayList;
 import java.util.List;
+import gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
 import gov.niem.release.niem.niem_core._4.CaseType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentReviewType;
@@ -56,8 +57,8 @@ public class RecordReceiptMessageType
     extends CaseFilingType
 {
 
-    @XmlElement(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", nillable = true)
-    protected CaseType _case;
+    @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
+    protected JAXBElement<? extends CaseType> _case;
     @XmlElement(name = "FilingStatus", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", required = true)
     protected FilingStatusType filingStatus;
     @XmlElement(name = "ConnectedDocumentReview", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf")
@@ -72,10 +73,11 @@ public class RecordReceiptMessageType
      * 
      * @return
      *     possible object is
-     *     {@link CaseType }
+     *     {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
      *     
      */
-    public CaseType getCase() {
+    public JAXBElement<? extends CaseType> getCase() {
         return _case;
     }
 
@@ -84,10 +86,11 @@ public class RecordReceiptMessageType
      * 
      * @param value
      *     allowed object is
-     *     {@link CaseType }
+     *     {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
      *     
      */
-    public void setCase(CaseType value) {
+    public void setCase(JAXBElement<? extends CaseType> value) {
         this._case = value;
     }
 

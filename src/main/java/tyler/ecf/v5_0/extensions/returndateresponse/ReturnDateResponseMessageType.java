@@ -7,7 +7,6 @@ import gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCas
 import gov.niem.release.niem.niem_core._4.CaseType;
 import gov.niem.release.niem.niem_core._4.DateType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
-import ietf.params.xml.ns.icalendar_2.IcalendarType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -29,7 +28,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ResponseMessageType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Case" minOccurs="0"/&gt;
- *         &lt;element ref="{urn:ietf:params:xml:ns:icalendar-2.0}icalendar" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:returndateresponse}ReturnDate" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:v5.0:extensions:returndateresponse}ReturnDateResponseMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
@@ -44,7 +42,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ReturnDateResponseMessageType", propOrder = {
     "_case",
-    "icalendar",
     "returnDate",
     "returnDateResponseMessageAugmentationPoint"
 })
@@ -54,8 +51,6 @@ public class ReturnDateResponseMessageType
 
     @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
     protected JAXBElement<? extends CaseType> _case;
-    @XmlElement(namespace = "urn:ietf:params:xml:ns:icalendar-2.0")
-    protected IcalendarType icalendar;
     @XmlElement(name = "ReturnDate")
     protected DateType returnDate;
     @XmlElement(name = "ReturnDateResponseMessageAugmentationPoint")
@@ -85,30 +80,6 @@ public class ReturnDateResponseMessageType
      */
     public void setCase(JAXBElement<? extends CaseType> value) {
         this._case = value;
-    }
-
-    /**
-     * Gets the value of the icalendar property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link IcalendarType }
-     *     
-     */
-    public IcalendarType getIcalendar() {
-        return icalendar;
-    }
-
-    /**
-     * Sets the value of the icalendar property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link IcalendarType }
-     *     
-     */
-    public void setIcalendar(IcalendarType value) {
-        this.icalendar = value;
     }
 
     /**

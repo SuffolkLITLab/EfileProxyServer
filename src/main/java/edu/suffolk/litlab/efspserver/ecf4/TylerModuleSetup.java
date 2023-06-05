@@ -1,9 +1,12 @@
 package edu.suffolk.litlab.efspserver.ecf4;
 
+import com.hubspot.algebra.NullValue;
+import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.EfmConfiguration;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.ecf5.CourtSchedulingService;
+import edu.suffolk.litlab.efspserver.ecfcodes.CodeUpdater;
 import edu.suffolk.litlab.efspserver.services.AdminUserService;
 import edu.suffolk.litlab.efspserver.services.EfmFilingInterface;
 import edu.suffolk.litlab.efspserver.services.EfmModuleSetup;
@@ -19,8 +22,6 @@ import edu.suffolk.litlab.efspserver.services.UpdateCodeVersions;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.tyler.codes.EcfCodesService;
-import edu.suffolk.litlab.efspserver.ecfcodes.CodeUpdater;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -31,9 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import com.hubspot.algebra.NullValue;
-import com.hubspot.algebra.Result;
 import javax.sql.DataSource;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.quartz.CronScheduleBuilder;
@@ -169,7 +167,10 @@ public class TylerModuleSetup implements EfmModuleSetup {
     } catch (IOException ex) {
       log.warn("Couldn't find config with ECF versions");
     }
-    var ecfVersion = (config.get(getJurisdiction()).equalsIgnoreCase("ecf5")) ? CodeUpdater.ECF_VERSION.V5: CodeUpdater.ECF_VERSION.V4;
+    var ecfVersion =
+        (config.get(getJurisdiction()).equalsIgnoreCase("ecf5"))
+            ? CodeUpdater.ECF_VERSION.V5
+            : CodeUpdater.ECF_VERSION.V4;
 
     log.info("Checking table if absent");
     try (CodeDatabase cd = new CodeDatabase(tylerJurisdiction, tylerEnv, codeDs.getConnection())) {
@@ -273,9 +274,10 @@ public class TylerModuleSetup implements EfmModuleSetup {
     final String jurisdiction = getJurisdiction();
     final String env = this.tylerEnv;
 
-    Supplier<CodeDatabase> cdSupplier = () -> {
-      return CodeDatabase.fromDS(jurisdiction, env, this.codeDs);
-    };
+    Supplier<CodeDatabase> cdSupplier =
+        () -> {
+          return CodeDatabase.fromDS(jurisdiction, env, this.codeDs);
+        };
 
     EfmFilingInterface filer = new TylerEcfFiler(jurisdiction, env, codeDs, cdSupplier);
 
@@ -284,40 +286,47 @@ public class TylerModuleSetup implements EfmModuleSetup {
       getCallback().ifPresent(call -> callbackMap.put(court, call));
     }
 
-    Function<String, Result<NullValue, String>> passwordChecker = (password) -> {
-      // The "0" is the default for all courts, sometimes "1" though? There's no way to enforce court specific passwords
-      DataFieldRow globalPasswordRow = DataFieldRow.MissingDataField("GlobalPassword");
-      try (CodeDatabase cd = cdSupplier.get()) {
-        globalPasswordRow = cd.getDataField("0", "GlobalPassword");
-      } catch (SQLException e) {
-        log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
-      }
-      if (globalPasswordRow.isvisible && globalPasswordRow.isrequired && password != null && password != null && !password.isEmpty()) {
-        if (globalPasswordRow.matchRegex(password)) {
+    Function<String, Result<NullValue, String>> passwordChecker =
+        (password) -> {
+          // The "0" is the default for all courts, sometimes "1" though? There's no way to enforce
+          // court specific passwords
+          DataFieldRow globalPasswordRow = DataFieldRow.MissingDataField("GlobalPassword");
+          try (CodeDatabase cd = cdSupplier.get()) {
+            globalPasswordRow = cd.getDataField("0", "GlobalPassword");
+          } catch (SQLException e) {
+            log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
+          }
+          if (globalPasswordRow.isvisible
+              && globalPasswordRow.isrequired
+              && password != null
+              && password != null
+              && !password.isEmpty()) {
+            if (globalPasswordRow.matchRegex(password)) {
+              return Result.nullOk();
+            } else {
+              return Result.err(globalPasswordRow.validationmessage);
+            }
+          }
           return Result.nullOk();
-        } else {
-          return Result.err(globalPasswordRow.validationmessage);
-        }
-      }
-      return Result.nullOk();
-    };
+        };
 
-    var adminUser = new AdminUserService(jurisdiction, env, this.userDs, cdSupplier, passwordChecker);
+    var adminUser =
+        new AdminUserService(jurisdiction, env, this.userDs, cdSupplier, passwordChecker);
     var cases = new CasesService(jurisdiction, env, this.userDs, cdSupplier);
     var codes = new EcfCodesService(jurisdiction, cdSupplier);
     Optional<CourtSchedulingService> courtScheduler = Optional.empty();
-    //if (jurisdiction == "illinois") {
+    // if (jurisdiction == "illinois") {
     //  courtScheduler =
-    //      Optional.of(new CourtSchedulingService(converterMap, jurisdiction, env, cdSupplier, userDs));
-   // }
+    //      Optional.of(new CourtSchedulingService(converterMap, jurisdiction, env, cdSupplier,
+    // userDs));
+    // }
     var filingReview =
         new FilingReviewService(
             getJurisdiction(), this.userDs, converterMap, filingMap, callbackMap, this.sender);
     var firmAttorney =
         new FirmAttorneyAndServiceService(jurisdiction, env, this.userDs, cdSupplier);
     var payments =
-        new PaymentsService(
-            jurisdiction, env, this.togaKey, this.togaUrl, cdSupplier, this.userDs);
+        new PaymentsService(jurisdiction, env, this.togaKey, this.togaUrl, cdSupplier, this.userDs);
     JurisdictionServiceHandle handle =
         new JurisdictionServiceHandle(
             getJurisdiction(),
@@ -338,9 +347,10 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public void setupGlobals() {
-    Supplier<CodeDatabase> cdSupplier = () -> {
-      return CodeDatabase.fromDS(getJurisdiction(), this.tylerEnv, this.codeDs);
-    };
+    Supplier<CodeDatabase> cdSupplier =
+        () -> {
+          return CodeDatabase.fromDS(getJurisdiction(), this.tylerEnv, this.codeDs);
+        };
     TylerEcfWsCallback implementor =
         new TylerEcfWsCallback(tylerJurisdiction, tylerEnv, cdSupplier, userDs, sender);
     String baseLocalUrl = ServiceHelpers.BASE_LOCAL_URL;
@@ -353,14 +363,15 @@ public class TylerModuleSetup implements EfmModuleSetup {
     log.info("Address : " + jaxWsEndpoint.getAddress());
     log.info("Bean name: " + jaxWsEndpoint.getBeanName());
 
-    //OasisEcfv5WsCallback impl2 =
+    // OasisEcfv5WsCallback impl2 =
     //    new OasisEcfv5WsCallback(tylerJurisdiction, tylerEnv, codeDs, userDs, sender);
     String v5Address =
         baseLocalUrl + "/jurisdictions/" + tylerJurisdiction + ServiceHelpers.ASSEMBLY_PORT_V5;
-    //EndpointImpl jaxWsV5Endpoint = (EndpointImpl) jakarta.xml.ws.Endpoint.publish(v5Address, impl2);
-    //log.info("V5 Wsdl location: " + jaxWsV5Endpoint.getWsdlLocation());
-    //log.info("V5 Address : " + jaxWsV5Endpoint.getAddress());
-    //log.info("V5 Bean name: " + jaxWsV5Endpoint.getBeanName());
+    // EndpointImpl jaxWsV5Endpoint = (EndpointImpl) jakarta.xml.ws.Endpoint.publish(v5Address,
+    // impl2);
+    // log.info("V5 Wsdl location: " + jaxWsV5Endpoint.getWsdlLocation());
+    // log.info("V5 Address : " + jaxWsV5Endpoint.getAddress());
+    // log.info("V5 Bean name: " + jaxWsV5Endpoint.getBeanName());
 
     /*
     Endpoint cxfEndpoint = jaxWsEndpoint.getServer().getEndpoint();

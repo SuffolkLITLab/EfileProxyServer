@@ -28,10 +28,10 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://release.niem.gov/niem/niem-core/4.0/}AssociationType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.0/}Child"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.0/}Parent" maxOccurs="unbounded"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.0/}ParentChildKinshipCategoryAbstract" minOccurs="0"/&gt;
- *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.0/}BiologicalParentDeterminationDescriptionText" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.1/}Child"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.1/}Parent" maxOccurs="unbounded"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.1/}ParentChildKinshipCategoryAbstract" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.1/}BiologicalParentDeterminationDescriptionText" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -56,7 +56,7 @@ public class ParentChildAssociationType
     protected ChildType child;
     @XmlElement(name = "Parent", required = true, nillable = true)
     protected List<PersonType> parent;
-    @XmlElementRef(name = "ParentChildKinshipCategoryAbstract", namespace = "http://release.niem.gov/niem/domains/humanServices/4.0/", type = JAXBElement.class, required = false)
+    @XmlElementRef(name = "ParentChildKinshipCategoryAbstract", namespace = "http://release.niem.gov/niem/domains/humanServices/4.1/", type = JAXBElement.class, required = false)
     protected JAXBElement<?> parentChildKinshipCategoryAbstract;
     @XmlElement(name = "BiologicalParentDeterminationDescriptionText")
     protected TextType biologicalParentDeterminationDescriptionText;
