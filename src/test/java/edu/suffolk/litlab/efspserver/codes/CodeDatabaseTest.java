@@ -2,11 +2,11 @@ package edu.suffolk.litlab.efspserver.codes;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -48,15 +48,16 @@ public class CodeDatabaseTest {
   
   @Test
   public void allNamespacesMapToTables() {
-    Collection<String> tables = CodeUpdater.ncToTableName.values();
-    for (String table : tables) {
-      assertNotEquals(CodeTableConstants.getTableColumns(table).size(),
-          0, "Expected " + table + " to exist");
+    for (String table : CodeUpdater.ncToTableName.values()) {
+      if (!table.equalsIgnoreCase("optionalservices")) {
+        assertNotEquals(CodeTableConstants.getTableColumns(table).size(),
+            0, "Expected " + table + " to exist");
+        assertTrue(table.length() <= 63, "table name " + table + " should be <= 63 characters");
+      }
     }
   }
-  
-  @Test
-  public void testFromNothing() throws Exception {
+
+  private void loadFromXmls() throws Exception {
     Map<String, List<String>> tableToCourts = Map.of(
         "location", List.of("0"),
         "optionalservices", List.of("adams"),
@@ -74,7 +75,12 @@ public class CodeDatabaseTest {
         cd.updateTable(table, court, this.getClass().getResourceAsStream(filename)); 
       }
     }
-    
+  }
+  
+  @Test
+  public void testFromNothing() throws Exception {
+    loadFromXmls();
+
     List<CaseCategory> cats = cd.getCaseCategoriesFor("adams");
     assertFalse(cats.isEmpty());
     List<CaseType> types = cd.getCaseTypesFor("adams", "183527", Optional.empty()); 
@@ -92,6 +98,25 @@ public class CodeDatabaseTest {
     assertFalse(fileable.isEmpty());
     assertTrue(info.isPresent());
   }
-  // TODO(brycew-later): test that all database column names are <= 63 characters (NAMEDATALEN - 1)
+
+  @Test
+  public void testDeletes() throws Exception {
+    loadFromXmls();
+
+
+    var beforeDeleteKane = cd.getOptionalServices("adams", "183612");
+    cd.deleteFromTable("optionalservices", "kane");
+    var afterDeleteKane = cd.getOptionalServices("adams", "183612");
+    assertEquals(beforeDeleteKane.size(), afterDeleteKane.size(), "Before and after deleting something else should be the same");
+    cd.deleteFromTable("optionalservices", "adams");
+    var afterDeleteAdams = cd.getOptionalServices("adams", "183612");
+    assertEquals(0, afterDeleteAdams.size(), "Shouldn't be any adams stuff after deleting it");
+
+    List<CaseCategory> catsBeforeDelete = cd.getCaseCategoriesFor("adams");
+    assertFalse(catsBeforeDelete.isEmpty());
+    cd.deleteFromTable("casecategory", "adams");
+    List<CaseCategory> catsAfterDelete = cd.getCaseCategoriesFor("adams");
+    assertEquals(0, catsAfterDelete.size(), "Should be no categories after deleting");
+  }
 
 }

@@ -1,13 +1,11 @@
 package edu.suffolk.litlab.efspserver.codes;
 
-import jakarta.xml.bind.JAXBException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import javax.xml.stream.XMLStreamException;
 import org.oasis_open.docs.codelist.ns.genericode._1.CodeListDocument;
 import org.oasis_open.docs.codelist.ns.genericode._1.Column;
 import org.oasis_open.docs.codelist.ns.genericode._1.Value;
@@ -151,7 +149,7 @@ public class OptionalServiceCode {
       stmtFL.setString(1, tylerDomain);
       if (courtLocation != null) {
         stmt.setString(2, courtLocation);
-        stmt.setString(2, courtLocation);
+        stmtFL.setString(2, courtLocation);
       }
       stmt.executeUpdate();
       stmtFL.executeUpdate();
@@ -160,7 +158,7 @@ public class OptionalServiceCode {
 
   public static void updateOptionalServiceTable(
       String courtName, String tylerDomain, CodeListDocument doc, Connection conn)
-      throws JAXBException, SQLException, XMLStreamException {
+      throws SQLException {
     String insertMainQuery =
         """
       INSERT INTO "optionalservices" ("code", "name", "displayorder", "fee", "multiplier", "altfeedesc", "hasfeeprompt",
