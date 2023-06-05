@@ -443,6 +443,8 @@
                             <exclude>tyler/**/*.class</exclude>
                             <exclude>org/**/*.class</exclude>
                             <exclude>un/**/*.class</exclude>
+                            <exclude>https/**/*.class</exclude>
+                            <exclude>ietf/**/*.class</exclude>
                         </excludes>
                     </configuration>
                     <executions>
