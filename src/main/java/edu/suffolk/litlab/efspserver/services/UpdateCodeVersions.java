@@ -1,11 +1,10 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import edu.suffolk.litlab.efspserver.SendMessage;
+import edu.suffolk.litlab.efspserver.Monitor;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.codes.CodeUpdater;
 import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -57,33 +56,18 @@ public class UpdateCodeVersions implements Job {
       success = false;
     }
     if (!success) {
-      String monitoringEmail = System.getenv("MONITORING_EMAIL");
-      if (monitoringEmail != null && !monitoringEmail.isBlank()) {
-        SendMessage.create()
-            .ifPresent(
-                sender -> {
-                  try {
-                    sender.sendEmail(
-                        "massaccess@suffolk.edu",
-                        "UpdateCodeVersions error on " + ServiceHelpers.EXTERNAL_URL,
-                        monitoringEmail,
-                        badUpdateEmailTemplate,
-                        Map.of(
-                            "external_server",
-                            ServiceHelpers.EXTERNAL_URL,
-                            "jurisdiction",
-                            jurisdiction,
-                            "env",
-                            env,
-                            "error_timestamp",
-                            LocalDate.now().toString()));
-                  } catch (IOException ex) {
-                    log.error(
-                        "Failed to notify that an updated failed, hope someone checks the logs\n\n"
-                            + StdLib.strFromException(ex));
-                  }
-                });
-      }
+      Monitor.sendErrorNotification(
+          "UpdateCodeVersions error on " + Monitor.EXTERNAL_DOMAIN,
+          badUpdateEmailTemplate,
+          Map.of(
+              "external_server",
+              ServiceHelpers.EXTERNAL_URL,
+              "jurisdiction",
+              jurisdiction,
+              "env",
+              env,
+              "error_timestamp",
+              LocalDate.now().toString()));
     }
   }
 }
