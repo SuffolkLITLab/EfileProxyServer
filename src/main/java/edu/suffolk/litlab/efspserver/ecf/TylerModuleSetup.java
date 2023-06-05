@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver.ecf;
 
+import static edu.suffolk.litlab.efspserver.StdLib.GetEnv;
+
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
@@ -109,7 +111,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
   }
 
   private static Optional<CreationArgs> createFromEnvVars() {
-    Optional<String> maybeX509Password = EfmModuleSetup.GetEnv("X509_PASSWORD");
+    Optional<String> maybeX509Password = GetEnv("X509_PASSWORD");
     if (maybeX509Password.isEmpty() || maybeX509Password.orElse("").isBlank()) {
       log.warn("If using Tyler, X509_PASSWORD can't be null. Did you forget to source .env?");
       return Optional.empty();
@@ -117,7 +119,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     CreationArgs args = new CreationArgs();
     args.x509Password = maybeX509Password.get();
 
-    Optional<String> maybeTylerEnv = EfmModuleSetup.GetEnv("TYLER_ENV");
+    Optional<String> maybeTylerEnv = GetEnv("TYLER_ENV");
     if (maybeTylerEnv.isPresent()) {
       log.info("Using " + maybeTylerEnv.get() + " for TYLER_ENV");
       args.tylerEnv = maybeTylerEnv.get();
@@ -125,21 +127,21 @@ public class TylerModuleSetup implements EfmModuleSetup {
       log.info("Not using any TYLER_ENV, maybe prod?");
     }
 
-    args.pgUser = EfmModuleSetup.GetEnv("POSTGRES_USER").orElse("postgres");
-    Optional<String> maybeDbPassword = EfmModuleSetup.GetEnv("POSTGRES_PASSWORD");
+    args.pgUser = GetEnv("POSTGRES_USER").orElse("postgres");
+    Optional<String> maybeDbPassword = GetEnv("POSTGRES_PASSWORD");
     if (maybeDbPassword.isEmpty()) {
       log.warn("You need to define a POSTGRES_PASSWORD");
       return Optional.empty();
     }
     args.pgPassword = maybeDbPassword.get();
-    args.pgDb = EfmModuleSetup.GetEnv("POSTGRES_CODES_DB").orElse("tyler_efm_codes");
+    args.pgDb = GetEnv("POSTGRES_CODES_DB").orElse("tyler_efm_codes");
     args.pgUrl =
         "jdbc:postgresql://"
-            + EfmModuleSetup.GetEnv("POSTGRES_URL").orElse("localhost")
+            + GetEnv("POSTGRES_URL").orElse("localhost")
             + ":"
-            + EfmModuleSetup.GetEnv("POSTGRES_PORT").orElse("5432");
+            + GetEnv("POSTGRES_PORT").orElse("5432");
 
-    Optional<String> maybeTogaUrl = EfmModuleSetup.GetEnv("TOGA_URL");
+    Optional<String> maybeTogaUrl = GetEnv("TOGA_URL");
     if (maybeTogaUrl.isEmpty()) {
       log.warn("You need to define a TOGA_URL");
       return Optional.empty();

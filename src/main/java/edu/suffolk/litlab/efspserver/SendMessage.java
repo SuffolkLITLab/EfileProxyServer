@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver;
 
+import static edu.suffolk.litlab.efspserver.StdLib.GetEnv;
+
 import com.hubspot.jinjava.Jinjava;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
@@ -46,7 +48,7 @@ public class SendMessage {
   private final String twilioSendingNumber;
 
   public static Optional<SendMessage> create() {
-    Optional<String> maybeSendingMethod = EfmModuleSetup.GetEnv("EMAIL_METHOD");
+    Optional<String> maybeSendingMethod = GetEnv("EMAIL_METHOD");
     if (maybeSendingMethod.isEmpty()) {
       log.warn("Need EMAIL_METHOD env var to send email confirmations to users.");
       return Optional.empty();
@@ -54,7 +56,7 @@ public class SendMessage {
     String sendingMethod = maybeSendingMethod.get();
     String sendgridApiKey = null;
     if (sendingMethod.equalsIgnoreCase("sendgrid")) {
-      Optional<String> maybeKey = EfmModuleSetup.GetEnv("SENDGRID_API_KEY");
+      Optional<String> maybeKey = GetEnv("SENDGRID_API_KEY");
       if (maybeKey.isEmpty()) {
         log.warn("Need SENDGRID_API_KEY if sending method is " + sendingMethod);
         return Optional.empty();

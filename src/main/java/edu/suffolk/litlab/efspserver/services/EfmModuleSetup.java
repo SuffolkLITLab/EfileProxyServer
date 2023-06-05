@@ -9,6 +9,8 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.suffolk.litlab.efspserver.StdLib;
+
 /** Each module has a jurisdiction it's associated too, and a set of courts that it can handle. */
 public interface EfmModuleSetup {
   static Logger log = LoggerFactory.getLogger(EfmModuleSetup.class);
@@ -27,19 +29,10 @@ public interface EfmModuleSetup {
 
   void setupGlobals();
 
-  /** Quick wrapper to get an env var as an optional. */
-  public static Optional<String> GetEnv(String envVarName) {
-    String val = System.getenv(envVarName);
-    if (val == null || val.isBlank()) {
-      return Optional.empty();
-    }
-    return Optional.of(val);
-  }
-
   public static Map<Boolean, List<Optional<String>>> GetAllEnvs(Stream<String> vars) {
     return vars.map(
             s -> {
-              Optional<String> maybeVar = EfmModuleSetup.GetEnv(s);
+              Optional<String> maybeVar = StdLib.GetEnv(s);
               if (maybeVar.isEmpty()) {
                 log.warn("You need " + s + " as an env var");
               }

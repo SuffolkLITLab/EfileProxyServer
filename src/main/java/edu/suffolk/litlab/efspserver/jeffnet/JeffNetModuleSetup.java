@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efspserver.jeffnet;
 
 import com.opencsv.exceptions.CsvValidationException;
 import edu.suffolk.litlab.efspserver.LegalIssuesTaxonomyCodes;
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.services.EfmFilingInterface;
 import edu.suffolk.litlab.efspserver.services.EfmModuleSetup;
 import edu.suffolk.litlab.efspserver.services.EfmRestCallbackInterface;
@@ -49,7 +50,7 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
       DataSource ds,
       OrgMessageSender sender)
       throws URISyntaxException {
-    Optional<String> maybeJeffersonEndpoint = EfmModuleSetup.GetEnv("JEFFERSON_ENDPOINT");
+    Optional<String> maybeJeffersonEndpoint = StdLib.GetEnv("JEFFERSON_ENDPOINT");
     if (maybeJeffersonEndpoint.isEmpty()) {
       throw new RuntimeException(
           "JEFFERSON_ENDPOINT needs to be the " + "defined. Did you forget to source .env?");

@@ -2,6 +2,8 @@ package edu.suffolk.litlab.efspserver;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Optional;
+
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import org.slf4j.Logger;
@@ -18,6 +20,15 @@ public class StdLib {
     pw.print(" ");
     ex.printStackTrace(pw);
     return sw.toString();
+  }
+
+  /** Quick wrapper to get an env var as an optional. */
+  public static Optional<String> GetEnv(String envVarName) {
+    String val = System.getenv(envVarName);
+    if (val == null || val.isBlank()) {
+      return Optional.empty();
+    }
+    return Optional.of(val);
   }
 
   public static void closeQuitely(XMLStreamReader xsr) {
