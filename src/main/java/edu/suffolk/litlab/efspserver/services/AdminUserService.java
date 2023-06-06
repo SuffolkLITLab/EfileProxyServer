@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import javax.sql.DataSource;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
@@ -314,15 +315,27 @@ public class AdminUserService {
   @Path("/users/{id}")
   public Response getUser(@Context HttpHeaders httpHeaders, @PathParam("id") String id) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.getUser");
-    Optional<IEfmFirmService> port = setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
-    if (port.isEmpty()) {
-      return Response.status(401).build();
-    }
-
+    String tylerId =
+        httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
     GetUserRequestType getUserReq = new GetUserRequestType();
     getUserReq.setUserID(id);
-    GetUserResponseType userRes = port.get().getUser(getUserReq);
 
+    Function<GetUserRequestType, GetUserResponseType> userGetter = null;
+    if (tylerId != null && !tylerId.isBlank() && tylerId.equals(id)) {
+      Optional<IEfmUserService> userPort = setupUserPort(httpHeaders);
+      if (userPort.isEmpty()) {
+        return Response.status(401).build();
+      }
+      userGetter = (req) -> userPort.get().getUser(getUserReq);
+    } else {
+      Optional<IEfmFirmService> port =
+          setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+      if (port.isEmpty()) {
+        return Response.status(401).build();
+      }
+      userGetter = (req) -> port.get().getUser(getUserReq);
+    }
+    var userRes = userGetter.apply(getUserReq);
     return ServiceHelpers.mapTylerCodesToHttp(
         userRes.getError(), () -> Response.ok(userRes.getUser()).build());
   }

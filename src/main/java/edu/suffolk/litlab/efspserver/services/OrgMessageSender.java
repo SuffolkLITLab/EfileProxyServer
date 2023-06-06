@@ -179,7 +179,7 @@ public class OrgMessageSender {
             sendMsg.sendEmail(msgSettings.fromEmail, subject, trans.email, template, templateVars);
         return (result == 200 || result == 202 || result == 204);
       } catch (IOException e) {
-        log.error(e.toString());
+        log.error(StdLib.strFromException(e));
         return false;
       }
     }
@@ -223,7 +223,7 @@ public class OrgMessageSender {
                 msgSettings.fromEmail, emailSubject, email, emailTemplate, templateVars);
         return (result == 200 || result == 202 || result == 204);
       } catch (IOException e) {
-        log.error(e.toString());
+        log.error(StdLib.strFromException(e));
         return false;
       }
     }

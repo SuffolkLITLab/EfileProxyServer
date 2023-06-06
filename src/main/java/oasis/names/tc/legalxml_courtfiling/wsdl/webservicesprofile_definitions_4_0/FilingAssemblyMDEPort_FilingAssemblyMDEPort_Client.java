@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
+import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.services.EfmModuleSetup;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.FilingStatusType;
@@ -46,7 +47,7 @@ public class FilingAssemblyMDEPort_FilingAssemblyMDEPort_Client {
             }
         }
 
-        Optional<String> maybeX509Password = EfmModuleSetup.GetEnv("X509_PASSWORD");
+        Optional<String> maybeX509Password = StdLib.GetEnv("X509_PASSWORD");
         SoapX509CallbackHandler.setX509Password(maybeX509Password.get());
         FilingAssemblyMDEService ss = new FilingAssemblyMDEService(wsdlURL, SERVICE_NAME);
         FilingAssemblyMDEPort port = ss.getFilingAssemblyMDEPort();

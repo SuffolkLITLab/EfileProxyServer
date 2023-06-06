@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import static edu.suffolk.litlab.efspserver.StdLib.GetEnv;
+
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
@@ -318,14 +320,5 @@ public class ServiceHelpers {
         return Response.ok(cd.getAllLocations());
       }
     }
-  }
-
-  /** Quick wrapper to get an env var as an optional. */
-  public static Optional<String> GetEnv(String envVarName) {
-    String val = System.getenv(envVarName);
-    if (val == null || val.isBlank()) {
-      return Optional.empty();
-    }
-    return Optional.of(val);
   }
 }

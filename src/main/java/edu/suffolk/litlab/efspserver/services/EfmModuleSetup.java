@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
+import edu.suffolk.litlab.efspserver.StdLib;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,19 +28,10 @@ public interface EfmModuleSetup {
 
   void setupGlobals();
 
-  /** Quick wrapper to get an env var as an optional. */
-  public static Optional<String> GetEnv(String envVarName) {
-    String val = System.getenv(envVarName);
-    if (val == null || val.isBlank()) {
-      return Optional.empty();
-    }
-    return Optional.of(val);
-  }
-
   public static Map<Boolean, List<Optional<String>>> GetAllEnvs(Stream<String> vars) {
     return vars.map(
             s -> {
-              Optional<String> maybeVar = EfmModuleSetup.GetEnv(s);
+              Optional<String> maybeVar = StdLib.GetEnv(s);
               if (maybeVar.isEmpty()) {
                 log.warn("You need " + s + " as an env var");
               }

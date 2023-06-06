@@ -3,6 +3,7 @@ target/
 # Compiled class file
 *.class
 *.swp
+.classpath
 
 # HTTPS key-cert related stuff
 *.key

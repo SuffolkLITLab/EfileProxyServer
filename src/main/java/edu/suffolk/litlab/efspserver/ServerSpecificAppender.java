@@ -1,5 +1,6 @@
-package edu.suffolk.litlab.efspserver.services;
+package edu.suffolk.litlab.efspserver;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
@@ -55,6 +56,9 @@ public class ServerSpecificAppender extends AppenderBase<ILoggingEvent> {
       addError("Got IO Exception writing to " + serverId + ".log");
     } finally {
       lock.unlock();
+    }
+    if (event.getLevel().equals(Level.ERROR)) {
+      Monitor.sendErrorNotification(event.getFormattedMessage());
     }
   }
 

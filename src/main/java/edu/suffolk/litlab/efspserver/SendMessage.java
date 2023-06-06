@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver;
 
+import static edu.suffolk.litlab.efspserver.StdLib.GetEnv;
+
 import com.hubspot.jinjava.Jinjava;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
@@ -45,8 +47,23 @@ public class SendMessage {
   private final String twilioAuthToken;
   private final String twilioSendingNumber;
 
+  /**
+   * Creates a message sender, initializing internal variables with environment variables. The
+   * relevant env vars are:
+   *
+   * <ul>
+   *   <li>`EMAIL_METHOD`
+   *   <li>`SENDGRID_API_KEY` if `EMAIL_METHOD` is "sendgrid"
+   *   <li>`SMTP_SERVER`, `SMTP_PORT`, `SMTP_ENABLE_AUTH`, `SMTP_USER`, and `SMTP_PASSWORD` if
+   *       `EMAIL_METHOD` is "smtp"
+   *   <li>`TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and `TWILIO_SENDING_NUMBER` if `EMAIL_METHOD`
+   *       is "twilio"
+   * </ul>
+   *
+   * @return a new SendMessage object to send your messages
+   */
   public static Optional<SendMessage> create() {
-    Optional<String> maybeSendingMethod = EfmModuleSetup.GetEnv("EMAIL_METHOD");
+    Optional<String> maybeSendingMethod = GetEnv("EMAIL_METHOD");
     if (maybeSendingMethod.isEmpty()) {
       log.warn("Need EMAIL_METHOD env var to send email confirmations to users.");
       return Optional.empty();
@@ -54,7 +71,7 @@ public class SendMessage {
     String sendingMethod = maybeSendingMethod.get();
     String sendgridApiKey = null;
     if (sendingMethod.equalsIgnoreCase("sendgrid")) {
-      Optional<String> maybeKey = EfmModuleSetup.GetEnv("SENDGRID_API_KEY");
+      Optional<String> maybeKey = GetEnv("SENDGRID_API_KEY");
       if (maybeKey.isEmpty()) {
         log.warn("Need SENDGRID_API_KEY if sending method is " + sendingMethod);
         return Optional.empty();
@@ -134,19 +151,6 @@ public class SendMessage {
     this.twilioSendingNumber = twilioSendingNumber;
   }
 
-  /** Main just for testing. */
-  public static void main(String[] args) throws IOException {
-    HashMap<String, Object> context = new HashMap<String, Object>();
-    context.put("name", "Suffolk LIT Lab Test");
-    System.out.println("\n" + System.getenv("SMTP_SERVER") + "\n");
-
-    /*
-     sendEmail("test@sender.example.com", "Test email", "test@recipient.example.com",
-     "Hello, {{ name }}. message body", context);
-    */
-    // sendSms("+1.........", "Hello {{ name }}", context);
-  }
-
   /**
    * Send an email, respecting method specified in environment variable EMAIL_METHOD ("smtp" or
    * "sendgrid")
@@ -156,7 +160,7 @@ public class SendMessage {
    * @param to The email recipient
    * @param messageTemplate A string with optional Jinja2 template variables. Will be rendered as
    *     plain text.
-   * @param context A HashMap containing variables that will be substituted in the message_template
+   * @param context A Map containing variables that will be substituted in the message_template
    * @throws IOException If there's a network error talking to sendgrid
    */
   public int sendEmail(
@@ -231,8 +235,9 @@ public class SendMessage {
    * @param from The email "from" address
    * @param subject The email subject
    * @param to The email recipient
-   * @param messageTemplate A string with optional Jinja2 template variables. Will be rendered as
-   *     plain text.
+   * @param messageTemplate A string with optional Jinja2 template variables. If the rendered
+   *     template startes with "<!DOCTYPE html>", will be rendered as `text/html`. Otherwise, will
+   *     be rendered as plain text.
    * @param context A HashMap containing variables that will be substituted in the message_template
    * @throws IOException If there's a network error talking to sendgrid
    */
@@ -289,5 +294,18 @@ public class SendMessage {
   public static boolean isValidPhoneNumber(String phoneNumber) {
     // TODO(brycew-later): what format does Twilio need numbers in?
     return true;
+  }
+
+  /** Main just for testing. */
+  public static void main(String[] args) throws IOException {
+    HashMap<String, Object> context = new HashMap<String, Object>();
+    context.put("name", "Suffolk LIT Lab Test");
+    System.out.println("\n" + System.getenv("SMTP_SERVER") + "\n");
+
+    /*
+     sendEmail("test@sender.example.com", "Test email", "test@recipient.example.com",
+     "Hello, {{ name }}. message body", context);
+    */
+    // sendSms("+1.........", "Hello {{ name }}", context);
   }
 }
