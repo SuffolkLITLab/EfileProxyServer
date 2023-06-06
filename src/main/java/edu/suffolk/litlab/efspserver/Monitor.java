@@ -17,9 +17,15 @@ public class Monitor {
   private static LocalTime lastSent = null;
   private static AtomicInteger prevErrors = new AtomicInteger(0);
 
+  /**
+   * Sends error notifications, without overwhelming the monitoring channel. Can be called whenever,
+   * and will only send a notification once every 2 minutes.
+   *
+   * <p>This works because most of the error info is still in the logs.
+   */
   public static void sendErrorNotification(String errorStr) {
     LocalTime now = LocalTime.now();
-    if (lastSent != null && now.isAfter(lastSent.plusMinutes(2))) {
+    if (lastSent == null || (lastSent != null && now.isAfter(lastSent.plusMinutes(2)))) {
       String smallErrStr = (errorStr.length() > 21) ? errorStr.substring(0, 20) : errorStr;
       StringBuilder fullEmailMsg = new StringBuilder();
       fullEmailMsg
@@ -27,16 +33,16 @@ public class Monitor {
           .append(EXTERNAL_DOMAIN)
           .append(", at ")
           .append(now.toString())
-          .append(". The error was: ")
+          .append(". The error was: \n")
           .append(errorStr)
           .append(". ");
-      if (prevErrors.get() > 0) {
+      if (lastSent != null && prevErrors.get() > 0) {
         fullEmailMsg
             .append("There were ")
             .append(prevErrors.get())
-            .append(" previous errors between now and ")
+            .append(" previous error(s) between ")
             .append(lastSent.toString())
-            .append(". Check the logs for more information.");
+            .append(" and now. Check the logs for more information.");
       }
       sendImmediateErrorNotification(
           "Error in EfileProxy: " + smallErrStr, fullEmailMsg.toString(), Map.of());
@@ -47,6 +53,17 @@ public class Monitor {
     }
   }
 
+  /**
+   * Sends an error notification immediately. Should only call for scheduled processes, and not
+   * anything that can be triggered by an API user.
+   *
+   * <p>The server needs to be able to send email messages for monitoring to work.
+   *
+   * @see edu.suffolk.litlab.efspserver.SendMessage
+   * @param subject The subject of the notification (email subject for now)
+   * @param template The body of the notification, as a jinja template
+   * @param context the mapping of jinja variables in `template` to the strings they should become.
+   */
   public static void sendImmediateErrorNotification(
       String subject, String template, Map<String, Object> context) {
     if (monitoringEmail != null && !monitoringEmail.isBlank()) {

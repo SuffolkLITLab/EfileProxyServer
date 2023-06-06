@@ -47,6 +47,21 @@ public class SendMessage {
   private final String twilioAuthToken;
   private final String twilioSendingNumber;
 
+  /**
+   * Creates a message sender, initializing internal variables with environment variables. The
+   * relevant env vars are:
+   *
+   * <ul>
+   *   <li>`EMAIL_METHOD`
+   *   <li>`SENDGRID_API_KEY` if `EMAIL_METHOD` is "sendgrid"
+   *   <li>`SMTP_SERVER`, `SMTP_PORT`, `SMTP_ENABLE_AUTH`, `SMTP_USER`, and `SMTP_PASSWORD` if
+   *       `EMAIL_METHOD` is "smtp"
+   *   <li>`TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and `TWILIO_SENDING_NUMBER` if `EMAIL_METHOD`
+   *       is "twilio"
+   * </ul>
+   *
+   * @return a new SendMessage object to send your messages
+   */
   public static Optional<SendMessage> create() {
     Optional<String> maybeSendingMethod = GetEnv("EMAIL_METHOD");
     if (maybeSendingMethod.isEmpty()) {
@@ -145,7 +160,7 @@ public class SendMessage {
    * @param to The email recipient
    * @param messageTemplate A string with optional Jinja2 template variables. Will be rendered as
    *     plain text.
-   * @param context A HashMap containing variables that will be substituted in the message_template
+   * @param context A Map containing variables that will be substituted in the message_template
    * @throws IOException If there's a network error talking to sendgrid
    */
   public int sendEmail(
@@ -220,8 +235,9 @@ public class SendMessage {
    * @param from The email "from" address
    * @param subject The email subject
    * @param to The email recipient
-   * @param messageTemplate A string with optional Jinja2 template variables. Will be rendered as
-   *     plain text.
+   * @param messageTemplate A string with optional Jinja2 template variables. If the rendered
+   *     template startes with "<!DOCTYPE html>", will be rendered as `text/html`. Otherwise, will
+   *     be rendered as plain text.
    * @param context A HashMap containing variables that will be substituted in the message_template
    * @throws IOException If there's a network error talking to sendgrid
    */
