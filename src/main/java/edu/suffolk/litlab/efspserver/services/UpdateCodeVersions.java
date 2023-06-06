@@ -56,7 +56,7 @@ public class UpdateCodeVersions implements Job {
       success = false;
     }
     if (!success) {
-      Monitor.sendErrorNotification(
+      Monitor.sendImmediateErrorNotification(
           "UpdateCodeVersions error on " + Monitor.EXTERNAL_DOMAIN,
           badUpdateEmailTemplate,
           Map.of(
