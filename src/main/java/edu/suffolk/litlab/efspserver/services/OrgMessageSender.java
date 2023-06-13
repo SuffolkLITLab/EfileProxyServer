@@ -76,7 +76,7 @@ public class OrgMessageSender {
     this.sendMsg = sendMsg;
   }
 
-  private MessageInfo getSettings(UUID serverId) {
+  public MessageInfo getSettings(UUID serverId) {
     Optional<MessageInfo> maybeInfo = Optional.empty();
     try (Connection conn = ds.getConnection()) {
       var md = new MessageSettingsDatabase(conn);

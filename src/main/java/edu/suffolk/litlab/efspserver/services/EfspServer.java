@@ -242,8 +242,10 @@ public class EfspServer {
             new Thread() {
               @Override
               public void run() {
+                log.info("Stopping servers");
                 server.stopServers();
                 for (EfmModuleSetup mod : modules) {
+                  log.info("Stopping module " + mod.getJurisdiction());
                   mod.shutdown();
                 }
               }
