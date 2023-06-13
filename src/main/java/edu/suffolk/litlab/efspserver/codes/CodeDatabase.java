@@ -950,6 +950,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
     }
     if (tableName.equals("optionalservices")) {
       OptionalServiceCode.deleteFromOptionalServiceTable(courtLocation, tylerDomain, conn);
+      return true;
     }
     // TODO(brycew): make variant that deletes everything with a specific jurisdiction
     final String deleteFromTableStr = CodeTableConstants.getDeleteFrom(tableName);

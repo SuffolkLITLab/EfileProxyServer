@@ -193,7 +193,7 @@ public class CodeUpdater {
   }
 
   private boolean downloadSystemTables(String baseUrl, CodeDatabase cd, HeaderSigner signer)
-      throws SQLException, IOException, JAXBException, XMLStreamException {
+      throws SQLException, IOException, JAXBException {
     Map<String, String> codeUrls =
         Map.of(
             "version",
@@ -407,7 +407,7 @@ public class CodeUpdater {
 
   /** Returns true if successful, false if not successful */
   public boolean updateAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
-      throws SQLException, IOException, JAXBException, XMLStreamException {
+      throws SQLException, IOException, JAXBException {
     HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
     if (!downloadSystemTables(baseUrl, cd, signer)) {
       log.warn(
@@ -478,7 +478,13 @@ public class CodeUpdater {
    * Downloads all of the codes from scratch, deleting all of the existing info already in tables.
    */
   public boolean replaceAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
-      throws SQLException, IOException, JAXBException, XMLStreamException {
+      throws SQLException, IOException, JAXBException {
+    return replaceSome(baseUrl, filingPort, cd, List.of());
+  }
+
+  public boolean replaceSome(
+      String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd, List<String> locs)
+      throws SQLException, IOException, JAXBException {
     HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
     log.info("Downloading system tables for {}", cd.getDomain());
     boolean success = downloadSystemTables(baseUrl, cd, signer);
@@ -493,7 +499,9 @@ public class CodeUpdater {
     downloads = Duration.ZERO;
     soaps = Duration.ZERO;
     updates = Duration.ZERO;
-    List<String> locs = cd.getAllLocations();
+    if (locs.isEmpty()) {
+      locs = cd.getAllLocations();
+    }
     Instant startPolicy = Instant.now(Clock.systemUTC());
     Map<String, CourtPolicyResponseMessageType> policies =
         streamPolicies(locs.stream(), cd.getDomain(), filingPort);
@@ -589,6 +597,8 @@ public class CodeUpdater {
       CodeUpdater cu = new CodeUpdater(System.getenv("PATH_TO_KEYSTORE"), x509Password);
       if (command.equalsIgnoreCase("replaceall")) {
         return cu.replaceAll(codesSite, filingPort, cd);
+      } else if (command.equalsIgnoreCase("replacesome")) {
+        return cu.replaceSome(codesSite, filingPort, cd, args);
       } else if (command.equalsIgnoreCase("refresh")) {
         return cu.updateAll(codesSite, filingPort, cd);
       } else if (command.equalsIgnoreCase("downloadIndiv")) {
@@ -597,7 +607,7 @@ public class CodeUpdater {
         log.error("Command " + command + " isn't a real command");
         return false;
       }
-    } catch (SQLException | IOException | JAXBException | XMLStreamException e) {
+    } catch (SQLException | IOException | JAXBException e) {
       log.error("Exception when doing code updating! " + StdLib.strFromException(e));
       return false;
     }
