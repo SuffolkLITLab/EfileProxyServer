@@ -43,9 +43,9 @@ pip install docassemble.EFSPIntegration
 # Run the integration test
 ./integration_test.py
 # change the output jacoco.exec file to be owned by you
-chown $USER target/jacoco.exec
+sudo chown $USER target/jacoco.exec
 # run unit tests (without deleting jacoco.exec) and create the report
-mvn clean jacoco:prepare-agent verify jacoco:report
+mvn jacoco:prepare-agent verify jacoco:report
 # view the report in your browser
 firefox target/site/jacoco/index.html # or chrome, chromium, etc.
 ```

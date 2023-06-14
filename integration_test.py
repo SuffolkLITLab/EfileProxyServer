@@ -7,6 +7,9 @@ from docassemble.EFSPIntegration.test import integration_test
 
 from plumbum import local, FG, BG
 
+if not os.path.exists("target"):
+  os.mkdir("target")
+
 docker_compose = local.cmd.docker['compose', '-f', 'docker-integration-test.yml']
 docker_compose['build'] & FG
 docker_compose['up', '-d'] & FG

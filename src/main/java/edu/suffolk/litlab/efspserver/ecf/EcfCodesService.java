@@ -54,6 +54,7 @@ public class EcfCodesService implements CodesService {
           "getCaseTypes",
           "getNameSuffixes",
           "getServiceTypes",
+          "getDataFields",
           "getProcedureOrRemedies",
           "getFilingTypes",
           "getDamageAmounts",
