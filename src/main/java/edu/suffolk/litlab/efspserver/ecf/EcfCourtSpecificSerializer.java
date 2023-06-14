@@ -882,7 +882,7 @@ public class EcfCourtSpecificSerializer {
         if (!codeSettings.hasfeeprompt && serv.feeAmount.isPresent()) {
           collector.addWrong(servVar.appendDesc(": doesn't need fee prompt"));
         }
-        if (codeSettings.multiplier.equalsIgnoreCase("true")) {
+        if (codeSettings.multiplier == true) {
           if (serv.multiplier.isEmpty()) {
             collector.addWrong(servVar.appendDesc(": needs multiplier"));
           } else {

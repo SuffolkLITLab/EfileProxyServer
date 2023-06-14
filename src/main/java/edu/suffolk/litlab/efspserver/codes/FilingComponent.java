@@ -19,9 +19,9 @@ public class FilingComponent {
         rs.getString(1),
         rs.getString(2),
         rs.getString(3),
-        Boolean.parseBoolean(rs.getString(4)),
-        Boolean.parseBoolean(rs.getString(5)),
-        Integer.parseInt(rs.getString(6)),
+        rs.getBoolean(4),
+        rs.getBoolean(5),
+        rs.getInt(6),
         rs.getString(7),
         rs.getString(8));
   }
@@ -55,6 +55,14 @@ public class FilingComponent {
 
   @Override
   public String toString() {
-    return "FilingComponent[code=" + code + ",name=" + name + ",location=" + location + "]";
+    StringBuilder sb = new StringBuilder();
+    sb.append("FilingComponent[code=");
+    sb.append(code);
+    sb.append(",name=");
+    sb.append(name);
+    sb.append(",location=");
+    sb.append(location);
+    sb.append("]");
+    return sb.toString();
   }
 }

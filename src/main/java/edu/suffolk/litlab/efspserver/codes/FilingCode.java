@@ -24,21 +24,21 @@ public class FilingCode {
   public final String location;
   
   public FilingCode(String code, String name, String fee, String casecategory,
-          String casetypeid, String filingtype, String iscourtuseonly, String civilclaimamount,
-          String probabeestateamount, String amountincontroversy, String useduedate,
-          String isproposedorder, String efspcode, String location) {
+          String casetypeid, String filingtype, boolean iscourtuseonly, String civilclaimamount,
+          String probabeestateamount, String amountincontroversy, boolean useduedate,
+          boolean isproposedorder, String efspcode, String location) {
     this.code = code;
     this.name = name;
     this.fee = fee;
     this.casecategory = casecategory;
     this.casetypeid = casetypeid;
     this.filingtype = filingtype;
-    this.iscourtuseonly = Boolean.parseBoolean(iscourtuseonly);
+    this.iscourtuseonly = iscourtuseonly;
     this.civilclaimamount = civilclaimamount;
     this.probateestateamount = probabeestateamount;
     this.amountincontroversy = amountincontroversy;
-    this.useduedate = Boolean.parseBoolean(useduedate);
-    this.isproposedorder = Boolean.parseBoolean(isproposedorder);
+    this.useduedate = useduedate;
+    this.isproposedorder = isproposedorder;
     this.efspcode = efspcode;
     this.location = location;
   }
@@ -51,12 +51,12 @@ public class FilingCode {
           rs.getString(4), 
           rs.getString(5), 
           rs.getString(6), 
-          rs.getString(7), 
+          rs.getBoolean(7), 
           rs.getString(8), 
           rs.getString(9), 
           rs.getString(10), 
-          rs.getString(11), 
-          rs.getString(12), 
+          rs.getBoolean(11), 
+          rs.getBoolean(12), 
           rs.getString(13),
           rs.getString(14));
   }

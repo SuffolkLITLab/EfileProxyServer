@@ -37,6 +37,11 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
+import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.codes.FilingComponent;
+import edu.suffolk.litlab.efspserver.codes.OptionalServiceCode;
+import edu.suffolk.litlab.efspserver.codes.PartyType;
+
 public class DatabaseVersionTest {
   private final static Logger log = 
       LoggerFactory.getLogger(DatabaseVersionTest.class); 
@@ -115,6 +120,15 @@ public class DatabaseVersionTest {
 
     while (rs.next()) {
       assertEquals(rs.getString(1), "illinois-stage");
+    }
+
+    try (var codesDatabase = new CodeDatabase("illinois", "stage", codeConn)) {
+      List<OptionalServiceCode> opts = codesDatabase.getOptionalServices("adams", "27959");
+      assertEquals(23, opts.size());
+      List<PartyType> partyTypes = codesDatabase.getPartyTypeFor("adams", "27898");
+      assertEquals(2, partyTypes.size());
+      List<FilingComponent> components = codesDatabase.getFilingComponents("adams", "27959");
+      assertEquals(2, components.size());
     }
   }
   

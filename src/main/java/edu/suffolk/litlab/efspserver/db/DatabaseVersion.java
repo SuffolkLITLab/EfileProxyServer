@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DatabaseVersion {
 
-  static final int CURRENT_VERSION = 7;
+  static final int CURRENT_VERSION = 8;
   private static Logger log = LoggerFactory.getLogger(DatabaseVersion.class);
   private final Connection codeConn;
   private final Connection userConn;
@@ -148,6 +148,8 @@ public class DatabaseVersion {
       update5To6();
     } else if (onDiskVersion == 6) {
       update6To7();
+    } else if (onDiskVersion == 7) {
+      update7To8();
     }
     setSchemaVersion(onDiskVersion + 1);
     userConn.commit();
@@ -346,6 +348,153 @@ public class DatabaseVersion {
       st.executeUpdate(createRefundReason);
     }
     userConn.commit();
+    codeConn.commit();
+  }
+
+  private void update7To8() throws SQLException {
+    // Version 8 will:
+    // * turn location into char varying (80) (max seen is 20) (will use only 1 byte per row + chars
+    // instead of 4)
+    // * turn code into char varying (40) (max seen is 7)
+    // * turn filingcodeid into char varying (40) (max seen is also 7)
+    // * turn hasfeeprompt and multiplier, and other boolean things to booleans
+    // * split the Optional services table into two tables, to compress and save space.
+    // https://stackoverflow.com/a/7162961/11416267
+    // *
+    try (Statement st = codeConn.createStatement()) {
+      final String shrinkOptSrv =
+          """
+        ALTER TABLE optionalservices
+          ALTER COLUMN code TYPE varchar(40),
+          ALTER COLUMN filingcodeid TYPE varchar(40),
+          ALTER COLUMN domain TYPE varchar(80),
+          ALTER COLUMN location TYPE varchar(80),
+          ALTER COLUMN displayorder TYPE smallint USING displayorder::smallint,
+          ALTER COLUMN multiplier TYPE boolean USING multiplier::boolean,
+          ALTER COLUMN hasfeeprompt TYPE boolean USING hasfeeprompt::boolean
+        """;
+      st.executeUpdate(shrinkOptSrv);
+      final String newOptSrv_FilingList =
+          """
+        CREATE TABLE optionalservices_filinglist AS
+          SELECT code, filingcodeid, domain, location FROM optionalservices
+        """;
+      st.executeUpdate(newOptSrv_FilingList);
+      // * split optionalservices into two tables:
+      final String newOptSrv =
+          """
+        ALTER TABLE optionalservices
+          DROP COLUMN filingcodeid
+          """;
+      st.executeUpdate(newOptSrv);
+      final String copyOptSrv =
+          """
+      CREATE TABLE dedup_optionalservices AS
+        SELECT DISTINCT * FROM optionalservices
+        """;
+      st.executeUpdate(copyOptSrv);
+      st.executeUpdate("DROP TABLE optionalservices");
+      st.executeUpdate("ALTER TABLE dedup_optionalservices RENAME TO optionalservices");
+      // Then, we'll remake the indices;
+      st.executeUpdate("CREATE INDEX ON optionalservices (location)");
+      st.executeUpdate("CREATE INDEX ON optionalservices (domain)");
+      st.executeUpdate("CREATE INDEX ON optionalservices_filinglist (filingcodeid)");
+      st.executeUpdate("CREATE INDEX ON optionalservices_filinglist (location)");
+      st.executeUpdate("CREATE INDEX ON optionalservices_filinglist (domain)");
+      final String shrinkFilingCode =
+          """
+        ALTER TABLE filing
+          ALTER COLUMN code TYPE varchar(40),
+          ALTER COLUMN isproposedorder TYPE boolean USING isproposedorder::boolean,
+          ALTER COLUMN iscourtuseonly TYPE boolean USING iscourtuseonly::boolean,
+          ALTER COLUMN useduedate TYPE boolean USING useduedate::boolean
+          """;
+      st.executeUpdate(shrinkFilingCode);
+      final String shrinkFilingComponent =
+          """
+        ALTER TABLE filingcomponent
+          ALTER COLUMN code TYPE varchar(40),
+          ALTER COLUMN filingcodeid TYPE varchar(40),
+          ALTER COLUMN required TYPE boolean USING required::boolean,
+          ALTER COLUMN allowmultiple TYPE boolean USING allowmultiple::boolean,
+          ALTER COLUMN displayorder TYPE smallint USING displayorder::smallint
+          """;
+      st.executeUpdate(shrinkFilingComponent);
+      final String shrinkPartyType =
+          """
+        ALTER TABLE partytype
+          ALTER COLUMN code TYPE varchar(40),
+          ALTER COLUMN isrequired TYPE boolean USING isrequired::boolean,
+          ALTER COLUMN isavailablefornewparties TYPE boolean USING isavailablefornewparties::boolean
+          """;
+      st.executeUpdate(shrinkPartyType);
+      final String shrinkCaseType =
+          """
+        ALTER TABLE casetype
+          ALTER COLUMN code TYPE varchar(40)
+          """;
+      st.executeUpdate(shrinkCaseType);
+      final String shrinkDatafieldConfig =
+          """
+        ALTER TABLE datafieldconfig
+          ALTER COLUMN isvisible TYPE boolean USING isvisible::boolean,
+          ALTER COLUMN isrequired TYPE boolean USING isrequired::boolean,
+          ALTER COLUMN isreadonly TYPE boolean USING isreadonly::boolean
+          """;
+      st.executeUpdate(shrinkDatafieldConfig);
+      for (var tableName :
+          List.of(
+              "country",
+              "state",
+              "filingstatus",
+              "filingcomponent",
+              "partytype",
+              "casetype",
+              "filing",
+              "datafieldconfig",
+              "answer",
+              "arrestlocation",
+              "bond",
+              "casecategory",
+              "casesubtype",
+              "chargephase",
+              "citationjurisdiction",
+              "crossreference",
+              "damageamount",
+              "degree",
+              "disclaimerrequirement",
+              "driverlicensetype",
+              "documenttype",
+              "ethnicity",
+              "eyecolor",
+              "filertype",
+              "filetype",
+              "generaloffense",
+              "haircolor",
+              "language",
+              "lawenforcementunit",
+              "motiontype",
+              "namesuffix",
+              "physicalfeature",
+              "procedureremedy",
+              "question",
+              "race",
+              "servicetype",
+              "statute",
+              "statutetype",
+              "vehiclecolor",
+              "vehiclemake",
+              "vehicletype",
+              "refundreason")) {
+        st.executeUpdate(
+            """
+          ALTER TABLE %s
+            ALTER COLUMN domain TYPE varchar(80),
+            ALTER COLUMN location TYPE varchar(80)
+            """
+                .formatted(tableName));
+      }
+    }
     codeConn.commit();
   }
 }

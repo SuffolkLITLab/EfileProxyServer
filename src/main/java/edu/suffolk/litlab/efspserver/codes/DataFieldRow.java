@@ -14,27 +14,27 @@ public class DataFieldRow {
   public String validationmessage;
   public Pattern regularexpression;
   public String defaultvalueexpression;
-  public String isreadonly;
+  public boolean isreadonly;
   public String location;
 
   /** Constructor directly from Database. */
   public DataFieldRow(
       String code,
       String name,
-      String isvisible,
-      String isrequired,
+      boolean isvisible,
+      boolean isrequired,
       String helptext,
       String ghosttext,
       String contextualhelpdata,
       String validationmessage,
       String regularexpression,
       String defaultvalueexpression,
-      String isreadonly,
+      boolean isreadonly,
       String location) {
     this.code = code;
     this.name = name;
-    this.isvisible = Boolean.parseBoolean(isvisible);
-    this.isrequired = Boolean.parseBoolean(isrequired);
+    this.isvisible = isvisible;
+    this.isrequired = isrequired;
     this.helptext = helptext;
     this.ghosttext = ghosttext;
     this.contextualhelpdata = contextualhelpdata;
@@ -56,7 +56,7 @@ public class DataFieldRow {
    * @return
    */
   public static DataFieldRow MissingDataField(String name) {
-    return new DataFieldRow("", name, "false", "false", "", "", "", "", "", "", "", "");
+    return new DataFieldRow("", name, false, false, "", "", "", "", "", "", false, "");
   }
 
   public boolean matchRegex(String value) {
