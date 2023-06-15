@@ -166,9 +166,18 @@ public class TylerModuleSetup implements EfmModuleSetup {
       if (downloadAll) {
         String testOnlyLocation = StdLib.GetEnv("_TEST_ONLY_LOCATION").orElse("");
         if (!testOnlyLocation.isBlank()) {
-          log.info("Downloading just codes for " + testOnlyLocation + " in " + tylerJurisdiction + ": please wait a bit");
+          log.info(
+              "Downloading just codes for "
+                  + testOnlyLocation
+                  + " in "
+                  + tylerJurisdiction
+                  + ": please wait a bit");
           CodeUpdater.executeCommand(
-              cd, tylerJurisdiction, tylerEnv, List.of("replacesome", testOnlyLocation), this.x509Password);
+              cd,
+              tylerJurisdiction,
+              tylerEnv,
+              List.of("replacesome", testOnlyLocation),
+              this.x509Password);
         } else {
           log.info("Downloading all codes for " + tylerJurisdiction + ": please wait a bit");
           CodeUpdater.executeCommand(
