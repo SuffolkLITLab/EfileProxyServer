@@ -293,6 +293,7 @@ public class LoginDatabase implements DatabaseInterface {
       LoginDatabase ld = new LoginDatabase(conn);
       boolean tylerBool = Boolean.parseBoolean(tylerEnabled);
       boolean jeffnetBool = Boolean.parseBoolean(jeffnetEnabled);
+      ld.createTablesIfAbsent();
       String newApiKey = ld.addNewUser(serverName, tylerBool, jeffnetBool);
       System.out.println("New Api Key for " + serverName + ": " + newApiKey);
       System.out.println("Using tyler: " + tylerBool + " and using jeffnet: " + jeffnetBool);

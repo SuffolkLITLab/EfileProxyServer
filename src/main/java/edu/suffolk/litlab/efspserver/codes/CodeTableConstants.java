@@ -93,7 +93,7 @@ public class CodeTableConstants {
           new ImmutablePair<String, String>("code", "text"),
           new ImmutablePair<String, String>("name", "text")))),
         Map.entry("datafieldconfig", makeCourtColumnInfo(List.of(
-          new ImmutablePair<String, String>("code", "varchar(40)"),
+          new ImmutablePair<String, String>("code", "varchar(80)"),
           new ImmutablePair<String, String>("name", "text"), 
           new ImmutablePair<String, String>("isvisible", "boolean"),
           new ImmutablePair<String, String>("isrequired", "boolean"), 

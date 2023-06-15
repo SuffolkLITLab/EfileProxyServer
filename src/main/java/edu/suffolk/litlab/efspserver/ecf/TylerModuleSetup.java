@@ -164,9 +164,16 @@ public class TylerModuleSetup implements EfmModuleSetup {
           "All locations for " + this.tylerJurisdiction + "-" + this.tylerEnv + ": " + locations);
       boolean downloadAll = (cd.getAllLocations().size() == 0);
       if (downloadAll) {
-        log.info("Downloading all codes for " + tylerJurisdiction + ": please wait a bit");
-        CodeUpdater.executeCommand(
-            cd, tylerJurisdiction, tylerEnv, List.of("replaceall"), this.x509Password);
+        String testOnlyLocation = StdLib.GetEnv("_TEST_ONLY_LOCATION").orElse("");
+        if (!testOnlyLocation.isBlank()) {
+          log.info("Downloading just codes for " + testOnlyLocation + " in " + tylerJurisdiction + ": please wait a bit");
+          CodeUpdater.executeCommand(
+              cd, tylerJurisdiction, tylerEnv, List.of("replacesome", testOnlyLocation), this.x509Password);
+        } else {
+          log.info("Downloading all codes for " + tylerJurisdiction + ": please wait a bit");
+          CodeUpdater.executeCommand(
+              cd, tylerJurisdiction, tylerEnv, List.of("replaceall"), this.x509Password);
+        }
       }
     } catch (SQLException e) {
       log.error("SQL Exception: " + StdLib.strFromException(e));
