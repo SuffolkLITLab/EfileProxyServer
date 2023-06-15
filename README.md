@@ -39,7 +39,7 @@ with coverage, do the following:
 wget --output-document=jacoco-0.8.10.zip https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.10/jacoco-0.8.10.zip
 unzip jacoco-0.8.10.zip
 # Setup the EFSPIntegration python side of things; where the actual tests are
-pip install docassemble.EFSPIntegration
+pip install plumbum docassemble.EFSPIntegration
 # Run the integration test
 ./integration_test.py
 # change the output jacoco.exec file to be owned by you
