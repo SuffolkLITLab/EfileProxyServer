@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<definitions xmlns:wsmp="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns="http://schemas.xmlsoap.org/wsdl/"
+	targetNamespace="urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0">
+    <import location="ecf-1.xsd" namespace="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0"/>
+    <service name="FilingAssemblyMDEService">
+        <port binding="wsmp:FilingAssemblyMDEPortSOAPBinding" name="FilingAssemblyMDEPort">
+            <soap:address location="https://efile-test.suffolklitlab.org/jurisdictions/california/filingassembly/callbacks/FilingAssemblyMDEPort"/>
+        </port>
+    </service>
+</definitions>
