@@ -26,6 +26,7 @@ public class SoapClientChooser {
           "illinois-test", "wsdl/test/illinois-EFMUserServiceSingle.svc.wsdl",
           "illinois-prod", "wsdl/prod/illinois-EFMUserServiceSingle.svc.wsdl",
           "massachusetts-stage", "wsdl/stage/massachusetts-EFMUserServiceSingle.svc.wsdl",
+          "california-stage", "wsdl/stage/california-EFMUserServiceSingle.svc.wsdl",
           "texas-stage", "wsdl/stage/texas-EFMUserServiceSingle.svc.wsdl",
           "indiana-stage", "wsdl/stage/indiana-EFMUserServiceSingle.svc.wsdl");
 
@@ -35,6 +36,7 @@ public class SoapClientChooser {
           "illinois-test", "wsdl/test/illinois-EFMFirmServiceSingle.svc.wsdl",
           "illinois-prod", "wsdl/prod/illinois-EFMFirmServiceSingle.svc.wsdl",
           "massachusetts-stage", "wsdl/stage/massachusetts-EFMFirmServiceSingle.svc.wsdl",
+          "california-stage", "wsdl/stage/california-EFMFirmServiceSingle.svc.wsdl",
           "texas-stage", "wsdl/stage/texas-EFMFirmServiceSingle.svc.wsdl",
           "indiana-stage", "wsdl/stage/indiana-EFMFirmServiceSingle.svc.wsdl");
 
@@ -44,6 +46,7 @@ public class SoapClientChooser {
           "illinois-test", "wsdl/test/illinois-ECF-4.0-ServiceMDEService.wsdl",
           "illinois-prod", "wsdl/prod/illinois-ECF-4.0-ServiceMDEService.wsdl",
           "massachusetts-stage", "wsdl/stage/massachusetts-ECF-4.0-ServiceMDEService.wsdl",
+          "california-stage", "wsdl/stage/california-ECF-4.0-ServiceMDEService.wsdl",
           "texas-stage", "wsdl/stage/texas-ECF-4.0-ServiceMDEService.wsdl",
           "indiana-stage", "wsdl/stage/indiana-ECF-4.0-ServiceMDEService.wsdl");
 
@@ -53,6 +56,7 @@ public class SoapClientChooser {
           "illinois-test", "wsdl/test/illinois-ECF-4.0-FilingReviewMDEService.wsdl",
           "illinois-prod", "wsdl/prod/illinois-ECF-4.0-FilingReviewMDEService.wsdl",
           "massachusetts-stage", "wsdl/stage/massachusetts-ECF-4.0-FilingReviewMDEService.wsdl",
+          "california-stage", "wsdl/stage/california-ECF-4.0-FilingReviewMDEService.wsdl",
           "texas-stage", "wsdl/stage/texas-ECF-4.0-FilingReviewMDEService.wsdl",
           "indiana-stage", "wsdl/stage/indiana-ECF-4.0-FilingReviewMDEService.wsdl");
 
@@ -62,6 +66,7 @@ public class SoapClientChooser {
           "illinois-test", "wsdl/test/illinois-ECF-4.0-CourtRecordMDEService.wsdl",
           "illinois-prod", "wsdl/prod/illinois-ECF-4.0-CourtRecordMDEService.wsdl",
           "massachusetts-stage", "wsdl/stage/massachusetts-ECF-4.0-CourtRecordMDEService.wsdl",
+          "california-stage", "wsdl/stage/california-ECF-4.0-CourtRecordMDEService.wsdl",
           "texas-stage", "wsdl/stage/texas-ECF-4.0-CourtRecordMDEService.wsdl",
           "indiana-stage", "wsdl/stage/indiana-ECF-4.0-CourtRecordMDEService.wsdl");
 
@@ -76,6 +81,9 @@ public class SoapClientChooser {
             || jurisdiction.equalsIgnoreCase("illinois"))
         && env.equalsIgnoreCase("prod")) {
       return "https://" + jurisdiction + ".tylerhost.net/";
+    }
+    if (jurisdiction.equalsIgnoreCase("california")) {
+      return "https://california-efm-" + env + ".tylertech.cloud/";
     }
     if (env.equalsIgnoreCase("prod")) {
       return "https://" + jurisdiction + ".tylertech.cloud/";
