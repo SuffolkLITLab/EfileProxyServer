@@ -598,7 +598,7 @@ public class CodeUpdater {
       if (command.equalsIgnoreCase("replaceall")) {
         return cu.replaceAll(codesSite, filingPort, cd);
       } else if (command.equalsIgnoreCase("replacesome")) {
-        return cu.replaceSome(codesSite, filingPort, cd, args);
+        return cu.replaceSome(codesSite, filingPort, cd, args.subList(1, args.size()));
       } else if (command.equalsIgnoreCase("refresh")) {
         return cu.updateAll(codesSite, filingPort, cd);
       } else if (command.equalsIgnoreCase("downloadIndiv")) {

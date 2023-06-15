@@ -1,5 +1,12 @@
 target/
 
+# stuff related to running integration tests
+/cp.txt
+/proxy_stuff.txt
+/jacoco.exec
+jacoco-0.8.10/
+
+
 # Compiled class file
 *.class
 *.swp

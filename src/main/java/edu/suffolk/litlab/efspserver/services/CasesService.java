@@ -43,7 +43,6 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.Cas
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistresponsemessage_4.CaseListResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
@@ -171,15 +170,6 @@ public class CasesService {
       return Response.status(500).build();
     }
 
-    boolean internalTestTrigger = docketId != null && docketId.equals("abc123SecretTrigger");
-    if (internalTestTrigger) {
-      firstName = "John";
-      middleName = "";
-      lastName = "Brown";
-      businessName = null;
-      docketId = null;
-    }
-
     CaseListQueryMessageType query = new CaseListQueryMessageType();
     EntityType typ = new EntityType();
     JAXBElement<PersonType> elem2 = ecfOf.createEntityPerson(new PersonType());
@@ -221,12 +211,6 @@ public class CasesService {
 
     log.info("Before the case list query");
     CaseListResponseMessageType resp = maybePort.get().getCaseList(query);
-    if (internalTestTrigger) {
-      ErrorType et = new ErrorType();
-      et.setErrorCode(XmlHelper.convertText("-10"));
-      et.setErrorText(XmlHelper.convertText("Haha, secret code activated"));
-      resp.getError().add(et);
-    }
     log.info(XmlHelper.objectToXmlStrOrError(resp, CaseListResponseMessageType.class));
 
     MDCWrappers.removeAllMDCs();

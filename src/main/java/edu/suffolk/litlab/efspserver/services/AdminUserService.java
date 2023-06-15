@@ -115,7 +115,7 @@ public class AdminUserService {
   @Path("/")
   public Response getAll() {
     EndpointReflection ef =
-        new EndpointReflection("/jurisdictions/" + jurisdiction + "/adminusers/");
+        new EndpointReflection("/jurisdictions/" + jurisdiction + "/adminusers");
     return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(AdminUserService.class))))
         .build();
   }

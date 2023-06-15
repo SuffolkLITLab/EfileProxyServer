@@ -17,21 +17,7 @@ These instructions are written for Linux (specifically Ubuntu 20.04), steps for 
 
 ## Env file
 
-Docker env files are weird, and don't work in normal bash. To read all of the values to the current shell, use:
-
-```bash
-cat .env | export $(cut -d= -f1 -)="$(cut -d= -f2 -)"
-```
-
-## Testing
-
-You can run tests and get coverage with the following command:
-
-```bash
-mvn clean jacoco:prepare-agent verify jacoco:report
-```
-
-Then, visit the `target/site/jacoco/index.html` file to see the coverage report.
+Docker env files don't work in normal bash, so if you are running things in your local shell (like when [testing](#testing)), use [direnv](https://direnv.net).
 
 ## Making API Tokens
 
@@ -42,3 +28,26 @@ docker exec -i efileproxyserver-efspjava-1 /usr/bin/mvn -f /usr/src/app/pom.xml 
 ```
 
 The API token to add to the docassemble config will be printed out.
+
+## Testing
+
+You can run tests with `mvn test`. To run integration tests
+with coverage, do the following:
+
+```bash
+# download a separate jar for jacoco and extract it
+wget --output-document=jacoco-0.8.10.zip https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.10/jacoco-0.8.10.zip
+unzip jacoco-0.8.10.zip
+# Setup the EFSPIntegration python side of things; where the actual tests are
+pip install plumbum docassemble.EFSPIntegration
+# Run the integration test
+./integration_test.py
+# change the output jacoco.exec file to be owned by you
+sudo chown $USER target/jacoco.exec
+# run unit tests (without deleting jacoco.exec) and create the report
+mvn jacoco:prepare-agent verify jacoco:report
+# view the report in your browser
+firefox target/site/jacoco/index.html # or chrome, chromium, etc.
+```
+
+You shouldn't have an active running instance of the docker compose containers before running `integration_test.py`.

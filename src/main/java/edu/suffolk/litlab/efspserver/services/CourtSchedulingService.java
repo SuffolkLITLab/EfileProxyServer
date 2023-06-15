@@ -77,7 +77,6 @@ import tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
 import tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateResponseMessageType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 
-@Path("/scheduling/")
 @Produces({MediaType.APPLICATION_JSON})
 public class CourtSchedulingService {
 

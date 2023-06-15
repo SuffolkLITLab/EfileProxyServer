@@ -50,24 +50,20 @@ public class MessageSettingsService {
   @Path("/settings")
   public Response getMsgSettings(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "MessageSettingsService.getMsgSettings");
+    OrgMessageSender orgMsg = new OrgMessageSender(ds, null);
     try (Connection conn = ds.getConnection()) {
       LoginDatabase ld = new LoginDatabase(conn);
       Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
       if (atRest.isEmpty()) {
         return Response.status(401).entity("\"Not logged in to efile\"").build();
       }
-      var md = new MessageSettingsDatabase(conn);
-      Optional<MessageInfo> info = md.findMessageInfo(atRest.get().serverId);
-      if (info.isEmpty()) {
-        MDCWrappers.removeAllMDCs();
-        return Response.status(404).entity("\"No current email settings for this server\"").build();
-      }
-      MDCWrappers.removeAllMDCs();
-      return Response.ok(info.get()).build();
+      MessageInfo info = orgMsg.getSettings(atRest.get().serverId);
+      return Response.ok(info).build();
     } catch (SQLException ex) {
       log.error("Couldn't get email settings for server: " + StdLib.strFromException(ex));
-      MDCWrappers.removeAllMDCs();
       return Response.status(500).build();
+    } finally {
+      MDCWrappers.removeAllMDCs();
     }
   }
 

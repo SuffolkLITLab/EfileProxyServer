@@ -5,6 +5,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -114,6 +115,22 @@ public class JurisdictionServiceHandle {
     var x = ef.findRESTEndpoints(List.of(JurisdictionServiceHandle.class));
     log.info("All endpoints for servicehandle: " + x);
     var map = ef.endPointsToMap(x);
+    ArrayList<String> keysToRemove = new ArrayList<>();
+    for (String key : map.keySet()) {
+      var val = map.get(key);
+      String url = val.get("url");
+      if ((url.endsWith("adminusers") && adminUser.isEmpty())
+          || (url.endsWith("codes") && codes.isEmpty())
+          || (url.endsWith("cases") && cases.isEmpty())
+          || (url.endsWith("scheduling") && courtScheduling.isEmpty())
+          || (url.endsWith("firmattorneyservice") && firmAttorneyAndService.isEmpty())
+          || (url.endsWith("payments") && payments.isEmpty())) {
+        keysToRemove.add(key);
+      }
+    }
+    for (String key : keysToRemove) {
+      map.remove(key);
+    }
     log.info("Hitting HATEOS endpoint for " + jurisdiction + ": map: " + map);
     return Response.ok(map).build();
   }
