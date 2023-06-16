@@ -502,6 +502,8 @@ public class CodeUpdater {
     if (locs.isEmpty()) {
       locs = cd.getAllLocations();
     }
+    // Remove the "0" or top level court, which doesn't usually have individual court tables
+    locs.remove("0");
     Instant startPolicy = Instant.now(Clock.systemUTC());
     Map<String, CourtPolicyResponseMessageType> policies =
         streamPolicies(locs.stream(), cd.getDomain(), filingPort);
