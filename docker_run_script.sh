@@ -8,7 +8,7 @@ cd /usr/src/app
 # -Djava.util.concurrent.ForkJoinPool.common.threadFactory=edu.suffolk.litlab.efspserver.JAXBForkJoinWorkerThreadFactory \
 # if needed to debug http logs:
 # https://stackoverflow.com/questions/53215038/how-to-log-request-response-using-java-net-http-httpclient
-java \
+exec java \
     -cp $(cat cp.txt):target/efspserver.jar \
     -XX:+HeapDumpOnOutOfMemoryError \
     edu.suffolk.litlab.efspserver.services.EfspServer

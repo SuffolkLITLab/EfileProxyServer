@@ -1,0 +1,4 @@
+<definitions xmlns:wsmp="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0"><import namespace="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0" location="ecf-1.xsd"/><service name="CourtRecordMDEService"><port name="CourtRecordMDEPort" binding="wsmp:CourtRecordMDEPortSOAPBinding"><soap:address location="https://massachusetts.tylertech.cloud/efm/CourtRecordMDEPort.svc"/>
+		</port>
+	</service>
+</definitions>
