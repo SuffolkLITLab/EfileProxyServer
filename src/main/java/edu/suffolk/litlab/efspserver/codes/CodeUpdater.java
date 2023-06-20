@@ -433,6 +433,10 @@ public class CodeUpdater {
     log.info("Removing {} court entries, over {} queries", versionsToUpdate.size(), n);
     for (Entry<String, List<String>> courtAndTables : versionsToUpdate.entrySet()) {
       final String courtLocation = courtAndTables.getKey();
+      if (courtLocation.isBlank()) {
+        log.warn("Ignoring tables with an empty court!");
+        continue;
+      }
       List<String> tables = courtAndTables.getValue();
       log.debug(
           "In {}, removing entries for court {} for tables: {}",

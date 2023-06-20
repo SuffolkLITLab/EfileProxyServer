@@ -16,6 +16,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 public class UpdateCodeVersions implements Job {
   private static Logger log = LoggerFactory.getLogger(UpdateCodeVersions.class);
@@ -39,6 +40,8 @@ public class UpdateCodeVersions implements Job {
     JobDataMap dataMap = context.getJobDetail().getJobDataMap();
     String jurisdiction = dataMap.getString("TYLER_JURISDICTION");
     String env = dataMap.getString("TYLER_ENV");
+    MDC.put(MDCWrappers.OPERATION, "UpdateCodeVersions.execute");
+    MDC.put(MDCWrappers.USER_ID, jurisdiction);
     String x509Password = dataMap.getString("X509_PASSWORD");
 
     String pgFullUrl = dataMap.getString("POSTGRES_URL");
