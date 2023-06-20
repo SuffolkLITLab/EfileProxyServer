@@ -1,7 +1,6 @@
 package edu.suffolk.litlab.efspserver.ecf5;
 
 // import edu.suffolk.litlab.efspserver.ecf4.Ecfv5CaseTypeFactory;
-import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
