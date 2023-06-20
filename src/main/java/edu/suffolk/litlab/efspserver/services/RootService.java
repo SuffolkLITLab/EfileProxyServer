@@ -20,6 +20,7 @@ public class RootService {
     return Response.ok(
             ef.getClassPaths(
                 List.of(
+                    RootService.class,
                     AuthenticationService.class,
                     JurisdictionSwitch.class,
                     MessageSettingsService.class,
