@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import javax.sql.DataSource;
 import org.apache.cxf.jaxws.EndpointImpl;
@@ -208,12 +209,13 @@ public class TylerModuleSetup implements EfmModuleSetup {
               .usingJobData("POSTGRES_PASSWORD", this.pgPassword)
               .build();
 
+      var r = new Random();
       String triggerName = "trigger-" + this.tylerJurisdiction + "-" + this.tylerEnv;
       Trigger trigger =
           TriggerBuilder.newTrigger()
               .withIdentity(triggerName, "codesdb-group")
               .startNow()
-              .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(2, 15))
+              .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(2, 13 + r.nextInt(4)))
               // Testable version! Updates the codes 20 seconds after launch
               // .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(20))
               .build();
