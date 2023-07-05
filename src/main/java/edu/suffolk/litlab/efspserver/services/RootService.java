@@ -17,15 +17,15 @@ public class RootService {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAll() {
     EndpointReflection ef = new EndpointReflection("");
-    return Response.ok(
-            ef.getClassPaths(
-                List.of(
-                    RootService.class,
-                    AuthenticationService.class,
-                    JurisdictionSwitch.class,
-                    MessageSettingsService.class,
-                    ApiUserSettingsService.class)))
-        .build();
+    var endPoints =
+        ef.getClassPaths(
+            List.of(
+                AuthenticationService.class,
+                JurisdictionSwitch.class,
+                MessageSettingsService.class,
+                ApiUserSettingsService.class));
+    endPoints.put("getVersionInfo", ServiceHelpers.EXTERNAL_URL + "/about");
+    return Response.ok(endPoints).build();
   }
 
   @GET
