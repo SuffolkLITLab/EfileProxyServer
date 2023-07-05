@@ -443,30 +443,37 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       return new DataFields(Map.of());
     }
 
-    String query = DataFieldRow.getAllDataFieldConfigsForLoc();
-    try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, tylerDomain);
-      st.setString(2, courtLocationId);
-      ResultSet rs = st.executeQuery();
-      var dataFieldMap = new HashMap<String, DataFieldRow>();
-      while (rs.next()) {
-        DataFieldRow dfr =
-            new DataFieldRow(
-                rs.getString(1),
-                rs.getString(2),
-                rs.getBoolean(3),
-                rs.getBoolean(4),
-                rs.getString(5),
-                rs.getString(6),
-                rs.getString(7),
-                rs.getString(8),
-                rs.getString(9),
-                rs.getString(10),
-                rs.getBoolean(11),
-                rs.getString(12));
-        dataFieldMap.put(dfr.code, dfr);
+    try {
+      List<String> parentList = getParentList(courtLocationId);
+      String query = DataFieldRow.getAllDataFieldConfigsForLoc();
+      List<Map<String, DataFieldRow>> allDataFields = new ArrayList<>();
+      for (String currentCourt : parentList) {
+        try (PreparedStatement st = conn.prepareStatement(query)) {
+          st.setString(1, tylerDomain);
+          st.setString(2, currentCourt);
+          ResultSet rs = st.executeQuery();
+          var dataFieldMap = new HashMap<String, DataFieldRow>();
+          while (rs.next()) {
+            DataFieldRow dfr =
+                new DataFieldRow(
+                    rs.getString(1),
+                    rs.getString(2),
+                    rs.getBoolean(3),
+                    rs.getBoolean(4),
+                    rs.getString(5),
+                    rs.getString(6),
+                    rs.getString(7),
+                    rs.getString(8),
+                    rs.getString(9),
+                    rs.getString(10),
+                    rs.getBoolean(11),
+                    rs.getString(12));
+            dataFieldMap.put(dfr.code, dfr);
+          }
+          allDataFields.add(dataFieldMap);
+        }
       }
-      return new DataFields(dataFieldMap);
+      return new DataFields(allDataFields);
     } catch (SQLException ex) {
       log.error("SQLException: " + ex.toString());
       return new DataFields(Map.of());
@@ -1059,6 +1066,39 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
             }
           }
         });
+  }
+
+  /**
+   * Gets the full line of succession for a given court, so given "cook:dv6", this would return
+   * ["cook:dv6", "cook:dv", "cook", "1", "0"]
+   */
+  public List<String> getParentList(String courtId) {
+    List<String> parentList = new ArrayList<String>();
+    String currentCourt = courtId;
+    while (!currentCourt.isBlank()) {
+      parentList.add(currentCourt);
+      try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.parentQuery())) {
+        st.setString(1, tylerDomain);
+        st.setString(2, currentCourt);
+        ResultSet rs = st.executeQuery();
+        if (rs.next()) {
+          currentCourt = rs.getString(2);
+        } else {
+          log.warn("CourtLocation " + currentCourt + ", ancestor of " + courtId + " not found!");
+          return parentList;
+        }
+      } catch (SQLException ex) {
+        log.error(
+            "CourtLocation "
+                + currentCourt
+                + ", ancestor of "
+                + courtId
+                + " made a SQL error: "
+                + StdLib.strFromException(ex));
+        return parentList;
+      }
+    }
+    return parentList;
   }
 
   public List<Disclaimer> getDisclaimerRequirements(String courtLocation) {
