@@ -207,6 +207,14 @@ public class CourtLocationInfo {
     this.allowhearing = Boolean.parseBoolean(rs.getString(43));
   }
 
+  public static String parentQuery() {
+    return """
+      SELECT code, parentnodeid
+      FROM location
+      WHERE domain=? AND code=?
+        """;
+  }
+
   public static String fullSingleQuery() {
     return """
         SELECT code, name, initial, subsequent, disallowcopyingenvelopemultipletimes,
