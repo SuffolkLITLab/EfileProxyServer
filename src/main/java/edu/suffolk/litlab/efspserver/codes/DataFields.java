@@ -6,12 +6,8 @@ import java.util.Map;
 public class DataFields {
   private final List<Map<String, DataFieldRow>> fieldMaps;
 
-  public DataFields(Map<String, DataFieldRow> fieldMap) {
-    this.fieldMaps = List.of(fieldMap);
-  }
-
-  public DataFields(Map<String, DataFieldRow> fieldMap, Map<String, DataFieldRow> fieldMapParent) {
-    this.fieldMaps = List.of(fieldMap, fieldMapParent);
+  public DataFields() {
+    this.fieldMaps = List.of();
   }
 
   public DataFields(List<Map<String, DataFieldRow>> fieldMaps) {

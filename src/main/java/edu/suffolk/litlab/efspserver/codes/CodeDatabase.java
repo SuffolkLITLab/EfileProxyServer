@@ -440,7 +440,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
   public DataFields getDataFields(String courtLocationId) {
     if (conn == null) {
       log.error("SQL connection not created in DataField yet");
-      return new DataFields(Map.of());
+      return new DataFields();
     }
 
     try {
@@ -476,7 +476,7 @@ public class CodeDatabase implements DatabaseInterface, AutoCloseable {
       return new DataFields(allDataFields);
     } catch (SQLException ex) {
       log.error("SQLException: " + ex.toString());
-      return new DataFields(Map.of());
+      return new DataFields();
     }
   }
 
