@@ -60,8 +60,8 @@ public class EcfCourtSpecificSerializerTest {
     when(cd.getCrossReference("adams", caseType)).thenReturn(blank);
     when(cd.getLanguages("not_real")).thenReturn(List.of("English", "Polish", "Spanish"));
     when(cd.getDataFields(eq("not_real"))).thenReturn(new DataFields(
-        Map.of("PartyGender", 
-               new DataFieldRow("PartyGender", "Party Gender", true, false, "", "", "", "", "", "", false, ""))
+        List.of(Map.of("PartyGender",
+               new DataFieldRow("PartyGender", "Party Gender", true, false, "", "", "", "", "", "", false, "")))
         ));
     collector = new FailFastCollector();
   }
