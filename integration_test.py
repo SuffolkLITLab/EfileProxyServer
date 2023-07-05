@@ -27,7 +27,7 @@ while not server_up:
 with open("proxy_stuff.txt") as f:
   for line in f:
     if line.startswith("New Api Key for"):
-      proxy_key = line.split(": ")[1]
+      proxy_key = line.split(": ")[1].strip()
       break
 
 integration_test.main(base_url="http://localhost:9100/", api_key=proxy_key, user_email=os.getenv("TYLER_USER_EMAIL"), user_password=os.getenv("TYLER_USER_PASSWORD"))
