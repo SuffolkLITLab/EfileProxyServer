@@ -150,11 +150,21 @@ public class EcfCodesService implements CodesService {
   @GET
   @Path("/courts/{court_id}/case_types/{case_type_id}")
   public Response getCodesUnderCaseType(
-      @PathParam("court_id") String courtId, @PathParam("case_type_id") String caseTypeId) {
-    var errResp = okayCourt(courtId);
-    if (errResp.isPresent()) {
-      return errResp.get();
+      @PathParam("court_id") String courtId, @PathParam("case_type_id") String caseTypeId)
+      throws SQLException {
+    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
+      var errResp = okayCourt(cd, courtId);
+      if (errResp.isPresent()) {
+        return errResp.get();
+      }
+      Optional<CaseType> maybeType = cd.getCaseTypeWith(courtId, caseTypeId);
+      if (maybeType.isEmpty()) {
+        return Response.status(404)
+            .entity("\"Case type " + caseTypeId + " does not exist is court " + courtId + "\"")
+            .build();
+      }
     }
+
     Class<?> clazz = this.getClass();
     Method[] methods = clazz.getMethods();
     List<Method> subCaseMethods = new ArrayList<>();
