@@ -9,15 +9,18 @@ import ecf5.TylerCourtRecordMDEService;
 import ecf5.TylerCourtSchedulingMDEService;
 import ecf5.TylerFilingAssemblyMDEService;
 import ecf5.TylerFilingReviewMDEService;
+import edu.suffolk.litlab.efsp.ConfigurationLoader;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerVersion;
 import jakarta.xml.ws.BindingProvider;
+import jakarta.xml.ws.WebServiceFeature;
 import java.net.URL;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import org.apache.cxf.ext.logging.LoggingFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +37,21 @@ public class SoapClientChooserV5 {
   private static final String TYLER_FILING_ASSEM_WSDL = "-ECF5-TylerFilingAssemblyMDEService.wsdl";
   private static final String TYLER_FILING_REVIEW_WSDL = "-ECF5-TylerFilingReviewMDEService.wsdl";
 
+  private static Optional<Boolean> shouldLogRequests = Optional.empty();
+
+  public static boolean shouldLogRequests() {
+    if (shouldLogRequests.isEmpty()) {
+      shouldLogRequests = Optional.of(ConfigurationLoader.shouldLogRequests());
+    }
+    return shouldLogRequests.orElse(false);
+  }
+
+  public static WebServiceFeature getLoggingFeature() {
+    LoggingFeature loggingFeature = new LoggingFeature();
+    loggingFeature.setPrettyLogging(true);
+    return loggingFeature;
+  }
+
   public static Optional<Function<Consumer<BindingProvider>, CourtPolicyClient>>
       getCourtPolicyFactory(Jurisdiction jurisdiction) {
     var version = TylerClients.getVersion(jurisdiction);
@@ -41,8 +59,17 @@ public class SoapClientChooserV5 {
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, COURT_POLICY_WSDL);
+          boolean shouldLog = shouldLogRequests();
           return url.map(
-              u -> (consume) -> new CourtPolicyClient(new CourtPolicyMDEService(u), v, consume));
+              u ->
+                  (consume) -> {
+                    if (shouldLog) {
+                      return new CourtPolicyClient(
+                          new CourtPolicyMDEService(u, getLoggingFeature()), v, consume);
+                    } else {
+                      return new CourtPolicyClient(new CourtPolicyMDEService(u), v, consume);
+                    }
+                  });
         });
   }
 
@@ -53,8 +80,17 @@ public class SoapClientChooserV5 {
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, COURT_RECORD_WSDL);
+          boolean shouldLog = shouldLogRequests();
           return url.map(
-              u -> (consume) -> new CourtRecordClient(new CourtRecordMDEService(u), v, consume));
+              u ->
+                  (consume) -> {
+                    if (shouldLog) {
+                      return new CourtRecordClient(
+                          new CourtRecordMDEService(u, getLoggingFeature()), v, consume);
+                    } else {
+                      return new CourtRecordClient(new CourtRecordMDEService(u), v, consume);
+                    }
+                  });
         });
   }
 
@@ -65,10 +101,18 @@ public class SoapClientChooserV5 {
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, COURT_SCHED_WSDL);
+          boolean shouldLog = shouldLogRequests();
           return url.map(
               u ->
-                  (consume) ->
-                      new CourtSchedulingClient(new CourtSchedulingMDEService(u), v, consume));
+                  (consume) -> {
+                    if (shouldLog) {
+                      return new CourtSchedulingClient(
+                          new CourtSchedulingMDEService(u, getLoggingFeature()), v, consume);
+                    } else {
+                      return new CourtSchedulingClient(
+                          new CourtSchedulingMDEService(u), v, consume);
+                    }
+                  });
         });
   }
 
@@ -79,8 +123,17 @@ public class SoapClientChooserV5 {
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, FILING_REVIEW_WSDL);
+          boolean shouldLog = shouldLogRequests();
           return url.map(
-              u -> (consume) -> new FilingReviewClient(new FilingReviewMDEService(u), v, consume));
+              u ->
+                  (consume) -> {
+                    if (shouldLog) {
+                      return new FilingReviewClient(
+                          new FilingReviewMDEService(u, getLoggingFeature()), v, consume);
+                    } else {
+                      return new FilingReviewClient(new FilingReviewMDEService(u), v, consume);
+                    }
+                  });
         });
   }
 
@@ -91,7 +144,17 @@ public class SoapClientChooserV5 {
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, SERVICE_WSDL);
-          return url.map(u -> (consume) -> new ServiceClient(new ServiceMDEService(u), v, consume));
+          boolean shouldLog = shouldLogRequests();
+          return url.map(
+              u ->
+                  (consume) -> {
+                    if (shouldLog) {
+                      return new ServiceClient(
+                          new ServiceMDEService(u, getLoggingFeature()), v, consume);
+                    } else {
+                      return new ServiceClient(new ServiceMDEService(u), v, consume);
+                    }
+                  });
         });
   }
 
@@ -102,10 +165,18 @@ public class SoapClientChooserV5 {
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, TYLER_COURT_RECORD_WSDL);
+          boolean shouldLog = shouldLogRequests();
           return url.map(
               u ->
-                  (consume) ->
-                      new TylerCourtRecordClient(new TylerCourtRecordMDEService(u), v, consume));
+                  (consume) -> {
+                    if (shouldLog) {
+                      return new TylerCourtRecordClient(
+                          new TylerCourtRecordMDEService(u, getLoggingFeature()), v, consume);
+                    } else {
+                      return new TylerCourtRecordClient(
+                          new TylerCourtRecordMDEService(u), v, consume);
+                    }
+                  });
         });
   }
 
@@ -116,11 +187,18 @@ public class SoapClientChooserV5 {
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, TYLER_COURT_SCHED_WSDL);
+          boolean shouldLog = shouldLogRequests();
           return url.map(
               u ->
-                  (consume) ->
-                      new TylerCourtSchedulingClient(
-                          new TylerCourtSchedulingMDEService(u), v, consume));
+                  (consume) -> {
+                    if (shouldLog) {
+                      return new TylerCourtSchedulingClient(
+                          new TylerCourtSchedulingMDEService(u, getLoggingFeature()), v, consume);
+                    } else {
+                      return new TylerCourtSchedulingClient(
+                          new TylerCourtSchedulingMDEService(u), v, consume);
+                    }
+                  });
         });
   }
 
@@ -131,11 +209,18 @@ public class SoapClientChooserV5 {
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, TYLER_FILING_ASSEM_WSDL);
+          boolean shouldLog = shouldLogRequests();
           return url.map(
               u ->
-                  (consume) ->
-                      new TylerFilingAssemblyClient(
-                          new TylerFilingAssemblyMDEService(u), v, consume));
+                  (consume) -> {
+                    if (shouldLog) {
+                      return new TylerFilingAssemblyClient(
+                          new TylerFilingAssemblyMDEService(u, getLoggingFeature()), v, consume);
+                    } else {
+                      return new TylerFilingAssemblyClient(
+                          new TylerFilingAssemblyMDEService(u), v, consume);
+                    }
+                  });
         });
   }
 
@@ -146,10 +231,18 @@ public class SoapClientChooserV5 {
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, TYLER_FILING_REVIEW_WSDL);
+          boolean shouldLog = shouldLogRequests();
           return url.map(
               u ->
-                  (consume) ->
-                      new TylerFilingReviewClient(new TylerFilingReviewMDEService(u), v, consume));
+                  (consume) -> {
+                    if (shouldLog) {
+                      return new TylerFilingReviewClient(
+                          new TylerFilingReviewMDEService(u, getLoggingFeature()), v, consume);
+                    } else {
+                      return new TylerFilingReviewClient(
+                          new TylerFilingReviewMDEService(u), v, consume);
+                    }
+                  });
         });
   }
 

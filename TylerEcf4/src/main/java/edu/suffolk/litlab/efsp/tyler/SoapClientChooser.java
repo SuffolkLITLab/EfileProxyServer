@@ -4,9 +4,12 @@ import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.c
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
+import edu.suffolk.litlab.efsp.ConfigurationLoader;
 import edu.suffolk.litlab.efsp.Jurisdiction;
+import jakarta.xml.ws.WebServiceFeature;
 import java.net.URL;
 import java.util.Optional;
+import org.apache.cxf.ext.logging.LoggingFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +25,21 @@ public class SoapClientChooser {
   private static final String REVIEW_SUFFIX = "-ECF-4.0-FilingReviewMDEService.wsdl";
   private static final String RECORD_SUFFIX = "-ECF-4.0-CourtRecordMDEService.wsdl";
   private static final String SCHEDULE_SUFFIX = "-v5-CourtSchedulingMDE.wsdl";
+
+  private static Optional<Boolean> shouldLogRequests = Optional.empty();
+
+  public static boolean shouldLogRequests() {
+    if (shouldLogRequests.isEmpty()) {
+      shouldLogRequests = Optional.of(ConfigurationLoader.shouldLogRequests());
+    }
+    return shouldLogRequests.orElse(false);
+  }
+
+  public static WebServiceFeature getLoggingFeature() {
+    LoggingFeature loggingFeature = new LoggingFeature();
+    loggingFeature.setPrettyLogging(true);
+    return loggingFeature;
+  }
 
   private static URL getRes(TylerDomain domain, TylerVersion version, String suffix) {
     String wsdlPath =
@@ -45,8 +63,13 @@ public class SoapClientChooser {
     var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
     return version.map(
         v -> {
+          boolean shouldLog = shouldLogRequests();
           URL url = getRes(domain, v, REVIEW_SUFFIX);
-          return new FilingReviewMDEService(url);
+          if (shouldLog) {
+            return new FilingReviewMDEService(url, getLoggingFeature());
+          } else {
+            return new FilingReviewMDEService(url);
+          }
         });
   }
 
@@ -54,13 +77,31 @@ public class SoapClientChooser {
     var version = TylerClients.getVersion(jurisdiction);
     var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
 
-    return version.map(v -> new ServiceMDEService(getRes(domain, v, SERVICE_SUFFIX)));
+    return version.map(
+        v -> {
+          boolean shouldLog = shouldLogRequests();
+          URL url = getRes(domain, v, SERVICE_SUFFIX);
+          if (shouldLog) {
+            return new ServiceMDEService(url, getLoggingFeature());
+          } else {
+            return new ServiceMDEService(url);
+          }
+        });
   }
 
   public static Optional<CourtRecordMDEService> getCourtRecordFactory(Jurisdiction jurisdiction) {
     var version = TylerClients.getVersion(jurisdiction);
     var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
-    return version.map(v -> new CourtRecordMDEService(getRes(domain, v, RECORD_SUFFIX)));
+    return version.map(
+        v -> {
+          boolean shouldLog = shouldLogRequests();
+          URL url = getRes(domain, v, RECORD_SUFFIX);
+          if (shouldLog) {
+            return new CourtRecordMDEService(url, getLoggingFeature());
+          } else {
+            return new CourtRecordMDEService(url);
+          }
+        });
   }
 
   public static Optional<CourtSchedulingMDE_Service> getCourtSchedulingFactory(
@@ -70,6 +111,15 @@ public class SoapClientChooser {
     }
     var version = TylerClients.getVersion(jurisdiction);
     var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
-    return version.map(v -> new CourtSchedulingMDE_Service(getRes(domain, v, SCHEDULE_SUFFIX)));
+    return version.map(
+        v -> {
+          boolean shouldLog = shouldLogRequests();
+          URL url = getRes(domain, v, SCHEDULE_SUFFIX);
+          if (shouldLog) {
+            return new CourtSchedulingMDE_Service(url, getLoggingFeature());
+          } else {
+            return new CourtSchedulingMDE_Service(url);
+          }
+        });
   }
 }

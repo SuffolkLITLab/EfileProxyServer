@@ -288,7 +288,7 @@ public class CodeUpdater {
       String baseUrl)
       throws JAXBException, IOException, SQLException {
     MDC.put(MDCWrappers.SESSION_ID, location);
-    log.info("Doing updates for: {}, tables: {}", location, tables);
+    log.info("Doing updates for: {},\ttables: {}", location, tables);
     Instant downloadStart = Instant.now();
     // TODO(brycew-later): check that the effective date is later than today
     // JAXBElement<?> obj = ccl.getEffectiveDate().getDateRepresentation();
@@ -327,7 +327,7 @@ public class CodeUpdater {
     var downloadInc = Duration.between(downloadStart, Instant.now());
     downloadDuration = downloadDuration.plus(downloadInc);
     log.info(
-        "Location: {}: Downloads took: {} (total: {})", location, downloadInc, downloadDuration);
+        "Location: {}:\tDownloads took: {} (total: {})", location, downloadInc, downloadDuration);
 
     Instant updateStart = Instant.now();
     for (DownloadedCodes down : downloaded.values()) {
@@ -344,7 +344,7 @@ public class CodeUpdater {
     updateDuration = updateDuration.plus(updateInc);
 
     cd.commit();
-    log.info("Location: {}: updates took: {} (total: {})", location, updateInc, updateDuration);
+    log.info("Location: {}:\tupdates took: {} (total: {})", location, updateInc, updateDuration);
     MDC.remove(MDCWrappers.REQUEST_ID);
     MDC.remove(MDCWrappers.SESSION_ID);
     return true;
@@ -419,7 +419,7 @@ public class CodeUpdater {
       final String courtLocation = courtAndTables.getKey();
       List<String> tables = courtAndTables.getValue();
       log.debug(
-          "In {}, removing entries for court {} for tables: {}",
+          "In {},\nremoving entries for court {} for tables: {}",
           cd.getJurisdiction(),
           courtLocation,
           tables);
