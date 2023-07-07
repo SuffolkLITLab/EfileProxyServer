@@ -110,21 +110,23 @@ public class EfspServer {
     sf = new JAXRSServerFactoryBean();
     sf.setResourceClasses(new ArrayList<Class<?>>(services.keySet()));
 
-    LoggingFeature loggingFeature = new LoggingFeature();
-    // TODO(brycew): control this from a cofig
-    loggingFeature.addSensitiveElementNames(
-        Set.of("api_key", "password", "Password", "TYLER-TOKEN-ILLINOIS", "TYLER-ID-ILLINOIS"));
-    loggingFeature.addSensitiveProtocolHeaderNames(
-        Set.of(
-            "TYLER-TOKEN-ILLINOIS",
-            "TYLER-TOKEN-MASSACHUSETTS",
-            "TYLER-TOKEN-VERMONT",
-            "TYLER-ID-ILLINOIS",
-            "X-API-KEY",
-            "x-api-key",
-            "X-Api-Key"));
-    loggingFeature.setPrettyLogging(true);
-    sf.setFeatures(List.of(loggingFeature));
+    if (ConfigurationLoader.shouldLogRequests()) {
+      LoggingFeature loggingFeature = new LoggingFeature();
+      // TODO(brycew): control this from a cofig
+      loggingFeature.addSensitiveElementNames(
+          Set.of("api_key", "password", "Password", "TYLER-TOKEN-ILLINOIS", "TYLER-ID-ILLINOIS"));
+      loggingFeature.addSensitiveProtocolHeaderNames(
+          Set.of(
+              "TYLER-TOKEN-ILLINOIS",
+              "TYLER-TOKEN-MASSACHUSETTS",
+              "TYLER-TOKEN-VERMONT",
+              "TYLER-ID-ILLINOIS",
+              "X-API-KEY",
+              "x-api-key",
+              "X-Api-Key"));
+      loggingFeature.setPrettyLogging(true);
+      sf.setFeatures(List.of(loggingFeature));
+    }
 
     for (Map.Entry<Class<?>, SingletonResourceProvider> prov : services.entrySet()) {
       sf.setResourceProvider(prov.getKey(), prov.getValue());
