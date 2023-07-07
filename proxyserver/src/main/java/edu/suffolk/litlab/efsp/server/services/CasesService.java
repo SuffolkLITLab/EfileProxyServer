@@ -248,6 +248,7 @@ public class CasesService {
       }
       return Response.status(400).entity(resp.getError()).build();
     }
+    // TODO(brycew-now): resp.getCase().stream().map((c) => ECFToReturn.toCaseResponse(c));
     return Response.ok(resp.getCase()).build();
   }
 
