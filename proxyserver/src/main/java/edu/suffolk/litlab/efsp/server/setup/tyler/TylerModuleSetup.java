@@ -17,6 +17,7 @@ import edu.suffolk.litlab.efsp.server.services.JurisdictionServiceHandle;
 import edu.suffolk.litlab.efsp.server.services.PaymentsService;
 import edu.suffolk.litlab.efsp.server.services.api.EfmFilingInterface;
 import edu.suffolk.litlab.efsp.server.services.impl.Ecf4Filer;
+import edu.suffolk.litlab.efsp.server.services.impl.TylerCaseSearch;
 import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.utils.CodesSanityCheckJob;
@@ -344,7 +345,8 @@ public class TylerModuleSetup implements EfmModuleSetup {
     Supplier<UserDatabase> udSupplier = () -> UserDatabase.fromDS(this.userDs);
 
     var adminUser = new AdminUserService(jurisdiction, cdSupplier, passwordChecker);
-    var cases = new CasesService(jurisdiction, cdSupplier);
+    var caseSearch = new TylerCaseSearch(jurisdiction, cdSupplier);
+    var cases = new CasesService(jurisdiction, caseSearch);
     var codes = new EcfCodesService(jurisdiction, cdSupplier);
     Optional<CourtSchedulingService> courtScheduler = Optional.empty();
     if (jurisdiction == Jurisdiction.ILLINOIS) {
