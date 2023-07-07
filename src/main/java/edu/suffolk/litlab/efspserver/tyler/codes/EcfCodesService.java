@@ -116,7 +116,7 @@ public class EcfCodesService extends CodesService {
   public Response getCodesUnderCaseType(
       @PathParam("court_id") String courtId, @PathParam("case_type_id") String caseTypeId)
       throws SQLException {
-    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
+    try (CodeDatabase cd = cdSupplier.get()) {
       var errResp = okayCourt(cd, courtId);
       if (errResp.isPresent()) {
         return errResp.get();

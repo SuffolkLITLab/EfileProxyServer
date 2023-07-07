@@ -49,7 +49,7 @@ public class SoapClientChooser {
       Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-CourtPolicyMDEService.wsdl");
 
   static final Map<String, String> tylerCourtRecordMDEWsdls =
-      Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-CourtPolicyMDEService.wsdl");
+      Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-TylerCourtRecordMDEService.wsdl");
 
   /*
   public static Optional<FilingReviewMDEService> getFilingReviewFactory(String wsdlDomain) {
@@ -83,7 +83,7 @@ public class SoapClientChooser {
   }
 
   public static Optional<TylerCourtRecordMDEService> getTylerCourtRecordFactory(String wsdlDomain) {
-    Optional<URL> url = urlFromString(wsdlDomain, courtRecordMDEWsdls);
+    Optional<URL> url = urlFromString(wsdlDomain, tylerCourtRecordMDEWsdls);
     return url.map(u -> new TylerCourtRecordMDEService(u));
   }
 

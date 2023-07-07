@@ -249,6 +249,15 @@ public class CasesService extends CasesServiceAPI {
       prepMessage(query, courtId);
       CaseQueryCriteriaType criteria = new CaseQueryCriteriaType();
       criteria.setCaseTrackingID(Ecf5Helper.convertId(caseId));
+      criteria.setIncludeParticipantsIndicator(Ecfv5XmlHelper.convertBool(true));
+
+      // The below three lines set things in the XML that are required, but not supported,
+      // i.e. they should always be false / empty, for silly tyler reasons.
+      criteria.setIncludeCalendarEventIndicator(Ecfv5XmlHelper.convertBool(false));
+      criteria.setIncludeDocketEntryIndicator(Ecfv5XmlHelper.convertBool(false));
+      criteria.setCaseNumberText(Ecfv5XmlHelper.convertText(""));
+
+      query.setCaseQueryCriteria(criteria);
       GetCaseRequestType msg = new GetCaseRequestType();
       msg.setGetCaseRequestMessage(query);
       GetCaseResponseType resp = port.getCase(msg);
@@ -337,18 +346,21 @@ public class CasesService extends CasesServiceAPI {
 
     GetServiceInformationRequestMessageType query = new GetServiceInformationRequestMessageType();
     prepMessage(query, courtId);
+    query.getCaseTrackingID().add(Ecfv5XmlHelper.convertId(caseId));
+    // Required by the schema, but will never be used
+    query.setCaseNumberText(Ecfv5XmlHelper.convertText(""));
     GetServiceInformationRequestType msg = new GetServiceInformationRequestType();
     msg.setGetServiceInformationRequestMessage(query);
-    https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers
-            .GetServiceInformationResponseType
-        resp = port.getServiceInformation(msg);
+    var resp = port.getServiceInformation(msg);
     GetServiceInformationResponseMessageType result =
         resp.getGetServiceInformationResponseMessage();
     MDCWrappers.removeAllMDCs();
     if (hasError(result)) {
       return Response.status(400).entity(result).build();
     }
-    return Response.ok(result).build();
+    // Only returning the list of service recipient's, b/c that all
+    // that Tyler has documented / seems to actually return from this response
+    return Response.ok(result.getServiceRecipient()).build();
   }
 
   public Response getServiceInformationHistory(
