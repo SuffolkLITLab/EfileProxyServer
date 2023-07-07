@@ -1,5 +1,5 @@
-<CaseListResponseMessage xmlns= \"urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListResponseMessage-4.0\" xmlns:tyler= \"urn:tyler:ecf:extensions:Common\" xmlns:j= \"http://niem.gov/niem/domains/jxdm/4.0\" xmlns:s= \"http://niem.gov/niem/structures/2.0\" xmlns:nc= \"http://niem.gov/niem/niem-core/2.0\"
-    xmlns:ecf= \"urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0\" xmlns:xsi= \"http://www.w3.org/2001/XMLSchema-instance\">
+<CaseListResponseMessage xmlns= "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListResponseMessage-4.0" xmlns:tyler= "urn:tyler:ecf:extensions:Common" xmlns:j= "http://niem.gov/niem/domains/jxdm/4.0" xmlns:s= "http://niem.gov/niem/structures/2.0" xmlns:nc= "http://niem.gov/niem/niem-core/2.0"
+    xmlns:ecf= "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
     <ecf:SendingMDELocationID>
         <nc:IdentificationID>https://court:8000</nc:IdentificationID>
     </ecf:SendingMDELocationID>
@@ -15,7 +15,7 @@
         <ecf:ErrorCode>0</ecf:ErrorCode>
         <ecf:ErrorText>No Error</ecf:ErrorText>
     </ecf:Error>
-    <civil:CivilCase xmlns:civil= \"urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CivilCase-4.0\">
+    <civil:CivilCase xmlns:civil= "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CivilCase-4.0">
         <nc:CaseTitleText></nc:CaseTitleText>
         <nc:CaseCategoryText>6195</nc:CaseCategoryText>
         <nc:CaseTrackingID>8ef0d7ac-6a53-42e3-bc78-8e33cb8d7d5a</nc:CaseTrackingID>

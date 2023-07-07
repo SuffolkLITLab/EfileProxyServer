@@ -1,5 +1,5 @@
-<CaseResponseMessage xmlns= \"urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseResponseMessage-4.0\" xmlns:tyler= \"urn:tyler:ecf:extensions:Common\" xmlns:j= \"http://niem.gov/niem/domains/jxdm/4.0\" xmlns:xsi= \"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ecf= \"urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0\"
-    xmlns:nc= \"http://niem.gov/niem/niem-core/2.0\" xmlns:s= \"http://niem.gov/niem/structures/2.0\">
+<CaseResponseMessage xmlns= "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseResponseMessage-4.0" xmlns:tyler= "urn:tyler:ecf:extensions:Common" xmlns:j= "http://niem.gov/niem/domains/jxdm/4.0" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance" xmlns:ecf= "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0"
+    xmlns:nc= "http://niem.gov/niem/niem-core/2.0" xmlns:s= "http://niem.gov/niem/structures/2.0">
     <ecf:SendingMDELocationID>
         <nc:IdentificationID />
     </ecf:SendingMDELocationID>
@@ -9,7 +9,7 @@
         <ecf:ErrorCode>0</ecf:ErrorCode>
         <ecf:ErrorText>No error</ecf:ErrorText>
     </ecf:Error>
-    <civil:CivilCase xmlns:civil= \"urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CivilCase-4.0\">
+    <civil:CivilCase xmlns:civil= "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CivilCase-4.0">
         <nc:ActivityDate>
             <nc:DateTime>2020-09-28T05:00:00.0Z</nc:DateTime>
         </nc:ActivityDate>
@@ -40,17 +40,17 @@
         </j:CaseAugmentation>
         <tyler:CaseAugmentation>
             <ecf:CaseOtherEntityAttorney>
-                <nc:RoleOfPersonReference s:ref= \"Attorney1\" />
+                <nc:RoleOfPersonReference s:ref= "Attorney1" />
                 <j:JudicialOfficialBarMembership>
                     <j:JudicialOfficialBarIdentification>
                         <nc:IdentificationID>6288182</nc:IdentificationID>
                     </j:JudicialOfficialBarIdentification>
                 </j:JudicialOfficialBarMembership>
                 <j:CaseOfficialRoleText>LEAD</j:CaseOfficialRoleText>
-                <ecf:CaseRepresentedPartyReference s:ref= \"Party2\" />
+                <ecf:CaseRepresentedPartyReference s:ref= "Party2" />
             </ecf:CaseOtherEntityAttorney>
             <ecf:CaseParticipant>
-                <ecf:EntityPerson s:id= \"Party1\">
+                <ecf:EntityPerson s:id= "Party1">
                     <nc:PersonName>
                         <nc:PersonGivenName></nc:PersonGivenName>
                         <nc:PersonMiddleName></nc:PersonMiddleName>
@@ -88,7 +88,7 @@
                 <ecf:CaseParticipantRoleCode>88523</ecf:CaseParticipantRoleCode>
             </ecf:CaseParticipant>
             <ecf:CaseParticipant>
-                <ecf:EntityPerson s:id= \"Attorney1\">
+                <ecf:EntityPerson s:id= "Attorney1">
                     <nc:PersonName>
                         <nc:PersonGivenName></nc:PersonGivenName>
                         <nc:PersonMiddleName></nc:PersonMiddleName>
@@ -124,7 +124,7 @@
                 <ecf:CaseParticipantRoleCode>ATTY</ecf:CaseParticipantRoleCode>
             </ecf:CaseParticipant>
             <ecf:CaseParticipant>
-                <ecf:EntityPerson s:id= \"Party2\">
+                <ecf:EntityPerson s:id= "Party2">
                     <nc:PersonName>
                         <nc:PersonGivenName></nc:PersonGivenName>
                         <nc:PersonMiddleName></nc:PersonMiddleName>

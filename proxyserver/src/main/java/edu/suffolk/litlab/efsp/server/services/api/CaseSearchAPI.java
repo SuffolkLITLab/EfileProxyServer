@@ -8,7 +8,14 @@ public interface CaseSearchAPI {
 
   public enum ReturnType {
     LEGACY_XML, // just return the raw XML object through the response
-    JSON_V1 // convert the XML response into a model object first, the same b/t ECF4 and 5
+    JSON_V1; // convert the XML response into a model object first, the same b/t ECF4 and 5
+
+    public static ReturnType fromString(String s) {
+      if (s.equalsIgnoreCase("JSON") || s.equalsIgnoreCase("JSON-V1")) {
+        return JSON_V1;
+      }
+      return LEGACY_XML;
+    }
   }
 
   public Response getCourts();

@@ -2,6 +2,9 @@ package edu.suffolk.litlab.efsp.server.services.impl;
 
 import ecf4.latest.gov.niem.niem.niem_core._2.CaseType;
 import ecf4.latest.gov.niem.niem.niem_core._2.EntityType;
+import ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory;
+import ecf4.latest.gov.niem.niem.niem_core._2.PersonNameTextType;
+import ecf4.latest.gov.niem.niem.niem_core._2.PersonNameType;
 import ecf4.latest.gov.niem.niem.niem_core._2.TextType;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseListQueryMessageType;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseParticipantType;
@@ -22,6 +25,7 @@ import ecf4.latest.tyler.ecf.extensions.serviceinformationhistoryresponsemessage
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.model.Name;
+import edu.suffolk.litlab.efsp.model.cases.CaseResponse;
 import edu.suffolk.litlab.efsp.server.auth.UserCreds;
 import edu.suffolk.litlab.efsp.server.services.api.CaseSearchAPI;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
@@ -30,6 +34,7 @@ import edu.suffolk.litlab.efsp.server.utils.TylerEcf4Helper;
 import edu.suffolk.litlab.efsp.tyler.Ecf4Helper;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
 import edu.suffolk.litlab.efsp.tyler.ecf4.EcfCaseTypeFactory;
+import edu.suffolk.litlab.efsp.tyler.ecf4.TylerEcfToReturn;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.DataFieldRow;
@@ -37,6 +42,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.ws.BindingProvider;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -128,7 +134,16 @@ public class TylerCaseSearch implements CaseSearchAPI {
         // TODO: convert the errors into JSON?
         return Response.status(statusCode).entity(resp.getError()).build();
       }
-      return Response.status(statusCode).entity(resp.getCase()).build();
+      if (rt == ReturnType.JSON_V1) {
+        var caseList = new ArrayList<CaseResponse>();
+        for (var theCase : resp.getCase()) {
+          var ecfToReturn = new TylerEcfToReturn(theCase.getValue(), cd);
+          caseList.add(ecfToReturn.toCase());
+        }
+        return Response.status(statusCode).entity(caseList).build();
+      } else {
+        return Response.status(statusCode).entity(resp.getCase()).build();
+      }
     } catch (SQLException e) {
       log.error("can't get connection: ", e);
       return Response.status(500).build();
@@ -162,7 +177,7 @@ public class TylerCaseSearch implements CaseSearchAPI {
             query.getCaseListQueryCaseParticipant().add(cpt);
           } else {
             PersonType pt = ecfOf.createPersonType();
-            pt.setPersonName(name.getNameType());
+            pt.setPersonName(getNameType(name));
 
             var commonCpt = ecfOf.createCaseParticipantType();
             commonCpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
@@ -220,7 +235,12 @@ public class TylerCaseSearch implements CaseSearchAPI {
               }
             });
       }
-      return Response.status(statusCode).entity(resp.getCase()).build();
+      if (rt == ReturnType.JSON_V1) {
+        var ecfToReturn = new TylerEcfToReturn(resp.getCase().getValue(), cd);
+        return Response.status(statusCode).entity(ecfToReturn.toCase()).build();
+      } else {
+        return Response.status(statusCode).entity(resp.getCase()).build();
+      }
     } catch (SQLException e) {
       log.error("can't get connection: ", e);
       return Response.status(500).build();
@@ -332,5 +352,25 @@ public class TylerCaseSearch implements CaseSearchAPI {
     ServiceHelpers.changeTimeout((BindingProvider) port, 180_000);
     TylerEcf4Helper.setupServicePort((BindingProvider) port, userCreds);
     return Optional.of(port);
+  }
+
+  private static ecf4.latest.gov.niem.niem.niem_core._2.PersonNameTextType wrapName(String name) {
+    ObjectFactory of = new ObjectFactory();
+    PersonNameTextType t = of.createPersonNameTextType();
+    t.setValue(name);
+    return t;
+  }
+
+  /** Returns the PersonNameType XML object from this Name. */
+  private ecf4.latest.gov.niem.niem.niem_core._2.PersonNameType getNameType(Name name) {
+    ObjectFactory of = new ObjectFactory();
+    PersonNameType personName = of.createPersonNameType();
+    personName.setPersonGivenName(wrapName(name.firstName()));
+    personName.setPersonMaidenName(wrapName(name.maidenName()));
+    personName.setPersonMiddleName(wrapName(name.middleName()));
+    personName.setPersonSurName(wrapName(name.lastName()));
+    personName.setPersonNamePrefixText(wrapName(name.prefix()));
+    personName.setPersonNameSuffixText(wrapName(name.suffix()));
+    return personName;
   }
 }

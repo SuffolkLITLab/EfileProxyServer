@@ -1,17 +1,14 @@
 package edu.suffolk.litlab.efsp.model;
 
-import ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory;
-import ecf4.latest.gov.niem.niem.niem_core._2.PersonNameTextType;
-import ecf4.latest.gov.niem.niem.niem_core._2.PersonNameType;
 import java.util.stream.Stream;
 
-public class Name {
-  private String firstName;
-  private String middleName;
-  private String lastName;
-  private String suffix;
-  private String maidenName;
-  private String prefix;
+public record Name(
+    String prefix,
+    String firstName,
+    String middleName,
+    String lastName,
+    String suffix,
+    String maidenName) {
 
   /** Default constructor with all members. */
   public Name(
@@ -21,11 +18,29 @@ public class Name {
       String lastName,
       String suffix,
       String maidenName) {
+    if (prefix == null) {
+      prefix = "";
+    }
     this.prefix = prefix;
+    if (firstName == null) {
+      firstName = "";
+    }
     this.firstName = firstName;
+    if (middleName == null) {
+      middleName = "";
+    }
     this.middleName = middleName;
+    if (lastName == null) {
+      lastName = "";
+    }
     this.lastName = lastName;
+    if (suffix == null) {
+      suffix = "";
+    }
     this.suffix = suffix;
+    if (maidenName == null) {
+      maidenName = "";
+    }
     this.maidenName = maidenName;
   }
 
@@ -38,7 +53,10 @@ public class Name {
   }
 
   /** The full name, with no extra spaces. */
-  public String getFullName() {
+  public String makeFullName() {
+    if (prefix.isBlank() && firstName.isBlank() && middleName.isBlank() && suffix.isBlank()) {
+      return "(No name given)";
+    }
     return Stream.of(prefix, firstName, middleName, lastName, suffix)
         .reduce(
             (wd, namePart) -> {
@@ -65,9 +83,15 @@ public class Name {
     return lastName;
   }
 
-  /** If there's only a first name, then us it, otherwise take only the last name */
-  public String getTitleName() {
+  /**
+   * If there's only a first name, then us it, otherwise take only the last name. Used to create the
+   * titles of cases, i.e. Jones v. Discover, etc.
+   */
+  public String makeTitleName() {
     if (lastName == null || lastName.isBlank()) {
+      if (firstName == null || firstName.isBlank()) {
+        return "(Unnamed)";
+      }
       return firstName;
     } else {
       return lastName;
@@ -84,25 +108,5 @@ public class Name {
 
   public String getMaidenName() {
     return maidenName;
-  }
-
-  private static ecf4.latest.gov.niem.niem.niem_core._2.PersonNameTextType wrapName(String name) {
-    ObjectFactory of = new ObjectFactory();
-    PersonNameTextType t = of.createPersonNameTextType();
-    t.setValue(name);
-    return t;
-  }
-
-  /** Returns the PersonNameType XML object from this Name. */
-  public ecf4.latest.gov.niem.niem.niem_core._2.PersonNameType getNameType() {
-    ObjectFactory of = new ObjectFactory();
-    PersonNameType personName = of.createPersonNameType();
-    personName.setPersonGivenName(wrapName(firstName));
-    personName.setPersonMaidenName(wrapName(maidenName));
-    personName.setPersonMiddleName(wrapName(middleName));
-    personName.setPersonSurName(wrapName(lastName));
-    personName.setPersonNamePrefixText(wrapName(prefix));
-    personName.setPersonNameSuffixText(wrapName(suffix));
-    return personName;
   }
 }

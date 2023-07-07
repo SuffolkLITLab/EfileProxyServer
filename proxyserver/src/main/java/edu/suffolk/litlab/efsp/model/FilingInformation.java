@@ -99,20 +99,20 @@ public class FilingInformation {
 
   public String makeCaseTitle() {
     if (getNewPlaintiffs().size() > 0 && getNewDefendants().size() > 0) {
-      return getNewPlaintiffs().get(0).getName().getTitleName()
+      return getNewPlaintiffs().get(0).getName().makeTitleName()
           + " v. "
-          + getNewDefendants().get(0).getName().getTitleName();
+          + getNewDefendants().get(0).getName().makeTitleName();
     } else if (getNewPlaintiffs().size() > 0) {
-      return "In the matter of " + getNewPlaintiffs().get(0).getName().getTitleName();
+      return "In the matter of " + getNewPlaintiffs().get(0).getName().makeTitleName();
     } else if (getNewDefendants().size() > 0) {
-      return "In the matter of " + getNewDefendants().get(0).getName().getTitleName();
+      return "In the matter of " + getNewDefendants().get(0).getName().makeTitleName();
     } else {
       log.warn(
           "Cannot guess title of the case (not existing case, no plaintiffs or defendants)"
               + " (filing "
               + getFilings().get(0).getFilingComments()
               + ")\nUsing backup of lead contact");
-      return "On Behalf of " + leadContact.map(u -> u.getName().getFullName()).orElse("the Filer");
+      return "On Behalf of " + leadContact.map(u -> u.getName().makeFullName()).orElse("the Filer");
     }
   }
 

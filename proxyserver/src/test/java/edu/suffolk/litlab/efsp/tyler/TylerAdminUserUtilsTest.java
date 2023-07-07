@@ -52,7 +52,7 @@ public class TylerAdminUserUtilsTest {
 
     Person person = TylerAdminUserUtils.getUser(tylerUserClient, "abc123");
     assertThat(person.getContactInfo().getEmail()).contains("bob@example.com");
-    assertThat(person.getName().getFullName()).isEqualTo("Bob Jones");
+    assertThat(person.getName().makeFullName()).isEqualTo("Bob Jones");
   }
 
   @Test
@@ -65,6 +65,6 @@ public class TylerAdminUserUtilsTest {
 
     Person person = TylerAdminUserUtils.getUser(tylerUserClient, "abc123");
     assertThat(person.getContactInfo().getEmail()).isEmpty();
-    assertThat(person.getName().getFullName()).isEqualTo("");
+    assertThat(person.getName().makeFullName()).isEqualTo("(No name given)");
   }
 }

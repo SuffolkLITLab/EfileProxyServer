@@ -154,17 +154,17 @@ public class DocassembleToFilingInformationConverterTest {
         2,
         entities.getNewPlaintiffs().size(),
         entities.getNewPlaintiffs().stream()
-            .map((p) -> p.getName().getFullName())
+            .map((p) -> p.getName().makeFullName())
             .reduce("", (p, p2) -> p + " " + p2));
     assertEquals(
         1,
         entities.getNewDefendants().size(),
         entities.getNewDefendants().stream()
-            .map((p) -> p.getName().getFullName())
+            .map((p) -> p.getName().makeFullName())
             .reduce("", (p, p2) -> p + ", " + p2));
 
     Person plaintiff = entities.getNewPlaintiffs().get(0);
-    assertEquals("Bob Zombie", plaintiff.getName().getFullName());
+    assertEquals("Bob Zombie", plaintiff.getName().makeFullName());
     assertTrue(plaintiff.getContactInfo().getEmail().isPresent(), "user[0] should have email");
     assertEquals("test@example.com", plaintiff.getContactInfo().getEmail().get());
     assertEquals("Boston", plaintiff.getContactInfo().getAddress().get().getCity());
@@ -174,11 +174,11 @@ public class DocassembleToFilingInformationConverterTest {
     assertEquals("Spanish", plaintiff.getLanguage().get());
 
     Person plaintiff2 = entities.getNewPlaintiffs().get(1);
-    assertEquals("Jill Vampire", plaintiff2.getName().getFullName());
+    assertEquals("Jill Vampire", plaintiff2.getName().makeFullName());
     assertTrue(plaintiff2.getContactInfo().getEmail().isEmpty(), "user[1] should have empty email");
 
     Person defendant = entities.getNewDefendants().get(0);
-    assertEquals("Company LLC", defendant.getName().getFullName());
+    assertEquals("Company LLC", defendant.getName().makeFullName());
     assertTrue(defendant.getContactInfo().getAddress().isPresent());
     assertEquals("Boston", defendant.getContactInfo().getAddress().get().getCity());
   }
