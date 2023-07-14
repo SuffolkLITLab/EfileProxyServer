@@ -89,3 +89,5 @@ google-java-format_*
 
 # MKDocs Output
 site
+
+.jqwik-database
