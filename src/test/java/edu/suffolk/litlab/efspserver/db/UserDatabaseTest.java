@@ -54,7 +54,7 @@ public class UserDatabaseTest {
     ud.addToTable(name, userId, 
         Optional.empty(), email, transactionId, serverId, apiKey,
         "Motion to File", courtId, new Timestamp(System.currentTimeMillis()),
-        "", "", "", "", "", "", "my title");
+        "", "", "", "", "", "", "my title", "2021ENVL");
     
     Optional<Transaction> transaction = ud.findTransaction(transactionId);
     assertTrue(transaction.isPresent());

@@ -198,7 +198,8 @@ public class OrgMessageSender {
       String courtName,
       List<UUID> transactionIds,
       String caseType,
-      String caseTitle) {
+      String caseTitle,
+      String envelopeId) {
     MessageInfo msgSettings = getSettings(serverId);
     if (emailTemplate == null || emailTemplate.isBlank()) {
       log.warn("given email template was blank (" + emailTemplate + "), using default");
@@ -214,6 +215,7 @@ public class OrgMessageSender {
     templateVars.put("case_type", caseType);
     templateVars.put("transaction_id", ids);
     templateVars.put("case_title", caseTitle);
+    templateVars.put("envelope_id", envelopeId);
     boolean canEmail = email != null && SendMessage.isValidEmail(email);
     if (canEmail) {
       int result;

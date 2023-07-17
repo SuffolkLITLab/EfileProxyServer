@@ -419,7 +419,8 @@ public class FilingReviewService {
           rejectedSubject,
           neutralTemplate,
           neutralSubject,
-          filingResult.caseTitle);
+          filingResult.caseTitle,
+          filingResult.envelopeId);
 
       msgSender.sendConfirmation(
           user.getContactInfo().getEmail().orElse(""),
@@ -430,7 +431,8 @@ public class FilingReviewService {
           filingResult.courtName,
           filingIds,
           filingResult.caseCategoryName,
-          filingResult.caseTitle);
+          filingResult.caseTitle,
+          filingResult.envelopeId);
     } catch (SQLException ex) {
       log.error(
           "Couldn't add info to the database! Logging here for posterity: "

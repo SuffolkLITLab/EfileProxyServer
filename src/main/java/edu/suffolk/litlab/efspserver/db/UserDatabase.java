@@ -53,7 +53,8 @@ public class UserDatabase implements DatabaseInterface {
              "rejected_msg_subject" text,
              "neutral_msg_template" text,
              "neutral_msg_subject" text,
-             "case_title" text)""";
+             "case_title" text,
+             "envelope_id" text)""";
         try (Statement createSt = conn.createStatement()) {
           log.info("Full statement: " + createQuery);
           int retVal = createSt.executeUpdate(createQuery);
@@ -83,7 +84,8 @@ public class UserDatabase implements DatabaseInterface {
       String rejectedSubject,
       String neutralTmpl,
       String neutralSubject,
-      String caseTitle)
+      String caseTitle,
+      String envelopeId)
       throws SQLException {
     for (UUID id : transactionIds) {
       addToTable(
@@ -103,7 +105,8 @@ public class UserDatabase implements DatabaseInterface {
           rejectedSubject,
           neutralTmpl,
           neutralSubject,
-          caseTitle);
+          caseTitle,
+          envelopeId);
     }
   }
 
@@ -125,7 +128,8 @@ public class UserDatabase implements DatabaseInterface {
       String rejectedSubject,
       String neutralTmpl,
       String neutralSubject,
-      String caseTitle)
+      String caseTitle,
+      String envelopeId)
       throws SQLException {
     if (conn == null) {
       log.error("Connection in addToTable wasn't open yet!");
@@ -143,12 +147,13 @@ public class UserDatabase implements DatabaseInterface {
                         "rejected_msg_subject",
                         "neutral_msg_template",
                         "neutral_msg_subject",
-                        "case_title"
+                        "case_title",
+                        "envelope_id"
                     ) VALUES (
                         ?, ?,
                         ?, ?, ?, ?,
                         ?, ?, ?, ?,
-                        ?, ?, ?, ?, ?, ?, ?)""";
+                        ?, ?, ?, ?, ?, ?, ?, ?)""";
     try (PreparedStatement insertSt = conn.prepareStatement(insertIntoTable)) {
       insertSt.setObject(1, filingPartyId);
       insertSt.setString(2, name);
@@ -168,6 +173,7 @@ public class UserDatabase implements DatabaseInterface {
       insertSt.setString(15, neutralTmpl);
       insertSt.setString(16, neutralSubject);
       insertSt.setString(17, caseTitle);
+      insertSt.setString(18, envelopeId);
       insertSt.executeUpdate();
     }
   }

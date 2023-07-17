@@ -150,6 +150,8 @@ public class DatabaseVersion {
       update6To7();
     } else if (onDiskVersion == 7) {
       update7To8();
+    } else if (onDiskVersion == 8) {
+      update8To9();
     }
     setSchemaVersion(onDiskVersion + 1);
     userConn.commit();
@@ -496,5 +498,17 @@ public class DatabaseVersion {
       }
     }
     codeConn.commit();
+  }
+
+  public void update8To9() throws SQLException {
+    final String alterUserDb =
+        """
+      ALTER TABLE submitted_filings
+        ADD COLUMN envelope_id text""";
+
+    try (Statement st = userConn.createStatement()) {
+      st.executeUpdate(alterUserDb);
+    }
+    userConn.commit();
   }
 }

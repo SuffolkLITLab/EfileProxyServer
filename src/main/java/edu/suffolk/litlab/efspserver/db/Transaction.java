@@ -25,13 +25,14 @@ public class Transaction {
   public String courtId;
   public Timestamp submitted;
   public String caseTitle;
+  public String envelopeId;
 
   public static final String query =
       """
         SELECT name, user_id, phone_number, email, transaction_id, server_id,
             api_key_used, casetype, court_id, submitted, accepted_msg_template,
             accepted_msg_subject, rejected_msg_template, rejected_msg_subject,
-            neutral_msg_template, neutral_msg_subject, case_title
+            neutral_msg_template, neutral_msg_subject, case_title, envelope_id
         FROM submitted_filings
         WHERE transaction_id = ?""";
 
@@ -58,6 +59,7 @@ public class Transaction {
     trans.neutralMsgTemplate = rs.getString(15);
     trans.neutralMsgSubject = rs.getString(16);
     trans.caseTitle = rs.getString(17);
+    trans.envelopeId = rs.getString(18);
     return trans;
   }
 }
