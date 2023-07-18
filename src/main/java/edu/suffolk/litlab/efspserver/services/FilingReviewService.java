@@ -422,17 +422,6 @@ public class FilingReviewService {
           filingResult.caseTitle,
           filingResult.envelopeId);
 
-      msgSender.sendConfirmation(
-          user.getContactInfo().getEmail().orElse(""),
-          confirmationTemplate,
-          confirmationSubject,
-          atRest.get().serverId,
-          user.getName().getFullName(),
-          filingResult.courtName,
-          filingIds,
-          filingResult.caseCategoryName,
-          filingResult.caseTitle,
-          filingResult.envelopeId);
     } catch (SQLException ex) {
       log.error(
           "Couldn't add info to the database! Logging here for posterity: "
@@ -448,6 +437,17 @@ public class FilingReviewService {
       log.error("Error: " + ex);
       return Response.ok().entity("Submitted, but error saving info to database").build();
     }
+    msgSender.sendConfirmation(
+        user.getContactInfo().getEmail().orElse(""),
+        confirmationTemplate,
+        confirmationSubject,
+        atRest.get().serverId,
+        user.getName().getFullName(),
+        filingResult.courtName,
+        filingIds,
+        filingResult.caseCategoryName,
+        filingResult.caseTitle,
+        filingResult.envelopeId);
     return result.match(
         err -> Response.serverError().entity(err).build(), n -> Response.ok(filingResult).build());
   }
