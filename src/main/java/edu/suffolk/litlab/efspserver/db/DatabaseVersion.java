@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DatabaseVersion {
 
-  static final int CURRENT_VERSION = 8;
+  static final int CURRENT_VERSION = 9;
   private static Logger log = LoggerFactory.getLogger(DatabaseVersion.class);
   private final Connection codeConn;
   private final Connection userConn;
