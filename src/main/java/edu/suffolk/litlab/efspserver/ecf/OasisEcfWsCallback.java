@@ -113,8 +113,6 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
             .append("The document (")
             .append(tylerDoc.getDocumentDescriptionText().getValue())
             .append(") ");
-      } else {
-        docText.append("The document ");
       }
       if (tylerDoc.getDocumentBinary() != null
           && tylerDoc.getDocumentBinary().getBinaryDescriptionText() != null) {
@@ -163,6 +161,9 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     }
     if (docText.length() > 0) {
       docText.append('.');
+      if (!docText.substring(0, 12).equals("The document")) {
+        docText.insert(0, "The document ");
+      }
     }
     return docText.toString();
   }
