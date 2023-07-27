@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DatabaseVersion {
 
-  static final int CURRENT_VERSION = 9;
+  static final int CURRENT_VERSION = 10;
   private static Logger log = LoggerFactory.getLogger(DatabaseVersion.class);
   private final Connection codeConn;
   private final Connection userConn;
@@ -152,6 +152,8 @@ public class DatabaseVersion {
       update7To8();
     } else if (onDiskVersion == 8) {
       update8To9();
+    } else if (onDiskVersion == 9) {
+      update9To10();
     }
     setSchemaVersion(onDiskVersion + 1);
     userConn.commit();
@@ -510,5 +512,23 @@ public class DatabaseVersion {
       st.executeUpdate(alterUserDb);
     }
     userConn.commit();
+  }
+
+  public void update9To10() throws SQLException {
+    try (Statement st = codeConn.createStatement()) {
+      // There were issues in the insert code, so there are likely way too many opt services again.
+      final String reDistinctOpt =
+          """
+          CREATE TABLE dedup_optionalservices AS
+          SELECT DISTINCT * FROM optionalservices
+          """;
+      st.executeUpdate(reDistinctOpt);
+      st.executeUpdate("DROP TABLE optionalservices");
+      st.executeUpdate("ALTER TABLE dedup_optionalservices RENAME TO optionalservices");
+      // Then, we'll remake the indices
+      st.executeUpdate("CREATE INDEX ON optionalservices (location)");
+      st.executeUpdate("CREATE INDEX ON optionalservices (domain)");
+    }
+    codeConn.commit();
   }
 }
