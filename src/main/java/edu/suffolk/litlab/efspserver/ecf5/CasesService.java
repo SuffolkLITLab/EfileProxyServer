@@ -249,13 +249,13 @@ public class CasesService extends CasesServiceAPI {
       prepMessage(query, courtId);
       CaseQueryCriteriaType criteria = new CaseQueryCriteriaType();
       criteria.setCaseTrackingID(Ecf5Helper.convertId(caseId));
-      criteria.setIncludeParticipantsIndicator(Ecfv5XmlHelper.convertBool(true));
+      criteria.setIncludeParticipantsIndicator(Ecf5Helper.convertBool(true));
 
       // The below three lines set things in the XML that are required, but not supported,
       // i.e. they should always be false / empty, for silly tyler reasons.
-      criteria.setIncludeCalendarEventIndicator(Ecfv5XmlHelper.convertBool(false));
-      criteria.setIncludeDocketEntryIndicator(Ecfv5XmlHelper.convertBool(false));
-      criteria.setCaseNumberText(Ecfv5XmlHelper.convertText(""));
+      criteria.setIncludeCalendarEventIndicator(Ecf5Helper.convertBool(false));
+      criteria.setIncludeDocketEntryIndicator(Ecf5Helper.convertBool(false));
+      criteria.setCaseNumberText(Ecf5Helper.convertText(""));
 
       query.setCaseQueryCriteria(criteria);
       GetCaseRequestType msg = new GetCaseRequestType();
@@ -346,9 +346,9 @@ public class CasesService extends CasesServiceAPI {
 
     GetServiceInformationRequestMessageType query = new GetServiceInformationRequestMessageType();
     prepMessage(query, courtId);
-    query.getCaseTrackingID().add(Ecfv5XmlHelper.convertId(caseId));
+    query.getCaseTrackingID().add(Ecf5Helper.convertId(caseId));
     // Required by the schema, but will never be used
-    query.setCaseNumberText(Ecfv5XmlHelper.convertText(""));
+    query.setCaseNumberText(Ecf5Helper.convertText(""));
     GetServiceInformationRequestType msg = new GetServiceInformationRequestType();
     msg.setGetServiceInformationRequestMessage(query);
     var resp = port.getServiceInformation(msg);

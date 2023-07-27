@@ -28,14 +28,7 @@ public class PolicyCacher {
       return policyInMemoryCache.get(courtId);
     } else {
       GetPolicyRequestType policyRequest = new GetPolicyRequestType();
-      var msg = new GetPolicyRequestMessageType();
-      msg.setCaseCourt(Ecf5Helper.convertCourt(courtId));
-      msg.setSendingMDELocationID(Ecf5Helper.convertId("https://efile.suffolklitlab.org"));
-      msg.setServiceInteractionProfileCode(
-          Ecf5Helper.convertNormalizedString(
-              "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-5.0"));
-      msg.setDocumentPostDate(Ecf5Helper.convertNow());
-      msg.getDocumentIdentification().add(Ecf5Helper.convertId("1", "FilingAssembly", "messageID"));
+      var msg = Ecf5Helper.prep(new GetPolicyRequestMessageType(), courtId);
       PolicyQueryCriteriaType pqct = new PolicyQueryCriteriaType();
       msg.setPolicyQueryCriteria(pqct);
       policyRequest.setGetPolicyRequestMessage(msg);

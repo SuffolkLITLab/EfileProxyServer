@@ -254,7 +254,9 @@ public class AdminUserService {
 
       Result<NullValue, String> passwordGood = passwordChecker.apply(params.newPassword);
       if (passwordGood.isErr()) {
-        return Response.status(400).entity(passwordGood.expectErr("invalid internal state")).build();
+        return Response.status(400)
+            .entity(passwordGood.expectErr("invalid internal state"))
+            .build();
       }
       ResetUserPasswordRequestType resetReq = new ResetUserPasswordRequestType();
       resetReq.setUserID(id);
@@ -287,7 +289,9 @@ public class AdminUserService {
       }
       Result<NullValue, String> passwordGood = passwordChecker.apply(params.newPassword);
       if (passwordGood.isErr()) {
-        return Response.status(400).entity(passwordGood.expectErr("invalid internal state")).build();
+        return Response.status(400)
+            .entity(passwordGood.expectErr("invalid internal state"))
+            .build();
       }
       ChangePasswordRequestType change = new ChangePasswordRequestType();
       change.setOldPassword(params.currentPassword);
@@ -405,7 +409,7 @@ public class AdminUserService {
         return Response.status(401, userRes.getError().getErrorText()).build();
       }
 
-      UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser);
+      UpdateUserRequestType updateReq = makeUpdateUserReq(userRes.getUser(), updatedUser);
       UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
       if (ServiceHelpers.checkErrors(updateResp.getError())) {
         return Response.status(401).entity(updateResp.getError().getErrorText()).build();
@@ -443,7 +447,7 @@ public class AdminUserService {
         return Response.status(401, userRes.getError().getErrorText()).build();
       }
 
-      UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser);
+      UpdateUserRequestType updateReq = makeUpdateUserReq(userRes.getUser(), updatedUser);
       UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
       if (ServiceHelpers.checkErrors(updateResp.getError())) {
         return Response.status(401).entity(updateResp.getError().getErrorText()).build();
@@ -455,21 +459,24 @@ public class AdminUserService {
     }
   }
 
-  private static UpdateUserRequestType updateUser(UserType existingUser, UserType updatedUser) {
-    if (updatedUser.getEmail() != null) {
-      existingUser.setEmail(updatedUser.getEmail());
+  private static UpdateUserRequestType makeUpdateUserReq(UserType baseUser, UserType extendedUser) {
+    if (extendedUser.getEmail() != null) {
+      baseUser.setEmail(extendedUser.getEmail());
     }
-    if (updatedUser.getFirstName() != null) {
-      existingUser.setFirstName(updatedUser.getFirstName());
+    if (extendedUser.getFirstName() != null) {
+      baseUser.setFirstName(extendedUser.getFirstName());
     }
-    if (updatedUser.getMiddleName() != null) {
-      existingUser.setMiddleName(updatedUser.getMiddleName());
+    if (extendedUser.getMiddleName() != null) {
+      baseUser.setMiddleName(extendedUser.getMiddleName());
     }
-    if (updatedUser.getLastName() != null) {
-      existingUser.setLastName(updatedUser.getLastName());
+    if (extendedUser.getLastName() != null) {
+      baseUser.setLastName(extendedUser.getLastName());
+    }
+    if (extendedUser.getUserID() != null) {
+      baseUser.setUserID(extendedUser.getUserID());
     }
     UpdateUserRequestType updateReq = new UpdateUserRequestType();
-    updateReq.setUser(existingUser);
+    updateReq.setUser(baseUser);
     return updateReq;
   }
 
@@ -645,9 +652,10 @@ public class AdminUserService {
 
       Result<NullValue, String> passwordGood = passwordChecker.apply(req.getPassword());
       if (passwordGood.isErr()) {
-        return Response.status(400).entity(passwordGood.expectErr("invalid internal state")).build();
+        return Response.status(400)
+            .entity(passwordGood.expectErr("invalid internal state"))
+            .build();
       }
-
 
       RegistrationResponseType regResp = port.get().registerUser(req);
       log.info(

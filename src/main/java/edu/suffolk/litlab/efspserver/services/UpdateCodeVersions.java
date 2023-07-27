@@ -1,7 +1,7 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import edu.suffolk.litlab.efspserver.Monitor;
 import edu.suffolk.litlab.efspserver.EfmConfiguration;
+import edu.suffolk.litlab.efspserver.Monitor;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
 import edu.suffolk.litlab.efspserver.ecfcodes.CodeUpdater;
@@ -62,7 +62,8 @@ public class UpdateCodeVersions implements Job {
               DatabaseCreator.makeSingleConnection(pgDb, pgFullUrl, pgUser, pgPassword);
           CodeDatabase cd = new CodeDatabase(jurisdiction, env, conn)) {
         success =
-            CodeUpdater.executeCommand(cd, ecfVersion, jurisdiction, env, List.of("refresh"), x509Password);
+            CodeUpdater.executeCommand(
+                cd, ecfVersion, jurisdiction, env, List.of("refresh"), x509Password);
       } catch (SQLException e) {
         log.error("Couldn't connect to Codes db from Job Executor: " + StdLib.strFromException(e));
         success = false;

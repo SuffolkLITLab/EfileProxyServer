@@ -63,7 +63,7 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
 
   private static String chargeToStr(AllowanceChargeType charge) {
     StringBuilder chargeReasonStr = new StringBuilder();
-    String amountText = Ecfv5XmlHelper.amountToString(charge.getAmount());
+    String amountText = Ecf5Helper.amountToString(charge.getAmount());
     chargeReasonStr.append(amountText);
     chargeReasonStr.append(" for ").append(charge.getAllowanceChargeReason());
     charge.getPaymentMeans().stream()
@@ -299,7 +299,7 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
     st.setMessageStatusCode(ct);
     MessageContentErrorType contentError = new MessageContentErrorType();
     MessageErrorType errType = new MessageErrorType();
-    errType.setErrorCodeText(Ecfv5XmlHelper.convertText("0"));
+    errType.setErrorCodeText(Ecf5Helper.convertText("0"));
     contentError.setErrorDescription(errType);
     st.getMessageContentError().add(contentError);
     return st;
@@ -308,7 +308,7 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
   private static MessageStatusType common() {
     MessageStatusType st = new MessageStatusType();
     st.setSystemSimulatedIndicator(false);
-    st.setSystemEventDateTime(Ecfv5XmlHelper.convertProxyDate(LocalDateTime.now()));
+    st.setSystemEventDateTime(Ecf5Helper.convertProxyDate(LocalDateTime.now()));
     CredentialsAuthenticatedCodeType act = new CredentialsAuthenticatedCodeType();
     act.setValue(CredentialsAuthenticatedCodeSimpleType.AUTHENTICATED);
     st.setCredentialsAuthenticatedCode(act);
@@ -316,9 +316,9 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
     // mct.setValue(SystemOperatingModeCodeSimpleType.OPS);
     var statusFac = new gov.niem.release.niem.domains.cbrn._4.ObjectFactory();
     st.setSystemOperatingModeAbstract(statusFac.createCredentialsAuthenticatedCode(act));
-    st.setResendRequestIndicator(Ecfv5XmlHelper.convertBool(false));
+    st.setResendRequestIndicator(Ecf5Helper.convertBool(false));
     MessageErrorType okHandling = new MessageErrorType();
-    okHandling.setErrorCodeText(Ecfv5XmlHelper.convertText("0"));
+    okHandling.setErrorCodeText(Ecf5Helper.convertText("0"));
     st.setMessageHandlingError(okHandling);
     return st;
   }
@@ -331,8 +331,8 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
     st.setMessageStatusCode(ct);
     MessageContentErrorType contentError = new MessageContentErrorType();
     MessageErrorType errType = new MessageErrorType();
-    errType.setErrorCodeText(Ecfv5XmlHelper.convertText(code));
-    errType.setErrorCodeDescriptionText(Ecfv5XmlHelper.convertText(text));
+    errType.setErrorCodeText(Ecf5Helper.convertText(code));
+    errType.setErrorCodeDescriptionText(Ecf5Helper.convertText(text));
     contentError.setErrorDescription(errType);
     st.getMessageContentError().add(contentError);
     return null;

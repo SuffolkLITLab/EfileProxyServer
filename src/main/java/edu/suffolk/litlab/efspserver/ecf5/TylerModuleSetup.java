@@ -308,7 +308,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
           return LoginDatabase.fromDS(this.userDs);
         };
 
-    EfmFilingInterface filer = new Ecf5Filer(jurisdiction, env);
+    EfmFilingInterface filer = new Ecf5Filer(jurisdiction, env, cdSupplier);
 
     for (String court : getCourts()) {
       filingMap.put(court, filer);

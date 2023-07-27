@@ -1,8 +1,8 @@
 package edu.suffolk.litlab.efspserver.ecf5;
 
 import static edu.suffolk.litlab.efspserver.JsonHelpers.isNull;
-import static edu.suffolk.litlab.efspserver.ecf5.Ecfv5XmlHelper.convertId;
-import static edu.suffolk.litlab.efspserver.ecf5.Ecfv5XmlHelper.convertText;
+import static edu.suffolk.litlab.efspserver.ecf5.Ecf5Helper.convertId;
+import static edu.suffolk.litlab.efspserver.ecf5.Ecf5Helper.convertText;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hubspot.algebra.Result;

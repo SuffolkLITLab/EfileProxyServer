@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efspserver.ecf5;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE_Service;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDEService;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtrecordmde.CourtRecordMDEService;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.filingreviewmde.FilingReviewMDEService;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
@@ -28,13 +29,7 @@ public class SoapClientChooser {
           "indiana-stage", "wsdl/stage/indiana-ECF-4.0-ServiceMDEService.wsdl");
 
   static final Map<String, String> filingReviewMDEWsdls =
-      Map.of(
-          "illinois-stage", "wsdl/stage/illinois-ECF-4.0-FilingReviewMDEService.wsdl",
-          "illinois-test", "wsdl/test/illinois-ECF-4.0-FilingReviewMDEService.wsdl",
-          "illinois-prod", "wsdl/prod/illinois-ECF-4.0-FilingReviewMDEService.wsdl",
-          "massachusetts-stage", "wsdl/stage/massachusetts-ECF-4.0-FilingReviewMDEService.wsdl",
-          "texas-stage", "wsdl/stage/texas-ECF-4.0-FilingReviewMDEService.wsdl",
-          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-FilingReviewMDEService.wsdl");
+      Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-FilingReviewMDEService.wsdl");
 
   static final Map<String, String> courtRecordMDEWsdls =
       Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-CourtRecordMDEService.wsdl");
@@ -110,6 +105,16 @@ public class SoapClientChooser {
   public static Optional<CourtPolicyMDEService> getCourtPolicyFactory(
       String jurisdiction, String env) {
     return getCourtPolicyFactory(jurisdiction + "-" + env);
+  }
+
+  public static Optional<FilingReviewMDEService> getFilingReviewFactory(
+      String jurisdiction, String env) {
+    return getFilingReviewFactory(jurisdiction + "-" + env);
+  }
+
+  public static Optional<FilingReviewMDEService> getFilingReviewFactory(String wsdlDomain) {
+    Optional<URL> url = urlFromString(wsdlDomain, filingReviewMDEWsdls);
+    return url.map(u -> new FilingReviewMDEService(u));
   }
 
   private static Optional<URL> urlFromString(String wsdlDomain, Map<String, String> domainToWsdl) {

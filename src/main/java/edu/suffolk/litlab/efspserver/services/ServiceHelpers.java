@@ -7,6 +7,7 @@ import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
+import edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efspserver.tyler.TylerLogin;
 import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
@@ -16,7 +17,6 @@ import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.ws.BindingProvider;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,7 +56,6 @@ public class ServiceHelpers {
   public static final String EXTERNAL_URL;
   public static final String SERVICE_URL;
   public static final String REST_CALLBACK_URL;
-  static Map<String, Integer> tylerToHttp = new HashMap<>();
 
   static {
     Optional<String> certPassword = GetEnv("CERT_PASSWORD");
@@ -81,44 +80,6 @@ public class ServiceHelpers {
 
     SERVICE_URL = EXTERNAL_URL + ASSEMBLY_PORT;
     REST_CALLBACK_URL = EXTERNAL_URL + "/filingreview/jurisdictions/%s/courts/%s/filing/status";
-
-    tylerToHttp.clear();
-    // First three are ones that the proxy should handle well. If we don't then it's
-    // our fault.
-    // Message received in substitution message format but extended message format
-    // expected.
-    tylerToHttp.put("-1000", 500);
-    // Message received in extended message format but substitution message format
-    // expected.
-    tylerToHttp.put("-999", 500);
-    tylerToHttp.put("-20", 500); // Schema validation error
-    // Everything else
-    tylerToHttp.put("-15", 504); // Communicitation with CMS timed out or failed
-    // CMS is unavailable, cases that have not been E-filed previously won't be
-    // found at this time
-    tylerToHttp.put("-10", 503);
-    tylerToHttp.put("-5", 403); // Insufficient permissions to complete operation
-    tylerToHttp.put("-4", 401); // Authorization failed
-    tylerToHttp.put("-2", 401); // Caller not authenticated
-    tylerToHttp.put("-1", 502); // Unknown error
-    tylerToHttp.put("0", 200);
-    tylerToHttp.put("77", 400); // IncludeParticipants is empty, this is a required query element
-    tylerToHttp.put("78", 428); // User has already been activated
-    tylerToHttp.put("85", 428); // Service Contact already attached to party
-    tylerToHttp.put("86", 428); // Service Contact not attached to party
-    tylerToHttp.put("87", 428); // Service Contact already attached to case
-    tylerToHttp.put("88", 428); // Service Contact already attached to party
-    tylerToHttp.put("90", 400); // Invalid QuerySubmitterID
-    tylerToHttp.put("91", 400); // Invalid DocumentSubmitterID
-    tylerToHttp.put("92", 400); // Invalid CaseTrackingID
-    tylerToHttp.put("93", 400); // Invalid StartDate
-    tylerToHttp.put("94", 400); // Invalid EndDate
-    tylerToHttp.put("95", 400); // Invalid FilingAttorneyID
-    tylerToHttp.put("96", 400); // Invalid FilingPartyID
-    tylerToHttp.put("97", 400); // Invalid PaymentID
-    tylerToHttp.put("169", 422); // Invalid birthdate
-    tylerToHttp.put("170", 422); // Invalid password (when making an account? TODO(brycew))
-    tylerToHttp.put("344", 422); // Doesn't handle cross references
   }
 
   /**
@@ -175,8 +136,8 @@ public class ServiceHelpers {
       return defaultRespFunc.get();
     }
 
-    if (tylerToHttp.containsKey(error.getErrorCode())) {
-      return Response.status(tylerToHttp.get(error.getErrorCode()))
+    if (TylerErrorCodes.tylerToHttp.containsKey(error.getErrorCode())) {
+      return Response.status(TylerErrorCodes.tylerToHttp.get(error.getErrorCode()))
           .entity(error.getErrorText())
           .build();
     }
@@ -193,8 +154,8 @@ public class ServiceHelpers {
         continue;
       }
 
-      if (tylerToHttp.containsKey(error.getErrorCode().getValue())) {
-        return Response.status(tylerToHttp.get(error.getErrorCode().getValue()))
+      if (TylerErrorCodes.tylerToHttp.containsKey(error.getErrorCode().getValue())) {
+        return Response.status(TylerErrorCodes.tylerToHttp.get(error.getErrorCode().getValue()))
             .entity(error.getErrorText().getValue())
             .build();
       }
@@ -218,7 +179,10 @@ public class ServiceHelpers {
     typ.setEntityRepresentation(elem2);
     newMsg.setQuerySubmitter(typ);
     newMsg.setCaseCourt(XmlHelper.convertCourtType(courtId));
-    newMsg.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
+    // Example in the ECF4 docs is "https://filingreviewmde.com", which matches best to
+    // EXTERNAL_URL.
+    // Doesn't seem to be used by Tyler however.
+    newMsg.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.EXTERNAL_URL));
     newMsg.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     return newMsg;
   }

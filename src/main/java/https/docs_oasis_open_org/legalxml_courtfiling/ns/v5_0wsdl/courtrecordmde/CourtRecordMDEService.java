@@ -1,6 +1,5 @@
 package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtrecordmde;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import javax.xml.namespace.QName;
 import jakarta.xml.ws.WebEndpoint;
