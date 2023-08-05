@@ -118,6 +118,12 @@ Certain courts have disclaimers that users are required to be shown and generall
 
 Which language the filer or any specified party speaks or prefers to use.
 
+In practice, this code doesn't seem to be used well; in Illinois, there are no language codes for any court, and in Texas there are only 10 listed languages.
+Tyler's documentation states that "this is used to determine if an interpreter is required", and limited selection of languages seems to reflect this.
+As a suggestion, for Language (and other important pieces of information), you unforunately cannot rely on the courts being able to ingest all of the
+possible types of data that your users can give. Instead of limiting your users to only choose Tyler allowed options, I suggest that you instead make sure that
+all important pieces of information like language are also present in the filing itself, and not just as a value in the e-filing information.
+
 ### File Type
 
 The types of the digital files that are accepted at this location. For example, PDF or DOCX.
