@@ -1,73 +1,87 @@
-# Developer Setup
+# Setup
 
-There are two different ways of running and developing on the proxy server:
+There are two different ways of running this proxy server:
 
-1. Through Docker / Docker-Compose. This is how the server will run in production,
-   so you do need to have this setup.
-2. Locally on your own machine. This is not recommended or supported.
-   These instructions are setup for Ubuntu / Windows Subsystem for Linux,
-   but should be amenable for Macs.
+1. Through Docker and Docker-Compose. This is how the server will run in prod,
+   so you should have and know this setup.
+2. Locally on your own machine. This is only recommended for unit tests, as
+   some of important unittests cannot run in a docker container. However,
+   running the full server locally is *not* recommended.
+
+These instructions are setup for Ubuntu / Windows Subsystem for Linux,
+but should be amenable for Macs.
 
 **NOTE**: it can take about 40 minutes to load all of the codes into the database when starting the proxy server
-for the first time. This only happens the first time you run it (if you are using docker-compose, `docker-compose down` won't re-download the codes).
+for the first time. This only happens the first time you run it (if you are using docker-compose, `docker-compose down` remove the downloaded codes).
 
 ## Docker
 
-### Main Engine
-
-The official instructions are [on the docker site itself](https://docs.docker.com/engine/install/ubuntu/).
-If those disagree with what's here, then go with those!
-
 ```bash
-sudo apt-get install \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release
-    
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+sudo apt-get update
+sudo apt-get install ca-certificates curl gnupg
+
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
 echo \
-  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null 
+  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
   
 sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
 /etc/init.d/docker start
 sudo usermod -aG docker $USER 
 newgrp docker 
 ```
 
-### Docker Compose
+If any of this doesn't work, checkout the official instructions for [docker](https://docs.docker.com/engine/install/ubuntu/)
+and [docker compose](https://docs.docker.com/compose/install/linux/#install-using-the-repository).
 
-Checkout the main [docker compose documentation](https://docs.docker.com/compose/install/)
+After installing docker compose, you can download the git repo;
 
 ```bash
-sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+git clone https://github.com/SuffolkLITLab/EfileProxyServer
+cd EfileProxyServer
 ```
 
-Copy in `Suffolk.pfx` and `client_sign.properties` (also has the password that is in the .env file)
+Then you'll need to create or download files not present in the git repo, including:
 
-`docker-compose up` will run the server. `docker-compose up -d` will start the server as a background process.
+* `Suffolk.pfx`: this is the PKCS12 certificate file that Tyler Technologies gives you to sign
+  our communication with them. It's needed to for the server to communicate with any of the Tyler jurisdictions
+  (Illinois, Texas, Indiana, California, and Massachusetts).
+* `client_sign.properties`: contains the password for unlocking Suffolk.pfx. You can
+  see the structure of this file in
+  [`client_sign.properties.example`](../client_sign.properties.example) if you
+  need to recreate it.
 
+Finally, you run the following commands to build, start, monitor, and stop the server.
+
+```bash
+docker compose build # I encourage building the server first, so it can start immediately.
+docker compose up -d # `-d` starts it as a background process.
+docker compose logs # will print out all of the logs from the proxy server and the database
+docker compose down
+```
 
 ### Docassemble
 
-We've also included a docker-compose file that spins up a docassemble server as
-well. You can use it with:
+To communicate with the Efile Proxy Server from docassemble using the [EFSPIntegration package](https://github.com/SuffolkLITLab/docassemble-EFSPIntegration), you will need to add some config values in docassemble's config:
 
-```bash
-docker-compose -f docker-docassemble.yml
+```yml
+efile proxy:
+  # Once the efile proxy server has started, generated an API Key and past that
+  # here; see README.md
+  api key: abc123 
+  # This can stay the same
+  url: http://efspjava:9000/
+  # If using JeffNet, you can copy the JeffNet API Key here
+  jeffnet api token: abc123
 ```
 
-You will need to add some config values in docassemble's config to allow the
-docassemble server to communicate with the proxy, you can see
-[config.example](config.example) for documentation on those values.
-
-**Note** that it can take at least 30-40 minutes to download and start Docassemble on a midrange laptop.
-
-## Local Development
+## Running unit tests locally
 
 Start with installing everything.
 
@@ -77,21 +91,19 @@ sudo apt update
 sudo apt install openjdk-15-jdk
 ```
 
-We are using CXF as the SOAP client which supports up to JDK 17. Maybe could go back to version 11
+We are using CXF as the SOAP client which supports up to JDK 17. Maybe could go back to version 11.
 
 ```bash
 sudo apt install maven
 git clone git@github.com:SuffolkLITLab/EfileProxyServer.git
-git clone git@github.com:SuffolkLITLab/docassemble-EFSPIntegration.git
+cd EfileProxyServer
 ```
 
-Note: may not be able to run Eclipse with WSL2. VS Code is usable but
-not a full IDE.
+Note: may not be able to run Eclipse with WSL2. VS Code is usable but the only java extensions that work with it routinely take up 24GB of RAM and crash.
 
 To run all of the unit tests in the project, use the following:
 
 ```bash
-cd EfileProxyServer
 mvn test 
 ```
 
