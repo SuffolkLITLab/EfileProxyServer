@@ -27,7 +27,7 @@ services:
     #    target: /tmp/secrets
   db:
     image: "postgres:14"
-    shm_size: 128MB
+    shm_size: 128m
     env_file: .env
     volumes:
       - data-volume:/var/lib/postgresql/data
