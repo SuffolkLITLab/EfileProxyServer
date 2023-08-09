@@ -334,25 +334,22 @@ public class CodeDatabase extends CodeDatabaseAPI {
         });
   }
 
-  public List<NameAndCode> getCaseSubtypesFor(String courtLocationId, String caseType)
-      throws SQLException {
-    if (conn == null) {
-      log.error("SQL connection not created in CaseSubtypes yet");
-      throw new SQLException();
-    }
-
-    String query = CodeTableConstants.getCaseSubtypesFor();
-    List<NameAndCode> subtypes = new ArrayList<NameAndCode>();
-    try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, tylerDomain);
-      st.setString(2, courtLocationId);
-      st.setString(3, caseType);
-      ResultSet rs = st.executeQuery();
-      while (rs.next()) {
-        subtypes.add(new NameAndCode(rs.getString(2), rs.getString(1)));
-      }
-    }
-    return subtypes;
+  public List<NameAndCode> getCaseSubtypesFor(String courtLocationId, String caseType) {
+    return safetyWrap(
+        () -> {
+          String query = CodeTableConstants.getCaseSubtypesFor();
+          List<NameAndCode> subtypes = new ArrayList<NameAndCode>();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, courtLocationId);
+            st.setString(3, caseType);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              subtypes.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+            }
+          }
+          return subtypes;
+        });
   }
 
   public DataFieldRow getDataField(String courtLocationId, String dataName) {
@@ -469,7 +466,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       st.setString(2, courtLocationId);
       st.setString(3, caseCategory);
       ResultSet rs = st.executeQuery();
-      List<NameAndCode> names = new ArrayList<NameAndCode>();
+      List<NameAndCode> names = new ArrayList<>();
       while (rs.next()) {
         names.add(new NameAndCode(rs.getString(1), rs.getString(2)));
       }
@@ -484,7 +481,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       String courtLocationId, String categoryCode, String typeCode, boolean initial) {
     return safetyWrap(
         () -> {
-          List<FilingCode> filingTypes = new ArrayList<FilingCode>();
+          List<FilingCode> filingTypes = new ArrayList<>();
           try (PreparedStatement specificSt =
               FilingCode.prepQueryWithCaseInfo(
                   conn, initial, tylerDomain, courtLocationId, categoryCode, typeCode)) {
@@ -744,7 +741,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       st.setString(2, courtLocationId);
       st.setString(3, filingCodeId);
       ResultSet rs = st.executeQuery();
-      List<FilingComponent> components = new ArrayList<FilingComponent>();
+      List<FilingComponent> components = new ArrayList<>();
       while (rs.next()) {
         components.add(new FilingComponent(rs));
       }
@@ -768,7 +765,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       st.setString(2, courtId);
       st.setString(3, country);
       ResultSet rs = st.executeQuery();
-      List<String> stateCodes = new ArrayList<String>();
+      List<String> stateCodes = new ArrayList<>();
       while (rs.next()) {
         stateCodes.add(rs.getString(1));
       }
@@ -797,7 +794,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
             st.setString(1, tylerDomain);
             st.setString(2, courtId);
             ResultSet rs = st.executeQuery();
-            List<FileType> types = new ArrayList<FileType>();
+            List<FileType> types = new ArrayList<>();
             while (rs.next()) {
               types.add(new FileType(rs));
             }
@@ -814,7 +811,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
             st.setString(1, tylerDomain);
             st.setString(2, courtId);
             ResultSet rs = st.executeQuery();
-            List<FilerType> types = new ArrayList<FilerType>();
+            List<FilerType> types = new ArrayList<>();
             while (rs.next()) {
               types.add(new FilerType(rs));
             }
@@ -834,7 +831,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       st.setString(1, tylerDomain);
       st.setString(2, courtId);
       ResultSet rs = st.executeQuery();
-      List<NameAndCode> names = new ArrayList<NameAndCode>();
+      List<NameAndCode> names = new ArrayList<>();
       while (rs.next()) {
         names.add(new NameAndCode(rs.getString(1), rs.getString(2)));
       }
@@ -851,7 +848,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
           try (PreparedStatement st =
               OptionalServiceCode.prepQuery(conn, tylerDomain, courtId, filingCode)) {
             ResultSet rs = st.executeQuery();
-            List<OptionalServiceCode> services = new ArrayList<OptionalServiceCode>();
+            List<OptionalServiceCode> services = new ArrayList<>();
             while (rs.next()) {
               services.add(new OptionalServiceCode(rs));
             }
@@ -860,7 +857,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         });
   }
 
-  public List<String> getLanguages(String courtLocationId) {
+  public List<String> getLanguageNames(String courtLocationId) {
     return safetyWrap(
         () -> {
           String query = CodeTableConstants.getLanguages();
@@ -868,9 +865,26 @@ public class CodeDatabase extends CodeDatabaseAPI {
             st.setString(1, tylerDomain);
             st.setString(2, courtLocationId);
             ResultSet rs = st.executeQuery();
-            List<String> languages = new ArrayList<String>();
+            List<String> languages = new ArrayList<>();
             while (rs.next()) {
               languages.add(rs.getString(2));
+            }
+            return languages;
+          }
+        });
+  }
+
+  public List<NameAndCode> getLanguages(String courtLocationId) {
+    return safetyWrap(
+        () -> {
+          String query = CodeTableConstants.getLanguages();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, courtLocationId);
+            ResultSet rs = st.executeQuery();
+            List<NameAndCode> languages = new ArrayList<>();
+            while (rs.next()) {
+              languages.add(new NameAndCode(rs.getString(2), rs.getString(1)));
             }
             return languages;
           }

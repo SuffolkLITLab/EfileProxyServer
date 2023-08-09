@@ -6,6 +6,8 @@
 	<import namespace="urn:tyler:ecf:v5.0:extensions:criminal" location="ecf5-full-5af175c0454ab847.xsd"/>
 	<import namespace="urn:tyler:ecf:v5.0:extensions:massachusetts" location="ecf5-full-85da63d0dfbf9699.xsd"/>
 	<import namespace="urn:tyler:ecf:v5.0:extensions:taxdelinquency" location="ecf5-full-f80a207221f28385.xsd"/>
+	<import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/domestic" location="ecf5-full-domestic.xsd"/>
+	<import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/appellate" location="ecf5-full-appellate.xsd"/>
 	<service name="FilingReviewMDEService">
 		<port name="FilingReviewMDE" binding="wsmp:FilingReviewMDESoap">
 			<soap:address location="https://illinois-stage.tylertech.cloud/efm/v5/filingreviewservice.svc"/>

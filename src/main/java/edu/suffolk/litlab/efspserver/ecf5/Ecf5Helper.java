@@ -1,6 +1,5 @@
 package edu.suffolk.litlab.efspserver.ecf5;
 
-import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
@@ -30,8 +29,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.function.Supplier;
@@ -40,7 +37,6 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
-import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tyler.ecf.v5_0.extensions.tylerfilingreviewmde.TylerFilingReviewMDE;
@@ -93,6 +89,14 @@ public class Ecf5Helper {
     var outputDate = niemProxyObjFac.createDateTime();
     outputDate.setValue(datatypeFac.newXMLGregorianCalendar(cal));
     return outputDate;
+  }
+
+  public static gov.niem.release.niem.niem_core._4.AmountType convertAmount(BigDecimal number) {
+    var amt = new gov.niem.release.niem.niem_core._4.AmountType();
+    var deci = new gov.niem.release.niem.proxy.xsd._4.Decimal();
+    deci.setValue(number);
+    amt.setAmount(deci);
+    return amt;
   }
 
   public static String amountToString(
@@ -195,6 +199,14 @@ public class Ecf5Helper {
     return outStr;
   }
 
+  public static gov.niem.release.niem.niem_core._4.ProperNameTextType convertProperName(
+      String name) {
+    gov.niem.release.niem.niem_core._4.ProperNameTextType pntt =
+        niemCoreObjFac.createProperNameTextType();
+    pntt.setValue(name);
+    return pntt;
+  }
+
   public static gov.niem.release.niem.niem_core._4.IdentificationType convertId(String idStr) {
     var id = niemCoreObjFac.createIdentificationType();
     id.setIdentificationID(convertString(idStr));
@@ -240,10 +252,7 @@ public class Ecf5Helper {
       return Optional.empty();
     }
     CourtPolicyMDE mde = policyServFactory.getCourtPolicyMDE();
-    Map<String, Object> ctx = ((BindingProvider) mde).getRequestContext();
-    List<Header> headerList = List.of(creds.get().toHeader());
-    ctx.put(Header.HEADER_LIST, headerList);
-    setupServicePort((BindingProvider) mde);
+    ServiceHelpers.setupServicePort((BindingProvider) mde, creds.get());
     return Optional.of(mde);
   }
 
@@ -257,10 +266,7 @@ public class Ecf5Helper {
     }
 
     FilingReviewMDE mde = reviewServFactory.getFilingReviewMDE();
-    Map<String, Object> ctx = ((BindingProvider) mde).getRequestContext();
-    List<Header> headerList = List.of(creds.get().toHeader());
-    ctx.put(Header.HEADER_LIST, headerList);
-    setupServicePort((BindingProvider) mde);
+    ServiceHelpers.setupServicePort((BindingProvider) mde, creds.get());
     return Optional.of(mde);
   }
 
@@ -275,10 +281,7 @@ public class Ecf5Helper {
     }
 
     TylerFilingReviewMDE mde = tylerReviewServFactory.getTylerFilingReviewMDE();
-    Map<String, Object> ctx = ((BindingProvider) mde).getRequestContext();
-    List<Header> headerList = List.of(creds.get().toHeader());
-    ctx.put(Header.HEADER_LIST, headerList);
-    setupServicePort((BindingProvider) mde);
+    ServiceHelpers.setupServicePort((BindingProvider) mde, creds.get());
     return Optional.of(mde);
   }
 
@@ -412,20 +415,5 @@ public class Ecf5Helper {
     StringWriter sw = new StringWriter();
     mar.marshal(wrappedRoot, sw);
     return sw.toString();
-  }
-
-  /**
-   * Sets up a connection to Tyler's SOAP API WITHOUT any Auth headers, but does handle the X.509
-   * certificate and signing parameters.
-   *
-   * <p>Can be used to make an Auth request, or can have the header inserted later.
-   */
-  public static void setupServicePort(BindingProvider bp) {
-    Map<String, Object> ctx = bp.getRequestContext();
-    ctx.put("security.username", "bwilley@suffolk.edu");
-    ctx.put("security.password", "can-be-anything?");
-    ctx.put("security.signature.properties", "client_sign.properties");
-    ctx.put("security.callback-handler", SoapX509CallbackHandler.class.getName());
-    ctx.put("security.signature.username", "1");
   }
 }

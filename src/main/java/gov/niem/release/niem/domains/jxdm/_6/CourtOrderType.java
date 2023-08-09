@@ -4,6 +4,7 @@ package gov.niem.release.niem.domains.jxdm._6;
 import java.util.ArrayList;
 import java.util.List;
 import gov.niem.release.niem.niem_core._4.ActivityType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.domestic.DomesticCaseOrderType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -41,7 +42,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 })
 @XmlSeeAlso({
     WarrantType.class,
-    ProtectionOrderType.class
+    ProtectionOrderType.class,
+    DomesticCaseOrderType.class
 })
 public class CourtOrderType
     extends ActivityType

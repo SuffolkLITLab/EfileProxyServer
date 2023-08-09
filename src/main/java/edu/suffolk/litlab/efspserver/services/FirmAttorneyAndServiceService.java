@@ -1,13 +1,14 @@
 package edu.suffolk.litlab.efspserver.services;
 
 import static edu.suffolk.litlab.efspserver.JsonHelpers.getStringMember;
-import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
+import static edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes.makeResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.suffolk.litlab.efspserver.StdLib;
+import edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.DataFieldRow;
@@ -444,7 +445,7 @@ public class FirmAttorneyAndServiceService {
     GetServiceContactRequestType getReq = new GetServiceContactRequestType();
     getReq.setServiceContactID(contactId);
     GetServiceContactResponseType getResp = firmPort.get().getServiceContact(getReq);
-    if (ServiceHelpers.hasError(getResp)) {
+    if (TylerErrorCodes.hasError(getResp)) {
       return Response.status(404).entity("No service contact with id " + contactId).build();
     }
     ServiceContactType contact = getResp.getServiceContact();

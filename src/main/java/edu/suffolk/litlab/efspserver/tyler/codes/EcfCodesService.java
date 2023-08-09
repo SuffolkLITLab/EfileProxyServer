@@ -541,7 +541,7 @@ public class EcfCodesService extends CodesService {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
-      List<String> languages = cd.getLanguages(courtId);
+      List<String> languages = cd.getLanguageNames(courtId);
 
       return cors(Response.ok(languages));
     }

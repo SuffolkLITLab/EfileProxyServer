@@ -4,39 +4,29 @@ import static edu.suffolk.litlab.efspserver.StdLib.GetEnv;
 
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
-import edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efspserver.tyler.TylerLogin;
 import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
-import gov.niem.niem.niem_core._2.EntityType;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
-import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.ws.BindingProvider;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.IEfmFirmService;
-import tyler.efm.services.schema.baseresponse.BaseResponseType;
 
 public class ServiceHelpers {
-  private static Logger log = LoggerFactory.getLogger(ServiceHelpers.class);
+  private static final Logger log = LoggerFactory.getLogger(ServiceHelpers.class);
 
   /**
    * One of the ways that you can communicate over ECF. For more information, see
@@ -97,144 +87,14 @@ public class ServiceHelpers {
     ctx.put("security.signature.username", "1");
   }
 
-  public static Response makeResponse(BaseResponseType resp, Supplier<Response> defaultRespFunc) {
-    return mapTylerCodesToHttp(resp.getError(), defaultRespFunc);
+  public static void setupServicePort(BindingProvider bp, TylerUserNamePassword creds) {
+    setupServicePort(bp, List.of(creds.toHeader()));
   }
 
-  public static Response makeResponse(
-      QueryResponseMessageType resp, Supplier<Response> defaultRespFunc) {
-    return mapTylerCodesToHttp(resp.getError(), defaultRespFunc);
-  }
-
-  public static boolean hasError(BaseResponseType resp) {
-    return checkErrors(resp.getError());
-  }
-
-  /** Returns true on errors from the Tyler / Admin side of the API. */
-  public static boolean checkErrors(tyler.efm.services.schema.common.ErrorType error) {
-    if (!error.getErrorCode().equals("0")) {
-      log.error("Error!: " + error.getErrorCode() + ": " + error.getErrorText());
-      return true;
-    }
-    return false;
-  }
-
-  /** Returns true on errors from the ECF side of the API. They work the same as the Tyler ones. */
-  public static boolean checkErrors(
-      oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType error) {
-    if (error.getErrorCode() != null && !error.getErrorCode().getValue().equals("0")) {
-      log.error(
-          "Error!: " + error.getErrorCode().getValue() + ": " + error.getErrorText().getValue());
-      return true;
-    }
-    return false;
-  }
-
-  public static Response mapTylerCodesToHttp(
-      tyler.efm.services.schema.common.ErrorType error, Supplier<Response> defaultRespFunc) {
-    if (!checkErrors(error)) {
-      return defaultRespFunc.get();
-    }
-
-    if (TylerErrorCodes.tylerToHttp.containsKey(error.getErrorCode())) {
-      return Response.status(TylerErrorCodes.tylerToHttp.get(error.getErrorCode()))
-          .entity(error.getErrorText())
-          .build();
-    }
-
-    // 422 as semantic issues covers most of the error codes
-    return Response.status(422).entity(error.getErrorText()).build();
-  }
-
-  public static Response mapTylerCodesToHttp(
-      List<oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType> errors,
-      Supplier<Response> defaultRespFunc) {
-    for (var error : errors) {
-      if (!checkErrors(error)) {
-        continue;
-      }
-
-      if (TylerErrorCodes.tylerToHttp.containsKey(error.getErrorCode().getValue())) {
-        return Response.status(TylerErrorCodes.tylerToHttp.get(error.getErrorCode().getValue()))
-            .entity(error.getErrorText().getValue())
-            .build();
-      }
-
-      // 422 as semantic issues covers most of the error codes
-      return Response.status(422).entity(error.getErrorText().getValue()).build();
-    }
-    return defaultRespFunc.get();
-  }
-
-  public static void setupReplys(CaseFilingType reply) {
-    reply.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
-    reply.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
-  }
-
-  public static <T extends QueryMessageType> T prep(T newMsg, String courtId) {
-    EntityType typ = new EntityType();
-    var commonObjFac =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-    JAXBElement<PersonType> elem2 = commonObjFac.createEntityPerson(new PersonType());
-    typ.setEntityRepresentation(elem2);
-    newMsg.setQuerySubmitter(typ);
-    newMsg.setCaseCourt(XmlHelper.convertCourtType(courtId));
-    // Example in the ECF4 docs is "https://filingreviewmde.com", which matches best to
-    // EXTERNAL_URL.
-    // Doesn't seem to be used by Tyler however.
-    newMsg.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.EXTERNAL_URL));
-    newMsg.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
-    return newMsg;
-  }
-
-  public static Optional<IEfmFirmService> setupFirmPort(
-      EfmFirmService firmFactory, HttpHeaders httpHeaders, DataSource userDs, String jurisdiction) {
-    return setupFirmPort(firmFactory, httpHeaders, userDs, true, jurisdiction);
-  }
-
-  public static Optional<IEfmFirmService> setupFirmPort(
-      EfmFirmService firmFactory,
-      HttpHeaders httpHeaders,
-      DataSource userDs,
-      boolean needsSoapHeader,
-      String jurisdiction) {
-    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
-    try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
-      Optional<AtRest> atRest = ld.getAtRestInfo(activeToken);
-      if (atRest.isEmpty()) {
-        log.warn("Couldn't find server api key");
-        return Optional.empty();
-      }
-      if (needsSoapHeader) {
-        String tylerToken =
-            httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-        MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
-        return setupFirmPort(firmFactory, tylerToken);
-      }
-    } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex));
-      return Optional.empty();
-    }
-    IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
-    setupServicePort((BindingProvider) port);
-    return Optional.of(port);
-  }
-
-  public static Optional<IEfmFirmService> setupFirmPort(
-      EfmFirmService firmFactory, String tylerToken) {
-    Optional<TylerUserNamePassword> creds =
-        TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
-    if (creds.isEmpty()) {
-      log.warn("No creds from " + tylerToken + "?");
-      return Optional.empty();
-    }
-
-    IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
-    setupServicePort((BindingProvider) port);
-    Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    List<Header> headersList = List.of(creds.get().toHeader());
-    ctx.put(Header.HEADER_LIST, headersList);
-    return Optional.of(port);
+  public static void setupServicePort(BindingProvider bp, List<Header> headerList) {
+    Map<String, Object> ctx = bp.getRequestContext();
+    ctx.put(Header.HEADER_LIST, headerList);
+    setupServicePort(bp);
   }
 
   /**
@@ -270,5 +130,53 @@ public class ServiceHelpers {
         return Response.ok(cd.getAllLocations());
       }
     }
+  }
+
+  public static Optional<IEfmFirmService> setupFirmPort(
+      EfmFirmService firmFactory, HttpHeaders httpHeaders, DataSource userDs, String jurisdiction) {
+    return setupFirmPort(firmFactory, httpHeaders, userDs, true, jurisdiction);
+  }
+
+  public static Optional<IEfmFirmService> setupFirmPort(
+      EfmFirmService firmFactory,
+      HttpHeaders httpHeaders,
+      DataSource userDs,
+      boolean needsSoapHeader,
+      String jurisdiction) {
+    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
+    try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
+      Optional<AtRest> atRest = ld.getAtRestInfo(activeToken);
+      if (atRest.isEmpty()) {
+        log.warn("Couldn't find server api key");
+        return Optional.empty();
+      }
+      if (needsSoapHeader) {
+        String tylerToken =
+            httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
+        MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
+        return setupFirmPort(firmFactory, tylerToken);
+      } else {
+        IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
+        ServiceHelpers.setupServicePort((BindingProvider) port);
+        return Optional.of(port);
+      }
+    } catch (SQLException ex) {
+      log.error(StdLib.strFromException(ex));
+      return Optional.empty();
+    }
+  }
+
+  public static Optional<IEfmFirmService> setupFirmPort(
+      EfmFirmService firmFactory, String tylerToken) {
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
+    if (creds.isEmpty()) {
+      log.warn("No creds from " + tylerToken + "?");
+      return Optional.empty();
+    }
+
+    IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
+    ServiceHelpers.setupServicePort((BindingProvider) port, creds.get());
+    return Optional.of(port);
   }
 }

@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.ecf5;
 
+import static edu.suffolk.litlab.efspserver.ecf5.Ecf5Helper.prep;
 import static edu.suffolk.litlab.efspserver.services.EndpointReflection.replacePathParam;
 
 import edu.suffolk.litlab.efspserver.Name;
@@ -18,7 +19,6 @@ import edu.suffolk.litlab.efspserver.tyler.codes.DataFieldRow;
 import gov.niem.release.niem.domains.cbrn._4.MessageStatusType;
 import gov.niem.release.niem.niem_core._4.CaseType;
 import gov.niem.release.niem.niem_core._4.EntityType;
-import gov.niem.release.niem.niem_core._4.IdentificationType;
 import gov.niem.release.niem.niem_core._4.OrganizationType;
 import gov.niem.release.niem.niem_core._4.PersonType;
 import gov.niem.release.niem.proxy.xsd._4.NormalizedString;
@@ -29,7 +29,6 @@ import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caserequest.CaseQu
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caserequest.GetCaseRequestMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caseresponse.GetCaseResponseMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseAugmentationType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.RequestMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.serviceinformationrequest.GetServiceInformationRequestMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.serviceinformationresponse.GetServiceInformationResponseMessageType;
@@ -169,10 +168,11 @@ public class CasesService extends CasesServiceAPI {
     } catch (SQLException e) {
       log.error("can't get connection: " + StdLib.strFromException(e));
       return Response.status(500).build();
+    } finally {
+      MDCWrappers.removeAllMDCs();
     }
 
-    GetCaseListRequestMessageType query = new GetCaseListRequestMessageType();
-    prepMessage(query, courtId);
+    GetCaseListRequestMessageType query = prep(new GetCaseListRequestMessageType(), courtId);
 
     if (docketId != null) {
       CaseListQueryCriteriaType criteria = new CaseListQueryCriteriaType();
@@ -230,6 +230,24 @@ public class CasesService extends CasesServiceAPI {
     return Response.ok(result.getCase()).build();
   }
 
+  public static GetCaseRequestType makeCaseRequest(String courtId, String caseId) {
+    GetCaseRequestMessageType query = prep(new GetCaseRequestMessageType(), courtId);
+    CaseQueryCriteriaType criteria = new CaseQueryCriteriaType();
+    criteria.setCaseTrackingID(Ecf5Helper.convertId(caseId));
+    criteria.setIncludeParticipantsIndicator(Ecf5Helper.convertBool(true));
+
+    // The below three lines set things in the XML that are required, but not supported,
+    // i.e. they should always be false / empty, for silly tyler reasons.
+    criteria.setIncludeCalendarEventIndicator(Ecf5Helper.convertBool(false));
+    criteria.setIncludeDocketEntryIndicator(Ecf5Helper.convertBool(false));
+    criteria.setCaseNumberText(Ecf5Helper.convertText(""));
+
+    query.setCaseQueryCriteria(criteria);
+    GetCaseRequestType msg = new GetCaseRequestType();
+    msg.setGetCaseRequestMessage(query);
+    return msg;
+  }
+
   @Override
   public Response getCase(HttpHeaders httpHeaders, String courtId, String caseId) {
     MDC.put(MDCWrappers.OPERATION, "ecf5.CasesService.getCase");
@@ -245,21 +263,7 @@ public class CasesService extends CasesServiceAPI {
         log.warn("Can't find court location for " + courtId + " when getting case");
         return Response.status(404).entity("No court " + courtId).build();
       }
-      GetCaseRequestMessageType query = new GetCaseRequestMessageType();
-      prepMessage(query, courtId);
-      CaseQueryCriteriaType criteria = new CaseQueryCriteriaType();
-      criteria.setCaseTrackingID(Ecf5Helper.convertId(caseId));
-      criteria.setIncludeParticipantsIndicator(Ecf5Helper.convertBool(true));
-
-      // The below three lines set things in the XML that are required, but not supported,
-      // i.e. they should always be false / empty, for silly tyler reasons.
-      criteria.setIncludeCalendarEventIndicator(Ecf5Helper.convertBool(false));
-      criteria.setIncludeDocketEntryIndicator(Ecf5Helper.convertBool(false));
-      criteria.setCaseNumberText(Ecf5Helper.convertText(""));
-
-      query.setCaseQueryCriteria(criteria);
-      GetCaseRequestType msg = new GetCaseRequestType();
-      msg.setGetCaseRequestMessage(query);
+      GetCaseRequestType msg = makeCaseRequest(courtId, caseId);
       GetCaseResponseType resp = port.getCase(msg);
       GetCaseResponseMessageType result = resp.getGetCaseResponseMessage();
       int responseCode = 200;
@@ -280,7 +284,7 @@ public class CasesService extends CasesServiceAPI {
       }
 
       if (locationInfo.get().hasprotectedcasetypes) {
-        CaseType caseType = result.getCase();
+        CaseType caseType = result.getCase().getValue();
         Optional<CaseAugmentationType> caseAug =
             Ecfv5CaseTypeFactory.getEcfCaseAugmentation(caseType);
         caseAug.ifPresent(
@@ -323,8 +327,7 @@ public class CasesService extends CasesServiceAPI {
       MDCWrappers.removeAllMDCs();
       return Response.status(401).build();
     }
-    GetServiceCaseListMessageType query = new GetServiceCaseListMessageType();
-    prepMessage(query, courtId);
+    GetServiceCaseListMessageType query = prep(new GetServiceCaseListMessageType(), courtId);
     query.setServiceRecipientID(Ecf5Helper.convertId(serviceId));
     GetServiceCaseListRequestType msg = new GetServiceCaseListRequestType();
     msg.setGetServiceCaseListMessage(query);
@@ -344,8 +347,8 @@ public class CasesService extends CasesServiceAPI {
       return Response.status(401).build();
     }
 
-    GetServiceInformationRequestMessageType query = new GetServiceInformationRequestMessageType();
-    prepMessage(query, courtId);
+    GetServiceInformationRequestMessageType query =
+        prep(new GetServiceInformationRequestMessageType(), courtId);
     query.getCaseTrackingID().add(Ecf5Helper.convertId(caseId));
     // Required by the schema, but will never be used
     query.setCaseNumberText(Ecf5Helper.convertText(""));
@@ -370,8 +373,7 @@ public class CasesService extends CasesServiceAPI {
     if (!setupRecordPort(httpHeaders, (BindingProvider) port)) {
       return Response.status(401).build();
     }
-    GetServiceInformationHistoryMessageType query = new GetServiceInformationHistoryMessageType();
-    prepMessage(query, courtId);
+    var query = prep(new GetServiceInformationHistoryMessageType(), courtId);
     query.getCaseTrackingID().add(Ecf5Helper.convertId(caseId));
     GetServiceInformationHistoryRequestType msg = new GetServiceInformationHistoryRequestType();
     msg.setGetServiceInformationHistoryMessage(query);
@@ -388,20 +390,6 @@ public class CasesService extends CasesServiceAPI {
     MessageStatusType status = resp.getMessageStatus();
     return (!status.getMessageHandlingError().getErrorCodeText().getValue().equals("0")
         || status.getMessageContentError().size() >= 1);
-  }
-
-  private void prepMessage(RequestMessageType query, String courtId) {
-    query.setCaseCourt(Ecf5Helper.convertCourt(courtId));
-    var did = new IdentificationType();
-    did.setIdentificationID(Ecf5Helper.convertString("1"));
-    did.setIdentificationSourceText(Ecf5Helper.convertText("FilingAssembly"));
-    did.setIdentificationCategoryDescriptionText(Ecf5Helper.convertText("messageID"));
-    query.getDocumentIdentification().add(did);
-    query.setSendingMDELocationID(Ecf5Helper.convertId(ServiceHelpers.EXTERNAL_URL));
-    query.setServiceInteractionProfileCode(
-        Ecf5Helper.convertNormalizedString(
-            "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-5.0"));
-    query.setDocumentPostDate(Ecf5Helper.convertNow());
   }
 
   /** Returns true if it works. */

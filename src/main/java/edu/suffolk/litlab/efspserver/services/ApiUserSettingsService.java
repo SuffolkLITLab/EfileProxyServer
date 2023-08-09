@@ -15,13 +15,10 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Path("/api_user_settings")
 @Produces({MediaType.APPLICATION_JSON})
 public class ApiUserSettingsService {
-  private static Logger log = LoggerFactory.getLogger(ApiUserSettingsService.class);
 
   private final DataSource ds;
 

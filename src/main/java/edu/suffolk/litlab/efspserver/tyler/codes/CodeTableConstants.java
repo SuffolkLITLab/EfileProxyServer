@@ -140,6 +140,7 @@ public class CodeTableConstants {
           new ImmutablePair<String, String>("initial", "text"),
           new ImmutablePair<String, String>("fee", "text"),
           new ImmutablePair<String, String>("willfileddate", "text"),
+          new ImmutablePair<String, String>("casestreetaddress", "text"),
           new ImmutablePair<String, String>("efspcode", "text")))),
         Map.entry("chargephase", makeCourtColumnInfo(List.of(
           new ImmutablePair<String, String>("code", "text"),

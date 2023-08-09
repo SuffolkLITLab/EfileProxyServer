@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efspserver.ecf4;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.CoreFilingMessageType;
 
 public class CoreMessageAndNames {

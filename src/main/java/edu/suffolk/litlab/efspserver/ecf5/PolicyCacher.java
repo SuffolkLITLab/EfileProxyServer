@@ -29,8 +29,7 @@ public class PolicyCacher {
     } else {
       GetPolicyRequestType policyRequest = new GetPolicyRequestType();
       var msg = Ecf5Helper.prep(new GetPolicyRequestMessageType(), courtId);
-      PolicyQueryCriteriaType pqct = new PolicyQueryCriteriaType();
-      msg.setPolicyQueryCriteria(pqct);
+      msg.setPolicyQueryCriteria(new PolicyQueryCriteriaType());
       policyRequest.setGetPolicyRequestMessage(msg);
 
       GetPolicyResponseType p = policyPort.getPolicy(policyRequest);

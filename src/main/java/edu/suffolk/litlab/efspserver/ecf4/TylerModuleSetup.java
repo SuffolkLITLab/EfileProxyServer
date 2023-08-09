@@ -279,7 +279,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
           return CodeDatabase.fromDS(jurisdiction, env, this.codeDs);
         };
 
-    EfmFilingInterface filer = new TylerEcfFiler(jurisdiction, env, codeDs, cdSupplier);
+    EfmFilingInterface filer = new Ecf4Filer(jurisdiction, env, codeDs, cdSupplier);
 
     for (String court : getCourts()) {
       filingMap.put(court, filer);

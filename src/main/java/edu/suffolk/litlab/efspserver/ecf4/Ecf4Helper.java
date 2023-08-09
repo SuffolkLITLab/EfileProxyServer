@@ -1,23 +1,40 @@
-package edu.suffolk.litlab.efspserver;
+package edu.suffolk.litlab.efspserver.ecf4;
 
+import com.hubspot.algebra.Result;
+import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
+import edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes;
 import gov.niem.niem.domains.jxdm._4.CourtType;
+import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
+import gov.niem.niem.fips_10_4._2.CountryCodeType;
 import gov.niem.niem.niem_core._2.DateType;
+import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.MeasureType;
 import gov.niem.niem.niem_core._2.TextType;
+import gov.niem.niem.proxy.xsd._2.Decimal;
+import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import java.io.File;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.function.Supplier;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryMessageType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class that easily converts Java native types to Cumbersome XML Schema types, particularly
@@ -32,7 +49,8 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountTy
  *
  * @author Bryce Willey
  */
-public class XmlHelper {
+public class Ecf4Helper {
+  private static Logger log = LoggerFactory.getLogger(Ecf4Helper.class);
 
   static final gov.niem.niem.proxy.xsd._2.ObjectFactory niemProxyObjFac;
   static final gov.niem.niem.niem_core._2.ObjectFactory niemCoreObjFac;
@@ -46,8 +64,6 @@ public class XmlHelper {
     try {
       datatypeFac = DatatypeFactory.newInstance();
     } catch (DatatypeConfigurationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
       throw new RuntimeException(e);
     }
   }
@@ -132,6 +148,27 @@ public class XmlHelper {
     return id;
   }
 
+  public static Decimal convertDecimal(BigDecimal deci) {
+    Decimal xml = new Decimal();
+    xml.setValue(deci);
+    return xml;
+  }
+
+  /**
+   * Convert an int to a BigDecimal to an XML Decimal
+   *
+   * <p>Weird conversion, but the multiplier on optional services is a Decimal for some reason? "I
+   * need 2.3 copies of this sent to my office", lmao.
+   *
+   * @param val
+   * @return
+   */
+  public static Decimal convertDecimal(int val) {
+    Decimal xml = new Decimal();
+    xml.setValue(new BigDecimal(val));
+    return xml;
+  }
+
   /** Converts a Java string to a URI. */
   public static gov.niem.niem.proxy.xsd._2.AnyURI convertUri(String uri) {
     gov.niem.niem.proxy.xsd._2.AnyURI anyUri = niemProxyObjFac.createAnyURI();
@@ -151,7 +188,7 @@ public class XmlHelper {
   public static CourtType convertCourtType(String courtId) {
     CourtType court = jxObjFac.createCourtType();
     JAXBElement<gov.niem.niem.niem_core._2.IdentificationType> idType =
-        niemCoreObjFac.createOrganizationIdentification(XmlHelper.convertId(courtId));
+        niemCoreObjFac.createOrganizationIdentification(Ecf4Helper.convertId(courtId));
     court.setOrganizationIdentification(idType);
     return court;
   }
@@ -238,5 +275,73 @@ public class XmlHelper {
     QName qname = new QName("suffolk.test.objectToXml", "objectToXml");
     JAXBElement<T> pp = new JAXBElement<T>(qname, toXmlClazz, toXml);
     mar.marshal(pp, outfile);
+  }
+
+  /** Turn a given string into a country type. */
+  public static Result<CountryCodeType, IllegalArgumentException> strToCountryCode(String country) {
+    CountryCodeType cct = new CountryCodeType();
+    try {
+      cct.setValue(CountryCodeSimpleType.fromValue(country));
+      return Result.ok(cct);
+    } catch (IllegalArgumentException ex) {
+      return Result.err(ex);
+    }
+  }
+
+  public static <T extends QueryMessageType> T prep(T newMsg, String courtId) {
+    EntityType typ = new EntityType();
+    var commonObjFac =
+        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+    JAXBElement<PersonType> elem2 = commonObjFac.createEntityPerson(new PersonType());
+    typ.setEntityRepresentation(elem2);
+    newMsg.setQuerySubmitter(typ);
+    newMsg.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
+    // Example in the ECF4 docs is "https://filingreviewmde.com", which matches best to
+    // EXTERNAL_URL.
+    // Doesn't seem to be used by Tyler however.
+    newMsg.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.EXTERNAL_URL));
+    newMsg.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+    return newMsg;
+  }
+
+  public static Response makeResponse(
+      QueryResponseMessageType resp, Supplier<Response> defaultRespFunc) {
+    return mapTylerCodesToHttp(resp.getError(), defaultRespFunc);
+  }
+
+  /** Returns true on errors from the ECF side of the API. They work the same as the Tyler ones. */
+  public static boolean checkErrors(
+      oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType error) {
+    if (error.getErrorCode() != null && !error.getErrorCode().getValue().equals("0")) {
+      log.error(
+          "Error!: " + error.getErrorCode().getValue() + ": " + error.getErrorText().getValue());
+      return true;
+    }
+    return false;
+  }
+
+  public static Response mapTylerCodesToHttp(
+      List<oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType> errors,
+      Supplier<Response> defaultRespFunc) {
+    for (var error : errors) {
+      if (!checkErrors(error)) {
+        continue;
+      }
+
+      if (TylerErrorCodes.tylerToHttp.containsKey(error.getErrorCode().getValue())) {
+        return Response.status(TylerErrorCodes.tylerToHttp.get(error.getErrorCode().getValue()))
+            .entity(error.getErrorText().getValue())
+            .build();
+      }
+
+      // 422 as semantic issues covers most of the error codes
+      return Response.status(422).entity(error.getErrorText().getValue()).build();
+    }
+    return defaultRespFunc.get();
+  }
+
+  public static void setupReplys(CaseFilingType reply) {
+    reply.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
+    reply.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
   }
 }

@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DatabaseVersion {
 
-  static final int CURRENT_VERSION = 10;
+  static final int CURRENT_VERSION = 11;
   private static Logger log = LoggerFactory.getLogger(DatabaseVersion.class);
   private final Connection codeConn;
   private final Connection userConn;
@@ -154,6 +154,8 @@ public class DatabaseVersion {
       update8To9();
     } else if (onDiskVersion == 9) {
       update9To10();
+    } else if (onDiskVersion == 10) {
+      update10To11();
     }
     setSchemaVersion(onDiskVersion + 1);
     userConn.commit();
@@ -528,6 +530,18 @@ public class DatabaseVersion {
       // Then, we'll remake the indices
       st.executeUpdate("CREATE INDEX ON optionalservices (location)");
       st.executeUpdate("CREATE INDEX ON optionalservices (domain)");
+    }
+    codeConn.commit();
+  }
+
+  public void update10To11() throws SQLException {
+    final String alterCodeDb =
+        """
+      ALTER TABLE casetype
+        ADD COLUMN casestreetaddress text""";
+
+    try (Statement st = codeConn.createStatement()) {
+      st.executeUpdate(alterCodeDb);
     }
     codeConn.commit();
   }

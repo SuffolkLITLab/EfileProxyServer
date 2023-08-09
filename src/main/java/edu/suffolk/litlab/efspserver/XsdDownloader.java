@@ -33,11 +33,21 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * Downloaded the FilingReviewMDE wsdl, necessary for it to run faster. Slightly modified to handle
- * relative paths on the server. Runs like: ``` mvn exec:java@XsdDownloader
+ * Downloads the various EFM SOAP wsdl service files, like FilingReviewMDE. Without this, we have to
+ * point at some external location (a URL for ECF 4, and some dump of files that Tyler gives us for
+ * ECF 5), and everytime we start a MDE Service, it takes ~60 seconds to download all of the other
+ * XSD files associated with it. That's fairly instant when this is downloaded. For ECF 5, that dump
+ * of XSD files that Tyler gives us has relative paths to the other files, but using Window's paths.
+ * We also use this to correct those paths automatically. Slightly modified to handle relative paths
+ * on the server. Runs like:
+ *
+ * <p>```mvn exec:java@XsdDownloader
  * -Dexec.args="https://example.tylertech.cloud/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf"
- * ``` Then move all of the ecf files into src/main/resources/wsdl/, and point the FilingReviewMDE
- * URL to it. <a href="https://github.com/pablod/xsd-downloader">Github here</a>
+ * ```
+ *
+ * <p>Then move all of the ecf files into src/main/resources/wsdl/, and point the FilingReviewMDE
+ * URL to it. Based off of an original <a href="https://github.com/pablod/xsd-downloader">Github
+ * project here</a>
  *
  * @author https://github.com/pablod
  */
@@ -51,6 +61,19 @@ public class XsdDownloader {
 
   private final String downloadPrefix;
 
+  /**
+   * Given a string input (in our case, the contents of the file), generate a hash.
+   *
+   * <p>Necessary because there are multiple places in Tyler's download of ECF 5 where there are
+   * different files with the exact same contents, but different names / locations. Normally this
+   * would be fine, but the location of the files breaks our process (TODO(brycew): don't remember
+   * whether it's wsdl2java, or the java compliation once the code is generated, but it does
+   * definitely break).
+   *
+   * @param str some string
+   * @return the SHA-256 hash over the string.
+   * @throws NoSuchAlgorithmException
+   */
   private String strToHash(final String str) throws NoSuchAlgorithmException {
     MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
     String fullHash =

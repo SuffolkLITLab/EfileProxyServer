@@ -67,12 +67,12 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     SentenceType.class,
     TermType.class,
     SupervisionType.class,
-    CourtOrderType.class,
     IncidentType.class,
     CaseType.class,
     PlacementType.class,
     PersonDisunionType.class,
-    PersonUnionSeparationType.class
+    PersonUnionSeparationType.class,
+    CourtOrderType.class
 })
 public class ActivityType
     extends ObjectType

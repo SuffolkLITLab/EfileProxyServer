@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tyler.ecf.v5_0.extensions.tylercourtrecordmde.TylerCourtRecordMDEService;
+import tyler.ecf.v5_0.extensions.tylerfilingreviewmde.TylerFilingReviewMDEService;
 
 /**
  * Handles working in multiple Tyler Jurisdictions. Needs to have all of the WSDL files hardcoded
@@ -31,8 +32,14 @@ public class SoapClientChooser {
   static final Map<String, String> filingReviewMDEWsdls =
       Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-FilingReviewMDEService.wsdl");
 
+  static final Map<String, String> tylerFilingReviewMDEWsdls =
+      Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-TylerFilingReviewMDEService.wsdl");
+
   static final Map<String, String> courtRecordMDEWsdls =
       Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-CourtRecordMDEService.wsdl");
+
+  static final Map<String, String> tylerCourtRecordMDEWsdls =
+      Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-TylerCourtRecordMDEService.wsdl");
 
   static final Map<String, String> courtSchedulingMDEWsdls =
       Map.of(
@@ -43,20 +50,7 @@ public class SoapClientChooser {
   static final Map<String, String> courtPolicyMDEWsdls =
       Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-CourtPolicyMDEService.wsdl");
 
-  static final Map<String, String> tylerCourtRecordMDEWsdls =
-      Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-TylerCourtRecordMDEService.wsdl");
-
   /*
-  public static Optional<FilingReviewMDEService> getFilingReviewFactory(String wsdlDomain) {
-    Optional<URL> url = urlFromString(wsdlDomain, filingReviewMDEWsdls);
-    return url.map(u -> new FilingReviewMDEService(u));
-  }
-
-  public static Optional<FilingReviewMDEService> getFilingReviewFactory(
-      String jurisdiction, String env) {
-    return getFilingReviewFactory(jurisdiction + "-" + env);
-  }
-
   public static Optional<ServiceMDEService> getServiceFactory(String wsdlDomain) {
     Optional<URL> url = urlFromString(wsdlDomain, serviceMDEWsdls);
     return url.map(u -> new ServiceMDEService(u));
@@ -115,6 +109,17 @@ public class SoapClientChooser {
   public static Optional<FilingReviewMDEService> getFilingReviewFactory(String wsdlDomain) {
     Optional<URL> url = urlFromString(wsdlDomain, filingReviewMDEWsdls);
     return url.map(u -> new FilingReviewMDEService(u));
+  }
+
+  public static Optional<TylerFilingReviewMDEService> getTylerFilingReviewFactory(
+      String jurisdiction, String env) {
+    return getTylerFilingReviewFactory(jurisdiction + "-" + env);
+  }
+
+  public static Optional<TylerFilingReviewMDEService> getTylerFilingReviewFactory(
+      String wsdlDomain) {
+    Optional<URL> url = urlFromString(wsdlDomain, tylerFilingReviewMDEWsdls);
+    return url.map(u -> new TylerFilingReviewMDEService(u));
   }
 
   private static Optional<URL> urlFromString(String wsdlDomain, Map<String, String> domainToWsdl) {

@@ -8,16 +8,17 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 public class CaseType {
-  public String code;
-  public String name;
-  public String casecategory;
+  public final String code;
+  public final String name;
+  public final String casecategory;
   /** Whether the court accepts new cases of this type. */
-  public boolean initial;
+  public final boolean initial;
 
-  public BigDecimal fee;
-  public String willfileddate;
-  public String efspcode;
-  public String location;
+  public final BigDecimal fee;
+  public final String willfileddate;
+  public final String casestreetaddress;
+  public final String efspcode;
+  public final String location;
 
   public CaseType(
       String code,
@@ -26,6 +27,7 @@ public class CaseType {
       String initial,
       String fee,
       String willfileddate,
+      String casestreetaddress,
       String efspcode,
       String location) {
     this.code = code;
@@ -34,6 +36,7 @@ public class CaseType {
     this.initial = Boolean.parseBoolean(initial);
     this.fee = BigDecimal.valueOf(Double.parseDouble(fee));
     this.willfileddate = willfileddate;
+    this.casestreetaddress = casestreetaddress;
     this.efspcode = efspcode;
     this.location = location;
   }
@@ -54,7 +57,8 @@ public class CaseType {
         rs.getString(5),
         rs.getString(6),
         rs.getString(7),
-        rs.getString(8));
+        rs.getString(8),
+        rs.getString(9));
   }
 
   // HACK(brycew): here for when CaseType isn't present, but we have AllWrong collector
@@ -66,6 +70,7 @@ public class CaseType {
         "true",
         "-1",
         "Bad date",
+        "Bad address",
         "Bade code",
         "Bad loc");
   }
@@ -129,6 +134,8 @@ public class CaseType {
     sb.append(", ");
     sb.append(willfileddate);
     sb.append(", ");
+    sb.append(casestreetaddress);
+    sb.append(", ");
     sb.append(efspcode);
     sb.append(", ");
     sb.append(location);
@@ -138,7 +145,7 @@ public class CaseType {
   private static String getCaseTypesForCategory() {
     return """
         SELECT code, name, casecategory, initial,
-        fee, willfileddate, efspcode, location
+        fee, willfileddate, casestreetaddress, efspcode, location
         FROM casetype WHERE domain=? AND location=? AND casecategory=?""";
   }
 
@@ -149,7 +156,7 @@ public class CaseType {
   private static String getCaseTypesWithCode() {
     return """
         SELECT code, name, casecategory, initial,
-          fee, willfileddate, efspcode, location
+          fee, willfileddate, casestreetaddress, efspcode, location
         FROM casetype WHERE domain=? AND location=? AND code=?
         """;
   }

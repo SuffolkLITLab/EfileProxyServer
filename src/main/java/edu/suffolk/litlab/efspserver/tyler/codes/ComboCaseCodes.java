@@ -16,6 +16,13 @@ public class ComboCaseCodes {
    */
   public final Map<String, Pair<PartyType, Boolean>> partyInfo;
 
+  public ComboCaseCodes() {
+    this.cat = new CaseCategory("", "", "", "", "", "", "");
+    this.type = new CaseType("", "", "", "", "", "", "", "", "");
+    this.filings = List.of();
+    this.partyInfo = Map.of();
+  }
+
   public ComboCaseCodes(
       CaseCategory cat,
       CaseType type,

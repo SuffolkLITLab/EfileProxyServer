@@ -30,8 +30,8 @@ import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
-import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingInformationConverter;
+import edu.suffolk.litlab.efspserver.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efspserver.ecf4.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
@@ -59,7 +59,7 @@ public class EcfCaseTypeFactoryTest {
     List<CrossReference> blank = List.of();
     when(cd.getCrossReference("cook:cd1", caseType)).thenReturn(refs);
     when(cd.getCrossReference("adams", caseType)).thenReturn(blank);
-    when(cd.getLanguages("not_real")).thenReturn(List.of("English", "Polish", "Spanish"));
+    when(cd.getLanguageNames("not_real")).thenReturn(List.of("English", "Polish", "Spanish"));
     when(cd.getDataField(eq("not_real"), anyString())).thenReturn(DataFieldRow.MissingDataField(""));
     when(cd.getDataField(eq("not_real"), eq("PartyGender"))).thenReturn(
         new DataFieldRow("PartyGender", "Party Gender", true, false, "", "", "", "", "", "", false, ""));
@@ -76,7 +76,7 @@ public class EcfCaseTypeFactoryTest {
   @Test
   public void shouldUnpackTylerCaseCorrectly() throws FileNotFoundException, JAXBException, XMLStreamException {
     gov.niem.niem.niem_core._2.CaseType myCase = readFromFile(this.getClass().getResourceAsStream("/case_resp.xml")).getCase().getValue();
-    System.out.println(XmlHelper.objectToXmlStrOrError(myCase, gov.niem.niem.niem_core._2.CaseType.class));
+    System.out.println(Ecf4Helper.objectToXmlStrOrError(myCase, gov.niem.niem.niem_core._2.CaseType.class));
     Optional<Map<PartyId, Person>> participants = EcfCaseTypeFactory.getCaseParticipants(myCase);
     assertTrue(participants.isPresent());
     assertEquals(participants.get().size(), 2);
@@ -98,7 +98,7 @@ public class EcfCaseTypeFactoryTest {
   @Test
   public void shouldMatchExistingPartyPersonOrOrgXmlWrappers() throws Exception {
     gov.niem.niem.niem_core._2.CaseType myCase = readFromFile(this.getClass().getResourceAsStream("/case_resp.xml")).getCase().getValue();
-    EcfCaseTypeFactory caseFactory = new EcfCaseTypeFactory(cd);
+    EcfCaseTypeFactory caseFactory = new EcfCaseTypeFactory(cd, "illinois");
     InterviewToFilingInformationConverter converter = new DocassembleToFilingInformationConverter(null);
     Result<FilingInformation, FilingError> infoRes = converter.extractInformation(""); 
     return;

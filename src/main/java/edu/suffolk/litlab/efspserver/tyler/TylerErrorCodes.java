@@ -1,8 +1,15 @@
 package edu.suffolk.litlab.efspserver.tyler;
 
+import jakarta.ws.rs.core.Response;
 import java.util.Map;
+import java.util.function.Supplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import tyler.efm.services.schema.baseresponse.BaseResponseType;
 
 public class TylerErrorCodes {
+  private static final Logger log = LoggerFactory.getLogger(TylerErrorCodes.class);
+
   // First three are ones that the proxy should handle well. If we don't then it's
   // our fault.
   public static Map<String, Integer> tylerToHttp =
@@ -40,4 +47,37 @@ public class TylerErrorCodes {
           Map.entry("170", 422), // Invalid password (when making an account? TODO(brycew))
           Map.entry("344", 422) // Doesn't handle cross references
           );
+
+  public static boolean hasError(BaseResponseType resp) {
+    return checkErrors(resp.getError());
+  }
+
+  public static Response makeResponse(BaseResponseType resp, Supplier<Response> defaultRespFunc) {
+    return TylerErrorCodes.mapTylerCodesToHttp(resp.getError(), defaultRespFunc);
+  }
+
+  /** Returns true on errors from the Tyler / Admin side of the API. */
+  public static boolean checkErrors(tyler.efm.services.schema.common.ErrorType error) {
+    if (!error.getErrorCode().equals("0")) {
+      log.error("Error!: " + error.getErrorCode() + ": " + error.getErrorText());
+      return true;
+    }
+    return false;
+  }
+
+  public static Response mapTylerCodesToHttp(
+      tyler.efm.services.schema.common.ErrorType error, Supplier<Response> defaultRespFunc) {
+    if (!checkErrors(error)) {
+      return defaultRespFunc.get();
+    }
+
+    if (TylerErrorCodes.tylerToHttp.containsKey(error.getErrorCode())) {
+      return Response.status(TylerErrorCodes.tylerToHttp.get(error.getErrorCode()))
+          .entity(error.getErrorText())
+          .build();
+    }
+
+    // 422 as semantic issues covers most of the error codes
+    return Response.status(422).entity(error.getErrorText()).build();
+  }
 }

@@ -8,6 +8,7 @@ import gov.niem.release.niem.niem_core._4.CaseType;
 import gov.niem.release.niem.niem_core._4.DateType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.docketcallback.NotifyDocketingCompleteMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reviewfilingcallback.NotifyFilingReviewCompleteMessageType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.stampinformationcallback.NotifyDocumentStampInformationMessageType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -17,7 +18,6 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import tyler.ecf.v5_0.extensions.servicecallback.NotifyServiceCompleteMessageType;
 
 
 /**
@@ -55,10 +55,10 @@ import tyler.ecf.v5_0.extensions.servicecallback.NotifyServiceCompleteMessageTyp
     "_case"
 })
 @XmlSeeAlso({
+    NotifyDocumentStampInformationMessageType.class,
     NotifyFilingReviewCompleteMessageType.class,
     MatchingFilingType.class,
-    NotifyDocketingCompleteMessageType.class,
-    NotifyServiceCompleteMessageType.class
+    NotifyDocketingCompleteMessageType.class
 })
 public class CallbackMessageType
     extends CaseFilingType

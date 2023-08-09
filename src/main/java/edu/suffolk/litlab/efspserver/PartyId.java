@@ -36,7 +36,7 @@ public class PartyId {
     return kind.equals(Kind.ALREADY_IN);
   }
 
-  /* ID string required by XML (needs to start with "id-"). */
+  /* ID string required by XML (needs to start with "id-"). Same as Person.getIdString() */
   public String getIdString() {
     if (id.startsWith("id-")) {
       return id;

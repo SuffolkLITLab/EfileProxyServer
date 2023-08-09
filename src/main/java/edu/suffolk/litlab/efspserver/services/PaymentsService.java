@@ -1,13 +1,14 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
+import static edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes.makeResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.suffolk.litlab.efspserver.RandomString;
+import edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import jakarta.ws.rs.Consumes;
@@ -494,7 +495,7 @@ public class PaymentsService {
       } else {
         accountResp = firmPort.createPaymentAccount(createAccount);
       }
-      if (ServiceHelpers.hasError(accountResp)) {
+      if (TylerErrorCodes.hasError(accountResp)) {
         log.error(
             accountResp.getError().getErrorCode() + " " + accountResp.getError().getErrorText());
         return Response.status(302).header("Location", tempInfo.errorUrl).build();
@@ -565,7 +566,7 @@ public class PaymentsService {
     } else {
       resp = firmPort.createPaymentAccount(createAccount);
     }
-    if (ServiceHelpers.hasError(resp)) {
+    if (TylerErrorCodes.hasError(resp)) {
       return Response.status(400)
           .entity(resp.getError().getErrorCode() + " " + resp.getError().getErrorText())
           .build();
@@ -588,7 +589,7 @@ public class PaymentsService {
     }
 
     GetPaymentAccountResponseType existingResp = accountSupplier.get();
-    if (ServiceHelpers.hasError(existingResp)) {
+    if (TylerErrorCodes.hasError(existingResp)) {
       return Response.status(400).entity(existingResp.getError()).build();
     }
     PaymentAccountType existingAccount = existingResp.getPaymentAccount();

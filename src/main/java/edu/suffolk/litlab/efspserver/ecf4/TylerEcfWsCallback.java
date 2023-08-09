@@ -1,12 +1,10 @@
 package edu.suffolk.litlab.efspserver.ecf4;
 
 import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.XmlHelper;
 import edu.suffolk.litlab.efspserver.db.Transaction;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.services.MDCWrappers;
 import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
-import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.services.UpdateMessageStatus;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.CourtLocationInfo;
@@ -73,7 +71,7 @@ public class TylerEcfWsCallback implements FilingAssemblyMDEPort {
 
   private static String chargeToStr(AllowanceChargeType charge) {
     StringBuilder chargeReason = new StringBuilder();
-    String amountText = XmlHelper.amountToString(charge.getAmount());
+    String amountText = Ecf4Helper.amountToString(charge.getAmount());
     chargeReason.append(amountText);
     if (charge.getAllowanceChargeReason() != null) {
       chargeReason.append(" for ").append(charge.getAllowanceChargeReason());
@@ -255,7 +253,7 @@ public class TylerEcfWsCallback implements FilingAssemblyMDEPort {
     PaymentMessageType payment = msg.getPaymentReceiptMessage();
     ReviewFilingCallbackMessageType revFiling = msg.getReviewFilingCallbackMessage();
     MessageReceiptMessageType reply = recepitFac.createMessageReceiptMessageType();
-    ServiceHelpers.setupReplys(reply);
+    Ecf4Helper.setupReplys(reply);
     // This shouldn't happen, but I don't trust this XML BS
     if (payment == null || revFiling == null) {
       log.error(
@@ -314,7 +312,7 @@ public class TylerEcfWsCallback implements FilingAssemblyMDEPort {
     MDC.put(MDCWrappers.SERVER_ID, trans.get().serverId.toString());
     log.info(
         "Full NotifyFilingReviewComplete msg: "
-            + XmlHelper.objectToXmlStrOrError(
+            + Ecf4Helper.objectToXmlStrOrError(
                 msg, NotifyFilingReviewCompleteRequestMessageType.class));
 
     // Trust in Tyler's courtId over ours, maybe location can change on their side
@@ -341,7 +339,7 @@ public class TylerEcfWsCallback implements FilingAssemblyMDEPort {
       courtInfo.get().name = courtId;
     }
 
-    reply.setCaseCourt(XmlHelper.convertCourtType(courtId));
+    reply.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
     String statusText = reviewedFilingStatusText(revFiling, trans.get());
     String messageText = reviewedFilingMessageText(revFiling, trans.get(), courtInfo.get());
 
@@ -372,7 +370,7 @@ public class TylerEcfWsCallback implements FilingAssemblyMDEPort {
     log.info("Full NotifyEvent msg" + eventCallbackMessage);
     // TODO(brycew): not going to do anything with for now
     MessageReceiptMessageType reply = recepitFac.createMessageReceiptMessageType();
-    ServiceHelpers.setupReplys(reply);
+    Ecf4Helper.setupReplys(reply);
     return ok(reply);
   }
 
@@ -381,11 +379,11 @@ public class TylerEcfWsCallback implements FilingAssemblyMDEPort {
       ServiceCallbackMessageType serviceCallbackMessage) {
     log.info(
         "Full NotifyServiceComplete msg: "
-            + XmlHelper.objectToXmlStrOrError(
+            + Ecf4Helper.objectToXmlStrOrError(
                 serviceCallbackMessage, ServiceCallbackMessageType.class));
     // TODO(brycew): not going to do anything with for now
     MessageReceiptMessageType reply = recepitFac.createMessageReceiptMessageType();
-    ServiceHelpers.setupReplys(reply);
+    Ecf4Helper.setupReplys(reply);
     return ok(reply);
   }
 
@@ -396,8 +394,8 @@ public class TylerEcfWsCallback implements FilingAssemblyMDEPort {
   private static MessageReceiptMessageType error(
       MessageReceiptMessageType reply, String code, String text) {
     ErrorType err = new ErrorType();
-    err.setErrorCode(XmlHelper.convertText(code));
-    err.setErrorText(XmlHelper.convertText(text));
+    err.setErrorCode(Ecf4Helper.convertText(code));
+    err.setErrorText(Ecf4Helper.convertText(text));
     reply.getError().add(err);
     return reply;
   }
