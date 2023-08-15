@@ -10,6 +10,7 @@ import static edu.suffolk.litlab.efspserver.services.FilingError.serverError;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
+import edu.suffolk.litlab.efspserver.FilingAction;
 import edu.suffolk.litlab.efspserver.FilingAttachment;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.JsonHelpers;
@@ -36,7 +37,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tyler.ecf.extensions.common.FilingTypeType;
 
 public class FilingDocDocassembleJacksonDeserializer {
   private static Logger log =
@@ -114,15 +114,15 @@ public class FilingDocDocassembleJacksonDeserializer {
     List<String> filingParties = getMemberList(node, "filing_parties");
 
     Optional<String> actionStr = getStringMember(node, "filing_action");
-    Optional<FilingTypeType> action = Optional.empty();
+    Optional<FilingAction> action = Optional.empty();
     if (actionStr.isPresent()) {
       String s = actionStr.get();
       if (s.equalsIgnoreCase("e_file") || s.equalsIgnoreCase("efile")) {
-        action = Optional.of(FilingTypeType.E_FILE);
+        action = Optional.of(FilingAction.E_FILE);
       } else if (s.equalsIgnoreCase("efile_and_serve") || s.equalsIgnoreCase("e_file_and_serve")) {
-        action = Optional.of(FilingTypeType.E_FILE_AND_SERVE);
+        action = Optional.of(FilingAction.E_FILE_AND_SERVE);
       } else if (s.equalsIgnoreCase("serve")) {
-        action = Optional.of(FilingTypeType.SERVE);
+        action = Optional.of(FilingAction.SERVE);
       } else {
         log.warn(
             "Filing Action "

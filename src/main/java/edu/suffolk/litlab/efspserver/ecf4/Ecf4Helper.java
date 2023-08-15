@@ -164,9 +164,7 @@ public class Ecf4Helper {
    * @return
    */
   public static Decimal convertDecimal(int val) {
-    Decimal xml = new Decimal();
-    xml.setValue(new BigDecimal(val));
-    return xml;
+    return convertDecimal(new BigDecimal(val));
   }
 
   /** Converts a Java string to a URI. */

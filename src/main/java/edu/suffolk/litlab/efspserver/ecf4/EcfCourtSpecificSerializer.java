@@ -7,6 +7,7 @@ import static edu.suffolk.litlab.efspserver.ecf4.Ecf4Helper.convertText;
 import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efspserver.Address;
 import edu.suffolk.litlab.efspserver.ContactInformation;
+import edu.suffolk.litlab.efspserver.FilingAction;
 import edu.suffolk.litlab.efspserver.FilingAttachment;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
@@ -73,6 +74,7 @@ import org.slf4j.LoggerFactory;
 import tyler.ecf.extensions.common.CapabilityType;
 import tyler.ecf.extensions.common.DocumentOptionalServiceType;
 import tyler.ecf.extensions.common.DocumentType;
+import tyler.ecf.extensions.common.FilingTypeType;
 
 public class EcfCourtSpecificSerializer {
   private static Logger log = LoggerFactory.getLogger(EcfCourtSpecificSerializer.class);
@@ -349,7 +351,7 @@ public class EcfCourtSpecificSerializer {
         .vetDueDate(doc.getDueDate(), filing, collector)
         .ifPresent(
             date -> {
-              DateType cutOffDate = Ecf4Helper.convertDate(doc.getDueDate().get());
+              DateType cutOffDate = Ecf4Helper.convertDate(date);
               docType.setDocumentInformationCutOffDate(cutOffDate);
             });
 
@@ -408,7 +410,7 @@ public class EcfCourtSpecificSerializer {
         .vetFilingAction(doc.getFilingAction(), isInitialFiling, collector)
         .ifPresent(
             action -> {
-              docType.setFilingAction(action);
+              docType.setFilingAction(filingActionToXml(action));
             });
 
     tylerSerializer.vetOptionalServices(doc.getOptionalServices(), filing, collector).stream()
@@ -455,6 +457,20 @@ public class EcfCourtSpecificSerializer {
       return tylerObjFac.createFilingLeadDocument(docType);
     } else {
       return tylerObjFac.createFilingConnectedDocument(docType);
+    }
+  }
+
+  private FilingTypeType filingActionToXml(FilingAction action) {
+    switch (action) {
+      case E_FILE:
+        return FilingTypeType.E_FILE;
+      case E_FILE_AND_SERVE:
+        return FilingTypeType.E_FILE_AND_SERVE;
+      case SERVE:
+        return FilingTypeType.SERVE;
+      default:
+        // TODO(brycew): I don't like enum defaults...
+        return FilingTypeType.E_FILE;
     }
   }
 

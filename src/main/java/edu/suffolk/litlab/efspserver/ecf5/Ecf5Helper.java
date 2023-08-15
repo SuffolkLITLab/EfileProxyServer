@@ -8,8 +8,11 @@ import gov.niem.release.niem.domains.cbrn._4.MessageStatusType;
 import gov.niem.release.niem.domains.jxdm._6.CourtType;
 import gov.niem.release.niem.niem_core._4.DateType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.RequestMessageType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing.FilingMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDE;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDEService;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtrecordmde.CourtRecordMDE;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtrecordmde.CourtRecordMDEService;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.filingreviewmde.FilingReviewMDE;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.filingreviewmde.FilingReviewMDEService;
 import jakarta.ws.rs.core.Response;
@@ -231,6 +234,17 @@ public class Ecf5Helper {
     return id;
   }
 
+  public static gov.niem.release.niem.niem_core._4.NonNegativeDecimalType convertDecimal(
+      BigDecimal deci) {
+    var deciXml = niemCoreObjFac.createNonNegativeDecimalType();
+    deciXml.setValue(deci);
+    return deciXml;
+  }
+
+  public static gov.niem.release.niem.niem_core._4.NonNegativeDecimalType convertDecimal(int val) {
+    return convertDecimal(new BigDecimal(val));
+  }
+
   public static gov.niem.release.niem.proxy.xsd._4.Boolean convertBool(boolean value) {
     var boolVal = niemProxyObjFac.createBoolean();
     boolVal.setValue(value);
@@ -245,8 +259,7 @@ public class Ecf5Helper {
 
   public static Optional<CourtPolicyMDE> setupPolicyPort(
       CourtPolicyMDEService policyServFactory, String tylerToken) {
-    Optional<TylerUserNamePassword> creds =
-        TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
+    var creds = TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds from " + tylerToken + "?");
       return Optional.empty();
@@ -258,8 +271,7 @@ public class Ecf5Helper {
 
   public static Optional<FilingReviewMDE> setupReviewPort(
       FilingReviewMDEService reviewServFactory, String tylerToken) {
-    Optional<TylerUserNamePassword> creds =
-        TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
+    var creds = TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds from " + tylerToken + "?");
       return Optional.empty();
@@ -272,9 +284,7 @@ public class Ecf5Helper {
 
   public static Optional<TylerFilingReviewMDE> setupTylerReviewPort(
       TylerFilingReviewMDEService tylerReviewServFactory, String tylerToken) {
-
-    Optional<TylerUserNamePassword> creds =
-        TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
+    var creds = TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds from " + tylerToken + "?");
       return Optional.empty();
@@ -285,9 +295,33 @@ public class Ecf5Helper {
     return Optional.of(mde);
   }
 
+  public static Optional<CourtRecordMDE> setupRecordPort(
+      CourtRecordMDEService recordServFactory, String tylerToken) {
+    var creds = TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
+    if (creds.isEmpty()) {
+      log.warn("No creds from " + tylerToken + "?");
+      return Optional.empty();
+    }
+
+    CourtRecordMDE mde = recordServFactory.getCourtRecordMDE();
+    ServiceHelpers.setupServicePort((BindingProvider) mde, creds.get());
+    return Optional.of(mde);
+  }
+
   public static <T extends RequestMessageType> T prep(T newMsg, String courtId) {
     newMsg.setCaseCourt(convertCourt(courtId));
     // The example in the docs is "http://example.com/efsp1"
+    newMsg.setSendingMDELocationID(convertId(ServiceHelpers.EXTERNAL_URL));
+    newMsg.setServiceInteractionProfileCode(
+        convertNormalizedString(ServiceHelpers.MDE_PROFILE_CODE_5));
+    newMsg.setDocumentPostDate(convertNow());
+    // TODO: Tyler just sends this back to us, so it can be whatever? Should be unique though.
+    newMsg.getDocumentIdentification().add(convertId("1", "FilingAssembly", "messageID"));
+    return newMsg;
+  }
+
+  public static <T extends FilingMessageType> T prep(T newMsg, String courtId) {
+    newMsg.setCaseCourt(convertCourt(courtId));
     newMsg.setSendingMDELocationID(convertId(ServiceHelpers.EXTERNAL_URL));
     newMsg.setServiceInteractionProfileCode(
         convertNormalizedString(ServiceHelpers.MDE_PROFILE_CODE_5));

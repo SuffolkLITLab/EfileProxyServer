@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efspserver.tyler;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import edu.suffolk.litlab.efspserver.FilingAction;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.LowerCourtInfo;
@@ -40,7 +41,6 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tyler.ecf.extensions.common.FilingTypeType;
 
 /**
  * All of the Tyler code specific conversions and logic checks from our objects (really light
@@ -120,9 +120,7 @@ public class TylerCodesSerializer {
       collector.popAttributeStack();
     }
     List<String> filingCodeStrs =
-        info.getFilings().stream()
-            .map(f -> f.getFilingCode().orElse(""))
-            .collect(Collectors.toList());
+        info.getFilings().stream().map(f -> f.getFilingCode().orElse("")).toList();
     List<FilingCode> filingCodes =
         vetFilingTypes(filingCodeStrs, caseCategory, type, collector, isInitialFiling);
     Map<String, Person> partyInfo =
@@ -143,7 +141,7 @@ public class TylerCodesSerializer {
               "efile_case_category",
               "",
               "choice",
-              categories.stream().map(cat -> cat.code).collect(Collectors.toList()));
+              categories.stream().map(cat -> cat.code).toList());
       collector.addWrong(var);
       // Foundational error: Category is sorely needed
       throw FilingError.wrongValue(var);
@@ -167,10 +165,7 @@ public class TylerCodesSerializer {
     if (maybeType.isEmpty()) {
       InterviewVariable var =
           collector.requestVar(
-              "efile_case_type",
-              "",
-              "choice",
-              caseTypes.stream().map(type -> type.name).collect(Collectors.toList()));
+              "efile_case_type", "", "choice", caseTypes.stream().map(type -> type.name).toList());
       collector.addWrong(var);
       throw FilingError.wrongValue(var);
     }
@@ -209,7 +204,7 @@ public class TylerCodesSerializer {
                 "efile_case_subtype",
                 "Sub type of the case",
                 "choices",
-                subTypes.stream().map(nac -> nac.getName()).collect(Collectors.toList()));
+                subTypes.stream().map(nac -> nac.getName()).toList());
         collector.addWrong(subTypeVar);
       }
       return maybeSubtype.map(s -> s.getCode());
@@ -232,7 +227,7 @@ public class TylerCodesSerializer {
                 code -> {
                   return filingOptions.stream().filter(fil -> fil.code.equals(code)).findFirst();
                 })
-            .collect(Collectors.toList());
+            .toList();
 
     collector.pushAttributeStack("al_court_bundle[i]");
     if (filingOptions.isEmpty()) {
@@ -262,7 +257,7 @@ public class TylerCodesSerializer {
                   "filing_type",
                   "What filing type is this? (can't be " + maybeCodeStrs.get(idx) + ")",
                   "text",
-                  filingOptions.stream().map(f -> f.code).collect(Collectors.toList()));
+                  filingOptions.stream().map(f -> f.code).toList());
           collector.addWrong(filingVar);
           collector.popAttributeStack();
           throw FilingError.missingRequired(filingVar);
@@ -271,7 +266,7 @@ public class TylerCodesSerializer {
       }
     }
 
-    return maybeCodes.stream().map(f -> f.get()).collect(Collectors.toList());
+    return maybeCodes.stream().map(f -> f.get()).toList();
   }
 
   /**
@@ -398,7 +393,8 @@ public class TylerCodesSerializer {
               filerTypeName,
               "Metadata about the filer of this case",
               "choices",
-              allTypes.stream().map(t -> t.name).collect(Collectors.toList()));
+              allTypes.stream().map(t -> t.name).toList());
+      // TODO(brycew) is this ever required?
       if (filerTypeNode != null && filerTypeNode.isTextual()) {
         String filerType = filerTypeNode.asText();
         Optional<FilerType> typeInfo =
@@ -1027,8 +1023,8 @@ public class TylerCodesSerializer {
     return Optional.empty();
   }
 
-  public Optional<FilingTypeType> vetFilingAction(
-      Optional<FilingTypeType> filingAction, boolean isInitialFiling, InfoCollector collector)
+  public Optional<FilingAction> vetFilingAction(
+      Optional<FilingAction> filingAction, boolean isInitialFiling, InfoCollector collector)
       throws FilingError {
     boolean serviceOnInitial =
         this.court.allowserviceoninitial.orElse(
@@ -1038,10 +1034,10 @@ public class TylerCodesSerializer {
     // * ReviewFiling API w/ service contacts: EfileAndServe
     // * ServeFiling API: Serve
     if (filingAction.isPresent()) {
-      FilingTypeType act = filingAction.get();
+      FilingAction act = filingAction.get();
       if (isInitialFiling
           && !serviceOnInitial
-          && (act.equals(FilingTypeType.E_FILE_AND_SERVE) || act.equals(FilingTypeType.SERVE))) {
+          && (act.equals(FilingAction.E_FILE_AND_SERVE) || act.equals(FilingAction.SERVE))) {
         InterviewVariable var =
             collector.requestVar("filing_action", "Cannot do service on initial filing", "text");
         collector.addWrong(var);
@@ -1109,7 +1105,7 @@ public class TylerCodesSerializer {
         List<NameAndCode> maybeProcedures =
             procedureRemedies.stream()
                 .filter(nac -> nac.getName().equals(proRem.asText()))
-                .collect(Collectors.toList());
+                .toList();
         if (maybeProcedures.isEmpty()) {
           collector.addWrong(var);
         }
@@ -1152,7 +1148,7 @@ public class TylerCodesSerializer {
               "procedure_remedy",
               "Procedure Remedy",
               "choices",
-              damageAmounts.stream().map(nac -> nac.getName()).collect(Collectors.toList()));
+              damageAmounts.stream().map(nac -> nac.getName()).toList());
     }
     JsonNode jsonDmg = miscInfo.get("damage_amount");
     if (jsonDmg != null && !jsonDmg.isNull() && jsonDmg.isTextual()) {

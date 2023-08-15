@@ -64,25 +64,22 @@ public class EcfCaseTypeFactory {
    * @param miscInfo
    * @param serializer
    * @param collector
-   * @param serviceContactToXmlObjs
    * @return two objects: the actual case object, and a map from party ID to the object inside the
    *     case, used to associate other elements to the party element later on.
    * @throws FilingError
    * @throws SQLException
    */
-  public Pair<gov.niem.release.niem.niem_core._4.CaseType, Map<String, Object>>
-      makeCaseTypeFromTylerCategory(
-          CourtLocationInfo courtLocation,
-          ComboCaseCodes comboCodes,
-          FilingInformation info,
-          boolean isInitialFiling,
-          boolean isFirstIndexedFiling,
-          JsonNode miscInfo, // TODO(brycew-later): if we get XML Answer files, this isn't generic
-          EcfCourtSpecificSerializer serializer,
-          TylerCodesSerializer tylerSerializer,
-          InfoCollector collector,
-          Map<String, Object> serviceContactToXmlObjs)
-          throws SQLException, FilingError {
+  public Pair<gov.niem.release.niem.niem_core._4.CaseType, XmlMaps> makeCaseTypeFromTylerCategory(
+      CourtLocationInfo courtLocation,
+      ComboCaseCodes comboCodes,
+      FilingInformation info,
+      boolean isInitialFiling,
+      boolean isFirstIndexedFiling,
+      JsonNode miscInfo, // TODO(brycew-later): if we get XML Answer files, this isn't generic
+      EcfCourtSpecificSerializer serializer,
+      TylerCodesSerializer tylerSerializer,
+      InfoCollector collector)
+      throws SQLException, FilingError {
     var myCaseType = niemObjFac.createCaseType();
     var pair =
         makeEcfCaseAug(
@@ -96,11 +93,13 @@ public class EcfCaseTypeFactory {
             courtLocation);
     var ecfAug = pair.getLeft();
     var partyIdToRefObj = pair.getRight();
-    myCaseType
-        .getCaseAugmentationPoint()
-        .add(
-            makeJxdmCaseAug(courtLocation.code, info, tylerSerializer, partyIdToRefObj, collector));
+    var pair2 =
+        makeJxdmCaseAug(courtLocation.code, info, tylerSerializer, partyIdToRefObj, collector);
+    var jxdmAug = pair2.getLeft();
+    var attorneyIdToRefObj = pair.getRight();
 
+    // JXDM apparently needs to be first, according to Tyler
+    myCaseType.getCaseAugmentationPoint().add(jxdmAug);
     myCaseType.getCaseAugmentationPoint().add(ecfAug);
     if (isInitialFiling) {
       myCaseType
@@ -110,7 +109,8 @@ public class EcfCaseTypeFactory {
           .getCaseAugmentationPoint()
           .add(makeSpecialAug(comboCodes, info, collector, miscInfo));
     }
-    return Pair.of(myCaseType, partyIdToRefObj);
+    var xmlMaps = new XmlMaps(partyIdToRefObj, attorneyIdToRefObj);
+    return Pair.of(myCaseType, xmlMaps);
   }
 
   private JAXBElement<? extends Object> makeSpecialAug(
@@ -381,7 +381,19 @@ public class EcfCaseTypeFactory {
     return tylerObjFac.createCaseAugmentation(cat);
   }
 
-  private static JAXBElement<gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType>
+  /**
+   * @param courtLocationId
+   * @param info
+   * @param tylerSerializer
+   * @param partyIdToRefObj
+   * @param collector
+   * @return The JXDM case aug, and the mapping from "id-" + attorney ID to the attorney's XML
+   *     object.
+   * @throws FilingError
+   */
+  private static Pair<
+          JAXBElement<gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType>,
+          Map<String, Object>>
       makeJxdmCaseAug(
           String courtLocationId,
           FilingInformation info,
@@ -391,6 +403,7 @@ public class EcfCaseTypeFactory {
           throws FilingError {
     var caseAug = jxdmObjFac.createCaseAugmentationType();
     caseAug.setCaseCourt(Ecf5Helper.convertCourt(courtLocationId));
+    Map<String, Object> attorneys = new HashMap<>();
     tylerSerializer
         .vetPartyAttorneyMap(info.getPartyAttorneyMap(), partyIdToRefObj, collector)
         .ifPresent(
@@ -403,6 +416,8 @@ public class EcfCaseTypeFactory {
                   var pat = ecfObjFac.createPersonAugmentationType();
                   pat.setParticipantID(Ecf5Helper.convertId(attyId));
                   pt.getPersonAugmentationPoint().add(ecfObjFac.createPersonAugmentation(pat));
+                  pt.setId("id-" + attyId);
+                  attorneys.put("id-" + attyId, pt);
                   t.setRoleOfPerson(pt);
                   var officialAug = ecfObjFac.createCaseOfficialAugmentationType();
                   var entity = niemObjFac.createEntityType();
@@ -414,6 +429,6 @@ public class EcfCaseTypeFactory {
               }
             });
     caseAug.getCaseOfficial();
-    return jxdmObjFac.createCaseAugmentation(caseAug);
+    return Pair.of(jxdmObjFac.createCaseAugmentation(caseAug), attorneys);
   }
 }

@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efspserver.ecf5;
 import static edu.suffolk.litlab.efspserver.StdLib.exists;
 import static edu.suffolk.litlab.efspserver.StdLib.strFromException;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.FilingInformation;
@@ -13,18 +14,19 @@ import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.FilingResult;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
+import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.tyler.TylerCodesSerializer;
 import edu.suffolk.litlab.efspserver.tyler.TylerLogin;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.ComboCaseCodes;
 import edu.suffolk.litlab.efspserver.tyler.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.tyler.codes.Disclaimer;
+import edu.suffolk.litlab.efspserver.tyler.codes.FilingCode;
 import edu.suffolk.litlab.efspserver.tyler.codes.ServiceCodeType;
 import gov.niem.release.niem.niem_core._4.DateRangeType;
 import gov.niem.release.niem.niem_core._4.IdentificationType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.cancel.CancelFilingMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caseresponse.GetCaseResponseMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ElectronicServiceInformationType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.FilingStatusType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.MessageStatusAugmentationType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filinglistrequest.FilingListQueryCriteriaType;
@@ -41,6 +43,7 @@ import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.ReviewFil
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDE;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDEService;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtrecordmde.CourtRecordMDE;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtrecordmde.CourtRecordMDEService;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.filingreviewmde.FilingReviewMDE;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.filingreviewmde.FilingReviewMDEService;
 import jakarta.ws.rs.core.Response;
@@ -57,6 +60,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tyler.ecf.v5_0.extensions.common.FilingAttorneyEntityType;
 import tyler.ecf.v5_0.extensions.filingservicerequest.GetFilingServiceMessageType;
 import tyler.ecf.v5_0.extensions.servicetypesrequest.GetServiceTypesMessageType;
 import tyler.ecf.v5_0.extensions.tylerfilingreviewmde.TylerFilingReviewMDE;
@@ -72,6 +76,7 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
   private final CourtPolicyMDEService policyServFactory;
   private final FilingReviewMDEService reviewServFactory;
   private final TylerFilingReviewMDEService tylerReviewServFactory;
+  private final CourtRecordMDEService recordServFactory;
   private final String headerKey;
   private final Supplier<CodeDatabase> cdSupplier;
 
@@ -84,8 +89,6 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
   private final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filingstatusrequest
           .ObjectFactory
       filingstatusObjFac;
-  private final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.payment.ObjectFactory
-      paymentObjFac;
   private final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing.ObjectFactory
       filingObjFac;
   private final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.ObjectFactory
@@ -118,13 +121,17 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
         SoapClientChooser.getTylerFilingReviewFactory(jurisdiction, env);
     if (maybeTylerReview.isEmpty()) {
       throw new RuntimeException(
-          "Cannot find "
-              + jurisdiction
-              + " in "
-              + env
-              + " for Tyler filing review service factory");
+          "Cannot find " + jurisdiction + " in " + env + " for Tyler filingreview factory");
     }
     this.tylerReviewServFactory = maybeTylerReview.get();
+
+    Optional<CourtRecordMDEService> maybeRecord =
+        SoapClientChooser.getCourtRecordFactory(jurisdiction, env);
+    if (maybeRecord.isEmpty()) {
+      throw new RuntimeException(
+          "Cannot find " + jurisdiction + " in " + env + " for court record service factory");
+    }
+    this.recordServFactory = maybeRecord.get();
 
     this.cdSupplier = cdSupplier;
 
@@ -138,8 +145,6 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
             .ObjectFactory();
     this.filingObjFac =
         new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing.ObjectFactory();
-    this.paymentObjFac =
-        new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.payment.ObjectFactory();
     this.wrapperObjFac =
         new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.ObjectFactory();
     this.niemObjFac = new gov.niem.release.niem.niem_core._4.ObjectFactory();
@@ -151,6 +156,13 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
   public Result<FilingResult, FilingError> submitFilingIfReady(
       FilingInformation info, InfoCollector collector, String apiToken, ApiChoice choice) {
     Optional<FilingReviewMDE> port = Ecf5Helper.setupReviewPort(reviewServFactory, apiToken);
+    Optional<CourtPolicyMDE> policyPort = Ecf5Helper.setupPolicyPort(policyServFactory, apiToken);
+    Optional<CourtRecordMDE> recordPort = Ecf5Helper.setupRecordPort(recordServFactory, apiToken);
+    if (port.isEmpty() || policyPort.isEmpty() || recordPort.isEmpty()) {
+      return Result.err(
+          FilingError.serverError(
+              "Coludn't make the service MDE ports needed with the given API key"));
+    }
     if (port.isEmpty()) {
       return Result.err(
           FilingError.serverError("Coludn't make a servec MDE port with the given API key"));
@@ -160,7 +172,7 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
     String caseCategoryName = "";
     CoreMessageAndNames core;
     try {
-      core = prepareFiling(info, collector);
+      core = prepareFiling(info, collector, policyPort.get(), recordPort.get());
       existingCaseTitle = core.existingCaseTitle;
       caseCategoryName = core.caseCategoryName;
     } catch (FilingError err) {
@@ -168,6 +180,7 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
     }
 
     var msg = core.filingMsg;
+    var courtName = core.courtName;
 
     ReviewFilingRequestType req = wrapperObjFac.createReviewFilingRequestType();
     req.getFilingMessage().add(msg);
@@ -302,13 +315,33 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
       }
 
       caseCategoryName = allCodes.cat.name;
-      var msg = filingObjFac.createFilingMessageType();
+      var msg = Ecf5Helper.prep(filingObjFac.createFilingMessageType(), info.getCourtLocation());
+
+      var pair =
+          ecfCaseFactory.makeCaseTypeFromTylerCategory(
+              locationInfo,
+              allCodes,
+              info,
+              isInitialFiling,
+              isFirstIndexedFiling,
+              info.getMiscInfo(),
+              serializer,
+              tylerSerializer,
+              collector);
+
+      msg.setCase(niemObjFac.createCase(pair.getLeft()));
+      var xmlMaps = pair.getRight();
 
       int i = 0;
       Map<String, Object> serviceContactXmlObjs = new HashMap<>();
+      boolean anyServicePartyAttached = false;
       for (CaseServiceContact servContact : info.getServiceContacts()) {
-        ElectronicServiceInformationType servInfo =
-            ecfObjFac.createElectronicServiceInformationType();
+        anyServicePartyAttached = true;
+        var servInfo = ecfObjFac.createElectronicServiceInformationType();
+        servInfo.setReceivingMDELocationID(Ecf5Helper.convertId(""));
+        servInfo.setReceivingMDEProfileCode(
+            Ecf5Helper.convertNormalizedString(ServiceHelpers.MDE_PROFILE_CODE_5));
+        servInfo.setServiceRecipientID(Ecf5Helper.convertId(""));
         List<ServiceCodeType> types = cd.getServiceTypes(info.getCourtLocation());
         Optional<ServiceCodeType> serviceCode =
             types.stream()
@@ -330,25 +363,165 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
             tylerObjFac.createServiceTypeCode(
                 Ecf5Helper.convertNormalizedString(serviceCode.get().code)));
         servRecipient.setServiceContactID(servContactID);
+        var partyEntity = niemObjFac.createEntityType();
+        partyEntity.setRef(xmlMaps.parties.get(servContact.refId));
+        servRecipient.getCaseRepresentedParty().add(partyEntity);
         serviceContactXmlObjs.put(servContact.refId, servInfo);
         aug.getServiceRecipient().add(servRecipient);
+        servInfo
+            .getObjectAugmentationPoint()
+            .add(tylerObjFac.createElectronicServiceAugmentation(aug));
         msg.getElectronicServiceInformation().add(servInfo);
       }
-      var pair =
-          ecfCaseFactory.makeCaseTypeFromTylerCategory(
-              locationInfo,
-              allCodes,
-              info,
-              isInitialFiling,
-              isFirstIndexedFiling,
-              info.getMiscInfo(),
-              serializer,
-              tylerSerializer,
-              collector,
-              serviceContactXmlObjs);
 
-      msg.setCase(niemObjFac.createCase(pair.getLeft()));
-      return new CoreMessageAndNames(msg, null, null, null);
+      i = 0;
+      for (var doc : info.getFilings()) {
+        FilingCode fc = allCodes.filings.get(i);
+        if (doc.isLead()) {
+          msg.getFilingLeadDocument()
+              .add(
+                  serializer.filingDocToXml(
+                      doc,
+                      i,
+                      isInitialFiling,
+                      allCodes.cat,
+                      allCodes.type,
+                      fc,
+                      info.getMiscInfo(),
+                      collector));
+        } else {
+          // TODO(brycew): connected documents are missing their "parent" document info:
+          // and don't currently have a way to handle this in our side? I guess it's because
+          // you can have multiple lead documents in a single envelope now? idk, it wasn't around
+          // before...
+          // <nc:DocumentAssociation>
+          //   <nc:PrimaryDocument structures:ref="Filing1">
+          //     <nc:DocumentIdentification/>
+          //   </nc:PrimaryDocument>
+          //   <ecf:DocumentAssociationAugmentation>
+          //   <ecf:DocumentRelatedCode>parent</ecf:DocumentRelatedCode>
+          //   </ecf:DocumentAssociationAugmentation>
+          // </nc:DocumentAssociation>
+          msg.getFilingConnectedDocument()
+              .add(
+                  serializer.filingDocToXml(
+                      doc,
+                      i,
+                      isInitialFiling,
+                      allCodes.cat,
+                      allCodes.type,
+                      fc,
+                      info.getMiscInfo(),
+                      collector));
+        }
+
+        i++;
+      }
+
+      var filingMessageAug = tylerObjFac.createFilingMessageAugmentationType();
+
+      Map<String, String> crossReferences =
+          tylerSerializer.getCrossRefIds(info.getMiscInfo(), collector, allCodes.type.code);
+      for (Map.Entry<String, String> ref : crossReferences.entrySet()) {
+        var xmlCross = tylerObjFac.createCrossReferenceType();
+        xmlCross.setReferenceNumber(Ecf5Helper.convertText(ref.getValue()));
+        xmlCross.setReferenceTypeCode(Ecf5Helper.convertText(ref.getKey()));
+        filingMessageAug.getCrossReference().add(xmlCross);
+      }
+
+      JsonNode miscInfo = info.getMiscInfo();
+      if (miscInfo.has("max_fee_amount") && locationInfo.allowmaxfeeamount) {
+        if (miscInfo.get("max_fee_amount").isNumber()) {
+          BigDecimal amnt = miscInfo.get("max_fee_amount").decimalValue();
+          filingMessageAug.setMaxFeeAmount(Ecf5Helper.convertAmount(amnt));
+        } else {
+          FilingError err =
+              FilingError.malformedInterview("max_fee_amount needs to be a decimal (float) value");
+          collector.error(err);
+        }
+      }
+
+      var attys =
+          info.getFilings().stream()
+              .map(doc -> doc.getFilingAttorney())
+              .filter(atty -> atty.isPresent())
+              .map(atty -> atty.orElse(""))
+              .distinct()
+              .toList();
+      if (attys.size() > 1) {
+        log.warn(
+            "Passed in multiple filing attorneys: in ECF5, there is only 1, envelope wide filing"
+                + " attorney. Only the first one will be used.");
+      }
+      var maybeAtty = attys.stream().findFirst();
+      var refObj =
+          tylerSerializer
+              .vetFilingAttorney(maybeAtty, collector)
+              .map(atty -> xmlMaps.attorneys.get("id-" + atty))
+              .orElse(null);
+      FilingAttorneyEntityType filingAtty = tylerObjFac.createFilingAttorneyEntityType();
+      var refType = tylerObjFac.createReferenceType();
+      refType.setRef(refObj);
+      filingAtty.setAttorneyReference(refType);
+      filingMessageAug.setFilingAttorney(filingAtty);
+
+      var parties =
+          info.getFilings().stream()
+              .flatMap(doc -> doc.getFilingPartyIds().stream())
+              .distinct()
+              .toList();
+      if (parties.size() > 1) {
+        log.warn(
+            "Passed in multiple filing attorneys: in ECF5, there is only 1, envelope wide filing"
+                + " attorney. Only use one.");
+      }
+      parties.stream()
+          .findFirst()
+          .ifPresent(
+              p -> {
+                var entity = tylerObjFac.createFilingPartyEntityType();
+                var refParty = tylerObjFac.createReferenceType();
+                refParty.setRef(xmlMaps.parties.get(p));
+                entity.setPartyReference(refParty);
+                filingMessageAug.setFilingParty(entity);
+              });
+
+      // Filing
+      tylerSerializer
+          .vetFilerTypes(miscInfo, collector)
+          .ifPresent(
+              ft -> {
+                filingMessageAug.setFilerTypeCode(Ecf5Helper.convertText(ft.code));
+              });
+
+      var maybeProcs =
+          tylerSerializer.vetProcedureRemedy(
+              miscInfo.get("procedure_remedy"), isInitialFiling, allCodes.cat, collector);
+      if (maybeProcs.size() > 0) {
+        var type = tylerObjFac.createProcedureRemedyType();
+        for (String proc : maybeProcs) {
+          type.getRemedyCode().add(Ecf5Helper.convertText(proc));
+        }
+        filingMessageAug.setProcedureRemedy(type);
+      }
+
+      JsonNode jsonAmount = miscInfo.get("civil_amount");
+      if (jsonAmount != null && !jsonAmount.isNull() && jsonAmount.isNumber()) {
+        filingMessageAug.setCivilAmount(Ecf5Helper.convertAmount(jsonAmount.decimalValue()));
+      }
+
+      filingMessageAug.setAttachServiceContactIndicator(
+          Ecf5Helper.convertBool(anyServicePartyAttached));
+
+      JsonNode envelopeComment = miscInfo.get("efile_comments_to_clerk");
+      if (envelopeComment != null && !envelopeComment.isNull() && envelopeComment.isTextual()) {
+        filingMessageAug.setEnvelopeLevelComment(Ecf5Helper.convertText("efile_comments_to_clerk"));
+      }
+
+      // TODO(brycew): remaining for filingMessageAug
+      // * out of state (for out of state service: is it only for mail?)
+      // * return date?
+      return new CoreMessageAndNames(msg, existingCaseTitle, caseCategoryName, courtName);
     } catch (SQLException ex) {
       log.error("IO Error when making filing! " + strFromException(ex));
       throw FilingError.serverError("Got Exception assembling the filing: " + ex);
