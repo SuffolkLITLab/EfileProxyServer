@@ -9,9 +9,6 @@
     <url>https://suffolklitlab.org</url>
     <description>an EFSP client for the AssemblyLine Project</description>
     <!-- to find dependencies that have been changed to a different group / artifact id, run `mvn biz.lermitage.oga:oga-maven-plugin:check` -->
-    <!-- TODO(#108): CXF is still using javax / jaxb and not jakarta namespaces, and won't until version 4.0.
-         Our code now also seems to be tied up with newer versions of the libraries. Until then
-         the above command will fail, but we can just not update the jakarta issues -->
     <!-- to quickly find dependencies that can be updated, run `mvn versions:display-dependency-updates` -->
 
     <properties>

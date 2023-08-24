@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efspserver.ecf5;
 
 import static edu.suffolk.litlab.efspserver.ecf5.Ecf5Helper.convertPersonText;
+import static edu.suffolk.litlab.efspserver.ecf5.Ecf5Helper.convertText;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efspserver.Address;
@@ -72,9 +73,6 @@ public class EcfCourtSpecificSerializer {
       new gov.niem.release.niem.domains.jxdm._6.ObjectFactory();
   private static final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ObjectFactory
       ecfObjFac = new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ObjectFactory();
-  private final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing.ObjectFactory
-      filingObjFac =
-          new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing.ObjectFactory();
 
   private final CourtLocationInfo court;
   private final CodeDatabase cd;
@@ -97,6 +95,11 @@ public class EcfCourtSpecificSerializer {
       gov.niem.release.niem.niem_core._4.CaseType theCase) {
     // TODO(brycew): full QName?
     // new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "CaseParty");
+
+    log.info("getCaseParticipants case:");
+    log.info(
+        Ecf5Helper.objectToXmlStrOrError(
+            theCase, gov.niem.release.niem.niem_core._4.CaseType.class));
 
     Map<PartyId, Person> existingParticipants = new HashMap<>();
     var allParties =
@@ -153,6 +156,9 @@ public class EcfCourtSpecificSerializer {
           String lastName =
               (xmlName.getPersonSurName() != null) ? xmlName.getPersonSurName().getValue() : "";
           Name name = new Name(firstName, middleName, lastName);
+          log.info(
+              Ecf5Helper.objectToXmlStrOrError(
+                  person, gov.niem.release.niem.niem_core._4.PersonType.class));
           var tylerAug =
               person.getPersonAugmentationPoint().stream()
                   .filter(
@@ -162,11 +168,8 @@ public class EcfCourtSpecificSerializer {
                   .map(
                       aug ->
                           (tyler.ecf.v5_0.extensions.common.PersonAugmentationType) aug.getValue())
+                  .filter(aug -> aug != null && aug.getPartyIdentification() != null)
                   .findFirst();
-          var efmId =
-              tylerAug
-                  .map(aug -> aug.getPartyIdentification().getIdentificationID().getValue())
-                  .orElse("");
           var ecfAug =
               person.getPersonAugmentationPoint().stream()
                   .filter(
@@ -181,6 +184,20 @@ public class EcfCourtSpecificSerializer {
                                   .PersonAugmentationType)
                               aug.getValue())
                   .findFirst();
+          var efmId =
+              tylerAug
+                  .map(
+                      aug -> {
+                        return aug.getPartyIdentification().getIdentificationID().getValue();
+                      })
+                  .orElseGet(
+                      () -> {
+                        // the Tyler docs say that party ID will be in the Tyler extension aug, but
+                        // are actually in the ecf Aug.
+                        return ecfAug
+                            .map(eAug -> eAug.getParticipantID().getIdentificationID().getValue())
+                            .orElse("");
+                      });
           var maybeRoleCode =
               ecfAug.flatMap(
                   aug ->
@@ -204,9 +221,13 @@ public class EcfCourtSpecificSerializer {
     orgs.forEach(
         org -> {
           String orgName = org.getOrganizationName().getValue();
-          String efmId = org.getOrganizationIdentification().getIdentificationID().getValue();
+          String efmId = "";
+          if (org.getOrganizationIdentification() != null
+              && org.getOrganizationIdentification().getIdentificationID() != null) {
+            efmId = org.getOrganizationIdentification().getIdentificationID().getValue();
+          }
 
-          var maybeRoleCode =
+          var orgAug =
               org.getOrganizationAugmentationPoint().stream()
                   .filter(
                       aug ->
@@ -219,12 +240,19 @@ public class EcfCourtSpecificSerializer {
                           (https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf
                                   .OrganizationAugmentationType)
                               aug.getValue())
-                  .findFirst()
-                  .flatMap(
-                      aug ->
-                          aug.getCaseParticipantRoleCode().stream()
-                              .map(rc -> rc.getValue())
-                              .findFirst());
+                  .findFirst();
+          var maybeRoleCode =
+              orgAug.flatMap(
+                  aug ->
+                      aug.getCaseParticipantRoleCode().stream()
+                          .map(rc -> rc.getValue())
+                          .findFirst());
+          if (efmId.isBlank()) {
+            efmId =
+                orgAug
+                    .map(aug -> aug.getParticipantID().getIdentificationID().getValue())
+                    .orElse("");
+          }
           existingParticipants.put(
               PartyId.Already(efmId),
               Person.FromEfm(
@@ -381,7 +409,7 @@ public class EcfCourtSpecificSerializer {
                 per.setPersonSexAbstract(jxdmObjFac.createPersonSexCode(sct));
               });
 
-      entity.setEntityRepresentation(niemObjFac.createEntityRepresentation(per));
+      entity.setEntityRepresentation(niemObjFac.createEntityPerson(per));
     }
     return ecfObjFac.createCaseParty(entity);
   }
@@ -389,12 +417,12 @@ public class EcfCourtSpecificSerializer {
   public PersonNameType createPersonName(Name name, InfoCollector collector) throws FilingError {
     Name betterName = tylerSerializer.vetFullName(name, collector);
     PersonNameType personName = niemObjFac.createPersonNameType();
-    personName.setPersonNamePrefixText(convertPersonText(betterName.getPrefix()));
+    personName.setPersonNamePrefixText(convertText(betterName.getPrefix()));
     personName.setPersonGivenName(convertPersonText(betterName.getFirstName()));
     personName.setPersonMaidenName(convertPersonText(betterName.getMaidenName()));
     personName.setPersonMiddleName(convertPersonText(betterName.getMiddleName()));
     personName.setPersonSurName(convertPersonText(betterName.getLastName()));
-    personName.setPersonNameSuffixText(convertPersonText(betterName.getSuffix()));
+    personName.setPersonNameSuffixText(convertText(betterName.getSuffix()));
     return personName;
   }
 
@@ -462,11 +490,13 @@ public class EcfCourtSpecificSerializer {
       CaseType motionType,
       FilingCode filing,
       JsonNode miscInfo,
+      XmlMaps xmlMaps,
       InfoCollector collector)
       throws FilingError {
     var docType = niemObjFac.createDocumentType();
     docType.setDocumentFiledDate(Ecf5Helper.convertNow());
     docType.setDocumentSequenceID(Ecf5Helper.convertString(Integer.toString(sequenceNum)));
+    docType.getDocumentIdentification().add(niemObjFac.createIdentificationType());
 
     tylerSerializer
         .getDocumentDescription(doc, filing, collector)
@@ -476,6 +506,12 @@ public class EcfCourtSpecificSerializer {
             });
 
     var tylerAug = tylerObjFac.createDocumentAugmentationType();
+
+    String cc = doc.getCourtesyCopies().stream().reduce("", (base, str) -> base + "," + str);
+    tylerAug.setCourtesyCopiesText(Ecf5Helper.convertText(cc));
+    String prelim = doc.getPreliminaryCopies().stream().reduce("", (base, str) -> base + "," + str);
+    tylerAug.setPreliminaryCopiesText(Ecf5Helper.convertText(prelim));
+
     tylerSerializer
         .vetFilingRefNum(doc.getFilingReferenceNum(), collector)
         .ifPresent(
@@ -501,6 +537,15 @@ public class EcfCourtSpecificSerializer {
             mt -> {
               tylerAug.setMotionTypeCode(Ecf5Helper.convertText(mt));
             });
+
+    for (var association : doc.getFilingPartyIds()) {
+      var assoc = tylerObjFac.createFilingAssociationType();
+      var ref = tylerObjFac.createReferenceType();
+      ref.setRef(xmlMaps.parties.get(association.getIdString()));
+      assoc.setPartyReference(ref);
+      // tylerAug.getFilingAssociation().add(assoc);
+    }
+
     tylerSerializer
         .vetFilingAction(doc.getFilingAction(), isInitialFiling, collector)
         .ifPresent(
@@ -546,6 +591,8 @@ public class EcfCourtSpecificSerializer {
         .getRest()
         .add(ecfObjFac.createRegisterActionDescriptionCode(Ecf5Helper.convertText(filing.code)));
 
+    docType.getDocumentAugmentationPoint().add(ecfObjFac.createDocumentAugmentation(ecfAug));
+    docType.getDocumentAugmentationPoint().add(tylerObjFac.createDocumentAugmentation(tylerAug));
     return docType;
   }
 
@@ -572,6 +619,7 @@ public class EcfCourtSpecificSerializer {
       InfoCollector collector)
       throws FilingError {
     var rendition = ecfObjFac.createDocumentRenditionType();
+    rendition.getDocumentIdentification().add(niemObjFac.createIdentificationType());
     var binary = niemObjFac.createBinaryType();
     binary.setBinarySizeValue(Ecf5Helper.convertDecimal(fa.getFileContents().length));
     var base64 = proxyObjFac.createBase64Binary();
@@ -583,10 +631,7 @@ public class EcfCourtSpecificSerializer {
         Ecf5Helper.convertText(
             tylerSerializer.vetFilingComponent(
                 fa.getFilingComponent(), components, filing, collector)));
-    if (miscInfo.has("page_count")) {
-      int count = miscInfo.get("page_count").asInt(1);
-      tylerAug.setPageCount(Ecf5Helper.convertDecimal(count));
-    }
+    tylerAug.setPageCount(Ecf5Helper.convertDecimal(fa.getPageCount()));
     tylerSerializer
         .vetFileName(fa.getFileName(), allowedFileTypes, collector)
         .ifPresent(

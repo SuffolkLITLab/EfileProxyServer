@@ -15,6 +15,8 @@ import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtrecordmde
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtrecordmde.CourtRecordMDEService;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.filingreviewmde.FilingReviewMDE;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.filingreviewmde.FilingReviewMDEService;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.servicemde.ServiceMDE;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.servicemde.ServiceMDEService;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
@@ -29,7 +31,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.GregorianCalendar;
 import java.util.Optional;
@@ -102,6 +103,10 @@ public class Ecf5Helper {
     return amt;
   }
 
+  public static gov.niem.release.niem.niem_core._4.AmountType convertAmount(int number) {
+    return convertAmount(new BigDecimal(number));
+  }
+
   public static String amountToString(
       oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType amt) {
     if (amt == null) {
@@ -141,7 +146,6 @@ public class Ecf5Helper {
    *     "2022-03-25T15:00:00.0Z"
    */
   public static DateType convertCourtReserveDate(OffsetDateTime date, int fracSecondPrecision) {
-    System.out.println("Pre-Truncated: " + date.getNano());
     OffsetDateTime op = date.toInstant().atOffset(ZoneOffset.UTC);
     GregorianCalendar cal = new GregorianCalendar();
     cal.set(
@@ -171,7 +175,7 @@ public class Ecf5Helper {
   }
 
   public static DateType convertNow() {
-    return convertDate(LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault()));
+    return convertDateTime(Instant.now(), 6);
   }
 
   public static gov.niem.release.niem.proxy.xsd._4.String convertString(String str) {
@@ -308,6 +312,19 @@ public class Ecf5Helper {
     return Optional.of(mde);
   }
 
+  public static Optional<ServiceMDE> setupServicePort(
+      ServiceMDEService serviceFactory, String tylerToken) {
+    var creds = TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
+    if (creds.isEmpty()) {
+      log.warn("No creds from " + tylerToken + "?");
+      return Optional.empty();
+    }
+
+    var mde = serviceFactory.getServiceMDE();
+    ServiceHelpers.setupServicePort((BindingProvider) mde, creds.get());
+    return Optional.of(mde);
+  }
+
   public static <T extends RequestMessageType> T prep(T newMsg, String courtId) {
     newMsg.setCaseCourt(convertCourt(courtId));
     // The example in the docs is "http://example.com/efsp1"
@@ -316,7 +333,11 @@ public class Ecf5Helper {
         convertNormalizedString(ServiceHelpers.MDE_PROFILE_CODE_5));
     newMsg.setDocumentPostDate(convertNow());
     // TODO: Tyler just sends this back to us, so it can be whatever? Should be unique though.
-    newMsg.getDocumentIdentification().add(convertId("1", "FilingAssembly", "messageID"));
+    newMsg
+        .getDocumentIdentification()
+        .add(
+            niemCoreObjFac
+                .createIdentificationType()); // convertId("1", "FilingAssembly", "messageID"));
     return newMsg;
   }
 
@@ -326,8 +347,8 @@ public class Ecf5Helper {
     newMsg.setServiceInteractionProfileCode(
         convertNormalizedString(ServiceHelpers.MDE_PROFILE_CODE_5));
     newMsg.setDocumentPostDate(convertNow());
-    // TODO: Tyler just sends this back to us, so it can be whatever? Should be unique though.
-    newMsg.getDocumentIdentification().add(convertId("1", "FilingAssembly", "messageID"));
+    //  Not needed for FilingMessageType
+    newMsg.getDocumentIdentification().add(niemCoreObjFac.createIdentificationType());
     return newMsg;
   }
 
@@ -340,7 +361,7 @@ public class Ecf5Helper {
     return false;
   }
 
-  private static class SimpleError {
+  static class SimpleError {
     private final String code;
     private final String description;
 

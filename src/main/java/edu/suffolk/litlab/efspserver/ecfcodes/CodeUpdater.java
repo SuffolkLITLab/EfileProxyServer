@@ -86,8 +86,10 @@ public class CodeUpdater {
     V5;
   }
 
-  // TODO(brycew-later): there's little more info on these mappings and how they combine besides:
-  // The name of an ECF element to be substituted by a court-specific codelist or extension
+  // TODO(brycew-later): there's little more info on these mappings and how they
+  // combine besides:
+  // The name of an ECF element to be substituted by a court-specific codelist or
+  // extension
   // Is this actually an XPath? Should figure it out
   public static final Map<String, String> ecf4ElemToTableName =
       Map.ofEntries(
@@ -328,8 +330,10 @@ public class CodeUpdater {
       zip.close();
       return success;
     } catch (IOException ex) {
-      // Some system codes (everything but "country", "state", "filingstatus", "datafieldconfig",
-      // and "servicetype") are expected to 500. Not really sure why they give us bad URLs.
+      // Some system codes (everything but "country", "state", "filingstatus",
+      // "datafieldconfig",
+      // and "servicetype") are expected to 500. Not really sure why they give us bad
+      // URLs.
       log.warn("Skipping " + toRead + ", got exception accessing zip: " + ex.toString());
       return false;
     }
@@ -343,7 +347,8 @@ public class CodeUpdater {
             "/CodeService/codes/version/",
             "location",
             "/CodeService/codes/location/",
-            // NOTE: the Tyler docs say "error" is available from `GetPolicy'. That is wrong.
+            // NOTE: the Tyler docs say "error" is available from `GetPolicy'. That is
+            // wrong.
             "error",
             "/CodeService/codes/error");
 
@@ -621,7 +626,8 @@ public class CodeUpdater {
     if (locs.isEmpty()) {
       locs = cd.getAllLocations();
     }
-    // Remove the "0" or top level court, which doesn't usually have individual court tables
+    // Remove the "0" or top level court, which doesn't usually have individual
+    // court tables
     locs.remove("0");
     Instant startPolicy = Instant.now(Clock.systemUTC());
     Map<String, Stream<CodeToDownload>> courtDownloads =
@@ -722,6 +728,11 @@ public class CodeUpdater {
             for (var rest : p.getGetPolicyResponseMessage().getRest()) {
               if (rest.getValue() instanceof RuntimePolicyType runtime) {
                 return runtime.getCodeListExtension().stream()
+                    .filter(
+                        cl -> {
+                          log.info(cl.toString());
+                          return cl.getECFElementNameText() != null;
+                        })
                     .map(
                         cl ->
                             new CodeToDownload(

@@ -135,7 +135,8 @@ import tyler.ecf.v5_0.extensions.criminal.StatuteAugmentationType;
     https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.domestic.CaseAugmentationType.class,
     https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.appellate.CaseAugmentationType.class,
     tyler.ecf.v5_0.extensions.taxdelinquency.CaseAugmentationType.class,
-    tyler.ecf.v5_0.extensions.massachusetts.CaseAugmentationType.class
+    tyler.ecf.v5_0.extensions.massachusetts.CaseAugmentationType.class,
+    https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.CaseAugmentationType.class
 })
 public abstract class AugmentationType {
 

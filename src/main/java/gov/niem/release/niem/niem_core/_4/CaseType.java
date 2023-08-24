@@ -104,6 +104,7 @@ public class CaseType
      * Objects of the following type(s) are allowed in the list
      * {@link JAXBElement }{@code <}{@link gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.appellate.CaseAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.CaseAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.domestic.CaseAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}

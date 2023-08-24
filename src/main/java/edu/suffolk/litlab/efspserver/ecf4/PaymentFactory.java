@@ -70,7 +70,8 @@ public class PaymentFactory {
       tct.setTierRatePercent(cbcObjFac.createTierRatePercentType());
       act.getTaxCategory().add(tct);
       TaxAmountType tax = cbcObjFac.createTaxAmountType();
-      tax.setValue(TylerConstants.ourCut.multiply(taxPercent));
+      var finalAmt = TylerConstants.ourCut.multiply(taxPercent);
+      tax.setValue(finalAmt);
       TaxTotalType ttt = cacObjFac.createTaxTotalType();
       ttt.setTaxAmount(tax);
       act.setTaxTotal(ttt);

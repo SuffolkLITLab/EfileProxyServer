@@ -44,7 +44,7 @@ public class FilingDocDocassembleJacksonDeserializer {
 
   /** Parses a filing from the DA Json Object. Used by Deserializers that include filings. */
   public static Optional<FilingDoc> fromNode(
-      JsonNode node, Map<String, PartyId> varToPartyId, boolean isLeadDoc, InfoCollector collector)
+      JsonNode node, Map<String, PartyId> varToPartyId, int seqNum, InfoCollector collector)
       throws FilingError {
     if (!node.isObject()) {
       FilingError err =
@@ -198,7 +198,7 @@ public class FilingDocDocassembleJacksonDeserializer {
             courtesyCopies,
             preliminaryCopies,
             action,
-            isLeadDoc));
+            seqNum));
   }
 
   private static Optional<FilingAttachment> getAttachment(JsonNode node, InfoCollector collector)
@@ -220,6 +220,14 @@ public class FilingDocDocassembleJacksonDeserializer {
     if (!node.has("proxy_enabled") || !node.get("proxy_enabled").asBoolean(false)) {
       log.info(fileName + " isn't proxy enabled");
       return Optional.empty();
+    }
+
+    // TODO(brycew): depends on some DA code, should read in the PDF if possible here. Might be
+    // risky though.
+    // https://stackoverflow.com/questions/6026971/page-count-of-pdf-with-java
+    int pageCount = 1;
+    if (node.has("page_count") && node.get("page_count").isNumber()) {
+      pageCount = node.get("page_count").asInt();
     }
 
     if (!node.has("data_url")
@@ -258,7 +266,8 @@ public class FilingDocDocassembleJacksonDeserializer {
               (inStream != null) ? inStream.readAllBytes() : new byte[0],
               documentTypeFormatName,
               filingComponentCode,
-              documentDescription));
+              documentDescription,
+              pageCount));
     } catch (MalformedURLException ex) {
       FilingError err =
           serverError(

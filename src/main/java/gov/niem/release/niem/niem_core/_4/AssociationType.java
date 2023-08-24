@@ -57,14 +57,14 @@ import tyler.ecf.v5_0.extensions.common.FilingAssociationType;
     JuvenilePlacementFacilityAssociationType.class,
     JuvenilePlacementPersonAssociationType.class,
     ParentChildAssociationType.class,
-    PersonCaseAssociationType.class,
     JuvenileGangAssociationType.class,
     DocumentAssociationType.class,
     OrganizationAssociationType.class,
     PersonEmploymentAssociationType.class,
     PersonOrganizationAssociationType.class,
     PersonAssociationType.class,
-    RelatedActivityAssociationType.class
+    RelatedActivityAssociationType.class,
+    PersonCaseAssociationType.class
 })
 public class AssociationType
     extends gov.niem.release.niem.structures._4.AssociationType

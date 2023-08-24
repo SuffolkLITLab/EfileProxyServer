@@ -70,6 +70,7 @@ import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.appellate.Appellat
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.appellate.AppellateCourtRuleCaseType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caselistrequest.CaseListQueryCriteriaType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caserequest.CaseQueryCriteriaType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.DecedentEstateCaseType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.documentrequest.DocumentQueryCriteriaType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.domestic.DomesticViolencePetitionType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventActorType;
@@ -241,7 +242,8 @@ import tyler.ecf.v5_0.extensions.criminal.StatuteAugmentationType;
     ObligationType.class,
     AppellateCaseAddedPartyType.class,
     AppellateCaseRemovedPartyType.class,
-    AppellateCourtRuleCaseType.class
+    AppellateCourtRuleCaseType.class,
+    DecedentEstateCaseType.class
 })
 public abstract class ObjectType {
 

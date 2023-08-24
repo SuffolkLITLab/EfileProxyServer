@@ -10,6 +10,7 @@ import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.JsonHelpers;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.services.EfmCheckableFilingInterface;
+import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.FilingResult;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
@@ -29,6 +30,7 @@ import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.cancel.CancelFilin
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caseresponse.GetCaseResponseMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.FilingStatusType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.MessageStatusAugmentationType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.feesrequest.GetFeesCalculationRequestMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filinglistrequest.FilingListQueryCriteriaType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filinglistresponse.GetFilingListResponseMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filingstatusrequest.FilingStatusQueryCriteriaType;
@@ -36,16 +38,22 @@ import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.Get
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.CancelFilingRequestType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.CancelFilingResponseType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.GetCaseRequestType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.GetFeesCalculationRequestType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.GetFeesCalculationResponseType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.GetFilingListRequestType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.GetFilingListResponseType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.GetFilingStatusResponseType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.ReviewFilingRequestType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.ServeFilingRequestType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers.ServeFilingResponseType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDE;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDEService;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtrecordmde.CourtRecordMDE;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtrecordmde.CourtRecordMDEService;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.filingreviewmde.FilingReviewMDE;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.filingreviewmde.FilingReviewMDEService;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.servicemde.ServiceMDE;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.servicemde.ServiceMDEService;
 import jakarta.ws.rs.core.Response;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -76,6 +84,7 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
   private final CourtPolicyMDEService policyServFactory;
   private final FilingReviewMDEService reviewServFactory;
   private final TylerFilingReviewMDEService tylerReviewServFactory;
+  private final ServiceMDEService serviceFactory;
   private final CourtRecordMDEService recordServFactory;
   private final String headerKey;
   private final Supplier<CodeDatabase> cdSupplier;
@@ -86,6 +95,8 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
   private final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filinglistrequest
           .ObjectFactory
       filinglistObjFac;
+  private final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.feesrequest.ObjectFactory
+      feesObjFac;
   private final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filingstatusrequest
           .ObjectFactory
       filingstatusObjFac;
@@ -133,6 +144,14 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
     }
     this.recordServFactory = maybeRecord.get();
 
+    Optional<ServiceMDEService> maybeService =
+        SoapClientChooser.getServiceFactory(jurisdiction, env);
+    if (maybeService.isEmpty()) {
+      throw new RuntimeException(
+          "Cannot find " + jurisdiction + " in " + env + " for service factory");
+    }
+    this.serviceFactory = maybeService.get();
+
     this.cdSupplier = cdSupplier;
 
     this.cancelObjFac =
@@ -140,6 +159,8 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
     this.filinglistObjFac =
         new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filinglistrequest
             .ObjectFactory();
+    this.feesObjFac =
+        new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.feesrequest.ObjectFactory();
     this.filingstatusObjFac =
         new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filingstatusrequest
             .ObjectFactory();
@@ -177,6 +198,14 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
       caseCategoryName = core.caseCategoryName;
     } catch (FilingError err) {
       return Result.err(err);
+    }
+
+    if (!collector.okToSubmit()) {
+      return Result.ok(new FilingResult(List.of(), null));
+    }
+
+    if (choice.equals(ApiChoice.ServiceApi)) {
+      return serveFilingIfReady(core, info, collector, apiToken);
     }
 
     var msg = core.filingMsg;
@@ -245,6 +274,40 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
             caseTitle,
             caseCategoryName,
             courtName));
+  }
+
+  private Result<FilingResult, FilingError> serveFilingIfReady(
+      CoreMessageAndNames core, FilingInformation info, InfoCollector collector, String apiToken) {
+    Optional<ServiceMDE> port = Ecf5Helper.setupServicePort(serviceFactory, apiToken);
+    if (port.isEmpty()) {
+      return Result.err(
+          FilingError.serverError("Couldn't make a service MDE port with the given API token"));
+    }
+    ServeFilingRequestType req = wrapperObjFac.createServeFilingRequestType();
+    req.getFilingMessage().add(core.filingMsg);
+    ServeFilingResponseType receipt = port.get().serveFiling(req);
+    var maybeErr = Ecf5Helper.checkErrors(receipt.getMessageStatus());
+    if (maybeErr.isPresent()) {
+      try {
+        FilingError err = FilingError.serverError(maybeErr.get().toString());
+        collector.error(err);
+        return Result.err(err);
+      } catch (FilingError err) {
+        return Result.err(err);
+      }
+    }
+    /*
+    List<UUID> ids =
+        receipt.getServiceRecipientStatus().stream()
+            .map(
+                st -> {
+                  String id = st.getServiceRecipientID().getIdentificationID().getValue();
+                  return UUID.fromString(id);
+                })
+            .collect(Collectors.toList());
+            */
+    // TODO(brycew): no recipient status returned, only the envelope number
+    return Result.ok(new FilingResult(List.of(), info.getLeadContact()));
   }
 
   private CoreMessageAndNames prepareFiling(
@@ -374,48 +437,33 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
         msg.getElectronicServiceInformation().add(servInfo);
       }
 
-      i = 0;
       for (var doc : info.getFilings()) {
-        FilingCode fc = allCodes.filings.get(i);
-        if (doc.isLead()) {
-          msg.getFilingLeadDocument()
-              .add(
-                  serializer.filingDocToXml(
-                      doc,
-                      i,
-                      isInitialFiling,
-                      allCodes.cat,
-                      allCodes.type,
-                      fc,
-                      info.getMiscInfo(),
-                      collector));
-        } else {
-          // TODO(brycew): connected documents are missing their "parent" document info:
-          // and don't currently have a way to handle this in our side? I guess it's because
-          // you can have multiple lead documents in a single envelope now? idk, it wasn't around
-          // before...
-          // <nc:DocumentAssociation>
-          //   <nc:PrimaryDocument structures:ref="Filing1">
-          //     <nc:DocumentIdentification/>
-          //   </nc:PrimaryDocument>
-          //   <ecf:DocumentAssociationAugmentation>
-          //   <ecf:DocumentRelatedCode>parent</ecf:DocumentRelatedCode>
-          //   </ecf:DocumentAssociationAugmentation>
-          // </nc:DocumentAssociation>
-          msg.getFilingConnectedDocument()
-              .add(
-                  serializer.filingDocToXml(
-                      doc,
-                      i,
-                      isInitialFiling,
-                      allCodes.cat,
-                      allCodes.type,
-                      fc,
-                      info.getMiscInfo(),
-                      collector));
-        }
-
-        i++;
+        FilingCode fc = allCodes.filings.get(doc.seqNum());
+        msg.getFilingLeadDocument()
+            .add(
+                serializer.filingDocToXml(
+                    doc,
+                    doc.seqNum(),
+                    isInitialFiling,
+                    allCodes.cat,
+                    allCodes.type,
+                    fc,
+                    info.getMiscInfo(),
+                    xmlMaps,
+                    collector));
+        // TODO(brycew): trying not doing connected documents, only leads and attachments
+        // connected documents are missing their "parent" document info:
+        // and don't currently have a way to handle this in our side? I guess it's because
+        // you can have multiple lead documents in a single envelope now? idk, it wasn't around
+        // before...
+        // <nc:DocumentAssociation>
+        //   <nc:PrimaryDocument structures:ref="Filing1">
+        //     <nc:DocumentIdentification/>
+        //   </nc:PrimaryDocument>
+        //   <ecf:DocumentAssociationAugmentation>
+        //   <ecf:DocumentRelatedCode>parent</ecf:DocumentRelatedCode>
+        //   </ecf:DocumentAssociationAugmentation>
+        // </nc:DocumentAssociation>
       }
 
       var filingMessageAug = tylerObjFac.createFilingMessageAugmentationType();
@@ -454,14 +502,18 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
                 + " attorney. Only the first one will be used.");
       }
       var maybeAtty = attys.stream().findFirst();
-      var refObj =
+      var refType =
           tylerSerializer
               .vetFilingAttorney(maybeAtty, collector)
               .map(atty -> xmlMaps.attorneys.get("id-" + atty))
+              .map(
+                  ref -> {
+                    var tylerRefType = tylerObjFac.createReferenceType();
+                    tylerRefType.setRef(ref);
+                    return tylerRefType;
+                  })
               .orElse(null);
       FilingAttorneyEntityType filingAtty = tylerObjFac.createFilingAttorneyEntityType();
-      var refType = tylerObjFac.createReferenceType();
-      refType.setRef(refObj);
       filingAtty.setAttorneyReference(refType);
       filingMessageAug.setFilingAttorney(filingAtty);
 
@@ -481,7 +533,7 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
               p -> {
                 var entity = tylerObjFac.createFilingPartyEntityType();
                 var refParty = tylerObjFac.createReferenceType();
-                refParty.setRef(xmlMaps.parties.get(p));
+                refParty.setRef(xmlMaps.parties.get(p.getIdString()));
                 entity.setPartyReference(refParty);
                 filingMessageAug.setFilingParty(entity);
               });
@@ -508,7 +560,12 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
       JsonNode jsonAmount = miscInfo.get("civil_amount");
       if (jsonAmount != null && !jsonAmount.isNull() && jsonAmount.isNumber()) {
         filingMessageAug.setCivilAmount(Ecf5Helper.convertAmount(jsonAmount.decimalValue()));
+      } else {
+        filingMessageAug.setCivilAmount(Ecf5Helper.convertAmount(0));
       }
+
+      // TDOO(brycew): make an input for this
+      filingMessageAug.setEstateAmount(Ecf5Helper.convertAmount(0));
 
       filingMessageAug.setAttachServiceContactIndicator(
           Ecf5Helper.convertBool(anyServicePartyAttached));
@@ -521,6 +578,10 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
       // TODO(brycew): remaining for filingMessageAug
       // * out of state (for out of state service: is it only for mail?)
       // * return date?
+      msg.getFilingMessageAugmentationPoint()
+          .add(tylerObjFac.createFilingMessageAugmentation(filingMessageAug));
+
+      // TODO(brycew): vet the file sizes with court limits
       return new CoreMessageAndNames(msg, existingCaseTitle, caseCategoryName, courtName);
     } catch (SQLException ex) {
       log.error("IO Error when making filing! " + strFromException(ex));
@@ -530,8 +591,37 @@ public class Ecf5Filer extends EfmCheckableFilingInterface {
 
   @Override
   public Result<Response, FilingError> getFilingFees(FilingInformation info, String apiToken) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getFilingFees'");
+    FailFastCollector collector = new FailFastCollector();
+    Optional<FilingReviewMDE> port = Ecf5Helper.setupReviewPort(reviewServFactory, apiToken);
+    Optional<CourtPolicyMDE> policyPort = Ecf5Helper.setupPolicyPort(policyServFactory, apiToken);
+    Optional<CourtRecordMDE> recordPort = Ecf5Helper.setupRecordPort(recordServFactory, apiToken);
+
+    CoreMessageAndNames core;
+    try {
+      core = prepareFiling(info, collector, policyPort.get(), recordPort.get());
+    } catch (FilingError err) {
+      return Result.err(err);
+    }
+
+    GetFeesCalculationRequestType req = wrapperObjFac.createGetFeesCalculationRequestType();
+    req.setPaymentMessage(
+        PaymentFactory.makePaymentMessage(info.getPaymentId(), this.jurisdiction));
+    GetFeesCalculationRequestMessageType msg =
+        Ecf5Helper.prep(
+            feesObjFac.createGetFeesCalculationRequestMessageType(), info.getCourtLocation());
+    msg.getFilingMessage().add(core.filingMsg);
+    req.setGetFeesCalculationRequestMessage(msg);
+    log.info("fees req:");
+    log.info(
+        Ecf5Helper.objectToXmlStrOrError(req, GetFeesCalculationRequestType.class)
+            .replaceAll("<ns[1-9]:Base64BinaryObject>[^<]+<\\/ns[1-9]:Base64BinaryObject>", ""));
+    var resp = port.get().getFeesCalculation(req);
+
+    log.info(Ecf5Helper.objectToXmlStrOrError(resp, GetFeesCalculationResponseType.class));
+    return Result.ok(
+        Ecf5Helper.mapTylerCodesToHttp(
+            resp.getGetFeesCalculationResponseMessage().getMessageStatus(),
+            () -> Response.ok().entity(resp.getGetFeesCalculationResponseMessage()).build()));
   }
 
   @Override

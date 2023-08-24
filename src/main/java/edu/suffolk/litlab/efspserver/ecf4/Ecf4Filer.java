@@ -100,6 +100,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       listObjFac;
   private final tyler.ecf.extensions.filingdetailquerymessage.ObjectFactory detailObjFac;
   private final tyler.ecf.extensions.cancelfilingmessage.ObjectFactory cancelObjFac;
+  private static final tyler.ecf.extensions.common.ObjectFactory tylerObjFac =
+      new tyler.ecf.extensions.common.ObjectFactory();
   private final oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory
       commonObjFac;
   private final gov.niem.niem.niem_core._2.ObjectFactory niemObjFac;
@@ -323,7 +325,6 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       long maxSize = Ecf4Helper.sizeMeasureAsBytes(maxIndivDocSize);
       long cumulativeBytes = 0;
       Map<String, Object> filingIdToObj = new HashMap<>();
-      int seqNum = 0;
       for (FilingDoc filingDoc : info.getFilings()) {
         long bytes = filingDoc.allAttachmentsLength();
         if (bytes > maxSize) {
@@ -342,13 +343,12 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         }
         cumulativeBytes += bytes;
 
-        FilingCode fc = allCodes.filings.get(seqNum);
+        FilingCode fc = allCodes.filings.get(filingDoc.seqNum());
 
-        collector.pushAttributeStack("al_court_bundle[" + seqNum + "]");
-        JAXBElement<DocumentType> result =
+        collector.pushAttributeStack("al_court_bundle[" + filingDoc.seqNum() + "]");
+        DocumentType result =
             serializer.filingDocToXml(
                 filingDoc,
-                seqNum,
                 isInitialFiling,
                 allCodes.cat,
                 allCodes.type,
@@ -356,13 +356,13 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                 info.getMiscInfo(),
                 collector);
         collector.popAttributeStack();
-        filingIdToObj.put(filingDoc.getIdString(), result.getValue());
-        if (filingDoc.isLead()) {
-          cfm.getFilingLeadDocument().add(result);
+        filingIdToObj.put(filingDoc.getIdString(), result);
+        // the 0th doc is the Lead doc by default
+        if (filingDoc.seqNum() == 0) {
+          cfm.getFilingLeadDocument().add(tylerObjFac.createFilingLeadDocument(result));
         } else {
-          cfm.getFilingConnectedDocument().add(result);
+          cfm.getFilingConnectedDocument().add(tylerObjFac.createFilingConnectedDocument(result));
         }
-        seqNum += 1;
         log.info("Added a document to the XML");
       }
       MeasureType maxTotalDocSize =

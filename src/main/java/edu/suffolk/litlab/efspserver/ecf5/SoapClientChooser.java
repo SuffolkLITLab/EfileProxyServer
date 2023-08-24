@@ -4,6 +4,7 @@ import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtscheduli
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDEService;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtrecordmde.CourtRecordMDEService;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.filingreviewmde.FilingReviewMDEService;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.servicemde.ServiceMDEService;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
@@ -21,13 +22,7 @@ public class SoapClientChooser {
   private static final Logger log = LoggerFactory.getLogger(SoapClientChooser.class);
 
   static final Map<String, String> serviceMDEWsdls =
-      Map.of(
-          "illinois-stage", "wsdl/stage/illinois-ECF-4.0-ServiceMDEService.wsdl",
-          "illinois-test", "wsdl/test/illinois-ECF-4.0-ServiceMDEService.wsdl",
-          "illinois-prod", "wsdl/prod/illinois-ECF-4.0-ServiceMDEService.wsdl",
-          "massachusetts-stage", "wsdl/stage/massachusetts-ECF-4.0-ServiceMDEService.wsdl",
-          "texas-stage", "wsdl/stage/texas-ECF-4.0-ServiceMDEService.wsdl",
-          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-ServiceMDEService.wsdl");
+      Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-ServiceMDEService.wsdl");
 
   static final Map<String, String> filingReviewMDEWsdls =
       Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-FilingReviewMDEService.wsdl");
@@ -50,7 +45,6 @@ public class SoapClientChooser {
   static final Map<String, String> courtPolicyMDEWsdls =
       Map.of("illinois-stage", "wsdl/stage/illinois-ecf5-CourtPolicyMDEService.wsdl");
 
-  /*
   public static Optional<ServiceMDEService> getServiceFactory(String wsdlDomain) {
     Optional<URL> url = urlFromString(wsdlDomain, serviceMDEWsdls);
     return url.map(u -> new ServiceMDEService(u));
@@ -59,7 +53,6 @@ public class SoapClientChooser {
   public static Optional<ServiceMDEService> getServiceFactory(String jurisdiction, String env) {
     return getServiceFactory(jurisdiction + "-" + env);
   }
-  */
 
   public static Optional<CourtRecordMDEService> getCourtRecordFactory(String wsdlDomain) {
     Optional<URL> url = urlFromString(wsdlDomain, courtRecordMDEWsdls);

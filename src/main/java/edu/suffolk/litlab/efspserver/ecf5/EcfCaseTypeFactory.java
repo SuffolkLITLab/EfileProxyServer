@@ -14,6 +14,8 @@ import edu.suffolk.litlab.efspserver.tyler.codes.ComboCaseCodes;
 import edu.suffolk.litlab.efspserver.tyler.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.tyler.codes.PartyType;
 import gov.niem.release.niem.domains.jxdm._6.CaseOfficialType;
+import gov.niem.release.niem.niem_core._4.EntityType;
+import gov.niem.release.niem.niem_core._4.IdentificationType;
 import gov.niem.release.niem.niem_core._4.OrganizationType;
 import gov.niem.release.niem.niem_core._4.PersonType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.OrganizationAugmentationType;
@@ -21,6 +23,7 @@ import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAugmenta
 import jakarta.xml.bind.JAXBElement;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -45,11 +48,9 @@ public class EcfCaseTypeFactory {
       ecfObjFac = new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ObjectFactory();
 
   private final CodeDatabase cd;
-  private final String jurisdiction;
 
   public EcfCaseTypeFactory(CodeDatabase cd, String jurisdiction) {
     this.cd = cd;
-    this.jurisdiction = jurisdiction;
   }
 
   /**
@@ -104,10 +105,10 @@ public class EcfCaseTypeFactory {
     if (isInitialFiling) {
       myCaseType
           .getCaseAugmentationPoint()
-          .add(makeTylerCaseAug(tylerSerializer, info, collector, comboCodes));
+          .add(makeSpecialAug(comboCodes, info, collector, miscInfo));
       myCaseType
           .getCaseAugmentationPoint()
-          .add(makeSpecialAug(comboCodes, info, collector, miscInfo));
+          .add(makeTylerCaseAug(tylerSerializer, info, collector, comboCodes));
     }
     var xmlMaps = new XmlMaps(partyIdToRefObj, attorneyIdToRefObj);
     return Pair.of(myCaseType, xmlMaps);
@@ -186,9 +187,10 @@ public class EcfCaseTypeFactory {
         amt -> {
           civAug.setAmountInControversy(Ecf5Helper.convertAmount(amt));
         });
-    // NOTE: ReliefTypeCode required by schema, but what to add to the list
-    // required by schema but unused
-    civAug.setCauseOfActionCode(Ecf5Helper.convertText(""));
+    civAug.getReliefTypeCode().add(niemObjFac.createTextType());
+    // Passing null to things gives you <CausoOfActionCode/>, blank strings give
+    // <CauseOfActionCode></CauseOfActionCode>
+    civAug.setCauseOfActionCode(Ecf5Helper.convertText(null));
     return civObjFac.createCaseAugmentation(civAug);
   }
 
@@ -251,27 +253,29 @@ public class EcfCaseTypeFactory {
           CourtLocationInfo courtLocation)
           throws FilingError {
     var ecfAug = ecfObjFac.createCaseAugmentationType();
-    ecfAug
-        .getRest()
-        .add(ecfObjFac.createCaseCategoryCode(Ecf5Helper.convertText(comboCodes.cat.code)));
-    ecfAug
-        .getRest()
-        .add(
-            ecfObjFac.createCaseTypeCode(Ecf5Helper.convertNormalizedString(comboCodes.type.code)));
-    ecfAug.getRest().add(ecfObjFac.createCaseNewIndicator(Ecf5Helper.convertBool(isInitialFiling)));
-    info.getPreviousCaseId()
-        .ifPresent(
-            id -> {
-              ecfAug.getRest().add(ecfObjFac.createCaseTrackingID(Ecf5Helper.convertId(id)));
-            });
+    var cat = ecfObjFac.createCaseCategoryCode(Ecf5Helper.convertText(comboCodes.cat.code));
+    var newInd = ecfObjFac.createCaseNewIndicator(Ecf5Helper.convertBool(isInitialFiling));
+    var type =
+        ecfObjFac.createCaseTypeCode(Ecf5Helper.convertNormalizedString(comboCodes.type.code));
+    Optional<JAXBElement<IdentificationType>> maybeCaseId =
+        info.getPreviousCaseId()
+            .map(id -> ecfObjFac.createCaseTrackingID(Ecf5Helper.convertId(id)));
+    // expected jxdm:CaseNumberText
+    // niem:
+    // Metadata,
+    // organizationassociation
+    // personassociation
+    // personorganizationassociation
     List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocation.code, comboCodes.type.code);
     Set<String> presentPartyTypes = new HashSet<>();
     Map<String, Object> partyIdToRefObj = new HashMap<>();
+
+    List<JAXBElement<EntityType>> parties = new ArrayList<>();
     int i = 0;
     for (Person plaintiff : info.getNewPlaintiffs()) {
       collector.pushAttributeStack("plaintiffs[" + i + "]");
       var partip = serializer.createFullEcfCaseParticipant(plaintiff, collector, partyTypes);
-      ecfAug.getRest().add(partip);
+      parties.add(partip);
       collector.popAttributeStack();
       partyIdToRefObj.put(
           plaintiff.getIdString(), partip.getValue().getEntityRepresentation().getValue());
@@ -282,7 +286,7 @@ public class EcfCaseTypeFactory {
     for (Person defendant : info.getNewDefendants()) {
       collector.pushAttributeStack("plaintiffs[" + i + "]");
       var partip = serializer.createFullEcfCaseParticipant(defendant, collector, partyTypes);
-      ecfAug.getRest().add(partip);
+      parties.add(partip);
       collector.popAttributeStack();
       partyIdToRefObj.put(
           defendant.getIdString(), partip.getValue().getEntityRepresentation().getValue());
@@ -356,9 +360,18 @@ public class EcfCaseTypeFactory {
           partyIdToRefObj.put(partyId.getIdString(), pt);
         }
         // No role code needed in ECF 5!
-        ecfAug.getRest().add(ecfObjFac.createCaseParty(entity));
+        parties.add(ecfObjFac.createCaseParty(entity));
       }
     }
+
+    // Need to put all of the REST things in order, otherwise it fails the schema validation.
+    ecfAug.getRest().add(cat);
+    ecfAug.getRest().add(newInd);
+    for (var party : parties) {
+      ecfAug.getRest().add(party);
+    }
+    maybeCaseId.ifPresent(tracking -> ecfAug.getRest().add(tracking));
+    ecfAug.getRest().add(type);
     return Pair.of(ecfObjFac.createCaseAugmentation(ecfAug), partyIdToRefObj);
   }
 
@@ -369,16 +382,15 @@ public class EcfCaseTypeFactory {
           InfoCollector collector,
           ComboCaseCodes comboCodes)
           throws FilingError {
-    var cat = tylerObjFac.createCaseAugmentationType();
-    tylerSerializer
-        .vetSubType(info.getCaseSubtypeCode(), comboCodes.type.code, collector)
-        .ifPresent(
-            subType -> {
-              cat.setCaseSubTypeCode(Ecf5Helper.convertText(subType));
-            });
+    var tylerAug = tylerObjFac.createCaseAugmentationType();
+    var subType =
+        tylerSerializer
+            .vetSubType(info.getCaseSubtypeCode(), comboCodes.type.code, collector)
+            .orElse("");
+    tylerAug.setCaseSubTypeCode(Ecf5Helper.convertText(subType));
     // TODO(brycew): WillFiledDate
     // TODO(brycew): wtf is CaseAddress
-    return tylerObjFac.createCaseAugmentation(cat);
+    return tylerObjFac.createCaseAugmentation(tylerAug);
   }
 
   /**

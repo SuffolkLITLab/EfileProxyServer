@@ -322,9 +322,8 @@ public class EcfCourtSpecificSerializer {
     return personName;
   }
 
-  public JAXBElement<DocumentType> filingDocToXml(
+  public DocumentType filingDocToXml(
       FilingDoc doc,
-      int sequenceNum,
       boolean isInitialFiling,
       CaseCategory caseCategory,
       CaseType motionType,
@@ -355,7 +354,7 @@ public class EcfCourtSpecificSerializer {
               docType.setDocumentInformationCutOffDate(cutOffDate);
             });
 
-    docType.setDocumentSequenceID(convertString(Integer.toString(sequenceNum)));
+    docType.setDocumentSequenceID(convertString(Integer.toString(doc.seqNum())));
 
     DocumentMetadataType metadata = ecfOf.createDocumentMetadataType();
     metadata.setRegisterActionDescriptionText(convertText(filing.code));
@@ -443,7 +442,7 @@ public class EcfCourtSpecificSerializer {
                   allowedFileTypes,
                   miscInfo,
                   collector,
-                  sequenceNum));
+                  doc.seqNum()));
       collector.popAttributeStack();
       idx += 1;
     }
@@ -453,11 +452,7 @@ public class EcfCourtSpecificSerializer {
     docType.getDocumentRendition().add(rendition);
     docType.setId(doc.getIdString());
 
-    if (doc.isLead()) {
-      return tylerObjFac.createFilingLeadDocument(docType);
-    } else {
-      return tylerObjFac.createFilingConnectedDocument(docType);
-    }
+    return docType;
   }
 
   private FilingTypeType filingActionToXml(FilingAction action) {
@@ -507,15 +502,10 @@ public class EcfCourtSpecificSerializer {
     JAXBElement<Base64Binary> n =
         niemObjFac.createBinaryBase64Object(Ecf4Helper.convertBase64(fa.getFileContents()));
     attachment.setBinaryObject(n);
-    // TODO(brycew): depends on some DA code, should read in the PDF if possible here. Might be
-    // risky though.
-    // https://stackoverflow.com/questions/6026971/page-count-of-pdf-with-java
-    if (miscInfo.has("page_count")) {
-      int count = miscInfo.get("page_count").asInt(1);
-      NonNegativeDecimalType nndt = new NonNegativeDecimalType();
-      nndt.setValue(new BigDecimal(count));
-      attachment.setBinarySizeValue(tylerObjFac.createPageCount(nndt));
-    }
+
+    NonNegativeDecimalType nndt = new NonNegativeDecimalType();
+    nndt.setValue(new BigDecimal(fa.getPageCount()));
+    attachment.setBinarySizeValue(tylerObjFac.createPageCount(nndt));
     attachment.setAttachmentSequenceID(convertString(Integer.toString(seqNum)));
     return attachment;
   }
