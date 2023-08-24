@@ -29,6 +29,7 @@ import edu.suffolk.litlab.efspserver.tyler.codes.CourtLocationInfo;
 import edu.suffolk.litlab.efspserver.tyler.codes.CrossReference;
 import edu.suffolk.litlab.efspserver.tyler.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.tyler.codes.DataFields;
+import edu.suffolk.litlab.efspserver.tyler.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.tyler.codes.PartyType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
@@ -52,7 +53,7 @@ public class EcfCourtSpecificSerializerTest {
     List<CrossReference> blank = List.of();
     when(cd.getCrossReference("cook:cd1", caseType)).thenReturn(refs);
     when(cd.getCrossReference("adams", caseType)).thenReturn(blank);
-    when(cd.getLanguageNames("not_real")).thenReturn(List.of("English", "Polish", "Spanish"));
+    when(cd.getLanguages("not_real")).thenReturn(List.of(new NameAndCode("English", "en"), new NameAndCode("Polish", "po"), new NameAndCode("Spanish", "es")));
     when(cd.getDataFields(eq("not_real"))).thenReturn(new DataFields(
         List.of(Map.of("PartyGender",
                new DataFieldRow("PartyGender", "Party Gender", true, false, "", "", "", "", "", "", false, "")))

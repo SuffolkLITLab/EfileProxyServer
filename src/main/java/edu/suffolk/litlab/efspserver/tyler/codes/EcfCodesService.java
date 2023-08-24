@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,17 +86,19 @@ public class EcfCodesService extends CodesService {
       return errResp.get();
     }
     Class<?> clazz = this.getClass();
-    Method[] methods = clazz.getMethods();
-    List<Method> subCourtMethods = new ArrayList<>();
-    for (Method method : methods) {
-      if (underCourtMethodNames.contains(method.getName())) {
-        subCourtMethods.add(method);
-      }
-    }
-    var retMap =
-        ef.endPointsToMap(
-            replacePathParam(
-                ef.makeRestEndpoints(subCourtMethods, clazz), Map.of("court_id", courtId)));
+    List<Method> subCourtMethods =
+        Stream.of(clazz.getMethods())
+            .filter(m -> underCourtMethodNames.contains(m.getName()))
+            .toList();
+    var endpoints = ef.makeRestEndpoints(subCourtMethods, clazz);
+
+    List<Method> superClassSubCourtMethods =
+        Stream.of(clazz.getSuperclass().getMethods())
+            .filter(m -> underCourtMethodNames.contains(m.getName()))
+            .toList();
+    endpoints.addAll(ef.makeRestEndpoints(superClassSubCourtMethods, clazz.getSuperclass()));
+
+    var retMap = ef.endPointsToMap(replacePathParam(endpoints, Map.of("court_id", courtId)));
     return cors(Response.ok(retMap));
   }
 

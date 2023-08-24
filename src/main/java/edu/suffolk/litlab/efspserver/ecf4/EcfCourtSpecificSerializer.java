@@ -195,8 +195,7 @@ public class EcfCourtSpecificSerializer {
           .ifPresent(
               l -> {
                 // TODO(brycew): currently taking the safer option: if no languages are specified,
-                // don't
-                // add one
+                // don't add one
                 // TODO(brycew): need to have an ISO 639_2 (language codes) converter, from general
                 // language name
                 /// https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes
