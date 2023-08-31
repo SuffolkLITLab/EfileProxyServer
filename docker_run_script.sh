@@ -11,4 +11,6 @@ cd /usr/src/app
 exec java \
     -cp $(cat cp.txt):target/efspserver.jar \
     -XX:+HeapDumpOnOutOfMemoryError \
+    -XX:InitialRAMPercentage=20.0 \
+    -XX:MaxRAMPercentage=75.0 \
     edu.suffolk.litlab.efspserver.services.EfspServer
