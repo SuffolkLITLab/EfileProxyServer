@@ -47,7 +47,10 @@ public class EfspServer {
 
   private static final File CERT_KEY_STORE = new File("src/main/config/tls_server_cert.jks");
 
+  // BusFactory.setDefaultBus needs to happen before other CXF code, so use a static block
   static {
+    // Creating the Bus will immediately unlock the JKS file in `ServerConfig.xml`, so we set
+    // CallbackHandler's CertPassword before we create the factory.
     Optional<String> certPassword = GetEnv("CERT_PASSWORD");
     if (certPassword.isPresent() && CERT_KEY_STORE.isFile()) {
       HttpsCallbackHandler.setCertPassword(certPassword.get());

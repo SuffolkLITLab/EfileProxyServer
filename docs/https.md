@@ -48,30 +48,32 @@ openssl pkcs12 -export -in my_domain.crt -inkey my_domain.key -out my_domain.p12
 keytool -importkeystore -srckeystore my_domain.p12 -srcstoretype PKCS12 -destkeystore my_domain.jks -deststoretype JKS
 ```
 
-Our sources for the above are listed below, refer to them if you don't :
-* [https://stackoverflow.com/a/41469242/11416267]
-* [https://www.tbs-certificates.co.uk/FAQ/en/ajouter-certificat-intermediaire-keystore-java.html]
-* [https://community.datarobot.com/t5/data-prep/how-to-convert-crt-and-key-to-jks-file/td-p/6342]
+Refer to the sources below if you need more details:
+* ["Java TLS with Keystores" cheat-sheet](https://stackoverflow.com/a/41469242/11416267)
+* [Install a Tomcat cert](https://www.tbs-certificates.co.uk/FAQ/en/ajouter-certificat-intermediaire-keystore-java.html)
+* [How to convert *.crt and *.key to *.jks](https://community.datarobot.com/t5/data-prep/how-to-convert-crt-and-key-to-jks-file/td-p/6342)
 
 
 ## Developer Notes: Using the cert in the CXF Server
 
-Next you have to set up the CXF server properly to use it.
+Once you have the cert, you need to set up the CXF server properly to use it. To do so,
+[ServerConfig.xml](https://github.com/SuffolkLITLab/EfileProxyServer/blob/4a25a9f30d7d74d9e0828d142f6b908e1a3532ec/src/main/config/ServerConfig.xml#L33)
+needs to point to the `*.jks` file.
 
-The following pages have useful information, but are kinda sparse:
+See the following files and their code comments for the current setup.
+
+* [EfspServer.java](https://github.com/SuffolkLITLab/EfileProxyServer/blob/main/src/main/java/edu/suffolk/litlab/efspserver/services/EfspServer.java)
+* [ServerConfig.xml](https://github.com/SuffolkLITLab/EfileProxyServer/blob/main/src/main/config/ServerConfig.xml)
+  * The ServerConfig.xml shouldn't use the `clientAuthentication` elem, as it expects our connecting clients to also have a TLS cert, which isn't how HTTPS traffic usually works.
+* [HttpsCallbackHandler.java](https://github.com/SuffolkLITLab/EfileProxyServer/blob/main/src/main/java/edu/suffolk/litlab/efspserver/HttpsCallbackHandler.java)
+* [ServiceHelpers.java](https://github.com/SuffolkLITLab/EfileProxyServer/blob/main/src/main/java/edu/suffolk/litlab/efspserver/services/ServiceHelpers.java#L74)
+  * The external address (i.e `ServerFactoryBean.setAddress`) needs to be `https://`, not `http://`. We use `CERT_PASSWORD` to determine if someone is trying to run with TLS, and if no `CERT_PASSWORD` is present, we use `http://`.
+
+
+The following CXF documentation pages have more information, but are kinda sparse:
 
 * [https://cxf.apache.org/docs/secure-jax-rs-services.html#SecureJAXRSServices-Configuringendpoints]
 * [https://cwiki.apache.org/confluence/display/CXF20DOC/TLS+Configuration]
 * [https://cxf.apache.org/docs/standalone-http-transport.html]
 * [http://svn.apache.org/repos/asf/cxf/trunk/distribution/src/main/release/samples/jax_rs/basic_https/]
 
-The SpringBusFactory and Bus from the ServerConfig.xml need to be created in
-a static block in the Server class, and you need to set the CertPassword to
-the CallbackHandler before you create the factory, as it will be used to immediately
-unlock the passed in JKS file.
-
-The external address (i.e `ServerFactoryBean.setAddress`) needs to be `https://`, not `http://`. We use `CERT_PASSWORD` to determine if someone is trying to run with TLS,
-and if no `CERT_PASSWORD` is present, we use `http://`.
-
-The ServerConfig.xml shouldn't use the `clientAuthentication` elem, as it
-expects clients connecting to also have a TLS cert.
