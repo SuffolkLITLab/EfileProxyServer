@@ -2,13 +2,33 @@
 
 Author: Bryce Willey
 
-TODO(brycew): Still in prgress!
+TODO(brycew): Still in progress!
 
 Tyler codes are simply options that the end-user must make (either implicitly or explicitly) when making a filing. The choices are essentially a drop-down list of options, defined by the court and other choices they have made so far in the filing process. Each court decides which codes are available to it's filers, and every court differs.
 
-Technically, Tyler describes it's codes using the [genericode](https://docs.oasis-open.org/codelist/cs-genericode-1.0/doc/oasis-code-list-representation-genericode.html#_Toc190622786) standard, as is required by ECF. Only a small subset of the features of genericode are used however. Most of the information about the codes can be expressed as a SQL table, as is natural for genericode: each code has one or more columns and each entry in a code is a row.
+Technically, Tyler describes it's codes using the [genericode](https://docs.oasis-open.org/codelist/cs-genericode-1.0/doc/oasis-code-list-representation-genericode.html#_Toc190622786) standard, as is required by ECF. Only a small subset of the features of genericode are used however. Most of the information about the codes can be expressed as a SQL table, as is natural for genericode: each code has one or more columns and each entry in a code is a row. We store all code information in SQL tables internally.
 
 This is not meant to be an exhaustive description of each column in all of the codes: it is an introduction into the hierarchy of the code tables, with a brief description of each.
+
+The hierarchy is shown in the below image:
+
+![The dependencies of the filing specific codes, as a directed graph](codes_dependencies.png)
+
+For example, if you want to know what party type codes are allowed to be used in a case, you need to know the following information (all of the parents above the `party type` node):
+* the location (i.e. the court)
+* the case category
+* whether the filing is an initial filing into a new case, or a subsequent filing into an existing case
+* the case type
+
+The rough SQL queries for the above would look like this (simplified);
+
+```SQL
+SELECT * FROM casecategory where location='adams';
+...
+SELECT * FROM casetype WHERE location='adams' AND casecategory='1234' AND initial='true';
+...
+SELECT * FROM partytype WHERE location='adams' AND casetype='5678';
+```
 
 The codes system has 45 different codes:
 * answer
@@ -82,7 +102,11 @@ The rest are described below, starting with the top of the hierarchy, down to th
 
 ## System codes
 
-System codes are technically not dependent on any specific court, and are available system wide. In practice, most of these codes can be changed on a per-court basis, so it's not wise to only get the system codes.
+From Tyler's documentation:
+
+> System codes define system wide behaviors and capabilities of the EFM
+
+System codes are available _jurisdiction_ wide (i.e., all of Illinois), and technically not dependent on any specific court. In practice, all of these codes (except `location` and `error`) can be changed on a per-court basis, so it's not wise to only get the system codes. They are treated differently internally and in Tyler's documentation, so there are here as well.
 
 ### Location
 
@@ -94,11 +118,15 @@ The error codes describe all possible error values that an API call can get back
 
 ### Country and State
 
-A list of countries recognized by country fields. The State codes are available for a select number of countries: for IL these are only Canada, the US, and Mexico.
+A list of countries accepted by the court. Can vary for some unknown reason (why they don't just use [ISO-3166](https://en.wikipedia.org/wiki/ISO_3166) I have no idea). The State codes are available for a select number of countries: for IL these are only Canada, the US, and Mexico.
 
 ### Filing status
 
+Things like "Filing has been served", "Filing has been cancelled", etc.
+
 ### Version
+
+Used internally to tell if we need to update any codes from the courts (e.g., we only need to download the codes file for suffixes, and not the other tables).
 
 ### Data Field Config
 
@@ -106,7 +134,7 @@ This code is one of the more important codes: it lists every piece of informatio
 
 ## Location Level Codes
 
-These codes aren't available system-wide, but only depend of the location/court that the user is interacting with.
+These codes aren't available system-wide, but depend on the location/court that the user is interacting with.
 
 ### Service Type
 
@@ -134,6 +162,8 @@ What suffixes are allowed in the names of users.
 
 ### Filer Type
 
+? Used in Texas only, seems to be "pro-se filer" vs "Government filer". Haven't used in production yet, not sure of the practical usage.
+
 ### Driver License Type
 
 
@@ -142,15 +172,9 @@ What suffixes are allowed in the names of users.
 
 These codes are generally the most relevant to the court and the filing being made, and thus are the most structured and differ the most from court to court.
 
-Their hierarchy is shown in the below image.
-
-
-![The dependencies of the filing specific codes, as a directed graph](codes_dependencies.png)
-
-
 ### Case Category
 
-The case category is a broad select across different groups of cases, ranging from as wide as Civil or Family, to narrower categories like Eminent Domain to Dissolution (Divorce) with Children to Contempt of Court. It also declares if two other code tables, Damage amount and procedure remedy, are available to cases of that category.
+The case category is a broad selection across different groups of cases, ranging from as wide as Civil or Family, to narrower categories like Eminent Domain to Dissolution (Divorce) with Children to Contempt of Court. It also declares if two other code tables, Damage amount and Procedure Remedy, are available to cases of that category.
 
 ### Damage Amount and Procedure Remedy
 
@@ -158,17 +182,17 @@ The case category is a broad select across different groups of cases, ranging fr
 
 ### Case Type and Subtype
 
-The actual and more specific type of the case being filed. For example, in Adams county, the case types for the case category "Eminent Domain" are:
+The actual type, and more specific type of the case being filed, respectively. For example, in Adams county, the case types for the case category "Eminent Domain" are:
 * Eminent Domain (started within the court, not allowed to be initiated by an e-filer)
 * Eminent Domain (allowed be the initiated by an e-filer)
 * Condemnation (N)
 * Change of Venue - Eminent Domain
 
-There are often case types that look identical until you filter by if they are allowed to be initiated by an e-filer. Those are allowed usually have an additional fee to initiate, whereas those that don't have no additional fee to make a subsequent filing.
+There are often case types that look identical until you filter on if they are allowed to be initiated by an e-filer (`CaseCategory.initial`). Case types where `initial` is true usually have an additional fee to initiate, whereas case types where `initial` is false usually have no additional fee to make a subsequent filing.
 
 ### Cross Reference
 
-A general number that references some other schema or database elsewhere. The most commonly used on in IL is the Cook County Attorney/Self-Represented Litigant Code, which each attorney will know, and if the filer is an SRL, needs to be a specific number, 99500. Cases can generally require an arbitrary number of these cross references.
+A general number that references some other schema or database elsewhere. The most commonly used one in IL is the Cook County Attorney/Self-Represented Litigant Code, which each attorney will know, and if the filer is an SRL, needs to be a specific number: 99500. Cases can generally require an arbitrary number of these cross references.
 
 ### Party Type
 
@@ -180,11 +204,17 @@ The actual filing type being made. Determined by what case type the filing is be
 
 #### Filing Component
 
+Whether the filing is the Lead Document or an attachment.
+
 #### Motion Type
 
 #### Document Type
 
+Various forms of "Confidential" and "Non-confidential". As is normal, every jurisdiction has
+a different way of saying the exact same thing (MA does "Public" and "Impounded", and Harris County in TX seems to put filing type information in here as well??).
+
 #### Optional Services
 
+An array of additional things that the filer can ask for / purchase from the court; this is kind of a catch-all, and includes things like adding a jury trial to a case (for some courts) to requesting additional copies be printed by the court.
 
 
