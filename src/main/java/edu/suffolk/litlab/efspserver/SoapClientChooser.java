@@ -82,9 +82,7 @@ public class SoapClientChooser {
           "illinois-prod", "wsdl/prod/illinois-v5-CourtSchedulingMDE.wsdl");
 
   public static String getCodeEndpointRootUrl(String jurisdiction, String env) {
-    if ((jurisdiction.equalsIgnoreCase("massachusetts")
-            || jurisdiction.equalsIgnoreCase("illinois"))
-        && env.equalsIgnoreCase("prod")) {
+    if (jurisdiction.equalsIgnoreCase("illinois") && env.equalsIgnoreCase("prod")) {
       return "https://" + jurisdiction + ".tylerhost.net/";
     }
     if (jurisdiction.equalsIgnoreCase("california")) {
