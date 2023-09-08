@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efspserver.ecf;
 
 import static edu.suffolk.litlab.efspserver.StdLib.strFromException;
+import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
 
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.CaseServiceContact;
@@ -82,6 +83,8 @@ import tyler.ecf.extensions.filingservicequerymessage.ServiceContactIdentificati
 import tyler.ecf.extensions.filingserviceresponsemessage.FilingServiceResponseMessageType;
 import tyler.ecf.extensions.servicetypesrequestmessage.ServiceTypesRequestMessageType;
 import tyler.ecf.extensions.servicetypesresponsemessage.ServiceTypesResponseMessageType;
+import tyler.efm.services.EfmFirmService;
+import tyler.efm.services.IEfmFirmService;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
@@ -104,6 +107,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   private final gov.niem.niem.proxy.xsd._2.ObjectFactory proxyObjFac;
   private final CourtRecordMDEService recordFactory;
   private final FilingReviewMDEService filingFactory;
+  private final EfmFirmService firmFactory;
   private final ServiceMDEService serviceFactory;
   private final String jurisdiction;
   private final String env;
@@ -143,6 +147,12 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
       throw new RuntimeException("Cannot find " + jurisdiction + " for service mde factory");
     }
     this.serviceFactory = maybeServiceFac.get();
+    Optional<EfmFirmService> maybeFirmFactory =
+        SoapClientChooser.getEfmFirmFactory(jurisdiction, env);
+    if (maybeFirmFactory.isEmpty()) {
+      throw new RuntimeException("Cannot find " + jurisdiction + " for firm mde factory");
+    }
+    this.firmFactory = maybeFirmFactory.get();
   }
 
   @Override
@@ -349,6 +359,10 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
           policy.getDevelopmentPolicyParameters().getValue().getMaximumAllowedAttachmentSize();
       long maxSize = XmlHelper.sizeMeasureAsBytes(maxIndivDocSize);
       long cumulativeBytes = 0;
+
+      Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, apiToken);
+      boolean isIndividual =
+          firmPort.map(port -> port.getFirm().getFirm().isIsIndividual()).orElse(true);
       Map<String, Object> filingIdToObj = new HashMap<>();
       int seqNum = 0;
       for (FilingDoc filingDoc : info.getFilings()) {
@@ -380,6 +394,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
                 allCodes.cat,
                 allCodes.type,
                 fc,
+                isIndividual,
                 info.getMiscInfo(),
                 collector);
         collector.popAttributeStack();

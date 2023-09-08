@@ -696,6 +696,7 @@ public class EcfCourtSpecificSerializer {
       CaseCategory caseCategory,
       CaseType motionType,
       FilingCode filing,
+      boolean isIndividual,
       JsonNode miscInfo,
       InfoCollector collector)
       throws IOException, FilingError {
@@ -757,10 +758,10 @@ public class EcfCourtSpecificSerializer {
 
     DataFieldRow attorneyRow = allDataFields.getFieldRow("FilingFilingAttorneyView");
     if (attorneyRow.isvisible) {
-      if (doc.getFilingAttorney().isPresent()) {
+      if (doc.getFilingAttorney().isPresent() && !doc.getFilingAttorney().get().isBlank()) {
         metadata.setFilingAttorneyID(
             XmlHelper.convertId(doc.getFilingAttorney().get(), "REFERENCE"));
-      } else if (!attorneyRow.isrequired) {
+      } else if (!attorneyRow.isrequired || isIndividual) {
         // "This field should contain empty values for Individual filers"
         metadata.setFilingAttorneyID(XmlHelper.convertId("", ""));
       } else {
