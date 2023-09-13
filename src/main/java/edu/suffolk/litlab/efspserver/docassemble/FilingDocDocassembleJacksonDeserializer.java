@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efspserver.docassemble;
 
 import static edu.suffolk.litlab.efspserver.JsonHelpers.getIntMember;
 import static edu.suffolk.litlab.efspserver.JsonHelpers.getMemberList;
+import static edu.suffolk.litlab.efspserver.JsonHelpers.getNonEmptyStringMember;
 import static edu.suffolk.litlab.efspserver.JsonHelpers.getNumberMember;
 import static edu.suffolk.litlab.efspserver.JsonHelpers.getStringDefault;
 import static edu.suffolk.litlab.efspserver.JsonHelpers.getStringMember;
@@ -103,7 +104,7 @@ public class FilingDocDocassembleJacksonDeserializer {
     }
     String userDescription = getStringDefault(node, "filing_description", "");
     Optional<String> filingRefNum = getStringMember(node, "reference_number");
-    Optional<String> filingAttorney = getStringMember(node, "filing_attorney");
+    Optional<String> filingAttorney = getNonEmptyStringMember(node, "filing_attorney");
     String filingComment = getStringDefault(node, "filing_comment", "");
 
     String _logName =

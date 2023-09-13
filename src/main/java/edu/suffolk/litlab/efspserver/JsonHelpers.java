@@ -19,6 +19,14 @@ public class JsonHelpers {
     return Optional.empty();
   }
 
+  public static Optional<String> getNonEmptyStringMember(JsonNode obj, String memberName) {
+    var maybeStr = getStringMember(obj, memberName);
+    if (maybeStr.map(str -> str.isBlank()).orElse(true)) {
+      return Optional.empty();
+    }
+    return maybeStr;
+  }
+
   public static String getStringDefault(JsonNode obj, String memberName, String def) {
     if (!obj.has(memberName)) {
       return def;
