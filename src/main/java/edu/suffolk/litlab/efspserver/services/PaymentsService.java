@@ -84,17 +84,27 @@ public class PaymentsService {
       </html>
       """;
 
+  // Set by some JAX magic.
+  @Context UriInfo uri;
+
+  private final RandomString transactionIdGen;
+  private final String togaKey;
+  private final String togaUrl;
+  private final EfmFirmService firmFactory;
+  private final Supplier<CodeDatabase> cdSupplier;
+  private final DataSource userDs;
+  private final String jurisdiction;
+
   public PaymentsService(
       String jurisdiction,
       String env,
       String togaKey,
       String togaUrl,
-      DataSource codeDs,
-      DataSource userDs) {
+      DataSource userDs,
+      Supplier<CodeDatabase> cdSupplier) {
     this.callbackToUsUrl =
         ServiceHelpers.EXTERNAL_URL + "/jurisdictions/" + jurisdiction + "/payments/toga-account";
     this.jurisdiction = jurisdiction;
-    this.env = env;
     // Will generated 21 character long transaction ids, the max length.
     this.transactionIdGen = new RandomString(21);
     this.togaKey = togaKey;
@@ -107,7 +117,7 @@ public class PaymentsService {
       throw new RuntimeException(
           jurisdiction + "-" + env + " not in SoapClientChooser for EFMFirm");
     }
-    this.codeDs = codeDs;
+    this.cdSupplier = cdSupplier;
     this.userDs = userDs;
   }
 
@@ -252,7 +262,7 @@ public class PaymentsService {
         new tyler.efm.services.schema.getpaymentaccountlistrequest.ObjectFactory()
             .createGetPaymentAccountListRequestType();
     if (courtId != null && !courtId.isBlank()) {
-      try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
+      try (CodeDatabase cd = cdSupplier.get()) {
         if (!cd.getAllLocations().contains(courtId)) {
           return Response.status(404).entity("Court does not exist " + courtId).build();
         }
@@ -620,16 +630,4 @@ public class PaymentsService {
   }
 
   private final Map<String, TempAccount> tempAccounts;
-
-  // Set by some JAX magic.
-  @Context UriInfo uri;
-
-  private final RandomString transactionIdGen;
-  private final String togaKey;
-  private final String togaUrl;
-  private final EfmFirmService firmFactory;
-  private final DataSource codeDs;
-  private final DataSource userDs;
-  private final String jurisdiction;
-  private final String env;
 }

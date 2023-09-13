@@ -21,17 +21,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author brycew
  */
-public class UserDatabase implements DatabaseInterface {
+public class UserDatabase extends Database {
   private static Logger log = LoggerFactory.getLogger(UserDatabase.class);
 
-  private final Connection conn;
-
   public UserDatabase(Connection conn) {
-    this.conn = conn;
-  }
-
-  public Connection getConnection() {
-    return conn;
+    super(conn);
   }
 
   /** Creates the userdatabase table if it doesn't exist yet. */

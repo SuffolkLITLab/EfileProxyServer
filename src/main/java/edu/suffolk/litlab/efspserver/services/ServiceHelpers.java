@@ -15,7 +15,6 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.ws.BindingProvider;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -249,8 +248,7 @@ public class ServiceHelpers {
       boolean needsSoapHeader,
       String jurisdiction) {
     String activeToken = httpHeaders.getHeaderString("X-API-KEY");
-    try (Connection conn = userDs.getConnection()) {
-      LoginDatabase ld = new LoginDatabase(conn);
+    try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
       Optional<AtRest> atRest = ld.getAtRestInfo(activeToken);
       if (atRest.isEmpty()) {
         log.warn("Couldn't find server api key");

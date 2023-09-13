@@ -211,14 +211,14 @@ public class CodeUpdater {
     // On first download, there won't be installed versions of things yet.
     cd.createTableIfAbsent("installedversion");
 
-    cd.getConnection().commit();
+    cd.commit();
 
-    Savepoint sp = cd.getConnection().setSavepoint("systemTables");
+    Savepoint sp = cd.setSavepoint("systemTables");
 
     Optional<String> signedTime = signer.signedCurrentTime();
     if (signedTime.isEmpty()) {
       log.error("Couldn't sign the current time: rolling back");
-      cd.getConnection().rollback(sp);
+      cd.rollback(sp);
       return false;
     }
 
@@ -238,11 +238,11 @@ public class CodeUpdater {
       boolean updateSuccess =
           downloadAndProcessZip(baseUrl + urlSuffix.getValue(), signedTime.get(), process);
       if (!updateSuccess) {
-        cd.getConnection().rollback(sp);
+        cd.rollback(sp);
         return false;
       }
     }
-    cd.getConnection().commit();
+    cd.commit();
     return true;
   }
 
@@ -400,7 +400,7 @@ public class CodeUpdater {
     }
     updates = updates.plus(Duration.between(updateStart, Instant.now(Clock.systemUTC())));
 
-    cd.getConnection().commit();
+    cd.commit();
     log.info("Location: {}: updates took: {}", location, updates);
     return true;
   }
@@ -417,7 +417,7 @@ public class CodeUpdater {
     }
 
     // Drop each of tables that need to be updated
-    Savepoint sp = cd.getConnection().setSavepoint("court update savepoint");
+    Savepoint sp = cd.setSavepoint("court update savepoint");
     Map<String, List<String>> versionsToUpdate = cd.getVersionsToUpdate();
     Instant startDel = Instant.now(Clock.systemUTC());
     Set<String> allTables = new HashSet<>();
@@ -447,7 +447,7 @@ public class CodeUpdater {
         Instant deleteFromTable = Instant.now(Clock.systemUTC());
         if (!cd.deleteFromTable(table, courtLocation)) {
           log.error("Couldn't delete from {} at {}, aborting", table, courtLocation);
-          cd.getConnection().rollback(sp);
+          cd.rollback(sp);
           return false;
         }
         updates = updates.plus(Duration.between(deleteFromTable, Instant.now(Clock.systemUTC())));
@@ -468,12 +468,12 @@ public class CodeUpdater {
       if (!downloadCourtTables(
           courtLocation, Optional.of(tables), cd, signer, policy.getValue(), baseUrl)) {
         log.warn("Failed updating court {}'s tables {}", courtLocation, tables);
-        cd.getConnection().rollback(sp);
+        cd.rollback(sp);
         return false;
       }
     }
-    cd.getConnection().commit();
-    cd.getConnection().setAutoCommit(true);
+    cd.commit();
+    cd.setAutoCommit(true);
     cd.vacuumAll();
     return true;
   }
@@ -498,7 +498,7 @@ public class CodeUpdater {
       cd.createTableIfAbsent(table);
       cd.deleteFromTable(table);
     }
-    cd.getConnection().commit();
+    cd.commit();
 
     downloads = Duration.ZERO;
     soaps = Duration.ZERO;
@@ -520,8 +520,8 @@ public class CodeUpdater {
           downloadCourtTables(location, Optional.empty(), cd, signer, policy.getValue(), baseUrl);
     }
     log.info("Downloads took: {}, and updates took: {}, soaps took: {}", downloads, updates, soaps);
-    cd.getConnection().commit();
-    cd.getConnection().setAutoCommit(true);
+    cd.commit();
+    cd.setAutoCommit(true);
     cd.vacuumAll();
     return success;
   }
@@ -592,7 +592,7 @@ public class CodeUpdater {
     SoapX509CallbackHandler.setX509Password(x509Password);
     String command = args.get(0);
     try {
-      cd.getConnection().setAutoCommit(false);
+      cd.setAutoCommit(false);
       String codesSite = SoapClientChooser.getCodeEndpointRootUrl(jurisdiction, env);
       FilingReviewMDEPort filingPort =
           loginWithTyler(

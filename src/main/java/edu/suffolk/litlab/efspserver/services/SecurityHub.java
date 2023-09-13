@@ -6,7 +6,6 @@ import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.db.NewTokens;
 import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetLogin;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -71,8 +70,7 @@ public class SecurityHub {
    *     authenticate the user.
    */
   public Optional<NewTokens> login(String apiKey, String jsonLoginInfo) {
-    try (Connection conn = userDs.getConnection()) {
-      LoginDatabase ld = new LoginDatabase(conn);
+    try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
       return ld.login(apiKey, jsonLoginInfo, loginFunctions);
     } catch (SQLException e) {
       log.error(StdLib.strFromException(e));

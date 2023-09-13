@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-public class LoginDatabase implements DatabaseInterface {
+public class LoginDatabase extends Database {
   private static Logger log = LoggerFactory.getLogger(LoginDatabase.class);
 
   private static final String atRestCreate =
@@ -47,20 +47,26 @@ public class LoginDatabase implements DatabaseInterface {
                ?, ?)""";
 
   private static final RandomString tokenGenerator = new RandomString();
-  private final Connection conn;
   private final MessageDigest digest;
 
   public LoginDatabase(Connection conn) {
+    super(conn);
     try {
       this.digest = MessageDigest.getInstance("SHA-256");
     } catch (NoSuchAlgorithmException ex) {
       throw new AssertionError(ex);
     }
-    this.conn = conn;
   }
 
-  public Connection getConnection() {
-    return conn;
+  public static LoginDatabase fromDS(DataSource ds) {
+    try {
+      LoginDatabase cd = new LoginDatabase(ds.getConnection());
+      return cd;
+    } catch (SQLException ex) {
+      log.error(
+          "In LoginDatabase constructor, can't get connection: " + StdLib.strFromException(ex));
+      throw new RuntimeException(ex);
+    }
   }
 
   @Override
@@ -288,9 +294,8 @@ public class LoginDatabase implements DatabaseInterface {
             System.getenv("POSTGRES_PASSWORD"),
             2,
             100);
-    try (Connection conn = ds.getConnection()) {
-      conn.setAutoCommit(true);
-      LoginDatabase ld = new LoginDatabase(conn);
+    try (LoginDatabase ld = new LoginDatabase(ds.getConnection())) {
+      ld.setAutoCommit(true);
       boolean tylerBool = Boolean.parseBoolean(tylerEnabled);
       boolean jeffnetBool = Boolean.parseBoolean(jeffnetEnabled);
       ld.createTablesIfAbsent();

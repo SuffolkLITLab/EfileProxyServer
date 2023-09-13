@@ -51,8 +51,7 @@ public class MessageSettingsService {
   public Response getMsgSettings(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "MessageSettingsService.getMsgSettings");
     OrgMessageSender orgMsg = new OrgMessageSender(ds, null);
-    try (Connection conn = ds.getConnection()) {
-      LoginDatabase ld = new LoginDatabase(conn);
+    try (LoginDatabase ld = new LoginDatabase(ds.getConnection())) {
       Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
       if (atRest.isEmpty()) {
         return Response.status(401).entity("\"Not logged in to efile\"").build();
@@ -72,6 +71,7 @@ public class MessageSettingsService {
   public Response setMsgSettings(@Context HttpHeaders httpHeaders, String newInfoStr) {
     try (Connection conn = ds.getConnection()) {
       MDC.put(MDCWrappers.OPERATION, "MessageSettingsService.setMsgSettings");
+      @SuppressWarnings("resource")
       LoginDatabase ld = new LoginDatabase(conn);
       Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
       if (atRest.isEmpty()) {
@@ -88,11 +88,11 @@ public class MessageSettingsService {
         node = mapper.readTree(newInfoStr);
       } catch (JsonProcessingException e) {
         log.error("You need to pass a JSON string to /settings; we got " + newInfoStr);
-        MDCWrappers.removeAllMDCs();
         return Response.status(400).build();
       }
       MessageInfo newInfo = new MessageInfo(node);
 
+      @SuppressWarnings("resource")
       var md = new MessageSettingsDatabase(conn);
       MessageInfo existingInfo =
           md.findMessageInfo(atRest.get().serverId)
@@ -105,8 +105,9 @@ public class MessageSettingsService {
       return Response.status(200).build();
     } catch (SQLException ex) {
       log.error("Error when trying to update settings: " + StdLib.strFromException(ex));
-      MDCWrappers.removeAllMDCs();
       return Response.status(500).build();
+    } finally {
+      MDCWrappers.removeAllMDCs();
     }
   }
 }

@@ -1,7 +1,7 @@
 package edu.suffolk.litlab.efspserver.codes;
 
 import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.db.DatabaseInterface;
+import edu.suffolk.litlab.efspserver.db.Database;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -37,38 +37,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author brycew
  */
-public class CodeDatabase implements DatabaseInterface, AutoCloseable {
+public class CodeDatabase extends Database {
   private static final Logger log = LoggerFactory.getLogger(CodeDatabase.class);
 
-  private final Connection conn;
   /** The DNS domain (tyler jurisdiction + tyler environment, illinois-stage). */
   private final String tylerDomain;
 
   public CodeDatabase(String jurisdiction, String env, Connection conn) {
+    super(conn);
     this.tylerDomain = jurisdiction + "-" + env;
-    this.conn = conn;
   }
 
-  public CodeDatabase(String jurisdiction, String env, DataSource ds) {
-    this.tylerDomain = jurisdiction + "-" + env;
-    Connection the_conn;
+  public static CodeDatabase fromDS(String jurisdiction, String env, DataSource ds) {
     try {
-      the_conn = ds.getConnection();
+      CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection());
+      return cd;
     } catch (SQLException e) {
       log.error("In CodeDatabase constructor, can't get connection: " + StdLib.strFromException(e));
-      the_conn = null;
-    }
-    this.conn = the_conn;
-  }
-
-  public Connection getConnection() {
-    return conn;
-  }
-
-  @Override
-  public void close() throws SQLException {
-    if (this.conn != null) {
-      this.conn.close();
+      throw new RuntimeException(e);
     }
   }
 

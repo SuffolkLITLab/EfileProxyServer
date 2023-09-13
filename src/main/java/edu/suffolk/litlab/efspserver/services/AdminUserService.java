@@ -25,12 +25,12 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.ws.BindingProvider;
 import java.net.URI;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
@@ -84,14 +84,13 @@ public class AdminUserService {
 
   private final EfmUserService userFactory;
   private final EfmFirmService firmFactory;
-  private final DataSource codeDs;
+  private final Supplier<CodeDatabase> cdSupplier;
   private final DataSource userDs;
   private final String jurisdiction;
-  private final String env;
 
-  public AdminUserService(String jurisdiction, String env, DataSource codeDs, DataSource userDs) {
+  public AdminUserService(
+      String jurisdiction, String env, DataSource userDs, Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
-    this.env = env;
     Optional<EfmUserService> maybeUserFactory =
         SoapClientChooser.getEfmUserFactory(jurisdiction, env);
     if (maybeUserFactory.isEmpty()) {
@@ -107,7 +106,7 @@ public class AdminUserService {
           "Can't find " + jurisdiction + " in the SoapClientChooser for EfmFirm factory");
     }
     this.firmFactory = maybeFirmFactory.get();
-    this.codeDs = codeDs;
+    this.cdSupplier = cdSupplier;
     this.userDs = userDs;
   }
 
@@ -250,7 +249,7 @@ public class AdminUserService {
 
       // The "1" is the default for all courts. There's no way to enforce court specific passwords
       DataFieldRow globalPasswordRow = DataFieldRow.MissingDataField("GlobalPassword");
-      try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
+      try (CodeDatabase cd = cdSupplier.get()) {
         globalPasswordRow = cd.getDataField("1", "GlobalPassword");
       } catch (SQLException e) {
         log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
@@ -289,7 +288,7 @@ public class AdminUserService {
       }
       // The "1" is the default for all courts. There's no way to enforce court specific passwords
       DataFieldRow globalPasswordRow = DataFieldRow.MissingDataField("GlobalPassword");
-      try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
+      try (CodeDatabase cd = cdSupplier.get()) {
         globalPasswordRow = cd.getDataField("1", "GlobalPassword");
       } catch (SQLException e) {
         log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
@@ -637,7 +636,7 @@ public class AdminUserService {
       }
 
       // The "1" is the default for all courts. There's no way to enforce court specific passwords
-      try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
+      try (CodeDatabase cd = cdSupplier.get()) {
         Optional<CourtLocationInfo> system = cd.getFullLocationInfo("0");
         if (system.isPresent()) {
           if (regType.equals(RegistrationType.INDIVIDUAL)
@@ -741,8 +740,7 @@ public class AdminUserService {
   private Optional<IEfmUserService> setupUserPort(
       HttpHeaders httpHeaders, boolean needsSoapHeader) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
-    try (Connection conn = userDs.getConnection()) {
-      LoginDatabase ld = new LoginDatabase(conn);
+    try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
       Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
       if (atRest.isEmpty()) {
         return Optional.empty();

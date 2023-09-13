@@ -30,13 +30,13 @@ import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.ws.BindingProvider;
 import java.lang.reflect.Method;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.sql.DataSource;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseListQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseParticipantType;
@@ -70,22 +70,21 @@ public class CasesService {
           new oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.ObjectFactory();
   private final oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf =
       new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-  private final DataSource codeDs;
   private final DataSource userDs;
+  private final Supplier<CodeDatabase> cdSupplier;
   private final String jurisdiction;
-  private final String env;
   private final EndpointReflection ef;
 
-  public CasesService(String jurisdiction, String env, DataSource codeDs, DataSource userDs) {
+  public CasesService(
+      String jurisdiction, String env, DataSource userDs, Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
-    this.env = env;
     Optional<CourtRecordMDEService> maybeRecords =
         SoapClientChooser.getCourtRecordFactory(jurisdiction, env);
     if (maybeRecords.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " for court record factory");
     }
     this.recordFactory = maybeRecords.get();
-    this.codeDs = codeDs;
+    this.cdSupplier = cdSupplier;
     this.userDs = userDs;
     this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/cases");
   }
@@ -100,7 +99,7 @@ public class CasesService {
   @GET
   @Path("/courts")
   public Response getCourts() {
-    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
+    try (CodeDatabase cd = cdSupplier.get()) {
       return ServiceHelpers.getCourts(cd, false, false).build();
     } catch (SQLException ex) {
       return Response.status(500).entity("database error retrieving all courts!").build();
@@ -147,7 +146,7 @@ public class CasesService {
       return Response.status(401).build();
     }
 
-    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs)) {
+    try (CodeDatabase cd = cdSupplier.get()) {
       Optional<CourtLocationInfo> info = cd.getFullLocationInfo(courtId);
       if (info.isEmpty()) {
         return Response.status(404).entity(courtId + " not in available courts to search").build();
@@ -241,7 +240,7 @@ public class CasesService {
       return Response.status(401).build();
     }
 
-    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs)) {
+    try (CodeDatabase cd = cdSupplier.get()) {
       Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId);
       if (locationInfo.isEmpty()) {
         log.warn("Can't find court location for " + courtId + " when getting case");
@@ -413,8 +412,7 @@ public class CasesService {
     Optional<AtRest> atRest = Optional.empty();
     String tylerToken =
         httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-    try (Connection conn = userDs.getConnection()) {
-      LoginDatabase ld = new LoginDatabase(conn);
+    try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
       atRest = ld.getAtRestInfo(apiKey);
       if (atRest.isEmpty()) {
         log.warn("Couldn't checkLogin");

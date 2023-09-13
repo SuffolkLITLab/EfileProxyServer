@@ -22,7 +22,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
@@ -71,8 +70,7 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
         return Response.status(400).build();
       }
     }
-    try (Connection conn = ds.getConnection()) {
-      UserDatabase ud = new UserDatabase(conn);
+    try (UserDatabase ud = new UserDatabase(ds.getConnection())) {
       Optional<Transaction> maybeTrans = ud.findTransaction(UUID.fromString(resp.transactionId));
       if (maybeTrans.isEmpty()) {
         log.error("Transaction " + resp.transactionId + " isn't present in the database!");

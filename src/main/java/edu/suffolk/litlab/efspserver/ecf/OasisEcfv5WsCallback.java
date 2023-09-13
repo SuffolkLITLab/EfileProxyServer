@@ -29,7 +29,6 @@ import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.payment.PaymentMes
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reviewfilingcallback.NotifyFilingReviewCompleteMessageType;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.filingassemblymde.FilingAssemblyMDE;
 import jakarta.xml.bind.JAXBElement;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -266,8 +265,7 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
               "Filing code not found in message"));
       return reply;
     }
-    try (Connection conn = userDs.getConnection()) {
-      UserDatabase ud = new UserDatabase(conn);
+    try (UserDatabase ud = new UserDatabase(userDs.getConnection())) {
       Optional<Transaction> trans = ud.findTransaction(UUID.fromString(filingId));
       if (trans.isEmpty()) {
         log.warn("No transaction on record for filingId: " + filingId + " no one to send to");
