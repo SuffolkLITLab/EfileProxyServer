@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import java.util.List;
+import java.util.Collection;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class InterviewVariable {
@@ -9,10 +9,11 @@ public class InterviewVariable {
 
   private final String description;
   private final String datatype;
-  private final List<String> choices;
+  private final Collection<String> choices;
 
   /** Default constructor, directly assing all variables from params. */
-  public InterviewVariable(String name, String description, String datatype, List<String> choices) {
+  public InterviewVariable(
+      String name, String description, String datatype, Collection<String> choices) {
     this.name = name;
     this.description = description;
     this.datatype = datatype;
@@ -33,10 +34,6 @@ public class InterviewVariable {
 
   public String getDatatype() {
     return datatype;
-  }
-
-  public List<String> getChoices() {
-    return choices;
   }
 
   public String toJson() {
