@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efspserver.ecf;
 import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efspserver.Address;
 import edu.suffolk.litlab.efspserver.ContactInformation;
+import edu.suffolk.litlab.efspserver.FilingAction;
 import edu.suffolk.litlab.efspserver.FilingAttachment;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
@@ -847,7 +848,7 @@ public class EcfCourtSpecificSerializer {
     // * ReviewFiling API w/ service contacts: EfileAndServe
     // * ServeFiling API: Serve
     if (doc.getFilingAction().isPresent()) {
-      FilingTypeType act = doc.getFilingAction().get();
+      FilingTypeType act = filingActionToXml(doc.getFilingAction().get());
       if (isInitialFiling
           && !serviceOnInitial
           && (act.equals(FilingTypeType.E_FILE_AND_SERVE) || act.equals(FilingTypeType.SERVE))) {
@@ -932,6 +933,20 @@ public class EcfCourtSpecificSerializer {
       return tylerObjFac.createFilingLeadDocument(docType);
     } else {
       return tylerObjFac.createFilingConnectedDocument(docType);
+    }
+  }
+
+  private FilingTypeType filingActionToXml(FilingAction action) {
+    switch (action) {
+      case E_FILE:
+        return FilingTypeType.E_FILE;
+      case E_FILE_AND_SERVE:
+        return FilingTypeType.E_FILE_AND_SERVE;
+      case SERVE:
+        return FilingTypeType.SERVE;
+      default:
+        // I don't like enum defaults...
+        return FilingTypeType.E_FILE;
     }
   }
 

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import tyler.ecf.extensions.common.FilingTypeType;
 
 // TODO(brycew-later): this class is a mess. Refactor, considering the same pattern that's in
 // FilingInformation: add a JsonNode / generic container for EFM specific settings
@@ -36,7 +35,7 @@ public class FilingDoc {
   private final List<String> preliminaryCopies;
 
   private final List<OptionalService> optServices;
-  private final Optional<FilingTypeType> filingAction;
+  private final Optional<FilingAction> filingAction;
 
   private final boolean isLeadDoc;
 
@@ -76,7 +75,7 @@ public class FilingDoc {
       List<OptionalService> optionalServices,
       List<String> courtesyCopies,
       List<String> preliminaryCopies,
-      Optional<FilingTypeType> filingAction,
+      Optional<FilingAction> filingAction,
       boolean isLeadDoc) {
     this.filingCode = filingCode;
     this.userProvidedDescription = NonEmptyString.create(userProvidedDescription);
@@ -169,7 +168,7 @@ public class FilingDoc {
     return filingCode;
   }
 
-  public Optional<FilingTypeType> getFilingAction() {
+  public Optional<FilingAction> getFilingAction() {
     return filingAction;
   }
 
