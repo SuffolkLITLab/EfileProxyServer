@@ -12,6 +12,10 @@ import org.slf4j.LoggerFactory;
 public class StdLib {
   private static final Logger log = LoggerFactory.getLogger(StdLib.class);
 
+  /**
+   * Adds the stack trace to an exception. Default exception strings don't contain enough info to
+   * track down errors.
+   */
   public static String strFromException(Exception ex) {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
@@ -30,6 +34,15 @@ public class StdLib {
     return Optional.of(val);
   }
 
+  /** A simple check to make sure something isn't null or blank. Used in a lot of places. */
+  public static boolean exists(String val) {
+    return val != null && !val.isBlank();
+  }
+
+  /**
+   * A way to close a stream without throwing another checked exception, which avoids having to read
+   * lots of nested try-catch blocks in business code.
+   */
   public static void closeQuitely(XMLStreamReader xsr) {
     try {
       if (xsr != null) {
