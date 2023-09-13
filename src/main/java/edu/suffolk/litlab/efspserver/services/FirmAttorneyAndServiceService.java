@@ -28,6 +28,7 @@ import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,18 +72,16 @@ public class FirmAttorneyAndServiceService {
   private static Logger log = LoggerFactory.getLogger(FirmAttorneyAndServiceService.class);
 
   private final EfmFirmService firmFactory;
-  private final DataSource codeDs;
+  private final Supplier<CodeDatabase> cdSupplier;
   private final DataSource userDs;
   private final String jurisdiction;
-  private final String env;
 
   private static final tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac =
       new tyler.efm.services.schema.common.ObjectFactory();
 
   public FirmAttorneyAndServiceService(
-      String jurisdiction, String env, DataSource codeDs, DataSource userDs) {
+      String jurisdiction, String env, DataSource userDs, Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
-    this.env = env;
     Optional<EfmFirmService> maybeFirmFactory =
         SoapClientChooser.getEfmFirmFactory(jurisdiction, env);
     if (maybeFirmFactory.isPresent()) {
@@ -91,7 +90,7 @@ public class FirmAttorneyAndServiceService {
       throw new RuntimeException(
           jurisdiction + "-" + env + " not in SoapClientChooser for EFMFirm");
     }
-    this.codeDs = codeDs;
+    this.cdSupplier = cdSupplier;
     this.userDs = userDs;
   }
 
@@ -202,7 +201,7 @@ public class FirmAttorneyAndServiceService {
     // TODO(brycew-later): what happens if a court has an additional requirement on the attorney
     // number?
     // Won't in IL at least. If it does, this whole system is poorly defined
-    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
+    try (CodeDatabase cd = cdSupplier.get()) {
       DataFieldRow row = cd.getDataField("1", "GlobalAttorneyNumber");
       if (row.isrequired && attorney.getBarNumber().isBlank()) {
         return Response.status(400).entity("Bar number required").build();
@@ -497,7 +496,7 @@ public class FirmAttorneyAndServiceService {
       // For "PublicServiceContactShowEmail" Datafield, we force API keys: the restriction of
       // "programmatic harvesting of emails" will have to be done on the DA side
       boolean showFirmName = false;
-      try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
+      try (CodeDatabase cd = cdSupplier.get()) {
         DataFieldRow row = cd.getDataField("1", "PublicServiceContactShowFreeFormFirmName");
         showFirmName = row.isvisible;
       } catch (SQLException ex) {

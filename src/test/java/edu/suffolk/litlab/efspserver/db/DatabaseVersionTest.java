@@ -108,13 +108,14 @@ public class DatabaseVersionTest {
     Statement st = userConn.createStatement();
     ResultSet rs = st.executeQuery(selectApiKey);
 
-    LoginDatabase ld = new LoginDatabase(userConn);
-    String manualHash = ld.makeHash(apiKey);
+    try (LoginDatabase ld = new LoginDatabase(userConn)) {
+      String manualHash = ld.makeHash(apiKey);
     
-    while (rs.next()) {
-      assertEquals(rs.getString(1), manualHash);
+      while (rs.next()) {
+        assertEquals(rs.getString(1), manualHash);
+      }
     }
-    
+
     Statement codeSt = codeConn.createStatement();
     rs = codeSt.executeQuery("SELECT DISTINCT domain from location");
 

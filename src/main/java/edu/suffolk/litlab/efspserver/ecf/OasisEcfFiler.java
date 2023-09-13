@@ -45,9 +45,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.sql.DataSource;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
@@ -91,7 +91,7 @@ import tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
 
 public class OasisEcfFiler extends EfmCheckableFilingInterface {
   private static Logger log = LoggerFactory.getLogger(OasisEcfFiler.class);
-  private DataSource ds;
+  private Supplier<CodeDatabase> cdSupplier;
   private final String headerKey;
   private final oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4
           .ObjectFactory
@@ -109,14 +109,10 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   private final FilingReviewMDEService filingFactory;
   private final EfmFirmService firmFactory;
   private final ServiceMDEService serviceFactory;
-  private final String jurisdiction;
-  private final String env;
   private static final PolicyCacher policyCacher = new PolicyCacher();
 
-  public OasisEcfFiler(String jurisdiction, String env, DataSource codesDs) {
-    this.ds = codesDs;
-    this.jurisdiction = jurisdiction;
-    this.env = env;
+  public OasisEcfFiler(String jurisdiction, String env, Supplier<CodeDatabase> cdSupplier) {
+    this.cdSupplier = cdSupplier;
     TylerLogin login = new TylerLogin(jurisdiction, env);
     this.headerKey = login.getHeaderKey();
     statusObjFac =
@@ -171,7 +167,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
     String existingCaseTitle = null;
     String caseCategoryName = "";
     String courtName = "";
-    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
+    try (CodeDatabase cd = cdSupplier.get()) {
       EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd);
       Optional<CourtLocationInfo> maybeLocationInfo =
           cd.getFullLocationInfo(info.getCourtLocation());
@@ -642,7 +638,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   }
 
   private Optional<CourtLocationInfo> getCourtInfo(FilingInformation info) {
-    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
+    try (CodeDatabase cd = cdSupplier.get()) {
       return cd.getFullLocationInfo(info.getCourtLocation());
     } catch (SQLException ex) {
       log.error("IN EcfEfiler, can't get CodesDB: " + StdLib.strFromException(ex));
@@ -651,7 +647,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
   }
 
   private List<String> getAllLocations() throws SQLException {
-    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
+    try (CodeDatabase cd = cdSupplier.get()) {
       return cd.getAllLocations();
     }
   }
@@ -897,7 +893,7 @@ public class OasisEcfFiler extends EfmCheckableFilingInterface {
 
   @Override
   public Response disclaimers(String courtId) {
-    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection())) {
+    try (CodeDatabase cd = cdSupplier.get()) {
       List<Disclaimer> disclaimers = cd.getDisclaimerRequirements(courtId);
       return Response.status(200).entity(disclaimers).build();
     } catch (SQLException ex) {

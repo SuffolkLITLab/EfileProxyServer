@@ -80,10 +80,13 @@ public class EfspServer {
       @Nullable AcmeChallengeService challengeService)
       throws SQLException, NoSuchAlgorithmException {
     try (Connection conn = userDs.getConnection()) {
+      @SuppressWarnings("resource")
       UserDatabase ud = new UserDatabase(conn);
       ud.createTablesIfAbsent();
+      @SuppressWarnings("resource")
       LoginDatabase ld = new LoginDatabase(conn);
       ld.createTablesIfAbsent();
+      @SuppressWarnings("resource")
       MessageSettingsDatabase md = new MessageSettingsDatabase(conn);
       md.createTablesIfAbsent();
     } catch (SQLException ex) {
@@ -184,6 +187,7 @@ public class EfspServer {
     try (Connection codeConn = codeDs.getConnection();
         Connection userConn = userDs.getConnection()) {
       DatabaseVersion dv = new DatabaseVersion(codeConn, userConn);
+      @SuppressWarnings("resource")
       LoginDatabase ld = new LoginDatabase(userConn);
       boolean brandNew = !ld.tablesExist();
       dv.createTablesIfAbsent(brandNew);

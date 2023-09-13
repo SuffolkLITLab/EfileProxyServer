@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 import jakarta.ws.rs.core.MediaType;
@@ -44,31 +45,33 @@ public class CodesServiceTest {
 
   private static final String ENDPOINT_ADDRESS = "http://localhost:9090";
   private Server server;
-  private CodeDatabase cd;
   
   private void startServer() throws Exception {
     DataSource ds = DatabaseCreator.makeDataSource(postgres.getJdbcUrl(), postgres.getDatabaseName(), postgres.getUsername(), postgres.getPassword(), 2, 100);
-    cd = new CodeDatabase("illinois", "stage", ds.getConnection());
-    cd.createTablesIfAbsent();
-    Set<String> tables = Set.of(
-        "casecategory", 
-        "casesubtype", 
-        "casetype", 
-        "filingstatus",
-        "servicetype", 
-        "optionalservices"); 
-    cd.createTableIfAbsent("location");
-    cd.updateTable("location", "0", this.getClass().getResourceAsStream("/0_location_test.xml"));
-    for (String table: tables) {
-      cd.createTableIfAbsent(table);
-      String filename = "/" + "adams" + "_" + table + "_test.xml";
-      log.info("Updating from file: " + filename);
-      cd.updateTable(table, "adams", this.getClass().getResourceAsStream(filename)); 
+    Supplier<CodeDatabase> cdSupplier = () -> {
+      return CodeDatabase.fromDS("illinois", "stage", ds);
+    };
+    try (CodeDatabase cd = cdSupplier.get()) {
+      cd.createTablesIfAbsent();
+      Set<String> tables = Set.of(
+          "casecategory", 
+          "casesubtype", 
+          "casetype", 
+          "filingstatus",
+          "servicetype", 
+          "optionalservices"); 
+      cd.createTableIfAbsent("location");
+      cd.updateTable("location", "0", this.getClass().getResourceAsStream("/0_location_test.xml"));
+      for (String table: tables) {
+        cd.createTableIfAbsent(table);
+        String filename = "/" + "adams" + "_" + table + "_test.xml";
+        log.info("Updating from file: " + filename);
+        cd.updateTable(table, "adams", this.getClass().getResourceAsStream(filename)); 
+      }
     }
-
     JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
     sf.setResourceClasses(EcfCodesService.class);
-    sf.setResourceProvider(EcfCodesService.class, new SingletonResourceProvider(new EcfCodesService("illinois", "stage", ds)));
+    sf.setResourceProvider(EcfCodesService.class, new SingletonResourceProvider(new EcfCodesService("illinois", "stage", cdSupplier)));
     sf.setAddress(ENDPOINT_ADDRESS);
     Map<Object, Object> extensionMappings = Map.of(
         "xml", MediaType.APPLICATION_XML,
@@ -91,7 +94,6 @@ public class CodesServiceTest {
   public void destroy() throws Exception {
     server.stop();
     server.destroy();
-    cd.close();
     postgres.stop();
   }
   

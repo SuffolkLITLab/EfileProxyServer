@@ -14,12 +14,12 @@ import edu.suffolk.litlab.efspserver.services.UpdateMessageStatus;
 import gov.niem.niem.domains.jxdm._4.CaseAugmentationType;
 import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.TextType;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 import javax.sql.DataSource;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.CardAccountType;
@@ -55,22 +55,18 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   private static Logger log = LoggerFactory.getLogger(OasisEcfFiler.class);
 
   private final ObjectFactory recepitFac;
-  private final DataSource codesDs;
+  private final Supplier<CodeDatabase> cdSupplier;
   private final DataSource userDs;
   private final OrgMessageSender msgSender;
-  private final String jurisdiction;
-  private final String env;
 
   public OasisEcfWsCallback(
       String jurisdiction,
       String env,
-      DataSource codesDs,
+      Supplier<CodeDatabase> cdSupplier,
       DataSource userDs,
       OrgMessageSender msgSender) {
-    this.jurisdiction = jurisdiction;
-    this.env = env;
-    recepitFac = new ObjectFactory();
-    this.codesDs = codesDs;
+    this.recepitFac = new ObjectFactory();
+    this.cdSupplier = cdSupplier;
     this.userDs = userDs;
     this.msgSender = msgSender;
   }
@@ -200,7 +196,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   private String reviewedFilingStatusText(
       ReviewFilingCallbackMessageType revFiling, Transaction trans) {
     List<NameAndCode> names = List.of();
-    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codesDs.getConnection())) {
+    try (CodeDatabase cd = cdSupplier.get()) {
       names = cd.getFilingStatuses(trans.courtId);
     } catch (SQLException ex) {
       log.error("In ECF v4 callback, couldn't get codes db: " + StdLib.strFromException(ex));
@@ -298,8 +294,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       }
     }
     Optional<Transaction> trans = Optional.empty();
-    try (Connection conn = userDs.getConnection()) {
-      UserDatabase ud = new UserDatabase(conn);
+    try (UserDatabase ud = new UserDatabase(userDs.getConnection())) {
       trans = ud.findTransaction(UUID.fromString(filingId));
     } catch (SQLException e) {
       log.error("Couldn't connect to the SQL database to get the transaction: " + e.toString());
@@ -326,7 +321,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     String courtId = (courtIdFromMsg.isBlank()) ? trans.get().courtId : courtIdFromMsg;
     String caseName = revFiling.getCase().getValue().getCaseTitleText().getValue();
     Optional<CourtLocationInfo> courtInfo = Optional.empty();
-    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codesDs.getConnection())) {
+    try (CodeDatabase cd = cdSupplier.get()) {
       courtInfo = cd.getFullLocationInfo(courtId);
       if (courtInfo.isEmpty()) {
         log.warn(

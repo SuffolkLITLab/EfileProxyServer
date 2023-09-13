@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.quartz.CronScheduleBuilder;
@@ -258,29 +259,34 @@ public class TylerModuleSetup implements EfmModuleSetup {
     final String jurisdiction = getJurisdiction();
     final String env = this.tylerEnv;
 
-    EfmFilingInterface filer = new OasisEcfFiler(jurisdiction, env, codeDs);
+    Supplier<CodeDatabase> cdSupplier =
+        () -> {
+          return CodeDatabase.fromDS(jurisdiction, env, this.codeDs);
+        };
+
+    EfmFilingInterface filer = new OasisEcfFiler(jurisdiction, env, cdSupplier);
 
     for (String court : getCourts()) {
       filingMap.put(court, filer);
       getCallback().ifPresent(call -> callbackMap.put(court, call));
     }
 
-    var adminUser = new AdminUserService(jurisdiction, env, this.codeDs, this.userDs);
-    var cases = new CasesService(jurisdiction, env, this.codeDs, this.userDs);
-    var codes = new EcfCodesService(jurisdiction, env, this.codeDs);
+    var adminUser = new AdminUserService(jurisdiction, env, this.userDs, cdSupplier);
+    var cases = new CasesService(jurisdiction, env, this.userDs, cdSupplier);
+    var codes = new EcfCodesService(jurisdiction, env, cdSupplier);
     Optional<CourtSchedulingService> courtScheduler = Optional.empty();
     if (jurisdiction == "illinois") {
       courtScheduler =
-          Optional.of(new CourtSchedulingService(converterMap, jurisdiction, env, codeDs, userDs));
+          Optional.of(
+              new CourtSchedulingService(converterMap, jurisdiction, env, userDs, cdSupplier));
     }
     var filingReview =
         new FilingReviewService(
             getJurisdiction(), this.userDs, converterMap, filingMap, callbackMap, this.sender);
     var firmAttorney =
-        new FirmAttorneyAndServiceService(jurisdiction, env, this.codeDs, this.userDs);
+        new FirmAttorneyAndServiceService(jurisdiction, env, this.userDs, cdSupplier);
     var payments =
-        new PaymentsService(
-            jurisdiction, env, this.togaKey, this.togaUrl, this.codeDs, this.userDs);
+        new PaymentsService(jurisdiction, env, this.togaKey, this.togaUrl, this.userDs, cdSupplier);
     JurisdictionServiceHandle handle =
         new JurisdictionServiceHandle(
             getJurisdiction(),
@@ -301,8 +307,13 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public void setupGlobals() {
+    Supplier<CodeDatabase> cdSupplier =
+        () -> {
+          return CodeDatabase.fromDS(getJurisdiction(), this.tylerEnv, this.codeDs);
+        };
+
     OasisEcfWsCallback implementor =
-        new OasisEcfWsCallback(tylerJurisdiction, tylerEnv, codeDs, userDs, sender);
+        new OasisEcfWsCallback(tylerJurisdiction, tylerEnv, cdSupplier, userDs, sender);
     String baseLocalUrl = ServiceHelpers.BASE_LOCAL_URL;
     String address =
         baseLocalUrl + "/jurisdictions/" + tylerJurisdiction + ServiceHelpers.ASSEMBLY_PORT;

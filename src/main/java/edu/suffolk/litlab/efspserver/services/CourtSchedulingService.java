@@ -50,7 +50,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.ws.BindingProvider;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -59,6 +58,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
@@ -92,20 +92,18 @@ public class CourtSchedulingService {
   private final Map<String, InterviewToFilingInformationConverter> converterMap;
   private final CourtRecordMDEService recordFactory;
   private final String jurisdiction;
-  private final String env;
 
-  private final DataSource codeDs;
+  private final Supplier<CodeDatabase> cdSupplier;
   private final DataSource userDs;
 
   public CourtSchedulingService(
       Map<String, InterviewToFilingInformationConverter> converterMap,
       String jurisdiction,
       String env,
-      DataSource codeDs,
-      DataSource userDs) {
+      DataSource userDs,
+      Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
-    this.env = env;
-    this.codeDs = codeDs;
+    this.cdSupplier = cdSupplier;
     this.userDs = userDs;
     var maybeSchedFactory = SoapClientChooser.getCourtSchedulingFactory(jurisdiction, env);
     if (maybeSchedFactory.isEmpty()) {
@@ -220,7 +218,7 @@ public class CourtSchedulingService {
     if (maybeServ.isEmpty()) {
       return Response.status(401).build();
     }
-    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
+    try (CodeDatabase cd = cdSupplier.get()) {
       Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId);
       if (locationInfo.isEmpty()) {
         return Response.status(404).entity("No court: " + courtId).build();
@@ -414,7 +412,7 @@ public class CourtSchedulingService {
     JsonNode params = mapper.readTree(paramStr);
 
     Optional<CourtLocationInfo> locationInfo = Optional.empty();
-    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
+    try (CodeDatabase cd = cdSupplier.get()) {
       locationInfo = cd.getFullLocationInfo(courtId);
     }
 
@@ -525,8 +523,7 @@ public class CourtSchedulingService {
   private Optional<CourtSchedulingMDE> setupSchedulingPort(HttpHeaders httpHeaders) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
     Optional<TylerUserNamePassword> creds = Optional.empty();
-    try (Connection conn = userDs.getConnection()) {
-      LoginDatabase ld = new LoginDatabase(conn);
+    try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
       Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
       if (atRest.isEmpty()) {
         log.warn("Couldn't checkLogin");

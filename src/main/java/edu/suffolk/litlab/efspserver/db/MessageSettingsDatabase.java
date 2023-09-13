@@ -11,17 +11,11 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MessageSettingsDatabase implements DatabaseInterface {
+public class MessageSettingsDatabase extends Database {
   private static Logger log = LoggerFactory.getLogger(MessageSettingsDatabase.class);
 
-  private final Connection conn;
-
   public MessageSettingsDatabase(Connection conn) {
-    this.conn = conn;
-  }
-
-  public Connection getConnection() {
-    return conn;
+    super(conn);
   }
 
   @Override
