@@ -1,16 +1,17 @@
 package edu.suffolk.litlab.efspserver.services;
 
 import static edu.suffolk.litlab.efspserver.JsonHelpers.getStringMember;
-import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
+import static edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes.makeResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
-import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
+import edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes;
+import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.tyler.codes.DataFieldRow;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
@@ -82,8 +83,7 @@ public class FirmAttorneyAndServiceService {
   public FirmAttorneyAndServiceService(
       String jurisdiction, String env, DataSource userDs, Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
-    Optional<EfmFirmService> maybeFirmFactory =
-        SoapClientChooser.getEfmFirmFactory(jurisdiction, env);
+    Optional<EfmFirmService> maybeFirmFactory = TylerUrls.getEfmFirmFactory(jurisdiction, env);
     if (maybeFirmFactory.isPresent()) {
       this.firmFactory = maybeFirmFactory.get();
     } else {
@@ -444,7 +444,7 @@ public class FirmAttorneyAndServiceService {
     GetServiceContactRequestType getReq = new GetServiceContactRequestType();
     getReq.setServiceContactID(contactId);
     GetServiceContactResponseType getResp = firmPort.get().getServiceContact(getReq);
-    if (ServiceHelpers.hasError(getResp)) {
+    if (TylerErrorCodes.hasError(getResp)) {
       return Response.status(404).entity("No service contact with id " + contactId).build();
     }
     ServiceContactType contact = getResp.getServiceContact();

@@ -408,7 +408,7 @@
                                 <goal>java</goal>
                             </goals>
                             <configuration>
-                                <mainClass>edu.suffolk.litlab.efspserver.codes.CodeUpdater</mainClass>
+                                <mainClass>edu.suffolk.litlab.efspserver.ecfcodes.CodeUpdater</mainClass>
                             </configuration>
                         </execution>
                         <execution>

@@ -2,9 +2,9 @@ package edu.suffolk.litlab.efspserver.services;
 
 import edu.suffolk.litlab.efspserver.Monitor;
 import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
-import edu.suffolk.litlab.efspserver.codes.CodeUpdater;
 import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
+import edu.suffolk.litlab.efspserver.ecfcodes.CodeUpdater;
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;

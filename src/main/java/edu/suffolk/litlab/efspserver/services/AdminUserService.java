@@ -1,17 +1,18 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.makeResponse;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
+import static edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes.makeResponse;
 
-import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
-import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
-import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
-import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
+import edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes;
+import edu.suffolk.litlab.efspserver.tyler.TylerLogin;
+import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
+import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.tyler.codes.CourtLocationInfo;
+import edu.suffolk.litlab.efspserver.tyler.codes.DataFieldRow;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
@@ -91,16 +92,14 @@ public class AdminUserService {
   public AdminUserService(
       String jurisdiction, String env, DataSource userDs, Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
-    Optional<EfmUserService> maybeUserFactory =
-        SoapClientChooser.getEfmUserFactory(jurisdiction, env);
+    Optional<EfmUserService> maybeUserFactory = TylerUrls.getEfmUserFactory(jurisdiction, env);
     if (maybeUserFactory.isEmpty()) {
       throw new RuntimeException(
           "Can't find " + jurisdiction + " in the SoapClientChooser for EfmUser");
     }
     this.userFactory = maybeUserFactory.get();
     ;
-    Optional<EfmFirmService> maybeFirmFactory =
-        SoapClientChooser.getEfmFirmFactory(jurisdiction, env);
+    Optional<EfmFirmService> maybeFirmFactory = TylerUrls.getEfmFirmFactory(jurisdiction, env);
     if (maybeFirmFactory.isEmpty()) {
       throw new RuntimeException(
           "Can't find " + jurisdiction + " in the SoapClientChooser for EfmFirm factory");
@@ -158,7 +157,7 @@ public class AdminUserService {
 
       NotificationPreferencesResponseType notifResp = port.get().getNotificationPreferences();
 
-      return ServiceHelpers.mapTylerCodesToHttp(
+      return TylerErrorCodes.mapTylerCodesToHttp(
           notifResp.getError(), () -> Response.ok(notifResp.getNotification()).build());
     } finally {
       MDCWrappers.removeAllMDCs();
@@ -183,7 +182,7 @@ public class AdminUserService {
       }
 
       BaseResponseType notifResp = port.get().updateNotificationPreferences(updateNotif);
-      return ServiceHelpers.mapTylerCodesToHttp(notifResp.getError(), () -> Response.ok().build());
+      return TylerErrorCodes.mapTylerCodesToHttp(notifResp.getError(), () -> Response.ok().build());
     } finally {
       MDCWrappers.removeAllMDCs();
     }
@@ -262,7 +261,7 @@ public class AdminUserService {
       resetReq.setEmail(params.email);
       resetReq.setPassword(params.newPassword);
       ResetPasswordResponseType resp = port.get().resetUserPassword(resetReq);
-      return ServiceHelpers.mapTylerCodesToHttp(
+      return TylerErrorCodes.mapTylerCodesToHttp(
           resp.getError(),
           () -> {
             return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
@@ -303,7 +302,7 @@ public class AdminUserService {
       change.setPasswordQuestion("");
       change.setPasswordAnswer("");
       ChangePasswordResponseType resp = port.get().changePassword(change);
-      return ServiceHelpers.mapTylerCodesToHttp(
+      return TylerErrorCodes.mapTylerCodesToHttp(
           resp.getError(),
           () -> {
             return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
@@ -328,7 +327,7 @@ public class AdminUserService {
       ResetPasswordResponseType resp = port.get().resetPassword(reset);
       // TODO(brycew-later): why would we reply with the password hash? They still shouldn't be able
       // to log in?
-      return ServiceHelpers.mapTylerCodesToHttp(
+      return TylerErrorCodes.mapTylerCodesToHttp(
           resp.getError(),
           () -> {
             return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
@@ -370,7 +369,7 @@ public class AdminUserService {
         userGetter = (req) -> port.get().getUser(getUserReq);
       }
       var userRes = userGetter.apply(getUserReq);
-      return ServiceHelpers.mapTylerCodesToHttp(
+      return TylerErrorCodes.mapTylerCodesToHttp(
           userRes.getError(), () -> Response.ok(userRes.getUser()).build());
     } finally {
       MDCWrappers.removeAllMDCs();
@@ -389,7 +388,7 @@ public class AdminUserService {
       }
 
       UserListResponseType resp = port.get().getUserList();
-      return ServiceHelpers.mapTylerCodesToHttp(
+      return TylerErrorCodes.mapTylerCodesToHttp(
           resp.getError(), () -> Response.ok(resp.getUser()).build());
     } finally {
       MDCWrappers.removeAllMDCs();
@@ -409,13 +408,13 @@ public class AdminUserService {
       GetUserRequestType getUserReq = new GetUserRequestType();
       getUserReq.setUserID(httpHeaders.getHeaderString(TylerLogin.getHeaderId(jurisdiction)));
       GetUserResponseType userRes = port.get().getUser(getUserReq);
-      if (ServiceHelpers.checkErrors(userRes.getError())) {
+      if (TylerErrorCodes.checkErrors(userRes.getError())) {
         return Response.status(401, userRes.getError().getErrorText()).build();
       }
 
       UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser);
       UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
-      if (ServiceHelpers.checkErrors(updateResp.getError())) {
+      if (TylerErrorCodes.checkErrors(updateResp.getError())) {
         return Response.status(401).entity(updateResp.getError().getErrorText()).build();
       }
 
@@ -447,13 +446,13 @@ public class AdminUserService {
       GetUserRequestType getUserReq = new GetUserRequestType();
       getUserReq.setUserID(id);
       GetUserResponseType userRes = port.get().getUser(getUserReq);
-      if (ServiceHelpers.checkErrors(userRes.getError())) {
+      if (TylerErrorCodes.checkErrors(userRes.getError())) {
         return Response.status(401, userRes.getError().getErrorText()).build();
       }
 
       UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser);
       UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
-      if (ServiceHelpers.checkErrors(updateResp.getError())) {
+      if (TylerErrorCodes.checkErrors(updateResp.getError())) {
         return Response.status(401).entity(updateResp.getError().getErrorText()).build();
       }
 
@@ -501,7 +500,7 @@ public class AdminUserService {
       GetUserRequestType getUserReq = new GetUserRequestType();
       getUserReq.setUserID(id);
       GetUserResponseType userRes = port.get().getUser(getUserReq);
-      return ServiceHelpers.mapTylerCodesToHttp(
+      return TylerErrorCodes.mapTylerCodesToHttp(
           userRes.getError(), () -> Response.ok(userRes.getUser().getRole()).build());
     } finally {
       MDCWrappers.removeAllMDCs();
@@ -534,7 +533,7 @@ public class AdminUserService {
         addRole.setUserID(id);
         // TODO(brycew-later): this won't be consistent if it fails part way through?
         BaseResponseType resp = port.get().addUserRole(addRole);
-        if (ServiceHelpers.checkErrors(resp.getError())) {
+        if (TylerErrorCodes.checkErrors(resp.getError())) {
           return Response.status(401).entity(resp.getError().getErrorText()).build();
         }
       }
@@ -574,7 +573,7 @@ public class AdminUserService {
         rmRole.setUserID(id);
         // TODO(brycew-later): this won't be consistent if it fails part way through?
         BaseResponseType resp = port.get().removeUserRole(rmRole);
-        if (ServiceHelpers.checkErrors(resp.getError())) {
+        if (TylerErrorCodes.checkErrors(resp.getError())) {
           return Response.status(401).entity(resp.getError().getErrorText()).build();
         }
       }
@@ -664,7 +663,7 @@ public class AdminUserService {
               + regResp.getFirmID()
               + " and user id: "
               + regResp.getUserID());
-      if (!ServiceHelpers.checkErrors(regResp.getError())) {
+      if (!TylerErrorCodes.checkErrors(regResp.getError())) {
         return Response.created(URI.create(regResp.getUserID())).entity(regResp).build();
       }
       return makeResponse(regResp, () -> Response.ok(regResp).build());
@@ -693,7 +692,7 @@ public class AdminUserService {
       RemoveUserRequestType rmUser = new RemoveUserRequestType();
       rmUser.setUserID(id);
       BaseResponseType resp = port.get().removeUser(rmUser);
-      return ServiceHelpers.mapTylerCodesToHttp(resp.getError(), () -> Response.ok().build());
+      return TylerErrorCodes.mapTylerCodesToHttp(resp.getError(), () -> Response.ok().build());
     } finally {
       MDCWrappers.removeAllMDCs();
     }
@@ -711,7 +710,7 @@ public class AdminUserService {
       }
 
       NotificationPreferencesListResponseType resp = port.get().getNotificationPreferencesList();
-      return ServiceHelpers.mapTylerCodesToHttp(
+      return TylerErrorCodes.mapTylerCodesToHttp(
           resp.getError(), () -> Response.ok(resp.getNotificationListItem()).build());
     } finally {
       MDCWrappers.removeAllMDCs();
