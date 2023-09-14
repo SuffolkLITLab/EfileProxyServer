@@ -11,7 +11,7 @@
       address="https://efile.suffolklitlab.org:9001/filingassemblycallbacks/FilingAssemblyMDEPort"
       serviceName="FilingAssemblyMDEService"
       endpointName="FilingAssemblyMDEEndpoint"
-      implementor="edu.suffolk.litlab.efspserver.ecf.OasisEcfWsCallback">
+      implementor="edu.suffolk.litlab.efspserver.ecf4.OasisEcfWsCallback">
  
       <jaxws:properties>
          <entry key="security.callback-handler"

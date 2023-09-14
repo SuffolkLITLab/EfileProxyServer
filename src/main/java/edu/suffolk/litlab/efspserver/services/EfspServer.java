@@ -12,7 +12,7 @@ import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.db.MessageSettingsDatabase;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingInformationConverter;
-import edu.suffolk.litlab.efspserver.ecf.TylerModuleSetup;
+import edu.suffolk.litlab.efspserver.ecf4.TylerModuleSetup;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetModuleSetup;
 import jakarta.ws.rs.core.MediaType;
 import java.io.File;

@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efspserver.db;
 
-import edu.suffolk.litlab.efspserver.codes.CodeTableConstants;
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeTableConstants;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

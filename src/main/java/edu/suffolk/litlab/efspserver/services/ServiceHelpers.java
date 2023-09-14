@@ -4,36 +4,32 @@ import static edu.suffolk.litlab.efspserver.StdLib.GetEnv;
 
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
-import edu.suffolk.litlab.efspserver.XmlHelper;
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
-import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
+import edu.suffolk.litlab.efspserver.ecf4.Ecf4Helper;
+import edu.suffolk.litlab.efspserver.tyler.TylerLogin;
+import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import gov.niem.niem.niem_core._2.EntityType;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.ws.BindingProvider;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import tyler.efm.services.EfmFirmService;
 import tyler.efm.services.IEfmFirmService;
-import tyler.efm.services.schema.baseresponse.BaseResponseType;
 
 public class ServiceHelpers {
   private static Logger log = LoggerFactory.getLogger(ServiceHelpers.class);
@@ -56,7 +52,6 @@ public class ServiceHelpers {
   public static final String EXTERNAL_URL;
   public static final String SERVICE_URL;
   public static final String REST_CALLBACK_URL;
-  static Map<String, Integer> tylerToHttp = new HashMap<>();
 
   static {
     Optional<String> certPassword = GetEnv("CERT_PASSWORD");
@@ -81,44 +76,6 @@ public class ServiceHelpers {
 
     SERVICE_URL = EXTERNAL_URL + ASSEMBLY_PORT;
     REST_CALLBACK_URL = EXTERNAL_URL + "/filingreview/jurisdictions/%s/courts/%s/filing/status";
-
-    tylerToHttp.clear();
-    // First three are ones that the proxy should handle well. If we don't then it's
-    // our fault.
-    // Message received in substitution message format but extended message format
-    // expected.
-    tylerToHttp.put("-1000", 500);
-    // Message received in extended message format but substitution message format
-    // expected.
-    tylerToHttp.put("-999", 500);
-    tylerToHttp.put("-20", 500); // Schema validation error
-    // Everything else
-    tylerToHttp.put("-15", 504); // Communicitation with CMS timed out or failed
-    // CMS is unavailable, cases that have not been E-filed previously won't be
-    // found at this time
-    tylerToHttp.put("-10", 503);
-    tylerToHttp.put("-5", 403); // Insufficient permissions to complete operation
-    tylerToHttp.put("-4", 401); // Authorization failed
-    tylerToHttp.put("-2", 401); // Caller not authenticated
-    tylerToHttp.put("-1", 502); // Unknown error
-    tylerToHttp.put("0", 200);
-    tylerToHttp.put("77", 400); // IncludeParticipants is empty, this is a required query element
-    tylerToHttp.put("78", 428); // User has already been activated
-    tylerToHttp.put("85", 428); // Service Contact already attached to party
-    tylerToHttp.put("86", 428); // Service Contact not attached to party
-    tylerToHttp.put("87", 428); // Service Contact already attached to case
-    tylerToHttp.put("88", 428); // Service Contact already attached to party
-    tylerToHttp.put("90", 400); // Invalid QuerySubmitterID
-    tylerToHttp.put("91", 400); // Invalid DocumentSubmitterID
-    tylerToHttp.put("92", 400); // Invalid CaseTrackingID
-    tylerToHttp.put("93", 400); // Invalid StartDate
-    tylerToHttp.put("94", 400); // Invalid EndDate
-    tylerToHttp.put("95", 400); // Invalid FilingAttorneyID
-    tylerToHttp.put("96", 400); // Invalid FilingPartyID
-    tylerToHttp.put("97", 400); // Invalid PaymentID
-    tylerToHttp.put("169", 422); // Invalid birthdate
-    tylerToHttp.put("170", 422); // Invalid password (when making an account? TODO(brycew))
-    tylerToHttp.put("344", 422); // Doesn't handle cross references
   }
 
   public static Optional<TylerUserNamePassword> userCredsFromAuthorization(
@@ -149,77 +106,8 @@ public class ServiceHelpers {
     ctx.put("security.signature.username", "1");
   }
 
-  public static Response makeResponse(BaseResponseType resp, Supplier<Response> defaultRespFunc) {
-    return mapTylerCodesToHttp(resp.getError(), defaultRespFunc);
-  }
-
-  public static Response makeResponse(
-      QueryResponseMessageType resp, Supplier<Response> defaultRespFunc) {
-    return mapTylerCodesToHttp(resp.getError(), defaultRespFunc);
-  }
-
-  public static boolean hasError(BaseResponseType resp) {
-    return checkErrors(resp.getError());
-  }
-
-  /** Returns true on errors from the Tyler / Admin side of the API. */
-  public static boolean checkErrors(tyler.efm.services.schema.common.ErrorType error) {
-    if (!error.getErrorCode().equals("0")) {
-      log.error("Error!: " + error.getErrorCode() + ": " + error.getErrorText());
-      return true;
-    }
-    return false;
-  }
-
-  /** Returns true on errors from the ECF side of the API. They work the same as the Tyler ones. */
-  public static boolean checkErrors(
-      oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType error) {
-    if (error.getErrorCode() != null && !error.getErrorCode().getValue().equals("0")) {
-      log.error(
-          "Error!: " + error.getErrorCode().getValue() + ": " + error.getErrorText().getValue());
-      return true;
-    }
-    return false;
-  }
-
-  public static Response mapTylerCodesToHttp(
-      tyler.efm.services.schema.common.ErrorType error, Supplier<Response> defaultRespFunc) {
-    if (!checkErrors(error)) {
-      return defaultRespFunc.get();
-    }
-
-    if (tylerToHttp.containsKey(error.getErrorCode())) {
-      return Response.status(tylerToHttp.get(error.getErrorCode()))
-          .entity(error.getErrorText())
-          .build();
-    }
-
-    // 422 as semantic issues covers most of the error codes
-    return Response.status(422).entity(error.getErrorText()).build();
-  }
-
-  public static Response mapTylerCodesToHttp(
-      List<oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType> errors,
-      Supplier<Response> defaultRespFunc) {
-    for (var error : errors) {
-      if (!checkErrors(error)) {
-        continue;
-      }
-
-      if (tylerToHttp.containsKey(error.getErrorCode().getValue())) {
-        return Response.status(tylerToHttp.get(error.getErrorCode().getValue()))
-            .entity(error.getErrorText().getValue())
-            .build();
-      }
-
-      // 422 as semantic issues covers most of the error codes
-      return Response.status(422).entity(error.getErrorText().getValue()).build();
-    }
-    return defaultRespFunc.get();
-  }
-
   public static void setupReplys(CaseFilingType reply) {
-    reply.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
+    reply.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
     reply.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
   }
 
@@ -230,8 +118,8 @@ public class ServiceHelpers {
     JAXBElement<PersonType> elem2 = commonObjFac.createEntityPerson(new PersonType());
     typ.setEntityRepresentation(elem2);
     newMsg.setQuerySubmitter(typ);
-    newMsg.setCaseCourt(XmlHelper.convertCourtType(courtId));
-    newMsg.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
+    newMsg.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
+    newMsg.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
     newMsg.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     return newMsg;
   }

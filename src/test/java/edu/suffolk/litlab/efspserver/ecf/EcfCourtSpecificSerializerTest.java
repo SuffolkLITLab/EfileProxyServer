@@ -26,16 +26,18 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import edu.suffolk.litlab.efspserver.ContactInformation;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.Person;
-import edu.suffolk.litlab.efspserver.XmlHelper;
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
-import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
-import edu.suffolk.litlab.efspserver.codes.CrossReference;
-import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
-import edu.suffolk.litlab.efspserver.codes.DataFields;
-import edu.suffolk.litlab.efspserver.codes.PartyType;
+import edu.suffolk.litlab.efspserver.ecf4.EcfCourtSpecificSerializer;
+import edu.suffolk.litlab.efspserver.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.tyler.codes.CourtLocationInfo;
+import edu.suffolk.litlab.efspserver.tyler.codes.CrossReference;
+import edu.suffolk.litlab.efspserver.tyler.codes.DataFieldRow;
+import edu.suffolk.litlab.efspserver.tyler.codes.DataFields;
+import edu.suffolk.litlab.efspserver.tyler.codes.PartyType;
+
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
@@ -85,7 +87,7 @@ public class EcfCourtSpecificSerializerTest {
     // The rest of the object should effectively be empty
     // assertNull(pt.getPersonSex());
     //assertNull(pt.getPersonStateIdentification());
-    XmlHelper.objectToXmlStr(cpt, CaseParticipantType.class);
+    Ecf4Helper.objectToXmlStr(cpt, CaseParticipantType.class);
     
     
     Person org = Person.FromInput(new Name("Business Org", "", ""), info, Optional.empty(), Optional.empty(), Optional.empty(), true, true, "1234", Optional.empty());
@@ -94,11 +96,11 @@ public class EcfCourtSpecificSerializerTest {
     assertTrue(cptOrg.getEntityRepresentation().getValue() instanceof OrganizationType);
     OrganizationType orgPt = ((OrganizationType) cptOrg.getEntityRepresentation().getValue());
     assertTrue(orgPt.getRest().size() > 0); 
-    XmlHelper.objectToXmlStr(cptOrg, CaseParticipantType.class);
+    Ecf4Helper.objectToXmlStr(cptOrg, CaseParticipantType.class);
     
     Person per = Person.FromInput(new Name("Bob", "", "Zombie"), info, Optional.of("Male"), Optional.of("Spanish"), Optional.empty(), false, false, "1234", Optional.empty());
     CaseParticipantType cptPer = courtSer.serializeEcfCaseParticipant(per, collector, okPartyTypes);
-    System.out.println(XmlHelper.objectToXmlStr(cpt, CaseParticipantType.class));
+    System.out.println(Ecf4Helper.objectToXmlStr(cpt, CaseParticipantType.class));
     assertEquals(cptPer.getCaseParticipantRoleCode().getValue(), "1234");
     assertTrue(cptPer.getEntityRepresentation().getValue() instanceof PersonType);
     PersonType perPt = ((PersonType) cptPer.getEntityRepresentation().getValue());
@@ -106,7 +108,7 @@ public class EcfCourtSpecificSerializerTest {
     List<JAXBElement<?>> langs = perPt.getPersonPrimaryLanguage().getLanguage();
     assertTrue(langs.size() > 0);
     //assertEquals("Spanish", ((LanguageCodeType) langs.get(0).getValue()).getValue());
-    XmlHelper.objectToXmlStr(cptPer, CaseParticipantType.class);
+    Ecf4Helper.objectToXmlStr(cptPer, CaseParticipantType.class);
   }
 
   @Test

@@ -30,15 +30,16 @@ import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
-import edu.suffolk.litlab.efspserver.XmlHelper;
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
-import edu.suffolk.litlab.efspserver.codes.CrossReference;
-import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingInformationConverter;
+import edu.suffolk.litlab.efspserver.ecf4.EcfCaseTypeFactory;
+import edu.suffolk.litlab.efspserver.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewToFilingInformationConverter;
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.tyler.codes.CrossReference;
+import edu.suffolk.litlab.efspserver.tyler.codes.DataFieldRow;
 
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
 
@@ -76,7 +77,7 @@ public class EcfCaseTypeFactoryTest {
   @Test
   public void shouldUnpackTylerCaseCorrectly() throws FileNotFoundException, JAXBException, XMLStreamException {
     gov.niem.niem.niem_core._2.CaseType myCase = readFromFile(this.getClass().getResourceAsStream("/case_resp.xml")).getCase().getValue();
-    System.out.println(XmlHelper.objectToXmlStrOrError(myCase, gov.niem.niem.niem_core._2.CaseType.class));
+    System.out.println(Ecf4Helper.objectToXmlStrOrError(myCase, gov.niem.niem.niem_core._2.CaseType.class));
     Optional<Map<PartyId, Person>> participants = EcfCaseTypeFactory.getCaseParticipants(myCase);
     assertTrue(participants.isPresent());
     assertEquals(participants.get().size(), 2);
@@ -98,7 +99,7 @@ public class EcfCaseTypeFactoryTest {
   @Test
   public void shouldMatchExistingPartyPersonOrOrgXmlWrappers() throws Exception {
     gov.niem.niem.niem_core._2.CaseType myCase = readFromFile(this.getClass().getResourceAsStream("/case_resp.xml")).getCase().getValue();
-    EcfCaseTypeFactory caseFactory = new EcfCaseTypeFactory(cd);
+    EcfCaseTypeFactory caseFactory = new EcfCaseTypeFactory(cd, "illinois");
     InterviewToFilingInformationConverter converter = new DocassembleToFilingInformationConverter(null);
     Result<FilingInformation, FilingError> infoRes = converter.extractInformation(""); 
     return;

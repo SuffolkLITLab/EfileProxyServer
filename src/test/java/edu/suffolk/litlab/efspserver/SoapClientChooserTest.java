@@ -9,6 +9,8 @@ import java.net.URL;
 
 import org.junit.jupiter.api.Test;
 
+import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
+
 public class SoapClientChooserTest {
   
   public void testJurisdictionEnvUrl(String urlExpected, String urlGenerated) throws IOException {
@@ -21,11 +23,11 @@ public class SoapClientChooserTest {
 
   @Test
   public void testJurisdictionEnvUrls() throws IOException {
-    testJurisdictionEnvUrl("https://texas-stage.tylertech.cloud/", SoapClientChooser.getCodeEndpointRootUrl("texas", "stage"));
-    testJurisdictionEnvUrl("https://texas.tylertech.cloud/", SoapClientChooser.getCodeEndpointRootUrl("texas", "prod"));
-    testJurisdictionEnvUrl("https://massachusetts-stage.tylertech.cloud/", SoapClientChooser.getCodeEndpointRootUrl("massachusetts", "stage"));
-    testJurisdictionEnvUrl("https://massachusetts.tylertech.cloud/", SoapClientChooser.getCodeEndpointRootUrl("massachusetts", "prod"));
-    testJurisdictionEnvUrl("https://illinois-stage.tylertech.cloud/", SoapClientChooser.getCodeEndpointRootUrl("illinois", "stage"));
-    testJurisdictionEnvUrl("https://illinois.tylerhost.net/", SoapClientChooser.getCodeEndpointRootUrl("illinois", "prod"));
+    testJurisdictionEnvUrl("https://texas-stage.tylertech.cloud/", TylerUrls.getCodeEndpointRootUrl("texas", "stage"));
+    testJurisdictionEnvUrl("https://texas.tylertech.cloud/", TylerUrls.getCodeEndpointRootUrl("texas", "prod"));
+    testJurisdictionEnvUrl("https://massachusetts-stage.tylertech.cloud/", TylerUrls.getCodeEndpointRootUrl("massachusetts", "stage"));
+    testJurisdictionEnvUrl("https://massachusetts.tylertech.cloud/", TylerUrls.getCodeEndpointRootUrl("massachusetts", "prod"));
+    testJurisdictionEnvUrl("https://illinois-stage.tylertech.cloud/", TylerUrls.getCodeEndpointRootUrl("illinois", "stage"));
+    testJurisdictionEnvUrl("https://illinois.tylerhost.net/", TylerUrls.getCodeEndpointRootUrl("illinois", "prod"));
   }
 }

@@ -4,17 +4,17 @@ import static edu.suffolk.litlab.efspserver.services.EndpointReflection.replaceP
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.suffolk.litlab.efspserver.Name;
-import edu.suffolk.litlab.efspserver.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.TylerUserNamePassword;
-import edu.suffolk.litlab.efspserver.XmlHelper;
-import edu.suffolk.litlab.efspserver.codes.CodeDatabase;
-import edu.suffolk.litlab.efspserver.codes.CourtLocationInfo;
-import edu.suffolk.litlab.efspserver.codes.DataFieldRow;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
-import edu.suffolk.litlab.efspserver.ecf.EcfCaseTypeFactory;
-import edu.suffolk.litlab.efspserver.ecf.TylerLogin;
+import edu.suffolk.litlab.efspserver.ecf4.Ecf4Helper;
+import edu.suffolk.litlab.efspserver.ecf4.EcfCaseTypeFactory;
+import edu.suffolk.litlab.efspserver.ecf4.SoapClientChooser;
+import edu.suffolk.litlab.efspserver.tyler.TylerLogin;
+import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.tyler.codes.CourtLocationInfo;
+import edu.suffolk.litlab.efspserver.tyler.codes.DataFieldRow;
 import gov.niem.niem.niem_core._2.CaseType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.TextType;
@@ -174,13 +174,13 @@ public class CasesService {
     JAXBElement<PersonType> elem2 = ecfOf.createEntityPerson(new PersonType());
     typ.setEntityRepresentation(elem2);
     query.setQuerySubmitter(typ);
-    query.setCaseCourt(XmlHelper.convertCourtType(courtId));
-    query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
+    query.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
+    query.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
 
     if (docketId != null) {
       CaseType ct = new CaseType();
-      ct.setCaseDocketID(XmlHelper.convertString(docketId));
+      ct.setCaseDocketID(Ecf4Helper.convertString(docketId));
       query.getCaseListQueryCase().add(ct);
     }
 
@@ -191,7 +191,7 @@ public class CasesService {
 
       var commonCpt = ecfOf.createCaseParticipantType();
       commonCpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
-      commonCpt.setCaseParticipantRoleCode(XmlHelper.convertText(""));
+      commonCpt.setCaseParticipantRoleCode(Ecf4Helper.convertText(""));
 
       CaseParticipantType cpt = listObjFac.createCaseParticipantType();
       cpt.setCaseParticipant(ecfOf.createCaseParticipant(commonCpt));
@@ -199,10 +199,10 @@ public class CasesService {
     }
     if (businessName != null) {
       OrganizationType ot = ecfOf.createOrganizationType();
-      ot.setOrganizationName(XmlHelper.convertText(businessName));
+      ot.setOrganizationName(Ecf4Helper.convertText(businessName));
       var commonCpt = ecfOf.createCaseParticipantType();
       commonCpt.setEntityRepresentation(ecfOf.createEntityOrganization(ot));
-      commonCpt.setCaseParticipantRoleCode(XmlHelper.convertText(""));
+      commonCpt.setCaseParticipantRoleCode(Ecf4Helper.convertText(""));
       CaseParticipantType cpt = listObjFac.createCaseParticipantType();
       cpt.setCaseParticipant(ecfOf.createCaseParticipant(commonCpt));
       query.getCaseListQueryCaseParticipant().add(cpt);
@@ -210,7 +210,7 @@ public class CasesService {
 
     log.info("Before the case list query");
     CaseListResponseMessageType resp = maybePort.get().getCaseList(query);
-    log.info(XmlHelper.objectToXmlStrOrError(resp, CaseListResponseMessageType.class));
+    log.info(Ecf4Helper.objectToXmlStrOrError(resp, CaseListResponseMessageType.class));
 
     MDCWrappers.removeAllMDCs();
     if (hasError(resp)) {
@@ -251,10 +251,10 @@ public class CasesService {
       JAXBElement<PersonType> elem2 = ecfOf.createEntityPerson(new PersonType());
       typ.setEntityRepresentation(elem2);
       query.setQuerySubmitter(typ);
-      query.setCaseCourt(XmlHelper.convertCourtType(courtId));
-      query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
+      query.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
+      query.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
       query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
-      query.setCaseTrackingID(XmlHelper.convertString(caseId));
+      query.setCaseTrackingID(Ecf4Helper.convertString(caseId));
       query.setCaseQueryCriteria(EcfCaseTypeFactory.getCriteria());
       CaseResponseMessageType resp = maybePort.get().getCase(query);
       int responseCode = 200;
@@ -281,7 +281,7 @@ public class CasesService {
                   .protectedcasetypes
                   .contains(aug.getCaseTypeText().getValue())) {
                 TextType protectedText =
-                    XmlHelper.convertText(locationInfo.get().protectedcasereplacementstring);
+                    Ecf4Helper.convertText(locationInfo.get().protectedcasereplacementstring);
                 aug.setCaseTypeText(protectedText);
                 caseType.setCaseCategoryText(protectedText);
               }
@@ -330,9 +330,9 @@ public class CasesService {
     EntityType typ = new EntityType();
     typ.setEntityRepresentation(ecfOf.createEntityPerson(new PersonType()));
     query.setQuerySubmitter(typ);
-    query.setCaseCourt(XmlHelper.convertCourtType(courtId));
-    query.setServiceContactIdentification(XmlHelper.convertId(serviceId));
-    query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
+    query.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
+    query.setServiceContactIdentification(Ecf4Helper.convertId(serviceId));
+    query.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     ServiceAttachCaseListResponseMessageType resp = maybePort.get().getServiceAttachCaseList(query);
     MDCWrappers.removeAllMDCs();
@@ -359,9 +359,9 @@ public class CasesService {
     JAXBElement<PersonType> elem2 = ecfOf.createEntityPerson(new PersonType());
     typ.setEntityRepresentation(elem2);
     query.setQuerySubmitter(typ);
-    query.setCaseCourt(XmlHelper.convertCourtType(courtId));
-    query.setCaseTrackingID(XmlHelper.convertString(caseId));
-    query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
+    query.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
+    query.setCaseTrackingID(Ecf4Helper.convertString(caseId));
+    query.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     ServiceInformationResponseMessageType resp = maybePort.get().getServiceInformation(query);
     MDCWrappers.removeAllMDCs();
@@ -388,9 +388,9 @@ public class CasesService {
     JAXBElement<PersonType> elem2 = ecfOf.createEntityPerson(new PersonType());
     typ.setEntityRepresentation(elem2);
     query.setQuerySubmitter(typ);
-    query.setCaseCourt(XmlHelper.convertCourtType(courtId));
-    query.setCaseTrackingID(XmlHelper.convertString(caseId));
-    query.setSendingMDELocationID(XmlHelper.convertId(ServiceHelpers.SERVICE_URL));
+    query.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
+    query.setCaseTrackingID(Ecf4Helper.convertString(caseId));
+    query.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     ServiceInformationHistoryResponseMessageType resp =
         maybePort.get().getServiceInformationHistory(query);

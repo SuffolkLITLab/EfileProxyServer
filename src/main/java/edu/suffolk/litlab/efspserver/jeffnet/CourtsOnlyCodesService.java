@@ -2,9 +2,9 @@ package edu.suffolk.litlab.efspserver.jeffnet;
 
 import static edu.suffolk.litlab.efspserver.services.EndpointReflection.replacePathParam;
 
-import edu.suffolk.litlab.efspserver.codes.NameAndCode;
 import edu.suffolk.litlab.efspserver.services.CodesService;
 import edu.suffolk.litlab.efspserver.services.EndpointReflection;
+import edu.suffolk.litlab.efspserver.tyler.codes.NameAndCode;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
