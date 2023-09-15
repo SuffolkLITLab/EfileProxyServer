@@ -6,14 +6,11 @@ import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
-import edu.suffolk.litlab.efspserver.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efspserver.tyler.TylerLogin;
 import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
-import gov.niem.niem.niem_core._2.EntityType;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
-import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.ws.BindingProvider;
 import java.sql.SQLException;
 import java.util.List;
@@ -21,9 +18,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryMessageType;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,71 +100,14 @@ public class ServiceHelpers {
     ctx.put("security.signature.username", "1");
   }
 
-  public static void setupReplys(CaseFilingType reply) {
-    reply.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
-    reply.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+  public static void setupServicePort(BindingProvider bp, TylerUserNamePassword creds) {
+    setupServicePort(bp, List.of(creds.toHeader()));
   }
 
-  public static <T extends QueryMessageType> T prep(T newMsg, String courtId) {
-    EntityType typ = new EntityType();
-    var commonObjFac =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-    JAXBElement<PersonType> elem2 = commonObjFac.createEntityPerson(new PersonType());
-    typ.setEntityRepresentation(elem2);
-    newMsg.setQuerySubmitter(typ);
-    newMsg.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
-    newMsg.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
-    newMsg.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
-    return newMsg;
-  }
-
-  public static Optional<IEfmFirmService> setupFirmPort(
-      EfmFirmService firmFactory, HttpHeaders httpHeaders, DataSource userDs, String jurisdiction) {
-    return setupFirmPort(firmFactory, httpHeaders, userDs, true, jurisdiction);
-  }
-
-  public static Optional<IEfmFirmService> setupFirmPort(
-      EfmFirmService firmFactory,
-      HttpHeaders httpHeaders,
-      DataSource userDs,
-      boolean needsSoapHeader,
-      String jurisdiction) {
-    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
-    try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
-      Optional<AtRest> atRest = ld.getAtRestInfo(activeToken);
-      if (atRest.isEmpty()) {
-        log.warn("Couldn't find server api key");
-        return Optional.empty();
-      }
-      if (needsSoapHeader) {
-        String tylerToken =
-            httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-        MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
-        return setupFirmPort(firmFactory, tylerToken);
-      }
-    } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex));
-      return Optional.empty();
-    }
-    IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
-    setupServicePort((BindingProvider) port);
-    return Optional.of(port);
-  }
-
-  public static Optional<IEfmFirmService> setupFirmPort(
-      EfmFirmService firmFactory, String tylerToken) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
-    if (creds.isEmpty()) {
-      log.warn("No creds from " + tylerToken + "?");
-      return Optional.empty();
-    }
-
-    IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
-    setupServicePort((BindingProvider) port);
-    Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    List<Header> headersList = List.of(creds.get().toHeader());
-    ctx.put(Header.HEADER_LIST, headersList);
-    return Optional.of(port);
+  public static void setupServicePort(BindingProvider bp, List<Header> headerList) {
+    Map<String, Object> ctx = bp.getRequestContext();
+    ctx.put(Header.HEADER_LIST, headerList);
+    setupServicePort(bp);
   }
 
   /**
@@ -206,5 +143,52 @@ public class ServiceHelpers {
         return Response.ok(cd.getAllLocations());
       }
     }
+  }
+
+  public static Optional<IEfmFirmService> setupFirmPort(
+      EfmFirmService firmFactory, HttpHeaders httpHeaders, DataSource userDs, String jurisdiction) {
+    return setupFirmPort(firmFactory, httpHeaders, userDs, true, jurisdiction);
+  }
+
+  public static Optional<IEfmFirmService> setupFirmPort(
+      EfmFirmService firmFactory,
+      HttpHeaders httpHeaders,
+      DataSource userDs,
+      boolean needsSoapHeader,
+      String jurisdiction) {
+    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
+    try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
+      Optional<AtRest> atRest = ld.getAtRestInfo(activeToken);
+      if (atRest.isEmpty()) {
+        log.warn("Couldn't find server api key");
+        return Optional.empty();
+      }
+      if (needsSoapHeader) {
+        String tylerToken =
+            httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
+        MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
+        return setupFirmPort(firmFactory, tylerToken);
+      } else {
+        IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
+        ServiceHelpers.setupServicePort((BindingProvider) port);
+        return Optional.of(port);
+      }
+    } catch (SQLException ex) {
+      log.error(StdLib.strFromException(ex));
+      return Optional.empty();
+    }
+  }
+
+  public static Optional<IEfmFirmService> setupFirmPort(
+      EfmFirmService firmFactory, String tylerToken) {
+    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
+    if (creds.isEmpty()) {
+      log.warn("No creds from " + tylerToken + "?");
+      return Optional.empty();
+    }
+
+    IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
+    ServiceHelpers.setupServicePort((BindingProvider) port, creds.get());
+    return Optional.of(port);
   }
 }

@@ -1,6 +1,5 @@
 package edu.suffolk.litlab.efspserver.ecf4;
 
-import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,7 +23,7 @@ public class PolicyCacher {
       return policyInMemoryCache.get(courtId);
     } else {
       CourtPolicyQueryMessageType policyQuery =
-          ServiceHelpers.prep(new CourtPolicyQueryMessageType(), courtId);
+          Ecf4Helper.prep(new CourtPolicyQueryMessageType(), courtId);
       CourtPolicyResponseMessageType p = filingPort.getPolicy(policyQuery);
       policyInMemoryCache.put(courtId, p);
       return p;

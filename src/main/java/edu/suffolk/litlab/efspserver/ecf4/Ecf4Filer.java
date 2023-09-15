@@ -205,7 +205,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       ComboCaseCodes allCodes;
       if (!isFirstIndexedFiling) {
         CaseQueryMessageType query = new CaseQueryMessageType();
-        ServiceHelpers.prep(query, info.getCourtLocation());
+        Ecf4Helper.prep(query, info.getCourtLocation());
         query.setCaseTrackingID(Ecf4Helper.convertString(info.getPreviousCaseId().get()));
         query.setCaseQueryCriteria(EcfCaseTypeFactory.getCriteria());
         CaseResponseMessageType resp = recordPort.getCase(query);
@@ -911,7 +911,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   private static <T extends QueryMessageType> T prep(T newMsg, String courtId) {
-    return ServiceHelpers.prep(newMsg, courtId);
+    return Ecf4Helper.prep(newMsg, courtId);
   }
 
   private Optional<FilingReviewMDEPort> setupFilingPort(String apiToken) {
