@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efspserver.ecf4;
 
+import static edu.suffolk.litlab.efspserver.StdLib.exists;
 import static edu.suffolk.litlab.efspserver.StdLib.strFromException;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
 
@@ -576,28 +577,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                           },
                           (str, str2) -> str + str2)));
     }
-    String caseTitle = "";
-    if (existingCaseTitle != null && !existingCaseTitle.isBlank()) {
-      caseTitle = existingCaseTitle;
-    } else {
-      if (info.getNewPlaintiffs().size() > 0 && info.getNewDefendants().size() > 0) {
-        caseTitle =
-            info.getNewPlaintiffs().get(0).getName().getTitleName()
-                + " v. "
-                + info.getNewDefendants().get(0).getName().getTitleName();
-      } else if (info.getNewPlaintiffs().size() > 0) {
-        caseTitle = "In the matter of " + info.getNewPlaintiffs().get(0).getName().getTitleName();
-      } else if (info.getNewDefendants().size() > 0) {
-        caseTitle = "In the matter of " + info.getNewDefendants().get(0).getName().getTitleName();
-      } else {
-        log.warn(
-            "Cannot guess title of the case (not existing case, no plaintiffs or defendants)"
-                + " (filing "
-                + info.getFilings().get(0).getFilingComments()
-                + ")\nUsing backup of lead contact");
-        caseTitle = "On Behalf of " + info.getLeadContact().getName().getFullName();
-      }
-    }
+    String caseTitle = (exists(existingCaseTitle)) ? existingCaseTitle : info.makeCaseTitle();
     log.info(Ecf4Helper.objectToXmlStrOrError(mrmt, MessageReceiptMessageType.class));
     return Result.ok(
         new FilingResult(

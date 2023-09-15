@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver.docassemble;
 
+import static edu.suffolk.litlab.efspserver.StdLib.GetEnv;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -12,6 +14,7 @@ import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
 import edu.suffolk.litlab.efspserver.JsonHelpers;
+import edu.suffolk.litlab.efspserver.LowerCourtInfo;
 import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
 import edu.suffolk.litlab.efspserver.services.FilingError;
@@ -200,6 +203,7 @@ public class FilingInformationDocassembleJacksonDeserializer
         extractPartyAttorneyMap(node.get("party_to_attorneys"), varToPartyId));
     entities.setServiceContacts(
         extractServiceContacts(node.get("service_contacts"), varToPartyId, collector));
+    entities.setLowerCourtInfo(extractLowerCourt(node.get("lower_court_case"), collector));
 
     // TODO(brycew-later): this approach is a complete mess, don't know
     // how to best map LIST onto case categories, ECF is too high level
@@ -464,6 +468,53 @@ public class FilingInformationDocassembleJacksonDeserializer
       }
     }
     return maybeReturnDate;
+  }
+
+  private static Optional<LowerCourtInfo> extractLowerCourt(JsonNode node, InfoCollector collector)
+      throws FilingError {
+    if (node == null) {
+      return Optional.empty();
+    }
+    JsonNode jsonLowerCase = node.get("lower_court_case");
+    if (jsonLowerCase == null || jsonLowerCase.isNull()) {
+      return Optional.empty();
+    }
+    String judgeName = "";
+    collector.pushAttributeStack("lower_court_case");
+    if (jsonLowerCase.get("judge").isTextual()) {
+      judgeName = jsonLowerCase.get("judge").asText();
+    } else if (jsonLowerCase.get("judge").isObject()) {
+      collector.pushAttributeStack("judge");
+      judgeName =
+          NameDocassembleDeserializer.fromNode(jsonLowerCase.get("judge"), collector).getFullName();
+      collector.popAttributeStack();
+    }
+    Optional<String> title = JsonHelpers.getStringMember(jsonLowerCase, "title");
+    Optional<String> docketNumber = JsonHelpers.getStringMember(jsonLowerCase, "docket_number");
+    collector.popAttributeStack();
+    // TODO(brycew): this one's tricky; `trial_court` is the current court if it's a non-appellate
+    // case, but is the lower court if it is an appellate case, but at this point, we don't know
+    // for sure that this is an appellate case, but likely is, since lower_court_case exists.
+    // So we'll use `trial_court.tyler_lower_court_code`.
+    String lowerCourtCode = "";
+    if (node.has("trial_court") && node.get("trial_court").isObject()) {
+      Optional<String> maybeCodeText = Optional.empty();
+      // TODO(brycew): HACK HACK HACK! Should be a better way to handle lower court codes than
+      // this, but it's broken on prod
+      var tylerEnv = GetEnv("TYLER_ENV");
+      if (tylerEnv.orElse("").equalsIgnoreCase("prod")) {
+        maybeCodeText =
+            JsonHelpers.getStringMember(node.get("trial_court"), "tyler_prod_lower_court_code");
+      } else {
+        maybeCodeText =
+            JsonHelpers.getStringMember(node.get("trial_court"), "tyler_lower_court_code");
+      }
+      if (maybeCodeText.isPresent()) {
+        lowerCourtCode = maybeCodeText.get();
+      }
+    }
+    return Optional.of(
+        new LowerCourtInfo(title.orElse(""), docketNumber.orElse(""), lowerCourtCode, judgeName));
   }
 
   private static String extractNullableString(JsonNode json) {
