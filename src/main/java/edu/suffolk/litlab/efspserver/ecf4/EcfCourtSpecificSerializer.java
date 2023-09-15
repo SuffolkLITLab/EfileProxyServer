@@ -443,7 +443,7 @@ public class EcfCourtSpecificSerializer {
 
       if (per.getLanguage().isPresent()) {
         String lang = per.getLanguage().get();
-        List<String> langs = cd.getLanguages(this.court.code);
+        List<String> langs = cd.getLanguageNames(this.court.code);
         if (!langs.isEmpty() && !langs.contains(lang)) {
           log.info("Can't have language: " + lang);
           collector.addWrong(

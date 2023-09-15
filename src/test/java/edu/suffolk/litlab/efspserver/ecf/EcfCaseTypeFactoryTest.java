@@ -60,7 +60,7 @@ public class EcfCaseTypeFactoryTest {
     List<CrossReference> blank = List.of();
     when(cd.getCrossReference("cook:cd1", caseType)).thenReturn(refs);
     when(cd.getCrossReference("adams", caseType)).thenReturn(blank);
-    when(cd.getLanguages("not_real")).thenReturn(List.of("English", "Polish", "Spanish"));
+    when(cd.getLanguageNames("not_real")).thenReturn(List.of("English", "Polish", "Spanish"));
     when(cd.getDataField(eq("not_real"), anyString())).thenReturn(DataFieldRow.MissingDataField(""));
     when(cd.getDataField(eq("not_real"), eq("PartyGender"))).thenReturn(
         new DataFieldRow("PartyGender", "Party Gender", true, false, "", "", "", "", "", "", false, ""));

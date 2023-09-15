@@ -33,8 +33,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
-import edu.suffolk.litlab.efspserver.ecf4.EcfCodesService;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.tyler.codes.EcfCodesService;
 
 public class CodesServiceTest {
   private static Logger log = LoggerFactory.getLogger(CodesServiceTest.class);
@@ -71,7 +71,7 @@ public class CodesServiceTest {
     }
     JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
     sf.setResourceClasses(EcfCodesService.class);
-    sf.setResourceProvider(EcfCodesService.class, new SingletonResourceProvider(new EcfCodesService("illinois", "stage", cdSupplier)));
+    sf.setResourceProvider(EcfCodesService.class, new SingletonResourceProvider(new EcfCodesService("illinois", cdSupplier)));
     sf.setAddress(ENDPOINT_ADDRESS);
     Map<Object, Object> extensionMappings = Map.of(
         "xml", MediaType.APPLICATION_XML,

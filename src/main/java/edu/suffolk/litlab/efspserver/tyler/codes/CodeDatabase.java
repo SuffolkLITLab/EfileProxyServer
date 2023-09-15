@@ -1,10 +1,8 @@
 package edu.suffolk.litlab.efspserver.tyler.codes;
 
 import edu.suffolk.litlab.efspserver.StdLib;
-import edu.suffolk.litlab.efspserver.db.Database;
-import jakarta.xml.bind.JAXBContext;
+import edu.suffolk.litlab.efspserver.ecfcodes.CodeDatabaseAPI;
 import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author brycew
  */
-public class CodeDatabase extends Database {
+public class CodeDatabase extends CodeDatabaseAPI {
   private static final Logger log = LoggerFactory.getLogger(CodeDatabase.class);
 
   /** The DNS domain (tyler jurisdiction + tyler environment, illinois-stage). */
@@ -155,15 +153,8 @@ public class CodeDatabase extends Database {
     xsr.close();
   }
 
-  public void updateTable(String tableName, String courtName, XMLStreamReader xsr)
-      throws JAXBException, SQLException, XMLStreamException {
-    Unmarshaller u = JAXBContext.newInstance(CodeListDocument.class).createUnmarshaller();
-    final CodeListDocument doc = u.unmarshal(xsr, CodeListDocument.class).getValue();
-    updateTable(tableName, courtName, doc);
-  }
-
   public void updateTable(String tableName, String courtName, CodeListDocument doc)
-      throws JAXBException, SQLException, XMLStreamException {
+      throws SQLException {
     String versionUpdate = CodeTableConstants.updateVersion();
     try (PreparedStatement update = conn.prepareStatement(versionUpdate)) {
       if (tableName.equals("optionalservices")) {
@@ -189,7 +180,7 @@ public class CodeDatabase extends Database {
   }
 
   public void updateTableInner(String tableName, String courtName, CodeListDocument doc)
-      throws JAXBException, SQLException, XMLStreamException {
+      throws SQLException {
     String insertQuery = CodeTableConstants.getInsertInto(tableName);
     try (PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
       // TODO(brycew-later): dive deeper in the Column set, and see if any Data type isn't a
@@ -343,25 +334,22 @@ public class CodeDatabase extends Database {
         });
   }
 
-  public List<NameAndCode> getCaseSubtypesFor(String courtLocationId, String caseType)
-      throws SQLException {
-    if (conn == null) {
-      log.error("SQL connection not created in CaseSubtypes yet");
-      throw new SQLException();
-    }
-
-    String query = CodeTableConstants.getCaseSubtypesFor();
-    List<NameAndCode> subtypes = new ArrayList<NameAndCode>();
-    try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, tylerDomain);
-      st.setString(2, courtLocationId);
-      st.setString(3, caseType);
-      ResultSet rs = st.executeQuery();
-      while (rs.next()) {
-        subtypes.add(new NameAndCode(rs.getString(2), rs.getString(1)));
-      }
-    }
-    return subtypes;
+  public List<NameAndCode> getCaseSubtypesFor(String courtLocationId, String caseType) {
+    return safetyWrap(
+        () -> {
+          String query = CodeTableConstants.getCaseSubtypesFor();
+          List<NameAndCode> subtypes = new ArrayList<NameAndCode>();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, courtLocationId);
+            st.setString(3, caseType);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              subtypes.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+            }
+          }
+          return subtypes;
+        });
   }
 
   public DataFieldRow getDataField(String courtLocationId, String dataName) {
@@ -478,7 +466,7 @@ public class CodeDatabase extends Database {
       st.setString(2, courtLocationId);
       st.setString(3, caseCategory);
       ResultSet rs = st.executeQuery();
-      List<NameAndCode> names = new ArrayList<NameAndCode>();
+      List<NameAndCode> names = new ArrayList<>();
       while (rs.next()) {
         names.add(new NameAndCode(rs.getString(1), rs.getString(2)));
       }
@@ -493,7 +481,7 @@ public class CodeDatabase extends Database {
       String courtLocationId, String categoryCode, String typeCode, boolean initial) {
     return safetyWrap(
         () -> {
-          List<FilingCode> filingTypes = new ArrayList<FilingCode>();
+          List<FilingCode> filingTypes = new ArrayList<>();
           try (PreparedStatement specificSt =
               FilingCode.prepQueryWithCaseInfo(
                   conn, initial, tylerDomain, courtLocationId, categoryCode, typeCode)) {
@@ -532,11 +520,15 @@ public class CodeDatabase extends Database {
         });
   }
 
-  public void vacuumAll() throws SQLException {
-    String vacuum = CodeTableConstants.vacuumAnalyzeAll();
-    try (PreparedStatement vacuumSt = conn.prepareStatement(vacuum)) {
-      log.info("Full vacuum statement: " + vacuumSt.toString());
-      vacuumSt.executeUpdate();
+  public void vacuumAll() {
+    try {
+      String vacuum = CodeTableConstants.vacuumAnalyzeAll();
+      try (PreparedStatement vacuumSt = conn.prepareStatement(vacuum)) {
+        log.info("Full vacuum statement: " + vacuumSt.toString());
+        vacuumSt.executeUpdate();
+      }
+    } catch (SQLException ex) {
+      log.error("Error when vacuuming in " + this.tylerDomain + ": " + StdLib.strFromException(ex));
     }
   }
 
@@ -544,7 +536,7 @@ public class CodeDatabase extends Database {
     return safetyWrap(
         () -> {
           String query = CodeTableConstants.getDamageAmount();
-          List<NameAndCode> amounts = new ArrayList<NameAndCode>();
+          List<NameAndCode> amounts = new ArrayList<>();
           try (PreparedStatement st = conn.prepareStatement(query)) {
             st.setString(1, tylerDomain);
             st.setString(2, courtLocationId);
@@ -751,7 +743,7 @@ public class CodeDatabase extends Database {
       st.setString(2, courtLocationId);
       st.setString(3, filingCodeId);
       ResultSet rs = st.executeQuery();
-      List<FilingComponent> components = new ArrayList<FilingComponent>();
+      List<FilingComponent> components = new ArrayList<>();
       while (rs.next()) {
         components.add(new FilingComponent(rs));
       }
@@ -775,7 +767,7 @@ public class CodeDatabase extends Database {
       st.setString(2, courtId);
       st.setString(3, country);
       ResultSet rs = st.executeQuery();
-      List<String> stateCodes = new ArrayList<String>();
+      List<String> stateCodes = new ArrayList<>();
       while (rs.next()) {
         stateCodes.add(rs.getString(1));
       }
@@ -804,7 +796,7 @@ public class CodeDatabase extends Database {
             st.setString(1, tylerDomain);
             st.setString(2, courtId);
             ResultSet rs = st.executeQuery();
-            List<FileType> types = new ArrayList<FileType>();
+            List<FileType> types = new ArrayList<>();
             while (rs.next()) {
               types.add(new FileType(rs));
             }
@@ -821,7 +813,7 @@ public class CodeDatabase extends Database {
             st.setString(1, tylerDomain);
             st.setString(2, courtId);
             ResultSet rs = st.executeQuery();
-            List<FilerType> types = new ArrayList<FilerType>();
+            List<FilerType> types = new ArrayList<>();
             while (rs.next()) {
               types.add(new FilerType(rs));
             }
@@ -841,7 +833,7 @@ public class CodeDatabase extends Database {
       st.setString(1, tylerDomain);
       st.setString(2, courtId);
       ResultSet rs = st.executeQuery();
-      List<NameAndCode> names = new ArrayList<NameAndCode>();
+      List<NameAndCode> names = new ArrayList<>();
       while (rs.next()) {
         names.add(new NameAndCode(rs.getString(1), rs.getString(2)));
       }
@@ -858,7 +850,7 @@ public class CodeDatabase extends Database {
           try (PreparedStatement st =
               OptionalServiceCode.prepQuery(conn, tylerDomain, courtId, filingCode)) {
             ResultSet rs = st.executeQuery();
-            List<OptionalServiceCode> services = new ArrayList<OptionalServiceCode>();
+            List<OptionalServiceCode> services = new ArrayList<>();
             while (rs.next()) {
               services.add(new OptionalServiceCode(rs));
             }
@@ -867,7 +859,7 @@ public class CodeDatabase extends Database {
         });
   }
 
-  public List<String> getLanguages(String courtLocationId) {
+  public List<String> getLanguageNames(String courtLocationId) {
     return safetyWrap(
         () -> {
           String query = CodeTableConstants.getLanguages();
@@ -875,9 +867,26 @@ public class CodeDatabase extends Database {
             st.setString(1, tylerDomain);
             st.setString(2, courtLocationId);
             ResultSet rs = st.executeQuery();
-            List<String> languages = new ArrayList<String>();
+            List<String> languages = new ArrayList<>();
             while (rs.next()) {
               languages.add(rs.getString(2));
+            }
+            return languages;
+          }
+        });
+  }
+
+  public List<NameAndCode> getLanguages(String courtLocationId) {
+    return safetyWrap(
+        () -> {
+          String query = CodeTableConstants.getLanguages();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, courtLocationId);
+            ResultSet rs = st.executeQuery();
+            List<NameAndCode> languages = new ArrayList<>();
+            while (rs.next()) {
+              languages.add(new NameAndCode(rs.getString(2), rs.getString(1)));
             }
             return languages;
           }
@@ -1095,7 +1104,7 @@ public class CodeDatabase extends Database {
             st.setString(1, tylerDomain);
             st.setString(2, courtLocation);
             ResultSet rs = st.executeQuery();
-            List<Disclaimer> disclaimers = new ArrayList<Disclaimer>();
+            List<Disclaimer> disclaimers = new ArrayList<>();
             while (rs.next()) {
               disclaimers.add(
                   new Disclaimer(
