@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efspserver.ecf4;
+package edu.suffolk.litlab.efspserver.tyler.codes;
 
 import static edu.suffolk.litlab.efspserver.services.EndpointReflection.replacePathParam;
 
@@ -6,31 +6,12 @@ import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.services.CodesService;
 import edu.suffolk.litlab.efspserver.services.EndpointReflection;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
-import edu.suffolk.litlab.efspserver.tyler.codes.CaseCategory;
-import edu.suffolk.litlab.efspserver.tyler.codes.CaseType;
-import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
-import edu.suffolk.litlab.efspserver.tyler.codes.CourtLocationInfo;
-import edu.suffolk.litlab.efspserver.tyler.codes.CrossReference;
-import edu.suffolk.litlab.efspserver.tyler.codes.DataFieldRow;
-import edu.suffolk.litlab.efspserver.tyler.codes.Disclaimer;
-import edu.suffolk.litlab.efspserver.tyler.codes.DocumentTypeTableRow;
-import edu.suffolk.litlab.efspserver.tyler.codes.FileType;
-import edu.suffolk.litlab.efspserver.tyler.codes.FilingCode;
-import edu.suffolk.litlab.efspserver.tyler.codes.FilingComponent;
-import edu.suffolk.litlab.efspserver.tyler.codes.NameAndCode;
-import edu.suffolk.litlab.efspserver.tyler.codes.OptionalServiceCode;
-import edu.suffolk.litlab.efspserver.tyler.codes.PartyType;
-import edu.suffolk.litlab.efspserver.tyler.codes.ServiceCodeType;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.OPTIONS;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
@@ -41,11 +22,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Produces({MediaType.APPLICATION_JSON})
-public class EcfCodesService implements CodesService {
+public class EcfCodesService extends CodesService {
   private static Logger log = LoggerFactory.getLogger(EcfCodesService.class);
   private static final Set<String> underCourtMethodNames =
       Set.of(
@@ -81,25 +62,17 @@ public class EcfCodesService implements CodesService {
   private final Supplier<CodeDatabase> cdSupplier;
   private final EndpointReflection ef;
 
-  public EcfCodesService(String jurisdiction, String env, Supplier<CodeDatabase> cdSupplier) {
+  public EcfCodesService(String jurisdiction, Supplier<CodeDatabase> cdSupplier) {
     this.cdSupplier = cdSupplier;
     this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/codes");
   }
 
-  @GET
-  @Path("/")
-  @Produces(MediaType.APPLICATION_JSON)
   public Response getAll() {
     var retMap = ef.endPointsToMap(ef.findRESTEndpoints(List.of(this.getClass())));
     return cors(Response.ok(retMap));
   }
 
-  @GET
-  @Path("/courts")
-  public Response getCourts(
-      @Context HttpHeaders httpHeaders,
-      @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly,
-      @DefaultValue("false") @QueryParam("with_names") boolean withNames) {
+  public Response getCourts(HttpHeaders httpHeaders, boolean fileableOnly, boolean withNames) {
     try (CodeDatabase cd = cdSupplier.get()) {
       return cors(ServiceHelpers.getCourts(cd, fileableOnly, withNames));
     } catch (SQLException ex) {
@@ -107,31 +80,29 @@ public class EcfCodesService implements CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}")
-  public Response getCodesUnderCourt(@PathParam("court_id") String courtId) {
+  public Response getCodesUnderCourt(String courtId) {
     var errResp = okayCourt(courtId);
     if (errResp.isPresent()) {
       return errResp.get();
     }
     Class<?> clazz = this.getClass();
-    Method[] methods = clazz.getMethods();
-    List<Method> subCourtMethods = new ArrayList<>();
-    for (Method method : methods) {
-      if (underCourtMethodNames.contains(method.getName())) {
-        subCourtMethods.add(method);
-      }
-    }
-    var retMap =
-        ef.endPointsToMap(
-            replacePathParam(
-                ef.makeRestEndpoints(subCourtMethods, clazz), Map.of("court_id", courtId)));
+    List<Method> subCourtMethods =
+        Stream.of(clazz.getMethods())
+            .filter(m -> underCourtMethodNames.contains(m.getName()))
+            .toList();
+    var endpoints = ef.makeRestEndpoints(subCourtMethods, clazz);
+
+    List<Method> superClassSubCourtMethods =
+        Stream.of(clazz.getSuperclass().getMethods())
+            .filter(m -> underCourtMethodNames.contains(m.getName()))
+            .toList();
+    endpoints.addAll(ef.makeRestEndpoints(superClassSubCourtMethods, clazz.getSuperclass()));
+
+    var retMap = ef.endPointsToMap(replacePathParam(endpoints, Map.of("court_id", courtId)));
     return cors(Response.ok(retMap));
   }
 
-  @GET
-  @Path("/courts/{court_id}/codes")
-  public Response getCourtLocationCodes(@PathParam("court_id") String courtId) {
+  public Response getCourtLocationCodes(String courtId) {
     try (CodeDatabase cd = cdSupplier.get()) {
       Optional<CourtLocationInfo> info = cd.getFullLocationInfo(courtId);
       if (info.isEmpty()) {
@@ -571,7 +542,7 @@ public class EcfCodesService implements CodesService {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
       }
-      List<String> languages = cd.getLanguages(courtId);
+      List<String> languages = cd.getLanguageNames(courtId);
 
       return cors(Response.ok(languages));
     }
@@ -636,27 +607,5 @@ public class EcfCodesService implements CodesService {
           Response.status(404).entity("\"Court " + courtId + " does not exist\"").build());
     }
     return Optional.empty();
-  }
-
-  /**
-   * Adds proper CORS headers to all responses to the codes API, which is public
-   *
-   * <p>See https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS and
-   * https://stackoverflow.com/a/28996470/11416267.
-   */
-  private static Response cors(Response.ResponseBuilder rb) {
-    return rb.header("Access-Control-Allow-Origin", "*").build();
-  }
-
-  @OPTIONS
-  @Path("{path : .*}")
-  public Response options() {
-    return Response.ok("")
-        .header("Access-Control-Allow-Origin", "*")
-        .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
-        .header("Access-Control-Allow-Credentials", "true")
-        .header("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD")
-        .header("Access-Control-Max-Age", "1209600")
-        .build();
   }
 }

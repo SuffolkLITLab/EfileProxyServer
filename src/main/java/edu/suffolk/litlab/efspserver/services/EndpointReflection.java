@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efspserver.services;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.OPTIONS;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -11,10 +12,15 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Request;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,9 +36,19 @@ public class EndpointReflection {
   /** Returns REST endpoints defined in Java classes in the specified package. */
   @SuppressWarnings("rawtypes")
   public List<Endpoint> findRESTEndpoints(List<Class> classes) {
-    var endpoints = new ArrayList<Endpoint>();
+    var endpoints = new HashSet<Endpoint>();
 
-    for (Class<?> clazz : classes) {
+    Deque<Class> classQueue = new ArrayDeque<>();
+    classQueue.addAll(classes);
+    while (!classQueue.isEmpty()) {
+      Class<?> clazz = classQueue.pop();
+      if (clazz == null) {
+        continue;
+      }
+      classQueue.addAll(List.of(clazz.getInterfaces()));
+      if (clazz.getSuperclass() != null) {
+        classQueue.add(clazz.getSuperclass());
+      }
       Path annotation = clazz.getAnnotation(Path.class);
       String basePath = "/";
       if (annotation != null) {
@@ -41,16 +57,16 @@ public class EndpointReflection {
       Method[] methods = clazz.getMethods();
       endpoints.addAll(makeRestEndpoints(methods, clazz, basePath));
     }
-    return endpoints;
+    return endpoints.stream().toList();
   }
 
-  public List<Endpoint> makeRestEndpoints(List<Method> methods, Class<?> clazz) {
+  public Set<Endpoint> makeRestEndpoints(List<Method> methods, Class<?> clazz) {
     String basePath = getRESTEndpointPath(clazz);
     return makeRestEndpoints(methods.toArray(new Method[0]), clazz, basePath);
   }
 
-  private List<Endpoint> makeRestEndpoints(Method[] methods, Class<?> clazz, String basePath) {
-    var endpoints = new ArrayList<Endpoint>();
+  private Set<Endpoint> makeRestEndpoints(Method[] methods, Class<?> clazz, String basePath) {
+    var endpoints = new HashSet<Endpoint>();
     for (Method method : methods) {
       if (method.isAnnotationPresent(GET.class)) {
         endpoints.add(createEndpoint(method, MethodEnum.GET, clazz, basePath));
@@ -60,8 +76,10 @@ public class EndpointReflection {
         endpoints.add(createEndpoint(method, MethodEnum.POST, clazz, basePath));
       } else if (method.isAnnotationPresent(DELETE.class)) {
         endpoints.add(createEndpoint(method, MethodEnum.DELETE, clazz, basePath));
+      } else if (method.isAnnotationPresent(OPTIONS.class)) {
+        // Skip, there is no need to document OPTIONS, only used for CORS stuff
       } else if (method.isAnnotationPresent(Path.class)) {
-        // This happens when we return a whole object to handle that endpoint. Sholud have a root
+        // This happens when we return a whole object to handle that endpoint. Should have a root
         // GET on each of those.
         endpoints.add(createEndpoint(method, MethodEnum.GET, clazz, basePath));
       }
@@ -79,8 +97,8 @@ public class EndpointReflection {
     return toDisplay;
   }
 
-  public static List<Endpoint> replacePathParam(
-      List<Endpoint> endpoints, Map<String, String> paramVals) {
+  public static Collection<Endpoint> replacePathParam(
+      Collection<Endpoint> endpoints, Map<String, String> paramVals) {
     for (Endpoint endpoint : endpoints) {
       for (Map.Entry<String, String> paramVal : paramVals.entrySet()) {
         endpoint.uri = endpoint.uri.replace("{" + paramVal.getKey() + "}", paramVal.getValue());
@@ -90,7 +108,7 @@ public class EndpointReflection {
     return endpoints;
   }
 
-  public Map<String, Map<String, String>> endPointsToMap(List<Endpoint> endpoints) {
+  public Map<String, Map<String, String>> endPointsToMap(Collection<Endpoint> endpoints) {
     return endpoints.stream()
         .collect(
             Collectors.toMap(
@@ -206,7 +224,7 @@ public class EndpointReflection {
     PUT,
     POST,
     GET,
-    DELETE
+    DELETE,
   }
 
   enum ParameterType {

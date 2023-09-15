@@ -3,6 +3,8 @@ package edu.suffolk.litlab.efspserver.services;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
 import static edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes.makeResponse;
 
+import com.hubspot.algebra.NullValue;
+import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
@@ -12,7 +14,6 @@ import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
 import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.CourtLocationInfo;
-import edu.suffolk.litlab.efspserver.tyler.codes.DataFieldRow;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
@@ -85,13 +86,19 @@ public class AdminUserService {
 
   private final EfmUserService userFactory;
   private final EfmFirmService firmFactory;
-  private final Supplier<CodeDatabase> cdSupplier;
   private final DataSource userDs;
+  private final Function<String, Result<NullValue, String>> passwordChecker;
+  private final Supplier<CodeDatabase> cdSupplier;
   private final String jurisdiction;
 
   public AdminUserService(
-      String jurisdiction, String env, DataSource userDs, Supplier<CodeDatabase> cdSupplier) {
+      String jurisdiction,
+      String env,
+      DataSource userDs,
+      Supplier<CodeDatabase> cdSupplier,
+      Function<String, Result<NullValue, String>> passwordChecker) {
     this.jurisdiction = jurisdiction;
+    this.passwordChecker = passwordChecker;
     Optional<EfmUserService> maybeUserFactory = TylerUrls.getEfmUserFactory(jurisdiction, env);
     if (maybeUserFactory.isEmpty()) {
       throw new RuntimeException(
@@ -247,14 +254,11 @@ public class AdminUserService {
       }
 
       // The "1" is the default for all courts. There's no way to enforce court specific passwords
-      DataFieldRow globalPasswordRow = DataFieldRow.MissingDataField("GlobalPassword");
-      try (CodeDatabase cd = cdSupplier.get()) {
-        globalPasswordRow = cd.getDataField("1", "GlobalPassword");
-      } catch (SQLException e) {
-        log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
-      }
-      if (!passwordOk(globalPasswordRow, params.newPassword)) {
-        return Response.status(400).entity(globalPasswordRow.validationmessage).build();
+      Result<NullValue, String> passwordGood = passwordChecker.apply(params.newPassword);
+      if (passwordGood.isErr()) {
+        return Response.status(400)
+            .entity(passwordGood.expectErr("invalid internal state"))
+            .build();
       }
       ResetUserPasswordRequestType resetReq = new ResetUserPasswordRequestType();
       resetReq.setUserID(id);
@@ -285,16 +289,11 @@ public class AdminUserService {
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
-      // The "1" is the default for all courts. There's no way to enforce court specific passwords
-      DataFieldRow globalPasswordRow = DataFieldRow.MissingDataField("GlobalPassword");
-      try (CodeDatabase cd = cdSupplier.get()) {
-        globalPasswordRow = cd.getDataField("1", "GlobalPassword");
-      } catch (SQLException e) {
-        log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
-      }
-
-      if (!passwordOk(globalPasswordRow, params.newPassword)) {
-        return Response.status(400).entity(globalPasswordRow.validationmessage).build();
+      Result<NullValue, String> passwordGood = passwordChecker.apply(params.newPassword);
+      if (passwordGood.isErr()) {
+        return Response.status(400)
+            .entity(passwordGood.expectErr("invalid internal state"))
+            .build();
       }
       ChangePasswordRequestType change = new ChangePasswordRequestType();
       change.setOldPassword(params.currentPassword);
@@ -645,14 +644,16 @@ public class AdminUserService {
                 .build();
           }
         }
-        DataFieldRow globalPasswordRow = cd.getDataField("1", "GlobalPassword");
-        // The "1" is the default for all courts. There's no way to enforce court specific passwords
-        if (!passwordOk(globalPasswordRow, req.getPassword())) {
-          return Response.status(400).entity(globalPasswordRow.validationmessage).build();
-        }
       } catch (SQLException e) {
         log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
         return Response.status(500).build();
+      }
+
+      Result<NullValue, String> passwordGood = passwordChecker.apply(req.getPassword());
+      if (passwordGood.isErr()) {
+        return Response.status(400)
+            .entity(passwordGood.expectErr("invalid internal state"))
+            .build();
       }
 
       RegistrationResponseType regResp = port.get().registerUser(req);
@@ -715,13 +716,6 @@ public class AdminUserService {
     } finally {
       MDCWrappers.removeAllMDCs();
     }
-  }
-
-  private static boolean passwordOk(DataFieldRow row, String password) {
-    if (row.isvisible && row.isrequired && password != null && !password.isEmpty()) {
-      return row.matchRegex(password);
-    }
-    return true;
   }
 
   /** Default needsSoapHeader to True: most ops need Tyler Authentication in the SOAP header. */

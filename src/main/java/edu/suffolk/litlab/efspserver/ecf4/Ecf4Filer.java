@@ -274,13 +274,13 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
             types.stream()
                 .filter(t -> t.code.equalsIgnoreCase(servContact.serviceType))
                 .findFirst();
-        InterviewVariable var =
-            collector.requestVar(
-                "service_contact[" + i + "].service_type",
-                "service type should be",
-                "choices",
-                types.stream().map(t -> t.code).collect(Collectors.toList()));
         if (serviceCode.isEmpty()) {
+          InterviewVariable var =
+              collector.requestVar(
+                  "service_contact[" + i + "].service_type",
+                  "service type should be",
+                  "choices",
+                  types.stream().map(t -> t.code).collect(Collectors.toList()));
           collector.addWrong(var);
         }
         /*
@@ -512,6 +512,11 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     } catch (FilingError err) {
       return Result.err(err);
     }
+
+    if (!collector.okToSubmit()) {
+      return Result.ok(new FilingResult(List.of(), null));
+    }
+
     if (choice.equals(ApiChoice.ServiceApi)) {
       return serveFilingIfReady(cfm, info, collector, apiToken);
     }
@@ -528,9 +533,6 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     rfrm.setPaymentMessage(pmt);
 
     log.debug(Ecf4Helper.objectToXmlStrOrError(rfrm, ReviewFilingRequestMessageType.class));
-    if (!collector.okToSubmit()) {
-      return Result.ok(new FilingResult(List.of(), null));
-    }
     MessageReceiptMessageType mrmt = filingPort.reviewFiling(rfrm);
     if (mrmt.getError().size() > 0) {
       for (var err : mrmt.getError()) {
@@ -681,7 +683,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   @Override
   public Response getFilingList(
       String courtId,
-      String userId,
+      String submitterId,
       java.time.LocalDate startDate,
       java.time.LocalDate beforeDate,
       String apiToken) {
@@ -698,7 +700,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         "Getting filing list with these params: "
             + courtId
             + ", "
-            + userId
+            + submitterId
             + ", "
             + startDate
             + ", "
@@ -715,9 +717,9 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       // Search all courts
       m.setCaseCourt(null);
     }
-    if (userId != null && !userId.isBlank()) {
+    if (submitterId != null && !submitterId.isBlank()) {
       IdentificationType id = niemObjFac.createIdentificationType();
-      id.setIdentificationID(Ecf4Helper.convertString(userId));
+      id.setIdentificationID(Ecf4Helper.convertString(submitterId));
       gov.niem.niem.niem_core._2.PersonType per = niemObjFac.createPersonType();
       per.getPersonOtherIdentification().add(id);
       EntityType entity = niemObjFac.createEntityType();

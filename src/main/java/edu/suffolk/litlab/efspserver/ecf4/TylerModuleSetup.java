@@ -2,6 +2,8 @@ package edu.suffolk.litlab.efspserver.ecf4;
 
 import static edu.suffolk.litlab.efspserver.StdLib.GetEnv;
 
+import com.hubspot.algebra.NullValue;
+import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.ecfcodes.CodeUpdater;
@@ -20,6 +22,8 @@ import edu.suffolk.litlab.efspserver.services.PaymentsService;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.services.UpdateCodeVersions;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
+import edu.suffolk.litlab.efspserver.tyler.codes.DataFieldRow;
+import edu.suffolk.litlab.efspserver.tyler.codes.EcfCodesService;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.apache.cxf.jaxws.EndpointImpl;
@@ -233,7 +238,6 @@ public class TylerModuleSetup implements EfmModuleSetup {
     return tylerJurisdiction;
   }
 
-  @Override
   public Set<String> getCourts() {
     try (CodeDatabase cd = new CodeDatabase(tylerJurisdiction, tylerEnv, codeDs.getConnection())) {
       Set<String> allCourts = new HashSet<String>(cd.getAllLocations());
@@ -271,9 +275,34 @@ public class TylerModuleSetup implements EfmModuleSetup {
       getCallback().ifPresent(call -> callbackMap.put(court, call));
     }
 
-    var adminUser = new AdminUserService(jurisdiction, env, this.userDs, cdSupplier);
+    Function<String, Result<NullValue, String>> passwordChecker =
+        (password) -> {
+          // The "0" is the default for all courts, sometimes "1" though? There's no way to enforce
+          // court specific passwords
+          DataFieldRow globalPasswordRow = DataFieldRow.MissingDataField("GlobalPassword");
+          try (CodeDatabase cd = cdSupplier.get()) {
+            globalPasswordRow = cd.getDataField("0", "GlobalPassword");
+          } catch (SQLException e) {
+            log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
+          }
+          if (globalPasswordRow.isvisible
+              && globalPasswordRow.isrequired
+              && password != null
+              && password != null
+              && !password.isEmpty()) {
+            if (globalPasswordRow.matchRegex(password)) {
+              return Result.nullOk();
+            } else {
+              return Result.err(globalPasswordRow.validationmessage);
+            }
+          }
+          return Result.nullOk();
+        };
+
+    var adminUser =
+        new AdminUserService(jurisdiction, env, this.userDs, cdSupplier, passwordChecker);
     var cases = new CasesService(jurisdiction, env, this.userDs, cdSupplier);
-    var codes = new EcfCodesService(jurisdiction, env, cdSupplier);
+    var codes = new EcfCodesService(jurisdiction, cdSupplier);
     Optional<CourtSchedulingService> courtScheduler = Optional.empty();
     if (jurisdiction == "illinois") {
       courtScheduler =
