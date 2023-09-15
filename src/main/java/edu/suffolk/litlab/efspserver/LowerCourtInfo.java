@@ -3,19 +3,19 @@ package edu.suffolk.litlab.efspserver;
 import com.hubspot.algebra.Result;
 
 public class LowerCourtInfo {
-  String caseTitleText;
-  String caseDocketId;
-  String lowerCourtName;
-  String lowerCourtJudgeName;
+  public final String caseTitleText;
+  public final String caseDocketId;
+  public final String lowerCourtCode;
+  public final String lowerCourtJudgeName;
 
-  private LowerCourtInfo(
+  public LowerCourtInfo(
       String caseTitleText,
       String caseDocketId,
-      String lowerCourtName,
+      String lowerCourtCode,
       String lowerCourtJudgeName) {
     this.caseTitleText = caseTitleText;
     this.caseDocketId = caseDocketId;
-    this.lowerCourtName = lowerCourtName;
+    this.lowerCourtCode = lowerCourtCode;
     this.lowerCourtJudgeName = lowerCourtJudgeName;
   }
 

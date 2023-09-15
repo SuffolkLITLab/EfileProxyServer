@@ -8,16 +8,16 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 public class CaseType {
-  public String code;
-  public String name;
-  public String casecategory;
+  public final String code;
+  public final String name;
+  public final String casecategory;
   /** Whether the court accepts new cases of this type. */
-  public boolean initial;
+  public final boolean initial;
 
-  public BigDecimal fee;
-  public String willfileddate;
-  public String efspcode;
-  public String location;
+  public final BigDecimal fee;
+  public final String willfileddate;
+  public final String efspcode;
+  public final String location;
 
   public CaseType(
       String code,
