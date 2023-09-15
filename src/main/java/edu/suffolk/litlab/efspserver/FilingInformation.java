@@ -6,8 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FilingInformation {
+  private static Logger log = LoggerFactory.getLogger(FilingInformation.class);
 
   private String courtLocationId;
   /** Plaintiffs that are new to the case; not in the case info before this filing */
@@ -82,6 +85,25 @@ public class FilingInformation {
    */
   public Person getLeadContact() {
     return leadContact;
+  }
+
+  public String makeCaseTitle() {
+    if (getNewPlaintiffs().size() > 0 && getNewDefendants().size() > 0) {
+      return getNewPlaintiffs().get(0).getName().getTitleName()
+          + " v. "
+          + getNewDefendants().get(0).getName().getTitleName();
+    } else if (getNewPlaintiffs().size() > 0) {
+      return "In the matter of " + getNewPlaintiffs().get(0).getName().getTitleName();
+    } else if (getNewDefendants().size() > 0) {
+      return "In the matter of " + getNewDefendants().get(0).getName().getTitleName();
+    } else {
+      log.warn(
+          "Cannot guess title of the case (not existing case, no plaintiffs or defendants)"
+              + " (filing "
+              + getFilings().get(0).getFilingComments()
+              + ")\nUsing backup of lead contact");
+      return "On Behalf of " + getLeadContact().getName().getFullName();
+    }
   }
 
   public String getCourtLocation() {
@@ -236,5 +258,9 @@ public class FilingInformation {
 
   public void setLowerCourtInfo(LowerCourtInfo info) {
     this.lowerCourtInfo = Optional.ofNullable(info);
+  }
+
+  public void setLowerCourtInfo(Optional<LowerCourtInfo> info) {
+    this.lowerCourtInfo = info;
   }
 }

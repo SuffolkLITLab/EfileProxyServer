@@ -1,17 +1,12 @@
 package edu.suffolk.litlab.efspserver.ecf4;
 
-import static edu.suffolk.litlab.efspserver.StdLib.GetEnv;
-
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NullNode;
 import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.ContactInformation;
 import edu.suffolk.litlab.efspserver.FilingInformation;
-import edu.suffolk.litlab.efspserver.JsonHelpers;
 import edu.suffolk.litlab.efspserver.Name;
 import edu.suffolk.litlab.efspserver.PartyId;
 import edu.suffolk.litlab.efspserver.Person;
-import edu.suffolk.litlab.efspserver.docassemble.NameDocassembleDeserializer;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InfoCollector;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
@@ -326,14 +321,7 @@ public class EcfCaseTypeFactory {
           makeDomesticCaseType(
               caseAug, tylerAug, info.getCaseDocketNumber(), info.getPreviousCaseId(), miscInfo);
     } else if (comboCodes.cat.ecfcasetype.equals("AppellateCase")) {
-      myCase =
-          makeAppellateCaseType(
-              caseAug,
-              tylerAug,
-              info.getCaseDocketNumber(),
-              info.getPreviousCaseId(),
-              miscInfo,
-              collector);
+      myCase = makeAppellateCaseType(caseAug, tylerAug, info, miscInfo, collector);
     } else if (comboCodes.cat.ecfcasetype.equals("BankruptcyCase")
         || comboCodes.cat.ecfcasetype.equals("CitationCase")
         || comboCodes.cat.ecfcasetype.equals("JuvenileCase")
@@ -898,8 +886,7 @@ public class EcfCaseTypeFactory {
   private static JAXBElement<AppellateCaseType> makeAppellateCaseType(
       JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
       JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
-      Optional<String> caseDocketId,
-      Optional<String> caseTrackingId,
+      FilingInformation info,
       JsonNode node,
       InfoCollector collector)
       throws FilingError {
@@ -907,86 +894,57 @@ public class EcfCaseTypeFactory {
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.appellatecase_4.ObjectFactory();
     var niemObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
     AppellateCaseType appl = ecfAppellateObjFac.createAppellateCaseType();
-    caseDocketId.ifPresent(
-        docket -> {
-          appl.setCaseDocketID(Ecf4Helper.convertString(docket));
-        });
-    caseTrackingId.ifPresent(
-        trackingId -> {
-          appl.setCaseTrackingID(Ecf4Helper.convertString(trackingId));
-        });
-    // Unclear if this needs to be the code
+    info.getCaseDocketNumber()
+        .ifPresent(
+            docket -> {
+              appl.setCaseDocketID(Ecf4Helper.convertString(docket));
+            });
+    info.getPreviousCaseId()
+        .ifPresent(
+            trackingId -> {
+              appl.setCaseTrackingID(Ecf4Helper.convertString(trackingId));
+            });
+
+    appl.getRest().add(caseAug);
+
+    CaseType ct = niemObjFac.createCaseType();
+
     InterviewVariable lowerNameVar =
         collector.requestVar("trial_court.name", "The lower court name", "text");
-    if (node.has("trial_court") && node.get("trial_court").isObject()) {
-      Optional<String> maybeCodeText = Optional.empty();
-      // TODO(brycew): HACK HACK HACK! Should be a better way to handle lower court codes than
-      // this, but it's broken on prod
-      var tylerEnv = GetEnv("TYLER_ENV");
-      if (tylerEnv.orElse("").equalsIgnoreCase("prod")) {
-        maybeCodeText =
-            JsonHelpers.getStringMember(node.get("trial_court"), "tyler_prod_lower_court_code");
-      } else {
-        maybeCodeText =
-            JsonHelpers.getStringMember(node.get("trial_court"), "tyler_lower_court_code");
-      }
-      if (maybeCodeText.isPresent()) {
-        tylerAug.getValue().setLowerCourtText(Ecf4Helper.convertText(maybeCodeText.get()));
-      } else {
+    if (info.getLowerCourtInfo().isPresent()) {
+      var lowerInfo = info.getLowerCourtInfo().get();
+      if (lowerInfo.lowerCourtCode == null || lowerInfo.lowerCourtCode.isBlank()) {
         collector.addRequired(lowerNameVar);
       }
+      tylerAug.getValue().setLowerCourtText(Ecf4Helper.convertText(lowerInfo.lowerCourtCode));
+      if (lowerInfo.lowerCourtJudgeName == null || lowerInfo.lowerCourtJudgeName.isBlank()) {
+        InterviewVariable var =
+            collector.requestVar(
+                "judge", "The name of the Judge who gave the lower court decision", "text");
+        collector.addRequired(var);
+      }
+      tylerAug
+          .getValue()
+          .setLowerCourtJudgeText(Ecf4Helper.convertText(lowerInfo.lowerCourtJudgeName));
+      if (lowerInfo.caseTitleText.isBlank()) {
+        InterviewVariable var =
+            collector.requestVar("title", "The name of the lower court case", "text");
+        collector.addRequired(var);
+      }
+      ct.setCaseTitleText(Ecf4Helper.convertText(lowerInfo.caseTitleText));
+      if (lowerInfo.caseDocketId.isBlank()) {
+        InterviewVariable var =
+            collector.requestVar(
+                "docket_number", "The docket number of the lower court case", "text");
+        collector.addRequired(var);
+      }
+      ct.setCaseDocketID(Ecf4Helper.convertString(lowerInfo.caseDocketId));
+      appl.getRest().add(tylerAug);
+      appl.getAppellateCaseOriginalCase().add(ct);
     } else {
       collector.addRequired(lowerNameVar);
     }
-    String judgeName = "";
-    JsonNode lowerCase = node.get("lower_court_case");
-    if (lowerCase == null || lowerCase.isNull()) {
-      InterviewVariable var =
-          collector.requestVar(
-              "lower_court_case",
-              "An object with information about the lower court desicion, including 'judge',"
-                  + " 'title', and 'docket_number'",
-              "DAObject");
-      collector.addRequired(var);
-      lowerCase = NullNode.getInstance();
-    }
-    collector.pushAttributeStack("lower_court_case");
 
-    if (lowerCase.get("judge").isTextual()) {
-      judgeName = lowerCase.get("judge").asText();
-    } else if (lowerCase.get("judge").isObject()) {
-      collector.pushAttributeStack("judge");
-      judgeName =
-          NameDocassembleDeserializer.fromNode(lowerCase.get("judge"), collector).getFullName();
-      collector.popAttributeStack();
-    } else {
-      InterviewVariable var =
-          collector.requestVar(
-              "judge", "The name of the Judge who gave the lower court decision", "text");
-      collector.addRequired(var);
-    }
-    tylerAug.getValue().setLowerCourtJudgeText(Ecf4Helper.convertText(judgeName));
-    appl.getRest().add(caseAug);
-    appl.getRest().add(tylerAug);
-    CaseType ct = niemObjFac.createCaseType();
-    Optional<String> title = JsonHelpers.getStringMember(lowerCase, "title");
-    if (title.isEmpty()) {
-      InterviewVariable var =
-          collector.requestVar("title", "The name of the lower court case", "text");
-      collector.addRequired(var);
-    }
-    ct.setCaseTitleText(Ecf4Helper.convertText(title.orElse("")));
-    Optional<String> docketNumber = JsonHelpers.getStringMember(lowerCase, "docket_number");
-    if (docketNumber.isEmpty()) {
-      InterviewVariable var =
-          collector.requestVar(
-              "docket_number", "The docket number of the lower court case", "text");
-      collector.addRequired(var);
-    }
-    ct.setCaseDocketID(Ecf4Helper.convertString(docketNumber.orElse("")));
-
-    appl.getAppellateCaseOriginalCase().add(ct);
-    collector.popAttributeStack();
     return ecfAppellateObjFac.createAppellateCase(appl);
   }
 
