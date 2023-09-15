@@ -93,7 +93,7 @@ import tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
 
 public class Ecf4Filer extends EfmCheckableFilingInterface {
   private static Logger log = LoggerFactory.getLogger(Ecf4Filer.class);
-  private Supplier<CodeDatabase> cdSupplier;
+  private final Supplier<CodeDatabase> cdSupplier;
   private final String headerKey;
   private final oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4
           .ObjectFactory
@@ -169,7 +169,6 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       throws FilingError {
     String existingCaseTitle = null;
     String caseCategoryName = "";
-    String courtName = "";
     try (CodeDatabase cd = cdSupplier.get()) {
       EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd, this.jurisdiction);
       Optional<CourtLocationInfo> maybeLocationInfo =
@@ -181,7 +180,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       }
 
       CourtLocationInfo locationInfo = maybeLocationInfo.orElse(new CourtLocationInfo());
-      courtName = locationInfo.name;
+      String courtName = locationInfo.name;
 
       CourtPolicyResponseMessageType policy =
           policyCacher.getPolicyFor(filingPort, info.getCourtLocation());
