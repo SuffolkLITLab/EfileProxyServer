@@ -1,8 +1,10 @@
 package edu.suffolk.litlab.efspserver.ecf4;
 
+import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes;
 import gov.niem.niem.domains.jxdm._4.CourtType;
 import gov.niem.niem.niem_core._2.DateType;
+import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.MeasureType;
 import gov.niem.niem.niem_core._2.TextType;
 import jakarta.ws.rs.core.Response;
@@ -22,6 +24,9 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -248,6 +253,22 @@ public class Ecf4Helper {
     mar.marshal(pp, outfile);
   }
 
+  public static <T extends QueryMessageType> T prep(T newMsg, String courtId) {
+    EntityType typ = new EntityType();
+    var commonObjFac =
+        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+    JAXBElement<PersonType> elem2 = commonObjFac.createEntityPerson(new PersonType());
+    typ.setEntityRepresentation(elem2);
+    newMsg.setQuerySubmitter(typ);
+    newMsg.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
+    // Example in the ECF4 docs is "https://filingreviewmde.com", which matches best to
+    // EXTERNAL_URL.
+    // Doesn't seem to be used by Tyler however.
+    newMsg.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.EXTERNAL_URL));
+    newMsg.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
+    return newMsg;
+  }
+
   public static Response makeResponse(
       QueryResponseMessageType resp, Supplier<Response> defaultRespFunc) {
     return mapTylerCodesToHttp(resp.getError(), defaultRespFunc);
@@ -282,5 +303,10 @@ public class Ecf4Helper {
       return Response.status(422).entity(error.getErrorText().getValue()).build();
     }
     return defaultRespFunc.get();
+  }
+
+  public static void setupReplys(CaseFilingType reply) {
+    reply.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
+    reply.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
   }
 }

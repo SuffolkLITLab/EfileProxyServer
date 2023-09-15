@@ -262,7 +262,7 @@ public class CourtSchedulingService {
                 .build();
           }
           CaseQueryMessageType query = new CaseQueryMessageType();
-          ServiceHelpers.prep(query, info.getCourtLocation());
+          Ecf4Helper.prep(query, info.getCourtLocation());
           query.setCaseTrackingID(Ecf4Helper.convertString(info.getPreviousCaseId().get()));
           query.setCaseQueryCriteria(EcfCaseTypeFactory.getCriteria());
           CaseResponseMessageType resp = recordPort.get().getCase(query);

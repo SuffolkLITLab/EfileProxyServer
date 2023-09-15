@@ -4,6 +4,7 @@ import edu.suffolk.litlab.efspserver.HeaderSigner;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
+import edu.suffolk.litlab.efspserver.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efspserver.ecf4.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
@@ -317,7 +318,7 @@ public class CodeUpdater {
     var policies = new ConcurrentHashMap<String, CourtPolicyResponseMessageType>();
     locations.forEach(
         location -> {
-          var m = ServiceHelpers.prep(new CourtPolicyQueryMessageType(), location);
+          var m = Ecf4Helper.prep(new CourtPolicyQueryMessageType(), location);
           try {
             CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
             policies.put(location, p);

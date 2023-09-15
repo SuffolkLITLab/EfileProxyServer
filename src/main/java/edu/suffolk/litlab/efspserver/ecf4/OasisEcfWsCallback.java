@@ -5,7 +5,6 @@ import edu.suffolk.litlab.efspserver.db.Transaction;
 import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.services.MDCWrappers;
 import edu.suffolk.litlab.efspserver.services.OrgMessageSender;
-import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.services.UpdateMessageStatus;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.CourtLocationInfo;
@@ -254,7 +253,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     PaymentMessageType payment = msg.getPaymentReceiptMessage();
     ReviewFilingCallbackMessageType revFiling = msg.getReviewFilingCallbackMessage();
     MessageReceiptMessageType reply = recepitFac.createMessageReceiptMessageType();
-    ServiceHelpers.setupReplys(reply);
+    Ecf4Helper.setupReplys(reply);
     // This shouldn't happen, but I don't trust this XML BS
     if (payment == null || revFiling == null) {
       log.error(
@@ -371,7 +370,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     log.info("Full NotifyEvent msg" + eventCallbackMessage);
     // TODO(brycew): not going to do anything with for now
     MessageReceiptMessageType reply = recepitFac.createMessageReceiptMessageType();
-    ServiceHelpers.setupReplys(reply);
+    Ecf4Helper.setupReplys(reply);
     return ok(reply);
   }
 
@@ -384,7 +383,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
                 serviceCallbackMessage, ServiceCallbackMessageType.class));
     // TODO(brycew): not going to do anything with for now
     MessageReceiptMessageType reply = recepitFac.createMessageReceiptMessageType();
-    ServiceHelpers.setupReplys(reply);
+    Ecf4Helper.setupReplys(reply);
     return ok(reply);
   }
 
