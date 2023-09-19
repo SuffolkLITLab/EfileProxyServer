@@ -40,9 +40,9 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "documentRendition"
 })
 @XmlSeeAlso({
-    CourtEventDocumentType.class,
     tyler.ecf.extensions.common.DocumentType.class,
-    ReviewedDocumentType.class
+    ReviewedDocumentType.class,
+    CourtEventDocumentType.class
 })
 public class DocumentType
     extends gov.niem.niem.niem_core._2.DocumentType
@@ -83,7 +83,7 @@ public class DocumentType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the documentRendition property.
      * 
      * <p>

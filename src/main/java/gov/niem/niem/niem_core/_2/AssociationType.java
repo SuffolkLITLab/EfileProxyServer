@@ -1,15 +1,15 @@
 
 package gov.niem.niem.niem_core._2;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlSeeAlso;
-import jakarta.xml.bind.annotation.XmlType;
 import gov.niem.niem.domains.jxdm._4.ActivityLocationAssociationType;
 import gov.niem.niem.domains.jxdm._4.DocumentCourtAssociationType;
 import gov.niem.niem.domains.jxdm._4.PersonChargeAssociationType;
 import gov.niem.niem.domains.jxdm._4.ViolatedStatuteAssociationType;
 import gov.niem.niem.structures._2.ComplexObjectType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.juvenilecase_4.PlacementAssociationType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
@@ -36,22 +36,22 @@ import tyler.ecf.extensions.common.FilingAssociationType;
 @XmlType(name = "AssociationType")
 @XmlSeeAlso({
     FilingAssociationType.class,
+    ActivityLocationAssociationType.class,
+    DocumentCourtAssociationType.class,
+    PersonChargeAssociationType.class,
+    DriverLicenseAssociationType.class,
+    ViolatedStatuteAssociationType.class,
+    PlacementAssociationType.class,
+    GuardianAssociationType.class,
     ImmediateFamilyAssociationType.class,
     ActivityConveyanceAssociationType.class,
     OrganizationContactInformationAssociationType.class,
     PersonContactInformationAssociationType.class,
     PersonEmploymentAssociationType.class,
-    DriverLicenseAssociationType.class,
     OrganizationAssociationType.class,
     PersonAssociationType.class,
     PersonOrganizationAssociationType.class,
-    RelatedActivityAssociationType.class,
-    ActivityLocationAssociationType.class,
-    DocumentCourtAssociationType.class,
-    PersonChargeAssociationType.class,
-    ViolatedStatuteAssociationType.class,
-    GuardianAssociationType.class,
-    PlacementAssociationType.class
+    RelatedActivityAssociationType.class
 })
 public class AssociationType
     extends ComplexObjectType

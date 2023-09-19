@@ -1,6 +1,8 @@
 
 package oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4;
 
+import gov.niem.niem.niem_core._2.IdentificationType;
+import gov.niem.niem.structures._2.ComplexObjectType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -8,8 +10,6 @@ import jakarta.xml.bind.annotation.XmlSchemaType;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.adapters.NormalizedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import gov.niem.niem.niem_core._2.IdentificationType;
-import gov.niem.niem.structures._2.ComplexObjectType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 

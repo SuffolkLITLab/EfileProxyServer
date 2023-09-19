@@ -1103,7 +1103,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the measurementDimension property.
      * 
      * <p>
@@ -1136,7 +1136,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the transportEquipmentSeal property.
      * 
      * <p>
@@ -1449,7 +1449,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the positioningTransportEvent property.
      * 
      * <p>
@@ -1482,7 +1482,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the quarantineTransportEvent property.
      * 
      * <p>
@@ -1515,7 +1515,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the deliveryTransportEvent property.
      * 
      * <p>
@@ -1548,7 +1548,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the pickupTransportEvent property.
      * 
      * <p>
@@ -1581,7 +1581,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the handlingTransportEvent property.
      * 
      * <p>
@@ -1614,7 +1614,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the loadingTransportEvent property.
      * 
      * <p>
@@ -1647,7 +1647,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the transportEvent property.
      * 
      * <p>
@@ -1708,7 +1708,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the haulageTradingTerms property.
      * 
      * <p>
@@ -1741,7 +1741,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the hazardousGoodsTransit property.
      * 
      * <p>
@@ -1774,7 +1774,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the packagedTransportHandlingUnit property.
      * 
      * <p>
@@ -1807,7 +1807,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the serviceAllowanceCharge property.
      * 
      * <p>
@@ -1840,7 +1840,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the freightAllowanceCharge property.
      * 
      * <p>
@@ -1873,7 +1873,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the attachedTransportEquipment property.
      * 
      * <p>
@@ -1906,7 +1906,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the goodsItem property.
      * 
      * <p>
@@ -1967,7 +1967,7 @@ public class TransportEquipmentType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the containedInTransportEquipment property.
      * 
      * <p>

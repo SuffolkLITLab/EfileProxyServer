@@ -1,11 +1,6 @@
 
 package oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4;
 
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.annotation.XmlElementDecl;
-import jakarta.xml.bind.annotation.XmlRegistry;
-import jakarta.xml.bind.annotation.adapters.NormalizedStringAdapter;
-import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.DriverLicenseType;
@@ -15,6 +10,11 @@ import gov.niem.niem.niem_core._2.ItemType;
 import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.proxy.xsd._2.Boolean;
 import gov.niem.niem.structures._2.ReferenceType;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlElementDecl;
+import jakarta.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.adapters.NormalizedStringAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -34,18 +34,21 @@ import gov.niem.niem.structures._2.ReferenceType;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _CaseParticipant_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "CaseParticipant");
+    private final static QName _CaseAugmentation_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "CaseAugmentation");
+    private final static QName _ReviewedLeadDocument_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "ReviewedLeadDocument");
+    private final static QName _ReviewedConnectedDocument_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "ReviewedConnectedDocument");
+    private final static QName _Document_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "Document");
     private final static QName _Alias_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "Alias");
     private final static QName _AliasAlternateName_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "AliasAlternateName");
     private final static QName _AliasAlternateNameTypeCode_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "AliasAlternateNameTypeCode");
     private final static QName _AttachmentSequenceID_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "AttachmentSequenceID");
     private final static QName _CaseAssociationTypeCode_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "CaseAssociationTypeCode");
-    private final static QName _CaseAugmentation_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "CaseAugmentation");
     private final static QName _CaseCourtEvent_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "CaseCourtEvent");
     private final static QName _CaseShortTitleText_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "CaseShortTitleText");
     private final static QName _CaseTypeCode_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "CaseTypeCode");
     private final static QName _CaseOfficial_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "CaseOfficial");
     private final static QName _CaseOtherEntityAttorney_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "CaseOtherEntityAttorney");
-    private final static QName _CaseParticipant_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "CaseParticipant");
     private final static QName _CaseParticipantRoleCode_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "CaseParticipantRoleCode");
     private final static QName _CaseRepresentedPartyReference_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "CaseRepresentedPartyReference");
     private final static QName _CauseOfActionCode_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "CauseOfActionCode");
@@ -60,7 +63,6 @@ public class ObjectFactory {
     private final static QName _CourtEventLocationText_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "CourtEventLocationText");
     private final static QName _CourtEventOnBehalfOfActor_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "CourtEventOnBehalfOfActor");
     private final static QName _CourtEventTypeCode_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "CourtEventTypeCode");
-    private final static QName _Document_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "Document");
     private final static QName _DocumentAttachment_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "DocumentAttachment");
     private final static QName _DocumentDocketID_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "DocumentDocketID");
     private final static QName _DocumentHashText_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "DocumentHashText");
@@ -99,8 +101,6 @@ public class ObjectFactory {
     private final static QName _RelatedCaseAssociation_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "RelatedCaseAssociation");
     private final static QName _ReceivingMDELocationID_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "ReceivingMDELocationID");
     private final static QName _ReceivingMDEProfileCode_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "ReceivingMDEProfileCode");
-    private final static QName _ReviewedLeadDocument_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "ReviewedLeadDocument");
-    private final static QName _ReviewedConnectedDocument_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "ReviewedConnectedDocument");
     private final static QName _SealDocumentIndicator_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "SealDocumentIndicator");
     private final static QName _SendingMDELocationID_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "SendingMDELocationID");
     private final static QName _SendingMDEProfileCode_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "SendingMDEProfileCode");
@@ -118,35 +118,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link OrganizationType }
-     * 
-     */
-    public OrganizationType createOrganizationType() {
-        return new OrganizationType();
-    }
-
-    /**
-     * Create an instance of {@link PersonType }
-     * 
-     */
-    public PersonType createPersonType() {
-        return new PersonType();
-    }
-
-    /**
      * Create an instance of {@link oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType }
      * 
      */
     public oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType createDocumentType() {
         return new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType();
-    }
-
-    /**
-     * Create an instance of {@link InsuranceType }
-     * 
-     */
-    public InsuranceType createInsuranceType() {
-        return new InsuranceType();
     }
 
     /**
@@ -171,6 +147,30 @@ public class ObjectFactory {
      */
     public ReviewedDocumentType createReviewedDocumentType() {
         return new ReviewedDocumentType();
+    }
+
+    /**
+     * Create an instance of {@link PersonType }
+     * 
+     */
+    public PersonType createPersonType() {
+        return new PersonType();
+    }
+
+    /**
+     * Create an instance of {@link OrganizationType }
+     * 
+     */
+    public OrganizationType createOrganizationType() {
+        return new OrganizationType();
+    }
+
+    /**
+     * Create an instance of {@link InsuranceType }
+     * 
+     */
+    public InsuranceType createInsuranceType() {
+        return new InsuranceType();
     }
 
     /**

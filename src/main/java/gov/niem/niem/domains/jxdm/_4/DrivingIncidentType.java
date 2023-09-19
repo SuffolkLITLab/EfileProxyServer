@@ -3,6 +3,12 @@ package gov.niem.niem.domains.jxdm._4;
 
 import java.util.ArrayList;
 import java.util.List;
+import gov.niem.niem.ansi_d20._2.AccidentSeverityCodeType;
+import gov.niem.niem.ansi_d20._2.HazMatCodeType;
+import gov.niem.niem.niem_core._2.IncidentType;
+import gov.niem.niem.niem_core._2.MeasureType;
+import gov.niem.niem.niem_core._2.TextType;
+import gov.niem.niem.proxy.xsd._2.Boolean;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -10,12 +16,6 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
-import gov.niem.niem.ansi_d20._2.AccidentSeverityCodeType;
-import gov.niem.niem.ansi_d20._2.HazMatCodeType;
-import gov.niem.niem.niem_core._2.IncidentType;
-import gov.niem.niem.niem_core._2.MeasureType;
-import gov.niem.niem.niem_core._2.TextType;
-import gov.niem.niem.proxy.xsd._2.Boolean;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -231,7 +231,7 @@ public class DrivingIncidentType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the drivingIncidentRadarDetectionIndicator property.
      * 
      * <p>

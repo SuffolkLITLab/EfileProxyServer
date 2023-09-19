@@ -1,6 +1,8 @@
 
 package tyler.ecf.extensions.eventcallbackmessage;
 
+import gov.niem.niem.niem_core._2.IdentificationType;
+import gov.niem.niem.niem_core._2.TextType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -8,8 +10,6 @@ import jakarta.xml.bind.annotation.XmlSchemaType;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.adapters.NormalizedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import gov.niem.niem.niem_core._2.IdentificationType;
-import gov.niem.niem.niem_core._2.TextType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 

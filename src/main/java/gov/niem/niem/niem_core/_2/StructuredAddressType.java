@@ -3,16 +3,16 @@ package gov.niem.niem.niem_core._2;
 
 import java.util.ArrayList;
 import java.util.List;
+import gov.niem.niem.fips_10_4._2.CountryCodeType;
+import gov.niem.niem.fips_6_4._2.USCountyCodeType;
+import gov.niem.niem.structures._2.ComplexObjectType;
+import gov.niem.niem.usps_states._2.USStateCodeType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
-import gov.niem.niem.fips_10_4._2.CountryCodeType;
-import gov.niem.niem.fips_6_4._2.USCountyCodeType;
-import gov.niem.niem.structures._2.ComplexObjectType;
-import gov.niem.niem.usps_states._2.USStateCodeType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -105,7 +105,7 @@ public class StructuredAddressType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the addressDeliveryPoint property.
      * 
      * <p>

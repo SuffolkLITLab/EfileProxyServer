@@ -3,15 +3,15 @@ package gov.niem.niem.domains.jxdm._4;
 
 import java.util.ArrayList;
 import java.util.List;
+import gov.niem.niem.niem_core._2.CaseType;
+import gov.niem.niem.niem_core._2.EntityType;
+import gov.niem.niem.structures._2.AugmentationType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
-import gov.niem.niem.niem_core._2.CaseType;
-import gov.niem.niem.niem_core._2.EntityType;
-import gov.niem.niem.structures._2.AugmentationType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -104,7 +104,7 @@ public class CaseAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the caseCharge property.
      * 
      * <p>
@@ -157,7 +157,7 @@ public class CaseAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the caseCourtEvent property.
      * 
      * <p>
@@ -187,7 +187,7 @@ public class CaseAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the caseDefendantParty property.
      * 
      * <p>
@@ -216,7 +216,7 @@ public class CaseAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the caseDefenseAttorney property.
      * 
      * <p>
@@ -245,7 +245,7 @@ public class CaseAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the caseInitiatingParty property.
      * 
      * <p>
@@ -274,7 +274,7 @@ public class CaseAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the caseJudge property.
      * 
      * <p>
@@ -303,7 +303,7 @@ public class CaseAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the caseLineageCase property.
      * 
      * <p>
@@ -332,7 +332,7 @@ public class CaseAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the caseOfficial property.
      * 
      * <p>
@@ -361,7 +361,7 @@ public class CaseAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the caseOtherEntity property.
      * 
      * <p>
@@ -390,7 +390,7 @@ public class CaseAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the caseProsecutionAttorney property.
      * 
      * <p>
@@ -419,7 +419,7 @@ public class CaseAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the caseRespondentAttorney property.
      * 
      * <p>
@@ -448,7 +448,7 @@ public class CaseAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the caseRespondentParty property.
      * 
      * <p>
@@ -477,7 +477,7 @@ public class CaseAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the caseInitiatingAttorney property.
      * 
      * <p>

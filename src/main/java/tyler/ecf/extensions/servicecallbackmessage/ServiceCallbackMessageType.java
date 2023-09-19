@@ -3,14 +3,14 @@ package tyler.ecf.extensions.servicecallbackmessage;
 
 import java.util.ArrayList;
 import java.util.List;
+import gov.niem.niem.niem_core._2.CaseType;
+import gov.niem.niem.niem_core._2.DateType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
-import gov.niem.niem.niem_core._2.CaseType;
-import gov.niem.niem.niem_core._2.DateType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.appellatecase_4.AppellateCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.bankruptcycase_4.BankruptcyCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.citationcase_4.CitationCaseType;
@@ -274,7 +274,7 @@ public class ServiceCallbackMessageType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the reviewedConnectedDocument property.
      * 
      * <p>

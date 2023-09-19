@@ -1,12 +1,12 @@
 
 package gov.niem.niem.niem_core._2;
 
+import gov.niem.niem.domains.jxdm._4.DrivingIncidentType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
-import gov.niem.niem.domains.jxdm._4.DrivingIncidentType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.citationcase_4.ParkingViolationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.juvenilecase_4.DelinquentActType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.juvenilecase_4.StatusOffenseActType;
@@ -38,10 +38,10 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "incidentLocation"
 })
 @XmlSeeAlso({
-    DelinquentActType.class,
-    StatusOffenseActType.class,
+    ParkingViolationType.class,
     DrivingIncidentType.class,
-    ParkingViolationType.class
+    DelinquentActType.class,
+    StatusOffenseActType.class
 })
 public class IncidentType
     extends ActivityType

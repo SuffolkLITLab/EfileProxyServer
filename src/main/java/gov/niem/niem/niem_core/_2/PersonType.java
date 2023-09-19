@@ -3,13 +3,6 @@ package gov.niem.niem.niem_core._2;
 
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlElementRef;
-import jakarta.xml.bind.annotation.XmlSeeAlso;
-import jakarta.xml.bind.annotation.XmlType;
 import gov.niem.niem.fbi._2.EYECodeType;
 import gov.niem.niem.fbi._2.EthnicityCodeType;
 import gov.niem.niem.fbi._2.HAICodeType;
@@ -18,6 +11,13 @@ import gov.niem.niem.fbi._2.SEXCodeType;
 import gov.niem.niem.fips_10_4._2.CountryCodeType;
 import gov.niem.niem.proxy.xsd._2.Boolean;
 import gov.niem.niem.structures._2.ComplexObjectType;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -183,7 +183,7 @@ public class PersonType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the personCitizenship property.
      * 
      * <p>
@@ -291,7 +291,7 @@ public class PersonType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the personFingerprintSet property.
      * 
      * <p>
@@ -418,7 +418,7 @@ public class PersonType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the personOtherIdentification property.
      * 
      * <p>
@@ -447,7 +447,7 @@ public class PersonType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the personPhysicalFeature property.
      * 
      * <p>

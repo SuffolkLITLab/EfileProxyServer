@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns="urn:tyler:ecf:extensions:Massachusetts" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tyler="urn:tyler:ecf:extensions:Common" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:s="http://niem.gov/niem/structures/2.0" targetNamespace="urn:tyler:ecf:extensions:Massachusetts">
-	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="../common/ECF-4.0-CommonTypes.xsd"/>
-	<xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="../constraint/niem/structures/2.0/structures.xsd"/>
-	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="../constraint/niem/proxy/xsd/2.0/xsd.xsd"/>
-	<xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="../constraint/niem/niem-core/2.0/niem-core.xsd"/>
-	<xsd:import namespace="urn:tyler:ecf:extensions:Common" schemaLocation="Tyler.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="ecf-18.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-3.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-13.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="ecf-2.xsd"/>
+	<xsd:import namespace="urn:tyler:ecf:extensions:Common" schemaLocation="ecf-60.xsd"/>
 	<xsd:complexType name="Component1Type">
 		<xsd:sequence>
 			<xsd:element ref="nc:PersonReference"/>

@@ -1,10 +1,10 @@
 
 package oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2;
 
+import javax.xml.namespace.QName;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
-import javax.xml.namespace.QName;
 
 
 /**

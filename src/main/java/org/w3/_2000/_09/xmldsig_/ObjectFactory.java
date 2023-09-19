@@ -2,10 +2,10 @@
 package org.w3._2000._09.xmldsig_;
 
 import java.math.BigInteger;
+import javax.xml.namespace.QName;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
-import javax.xml.namespace.QName;
 
 
 /**

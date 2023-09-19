@@ -1,6 +1,9 @@
 
 package gov.niem.niem.niem_core._2;
 
+import gov.niem.niem.fbi._2.LISCodeType;
+import gov.niem.niem.fbi._2.LSTACodeType;
+import gov.niem.niem.structures._2.ComplexObjectType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -8,9 +11,6 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
-import gov.niem.niem.fbi._2.LISCodeType;
-import gov.niem.niem.fbi._2.LSTACodeType;
-import gov.niem.niem.structures._2.ComplexObjectType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 import tyler.ecf.extensions.common.DocumentOptionalServiceType;
@@ -47,11 +47,11 @@ import tyler.ecf.extensions.common.OrganizationIdentificationType;
     "identificationSourceText"
 })
 @XmlSeeAlso({
-    tyler.ecf.extensions.filingserviceresponsemessage.ServiceContactIdentificationType.class,
+    tyler.ecf.extensions.filingservicequerymessage.ServiceContactIdentificationType.class,
     OrganizationIdentificationType.class,
     DocumentOptionalServiceType.class,
     tyler.ecf.extensions.common.ServiceContactIdentificationType.class,
-    tyler.ecf.extensions.filingservicequerymessage.ServiceContactIdentificationType.class
+    tyler.ecf.extensions.filingserviceresponsemessage.ServiceContactIdentificationType.class
 })
 public class IdentificationType
     extends ComplexObjectType

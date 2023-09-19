@@ -1,6 +1,10 @@
 
 package oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4;
 
+import gov.niem.niem.domains.jxdm._4.CourtType;
+import gov.niem.niem.niem_core._2.EntityType;
+import gov.niem.niem.niem_core._2.IdentificationType;
+import gov.niem.niem.structures._2.ComplexObjectType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -9,10 +13,6 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.adapters.NormalizedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import gov.niem.niem.domains.jxdm._4.CourtType;
-import gov.niem.niem.niem_core._2.EntityType;
-import gov.niem.niem.niem_core._2.IdentificationType;
-import gov.niem.niem.structures._2.ComplexObjectType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseListQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
@@ -64,21 +64,21 @@ import tyler.ecf.extensions.servicetypesrequestmessage.ServiceTypesRequestMessag
     "caseCourt"
 })
 @XmlSeeAlso({
-    CaseListQueryMessageType.class,
-    CaseQueryMessageType.class,
-    FilingListQueryMessageType.class,
-    ServiceAttachCaseListQueryMessageType.class,
     FilingServiceQueryMessageType.class,
-    ServiceInformationHistoryQueryMessageType.class,
-    DocumentQueryMessageType.class,
+    FeesCalculationQueryMessageType.class,
+    FilingStatusQueryMessageType.class,
+    FilingDetailQueryMessageType.class,
+    CaseQueryMessageType.class,
+    CaseListQueryMessageType.class,
     ServiceInformationQueryMessageType.class,
+    SecureCaseMessageType.class,
     ServiceTypesRequestMessageType.class,
     CourtPolicyQueryMessageType.class,
-    SecureCaseMessageType.class,
-    FilingDetailQueryMessageType.class,
+    DocumentQueryMessageType.class,
+    ServiceInformationHistoryQueryMessageType.class,
+    FilingListQueryMessageType.class,
     CancelFilingMessageType.class,
-    FilingStatusQueryMessageType.class,
-    FeesCalculationQueryMessageType.class
+    ServiceAttachCaseListQueryMessageType.class
 })
 public class QueryMessageType
     extends ComplexObjectType

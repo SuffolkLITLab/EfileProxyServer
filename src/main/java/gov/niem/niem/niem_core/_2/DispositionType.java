@@ -1,13 +1,13 @@
 
 package gov.niem.niem.niem_core._2;
 
+import gov.niem.niem.domains.jxdm._4.ChargeDispositionType;
+import gov.niem.niem.structures._2.ComplexObjectType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
-import gov.niem.niem.domains.jxdm._4.ChargeDispositionType;
-import gov.niem.niem.structures._2.ComplexObjectType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -42,8 +42,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "dispositionCategoryText"
 })
 @XmlSeeAlso({
-    CaseDispositionType.class,
-    ChargeDispositionType.class
+    ChargeDispositionType.class,
+    CaseDispositionType.class
 })
 public class DispositionType
     extends ComplexObjectType

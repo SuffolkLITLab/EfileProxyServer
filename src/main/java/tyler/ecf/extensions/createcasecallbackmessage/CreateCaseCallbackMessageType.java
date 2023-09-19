@@ -1,6 +1,8 @@
 
 package tyler.ecf.extensions.createcasecallbackmessage;
 
+import gov.niem.niem.niem_core._2.CaseType;
+import gov.niem.niem.niem_core._2.IdentificationType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -10,8 +12,6 @@ import jakarta.xml.bind.annotation.XmlSchemaType;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.adapters.NormalizedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import gov.niem.niem.niem_core._2.CaseType;
-import gov.niem.niem.niem_core._2.IdentificationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.appellatecase_4.AppellateCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.bankruptcycase_4.BankruptcyCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.citationcase_4.CitationCaseType;

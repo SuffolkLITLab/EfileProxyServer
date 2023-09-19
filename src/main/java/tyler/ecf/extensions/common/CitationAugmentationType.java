@@ -49,8 +49,8 @@ public class CitationAugmentationType
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "DrivingIncident" is used by two different parts of a schema. See: 
-     * line 206 of file:/home/brycew/Developer/EfileProxyServer/src/main/resources/wsdl/illinois/stage/ecf-60.xsd
-     * line 55 of file:/home/brycew/Developer/EfileProxyServer/src/main/resources/wsdl/illinois/stage/ecf-22.xsd
+     * line 206 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-60.xsd
+     * line 55 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-22.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 
@@ -59,7 +59,7 @@ public class CitationAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the rest property.
      * 
      * <p>
