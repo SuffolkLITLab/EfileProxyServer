@@ -591,7 +591,7 @@ public class EcfCourtSpecificSerializer {
     }
     sat.setLocationCountry(niemObjFac.createLocationCountryFIPS104Code(cct.get()));
     if (!fillStateCode(address.getState(), cct.get(), sat)) {
-      String countryString = cct.get().getValue().value();
+      String countryString = cct.get().getValue();
       List<String> stateCodes = cd.getStateCodes(this.court.code, countryString);
       InterviewVariable var =
           collector.requestVar("state", "State in a country", "choices", stateCodes);
@@ -1131,16 +1131,12 @@ public class EcfCourtSpecificSerializer {
     }
   }
 
+  // TODO(brycew): don't need the Optional anyy more
   private static Optional<CountryCodeType> strToCountryCode(
       String country, InfoCollector collector) {
     CountryCodeType cct = new CountryCodeType();
-    try {
-      cct.setValue(CountryCodeSimpleType.fromValue(country));
-      return Optional.of(cct);
-    } catch (IllegalArgumentException ex) {
-      log.error("DevOps ERROR:" + ex);
-      return Optional.empty();
-    }
+    cct.setValue(country);
+    return Optional.of(cct);
   }
 
   /** True if it worked. */
@@ -1152,7 +1148,7 @@ public class EcfCourtSpecificSerializer {
       return false;
     }
 
-    if (country.getValue().equals(CountryCodeSimpleType.US)) {
+    if (country.getValue().equalsIgnoreCase("US")) {
       try {
         USStateCodeSimpleType stateSimple = USStateCodeSimpleType.fromValue(state);
 
