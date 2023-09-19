@@ -98,10 +98,12 @@ public class EcfCaseTypeFactoryTest {
   
   @Test
   public void shouldMatchExistingPartyPersonOrOrgXmlWrappers() throws Exception {
-    gov.niem.niem.niem_core._2.CaseType myCase = readFromFile(this.getClass().getResourceAsStream("/case_resp.xml")).getCase().getValue();
-    EcfCaseTypeFactory caseFactory = new EcfCaseTypeFactory(cd, "illinois");
+    //gov.niem.niem.niem_core._2.CaseType myCase = readFromFile(this.getClass().getResourceAsStream("/case_resp.xml")).getCase().getValue();
+    //EcfCaseTypeFactory caseFactory = new EcfCaseTypeFactory(cd, "illinois");
+    EcfCaseTypeFactory.getCriteria();
     InterviewToFilingInformationConverter converter = new DocassembleToFilingInformationConverter(null);
     Result<FilingInformation, FilingError> infoRes = converter.extractInformation(""); 
+    assertTrue(infoRes.isErr());
     return;
     
     
