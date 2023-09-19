@@ -203,7 +203,7 @@ public class FilingInformationDocassembleJacksonDeserializer
         extractPartyAttorneyMap(node.get("party_to_attorneys"), varToPartyId));
     entities.setServiceContacts(
         extractServiceContacts(node.get("service_contacts"), varToPartyId, collector));
-    entities.setLowerCourtInfo(extractLowerCourt(node.get("lower_court_case"), collector));
+    entities.setLowerCourtInfo(extractLowerCourt(node, collector));
 
     // TODO(brycew-later): this approach is a complete mess, don't know
     // how to best map LIST onto case categories, ECF is too high level
