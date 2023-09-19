@@ -1,12 +1,12 @@
 
 package gov.niem.niem.niem_core._2;
 
+import gov.niem.niem.domains.jxdm._4.AppellateCaseType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
-import gov.niem.niem.domains.jxdm._4.AppellateCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.bankruptcycase_4.BankruptcyCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.citationcase_4.CitationCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.CivilCaseType;
@@ -48,12 +48,12 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 })
 @XmlSeeAlso({
     CivilCaseType.class,
-    CriminalCaseType.class,
     DomesticCaseType.class,
-    AppellateCaseType.class,
+    CriminalCaseType.class,
+    CitationCaseType.class,
     JuvenileCaseType.class,
-    BankruptcyCaseType.class,
-    CitationCaseType.class
+    AppellateCaseType.class,
+    BankruptcyCaseType.class
 })
 public class CaseType
     extends ActivityType

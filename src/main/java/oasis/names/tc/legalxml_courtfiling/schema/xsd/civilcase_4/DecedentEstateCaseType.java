@@ -1,13 +1,13 @@
 
 package oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4;
 
+import gov.niem.niem.niem_core._2.DateType;
+import gov.niem.niem.niem_core._2.PersonNameTextType;
+import gov.niem.niem.structures._2.ComplexObjectType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
-import gov.niem.niem.niem_core._2.DateType;
-import gov.niem.niem.niem_core._2.PersonNameTextType;
-import gov.niem.niem.structures._2.ComplexObjectType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 

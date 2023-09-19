@@ -1,9 +1,6 @@
 
 package tyler.ecf.extensions.common;
 
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.annotation.XmlElementDecl;
-import jakarta.xml.bind.annotation.XmlRegistry;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import gov.niem.niem.niem_core._2.AmountType;
@@ -20,6 +17,9 @@ import gov.niem.niem.proxy.xsd._2.Boolean;
 import gov.niem.niem.proxy.xsd._2.Decimal;
 import gov.niem.niem.proxy.xsd._2.GYear;
 import gov.niem.niem.structures._2.ReferenceType;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlElementDecl;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**

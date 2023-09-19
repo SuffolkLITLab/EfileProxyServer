@@ -3,6 +3,10 @@ package gov.niem.niem.structures._2;
 
 import java.util.ArrayList;
 import java.util.List;
+import gov.niem.niem.domains.jxdm._4.CaseAugmentationType;
+import gov.niem.niem.domains.jxdm._4.IncidentAugmentationType;
+import gov.niem.niem.domains.jxdm._4.PropertyAugmentationType;
+import gov.niem.niem.domains.screening._2.MarriageAssociationAugmentationType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAttribute;
@@ -13,10 +17,6 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import gov.niem.niem.domains.jxdm._4.CaseAugmentationType;
-import gov.niem.niem.domains.jxdm._4.IncidentAugmentationType;
-import gov.niem.niem.domains.jxdm._4.PropertyAugmentationType;
-import gov.niem.niem.domains.screening._2.MarriageAssociationAugmentationType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -50,14 +50,14 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AugmentationType")
 @XmlSeeAlso({
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationAugmentationType.class,
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonAugmentationType.class,
+    MarriageAssociationAugmentationType.class,
     CaseAugmentationType.class,
     IncidentAugmentationType.class,
     gov.niem.niem.domains.jxdm._4.OrganizationAugmentationType.class,
     gov.niem.niem.domains.jxdm._4.PersonAugmentationType.class,
     PropertyAugmentationType.class,
-    MarriageAssociationAugmentationType.class
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationAugmentationType.class,
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonAugmentationType.class
 })
 public abstract class AugmentationType {
 
@@ -101,7 +101,7 @@ public abstract class AugmentationType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the metadata property.
      * 
      * <p>

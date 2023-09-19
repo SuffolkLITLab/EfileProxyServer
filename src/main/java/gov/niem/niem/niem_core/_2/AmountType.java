@@ -1,12 +1,12 @@
 
 package gov.niem.niem.niem_core._2;
 
+import gov.niem.niem.iso_4217._2.CurrencyCodeSimpleType;
+import gov.niem.niem.proxy.xsd._2.Decimal;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlType;
-import gov.niem.niem.iso_4217._2.CurrencyCodeSimpleType;
-import gov.niem.niem.proxy.xsd._2.Decimal;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 

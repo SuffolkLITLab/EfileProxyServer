@@ -1,11 +1,11 @@
 
 package tyler.ecf.extensions.serviceattachcaselistquerymessage;
 
+import javax.xml.namespace.QName;
+import gov.niem.niem.niem_core._2.IdentificationType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
-import javax.xml.namespace.QName;
-import gov.niem.niem.niem_core._2.IdentificationType;
 
 
 /**

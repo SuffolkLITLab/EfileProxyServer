@@ -3,14 +3,14 @@ package oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4;
 
 import java.util.ArrayList;
 import java.util.List;
+import gov.niem.niem.niem_core._2.ContactInformationType;
+import gov.niem.niem.niem_core._2.EntityType;
+import gov.niem.niem.niem_core._2.TextType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
-import gov.niem.niem.niem_core._2.ContactInformationType;
-import gov.niem.niem.niem_core._2.EntityType;
-import gov.niem.niem.niem_core._2.TextType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 import tyler.ecf.extensions.common.CaseAbstractorType;
@@ -85,7 +85,7 @@ public class CaseParticipantType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the contactInformation property.
      * 
      * <p>

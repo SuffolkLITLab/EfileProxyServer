@@ -1,9 +1,6 @@
 
 package oasis.names.tc.legalxml_courtfiling.schema.xsd.juvenilecase_4;
 
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.annotation.XmlElementDecl;
-import jakarta.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 import gov.niem.niem.domains.jxdm._4.ArrestType;
 import gov.niem.niem.domains.jxdm._4.StatuteType;
@@ -12,6 +9,9 @@ import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.proxy.xsd._2.Boolean;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlElementDecl;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**

@@ -41,7 +41,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 public class CountryCodeType {
 
     @XmlValue
-    protected CountryCodeSimpleType value;
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    protected String value;
     @XmlAttribute(name = "id", namespace = "http://niem.gov/niem/structures/2.0")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
@@ -61,10 +62,10 @@ public class CountryCodeType {
      * 
      * @return
      *     possible object is
-     *     {@link CountryCodeSimpleType }
+     *     {@link String }
      *     
      */
-    public CountryCodeSimpleType getValue() {
+    public String getValue() {
         return value;
     }
 
@@ -73,10 +74,10 @@ public class CountryCodeType {
      * 
      * @param value
      *     allowed object is
-     *     {@link CountryCodeSimpleType }
+     *     {@link String }
      *     
      */
-    public void setValue(CountryCodeSimpleType value) {
+    public void setValue(String value) {
         this.value = value;
     }
 
@@ -110,7 +111,7 @@ public class CountryCodeType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the metadata property.
      * 
      * <p>
@@ -139,7 +140,7 @@ public class CountryCodeType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the linkMetadata property.
      * 
      * <p>

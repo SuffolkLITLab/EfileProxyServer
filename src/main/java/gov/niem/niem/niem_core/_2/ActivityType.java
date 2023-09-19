@@ -3,13 +3,6 @@ package gov.niem.niem.niem_core._2;
 
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlElementRef;
-import jakarta.xml.bind.annotation.XmlSeeAlso;
-import jakarta.xml.bind.annotation.XmlType;
 import gov.niem.niem.domains.jxdm._4.ArrestType;
 import gov.niem.niem.domains.jxdm._4.BookingType;
 import gov.niem.niem.domains.jxdm._4.CitationType;
@@ -18,6 +11,13 @@ import gov.niem.niem.domains.jxdm._4.CourtOrderType;
 import gov.niem.niem.domains.jxdm._4.SentenceType;
 import gov.niem.niem.domains.jxdm._4.TermType;
 import gov.niem.niem.structures._2.ComplexObjectType;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -54,16 +54,16 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "activityDisposition"
 })
 @XmlSeeAlso({
-    DriverLicenseWithdrawalType.class,
     ArrestType.class,
-    CourtEventType.class,
     BookingType.class,
     CitationType.class,
     CourtOrderType.class,
     SentenceType.class,
     TermType.class,
-    CaseType.class,
-    IncidentType.class
+    IncidentType.class,
+    DriverLicenseWithdrawalType.class,
+    CourtEventType.class,
+    CaseType.class
 })
 public class ActivityType
     extends ComplexObjectType
@@ -86,7 +86,7 @@ public class ActivityType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the activityIdentification property.
      * 
      * <p>
@@ -191,7 +191,7 @@ public class ActivityType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the activityDisposition property.
      * 
      * <p>

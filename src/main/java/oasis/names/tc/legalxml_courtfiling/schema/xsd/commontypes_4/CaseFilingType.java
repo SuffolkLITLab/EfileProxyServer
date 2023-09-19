@@ -1,6 +1,8 @@
 
 package oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4;
 
+import gov.niem.niem.niem_core._2.DocumentType;
+import gov.niem.niem.niem_core._2.IdentificationType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -9,8 +11,6 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.adapters.NormalizedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import gov.niem.niem.niem_core._2.DocumentType;
-import gov.niem.niem.niem_core._2.IdentificationType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtPolicyQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.messagereceiptmessage_4.MessageReceiptMessageType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -47,11 +47,11 @@ import tyler.ecf.extensions.servicecallbackmessage.ServiceCallbackMessageType;
     "sendingMDEProfileCode"
 })
 @XmlSeeAlso({
-    ServiceCallbackMessageType.class,
-    NotifyServiceMessageType.class,
-    CourtPolicyQueryMessageType.class,
     MessageReceiptMessageType.class,
+    CourtPolicyQueryMessageType.class,
+    ServiceCallbackMessageType.class,
     ElectronicFilingCallbackMessageType.class,
+    NotifyServiceMessageType.class,
     ElectronicFilingMessageType.class
 })
 public abstract class CaseFilingType

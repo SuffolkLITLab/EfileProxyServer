@@ -1,12 +1,12 @@
 
 package gov.niem.niem.domains.jxdm._4;
 
+import gov.niem.niem.niem_core._2.ItemValueType;
+import gov.niem.niem.structures._2.AugmentationType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
-import gov.niem.niem.niem_core._2.ItemValueType;
-import gov.niem.niem.structures._2.AugmentationType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 

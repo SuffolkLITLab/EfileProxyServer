@@ -1,10 +1,10 @@
 
 package gov.niem.niem.ansi_nist._2;
 
+import javax.xml.namespace.QName;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
-import javax.xml.namespace.QName;
 
 
 /**
@@ -34,19 +34,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FingerprintType }
-     * 
-     */
-    public FingerprintType createFingerprintType() {
-        return new FingerprintType();
-    }
-
-    /**
      * Create an instance of {@link FPCCodeType }
      * 
      */
     public FPCCodeType createFPCCodeType() {
         return new FPCCodeType();
+    }
+
+    /**
+     * Create an instance of {@link FingerprintType }
+     * 
+     */
+    public FingerprintType createFingerprintType() {
+        return new FingerprintType();
     }
 
     /**

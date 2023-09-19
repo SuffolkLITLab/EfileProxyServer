@@ -3,6 +3,11 @@ package oasis.names.tc.legalxml_courtfiling.schema.xsd.citationcase_4;
 
 import java.util.ArrayList;
 import java.util.List;
+import gov.niem.niem.domains.jxdm._4.ChargeType;
+import gov.niem.niem.domains.jxdm._4.CitationType;
+import gov.niem.niem.domains.jxdm._4.CourtAppearanceType;
+import gov.niem.niem.domains.jxdm._4.ViolatedStatuteAssociationType;
+import gov.niem.niem.structures._2.ComplexObjectType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -10,11 +15,6 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
-import gov.niem.niem.domains.jxdm._4.ChargeType;
-import gov.niem.niem.domains.jxdm._4.CitationType;
-import gov.niem.niem.domains.jxdm._4.CourtAppearanceType;
-import gov.niem.niem.domains.jxdm._4.ViolatedStatuteAssociationType;
-import gov.niem.niem.structures._2.ComplexObjectType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 import tyler.ecf.extensions.common.CitationAugmentationType;
@@ -115,7 +115,7 @@ public class CitationCaseAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the caseCharge property.
      * 
      * <p>
@@ -144,7 +144,7 @@ public class CitationCaseAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the violatedStatuteAssociation property.
      * 
      * <p>
@@ -221,7 +221,7 @@ public class CitationCaseAugmentationType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the vehicle property.
      * 
      * <p>

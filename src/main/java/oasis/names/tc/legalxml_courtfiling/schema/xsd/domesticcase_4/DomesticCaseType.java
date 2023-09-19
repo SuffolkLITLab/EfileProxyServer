@@ -3,16 +3,16 @@ package oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4;
 
 import java.util.ArrayList;
 import java.util.List;
+import gov.niem.niem.niem_core._2.CaseType;
+import gov.niem.niem.niem_core._2.ImmediateFamilyAssociationType;
+import gov.niem.niem.niem_core._2.TextType;
+import gov.niem.niem.proxy.xsd._2.Boolean;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlElementRefs;
 import jakarta.xml.bind.annotation.XmlType;
-import gov.niem.niem.niem_core._2.CaseType;
-import gov.niem.niem.niem_core._2.ImmediateFamilyAssociationType;
-import gov.niem.niem.niem_core._2.TextType;
-import gov.niem.niem.proxy.xsd._2.Boolean;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
@@ -86,7 +86,7 @@ public class DomesticCaseType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the rest property.
      * 
      * <p>

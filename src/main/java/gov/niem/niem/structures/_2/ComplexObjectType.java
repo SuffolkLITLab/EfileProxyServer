@@ -3,16 +3,6 @@ package gov.niem.niem.structures._2;
 
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlID;
-import jakarta.xml.bind.annotation.XmlIDREF;
-import jakarta.xml.bind.annotation.XmlSchemaType;
-import jakarta.xml.bind.annotation.XmlSeeAlso;
-import jakarta.xml.bind.annotation.XmlType;
-import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import gov.niem.niem.ansi_nist._2.FingerprintType;
 import gov.niem.niem.domains.jxdm._4.ChargeType;
 import gov.niem.niem.domains.jxdm._4.CourtAppearanceType;
@@ -68,6 +58,16 @@ import gov.niem.niem.niem_core._2.StreetType;
 import gov.niem.niem.niem_core._2.StructuredAddressType;
 import gov.niem.niem.niem_core._2.SupervisionType;
 import gov.niem.niem.niem_core._2.TelephoneNumberType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlIDREF;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.appellatecase_4.AppellateCaseAddedPartyType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.appellatecase_4.AppellateCaseRemovedPartyType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.appellatecase_4.AppellateCivilCaseType;
@@ -137,79 +137,79 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     IdentificationType.class,
     DecedentEstateCaseType.class,
     FiduciaryCaseType.class,
+    DomesticCaseChildSupportPetitionType.class,
+    DomesticCaseViolencePetitionType.class,
     DateRangeType.class,
     CaseQueryCriteriaType.class,
     CaseParticipantType.class,
-    AddressType.class,
-    BiometricType.class,
-    CaseDispositionDecisionType.class,
-    TelephoneNumberType.class,
-    ContactInformationType.class,
-    DNALocusType.class,
-    DriverLicenseBaseType.class,
-    DrivingRestrictionType.class,
-    FullTelephoneNumberType.class,
-    LocationType.class,
-    InternationalTelephoneNumberType.class,
-    ItemValueType.class,
-    StreetType.class,
-    NANPTelephoneNumberType.class,
-    ObligationExemptionType.class,
-    DNAType.class,
-    FingerprintSetType.class,
-    PersonNameType.class,
-    PhysicalFeatureType.class,
-    PersonLanguageType.class,
-    SupervisionType.class,
-    FacilityType.class,
-    ItemRegistrationType.class,
-    JurisdictionType.class,
-    PropertyType.class,
-    ScheduleDayType.class,
-    MeasureType.class,
-    ItemType.class,
     CourtCodelistType.class,
     CourtExtensionType.class,
     PublicKeyInformationType.class,
     RuntimePolicyParametersType.class,
     FingerprintType.class,
-    DomesticCaseChildSupportPetitionType.class,
+    CitationCaseAugmentationType.class,
+    LocationType.class,
+    EnforcementOfficialType.class,
+    SeverityLevelType.class,
+    CourtAppearanceType.class,
+    ScheduleDayType.class,
+    OrganizationType.class,
+    JudicialOfficialBarMembershipType.class,
+    BiometricType.class,
+    ItemValueType.class,
+    RegisteredOffenderType.class,
+    JurisdictionType.class,
+    SupervisionType.class,
+    VictimType.class,
+    DependencyAllegationType.class,
+    AddressType.class,
+    DispositionType.class,
+    CaseDispositionDecisionType.class,
+    TelephoneNumberType.class,
+    ContactInformationType.class,
     PersonType.class,
-    DomesticCaseViolencePetitionType.class,
+    DNALocusType.class,
+    DriverLicenseBaseType.class,
+    DrivingRestrictionType.class,
+    FullTelephoneNumberType.class,
+    InsuranceType.class,
+    InternationalTelephoneNumberType.class,
+    StreetType.class,
+    NANPTelephoneNumberType.class,
+    ObligationExemptionType.class,
     ObligationType.class,
+    DNAType.class,
+    FingerprintSetType.class,
+    PersonNameType.class,
+    PhysicalFeatureType.class,
+    PersonLanguageType.class,
+    FacilityType.class,
+    ItemRegistrationType.class,
+    PropertyType.class,
+    MeasureType.class,
+    ItemType.class,
+    ChargeType.class,
+    StatuteType.class,
     AppellateCaseAddedPartyType.class,
     AppellateCaseRemovedPartyType.class,
     AppellateCivilCaseType.class,
     AppellateCourtRuleCaseType.class,
     AliasType.class,
+    JudicialOfficialType.class,
     CourtEventActorType.class,
     CourtEventOnBehalfOfActorType.class,
     BinaryType.class,
     DocumentSignatureType.class,
     ElectronicServiceInformationType.class,
     ErrorType.class,
-    InsuranceType.class,
-    SignatureType.class,
-    EnforcementOfficialType.class,
-    DispositionType.class,
-    SeverityLevelType.class,
-    CourtAppearanceType.class,
-    JudicialOfficialType.class,
-    OrganizationType.class,
-    JudicialOfficialBarMembershipType.class,
-    RegisteredOffenderType.class,
-    VictimType.class,
-    DependencyAllegationType.class,
+    StatusType.class,
     AssociationType.class,
-    ChargeType.class,
-    StatuteType.class,
-    CitationCaseAugmentationType.class,
+    SignatureType.class,
+    QueryMessageType.class,
     SubjectType.class,
-    ActivityType.class,
     QueryResponseMessageType.class,
     EntityType.class,
-    StatusType.class,
-    QueryMessageType.class,
+    ActivityType.class,
     DocumentType.class
 })
 public abstract class ComplexObjectType {
@@ -258,7 +258,7 @@ public abstract class ComplexObjectType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the metadata property.
      * 
      * <p>
@@ -287,7 +287,7 @@ public abstract class ComplexObjectType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the linkMetadata property.
      * 
      * <p>

@@ -3,6 +3,9 @@ package oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4;
 
 import java.util.ArrayList;
 import java.util.List;
+import gov.niem.niem.domains.jxdm._4.CourtType;
+import gov.niem.niem.niem_core._2.IdentificationType;
+import gov.niem.niem.structures._2.ComplexObjectType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -11,9 +14,6 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.adapters.NormalizedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import gov.niem.niem.domains.jxdm._4.CourtType;
-import gov.niem.niem.niem_core._2.IdentificationType;
-import gov.niem.niem.structures._2.ComplexObjectType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistresponsemessage_4.CaseListResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtPolicyResponseMessageType;
@@ -64,19 +64,19 @@ import tyler.ecf.extensions.servicetypesresponsemessage.ServiceTypesResponseMess
     "error"
 })
 @XmlSeeAlso({
-    CancelFilingResponseMessageType.class,
-    ServiceTypesResponseMessageType.class,
-    ServiceInformationResponseMessageType.class,
-    FilingDetailResponseMessageType.class,
     FilingServiceResponseMessageType.class,
+    ServiceInformationResponseMessageType.class,
+    ServiceTypesResponseMessageType.class,
+    ServiceInformationHistoryResponseMessageType.class,
     FilingStatusResponseMessageType.class,
     CourtPolicyResponseMessageType.class,
-    ServiceInformationHistoryResponseMessageType.class,
-    CaseResponseMessageType.class,
-    CaseListResponseMessageType.class,
-    FeesCalculationResponseMessageType.class,
+    FilingDetailResponseMessageType.class,
     ServiceAttachCaseListResponseMessageType.class,
+    FeesCalculationResponseMessageType.class,
     FilingListResponseMessageType.class,
+    CaseListResponseMessageType.class,
+    CaseResponseMessageType.class,
+    CancelFilingResponseMessageType.class,
     DocumentResponseMessageType.class
 })
 public class QueryResponseMessageType
@@ -172,7 +172,7 @@ public class QueryResponseMessageType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the error property.
      * 
      * <p>

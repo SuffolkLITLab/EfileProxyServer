@@ -1,14 +1,14 @@
 
 package oasis.names.tc.legalxml_courtfiling.schema.xsd.appellatecase_4;
 
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.annotation.XmlElementDecl;
-import jakarta.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.NumericType;
 import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.proxy.xsd._2.Boolean;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlElementDecl;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**

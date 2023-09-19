@@ -99,6 +99,8 @@
 			<xsd:import namespace="urn:tyler:ecf:extensions:ServiceTypesRequestMessage" schemaLocation="ecf-75.xsd"/>
 			<xsd:import namespace="urn:tyler:ecf:extensions:ServiceTypesResponseMessage" schemaLocation="ecf-76.xsd"/>
 			<xsd:import namespace="urn:tyler:ecf:extensions:NotifyServiceMessage" schemaLocation="ecf-77.xsd"/>
+            <!-- NOTE(brycew): Manually added this one: some sample messages (and messages in prod) have Massachusetts substitutions -->
+			<xsd:import namespace="urn:tyler:ecf:extensions:Massachusetts" schemaLocation="ecf-78.xsd"/>
 			
 			<xsd:complexType name="NotifyFilingReviewCompleteRequestMessageType">
 				<xsd:annotation>

@@ -1,9 +1,6 @@
 
 package gov.niem.niem.domains.jxdm._4;
 
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.annotation.XmlElementDecl;
-import jakarta.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 import gov.niem.niem.ansi_d20._2.AccidentSeverityCodeType;
 import gov.niem.niem.ansi_d20._2.HazMatCodeType;
@@ -30,6 +27,9 @@ import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.proxy.xsd._2.Boolean;
 import gov.niem.niem.proxy.xsd._2.Duration;
 import gov.niem.niem.structures._2.ReferenceType;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlElementDecl;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**
@@ -51,7 +51,6 @@ public class ObjectFactory {
 
     private final static QName _ArrestAgency_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ArrestAgency");
     private final static QName _ArrestSubject_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ArrestSubject");
-    private final static QName _CaseCourtEvent_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "CaseCourtEvent");
     private final static QName _ActivityLocationAssociation_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ActivityLocationAssociation");
     private final static QName _AppellateCase_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "AppellateCase");
     private final static QName _AppellateCaseNotice_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "AppellateCaseNotice");
@@ -70,6 +69,7 @@ public class ObjectFactory {
     private final static QName _CaseAugmentation_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "CaseAugmentation");
     private final static QName _CaseCharge_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "CaseCharge");
     private final static QName _CaseCourt_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "CaseCourt");
+    private final static QName _CaseCourtEvent_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "CaseCourtEvent");
     private final static QName _CaseDefendantParty_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "CaseDefendantParty");
     private final static QName _CaseDefenseAttorney_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "CaseDefenseAttorney");
     private final static QName _CaseInitiatingAttorney_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "CaseInitiatingAttorney");
@@ -207,14 +207,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CourtEventType }
-     * 
-     */
-    public CourtEventType createCourtEventType() {
-        return new CourtEventType();
-    }
-
-    /**
      * Create an instance of {@link ActivityLocationAssociationType }
      * 
      */
@@ -284,6 +276,14 @@ public class ObjectFactory {
      */
     public CourtType createCourtType() {
         return new CourtType();
+    }
+
+    /**
+     * Create an instance of {@link CourtEventType }
+     * 
+     */
+    public CourtEventType createCourtEventType() {
+        return new CourtEventType();
     }
 
     /**
@@ -478,19 +478,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://niem.gov/niem/domains/jxdm/4.0", name = "ArrestSubject")
     public JAXBElement<SubjectType> createArrestSubject(SubjectType value) {
         return new JAXBElement<SubjectType>(_ArrestSubject_QNAME, SubjectType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link CourtEventType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link CourtEventType }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://niem.gov/niem/domains/jxdm/4.0", name = "CaseCourtEvent")
-    public JAXBElement<CourtEventType> createCaseCourtEvent(CourtEventType value) {
-        return new JAXBElement<CourtEventType>(_CaseCourtEvent_QNAME, CourtEventType.class, null, value);
     }
 
     /**
@@ -725,6 +712,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://niem.gov/niem/domains/jxdm/4.0", name = "CaseCourt")
     public JAXBElement<CourtType> createCaseCourt(CourtType value) {
         return new JAXBElement<CourtType>(_CaseCourt_QNAME, CourtType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CourtEventType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CourtEventType }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://niem.gov/niem/domains/jxdm/4.0", name = "CaseCourtEvent")
+    public JAXBElement<CourtEventType> createCaseCourtEvent(CourtEventType value) {
+        return new JAXBElement<CourtEventType>(_CaseCourtEvent_QNAME, CourtEventType.class, null, value);
     }
 
     /**

@@ -1,12 +1,12 @@
 
 package oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4;
 
+import gov.niem.niem.niem_core._2.CaseType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
-import gov.niem.niem.niem_core._2.CaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.appellatecase_4.AppellateCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.bankruptcycase_4.BankruptcyCaseType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.citationcase_4.CitationCaseType;

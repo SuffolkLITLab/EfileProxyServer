@@ -38,6 +38,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AnyURI }
+     * 
+     */
+    public AnyURI createAnyURI() {
+        return new AnyURI();
+    }
+
+    /**
      * Create an instance of {@link GYear }
      * 
      */
@@ -62,19 +70,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Duration }
+     * 
+     */
+    public Duration createDuration() {
+        return new Duration();
+    }
+
+    /**
      * Create an instance of {@link Base64Binary }
      * 
      */
     public Base64Binary createBase64Binary() {
         return new Base64Binary();
-    }
-
-    /**
-     * Create an instance of {@link AnyURI }
-     * 
-     */
-    public AnyURI createAnyURI() {
-        return new AnyURI();
     }
 
     /**
@@ -99,14 +107,6 @@ public class ObjectFactory {
      */
     public Time createTime() {
         return new Time();
-    }
-
-    /**
-     * Create an instance of {@link Duration }
-     * 
-     */
-    public Duration createDuration() {
-        return new Duration();
     }
 
 }

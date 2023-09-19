@@ -1,11 +1,11 @@
 
 package oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4;
 
+import javax.xml.namespace.QName;
+import gov.niem.niem.proxy.xsd._2.Boolean;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
-import javax.xml.namespace.QName;
-import gov.niem.niem.proxy.xsd._2.Boolean;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType;
 
 
@@ -26,10 +26,10 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _FilingLeadDocument_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0", "FilingLeadDocument");
+    private final static QName _FilingConnectedDocument_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0", "FilingConnectedDocument");
     private final static QName _CoreFilingMessage_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0", "CoreFilingMessage");
     private final static QName _FilingConfidentialityIndicator_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0", "FilingConfidentialityIndicator");
-    private final static QName _FilingConnectedDocument_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0", "FilingConnectedDocument");
-    private final static QName _FilingLeadDocument_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0", "FilingLeadDocument");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4
@@ -44,6 +44,32 @@ public class ObjectFactory {
      */
     public CoreFilingMessageType createCoreFilingMessageType() {
         return new CoreFilingMessageType();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0", name = "FilingLeadDocument")
+    public JAXBElement<DocumentType> createFilingLeadDocument(DocumentType value) {
+        return new JAXBElement<DocumentType>(_FilingLeadDocument_QNAME, DocumentType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0", name = "FilingConnectedDocument")
+    public JAXBElement<DocumentType> createFilingConnectedDocument(DocumentType value) {
+        return new JAXBElement<DocumentType>(_FilingConnectedDocument_QNAME, DocumentType.class, null, value);
     }
 
     /**
@@ -70,32 +96,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0", name = "FilingConfidentialityIndicator")
     public JAXBElement<Boolean> createFilingConfidentialityIndicator(Boolean value) {
         return new JAXBElement<Boolean>(_FilingConfidentialityIndicator_QNAME, Boolean.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0", name = "FilingConnectedDocument")
-    public JAXBElement<DocumentType> createFilingConnectedDocument(DocumentType value) {
-        return new JAXBElement<DocumentType>(_FilingConnectedDocument_QNAME, DocumentType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0", name = "FilingLeadDocument")
-    public JAXBElement<DocumentType> createFilingLeadDocument(DocumentType value) {
-        return new JAXBElement<DocumentType>(_FilingLeadDocument_QNAME, DocumentType.class, null, value);
     }
 
 }

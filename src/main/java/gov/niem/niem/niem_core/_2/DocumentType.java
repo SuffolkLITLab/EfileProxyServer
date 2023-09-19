@@ -3,6 +3,9 @@ package gov.niem.niem.niem_core._2;
 
 import java.util.ArrayList;
 import java.util.List;
+import gov.niem.niem.domains.jxdm._4.AppellateCaseNoticeType;
+import gov.niem.niem.iso_639_3._2.LanguageCodeType;
+import gov.niem.niem.structures._2.ComplexObjectType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -10,9 +13,6 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
-import gov.niem.niem.domains.jxdm._4.AppellateCaseNoticeType;
-import gov.niem.niem.iso_639_3._2.LanguageCodeType;
-import gov.niem.niem.structures._2.ComplexObjectType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentRenditionMetadataType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentRenditionType;
@@ -75,11 +75,11 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "documentSubmitter"
 })
 @XmlSeeAlso({
+    AppellateCaseNoticeType.class,
     MatchingFilingType.class,
     oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType.class,
     DocumentRenditionMetadataType.class,
     DocumentRenditionType.class,
-    AppellateCaseNoticeType.class,
     CaseFilingType.class
 })
 public class DocumentType
@@ -173,7 +173,7 @@ public class DocumentType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the documentCategoryText property.
      * 
      * <p>
@@ -307,7 +307,7 @@ public class DocumentType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the documentIdentification property.
      * 
      * <p>

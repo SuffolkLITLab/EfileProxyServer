@@ -3,12 +3,6 @@ package tyler.ecf.extensions.common;
 
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElementRef;
-import jakarta.xml.bind.annotation.XmlElementRefs;
-import jakarta.xml.bind.annotation.XmlType;
 import gov.niem.niem.fbi._2.VCOCodeType;
 import gov.niem.niem.fbi._2.VMACodeType;
 import gov.niem.niem.niem_core._2.ProperNameTextType;
@@ -16,6 +10,12 @@ import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.proxy.xsd._2.Boolean;
 import gov.niem.niem.proxy.xsd._2.GYear;
 import gov.niem.niem.structures._2.ReferenceType;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlElementRefs;
+import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -74,8 +74,8 @@ public class VehicleType
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "VehicleMakeCode" is used by two different parts of a schema. See: 
-     * line 187 of file:/home/brycew/Developer/EfileProxyServer/src/main/resources/wsdl/illinois/stage/ecf-60.xsd
-     * line 811 of file:/home/brycew/Developer/EfileProxyServer/src/main/resources/wsdl/illinois/stage/ecf-2.xsd
+     * line 187 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-60.xsd
+     * line 811 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-2.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 
@@ -84,7 +84,7 @@ public class VehicleType
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the rest property.
      * 
      * <p>
