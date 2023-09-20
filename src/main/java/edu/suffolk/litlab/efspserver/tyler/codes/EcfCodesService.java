@@ -44,6 +44,7 @@ public class EcfCodesService extends CodesService {
           "getLanguages",
           "getStates",
           "getFilingStatuses",
+          "getFilerTypes",
           "getAllowedFileTypes",
           "getPartyTypes",
           "getCaseSubtypes",
@@ -327,6 +328,18 @@ public class EcfCodesService extends CodesService {
       List<FilingCode> filingTypes = cd.getFilingType(courtId, categoryId, typeId, initial);
 
       return cors(Response.ok(filingTypes));
+    }
+  }
+
+  @GET
+  @Path("/courts/{court_id}/filer_types")
+  public Response getFilerTypes(@PathParam("court_id") String courtId) throws SQLException {
+    try (CodeDatabase cd = cdSupplier.get()) {
+      if (!cd.getAllLocations().contains(courtId)) {
+        return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
+      }
+      List<FilerType> filerTypes = cd.getFilerTypes(courtId);
+      return cors(Response.ok(filerTypes));
     }
   }
 
