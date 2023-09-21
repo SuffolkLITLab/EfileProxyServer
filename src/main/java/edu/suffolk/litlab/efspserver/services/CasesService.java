@@ -49,7 +49,11 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryRespons
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.serviceinformationquerymessage_4.ServiceInformationQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.serviceinformationresponsemessage_4.ServiceInformationResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.CourtRecordMDEPort;
+import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.headers.Header;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -438,14 +442,15 @@ public class CasesService {
     }
 
     CourtRecordMDEPort port = recordFactory.getCourtRecordMDEPort();
-    // Sometimes, getCases takes an incredibly long time. Bump timeout to 90s
-    // https://stackoverflow.com/a/7512962/11416267
-    ((BindingProvider) port)
-        .getRequestContext()
-        .put("com.sun.xml.internal.ws.connect.timeout", 90000);
-    ((BindingProvider) port)
-        .getRequestContext()
-        .put("com.sun.xml.internal.ws.request.timeout", 90000);
+
+    // Sometimes, getCases takes an incredibly long time. Bump timeout to 3 minutes
+    Client client = ClientProxy.getClient(port);
+    HTTPConduit http = (HTTPConduit) client.getConduit();
+    HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
+    httpClientPolicy.setConnectionTimeout(180_000);
+    httpClientPolicy.setReceiveTimeout(180_000);
+    http.setClient(httpClientPolicy);
+
     ServiceHelpers.setupServicePort((BindingProvider) port);
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
     List<Header> headersList = List.of(creds.get().toHeader());
