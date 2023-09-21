@@ -210,8 +210,6 @@ public class FilingReviewService {
     if (mediaType == null) {
       mediaType = MediaType.valueOf("application/json");
     }
-    log.trace("Court id: " + courtId);
-    log.info("All vars:" + allVars);
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
@@ -224,6 +222,8 @@ public class FilingReviewService {
     if (!converterMap.containsKey(mediaType.toString())) {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     }
+    log.trace("Court id: " + courtId);
+    log.info("All vars:" + allVars);
     InfoCollector collector = new FailFastCollector();
     Result<FilingInformation, FilingError> res =
         converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);

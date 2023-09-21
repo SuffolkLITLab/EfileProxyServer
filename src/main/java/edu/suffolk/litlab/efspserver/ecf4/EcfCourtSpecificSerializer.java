@@ -227,8 +227,7 @@ public class EcfCourtSpecificSerializer {
       collector.error(err);
     } else if (!isInitialFiling && (!court.subsequent)) {
       FilingError err =
-          FilingError.malformedInterview(
-              "An Subsequent" + " filing can't be filed at " + court.name);
+          FilingError.malformedInterview("A Subsequent filing can't be filed at " + court.name);
       collector.error(err);
     }
 
