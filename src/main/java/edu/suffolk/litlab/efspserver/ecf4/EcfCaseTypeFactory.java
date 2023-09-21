@@ -661,11 +661,11 @@ public class EcfCaseTypeFactory {
               filerTypeName,
               "Metadata about the filer of this case",
               "choices",
-              allTypes.stream().map(t -> t.name).collect(Collectors.toList()));
+              allTypes.stream().map(t -> t.code).collect(Collectors.toList()));
       if (filerTypeNode != null && filerTypeNode.isTextual()) {
         String filerType = filerTypeNode.asText();
         Optional<FilerType> typeInfo =
-            allTypes.stream().filter(t -> t.name.equalsIgnoreCase(filerType)).findFirst();
+            allTypes.stream().filter(t -> t.code.equalsIgnoreCase(filerType)).findFirst();
         if (typeInfo.isPresent()) {
           ecfAug.setFilerTypeText(Ecf4Helper.convertText(typeInfo.get().code));
         } else {
