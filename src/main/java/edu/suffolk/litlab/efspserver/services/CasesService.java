@@ -151,12 +151,19 @@ public class CasesService {
       if (info.isEmpty()) {
         return Response.status(404).entity(courtId + " not in available courts to search").build();
       }
-      DataFieldRow legacyRow = cd.getDataField(courtId, "LegacyLocationCaseSearch");
-      if (legacyRow.isvisible && !info.get().initial) {
-        return Response.status(400)
-            .entity(courtId + " doesn't allow for subsequent case searches")
-            .build();
-      }
+
+      // NOTE(brycew): Tyler's docs for "LegacyLocationCaseSearch" says:
+      // "Provides requirements regarding restricting search location to only those locations which
+      // allow initial filings. When IsVisible=True, only locations which allow initial filings
+      // will be allowed." Unfortunately, this doesnt make any sense, and we can still search at
+      // locations where LegacyLocation is true and initial is False. So turning this off for now.
+      //DataFieldRow legacyRow = cd.getDataField(courtId, "LegacyLocationCaseSearch");
+
+      //if (legacyRow.isvisible && !info.get().initial) {
+      //  return Response.status(400)
+      //      .entity(courtId + " doesn't allow for subsequent case searches")
+      //      .build();
+      //}
 
       if (courtId.equals("1")) {
         DataFieldRow row = cd.getDataField("1", "AdvancedSearchLocationAllLocations");
