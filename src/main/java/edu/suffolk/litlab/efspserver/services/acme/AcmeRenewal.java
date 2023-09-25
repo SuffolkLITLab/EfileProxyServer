@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efspserver.services;
+package edu.suffolk.litlab.efspserver.services.acme;
 
 import edu.suffolk.litlab.efspserver.StdLib;
 import java.io.ByteArrayOutputStream;
@@ -51,14 +51,22 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles Renewing the Server's HTTPS / TLS certificates using the ACME protocol.
  *
- * <p>The full process is as follows: - if not already present make a user public/private key pair
- * (i.e. you, the org running the site) - if not already present make a domain public/private key
- * pair (specific to this site's domain) - make a Certificate signing request (CSR) and send to
- * let's encrypt - in the background, it also creates a special token that is available at a URL
- * path known to Let's Encrypt that they use to verify we have control of the website at that domain
- * - get back a certificate chain (*.crt) from let's encrypt, showing that our domain public key is
- * the approved key for our given domain - save the domain private key and the *.crt as a Java Key
- * Store (JKS) file. This is used by our server to serve the REST API over HTTPS
+ * <p>The full process is as follows:
+ *
+ * <ol>
+ *   <li>if not already present make a user public/private key pair (i.e. you, the org running the
+ *       site)
+ *   <li>if not already present make a domain public/private key pair (specific to this site's
+ *       domain)/
+ *   <li>
+ *   <li>make a Certificate signing request (CSR) and send to let's encrypt
+ *   <li>in the background, it also creates a special token that is available at a URL path known to
+ *       Let's Encrypt that they use to verify we have control of the website at that domain
+ *   <li>get back a certificate chain (*.crt) from let's encrypt, showing that our domain public key
+ *       is the approved key for our given domain
+ *   <li>save the domain private key and the *.crt as a Java Key Store (JKS) file. This is used by
+ *       our server to serve the REST API over HTTPS
+ * </ol>
  */
 public class AcmeRenewal {
 
@@ -133,14 +141,17 @@ public class AcmeRenewal {
   }
 
   public void fetchCertificate(
-      Collection<String> domains, AcmeChallengePublisher publisher, String certPassword)
+      Collection<String> domains,
+      AcmeChallengePublisher publisher,
+      String certPassword,
+      String email)
       throws IOException, AcmeException {
     KeyPair userKeyPair = loadOrCreateUserKeyPair();
 
     Session session = new Session("acme://letsencrypt.org/");
 
     // If there is no account yet, create a new one
-    Account acct = findOrRegisterAccount(session, userKeyPair);
+    Account acct = findOrRegisterAccount(session, userKeyPair, email);
 
     // This should not be the userKeyPair!
     KeyPair domainKeyPair = loadOrCreateDomainKeyPair();
@@ -191,9 +202,9 @@ public class AcmeRenewal {
     }
   }
 
-  public Account findOrRegisterAccount(Session session, KeyPair accountKey) throws AcmeException {
+  public Account findOrRegisterAccount(Session session, KeyPair accountKey, String email)
+      throws AcmeException {
     Login login = null;
-    String email = System.getenv("TYLER_USER_EMAIL");
     try {
       String accountUrlStr = Files.readString(ACCOUNT_URL_FILE.toPath());
       login = session.login(new URL(accountUrlStr), accountKey);
@@ -390,7 +401,11 @@ public class AcmeRenewal {
    * Can be run on it's own: writes the token content to be used in two different files that are
    * independently read by the Acme service.
    *
-   * <p>Run with `mvn exec:java@AcmeRenewal renew`.
+   * <p>Run with
+   *
+   * <pre>
+   * java -cp $(cat cp.txt):target/efspserver.jar edu.suffolk.litlab.efspserver.services.acme.AcmeRenewal renew
+   * </pre>
    *
    * @throws AcmeException
    * @throws IOException
@@ -411,6 +426,7 @@ public class AcmeRenewal {
       return;
     }
 
+    String email = System.getenv("MONITORING_EMAIL");
     if (args.length == 1 && args[0].equalsIgnoreCase("renew")) {
       String domain = System.getenv("EXTERNAL_DOMAIN");
       if (domain == null || domain.isBlank()) {
@@ -420,7 +436,7 @@ public class AcmeRenewal {
       Security.addProvider(new BouncyCastleProvider());
       AcmeRenewal renewal = new AcmeRenewal();
       AcmeChallengePublisher publisher = new AcmeChallengeWriter();
-      renewal.fetchCertificate(Arrays.asList(domain), publisher, password);
+      renewal.fetchCertificate(Arrays.asList(domain), publisher, password, email);
     } else {
       log.info("No valid commands passed, doing nothing.");
     }

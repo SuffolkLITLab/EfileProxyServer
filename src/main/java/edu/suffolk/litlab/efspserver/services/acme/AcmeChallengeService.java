@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efspserver.services;
+package edu.suffolk.litlab.efspserver.services.acme;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
