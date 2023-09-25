@@ -21,7 +21,7 @@ We are still working to improve the steps, but current the process is:
 2. Start up the docker containers (see [setup.md](setup.md)).
 3. Start a bash shell inside the running container: `docker exec -it efileproxyserver-efspjava-1 /bin/bash`
 4. Change directories to the app: `cd /usr/src/app`.
-5. Run the ACME renewal process: `java -cp $(cat cp.txt):target/efspserver.java edu.suffolk.litlab.efspserver.services.acme.AcmeRenewal renew`.
+5. Run the ACME renewal process: `java -cp $(cat cp.txt):target/efspserver.jar edu.suffolk.litlab.efspserver.services.acme.AcmeRenewal renew`.
    If the renewal process succeeded, `acme-domain-chain.crt` and `tls_server_cert.jks`
    should both be present in `/tmp/tls_certs` inside the container and in `src/main/config` outside the container.
 6. Exit the bash shell you started, and rebuild and restart the java docker container.
