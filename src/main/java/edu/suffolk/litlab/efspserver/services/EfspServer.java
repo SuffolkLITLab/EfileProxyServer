@@ -14,6 +14,7 @@ import edu.suffolk.litlab.efspserver.db.UserDatabase;
 import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingInformationConverter;
 import edu.suffolk.litlab.efspserver.ecf4.TylerModuleSetup;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetModuleSetup;
+import edu.suffolk.litlab.efspserver.services.acme.AcmeChallengeService;
 import jakarta.ws.rs.core.MediaType;
 import java.io.File;
 import java.security.NoSuchAlgorithmException;
