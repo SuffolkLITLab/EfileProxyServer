@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Optional;
 
 public class CaseType {
@@ -57,6 +58,19 @@ public class CaseType {
         rs.getString(8));
   }
 
+  /** Turns the object into a map; attributes can be combined with HATEOS endpoints */
+  public Map<String, Object> toMap() {
+    return Map.ofEntries(
+        Map.entry("code", code),
+        Map.entry("name", name),
+        Map.entry("casecategory", casecategory),
+        Map.entry("initial", initial),
+        Map.entry("fee", fee),
+        Map.entry("willfileddate", willfileddate),
+        Map.entry("efspcode", efspcode),
+        Map.entry("location", location));
+  }
+
   // HACK(brycew): here for when CaseType isn't present, but we have AllWrong collector
   public static CaseType DummyCase() {
     return new CaseType(
@@ -104,13 +118,60 @@ public class CaseType {
     return st;
   }
 
+  private static String getCaseTypesForCategory() {
+    return """
+        SELECT code, name, casecategory, initial,
+        fee, willfileddate, efspcode, location
+        FROM casetype WHERE domain=? AND location=? AND casecategory=?""";
+  }
+
+  private static String getCaseTypesForTiming() {
+    return getCaseTypesForCategory() + " AND initial ILIKE ?";
+  }
+
   public static PreparedStatement prepQueryWithCode(
       Connection conn, String domain, String courtLocationId, String caseTypeCode)
       throws SQLException {
-    PreparedStatement st = conn.prepareStatement(getCaseTypesWithCode());
+    String withCode =
+        """
+        SELECT code, name, casecategory, initial,
+          fee, willfileddate, efspcode, location
+        FROM casetype WHERE domain=? AND location=? AND code=?
+        """;
+    PreparedStatement st = conn.prepareStatement(withCode);
     st.setString(1, domain);
     st.setString(2, courtLocationId);
     st.setString(3, caseTypeCode);
+    return st;
+  }
+
+  public static PreparedStatement prepSearchQuery(Connection conn, String domain, String searchTerm)
+      throws SQLException {
+    String search =
+        """
+        SELECT DISTINCT name
+        FROM casetype
+        WHERE domain=? AND name ILIKE ?
+        ORDER BY name
+        """;
+    PreparedStatement st = conn.prepareStatement(search);
+    st.setString(1, domain);
+    st.setString(2, searchTerm);
+    return st;
+  }
+
+  public static PreparedStatement prepRetrieveQuery(
+      Connection conn, String domain, String caseTypeName) throws SQLException {
+    String retrieve =
+        """
+        SELECT DISTINCT code, location
+        FROM casetype
+        WHERE domain=? AND name=?
+        ORDER BY location
+        """;
+    PreparedStatement st = conn.prepareStatement(retrieve);
+    st.setString(1, domain);
+    st.setString(2, caseTypeName);
     return st;
   }
 
@@ -133,24 +194,5 @@ public class CaseType {
     sb.append(", ");
     sb.append(location);
     return sb.toString();
-  }
-
-  private static String getCaseTypesForCategory() {
-    return """
-        SELECT code, name, casecategory, initial,
-        fee, willfileddate, efspcode, location
-        FROM casetype WHERE domain=? AND location=? AND casecategory=?""";
-  }
-
-  private static String getCaseTypesForTiming() {
-    return getCaseTypesForCategory() + " AND initial ILIKE ?";
-  }
-
-  private static String getCaseTypesWithCode() {
-    return """
-        SELECT code, name, casecategory, initial,
-          fee, willfileddate, efspcode, location
-        FROM casetype WHERE domain=? AND location=? AND code=?
-        """;
   }
 }

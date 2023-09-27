@@ -238,6 +238,67 @@ public class CodeDatabase extends CodeDatabaseAPI {
     return stmt;
   }
 
+  /**
+   * In most cases, we want to find all instances of the search term, not the exact term. It's a
+   * LIKE compare, so add the 0 or more characters on either side.
+   *
+   * @param searchTerm
+   * @return
+   */
+  public static String likeWildcard(String searchTerm) {
+    if (searchTerm == null) {
+      return "%";
+    }
+    return "%" + searchTerm + "%";
+  }
+
+  /**
+   * Gets all distinct case category names that have the search term in them.
+   *
+   * @param searchTerm
+   * @return
+   */
+  public List<String> searchCaseCategory(String searchTerm) {
+    String finalSearchTerm = likeWildcard(searchTerm);
+    return safetyWrap(
+        () -> {
+          String query = CaseCategory.searchCaseCategories();
+          List<String> cats = new ArrayList<>();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, finalSearchTerm);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              cats.add(rs.getString(1));
+            }
+          }
+          return cats;
+        });
+  }
+
+  /**
+   * Get the code and court locations of the case categories that match the given name exactly.
+   *
+   * @param categoryName
+   * @return
+   */
+  public List<CodeAndLocation> retrieveCaseCategoryByName(String categoryName) {
+    return safetyWrap(
+        () -> {
+          String query = CaseCategory.retrieveCaseCategoryForName();
+          List<CodeAndLocation> cats = new ArrayList<>();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, categoryName);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              cats.add(new CodeAndLocation(rs.getString(1), rs.getString(2)));
+            }
+          }
+          return cats;
+        });
+  }
+
   public List<CaseCategory> getCaseCategoriesFor(String courtLocationId) {
     return safetyWrap(
         () -> {
@@ -277,10 +338,11 @@ public class CodeDatabase extends CodeDatabaseAPI {
         });
   }
 
-  public Optional<CaseCategory> getCaseCategoryWithKey(String courtLocationId, String caseCatCode) {
+  public Optional<CaseCategory> getCaseCategoryWithCode(
+      String courtLocationId, String caseCatCode) {
     return safetyWrapOpt(
         () -> {
-          String query = CaseCategory.getCaseCategoryWithKey();
+          String query = CaseCategory.getCaseCategoryWithCode();
           try (PreparedStatement st = conn.prepareStatement(query)) {
             st.setString(1, tylerDomain);
             st.setString(2, courtLocationId);
@@ -293,6 +355,48 @@ public class CodeDatabase extends CodeDatabaseAPI {
               log.warn("No categories for code " + caseCatCode + " at " + courtLocationId);
               return Optional.empty();
             }
+          }
+        });
+  }
+
+  /**
+   * Gets all distinct case type names that have the search term in them.
+   *
+   * @param searchTerm
+   * @return
+   */
+  public List<String> searchCaseType(String searchTerm) {
+    String finalSearchTerm = likeWildcard(searchTerm);
+    return safetyWrap(
+        () -> {
+          try (PreparedStatement st =
+              CaseType.prepSearchQuery(conn, tylerDomain, finalSearchTerm)) {
+            List<String> types = new ArrayList<>();
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              types.add(rs.getString(1));
+            }
+            return types;
+          }
+        });
+  }
+
+  /**
+   * Get the code and court locations of the case types that match the given name exactly.
+   *
+   * @param categoryName
+   * @return
+   */
+  public List<CodeAndLocation> retrieveCaseTypeByName(String caseTypeName) {
+    return safetyWrap(
+        () -> {
+          try (PreparedStatement st = CaseType.prepRetrieveQuery(conn, tylerDomain, caseTypeName)) {
+            List<CodeAndLocation> types = new ArrayList<>();
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              types.add(new CodeAndLocation(rs.getString(1), rs.getString(2)));
+            }
+            return types;
           }
         });
   }
@@ -477,6 +581,49 @@ public class CodeDatabase extends CodeDatabaseAPI {
     }
   }
 
+  /**
+   * Gets all distinct filing type names that have the search term in them.
+   *
+   * @param searchTerm
+   * @return
+   */
+  public List<String> searchFilingType(String searchTerm) {
+    String finalSearchTerm = likeWildcard(searchTerm);
+    return safetyWrap(
+        () -> {
+          try (PreparedStatement st =
+              FilingCode.prepSearchQuery(conn, tylerDomain, finalSearchTerm)) {
+            List<String> types = new ArrayList<>();
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              types.add(rs.getString(1));
+            }
+            return types;
+          }
+        });
+  }
+
+  /**
+   * Get the code and court locations of the filing types that match the given name exactly.
+   *
+   * @param categoryName
+   * @return
+   */
+  public List<CodeAndLocation> retrieveFilingTypeByName(String caseTypeName) {
+    return safetyWrap(
+        () -> {
+          try (PreparedStatement st =
+              FilingCode.prepRetrieveQuery(conn, tylerDomain, caseTypeName)) {
+            List<CodeAndLocation> types = new ArrayList<>();
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              types.add(new CodeAndLocation(rs.getString(1), rs.getString(2)));
+            }
+            return types;
+          }
+        });
+  }
+
   public List<FilingCode> getFilingType(
       String courtLocationId, String categoryCode, String typeCode, boolean initial) {
     return safetyWrap(
@@ -509,7 +656,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     return safetyWrapOpt(
         () -> {
           try (PreparedStatement st =
-              FilingCode.prepQueryWithKey(conn, tylerDomain, courtLocationId, filingCode)) {
+              FilingCode.prepQueryWithCode(conn, tylerDomain, courtLocationId, filingCode)) {
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
               return Optional.of(new FilingCode(rs));
@@ -552,6 +699,47 @@ public class CodeDatabase extends CodeDatabaseAPI {
   }
 
   /**
+   * Gets all distinct filing type names that have the search term in them.
+   *
+   * @param searchTerm
+   * @return
+   */
+  public List<String> searchPartyType(String searchTerm) {
+    String finalSearchTerm = likeWildcard(searchTerm);
+    return safetyWrap(
+        () -> {
+          String query = PartyType.searchPartyType();
+          List<String> types = new ArrayList<>();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, finalSearchTerm);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              types.add(rs.getString(1));
+            }
+            return types;
+          }
+        });
+  }
+
+  public List<CodeAndLocation> retrievePartyType(String partyTypeName) {
+    return safetyWrap(
+        () -> {
+          String query = PartyType.retrievePartyTypeFromName();
+          List<CodeAndLocation> types = new ArrayList<>();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, partyTypeName);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              types.add(new CodeAndLocation(rs.getString(1), rs.getString(2)));
+            }
+            return types;
+          }
+        });
+  }
+
+  /**
    * Gets the party types that are allowed for a given court and case type.
    *
    * @param courtLocationId
@@ -559,7 +747,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
    *     case type.
    * @return a list of party types
    */
-  public List<PartyType> getPartyTypeFor(String courtLocationId, String typeCode) {
+  public List<PartyType> getPartyTypeFor(String courtLocationId, String caseTypeCode) {
     return safetyWrap(
         () -> {
           String query = PartyType.getPartyTypeFromCaseType();
@@ -567,8 +755,8 @@ public class CodeDatabase extends CodeDatabaseAPI {
           try (PreparedStatement caseSt = conn.prepareStatement(query)) {
             caseSt.setString(1, tylerDomain);
             caseSt.setString(2, courtLocationId);
-            if (typeCode != null) {
-              caseSt.setString(3, typeCode);
+            if (caseTypeCode != null) {
+              caseSt.setString(3, caseTypeCode);
               try (ResultSet rs = caseSt.executeQuery()) {
                 while (rs.next()) {
                   partyTypes.add(new PartyType(rs));
@@ -589,6 +777,24 @@ public class CodeDatabase extends CodeDatabaseAPI {
             }
           }
           return partyTypes;
+        });
+  }
+
+  public List<PartyType> getPartyTypeByCode(String courtLocationId, String partyTypeCode) {
+    return safetyWrap(
+        () -> {
+          String query = PartyType.retrievePartyTypeFromName();
+          List<PartyType> types = new ArrayList<>();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, tylerDomain);
+            st.setString(2, courtLocationId);
+            st.setString(3, partyTypeCode);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              types.add(new PartyType(rs));
+            }
+            return types;
+          }
         });
   }
 
@@ -624,32 +830,6 @@ public class CodeDatabase extends CodeDatabaseAPI {
           }
           return types;
         });
-  }
-
-  private <T> List<T> safetyWrap(SQLFunction<List<T>> sup) {
-    if (conn == null) {
-      log.error("SQL connection not created yet!");
-      return List.of();
-    }
-    try {
-      return sup.get();
-    } catch (SQLException ex) {
-      log.error("SQL excption: " + ex);
-      return List.of();
-    }
-  }
-
-  private <T> Optional<T> safetyWrapOpt(SQLFunction<Optional<T>> sup) {
-    if (conn == null) {
-      log.error("SQL connection not created yet!");
-      return Optional.empty();
-    }
-    try {
-      return sup.get();
-    } catch (SQLException ex) {
-      log.error("SQL excption: " + ex);
-      return Optional.empty();
-    }
   }
 
   public List<DocumentTypeTableRow> getDocumentTypes(String courtLocationId, String filingCodeId) {
@@ -842,6 +1022,52 @@ public class CodeDatabase extends CodeDatabaseAPI {
       log.error("SQLExecption: " + ex);
       return List.of();
     }
+  }
+
+  public List<String> searchOptionalServices(String searchTerm) {
+    final String finalSearchTerm = likeWildcard(searchTerm);
+    return safetyWrap(
+        () -> {
+          try (PreparedStatement st =
+              OptionalServiceCode.prepSearch(conn, tylerDomain, finalSearchTerm)) {
+            List<String> optServs = new ArrayList<>();
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              optServs.add(rs.getString(1));
+            }
+            return optServs;
+          }
+        });
+  }
+
+  public List<CodeAndLocation> retrieveOptionalServices(String optServName) {
+    return safetyWrap(
+        () -> {
+          try (PreparedStatement st =
+              OptionalServiceCode.prepRetrieve(conn, tylerDomain, optServName)) {
+            List<CodeAndLocation> optServs = new ArrayList<>();
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              optServs.add(new CodeAndLocation(rs.getString(1), rs.getString(2)));
+            }
+            return optServs;
+          }
+        });
+  }
+
+  public List<OptionalServiceCode> getOptionalServicesByCode(String courtId, String optServCode) {
+    return safetyWrap(
+        () -> {
+          try (PreparedStatement st =
+              OptionalServiceCode.prepQueryWithCode(conn, tylerDomain, courtId, optServCode)) {
+            List<OptionalServiceCode> optServs = new ArrayList<>();
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              optServs.add(new OptionalServiceCode(rs));
+            }
+            return optServs;
+          }
+        });
   }
 
   public List<OptionalServiceCode> getOptionalServices(String courtId, String filingCode) {
@@ -1113,5 +1339,31 @@ public class CodeDatabase extends CodeDatabaseAPI {
             return disclaimers;
           }
         });
+  }
+
+  private <T> List<T> safetyWrap(SQLFunction<List<T>> sup) {
+    if (conn == null) {
+      log.error("SQL connection not created yet!");
+      return List.of();
+    }
+    try {
+      return sup.get();
+    } catch (SQLException ex) {
+      log.error("SQL excption: " + ex);
+      return List.of();
+    }
+  }
+
+  private <T> Optional<T> safetyWrapOpt(SQLFunction<Optional<T>> sup) {
+    if (conn == null) {
+      log.error("SQL connection not created yet!");
+      return Optional.empty();
+    }
+    try {
+      return sup.get();
+    } catch (SQLException ex) {
+      log.error("SQL excption: " + ex);
+      return Optional.empty();
+    }
   }
 }

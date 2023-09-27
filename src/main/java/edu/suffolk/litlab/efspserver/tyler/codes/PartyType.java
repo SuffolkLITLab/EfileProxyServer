@@ -71,6 +71,24 @@ public class PartyType {
         rs.getString(12));
   }
 
+  public static String searchPartyType() {
+    return """
+        SELECT DISTINCT name
+        FROM partytype
+        WHERE domain=? AND name ILIKE ?
+        ORDER BY name
+        """;
+  }
+
+  public static String retrievePartyTypeFromName() {
+    return """
+        SELECT DISTINCT code, location
+        FROM partytype
+        WHERE domain=? AND name=?
+        ORDER BY location
+        """;
+  }
+
   public static String getPartyTypeFromCaseType() {
     return """
         SELECT code, name, isavailablefornewparties, casetypeid, isrequired, amount,
@@ -89,6 +107,15 @@ public class PartyType {
         FROM partytype
         WHERE domain=? AND location=? AND casetypeid=''
         ORDER BY isrequired DESC, displayorder, casetypeid DESC""";
+  }
+
+  public static String getPartyTypeFromCode() {
+    return """
+        SELECT code, name, isavailablefornewparties, casetypeid, isrequired, amount,
+               numberofpartiestoignore, sendforredaction, dateofdeath, displayorder,
+               efspcode, location
+        FROM partytype
+        WHERE domain=? AND location=? AND code=?""";
   }
 
   @Override

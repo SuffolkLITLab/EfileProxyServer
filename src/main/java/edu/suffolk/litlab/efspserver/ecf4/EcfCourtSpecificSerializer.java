@@ -116,7 +116,7 @@ public class EcfCourtSpecificSerializer {
       InfoCollector collector)
       throws FilingError {
     CaseCategory caseCategory =
-        vetCaseCat(cd.getCaseCategoryWithKey(this.court.code, caseCategoryCode), collector);
+        vetCaseCat(cd.getCaseCategoryWithCode(this.court.code, caseCategoryCode), collector);
     List<CaseType> caseTypes = cd.getCaseTypesFor(court.code, caseCategory.code, Optional.empty());
     Optional<CaseType> maybeType = cd.getCaseTypeWith(court.code, caseTypeCode);
     CaseType type = vetCaseType(maybeType, caseTypes, caseCategory, collector, false);
@@ -131,7 +131,7 @@ public class EcfCourtSpecificSerializer {
   public ComboCaseCodes serializeCaseCodes(
       FilingInformation info, InfoCollector collector, boolean isInitialFiling) throws FilingError {
     Optional<CaseCategory> maybeCaseCat =
-        cd.getCaseCategoryWithKey(this.court.code, info.getCaseCategoryCode());
+        cd.getCaseCategoryWithCode(this.court.code, info.getCaseCategoryCode());
     CaseCategory caseCategory = vetCaseCat(maybeCaseCat, collector);
 
     List<CaseType> caseTypes = cd.getCaseTypesFor(court.code, caseCategory.code, Optional.empty());

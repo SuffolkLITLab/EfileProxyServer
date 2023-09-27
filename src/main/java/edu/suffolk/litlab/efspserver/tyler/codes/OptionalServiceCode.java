@@ -74,20 +74,64 @@ public class OptionalServiceCode {
 
   public static PreparedStatement prepQuery(
       Connection conn, String domain, String courtId, String filingCodeId) throws SQLException {
-    PreparedStatement st = conn.prepareStatement(query());
+    final String query =
+        """
+        SELECT os.code, os.name, os.displayorder, os.fee, os_fl.filingcodeid, os.multiplier, os.altfeedesc, os.hasfeeprompt,
+          os.feeprompttext
+        FROM optionalservices as os JOIN optionalservices_filinglist as os_fl ON os.domain=os_fl.domain AND os.location=os_fl.location AND os.code=os_fl.code
+        WHERE os.domain=? AND os.location=? AND os_fl.filingcodeid=?
+        """;
+    PreparedStatement st = conn.prepareStatement(query);
     st.setString(1, domain);
     st.setString(2, courtId);
     st.setString(3, filingCodeId);
     return st;
   }
 
-  public static String query() {
-    return """
+  public static PreparedStatement prepSearch(Connection conn, String domain, String searchTerm)
+      throws SQLException {
+    final String search =
+        """
+        SELECT DISTINCT os.name
+        FROM optionalservices as os
+        WHERE os.domain=? AND os.name ILIKE ?
+        ORDER BY os.name
+        """;
+    PreparedStatement st = conn.prepareStatement(search);
+    st.setString(1, domain);
+    st.setString(2, searchTerm);
+    return st;
+  }
+
+  public static PreparedStatement prepRetrieve(Connection conn, String domain, String optServName)
+      throws SQLException {
+    final String retrieve =
+        """
+        SELECT DISTINCT os.code, os.location
+        FROM optionalservices as os
+        WHERE os.domain=? AND os.name=?
+        ORDER BY os.location
+        """;
+    PreparedStatement st = conn.prepareStatement(retrieve);
+    st.setString(1, domain);
+    st.setString(2, optServName);
+    return st;
+  }
+
+  public static PreparedStatement prepQueryWithCode(
+      Connection conn, String domain, String courtId, String optServCode) throws SQLException {
+    final String query =
+        """
         SELECT os.code, os.name, os.displayorder, os.fee, os_fl.filingcodeid, os.multiplier, os.altfeedesc, os.hasfeeprompt,
           os.feeprompttext
         FROM optionalservices as os JOIN optionalservices_filinglist as os_fl ON os.domain=os_fl.domain AND os.location=os_fl.location AND os.code=os_fl.code
-        WHERE os.domain=? AND os.location=? AND os_fl.filingcodeid=?
+        WHERE os.domain=? AND os.location=? AND os.code=?
         """;
+    PreparedStatement st = conn.prepareStatement(query);
+    st.setString(1, domain);
+    st.setString(2, courtId);
+    st.setString(3, optServCode);
+    return st;
   }
 
   public static void createFromOptionalServiceTable(Connection conn) throws SQLException {
