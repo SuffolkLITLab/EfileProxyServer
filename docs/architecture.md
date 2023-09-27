@@ -67,6 +67,8 @@ They are more rigorously defined than the Java classes, and it's easier to look 
 
 Below is the rough outline of what calls where when in our architecture. Not all network calls are present, but this is the general gist.
 
+![A sequence diagram of the network calls](mermaid-diagram-2023-09-27-123554.svg)
+
 ```mermaid
 sequenceDiagram
     participant User Email
