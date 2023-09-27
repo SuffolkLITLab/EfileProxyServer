@@ -50,6 +50,7 @@ public class EcfCodesService extends CodesService {
           "getCaseSubtypes",
           "getCrossReferences",
           "getOptionalServices",
+          "getOptionalService",
           "getFilingComponents",
           "getDocumentTypes",
           "getMotionTypes");
@@ -131,22 +132,24 @@ public class EcfCodesService extends CodesService {
             .entity("\"Case type " + caseTypeId + " does not exist is court " + courtId + "\"")
             .build();
       }
-    }
 
-    Class<?> clazz = this.getClass();
-    Method[] methods = clazz.getMethods();
-    List<Method> subCaseMethods = new ArrayList<>();
-    for (Method method : methods) {
-      if (underCaseTypeMethodNames.contains(method.getName())) {
-        subCaseMethods.add(method);
+      Class<?> clazz = this.getClass();
+      Method[] methods = clazz.getMethods();
+      List<Method> subCaseMethods = new ArrayList<>();
+      for (Method method : methods) {
+        if (underCaseTypeMethodNames.contains(method.getName())) {
+          subCaseMethods.add(method);
+        }
       }
+      var retMap =
+          new HashMap<String, Object>(
+              ef.endPointsToMap(
+                  replacePathParam(
+                      ef.makeRestEndpoints(subCaseMethods, clazz),
+                      Map.of("court_id", courtId, "case_type_id", caseTypeId))));
+      retMap.putAll(maybeType.get().toMap());
+      return cors(Response.ok(retMap));
     }
-    var retMap =
-        ef.endPointsToMap(
-            replacePathParam(
-                ef.makeRestEndpoints(subCaseMethods, clazz),
-                Map.of("court_id", courtId, "case_type_id", caseTypeId)));
-    return cors(Response.ok(retMap));
   }
 
   @GET
@@ -187,6 +190,92 @@ public class EcfCodesService extends CodesService {
   }
 
   @GET
+  @Path("/categories")
+  public Response searchCategories(@QueryParam("search") String searchTerm) throws SQLException {
+    try (CodeDatabase cd = cdSupplier.get()) {
+      return cors(Response.ok(cd.searchCaseCategory(searchTerm)));
+    }
+  }
+
+  @GET
+  @Path("/categories/{retrieve_name}")
+  public Response retrieveCategories(@PathParam("retrieve_name") String retrieveName)
+      throws SQLException {
+    try (CodeDatabase cd = cdSupplier.get()) {
+      return cors(Response.ok(cd.retrieveCaseCategoryByName(retrieveName)));
+    }
+  }
+
+  @GET
+  @Path("/case_types")
+  public Response searchCaseTypes(@QueryParam("search") String searchTerm) throws SQLException {
+    try (CodeDatabase cd = cdSupplier.get()) {
+      return cors(Response.ok(cd.searchCaseType(searchTerm)));
+    }
+  }
+
+  @GET
+  @Path("/case_types/{retrieve_name}")
+  public Response retrieveCaseTypes(@PathParam("retrieve_name") String retrieveName)
+      throws SQLException {
+    try (CodeDatabase cd = cdSupplier.get()) {
+      return cors(Response.ok(cd.retrieveCaseTypeByName(retrieveName)));
+    }
+  }
+
+  @GET
+  @Path("/filing_types")
+  public Response searchFilingTypes(@QueryParam("search") String searchTerm) throws SQLException {
+    try (CodeDatabase cd = cdSupplier.get()) {
+      return cors(Response.ok(cd.searchFilingType(searchTerm)));
+    }
+  }
+
+  @GET
+  @Path("/filing_types/{retrieve_name}")
+  public Response retrieveFilingTypes(@PathParam("retrieve_name") String retrieveName)
+      throws SQLException {
+    try (CodeDatabase cd = cdSupplier.get()) {
+      return cors(Response.ok(cd.retrieveFilingTypeByName(retrieveName)));
+    }
+  }
+
+  @GET
+  @Path("/party_types")
+  public Response searchPartyTypes(@QueryParam("search") String searchTerm) throws SQLException {
+    try (CodeDatabase cd = cdSupplier.get()) {
+      return cors(Response.ok(cd.searchPartyType(searchTerm)));
+    }
+  }
+
+  @GET
+  @Path("/party_types/{retrieve_name}")
+  public Response retrievePartyTypes(@PathParam("retrieve_name") String retrieveName)
+      throws SQLException {
+    try (CodeDatabase cd = cdSupplier.get()) {
+      return cors(Response.ok(cd.retrievePartyType(retrieveName)));
+    }
+  }
+
+  @GET
+  @Path("/optional_services")
+  public Response searchOptionalServices(@QueryParam("search") String searchTerm)
+      throws SQLException {
+    try (CodeDatabase cd = cdSupplier.get()) {
+      return cors(Response.ok(cd.searchOptionalServices(searchTerm)));
+    }
+  }
+
+  @GET
+  @Path("/optional_services/{retrieve_name}")
+  public Response retrieveOptionalServices(@PathParam("retrieve_name") String retrieveName)
+      throws SQLException {
+    try (CodeDatabase cd = cdSupplier.get()) {
+      return cors(Response.ok(cd.retrieveOptionalServices(retrieveName)));
+    }
+  }
+
+  @GET
   @Path("/courts/{court_id}/categories")
   public Response getCategories(
       @PathParam("court_id") String courtId,
@@ -217,6 +306,20 @@ public class EcfCodesService extends CodesService {
       log.info("Timing pass along: " + isInitial);
       List<CaseCategory> categories = cd.getFilableCaseCategories(courtId, isInitial);
       return cors(Response.ok(categories));
+    }
+  }
+
+  @GET
+  @Path("/courts/{court_id}/categories/{cat_code}")
+  public Response getCategoryByCode(
+      @PathParam("court_id") String courtId, @PathParam("cat_code") String catCode)
+      throws SQLException {
+    try (CodeDatabase cd = cdSupplier.get()) {
+      var errResp = okayCourt(cd, courtId);
+      if (errResp.isPresent()) {
+        return errResp.get();
+      }
+      return cors(Response.ok(cd.getCaseCategoryWithCode(courtId, catCode)));
     }
   }
 
@@ -438,6 +541,14 @@ public class EcfCodesService extends CodesService {
 
   @GET
   @Path("/courts/{court_id}/casetypes/{case_type_id}/cross_references")
+  public Response getCrossReferencesOld(
+      @PathParam("court_id") String courtId, @PathParam("case_type_id") String caseTypeId)
+      throws SQLException {
+    return getCrossReferences(courtId, caseTypeId);
+  }
+
+  @GET
+  @Path("/courts/{court_id}/case_types/{case_type_id}/cross_references")
   public Response getCrossReferences(
       @PathParam("court_id") String courtId, @PathParam("case_type_id") String caseTypeId)
       throws SQLException {
@@ -582,12 +693,25 @@ public class EcfCodesService extends CodesService {
       @PathParam("court_id") String courtId, @PathParam("field_name") String fieldName)
       throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
-      if (!cd.getAllLocations().contains(courtId)) {
-        return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
+      var maybeErr = okayCourt(cd, courtId);
+      if (maybeErr.isPresent()) {
+        return maybeErr.get();
       }
-      DataFieldRow datafieldrow = cd.getDataField(courtId, fieldName);
+      return cors(Response.ok(cd.getDataField(courtId, fieldName)));
+    }
+  }
 
-      return cors(Response.ok(datafieldrow));
+  @GET
+  @Path("/courts/{court_id}/optional_services/{opt_serv_code}")
+  public Response getOptionalService(
+      @PathParam("court_id") String courtId, @PathParam("opt_serv_code") String optServCode)
+      throws SQLException {
+    try (CodeDatabase cd = cdSupplier.get()) {
+      var maybeErr = okayCourt(cd, courtId);
+      if (maybeErr.isPresent()) {
+        return maybeErr.get();
+      }
+      return cors(Response.ok(cd.getOptionalServicesByCode(courtId, optServCode)));
     }
   }
 

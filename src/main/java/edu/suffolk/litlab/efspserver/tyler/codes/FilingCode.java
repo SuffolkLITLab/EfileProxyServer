@@ -79,6 +79,32 @@ public class FilingCode {
     );
   }
   
+  public static PreparedStatement prepSearchQuery(Connection conn, String domain, String searchTerm) throws SQLException {
+    final String search = """
+        SELECT DISTINCT name
+        FROM filing
+        WHERE domain=? AND name ILIKE ?
+        ORDER BY name
+        """;
+    PreparedStatement st = conn.prepareStatement(search);
+    st.setString(1, domain);
+    st.setString(2, searchTerm);
+    return st;
+  }
+  
+  public static PreparedStatement prepRetrieveQuery(Connection conn, String domain, String filingName) throws SQLException {
+    String retrieve = """
+        SELECT DISTINCT code, location
+        FROM filing
+        WHERE domain=? AND name=?
+        ORDER BY location
+        """;
+    PreparedStatement st = conn.prepareStatement(retrieve);
+    st.setString(1, domain);
+    st.setString(2, filingName);
+    return st;
+  }
+  
   public static PreparedStatement prepQueryWithCaseInfo(Connection conn, 
       boolean initial, String domain, String courtLocationId, String categoryId, String caseTypeId) throws SQLException {
     PreparedStatement st = conn.prepareStatement(getFilingWithCaseInfo(initial));
@@ -89,20 +115,6 @@ public class FilingCode {
     return st;
   }
 
-  public static PreparedStatement prepQueryNoCaseInfo(Connection conn, 
-      boolean initial, String domain, String courtLocationId) throws SQLException {
-    PreparedStatement st = conn.prepareStatement(getFilingNoCaseInfo(initial));
-    st.setString(1, domain);
-    st.setString(2, courtLocationId);
-    return st;
-  }
-  
-    st.setString(1, domain);
-    st.setString(2, courtId);
-    st.setString(3, typeCode);
-    return st;
-  }
-  
   /** @param initial true if its an initial filing, false if it's a subsequent. */
   private static String getFilingWithCaseInfo(boolean initial) {
     String mainQuery = """
@@ -118,6 +130,15 @@ public class FilingCode {
     }
   }
   
+
+  public static PreparedStatement prepQueryNoCaseInfo(Connection conn, 
+      boolean initial, String domain, String courtLocationId) throws SQLException {
+    PreparedStatement st = conn.prepareStatement(getFilingNoCaseInfo(initial));
+    st.setString(1, domain);
+    st.setString(2, courtLocationId);
+    return st;
+  }
+
   private static String getFilingNoCaseInfo(boolean initial) {
     String mainQuery = """
           SELECT code, name, fee, casecategory, casetypeid, filingtype, iscourtuseonly, 
@@ -131,6 +152,15 @@ public class FilingCode {
     } else {
       return mainQuery + "AND (filingtype='Subsequent' OR filingtype='Both')";
     }
+  }
+  
+  // TODO(brycew): test this one in particular, it was wrong
+  public static PreparedStatement prepQueryWithCode(Connection conn, String domain, String courtId, String typeCode) throws SQLException {
+    PreparedStatement st = conn.prepareStatement(getFilingWithCode());
+    st.setString(1, domain);
+    st.setString(2, courtId);
+    st.setString(3, typeCode);
+    return st;
   }
   
   private static String getFilingWithCode() {

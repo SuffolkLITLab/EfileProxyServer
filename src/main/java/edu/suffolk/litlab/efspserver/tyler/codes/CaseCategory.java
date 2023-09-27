@@ -91,6 +91,24 @@ public class CaseCategory {
     return st;
   }
 
+  public static String searchCaseCategories() {
+    return """
+        SELECT DISTINCT name
+        FROM casecategory
+        WHERE domain=? AND name ILIKE ?
+        ORDER BY name
+        """;
+  }
+
+  public static String retrieveCaseCategoryForName() {
+    return """
+        SELECT DISTINCT code, location
+        FROM casecategory
+        WHERE domain=? AND name=?
+        ORDER BY location
+        """;
+  }
+
   // TODO(#86): stop filtering out criminal categories
   public static String getCaseCategoriesForLoc() {
     return """
