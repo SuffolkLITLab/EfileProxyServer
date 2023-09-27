@@ -68,6 +68,29 @@ docker compose down
 
 ### Docassemble
 
+If you are running the docker container on the same machine as docassemble, you will likely need to add the following changes to your EfileProxyServer repo:
+
+```diff
+diff --git a/docker-compose.yml b/docker-compose.yml
+index 1617ba05..776776b6 100644
+--- a/docker-compose.yml
++++ b/docker-compose.yml
+@@ -6,9 +6,9 @@ services:
+     # Necessary b/c docassemble is external to the docker network
+     ports:
+       - target: 9009
+-        published: 80
++        published: 9000
+       - target: 9000
+-        published: 443
++        published: 9001
+     env_file: .env
+     depends_on:
+       - "db"
+```
+
+This allows both docassemble and the proxy server to run on the same machine (by default both use the default HTTP and HTTPS ports, 80 and 443).
+
 To communicate with the Efile Proxy Server from docassemble using the [EFSPIntegration package](https://github.com/SuffolkLITLab/docassemble-EFSPIntegration), you will need to add some config values in docassemble's config:
 
 ```yml
@@ -81,9 +104,9 @@ efile proxy:
   jeffnet api token: abc123
 ```
 
-## Running unit tests locally
+## Running unit tests without Docker
 
-Start with installing everything.
+Instructions are for Linux. Start with installing everything.
 
 ```bash
 sudo add-apt-repository ppa:openjdk-r/ppa
