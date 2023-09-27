@@ -97,9 +97,6 @@ public class FilingCode {
     return st;
   }
   
-  // TODO(brycew): test this one in particular, it was wrong
-  public static PreparedStatement prepQueryWithKey(Connection conn, String domain, String courtId, String typeCode) throws SQLException {
-    PreparedStatement st = conn.prepareStatement(getFilingWithKey());
     st.setString(1, domain);
     st.setString(2, courtId);
     st.setString(3, typeCode);
@@ -136,7 +133,7 @@ public class FilingCode {
     }
   }
   
-  private static String getFilingWithKey() {
+  private static String getFilingWithCode() {
     return """
         SELECT code, name, fee, casecategory, casetypeid, filingtype, iscourtuseonly,
                civilclaimamount, probateestateamount, amountincontroversy, useduedate,

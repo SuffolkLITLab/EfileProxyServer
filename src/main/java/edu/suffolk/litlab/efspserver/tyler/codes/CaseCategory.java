@@ -137,7 +137,7 @@ public class CaseCategory {
         """;
   }
 
-  public static String getCaseCategoryWithKey() {
+  public static String getCaseCategoryWithCode() {
     return """
         SELECT code, name, ecfcasetype, procedureremedyinitial,
           procedureremedysubsequent, damageamountinitial, damageamountsubsequent

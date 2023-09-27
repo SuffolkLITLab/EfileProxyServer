@@ -277,10 +277,11 @@ public class CodeDatabase extends CodeDatabaseAPI {
         });
   }
 
-  public Optional<CaseCategory> getCaseCategoryWithKey(String courtLocationId, String caseCatCode) {
+  public Optional<CaseCategory> getCaseCategoryWithCode(
+      String courtLocationId, String caseCatCode) {
     return safetyWrapOpt(
         () -> {
-          String query = CaseCategory.getCaseCategoryWithKey();
+          String query = CaseCategory.getCaseCategoryWithCode();
           try (PreparedStatement st = conn.prepareStatement(query)) {
             st.setString(1, tylerDomain);
             st.setString(2, courtLocationId);
@@ -509,7 +510,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     return safetyWrapOpt(
         () -> {
           try (PreparedStatement st =
-              FilingCode.prepQueryWithKey(conn, tylerDomain, courtLocationId, filingCode)) {
+              FilingCode.prepQueryWithCode(conn, tylerDomain, courtLocationId, filingCode)) {
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
               return Optional.of(new FilingCode(rs));
@@ -559,7 +560,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
    *     case type.
    * @return a list of party types
    */
-  public List<PartyType> getPartyTypeFor(String courtLocationId, String typeCode) {
+  public List<PartyType> getPartyTypeFor(String courtLocationId, String caseTypeCode) {
     return safetyWrap(
         () -> {
           String query = PartyType.getPartyTypeFromCaseType();
@@ -567,8 +568,8 @@ public class CodeDatabase extends CodeDatabaseAPI {
           try (PreparedStatement caseSt = conn.prepareStatement(query)) {
             caseSt.setString(1, tylerDomain);
             caseSt.setString(2, courtLocationId);
-            if (typeCode != null) {
-              caseSt.setString(3, typeCode);
+            if (caseTypeCode != null) {
+              caseSt.setString(3, caseTypeCode);
               try (ResultSet rs = caseSt.executeQuery()) {
                 while (rs.next()) {
                   partyTypes.add(new PartyType(rs));
