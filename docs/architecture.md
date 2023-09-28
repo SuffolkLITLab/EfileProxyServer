@@ -1,6 +1,8 @@
 # E-file Proxy Architecture
 
 There's a glossary at the end with common e-filing jargon.
+If I refer to specific `*.java` files, I will use just the file name (i.e. `LoginDatabase.java`) if it's unique in the repo, or sub number of
+subpackages of the file (`db.LoginDatabase.java`) if there are multiple files with the same name.
 
 ## ECF Architecture
 
@@ -62,6 +64,29 @@ You will need to include multiple ObjectFactory classes in the same file often, 
 
 Finally, I recommend learning enough about [the XML Schema](https://www.w3.org/XML/Schema#dev), and directly reading the schema files in `src/main/resources/wsdl/[stage,prod]/*.xsd`.
 They are more rigorously defined than the Java classes, and it's easier to look up what types should be used, instead of the Java code just saying `Object`.
+
+## The Databases
+
+There are two distinct databases that we use; both are in Postgres. They are `tyler_efm_codes`, and `user_transactions`.
+
+`tyler_efm_codes` contains all of the genericode data that Tyler makes available from every court in each jurisidiction.
+It is the more widely used of the databases. There is a Quartz job (setup in `ecf4.TylerModuleSetup.java`) that runs around 2 AM every night, pulling new codes from the courts and updating the databases and their indices. More details about the structures of the codes can be found in [tyler_codes.md](tyler_codes.md).
+
+`user_transactions` is everything else. As of writing, it has 4 tables: `at_rest_keys`, `message_settings`, `schema_version`, and `submitted_filings`.
+* `at_rest_keys` is the authorization database for server API keys. It contains the name and id of the server, whether it has access to tyler and jeffnet functionalities, and when it was created.
+  It also contains a SHA-256 hash of the API key, keeping the real key secure from leaks, and letting us confirm servers' API keys
+* `message_settings` contains default email settings for a particular server. It lets you set the email subject line and template and for the confirmation and accept/reject email.
+  NOTE: this db isn't heavily used, likely because there isn't an easy API to access it, and it isn't as flexible as being able to set unique emails for each interview.
+  You should use `accepted_msg_template` et al. in the `submitted_filings` table instead.
+* `schema_version` is a single row, single column table, than contains the current version of the database.
+  This lets us seemlessly add, alter, and remove rows from any of the tables in `users_transactions` or `tyler_efm_codes` by incrementing the schema version.
+  The code that handles this is in `db.DatabaseVersion.java`.
+* `submitted_filings` is the only table with user provided data.
+  It contains PII about the user, including their user ID for the EFM service, their name, phone, and email (for contacting them about their filing).
+  It also contains information about the filing itself like the case title, envelope id, when it was submitted, the court, from what server, etc.
+  Finally, it has `accepted_msg_template`, `accepted_msg_subject`, and the same for `rejected_msg_*`, and `neutral_msg_*`. 
+  These values are the full email subject lines and templates that we should send out to the user when they get a response from the court clerk, depending on the clerk's categorization of the filing.
+  `neutral` is any status that isn't explicitly "Accepted" or "Rejected".
 
 ## The Network call mapping
 
