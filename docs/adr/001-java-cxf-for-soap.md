@@ -53,7 +53,7 @@ development. On a brief look, it is lightly maintained, and I'm not sure if it h
 of the features necessary.
 
 
-### Java with a SOAP Libray
+### Java with a SOAP Library
 
 * `+` Other EFSPs used Java to implement their software, proving that it can work in production
 * `+` Tyler themselves mentioned that Java's SOAP code generation tools were better than C#, and had fewer bugs in the generated code.

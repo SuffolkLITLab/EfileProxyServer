@@ -31,7 +31,7 @@ Went with 2, using MDC. Was a little bit of learning, but definitely useful and 
     * con: still makes us (Suffolk) the manager of the data, and when users want specific data, they have to go through us.
 2. in a file, only internal to the server
     * pro: the file exists, still pretty simple, when we want it we can save it
-    * con: docker container is even less empheral, and we lose all of those server specific logs when we restart / update
+    * con: docker container is even less ephemeral, and we lose all of those server specific logs when we restart / update
 3. in a separate external file (likely in a docker volume)
     * pro: file is always there, even with restarts
     * con: more volumes, we already have quite a few
