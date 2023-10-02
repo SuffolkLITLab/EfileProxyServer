@@ -622,8 +622,13 @@ public class CodeUpdater {
   }
 
   /**
-   * Run with: `mvn exec:java@CodeUpdater -Dexec.args="refresh"` TODO(#111): use with this System
-   * property and class to try to fix parallel unmarshalling
+   * Run with:
+   *
+   * <pre>
+   * java -cp $(cat cp.txt):target/efspserver.jar edu.suffolk.litlab.efspserver.ecfcodes.CodeUpdater refresh
+   * </pre>
+   *
+   * <p>TODO(#111): use with this System property and class to try to fix parallel unmarshalling
    * -Djava.util.concurrent.ForkJoinPool.common.threadFactory=edu.suffolk.litlab.efspserver.JAXBForkJoinWorkerThreadFactory
    * \ https://stackoverflow.com/a/57551188/11416267
    */
