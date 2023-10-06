@@ -129,7 +129,7 @@ public class EcfCodesService extends CodesService {
       Optional<CaseType> maybeType = cd.getCaseTypeWith(courtId, caseTypeId);
       if (maybeType.isEmpty()) {
         return Response.status(404)
-            .entity("\"Case type " + caseTypeId + " does not exist is court " + courtId + "\"")
+            .entity("\"Case type " + caseTypeId + " does not exist in court " + courtId + "\"")
             .build();
       }
 

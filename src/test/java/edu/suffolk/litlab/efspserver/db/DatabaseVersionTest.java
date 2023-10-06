@@ -43,15 +43,18 @@ import edu.suffolk.litlab.efspserver.tyler.codes.OptionalServiceCode;
 import edu.suffolk.litlab.efspserver.tyler.codes.PartyType;
 
 public class DatabaseVersionTest {
+
+  public static final String POSTGRES_DOCKER_NAME = "postgres:14";
+
   private final static Logger log = 
       LoggerFactory.getLogger(DatabaseVersionTest.class); 
 
   @Container
   public PostgreSQLContainer<?> userDb =
-      new PostgreSQLContainer<>(DockerImageName.parse("postgres:14"));
+      new PostgreSQLContainer<>(DockerImageName.parse(POSTGRES_DOCKER_NAME));
 
   @Container
-  public PostgreSQLContainer<?> codeDb = new PostgreSQLContainer<>(DockerImageName.parse("postgres:14"));
+  public PostgreSQLContainer<?> codeDb = new PostgreSQLContainer<>(POSTGRES_DOCKER_NAME);
 
   private static final String v0AtRestInsert = """
            INSERT INTO at_rest_keys (

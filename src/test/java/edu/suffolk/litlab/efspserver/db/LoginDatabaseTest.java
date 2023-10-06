@@ -29,7 +29,7 @@ public class LoginDatabaseTest {
   
   @Container
   public PostgreSQLContainer<?> postgres =
-      new PostgreSQLContainer<>(DockerImageName.parse("postgres:13.2"));
+      new PostgreSQLContainer<>(DockerImageName.parse(DatabaseVersionTest.POSTGRES_DOCKER_NAME));
   
   @BeforeEach
   public void setUp() throws SQLException, NoSuchAlgorithmException {

@@ -21,6 +21,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
 import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
+import edu.suffolk.litlab.efspserver.db.DatabaseVersionTest;
 import edu.suffolk.litlab.efspserver.ecfcodes.CodeUpdater;
 
 public class CodeDatabaseTest {
@@ -31,7 +32,7 @@ public class CodeDatabaseTest {
   
   @Container
   public PostgreSQLContainer<?> postgres =
-    new PostgreSQLContainer<>(DockerImageName.parse("postgres:13.2"));
+    new PostgreSQLContainer<>(DockerImageName.parse(DatabaseVersionTest.POSTGRES_DOCKER_NAME));
   
   @BeforeEach
   public void setUp() throws SQLException {
@@ -83,20 +84,20 @@ public class CodeDatabaseTest {
     loadFromXmls();
 
     List<CaseCategory> cats = cd.getCaseCategoriesFor("adams");
-    assertFalse(cats.isEmpty());
+    assertTrue(cats.size() > 0);
     List<CaseType> types = cd.getCaseTypesFor("adams", "183527", Optional.empty()); 
-    assertFalse(types.isEmpty());
+    assertTrue(types.size() > 0, "No case types available for category 183527");
     cd.getCaseSubtypesFor("adams", types.get(0).code);
     List<OptionalServiceCode> optServs = cd.getOptionalServices("adams", "183612");
-    assertFalse(optServs.isEmpty());
+    assertTrue(optServs.size() > 0);
     List<ServiceCodeType> services = cd.getServiceTypes("adams");
-    assertFalse(services.isEmpty());
+    assertTrue(services.size() > 0);
     
     Optional<CourtLocationInfo> info = cd.getFullLocationInfo("adams");
     List<String> allCourts = cd.getAllLocations();
-    assertFalse(allCourts.isEmpty());
+    assertTrue(allCourts.size() > 0);
     List<String> fileable = cd.getFileableLocations();
-    assertFalse(fileable.isEmpty());
+    assertTrue(fileable.size() > 0);
     assertTrue(info.isPresent());
   }
 

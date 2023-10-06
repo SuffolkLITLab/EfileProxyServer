@@ -22,7 +22,7 @@ public class UserDatabaseTest {
   
   @Container
   public PostgreSQLContainer<?> postgres =
-        new PostgreSQLContainer<>(DockerImageName.parse("postgres:13.2"));
+        new PostgreSQLContainer<>(DockerImageName.parse(DatabaseVersionTest.POSTGRES_DOCKER_NAME));
   
   /** Start's the Container and creates the UserDatabase. 
    * More info on the TestContainer Library at: https://www.testcontainers.org/,

@@ -33,6 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
+import edu.suffolk.litlab.efspserver.db.DatabaseVersionTest;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.EcfCodesService;
 
@@ -41,7 +42,7 @@ public class CodesServiceTest {
   
   @Container
   public PostgreSQLContainer<?> postgres =
-    new PostgreSQLContainer<>(DockerImageName.parse("postgres:13.2"));
+    new PostgreSQLContainer<>(DockerImageName.parse(DatabaseVersionTest.POSTGRES_DOCKER_NAME));
 
   private static final String ENDPOINT_ADDRESS = "http://localhost:9090";
   private Server server;
@@ -136,7 +137,7 @@ public class CodesServiceTest {
   public void testGetCase() throws JsonMappingException, JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node = mapper.readTree(getServerResponseAt("/courts/adams/case_types/25361"));
-    assertTrue(node.has("getCaseSubtypes"), "didn't have case sub types: " + node);
+    assertTrue(node.has("getCaseSubtypes"), "didn't have case sub types. Response was: " + node);
     assertEquals(
         ServiceHelpers.EXTERNAL_URL + "/jurisdictions/illinois/codes/courts/adams/case_types/25361/case_subtypes",
         node.get("getCaseSubtypes").get("url").asText());
