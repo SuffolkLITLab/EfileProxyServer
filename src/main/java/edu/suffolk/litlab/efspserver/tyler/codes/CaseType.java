@@ -126,7 +126,7 @@ public class CaseType {
   private static String getCaseTypesForCategory() {
     return """
         SELECT code, name, casecategory, initial,
-        fee, willfileddate, efspcode, location
+        fee, willfileddate, casestreetaddress, efspcode, location
         FROM casetype WHERE domain=? AND location=? AND casecategory=?""";
   }
 
@@ -140,7 +140,7 @@ public class CaseType {
     String withCode =
         """
         SELECT code, name, casecategory, initial,
-          fee, willfileddate, efspcode, location
+          fee, willfileddate, casestreetaddress, efspcode, location
         FROM casetype WHERE domain=? AND location=? AND code=?
         """;
     PreparedStatement st = conn.prepareStatement(withCode);
