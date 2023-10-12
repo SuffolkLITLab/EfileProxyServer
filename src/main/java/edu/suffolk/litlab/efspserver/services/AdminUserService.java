@@ -81,7 +81,6 @@ import tyler.efm.services.schema.userlistresponse.UserListResponseType;
  */
 @Produces(MediaType.APPLICATION_JSON)
 public class AdminUserService {
-
   private static final Logger log = LoggerFactory.getLogger(AdminUserService.class);
 
   private final EfmUserService userFactory;
