@@ -140,7 +140,11 @@ public class EfspServer {
         Map.of(
             "xml", MediaType.APPLICATION_XML,
             "json", MediaType.APPLICATION_JSON));
-    sf.setProviders(List.of(new JAXBElementProvider<Object>(), new JacksonJsonProvider()));
+    sf.setProviders(
+        List.of(
+            new JAXBElementProvider<Object>(),
+            new JacksonJsonProvider(),
+            new SoapExceptionMapper()));
 
     sf.setAddress(ServiceHelpers.BASE_LOCAL_URL);
     server = sf.create();
