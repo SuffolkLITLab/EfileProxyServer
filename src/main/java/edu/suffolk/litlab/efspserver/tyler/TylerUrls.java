@@ -64,9 +64,6 @@ public class TylerUrls {
   }
 
   public static String getCodeEndpointRootUrl(String jurisdiction, String env) {
-    if (jurisdiction.equalsIgnoreCase("illinois") && env.equalsIgnoreCase("prod")) {
-      return "https://" + jurisdiction + ".tylerhost.net/";
-    }
     if (jurisdiction.equalsIgnoreCase("california")) {
       return "https://california-efm-" + env + ".tylertech.cloud/";
     }

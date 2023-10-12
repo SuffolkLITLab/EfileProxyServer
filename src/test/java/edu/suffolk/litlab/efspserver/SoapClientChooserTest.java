@@ -28,6 +28,6 @@ public class SoapClientChooserTest {
     testJurisdictionEnvUrl("https://massachusetts-stage.tylertech.cloud/", TylerUrls.getCodeEndpointRootUrl("massachusetts", "stage"));
     testJurisdictionEnvUrl("https://massachusetts.tylertech.cloud/", TylerUrls.getCodeEndpointRootUrl("massachusetts", "prod"));
     testJurisdictionEnvUrl("https://illinois-stage.tylertech.cloud/", TylerUrls.getCodeEndpointRootUrl("illinois", "stage"));
-    testJurisdictionEnvUrl("https://illinois.tylerhost.net/", TylerUrls.getCodeEndpointRootUrl("illinois", "prod"));
+    testJurisdictionEnvUrl("https://illinois.tylertech.cloud/", TylerUrls.getCodeEndpointRootUrl("illinois", "prod"));
   }
 }
