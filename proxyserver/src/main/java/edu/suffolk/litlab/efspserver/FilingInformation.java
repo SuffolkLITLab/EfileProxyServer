@@ -178,6 +178,10 @@ public class FilingInformation {
     return caseDocketNumber;
   }
 
+  public boolean isInitialFiling() {
+    return prevCaseId.isEmpty() && caseDocketNumber.isEmpty();
+  }
+
   public Optional<LocalDate> getReturnDate() {
     return returnDate;
   }

@@ -135,78 +135,92 @@ public class CourtSchedulingService {
   }
 
   /*
-  // @POST
-  // @Path("/return_date_test123")
-  public Response getReturnDate(@Context HttpHeaders httpHeaders) throws SQLException, JAXBException {
-    String courtId = "cook:cvd1";
-    Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort(httpHeaders);
-    if (maybeServ.isEmpty()) {
-      return Response.status(401).build();
-    }
-    Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId);
-    if (locationInfo.isEmpty()) {
-      return Response.status(404).entity("No court: " + courtId).build();
-    }
-    if (!locationInfo.get().allowreturndate) {
-      return Response.status(400).entity("Court " + courtId + " doesn't allow handling return dates").build();
-    }
-
-    ReturnDateRequestType r = oasisWrapObjFac.createReturnDateRequestType();
-    ReturnDateMessageType m = new ReturnDateMessageType();
-    setupReq(m, courtId);
-    CaseType ct = niemObjFac.createCaseType();
-
-    var jAug = jxObjFac.createCaseAugmentationType();
-    var event = jxObjFac.createCourtEventType();
-    var e = oasisObjFac.createCourtEventAugmentationType();
-    DateType currentDate = Ecfv5XmlHelper.convertDate(LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault()));
-    e.setCourtEventEnteredOnDocketDate(currentDate);
-    e.setCourtEventTypeCode(Ecfv5XmlHelper.convertText("141709"));
-    event.getCourtEventAugmentationPoint().add(oasisObjFac.createCourtEventAugmentation(e));
-    jAug.getCaseCourtEvent().add(event);
-    ct.getCaseAugmentationPoint().add(jxObjFac.createCaseAugmentation(jAug));
-
-    var ecfAug = oasisObjFac.createCaseAugmentationType();
-    ecfAug.getRest().add(oasisObjFac.createCaseCategoryCode(Ecfv5XmlHelper.convertText("7")));
-    ecfAug.getRest().add(oasisObjFac.createCaseTypeCode(Ecfv5XmlHelper.convertNormalized("63655")));
-    EntityType ent = niemObjFac.createEntityType();
-    PersonAugmentationType pat = oasisObjFac.createPersonAugmentationType();
-    pat.getCaseParticipantRoleCode().add(Ecfv5XmlHelper.convertText("9837"));
-    pat.setParticipantID(Ecfv5XmlHelper.convertId("SRL"));
-    PersonType perType = niemObjFac.createPersonType();
-    perType.getPersonAugmentationPoint().add(oasisObjFac.createPersonAugmentation(pat));
-    ent.setEntityRepresentation(niemObjFac.createEntityPerson(perType));
-    ent.setId("Party1");
-    ecfAug.getRest().add(oasisObjFac.createCaseParty(ent));
-    ct.getCaseAugmentationPoint().add(oasisObjFac.createCaseAugmentation(ecfAug));
-
-    var tylerAug = tylerObjFac.createCaseAugmentationType();
-    IdentificationType idType = niemObjFac.createIdentificationType();
-    idType.setIdentificationID(Ecfv5XmlHelper.convertString("99500"));
-    idType.setIdentificationSourceText(Ecfv5XmlHelper.convertText("87374"));
-    tylerAug.getCrossReferenceNumber().add(idType);
-    ct.getCaseAugmentationPoint().add(tylerObjFac.createCaseAugmentation(tylerAug));
-
-    var oasisAug = oasisCivilObjFac.createCaseAugmentationType();
-    AmountType at = niemObjFac.createAmountType();
-    Decimal d = proxyObjFac.createDecimal();
-    d.setValue(new BigDecimal(0.00));
-    at.setAmount(d);
-    oasisAug.setAmountInControversy(at);
-    oasisAug.setJuryDemandIndicator(Ecfv5XmlHelper.convertBool(false));
-    ct.getCaseAugmentationPoint().add(oasisCivilObjFac.createCaseAugmentation(oasisAug));
-    m.setCase(ct);
-    LocalDate returnDate = LocalDate.of(2021, 11, 17);
-    m.setReturnDate(Ecfv5XmlHelper.convertDate(returnDate));
-    m.setOutOfStateIndicator(Ecfv5XmlHelper.convertBool(false));
-    r.setReturnDateMessage(m);
-
-    log.info("Full msg: " + Ecfv5XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
-    ReturnDateResponseMessageType resp = maybeServ.get().getReturnDate(r).getReturnDateResponseMessage();
-    log.info("Full resp: " + Ecfv5XmlHelper.objectToXmlStrOrError(resp, ReturnDateResponseMessageType.class));
-    return Response.ok(resp).build();
-  }
-  */
+   * // @POST
+   * // @Path("/return_date_test123")
+   * public Response getReturnDate(@Context HttpHeaders httpHeaders) throws
+   * SQLException, JAXBException {
+   * String courtId = "cook:cvd1";
+   * Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort(httpHeaders);
+   * if (maybeServ.isEmpty()) {
+   * return Response.status(401).build();
+   * }
+   * Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId);
+   * if (locationInfo.isEmpty()) {
+   * return Response.status(404).entity("No court: " + courtId).build();
+   * }
+   * if (!locationInfo.get().allowreturndate) {
+   * return Response.status(400).entity("Court " + courtId +
+   * " doesn't allow handling return dates").build();
+   * }
+   *
+   * ReturnDateRequestType r = oasisWrapObjFac.createReturnDateRequestType();
+   * ReturnDateMessageType m = new ReturnDateMessageType();
+   * setupReq(m, courtId);
+   * CaseType ct = niemObjFac.createCaseType();
+   *
+   * var jAug = jxObjFac.createCaseAugmentationType();
+   * var event = jxObjFac.createCourtEventType();
+   * var e = oasisObjFac.createCourtEventAugmentationType();
+   * DateType currentDate =
+   * Ecfv5XmlHelper.convertDate(LocalDate.ofInstant(Instant.now(),
+   * ZoneId.systemDefault()));
+   * e.setCourtEventEnteredOnDocketDate(currentDate);
+   * e.setCourtEventTypeCode(Ecfv5XmlHelper.convertText("141709"));
+   * event.getCourtEventAugmentationPoint().add(oasisObjFac.
+   * createCourtEventAugmentation(e));
+   * jAug.getCaseCourtEvent().add(event);
+   * ct.getCaseAugmentationPoint().add(jxObjFac.createCaseAugmentation(jAug));
+   *
+   * var ecfAug = oasisObjFac.createCaseAugmentationType();
+   * ecfAug.getRest().add(oasisObjFac.createCaseCategoryCode(Ecfv5XmlHelper.
+   * convertText("7")));
+   * ecfAug.getRest().add(oasisObjFac.createCaseTypeCode(Ecfv5XmlHelper.
+   * convertNormalized("63655")));
+   * EntityType ent = niemObjFac.createEntityType();
+   * PersonAugmentationType pat = oasisObjFac.createPersonAugmentationType();
+   * pat.getCaseParticipantRoleCode().add(Ecfv5XmlHelper.convertText("9837"));
+   * pat.setParticipantID(Ecfv5XmlHelper.convertId("SRL"));
+   * PersonType perType = niemObjFac.createPersonType();
+   * perType.getPersonAugmentationPoint().add(oasisObjFac.createPersonAugmentation
+   * (pat));
+   * ent.setEntityRepresentation(niemObjFac.createEntityPerson(perType));
+   * ent.setId("Party1");
+   * ecfAug.getRest().add(oasisObjFac.createCaseParty(ent));
+   * ct.getCaseAugmentationPoint().add(oasisObjFac.createCaseAugmentation(ecfAug))
+   * ;
+   *
+   * var tylerAug = tylerObjFac.createCaseAugmentationType();
+   * IdentificationType idType = niemObjFac.createIdentificationType();
+   * idType.setIdentificationID(Ecfv5XmlHelper.convertString("99500"));
+   * idType.setIdentificationSourceText(Ecfv5XmlHelper.convertText("87374"));
+   * tylerAug.getCrossReferenceNumber().add(idType);
+   * ct.getCaseAugmentationPoint().add(tylerObjFac.createCaseAugmentation(tylerAug
+   * ));
+   *
+   * var oasisAug = oasisCivilObjFac.createCaseAugmentationType();
+   * AmountType at = niemObjFac.createAmountType();
+   * Decimal d = proxyObjFac.createDecimal();
+   * d.setValue(new BigDecimal(0.00));
+   * at.setAmount(d);
+   * oasisAug.setAmountInControversy(at);
+   * oasisAug.setJuryDemandIndicator(Ecfv5XmlHelper.convertBool(false));
+   * ct.getCaseAugmentationPoint().add(oasisCivilObjFac.createCaseAugmentation(
+   * oasisAug));
+   * m.setCase(ct);
+   * LocalDate returnDate = LocalDate.of(2021, 11, 17);
+   * m.setReturnDate(Ecfv5XmlHelper.convertDate(returnDate));
+   * m.setOutOfStateIndicator(Ecfv5XmlHelper.convertBool(false));
+   * r.setReturnDateMessage(m);
+   *
+   * log.info("Full msg: " + Ecfv5XmlHelper.objectToXmlStrOrError(r,
+   * ReturnDateRequestType.class));
+   * ReturnDateResponseMessageType resp =
+   * maybeServ.get().getReturnDate(r).getReturnDateResponseMessage();
+   * log.info("Full resp: " + Ecfv5XmlHelper.objectToXmlStrOrError(resp,
+   * ReturnDateResponseMessageType.class));
+   * return Response.ok(resp).build();
+   * }
+   */
 
   @POST
   @Path("/courts/{court_id}/return_date")
@@ -305,7 +319,13 @@ public class CourtSchedulingService {
                   + filingCodeStrs);
           allCodes =
               serializer.serializeCaseCodesIndexed(
-                  catCode, typeCode, filingCodeStrs, newPartyMap, existingPartyMap, collector);
+                  catCode,
+                  typeCode,
+                  filingCodeStrs,
+                  newPartyMap,
+                  existingPartyMap,
+                  collector,
+                  info.isInitialFiling());
         } else {
           allCodes = serializer.serializeCaseCodes(info, collector, isInitialFiling);
         }
@@ -362,7 +382,8 @@ public class CourtSchedulingService {
                         resp, ReturnDateResponseMessageType.class));
           }
         }
-        // TODO(brycew:) have gotten "451: AmountInControversy is not supported" for Handling error,
+        // TODO(brycew:) have gotten "451: AmountInControversy is not supported" for
+        // Handling error,
         // should
         // able to automatically not do the amount in those cases.
         MessageErrorType err = resp.getMessageStatus().getMessageHandlingError();

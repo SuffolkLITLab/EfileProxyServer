@@ -91,7 +91,7 @@ public class CodeDatabaseTest {
     assertTrue(cats.size() > 0);
     List<CaseType> types = cd.getCaseTypesFor("adams", "183527", Optional.empty());
     assertTrue(types.size() > 0, "No case types available for category 183527");
-    cd.getCaseSubtypesFor("adams", types.get(0).code);
+    cd.getCaseSubtypesFor("adams", types.get(0).getCode());
     List<OptionalServiceCode> optServs = cd.getOptionalServices("adams", "183612");
     assertTrue(optServs.size() > 0);
     List<ServiceCodeType> services = cd.getServiceTypes("adams");
