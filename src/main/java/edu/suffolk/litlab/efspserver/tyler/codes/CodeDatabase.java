@@ -12,9 +12,11 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import javax.sql.DataSource;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -462,30 +464,36 @@ public class CodeDatabase extends CodeDatabaseAPI {
       return DataFieldRow.MissingDataField(dataName);
     }
 
-    String query = DataFieldRow.getAllFromDataFieldConfigForLoc();
-    try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, tylerDomain);
-      st.setString(2, courtLocationId);
-      st.setString(3, dataName);
-      ResultSet rs = st.executeQuery();
-      if (!rs.next()) {
-        return DataFieldRow.MissingDataField(dataName);
+    try {
+      List<String> parentList = getParentList(courtLocationId);
+      String query = DataFieldRow.getAllFromDataFieldConfigForLoc();
+      for (String currentCourt : parentList) {
+        try (PreparedStatement st = conn.prepareStatement(query)) {
+          st.setString(1, tylerDomain);
+          st.setString(2, currentCourt);
+          st.setString(3, dataName);
+          ResultSet rs = st.executeQuery();
+          if (!rs.next()) {
+            continue;
+          }
+          DataFieldRow dfr =
+              new DataFieldRow(
+                  rs.getString(1),
+                  rs.getString(2),
+                  rs.getBoolean(3),
+                  rs.getBoolean(4),
+                  rs.getString(5),
+                  rs.getString(6),
+                  rs.getString(7),
+                  rs.getString(8),
+                  rs.getString(9),
+                  rs.getString(10),
+                  rs.getBoolean(11),
+                  rs.getString(12));
+          return dfr;
+        }
       }
-      DataFieldRow dfr =
-          new DataFieldRow(
-              rs.getString(1),
-              rs.getString(2),
-              rs.getBoolean(3),
-              rs.getBoolean(4),
-              rs.getString(5),
-              rs.getString(6),
-              rs.getString(7),
-              rs.getString(8),
-              rs.getString(9),
-              rs.getString(10),
-              rs.getBoolean(11),
-              rs.getString(12));
-      return dfr;
+      return DataFieldRow.MissingDataField(dataName);
     } catch (SQLException ex) {
       log.error("SQLException: " + ex.toString());
       return DataFieldRow.MissingDataField(dataName);
@@ -498,14 +506,24 @@ public class CodeDatabase extends CodeDatabaseAPI {
       return List.of();
     }
 
-    String query = DataFieldRow.getAllDataFieldNames();
-    try (PreparedStatement st = conn.prepareStatement(query)) {
-      st.setString(1, tylerDomain);
-      st.setString(2, courtLocationId);
-      ResultSet rs = st.executeQuery();
+    try {
+      List<String> parentList = getParentList(courtLocationId);
+      String query = DataFieldRow.getAllDataFieldNames();
       var dataFields = new ArrayList<NameAndCode>();
-      while (rs.next()) {
-        dataFields.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+      Set<String> codesInList = new HashSet<>();
+      for (String currentCourt : parentList) {
+        try (PreparedStatement st = conn.prepareStatement(query)) {
+          st.setString(1, tylerDomain);
+          st.setString(2, currentCourt);
+          ResultSet rs = st.executeQuery();
+          while (rs.next()) {
+            var code = rs.getString(1);
+            if (!codesInList.contains(code)) {
+              dataFields.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+              codesInList.add(rs.getString(1));
+            }
+          }
+        }
       }
       return dataFields;
     } catch (SQLException ex) {
