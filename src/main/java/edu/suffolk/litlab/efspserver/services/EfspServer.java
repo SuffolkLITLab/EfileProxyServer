@@ -218,7 +218,7 @@ public class EfspServer {
     List<String> jurisdictions = List.of(tylerJurisdictions.orElse("").split(" "));
     List<String> togaKeys = List.of(togaKeyStr.orElse("").split(" "));
     if (jurisdictions.size() > 0 && jurisdictions.size() != togaKeys.size()) {
-      log.error("TOGA_CLIENT_KEYS list should be same size as TYLER_JURSIDICTIONS list.");
+      log.error("TOGA_CLIENT_KEYS list should be same size as TYLER_JURISDICTIONS list.");
       throw new RuntimeException("TOGA_CLIENT_KEYS and TYLER_JURISDICTION mismatch");
     }
     for (int idx = 0; idx < jurisdictions.size(); idx++) {
