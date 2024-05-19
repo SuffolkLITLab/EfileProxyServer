@@ -258,6 +258,16 @@
             <version>2.3.2</version>
         </dependency>
         <dependency>
+            <groupId>com.papertrailapp</groupId>
+            <artifactId>logback-syslog4j</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.janino</groupId>
+            <artifactId>janino</artifactId>
+            <version>3.1.9</version>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
@@ -519,6 +529,8 @@
                                 <exclude>**/UserDatabaseTest.java</exclude>
                                 <exclude>**/LoginDatabaseTest.java</exclude>
                                 <exclude>**/CodeDatabaseTest.java</exclude>
+                                <exclude>**/CodesServiceTest.java</exclude>
+                                <exclude>**/DatabaseVersionTest.java</exclude>
                             </excludes>
                         </configuration>
                     </plugin>

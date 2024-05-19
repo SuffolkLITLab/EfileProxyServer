@@ -8,3 +8,6 @@ docassemble-os/**
 target/**
 bin/**
 *.hprof
+*.local
+*.log
+*.zip

@@ -1,0 +1,23 @@
+# fly.toml app configuration file generated for efileproxyserver on 2024-04-26T11:13:35-07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'efsp-prod'
+primary_region = 'bos'
+kill_timeout = 60
+
+[build]
+
+[http_service]
+  internal_port = 9009
+  force_https = false
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+[[vm]]
+  memory = '4gb'
+  cpu_kind = 'shared'
+  cpus = 2

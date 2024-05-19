@@ -39,8 +39,10 @@ import org.apache.cxf.jaxws.EndpointImpl;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
+import org.quartz.ScheduleBuilder;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
@@ -198,8 +200,13 @@ public class TylerModuleSetup implements EfmModuleSetup {
     log.info("Done checking table if absent");
 
     try {
+      boolean disableQuartzSchedule = Boolean.parseBoolean(GetEnv("DISABLE_QUARTZ_SCHEDULE_FOR_CODE_UPDATE").orElse("false"));
+      boolean scheduleImmediately = Boolean.parseBoolean(GetEnv("SCHEDULE_CODE_UPDATE_IMMEDIATELY").orElse("false"));
+
       Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-      scheduler.start();
+      if (!disableQuartzSchedule) {
+        scheduler.start();
+      }
 
       String jobName = "job-" + this.tylerJurisdiction + "-" + this.tylerEnv;
 
@@ -216,14 +223,20 @@ public class TylerModuleSetup implements EfmModuleSetup {
               .build();
 
       var r = new Random();
+      ScheduleBuilder codeUpdateSchedule;
+      if(scheduleImmediately) {
+        // Testable version! Updates the codes 20 seconds after launch
+        // We also use this for immediately running the update on ephemeral machines that are controlled by external cron
+        codeUpdateSchedule = SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(20);
+      } else {
+        codeUpdateSchedule = CronScheduleBuilder.dailyAtHourAndMinute(2, 13 + r.nextInt(4));
+      }
       String triggerName = "trigger-" + this.tylerJurisdiction + "-" + this.tylerEnv;
       Trigger trigger =
           TriggerBuilder.newTrigger()
               .withIdentity(triggerName, "codesdb-group")
               .startNow()
-              .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(2, 13 + r.nextInt(4)))
-              // Testable version! Updates the codes 20 seconds after launch
-              // .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(20))
+              .withSchedule(codeUpdateSchedule)
               .build();
 
       scheduler.scheduleJob(job, trigger);

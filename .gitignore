@@ -45,6 +45,7 @@ hs_err_pid*
 
 # Contains key info
 client_sign.properties
+client_sign.properties.local
 *.pfx
 .env*
 .da_env
