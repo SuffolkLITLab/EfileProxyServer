@@ -200,8 +200,10 @@ public class TylerModuleSetup implements EfmModuleSetup {
     log.info("Done checking table if absent");
 
     try {
-      boolean disableQuartzSchedule = Boolean.parseBoolean(GetEnv("DISABLE_QUARTZ_SCHEDULE_FOR_CODE_UPDATE").orElse("false"));
-      boolean scheduleImmediately = Boolean.parseBoolean(GetEnv("SCHEDULE_CODE_UPDATE_IMMEDIATELY").orElse("false"));
+      boolean disableQuartzSchedule =
+          Boolean.parseBoolean(GetEnv("DISABLE_QUARTZ_SCHEDULE_FOR_CODE_UPDATE").orElse("false"));
+      boolean scheduleImmediately =
+          Boolean.parseBoolean(GetEnv("SCHEDULE_CODE_UPDATE_IMMEDIATELY").orElse("false"));
 
       Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
       if (!disableQuartzSchedule) {
@@ -224,9 +226,10 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
       var r = new Random();
       ScheduleBuilder codeUpdateSchedule;
-      if(scheduleImmediately) {
+      if (scheduleImmediately) {
         // Testable version! Updates the codes 20 seconds after launch
-        // We also use this for immediately running the update on ephemeral machines that are controlled by external cron
+        // We also use this for immediately running the update on ephemeral machines that are
+        // controlled by external cron
         codeUpdateSchedule = SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(20);
       } else {
         codeUpdateSchedule = CronScheduleBuilder.dailyAtHourAndMinute(2, 13 + r.nextInt(4));
