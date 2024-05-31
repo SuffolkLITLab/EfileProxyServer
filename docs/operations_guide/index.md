@@ -137,7 +137,7 @@ There is an example fly.yml file called fly.yml.example. You can use this as a t
 
 ## Viewing Logs
 
-You can view the logs directly on Fly.io. The application logs are also shipped over to Papertrail, which will be covered in more detail. Papertrail is the recommended interface to view logs because it has search, filtering, and aggregation capabilities. However, checking on Fly.io is helpful if you are troubleshooting, as you will be able to see the platform logs in additional to the applications logs. Plus even if there is an error preventing the application from sending logs to Papertrail, the information will be stored within Fly.io's logs.
+You can view the logs directly on Fly.io. The application logs are also shipped over to Papertrail, which will be covered in more detail. Papertrail is the recommended interface to view logs because it has search, filtering, and aggregation capabilities. However, checking on Fly.io is helpful if you are troubleshooting, as you will be able to see the platform logs in additional to the applications logs. Plus, even if there is an error preventing the application from sending logs to Papertrail, the information will be stored within Fly.io's logs.
 
 ### Viewing Logs with Fly.io
 
