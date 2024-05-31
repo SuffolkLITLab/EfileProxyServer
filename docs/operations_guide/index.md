@@ -203,9 +203,9 @@ https://www.papertrail.com/help/alerts/
 
 ### Scaling Up Fly.io
 
-You can scale up the # of machines if you are reach a point where there is a lot of load, want to improve global response times, or to take advantage of more advanced deployment strategies. The only caveat is that the Tyler EFM Code Updater, which runs on a schedule by default, can get into a conflict if there are multiple instances doing the update at the same time. Since the Quartz Scheduler is running in-memory by default and the schedule is fixed in the code, it is safest to disable the automated updates on any supplemental machines. See env.example for more details on how to do that. 
+You can scale up the # of machines if you reach a point where there is a lot of load, want to improve global response times, or want to take advantage of more advanced deployment strategies. The only caveat is that the Tyler EFM Code Updater, which runs on a schedule by default, can get into a conflict if there are multiple instances doing the update at the same time. Since the Quartz Scheduler is running in-memory by default and the schedule is fixed in the code, it is safest to disable the automated updates on any supplemental machines. See env.example for more details on how to do that. 
 
-The default Fly config for EFSP will keep just a single machine running at all times. This is important as the code update will only happen is an instance is active when the schedule hits (2:15 am on the machine's clock).
+The default Fly config for EFSP will keep just a single machine running at all times. This is important as the code update will only happen if an instance is active when the schedule hits (2:15 am on the machine's clock).
 
 You can set the # of instances to scale to with the following command:
 ```
