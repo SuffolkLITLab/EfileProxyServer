@@ -201,48 +201,49 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
     try {
       boolean disableQuartzSchedule =
-          Boolean.parseBoolean(GetEnv("DISABLE_QUARTZ_SCHEDULE_FOR_CODE_UPDATE").orElse("false"));
+          Boolean.parseBoolean(GetEnv("DISABLE_SCHEDULE_FOR_CODE_UPDATE").orElse("false"));
       boolean scheduleImmediately =
           Boolean.parseBoolean(GetEnv("SCHEDULE_CODE_UPDATE_IMMEDIATELY").orElse("false"));
 
+      if (disableQuartzSchedule) {
+        return;
+      }
+
       Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-      if (!disableQuartzSchedule) {
-        scheduler.start();
-      }
+      scheduler.start();
 
-      String jobName = "job-" + this.tylerJurisdiction + "-" + this.tylerEnv;
-
-      JobDetail job =
-          JobBuilder.newJob(UpdateCodeVersions.class)
-              .withIdentity(jobName, "codesdb-group")
-              .usingJobData("TYLER_JURISDICTION", this.tylerJurisdiction)
-              .usingJobData("TYLER_ENV", this.tylerEnv)
-              .usingJobData("X509_PASSWORD", this.x509Password)
-              .usingJobData("POSTGRES_URL", this.pgUrl)
-              .usingJobData("POSTGRES_DB", this.pgDb)
-              .usingJobData("POSTGRES_USERNAME", this.pgUser)
-              .usingJobData("POSTGRES_PASSWORD", this.pgPassword)
-              .build();
-
+      // Always schedule daily codes update.
       var r = new Random();
-      ScheduleBuilder codeUpdateSchedule;
-      if (scheduleImmediately) {
-        // Testable version! Updates the codes 20 seconds after launch
-        // We also use this for immediately running the update on ephemeral machines that are
-        // controlled by external cron
-        codeUpdateSchedule = SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(20);
-      } else {
-        codeUpdateSchedule = CronScheduleBuilder.dailyAtHourAndMinute(2, 13 + r.nextInt(4));
-      }
       String triggerName = "trigger-" + this.tylerJurisdiction + "-" + this.tylerEnv;
       Trigger trigger =
           TriggerBuilder.newTrigger()
               .withIdentity(triggerName, "codesdb-group")
               .startNow()
-              .withSchedule(codeUpdateSchedule)
+              .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(2, 13 + r.nextInt(4)))
               .build();
 
-      scheduler.scheduleJob(job, trigger);
+      log.info("Scheduling daily Tyler EFM code update job.");
+      scheduler.scheduleJob(
+          buildJob("job-" + this.tylerJurisdiction + "-" + this.tylerEnv), trigger);
+
+      if (scheduleImmediately) {
+        // Schedule immediate codes update.
+        // Testable version - updates the codes 20 seconds after launch
+        // Also useful for immediately running the update on ephemeral machines that are controlled
+        // by external cron
+        Trigger immediateTrigger =
+            TriggerBuilder.newTrigger()
+                .withIdentity(
+                    "trigger-immediate-" + this.tylerJurisdiction + "-" + this.tylerEnv,
+                    "codesdb-group")
+                .startNow()
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(20))
+                .build();
+        log.info("Scheduling immediate Tyler EFM code update job.");
+        scheduler.scheduleJob(
+            buildJob("job-immediate-" + this.tylerJurisdiction + "-" + this.tylerEnv),
+            immediateTrigger);
+      }
     } catch (SchedulerException se) {
       log.error("Scheduler Exception: " + StdLib.strFromException(se));
       throw new RuntimeException(se);
@@ -412,5 +413,18 @@ public class TylerModuleSetup implements EfmModuleSetup {
   @Override
   public String toString() {
     return "TylerModuleSetup[jurisdiction=" + tylerJurisdiction + ",env=" + tylerEnv + "]";
+  }
+
+  private JobDetail buildJob(final String jobName) {
+    return JobBuilder.newJob(UpdateCodeVersions.class)
+        .withIdentity(jobName, "codesdb-group")
+        .usingJobData("TYLER_JURISDICTION", this.tylerJurisdiction)
+        .usingJobData("TYLER_ENV", this.tylerEnv)
+        .usingJobData("X509_PASSWORD", this.x509Password)
+        .usingJobData("POSTGRES_URL", this.pgUrl)
+        .usingJobData("POSTGRES_DB", this.pgDb)
+        .usingJobData("POSTGRES_USERNAME", this.pgUser)
+        .usingJobData("POSTGRES_PASSWORD", this.pgPassword)
+        .build();
   }
 }
