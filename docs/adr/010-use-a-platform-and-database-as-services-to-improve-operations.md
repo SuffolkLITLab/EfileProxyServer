@@ -42,3 +42,5 @@ Use the combination of a Platform-as-a-Service (PaaS) with a Database-as-a-Servi
       * Similar operational characteristics
    * Cons
      * Supabase has the best combination of ease of use, pricing, and track record. All the other alternatives are beaten in one or more of those aspects in comparison  
+   * Notes
+     * This is an easy decision to change our minds on in the future, as any Postgres-compatible database can be swapped in by changing the POSTGRES_* variables in the .env and the data is quite portable with a variety of pg_dump/export/replication options supported by all the DBaaS options.
