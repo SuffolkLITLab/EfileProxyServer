@@ -2,7 +2,7 @@
 
 ## Overview
 
-EFSP (Electronic Filing Service Provider) is a proxy between clients such as DocAssemble and an [ECF 4.0 (LegalXML's Electronic Court Filing 4.0 standard)](https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.0/ecf-v4.0-spec/ecf-v4.0-spec.html) EFM (Electronic Filing Manager), such as Tyler. The EFSP is commonly used to create court filings. This application (EfileProxyServer) fulfills the EFSP role and when EFSP is mentioned in this document, you can assume it is referring to this application.
+EFSP (Electronic Filing Service Provider) is a proxy between clients such as DocAssemble and an [ECF 4.0 (LegalXML's Electronic Court Filing 4.0 standard)](https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.0/ecf-v4.0-spec/ecf-v4.0-spec.html) EFM (Electronic Filing Manager), such as [Tyler Technology's Odyssey](https://www.tylertech.com/products/enterprise-justice/enterprise-case-manager). The EFSP is commonly used to create court filings. This application (EfileProxyServer) fulfills the EFSP role and when EFSP is mentioned in this document, you can assume it is referring to this application.
 
 ## Design Approach
 
@@ -31,13 +31,19 @@ The updated stack uses Fly.io, Supabase, Papertrail, and Cloudflare.
 * Fly.io runs the dockerized EFSP application.
 * Supabase is the Postgres database.
 * Papertrail serves as the cloud-hosted log management system, making it easy to aggregate, manage, and share logs.
-* Cloudflare provides SSL/TLS encryption and DNS. (TODO: are we planning to use the DDoS protection & CDN capabilities? assuming no for now.)
+* Cloudflare provides SSL/TLS encryption and DNS. (TODO: are we planning to use the DDoS protection?)
 
 The overall goal is to make it easier to run and operate EFSP as a service, with the tradeoff being a small monthly cost. Web interfaces are favored over the CLI (Command-Line Interface), although there is still lots of CLI and all existing commands are supported. Ideally, the learning curve will be shortened and day-to-day operational tasks can be done without needing to use the CLI.
 
 The current setup keeps a single machine running at all times within the Boston region. Because Fly.io, Supabase, Papertrail, and Cloudflare are all cloud services, scaling up and out is pretty easy. The trade-off is one of increased cost as more scale is requested. Fly.io also supports auto-scaling. Given the current volume, scaling was not explored and we opted for the simplest conceptual model of a single, continuously instance of the application.
 
-The EFSP application itself is mostly clusterable, the only exception being the way the Tyler EFM Code Updates are scheduled right now. For a single, always running instance, nothing needs to be done. In a scale-out scenario, the simplest approach of disabling the updates is supported. The EFSP application itself is stateless and will use the shared data within the database, so the single updater will result in every instance seeing the latest EFM codes. 
+The EFSP application itself is mostly clusterable, the exceptions being:
+* the way the Tyler EFM Code Updates are scheduled right now
+* CourtPolicy data, which is currently cached in memory (see l. 21 in /src/main/java/edu/suffolk/litlab/efspserver/ecf4/PolicyCacher.java [https://github.com/SuffolkLITLab/EfileProxyServer/blob/a67c75a6690e9bd54fd4050d0c274feccf13b382/src/main/java/edu/suffolk/litlab/efspserver/ecf4/PolicyCacher.java#L12]). To honor Tyler's restriction to only hit the endpoint once per day, this cache will need to be updated so that it can be shared across all instances. Caching it in the database would be one option to achieve that.  
+
+For a single, always running instance, nothing needs to be done.
+
+In a scale-out scenario, the simplest approach of disabling the updates is supported. All EFSP instances within the same environment use the same shared database, so the single updater will result in every instance seeing the latest EFM codes. Alternatively, the Quartz scheduler can be swapped over to store scheduling data in the database and configured for clustered operation.
 
 ## Secrets/Configuration
 
