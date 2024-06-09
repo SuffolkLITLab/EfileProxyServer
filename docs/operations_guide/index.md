@@ -324,5 +324,9 @@ Here you can see all the tables within the "postgres" database. Database in this
 
 You can also use your own database tools, such as [PgAdmin](https://www.pgadmin.org/) or psql, to interact with the data in your Supabase database. To get the information for the connection string, go to "Project Settings", then click on "Database" under the "Configuration" section. You should now see a page with the connection string on the right.
 
+![Supabase PSQL Connection Settings](./supabase_psql_connection.png)
+
+One example use case is migrating data from your existing Docker setup to Supabase. You can use pg_dump with the data only option to export the data from the user_transactions database in Docker, then use psql to import the data into Supabase's postgres database.
+
 For more details about connecting to Supabase with your own database tools, check out:
 https://supabase.com/docs/guides/database/connecting-to-postgres#direct-connections
