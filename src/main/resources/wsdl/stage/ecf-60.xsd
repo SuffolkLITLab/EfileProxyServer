@@ -87,7 +87,6 @@
 			<xsd:element minOccurs="1" ref="FeeAmount"/>
 		</xsd:sequence>
 	</xsd:complexType>
-	<xsd:element name="LocationSpecificUrl" type="niem-xsd:anyURI"/>
 	<xsd:element name="CourtSplitAmount" type="SplitAmountType"/>
 	<xsd:element name="NonCourtSplitAmount" type="SplitAmountType"/>
 	<xsd:element name="FeeSplit" type="FeeSplitType"/>
@@ -95,6 +94,8 @@
 	<xsd:element name="PartyService" type="PartyServiceType"/>
 	<xsd:element name="FilingAssociation" type="FilingAssociationType"/>
 	<xsd:element name="PartyReference" type="s:ReferenceType"/>
+	<xsd:element name="AddMeAsServiceContactPartyReference" type="s:ReferenceType"/>
+	<xsd:element name="HasUserFiledIntoCaseIndicator" type="niem-xsd:boolean"/>
 	<xsd:element name="FilingReference" type="s:ReferenceType"/>
 	<xsd:element name="ServiceDate" type="nc:DateType"/>
 	<xsd:element name="FilerInformation" type="FilerInformationType"/>
@@ -113,6 +114,7 @@
 	<xsd:element name="UseOktaAuthentication" type="niem-xsd:boolean"/>
 	<xsd:element name="OktaAuthenticationURI" type="niem-xsd:anyURI"/>
 	<xsd:element name="CaseAddress" type="nc:StructuredAddressType"/>
+	<xsd:element name="ServiceConsentEmail" substitutionGroup="nc:ContactMeans" type="niem-xsd:string"/>
 	<xsd:complexType name="CaseAugmentationType">
 		<xsd:complexContent>
 			<xsd:extension base="ecf:CaseAugmentationType">
@@ -145,6 +147,8 @@
 					<xsd:element minOccurs="0" ref="LowerCourtCaseTypeText"/>
 					<xsd:element minOccurs="0" ref="CaseAddress"/>
 					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="FeeSplit"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="AddMeAsServiceContactPartyReference"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="HasUserFiledIntoCaseIndicator"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -312,10 +316,21 @@
 				<xsd:sequence>
 					<xsd:element minOccurs="0" ref="Multiplier"/>
 					<xsd:element minOccurs="0" ref="FeeAmount"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="PartyPayor"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+	<xsd:element name="PartyPayor" type="PartyPayorType"/>
+	<xsd:complexType name="PartyPayorType">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" ref="PartyReference"/>
+			<xsd:element minOccurs="1" ref="WaiverIndicator"/>
+			<xsd:element minOccurs="0" ref="PaymentAccountID"/>
+			<xsd:element minOccurs="0" ref="FeeAmount"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="PaymentAccountID" type="nc:TextType"/>
 	<xsd:complexType name="ProcedureRemedyType">
 		<xsd:sequence>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" ref="RemedyCode"/>

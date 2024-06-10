@@ -1,4 +1,15 @@
 #!/usr/bin/env python3
+
+"""
+To run you must:
+
+* have the python dependencies installed (requests and plumbum)
+* have CXF installed on the PATH env var
+* have maven and Java (17) installed locally
+* have the env variables defined (search for `os.getenv`)
+* must have installed this project with maven (`mvn install`)
+
+"""
 import os
 import requests
 from plumbum import local, FG, BG
