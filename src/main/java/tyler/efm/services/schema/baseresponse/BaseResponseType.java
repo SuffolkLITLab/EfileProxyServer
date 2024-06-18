@@ -20,8 +20,7 @@ import tyler.efm.services.schema.getfirmresponse.GetFirmResponseType;
 import tyler.efm.services.schema.getpaymentaccountresponse.GetPaymentAccountResponseType;
 import tyler.efm.services.schema.getservicecontactresponse.GetServiceContactResponseType;
 import tyler.efm.services.schema.getuserresponse.GetUserResponseType;
-import tyler.efm.services.schema.getvitalchekpaymentaccountidresponse.GetVitalChekPaymentAccountIdResponseType;
-import tyler.efm.services.schema.notificationpreferenceslistresponse.NotificationPreferencesListResponseType;
+import tyler.efm.services.schema.notificationpreferencesresponse.NotificationPreferencesResponseType;
 import tyler.efm.services.schema.passwordquestionresponse.PasswordQuestionResponseType;
 import tyler.efm.services.schema.paymentaccountlistresponse.PaymentAccountListResponseType;
 import tyler.efm.services.schema.paymentaccounttypelistresponse.PaymentAccountTypeListResponseType;
@@ -59,30 +58,29 @@ import tyler.efm.services.schema.userlistresponse.UserListResponseType;
     "error"
 })
 @XmlSeeAlso({
-    RegistrationResponseType.class,
-    UserListResponseType.class,
-    GetUserResponseType.class,
-    UpdateUserResponseType.class,
-    GetFirmResponseType.class,
-    AttorneyListResponseType.class,
-    GetAttorneyResponseType.class,
-    UpdateAttorneyResponseType.class,
-    CreateAttorneyResponseType.class,
-    PaymentAccountTypeListResponseType.class,
-    PaymentAccountListResponseType.class,
-    GetPaymentAccountResponseType.class,
-    GetVitalChekPaymentAccountIdResponseType.class,
-    UpdatePaymentAccountResponseType.class,
-    CreatePaymentAccountResponseType.class,
-    ServiceContactListResponseType.class,
-    GetServiceContactResponseType.class,
-    UpdateServiceContactResponseType.class,
-    CreateServiceContactResponseType.class,
     ResetPasswordResponseType.class,
-    NotificationPreferencesListResponseType.class,
     PasswordQuestionResponseType.class,
     ChangePasswordResponseType.class,
-    AuthenticateResponseType.class
+    AuthenticateResponseType.class,
+    GetUserResponseType.class,
+    UpdateUserResponseType.class,
+    NotificationPreferencesResponseType.class,
+    UserListResponseType.class,
+    UpdateServiceContactResponseType.class,
+    UpdatePaymentAccountResponseType.class,
+    UpdateAttorneyResponseType.class,
+    ServiceContactListResponseType.class,
+    RegistrationResponseType.class,
+    PaymentAccountTypeListResponseType.class,
+    PaymentAccountListResponseType.class,
+    GetServiceContactResponseType.class,
+    GetPaymentAccountResponseType.class,
+    GetFirmResponseType.class,
+    GetAttorneyResponseType.class,
+    CreateServiceContactResponseType.class,
+    CreatePaymentAccountResponseType.class,
+    CreateAttorneyResponseType.class,
+    AttorneyListResponseType.class
 })
 public class BaseResponseType {
 

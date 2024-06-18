@@ -35,23 +35,23 @@ import tyler.ecf.extensions.common.FilingAssociationType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AssociationType")
 @XmlSeeAlso({
-    FilingAssociationType.class,
-    ActivityLocationAssociationType.class,
-    DocumentCourtAssociationType.class,
-    PersonChargeAssociationType.class,
-    DriverLicenseAssociationType.class,
-    ViolatedStatuteAssociationType.class,
-    PlacementAssociationType.class,
-    GuardianAssociationType.class,
     ImmediateFamilyAssociationType.class,
     ActivityConveyanceAssociationType.class,
     OrganizationContactInformationAssociationType.class,
     PersonContactInformationAssociationType.class,
     PersonEmploymentAssociationType.class,
+    DriverLicenseAssociationType.class,
+    ActivityLocationAssociationType.class,
+    DocumentCourtAssociationType.class,
+    PersonChargeAssociationType.class,
+    ViolatedStatuteAssociationType.class,
     OrganizationAssociationType.class,
-    PersonAssociationType.class,
     PersonOrganizationAssociationType.class,
-    RelatedActivityAssociationType.class
+    RelatedActivityAssociationType.class,
+    PersonAssociationType.class,
+    GuardianAssociationType.class,
+    PlacementAssociationType.class,
+    FilingAssociationType.class
 })
 public class AssociationType
     extends ComplexObjectType

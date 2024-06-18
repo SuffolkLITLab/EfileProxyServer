@@ -67,10 +67,10 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "value"
 })
 @XmlSeeAlso({
+    oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.NumericType.class,
     ValueType.class,
-    RateType.class,
     PercentType.class,
-    oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.NumericType.class
+    RateType.class
 })
 public class NumericType {
 
