@@ -132,14 +132,14 @@ To deploy to production:
 fly deploy -c fly.production.toml
 ```
 
-One thing to keep in mind is that the manual deployment builds the Docker image from the contents of your local filesystem. This is crucial for .pfx certificate files, as they are git-ignored but not docker-ignored to allow for the normal local testing. The automatic continuous deployment is a bit safer if you do not want to bake certs into your docker image since that will build from the contents in GitHub, which already has gone through the git ignore filtering step. 
-
 ### Automatic Continuous Deployment
 
 If you have forked the EFSP repo, you can set up auto-deploy. Fly.io can be deployed to from a GitHub workflow. For more information on how you would do this, check out:
 https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/
 
-You can use the .github/workflows/fly.yml by setting your own FLY_API_TOKEN as a repository secret. Alternatively, you can use it as a template to be customized or you can remove it entirely if you do not want GitHub to run that workflow. 
+You can use the .github/workflows/fly.yml by setting your own FLY_API_TOKEN as a repository secret. Alternatively, you can use it as the starting point for your customizations, or remove it entirely if you do not want GitHub to run the deployment workflow.
+
+One thing to keep in mind is that the manual deployment builds the Docker image from the contents of your local filesystem. This is important for .pfx certificate files, as they are git-ignored but not docker-ignored. When doing manual builds, the .pfx will be baked into the image. Continuous deployment builds the image from the repository in GitHub, which excludes the secured files. You will need to set up the .pfx certificate to be included from secure storage. See the [Secured Files/Certs section](#secured-filescerts) for more information.
 
 ## Viewing Logs
 
