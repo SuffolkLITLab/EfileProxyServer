@@ -8,6 +8,11 @@ if test -n "$FLY_MACHINE_ID"; then
   if ! test -f "$PATH_TO_KEYSTORE"; then
     echo "Installing cert"
     apk add --no-cache aws-cli
-    aws s3 cp $S3_TO_KEYSTORE_CERT .
+    aws s3 cp "$S3_TO_KEYSTORE_CERT" .
+  fi
+  if ! test -f "client_sign.properties"; then
+    echo "Installing client_sign.properties"
+    apk add --no-cache aws-cli
+    aws s3 cp "$S3_TO_CLIENT_SIGN_PROPERTIES" .
   fi
 fi
