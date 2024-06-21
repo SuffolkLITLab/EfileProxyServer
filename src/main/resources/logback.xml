@@ -10,6 +10,31 @@
       <Pattern>| %d{yyyy-MM-dd HH:mm:ss.SSS} | %X{serverId} | %X{userId} | %X{operation} | %thread | %-5level | %logger{50} |- %msg |%n</Pattern>
     </encoder>
   </appender>
+  <if condition='isDefined("PAPERTRAIL_HOST")'>
+    <then>
+      <appender name="SYSLOG-TLS" class="com.papertrailapp.logback.Syslog4jAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+          <pattern>%-5level %logger{35}: %m%n%xEx</pattern>
+        </layout>
+
+        <syslogConfig class="org.productivity.java.syslog4j.impl.net.tcp.ssl.SSLTCPNetSyslogConfig">
+          <!-- remote system to log to -->
+          <host>${PAPERTRAIL_HOST}</host>
+          <!-- remote port to log to -->
+          <port>${PAPERTRAIL_PORT}</port>
+          <!-- program name to log as -->
+          <ident>${PAPERTRAIL_APP_NAME}</ident>
+          <!-- max log message length in bytes -->
+          <maxMessageLength>128000</maxMessageLength>
+        </syslogConfig>
+      </appender>
+      <root level="info">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="PerServer"/>
+        <appender-ref ref="SYSLOG-TLS" />
+      </root>
+    </then>
+  </if>
 
   <logger name="org.ehcache.core.EhcacheManager" level="ERROR"/>
   <logger name="org.apache.cxf.wsdl.service.factory" level="WARN"/>

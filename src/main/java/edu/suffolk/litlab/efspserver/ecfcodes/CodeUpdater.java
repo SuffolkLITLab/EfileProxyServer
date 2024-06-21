@@ -381,7 +381,7 @@ public class CodeUpdater {
     }
     Optional<String> signedTime = signer.signedCurrentTime();
     if (signedTime.isEmpty()) {
-      log.error("Couldn't get signed time to download codeds, skipping all");
+      log.error("Couldn't get signed time to download codes, skipping all");
       return false;
     }
     Map<String, DownloadedCodes> downloaded =
