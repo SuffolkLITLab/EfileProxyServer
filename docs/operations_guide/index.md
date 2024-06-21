@@ -53,7 +53,9 @@ You should have separate .env files for each environment. For example, staging v
 
 ## Secured Files/Certs
 
-For files that you want to keep out of the Docker image, you should set up a private Fly.io Tigris bucket. This is Fly.io's equivalent of AWS's S3 service. When a Fly.io machine starts up, the fly_startup_script.sh will run. The script will pull down the keystore cert from Tigris if the file is not already in the system. While Fly.io will automatically inject the AWS config values into your application the first time you setup Tigris, you should also store the AWS config values in your .env file in case you need to reference them again or re-create a Fly.io app in the future.
+For files that you want to keep out of the Docker image, you should set up a private Fly.io Tigris bucket. This is Fly.io's equivalent of AWS's S3 service. When a Fly.io machine starts up, the fly_startup_script.sh will run. The script will pull down any secure files that are not already present from Tigris. This includes the PFX certificate and client_sign.properties. See the secured files section in the env.example file for the full list of supported files.
+
+While Fly.io will automatically inject the AWS config values into your application the first time you setup Tigris, you should also store the AWS config values in your .env file in case you need to reference them again or re-create a Fly.io app in the future.
 
 For more details, check out:
 https://fly.io/docs/reference/tigris/
