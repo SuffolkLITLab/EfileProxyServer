@@ -75,11 +75,11 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "value"
 })
 @XmlSeeAlso({
+    oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.BinaryObjectType.class,
     GraphicType.class,
     PictureType.class,
     SoundType.class,
-    VideoType.class,
-    oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.BinaryObjectType.class
+    VideoType.class
 })
 public class BinaryObjectType {
 

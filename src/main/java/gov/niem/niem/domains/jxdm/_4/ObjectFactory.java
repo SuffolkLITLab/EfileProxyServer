@@ -49,20 +49,20 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _ArrestAgency_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ArrestAgency");
-    private final static QName _ArrestSubject_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ArrestSubject");
     private final static QName _ActivityLocationAssociation_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ActivityLocationAssociation");
     private final static QName _AppellateCase_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "AppellateCase");
     private final static QName _AppellateCaseNotice_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "AppellateCaseNotice");
     private final static QName _AppellateCaseNoticeReasonText_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "AppellateCaseNoticeReasonText");
     private final static QName _AppellateCaseOriginalCase_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "AppellateCaseOriginalCase");
     private final static QName _Arrest_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "Arrest");
+    private final static QName _ArrestAgency_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ArrestAgency");
     private final static QName _ArrestAgencyRecordIdentification_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ArrestAgencyRecordIdentification");
     private final static QName _ArrestBailRecommendationText_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ArrestBailRecommendationText");
     private final static QName _ArrestBloodAlcoholContentNumberText_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ArrestBloodAlcoholContentNumberText");
     private final static QName _ArrestCharge_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ArrestCharge");
     private final static QName _ArrestLocation_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ArrestLocation");
     private final static QName _ArrestOfficial_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ArrestOfficial");
+    private final static QName _ArrestSubject_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ArrestSubject");
     private final static QName _ArrestWarrant_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "ArrestWarrant");
     private final static QName _Booking_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "Booking");
     private final static QName _BookingAgencyRecordIdentification_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "BookingAgencyRecordIdentification");
@@ -183,30 +183,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ArrestType }
-     * 
-     */
-    public ArrestType createArrestType() {
-        return new ArrestType();
-    }
-
-    /**
-     * Create an instance of {@link StatuteType }
-     * 
-     */
-    public StatuteType createStatuteType() {
-        return new StatuteType();
-    }
-
-    /**
-     * Create an instance of {@link SubjectType }
-     * 
-     */
-    public SubjectType createSubjectType() {
-        return new SubjectType();
-    }
-
-    /**
      * Create an instance of {@link ActivityLocationAssociationType }
      * 
      */
@@ -231,6 +207,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ArrestType }
+     * 
+     */
+    public ArrestType createArrestType() {
+        return new ArrestType();
+    }
+
+    /**
      * Create an instance of {@link ChargeType }
      * 
      */
@@ -244,6 +228,14 @@ public class ObjectFactory {
      */
     public EnforcementOfficialType createEnforcementOfficialType() {
         return new EnforcementOfficialType();
+    }
+
+    /**
+     * Create an instance of {@link SubjectType }
+     * 
+     */
+    public SubjectType createSubjectType() {
+        return new SubjectType();
     }
 
     /**
@@ -308,6 +300,14 @@ public class ObjectFactory {
      */
     public SeverityLevelType createSeverityLevelType() {
         return new SeverityLevelType();
+    }
+
+    /**
+     * Create an instance of {@link StatuteType }
+     * 
+     */
+    public StatuteType createStatuteType() {
+        return new StatuteType();
     }
 
     /**
@@ -455,32 +455,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link OrganizationType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link OrganizationType }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://niem.gov/niem/domains/jxdm/4.0", name = "ArrestAgency")
-    public JAXBElement<OrganizationType> createArrestAgency(OrganizationType value) {
-        return new JAXBElement<OrganizationType>(_ArrestAgency_QNAME, OrganizationType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link SubjectType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link SubjectType }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://niem.gov/niem/domains/jxdm/4.0", name = "ArrestSubject")
-    public JAXBElement<SubjectType> createArrestSubject(SubjectType value) {
-        return new JAXBElement<SubjectType>(_ArrestSubject_QNAME, SubjectType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ActivityLocationAssociationType }{@code >}
      * 
      * @param value
@@ -559,6 +533,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link OrganizationType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link OrganizationType }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://niem.gov/niem/domains/jxdm/4.0", name = "ArrestAgency")
+    public JAXBElement<OrganizationType> createArrestAgency(OrganizationType value) {
+        return new JAXBElement<OrganizationType>(_ArrestAgency_QNAME, OrganizationType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link IdentificationType }{@code >}
      * 
      * @param value
@@ -634,6 +621,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://niem.gov/niem/domains/jxdm/4.0", name = "ArrestOfficial")
     public JAXBElement<EnforcementOfficialType> createArrestOfficial(EnforcementOfficialType value) {
         return new JAXBElement<EnforcementOfficialType>(_ArrestOfficial_QNAME, EnforcementOfficialType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SubjectType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link SubjectType }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://niem.gov/niem/domains/jxdm/4.0", name = "ArrestSubject")
+    public JAXBElement<SubjectType> createArrestSubject(SubjectType value) {
+        return new JAXBElement<SubjectType>(_ArrestSubject_QNAME, SubjectType.class, null, value);
     }
 
     /**

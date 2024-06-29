@@ -52,9 +52,9 @@ import tyler.ecf.extensions.common.OrganizationIdentificationType;
     "organizationUnitName"
 })
 @XmlSeeAlso({
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType.class,
     CourtType.class,
-    EnforcementUnitType.class
+    EnforcementUnitType.class,
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType.class
 })
 public class OrganizationType
     extends ComplexObjectType

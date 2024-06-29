@@ -64,20 +64,20 @@ import tyler.ecf.extensions.servicetypesresponsemessage.ServiceTypesResponseMess
     "error"
 })
 @XmlSeeAlso({
-    FilingServiceResponseMessageType.class,
-    ServiceInformationResponseMessageType.class,
-    ServiceTypesResponseMessageType.class,
-    ServiceInformationHistoryResponseMessageType.class,
-    FilingStatusResponseMessageType.class,
-    CourtPolicyResponseMessageType.class,
-    FilingDetailResponseMessageType.class,
-    ServiceAttachCaseListResponseMessageType.class,
-    FeesCalculationResponseMessageType.class,
-    FilingListResponseMessageType.class,
     CaseListResponseMessageType.class,
     CaseResponseMessageType.class,
+    CourtPolicyResponseMessageType.class,
+    DocumentResponseMessageType.class,
+    FeesCalculationResponseMessageType.class,
+    FilingListResponseMessageType.class,
+    FilingStatusResponseMessageType.class,
+    ServiceInformationResponseMessageType.class,
+    ServiceInformationHistoryResponseMessageType.class,
+    ServiceAttachCaseListResponseMessageType.class,
+    FilingServiceResponseMessageType.class,
+    FilingDetailResponseMessageType.class,
     CancelFilingResponseMessageType.class,
-    DocumentResponseMessageType.class
+    ServiceTypesResponseMessageType.class
 })
 public class QueryResponseMessageType
     extends ComplexObjectType

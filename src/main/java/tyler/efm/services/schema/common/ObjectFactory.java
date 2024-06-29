@@ -1,10 +1,10 @@
 
 package tyler.efm.services.schema.common;
 
+import javax.xml.namespace.QName;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
-import javax.xml.namespace.QName;
 
 
 /**
@@ -30,8 +30,9 @@ public class ObjectFactory {
     private final static QName _Firm_QNAME = new QName("urn:tyler:efm:services:schema:Common", "Firm");
     private final static QName _Attorney_QNAME = new QName("urn:tyler:efm:services:schema:Common", "Attorney");
     private final static QName _Role_QNAME = new QName("urn:tyler:efm:services:schema:Common", "Role");
+    private final static QName _NotificationContact_QNAME = new QName("urn:tyler:efm:services:schema:Common", "NotificationContact");
     private final static QName _PaymentAccountLocationDetails_QNAME = new QName("urn:tyler:efm:services:schema:Common", "PaymentAccountLocationDetails");
-    private final static QName _NotificationListItem_QNAME = new QName("urn:tyler:efm:services:schema:Common", "NotificationListItem");
+    private final static QName _Notification_QNAME = new QName("urn:tyler:efm:services:schema:Common", "Notification");
     private final static QName _PaymentAccountTypeTypeCodeId_QNAME = new QName("urn:tyler:efm:services:schema:Common", "CodeId");
     private final static QName _PaymentAccountTypePaymentAccountTypeCodeId_QNAME = new QName("urn:tyler:efm:services:schema:Common", "PaymentAccountTypeCodeId");
     private final static QName _PaymentAccountTypeCardType_QNAME = new QName("urn:tyler:efm:services:schema:Common", "CardType");
@@ -43,6 +44,7 @@ public class ObjectFactory {
     private final static QName _ServiceContactTypeIsPublic_QNAME = new QName("urn:tyler:efm:services:schema:Common", "IsPublic");
     private final static QName _ServiceContactTypeIsInFirmMasterList_QNAME = new QName("urn:tyler:efm:services:schema:Common", "IsInFirmMasterList");
     private final static QName _ServiceContactTypeIsUndeliverable_QNAME = new QName("urn:tyler:efm:services:schema:Common", "IsUndeliverable");
+    private final static QName _ServiceContactTypeIsMailServiceContact_QNAME = new QName("urn:tyler:efm:services:schema:Common", "IsMailServiceContact");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: tyler.efm.services.schema.common
@@ -92,6 +94,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link NotificationContactType }
+     * 
+     */
+    public NotificationContactType createNotificationContactType() {
+        return new NotificationContactType();
+    }
+
+    /**
      * Create an instance of {@link PaymentAccountLocationDetails }
      * 
      */
@@ -100,11 +110,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link NotificationListItemType }
+     * Create an instance of {@link NotificationType }
      * 
      */
-    public NotificationListItemType createNotificationListItemType() {
-        return new NotificationListItemType();
+    public NotificationType createNotificationType() {
+        return new NotificationType();
     }
 
     /**
@@ -113,6 +123,14 @@ public class ObjectFactory {
      */
     public RoleLocationType createRoleLocationType() {
         return new RoleLocationType();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfString }
+     * 
+     */
+    public ArrayOfString createArrayOfString() {
+        return new ArrayOfString();
     }
 
     /**
@@ -234,6 +252,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link NotificationContactType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link NotificationContactType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:efm:services:schema:Common", name = "NotificationContact")
+    public JAXBElement<NotificationContactType> createNotificationContact(NotificationContactType value) {
+        return new JAXBElement<NotificationContactType>(_NotificationContact_QNAME, NotificationContactType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link PaymentAccountLocationDetails }{@code >}
      * 
      * @param value
@@ -247,16 +278,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link NotificationListItemType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link NotificationType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link NotificationListItemType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link NotificationType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:tyler:efm:services:schema:Common", name = "NotificationListItem")
-    public JAXBElement<NotificationListItemType> createNotificationListItem(NotificationListItemType value) {
-        return new JAXBElement<NotificationListItemType>(_NotificationListItem_QNAME, NotificationListItemType.class, null, value);
+    @XmlElementDecl(namespace = "urn:tyler:efm:services:schema:Common", name = "Notification")
+    public JAXBElement<NotificationType> createNotification(NotificationType value) {
+        return new JAXBElement<NotificationType>(_Notification_QNAME, NotificationType.class, null, value);
     }
 
     /**
@@ -400,6 +431,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:tyler:efm:services:schema:Common", name = "IsUndeliverable", scope = ServiceContactType.class)
     public JAXBElement<Boolean> createServiceContactTypeIsUndeliverable(Boolean value) {
         return new JAXBElement<Boolean>(_ServiceContactTypeIsUndeliverable_QNAME, Boolean.class, ServiceContactType.class, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:efm:services:schema:Common", name = "IsMailServiceContact", scope = ServiceContactType.class)
+    public JAXBElement<Boolean> createServiceContactTypeIsMailServiceContact(Boolean value) {
+        return new JAXBElement<Boolean>(_ServiceContactTypeIsMailServiceContact_QNAME, Boolean.class, ServiceContactType.class, value);
     }
 
     /**

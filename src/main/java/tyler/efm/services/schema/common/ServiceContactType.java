@@ -32,6 +32,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *         &lt;element name="IsPublic" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
  *         &lt;element name="IsInFirmMasterList" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
  *         &lt;element name="IsUndeliverable" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
+ *         &lt;element name="IsMailServiceContact" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="ServiceContactID" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="FirmID" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
@@ -55,7 +56,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "phoneNumber",
     "isPublic",
     "isInFirmMasterList",
-    "isUndeliverable"
+    "isUndeliverable",
+    "isMailServiceContact"
 })
 public class ServiceContactType {
 
@@ -79,6 +81,8 @@ public class ServiceContactType {
     protected JAXBElement<Boolean> isInFirmMasterList;
     @XmlElementRef(name = "IsUndeliverable", namespace = "urn:tyler:efm:services:schema:Common", type = JAXBElement.class, required = false)
     protected JAXBElement<Boolean> isUndeliverable;
+    @XmlElementRef(name = "IsMailServiceContact", namespace = "urn:tyler:efm:services:schema:Common", type = JAXBElement.class, required = false)
+    protected JAXBElement<Boolean> isMailServiceContact;
     @XmlAttribute(name = "ServiceContactID")
     protected String serviceContactID;
     @XmlAttribute(name = "FirmID")
@@ -326,6 +330,30 @@ public class ServiceContactType {
      */
     public void setIsUndeliverable(JAXBElement<Boolean> value) {
         this.isUndeliverable = value;
+    }
+
+    /**
+     * Gets the value of the isMailServiceContact property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     *     
+     */
+    public JAXBElement<Boolean> getIsMailServiceContact() {
+        return isMailServiceContact;
+    }
+
+    /**
+     * Sets the value of the isMailServiceContact property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     *     
+     */
+    public void setIsMailServiceContact(JAXBElement<Boolean> value) {
+        this.isMailServiceContact = value;
     }
 
     /**

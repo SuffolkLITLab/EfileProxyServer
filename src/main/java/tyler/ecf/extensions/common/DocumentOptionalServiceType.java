@@ -1,6 +1,8 @@
 
 package tyler.ecf.extensions.common;
 
+import java.util.ArrayList;
+import java.util.List;
 import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.proxy.xsd._2.Decimal;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -23,6 +25,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *       &lt;sequence&gt;
  *         &lt;element ref="{urn:tyler:ecf:extensions:Common}Multiplier" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:extensions:Common}FeeAmount" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}PartyPayor" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -34,7 +37,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "DocumentOptionalServiceType", propOrder = {
     "multiplier",
-    "feeAmount"
+    "feeAmount",
+    "partyPayor"
 })
 public class DocumentOptionalServiceType
     extends IdentificationType
@@ -44,6 +48,8 @@ public class DocumentOptionalServiceType
     protected Decimal multiplier;
     @XmlElement(name = "FeeAmount")
     protected Decimal feeAmount;
+    @XmlElement(name = "PartyPayor")
+    protected List<PartyPayorType> partyPayor;
 
     /**
      * Gets the value of the multiplier property.
@@ -91,6 +97,35 @@ public class DocumentOptionalServiceType
      */
     public void setFeeAmount(Decimal value) {
         this.feeAmount = value;
+    }
+
+    /**
+     * Gets the value of the partyPayor property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the partyPayor property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getPartyPayor().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link PartyPayorType }
+     * 
+     * 
+     */
+    public List<PartyPayorType> getPartyPayor() {
+        if (partyPayor == null) {
+            partyPayor = new ArrayList<PartyPayorType>();
+        }
+        return this.partyPayor;
     }
 
     /**

@@ -50,8 +50,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "obligationRecurrence"
 })
 @XmlSeeAlso({
-    FinancialObligationType.class,
-    ObligationRecurrenceType.class
+    ObligationRecurrenceType.class,
+    FinancialObligationType.class
 })
 public class ObligationType
     extends ComplexObjectType

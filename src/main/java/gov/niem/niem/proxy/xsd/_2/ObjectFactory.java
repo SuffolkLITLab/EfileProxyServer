@@ -30,11 +30,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Boolean }
+     * Create an instance of {@link String }
      * 
      */
-    public Boolean createBoolean() {
-        return new Boolean();
+    public String createString() {
+        return new String();
+    }
+
+    /**
+     * Create an instance of {@link Base64Binary }
+     * 
+     */
+    public Base64Binary createBase64Binary() {
+        return new Base64Binary();
     }
 
     /**
@@ -46,43 +54,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GYear }
+     * Create an instance of {@link Boolean }
      * 
      */
-    public GYear createGYear() {
-        return new GYear();
-    }
-
-    /**
-     * Create an instance of {@link Decimal }
-     * 
-     */
-    public Decimal createDecimal() {
-        return new Decimal();
-    }
-
-    /**
-     * Create an instance of {@link String }
-     * 
-     */
-    public String createString() {
-        return new String();
-    }
-
-    /**
-     * Create an instance of {@link Duration }
-     * 
-     */
-    public Duration createDuration() {
-        return new Duration();
-    }
-
-    /**
-     * Create an instance of {@link Base64Binary }
-     * 
-     */
-    public Base64Binary createBase64Binary() {
-        return new Base64Binary();
+    public Boolean createBoolean() {
+        return new Boolean();
     }
 
     /**
@@ -102,11 +78,35 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GYear }
+     * 
+     */
+    public GYear createGYear() {
+        return new GYear();
+    }
+
+    /**
      * Create an instance of {@link Time }
      * 
      */
     public Time createTime() {
         return new Time();
+    }
+
+    /**
+     * Create an instance of {@link Decimal }
+     * 
+     */
+    public Decimal createDecimal() {
+        return new Decimal();
+    }
+
+    /**
+     * Create an instance of {@link Duration }
+     * 
+     */
+    public Duration createDuration() {
+        return new Duration();
     }
 
 }

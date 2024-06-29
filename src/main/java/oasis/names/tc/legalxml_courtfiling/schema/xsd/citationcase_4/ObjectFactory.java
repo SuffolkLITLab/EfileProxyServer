@@ -28,10 +28,10 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.InsuranceTyp
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _Vehicle_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0", "Vehicle");
     private final static QName _CitationCaseAugmentation_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0", "CitationCaseAugmentation");
     private final static QName _CitationCase_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0", "CitationCase");
     private final static QName _CitationSubject_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0", "CitationSubject");
+    private final static QName _Vehicle_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0", "Vehicle");
     private final static QName _DrivingIncident_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0", "DrivingIncident");
     private final static QName _PersonBloodAlcoholNumber_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0", "PersonBloodAlcoholNumber");
     private final static QName _ParkingFacilityName_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0", "ParkingFacilityName");
@@ -46,14 +46,6 @@ public class ObjectFactory {
      * 
      */
     public ObjectFactory() {
-    }
-
-    /**
-     * Create an instance of {@link VehicleType }
-     * 
-     */
-    public VehicleType createVehicleType() {
-        return new VehicleType();
     }
 
     /**
@@ -81,6 +73,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link VehicleType }
+     * 
+     */
+    public VehicleType createVehicleType() {
+        return new VehicleType();
+    }
+
+    /**
      * Create an instance of {@link DrivingIncidentType }
      * 
      */
@@ -94,19 +94,6 @@ public class ObjectFactory {
      */
     public ParkingViolationType createParkingViolationType() {
         return new ParkingViolationType();
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link VehicleType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link VehicleType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0", name = "Vehicle")
-    public JAXBElement<VehicleType> createVehicle(VehicleType value) {
-        return new JAXBElement<VehicleType>(_Vehicle_QNAME, VehicleType.class, null, value);
     }
 
     /**
@@ -146,6 +133,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0", name = "CitationSubject")
     public JAXBElement<SubjectType> createCitationSubject(SubjectType value) {
         return new JAXBElement<SubjectType>(_CitationSubject_QNAME, SubjectType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link VehicleType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link VehicleType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CitationCase-4.0", name = "Vehicle")
+    public JAXBElement<VehicleType> createVehicle(VehicleType value) {
+        return new JAXBElement<VehicleType>(_Vehicle_QNAME, VehicleType.class, null, value);
     }
 
     /**

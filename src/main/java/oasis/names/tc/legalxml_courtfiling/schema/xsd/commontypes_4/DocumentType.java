@@ -40,9 +40,9 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "documentRendition"
 })
 @XmlSeeAlso({
+    CourtEventDocumentType.class,
     tyler.ecf.extensions.common.DocumentType.class,
-    ReviewedDocumentType.class,
-    CourtEventDocumentType.class
+    ReviewedDocumentType.class
 })
 public class DocumentType
     extends gov.niem.niem.niem_core._2.DocumentType

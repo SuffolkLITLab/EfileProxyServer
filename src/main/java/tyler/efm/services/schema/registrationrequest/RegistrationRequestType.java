@@ -1,6 +1,8 @@
 
 package tyler.efm.services.schema.registrationrequest;
 
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -9,6 +11,7 @@ import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 import tyler.efm.services.schema.baserequest.BaseRequestType;
+import tyler.efm.services.schema.common.NotificationContactType;
 import tyler.efm.services.schema.common.RegistrationType;
 
 
@@ -38,6 +41,8 @@ import tyler.efm.services.schema.common.RegistrationType;
  *         &lt;element name="CountryCode" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="FirmName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="PhoneNumber" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="FirmID" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:efm:services:schema:Common}NotificationContact" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -63,7 +68,9 @@ import tyler.efm.services.schema.common.RegistrationType;
     "zipCode",
     "countryCode",
     "firmName",
-    "phoneNumber"
+    "phoneNumber",
+    "firmID",
+    "notificationContact"
 })
 public class RegistrationRequestType
     extends BaseRequestType
@@ -102,6 +109,10 @@ public class RegistrationRequestType
     protected String firmName;
     @XmlElement(name = "PhoneNumber")
     protected String phoneNumber;
+    @XmlElement(name = "FirmID")
+    protected String firmID;
+    @XmlElement(name = "NotificationContact", namespace = "urn:tyler:efm:services:schema:Common")
+    protected List<NotificationContactType> notificationContact;
 
     /**
      * Gets the value of the registrationType property.
@@ -485,6 +496,59 @@ public class RegistrationRequestType
      */
     public void setPhoneNumber(String value) {
         this.phoneNumber = value;
+    }
+
+    /**
+     * Gets the value of the firmID property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getFirmID() {
+        return firmID;
+    }
+
+    /**
+     * Sets the value of the firmID property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setFirmID(String value) {
+        this.firmID = value;
+    }
+
+    /**
+     * Gets the value of the notificationContact property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the notificationContact property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getNotificationContact().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link NotificationContactType }
+     * 
+     * 
+     */
+    public List<NotificationContactType> getNotificationContact() {
+        if (notificationContact == null) {
+            notificationContact = new ArrayList<NotificationContactType>();
+        }
+        return this.notificationContact;
     }
 
     /**

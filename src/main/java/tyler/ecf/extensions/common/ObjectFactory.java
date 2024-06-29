@@ -44,7 +44,6 @@ public class ObjectFactory {
     private final static QName _DevelopmentPolicyParameters_QNAME = new QName("urn:tyler:ecf:extensions:Common", "DevelopmentPolicyParameters");
     private final static QName _PersonCapability_QNAME = new QName("urn:tyler:ecf:extensions:Common", "PersonCapability");
     private final static QName _IAmThisUserIndicator_QNAME = new QName("urn:tyler:ecf:extensions:Common", "IAmThisUserIndicator");
-    private final static QName _LocationSpecificUrl_QNAME = new QName("urn:tyler:ecf:extensions:Common", "LocationSpecificUrl");
     private final static QName _CourtSplitAmount_QNAME = new QName("urn:tyler:ecf:extensions:Common", "CourtSplitAmount");
     private final static QName _NonCourtSplitAmount_QNAME = new QName("urn:tyler:ecf:extensions:Common", "NonCourtSplitAmount");
     private final static QName _FeeSplit_QNAME = new QName("urn:tyler:ecf:extensions:Common", "FeeSplit");
@@ -52,6 +51,8 @@ public class ObjectFactory {
     private final static QName _PartyService_QNAME = new QName("urn:tyler:ecf:extensions:Common", "PartyService");
     private final static QName _FilingAssociation_QNAME = new QName("urn:tyler:ecf:extensions:Common", "FilingAssociation");
     private final static QName _PartyReference_QNAME = new QName("urn:tyler:ecf:extensions:Common", "PartyReference");
+    private final static QName _AddMeAsServiceContactPartyReference_QNAME = new QName("urn:tyler:ecf:extensions:Common", "AddMeAsServiceContactPartyReference");
+    private final static QName _HasUserFiledIntoCaseIndicator_QNAME = new QName("urn:tyler:ecf:extensions:Common", "HasUserFiledIntoCaseIndicator");
     private final static QName _FilingReference_QNAME = new QName("urn:tyler:ecf:extensions:Common", "FilingReference");
     private final static QName _ServiceDate_QNAME = new QName("urn:tyler:ecf:extensions:Common", "ServiceDate");
     private final static QName _FilerInformation_QNAME = new QName("urn:tyler:ecf:extensions:Common", "FilerInformation");
@@ -70,6 +71,7 @@ public class ObjectFactory {
     private final static QName _UseOktaAuthentication_QNAME = new QName("urn:tyler:ecf:extensions:Common", "UseOktaAuthentication");
     private final static QName _OktaAuthenticationURI_QNAME = new QName("urn:tyler:ecf:extensions:Common", "OktaAuthenticationURI");
     private final static QName _CaseAddress_QNAME = new QName("urn:tyler:ecf:extensions:Common", "CaseAddress");
+    private final static QName _ServiceConsentEmail_QNAME = new QName("urn:tyler:ecf:extensions:Common", "ServiceConsentEmail");
     private final static QName _AgencyOperation_QNAME = new QName("urn:tyler:ecf:extensions:Common", "AgencyOperation");
     private final static QName _Agency_QNAME = new QName("urn:tyler:ecf:extensions:Common", "Agency");
     private final static QName _AgencyIdentification_QNAME = new QName("urn:tyler:ecf:extensions:Common", "AgencyIdentification");
@@ -95,6 +97,8 @@ public class ObjectFactory {
     private final static QName _ProviderCharge_QNAME = new QName("urn:tyler:ecf:extensions:Common", "ProviderCharge");
     private final static QName _MotionTypeCode_QNAME = new QName("urn:tyler:ecf:extensions:Common", "MotionTypeCode");
     private final static QName _DecedentPartyAssociation_QNAME = new QName("urn:tyler:ecf:extensions:Common", "DecedentPartyAssociation");
+    private final static QName _PartyPayor_QNAME = new QName("urn:tyler:ecf:extensions:Common", "PartyPayor");
+    private final static QName _PaymentAccountID_QNAME = new QName("urn:tyler:ecf:extensions:Common", "PaymentAccountID");
     private final static QName _EntityFiler_QNAME = new QName("urn:tyler:ecf:extensions:Common", "EntityFiler");
     private final static QName _CaseAbstractor_QNAME = new QName("urn:tyler:ecf:extensions:Common", "CaseAbstractor");
     private final static QName _AbstractorName_QNAME = new QName("urn:tyler:ecf:extensions:Common", "AbstractorName");
@@ -337,6 +341,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link PartyPayorType }
+     * 
+     */
+    public PartyPayorType createPartyPayorType() {
+        return new PartyPayorType();
+    }
+
+    /**
      * Create an instance of {@link PersonFilerType }
      * 
      */
@@ -538,19 +550,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link AnyURI }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link AnyURI }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "LocationSpecificUrl")
-    public JAXBElement<AnyURI> createLocationSpecificUrl(AnyURI value) {
-        return new JAXBElement<AnyURI>(_LocationSpecificUrl_QNAME, AnyURI.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link SplitAmountType }{@code >}
      * 
      * @param value
@@ -639,6 +638,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "PartyReference")
     public JAXBElement<ReferenceType> createPartyReference(ReferenceType value) {
         return new JAXBElement<ReferenceType>(_PartyReference_QNAME, ReferenceType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ReferenceType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ReferenceType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "AddMeAsServiceContactPartyReference")
+    public JAXBElement<ReferenceType> createAddMeAsServiceContactPartyReference(ReferenceType value) {
+        return new JAXBElement<ReferenceType>(_AddMeAsServiceContactPartyReference_QNAME, ReferenceType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "HasUserFiledIntoCaseIndicator")
+    public JAXBElement<Boolean> createHasUserFiledIntoCaseIndicator(Boolean value) {
+        return new JAXBElement<Boolean>(_HasUserFiledIntoCaseIndicator_QNAME, Boolean.class, null, value);
     }
 
     /**
@@ -873,6 +898,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "CaseAddress")
     public JAXBElement<StructuredAddressType> createCaseAddress(StructuredAddressType value) {
         return new JAXBElement<StructuredAddressType>(_CaseAddress_QNAME, StructuredAddressType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link gov.niem.niem.proxy.xsd._2.String }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link gov.niem.niem.proxy.xsd._2.String }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "ServiceConsentEmail", substitutionHeadNamespace = "http://niem.gov/niem/niem-core/2.0", substitutionHeadName = "ContactMeans")
+    public JAXBElement<gov.niem.niem.proxy.xsd._2.String> createServiceConsentEmail(gov.niem.niem.proxy.xsd._2.String value) {
+        return new JAXBElement<gov.niem.niem.proxy.xsd._2.String>(_ServiceConsentEmail_QNAME, gov.niem.niem.proxy.xsd._2.String.class, null, value);
     }
 
     /**
@@ -1198,6 +1236,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "DecedentPartyAssociation")
     public JAXBElement<DecedentPartyAssociationType> createDecedentPartyAssociation(DecedentPartyAssociationType value) {
         return new JAXBElement<DecedentPartyAssociationType>(_DecedentPartyAssociation_QNAME, DecedentPartyAssociationType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PartyPayorType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PartyPayorType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "PartyPayor")
+    public JAXBElement<PartyPayorType> createPartyPayor(PartyPayorType value) {
+        return new JAXBElement<PartyPayorType>(_PartyPayor_QNAME, PartyPayorType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "PaymentAccountID")
+    public JAXBElement<TextType> createPaymentAccountID(TextType value) {
+        return new JAXBElement<TextType>(_PaymentAccountID_QNAME, TextType.class, null, value);
     }
 
     /**

@@ -76,10 +76,10 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 })
 @XmlSeeAlso({
     AppellateCaseNoticeType.class,
-    MatchingFilingType.class,
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType.class,
     DocumentRenditionMetadataType.class,
     DocumentRenditionType.class,
+    MatchingFilingType.class,
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType.class,
     CaseFilingType.class
 })
 public class DocumentType

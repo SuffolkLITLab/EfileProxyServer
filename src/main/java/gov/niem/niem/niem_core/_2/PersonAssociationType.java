@@ -39,8 +39,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 })
 @XmlSeeAlso({
     PersonFiduciaryAssociationType.class,
-    PersonUnionAssociationType.class,
-    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonAssociationType.class
+    oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonAssociationType.class,
+    PersonUnionAssociationType.class
 })
 public class PersonAssociationType
     extends AssociationType

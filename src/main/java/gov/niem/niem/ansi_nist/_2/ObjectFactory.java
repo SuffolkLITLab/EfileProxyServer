@@ -34,19 +34,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FPCCodeType }
-     * 
-     */
-    public FPCCodeType createFPCCodeType() {
-        return new FPCCodeType();
-    }
-
-    /**
      * Create an instance of {@link FingerprintType }
      * 
      */
     public FingerprintType createFingerprintType() {
         return new FingerprintType();
+    }
+
+    /**
+     * Create an instance of {@link FPCCodeType }
+     * 
+     */
+    public FPCCodeType createFPCCodeType() {
+        return new FPCCodeType();
     }
 
     /**

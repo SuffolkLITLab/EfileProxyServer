@@ -3,6 +3,7 @@ package tyler.efm.services.schema.common;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.datatype.XMLGregorianCalendar;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -11,7 +12,6 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlSchemaType;
 import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -35,6 +35,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *         &lt;element name="RestrictFiling" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *         &lt;element name="RestrictFilingComment" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="IsUndeliverable" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
+ *         &lt;element name="NotificationContact" type="{urn:tyler:efm:services:schema:Common}NotificationContactType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="Status" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="UserID" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="FirmID" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
@@ -59,7 +61,9 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "role",
     "restrictFiling",
     "restrictFilingComment",
-    "isUndeliverable"
+    "isUndeliverable",
+    "notificationContact",
+    "status"
 })
 public class UserType {
 
@@ -82,6 +86,10 @@ public class UserType {
     protected String restrictFilingComment;
     @XmlElementRef(name = "IsUndeliverable", namespace = "urn:tyler:efm:services:schema:Common", type = JAXBElement.class, required = false)
     protected JAXBElement<Boolean> isUndeliverable;
+    @XmlElement(name = "NotificationContact")
+    protected List<NotificationContactType> notificationContact;
+    @XmlElement(name = "Status")
+    protected String status;
     @XmlAttribute(name = "UserID")
     protected String userID;
     @XmlAttribute(name = "FirmID")
@@ -221,7 +229,7 @@ public class UserType {
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the Jakarta XML Binding object.
      * This is why there is not a <CODE>set</CODE> method for the role property.
      * 
      * <p>
@@ -306,6 +314,59 @@ public class UserType {
      */
     public void setIsUndeliverable(JAXBElement<Boolean> value) {
         this.isUndeliverable = value;
+    }
+
+    /**
+     * Gets the value of the notificationContact property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the notificationContact property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getNotificationContact().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link NotificationContactType }
+     * 
+     * 
+     */
+    public List<NotificationContactType> getNotificationContact() {
+        if (notificationContact == null) {
+            notificationContact = new ArrayList<NotificationContactType>();
+        }
+        return this.notificationContact;
+    }
+
+    /**
+     * Gets the value of the status property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * Sets the value of the status property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setStatus(String value) {
+        this.status = value;
     }
 
     /**

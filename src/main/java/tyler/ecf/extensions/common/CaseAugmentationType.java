@@ -8,6 +8,7 @@ import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.StructuredAddressType;
 import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.proxy.xsd._2.Boolean;
+import gov.niem.niem.structures._2.ReferenceType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -58,6 +59,8 @@ import tyler.ecf.extensions.massachusetts.RepresentativeCapacityType;
  *         &lt;element ref="{urn:tyler:ecf:extensions:Common}LowerCourtCaseTypeText" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:extensions:Common}CaseAddress" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:extensions:Common}FeeSplit" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}AddMeAsServiceContactPartyReference" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}HasUserFiledIntoCaseIndicator" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -95,7 +98,9 @@ import tyler.ecf.extensions.massachusetts.RepresentativeCapacityType;
     "agency",
     "lowerCourtCaseTypeText",
     "caseAddress",
-    "feeSplit"
+    "feeSplit",
+    "addMeAsServiceContactPartyReference",
+    "hasUserFiledIntoCaseIndicator"
 })
 public class CaseAugmentationType
     extends oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseAugmentationType
@@ -158,6 +163,10 @@ public class CaseAugmentationType
     protected StructuredAddressType caseAddress;
     @XmlElement(name = "FeeSplit")
     protected List<FeeSplitType> feeSplit;
+    @XmlElement(name = "AddMeAsServiceContactPartyReference")
+    protected List<ReferenceType> addMeAsServiceContactPartyReference;
+    @XmlElement(name = "HasUserFiledIntoCaseIndicator")
+    protected Boolean hasUserFiledIntoCaseIndicator;
 
     /**
      * Gets the value of the caseTypeText property.
@@ -882,6 +891,59 @@ public class CaseAugmentationType
             feeSplit = new ArrayList<FeeSplitType>();
         }
         return this.feeSplit;
+    }
+
+    /**
+     * Gets the value of the addMeAsServiceContactPartyReference property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the addMeAsServiceContactPartyReference property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getAddMeAsServiceContactPartyReference().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link ReferenceType }
+     * 
+     * 
+     */
+    public List<ReferenceType> getAddMeAsServiceContactPartyReference() {
+        if (addMeAsServiceContactPartyReference == null) {
+            addMeAsServiceContactPartyReference = new ArrayList<ReferenceType>();
+        }
+        return this.addMeAsServiceContactPartyReference;
+    }
+
+    /**
+     * Gets the value of the hasUserFiledIntoCaseIndicator property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean getHasUserFiledIntoCaseIndicator() {
+        return hasUserFiledIntoCaseIndicator;
+    }
+
+    /**
+     * Sets the value of the hasUserFiledIntoCaseIndicator property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setHasUserFiledIntoCaseIndicator(Boolean value) {
+        this.hasUserFiledIntoCaseIndicator = value;
     }
 
     /**

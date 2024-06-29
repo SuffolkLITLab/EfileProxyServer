@@ -82,6 +82,7 @@ public class ContactInformationType
      * {@link JAXBElement }{@code <}{@link TelephoneNumberType }{@code >}
      * {@link JAXBElement }{@code <}{@link TelephoneNumberType }{@code >}
      * {@link JAXBElement }{@code <}{@link gov.niem.niem.proxy.xsd._2.String }{@code >}
+     * {@link JAXBElement }{@code <}{@link gov.niem.niem.proxy.xsd._2.String }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
      * 
      * 
