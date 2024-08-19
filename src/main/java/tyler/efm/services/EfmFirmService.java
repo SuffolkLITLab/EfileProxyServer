@@ -15,26 +15,13 @@ import jakarta.xml.ws.Service;
  *
  */
 @WebServiceClient(name = "EfmFirmService",
-                  wsdlLocation = "file:illinois-EFMFirmServiceSingle.svc.wsdl",
+                  wsdlLocation = "classpath:wsdl/stage/illinois-EFMFirmServiceSingle.svc.wsdl",
                   targetNamespace = "urn:tyler:efm:services")
 public class EfmFirmService extends Service {
-
-    public static final URL WSDL_LOCATION;
 
     public static final QName SERVICE = new QName("urn:tyler:efm:services", "EfmFirmService");
     public static final QName BasicHttpBindingIEfmFirmService = new QName("urn:tyler:efm:services", "BasicHttpBinding_IEfmFirmService");
     public static final QName BasicHttpBindingIEfmFirmService1 = new QName("urn:tyler:efm:services", "BasicHttpBinding_IEfmFirmService1");
-    static {
-        URL url = null;
-        try {
-            url = new URL("file:illinois-EFMFirmServiceSingle.svc.wsdl");
-        } catch (MalformedURLException e) {
-            java.util.logging.Logger.getLogger(EfmFirmService.class.getName())
-                .log(java.util.logging.Level.INFO,
-                     "Can not initialize the default wsdl from {0}", "file:illinois-EFMFirmServiceSingle.svc.wsdl");
-        }
-        WSDL_LOCATION = url;
-    }
 
     public EfmFirmService(URL wsdlLocation) {
         super(wsdlLocation, SERVICE);
@@ -42,14 +29,6 @@ public class EfmFirmService extends Service {
 
     public EfmFirmService(URL wsdlLocation, QName serviceName) {
         super(wsdlLocation, serviceName);
-    }
-
-    public EfmFirmService() {
-        super(WSDL_LOCATION, SERVICE);
-    }
-
-    public EfmFirmService(WebServiceFeature ... features) {
-        super(WSDL_LOCATION, SERVICE, features);
     }
 
     public EfmFirmService(URL wsdlLocation, WebServiceFeature ... features) {

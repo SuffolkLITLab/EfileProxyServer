@@ -1,6 +1,5 @@
 package tyler.efm.services;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import javax.xml.namespace.QName;
 import jakarta.xml.ws.WebEndpoint;
@@ -19,22 +18,9 @@ import jakarta.xml.ws.Service;
                   targetNamespace = "urn:tyler:efm:services")
 public class EfmUserService extends Service {
 
-    public static final URL WSDL_LOCATION;
-
     public static final QName SERVICE = new QName("urn:tyler:efm:services", "EfmUserService");
     public static final QName BasicHttpBindingIEfmUserService = new QName("urn:tyler:efm:services", "BasicHttpBinding_IEfmUserService");
     public static final QName BasicHttpBindingIEfmUserService1 = new QName("urn:tyler:efm:services", "BasicHttpBinding_IEfmUserService1");
-    static {
-        URL url = null;
-        try {
-            url = new URL("file:illinois-EFMUserServiceSingle.svc.wsdl");
-        } catch (MalformedURLException e) {
-            java.util.logging.Logger.getLogger(EfmUserService.class.getName())
-                .log(java.util.logging.Level.INFO,
-                     "Can not initialize the default wsdl from {0}", "file:illinois-EFMUserServiceSingle.svc.wsdl");
-        }
-        WSDL_LOCATION = url;
-    }
 
     public EfmUserService(URL wsdlLocation) {
         super(wsdlLocation, SERVICE);
@@ -42,14 +28,6 @@ public class EfmUserService extends Service {
 
     public EfmUserService(URL wsdlLocation, QName serviceName) {
         super(wsdlLocation, serviceName);
-    }
-
-    public EfmUserService() {
-        super(WSDL_LOCATION, SERVICE);
-    }
-
-    public EfmUserService(WebServiceFeature ... features) {
-        super(WSDL_LOCATION, SERVICE, features);
     }
 
     public EfmUserService(URL wsdlLocation, WebServiceFeature ... features) {
