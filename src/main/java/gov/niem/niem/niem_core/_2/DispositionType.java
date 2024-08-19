@@ -42,8 +42,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "dispositionCategoryText"
 })
 @XmlSeeAlso({
-    ChargeDispositionType.class,
-    CaseDispositionType.class
+    CaseDispositionType.class,
+    ChargeDispositionType.class
 })
 public class DispositionType
     extends ComplexObjectType

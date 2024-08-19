@@ -37,8 +37,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "courtOrderStatus"
 })
 @XmlSeeAlso({
-    DomesticCaseOrderType.class,
-    WarrantType.class
+    WarrantType.class,
+    DomesticCaseOrderType.class
 })
 public class CourtOrderType
     extends ActivityType

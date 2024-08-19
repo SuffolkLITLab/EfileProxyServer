@@ -1,5 +1,5 @@
 
-package tyler.efm.services.schema.notificationpreferencesresponse;
+package tyler.efm.services.schema.common;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,23 +9,21 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import tyler.efm.services.schema.baseresponse.BaseResponseType;
-import tyler.efm.services.schema.common.NotificationType;
 
 
 /**
- * <p>Java class for NotificationPreferencesResponseType complex type.
+ * <p>Java class for ArrayOfString complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="NotificationPreferencesResponseType"&gt;
+ * &lt;complexType name="ArrayOfString"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{urn:tyler:efm:services:schema:BaseResponse}BaseResponseType"&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{urn:tyler:efm:services:schema:Common}Notification" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="NotificationType" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
- *     &lt;/extension&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -33,43 +31,41 @@ import tyler.efm.services.schema.common.NotificationType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "NotificationPreferencesResponseType", propOrder = {
-    "notification"
+@XmlType(name = "ArrayOfString", propOrder = {
+    "notificationType"
 })
-public class NotificationPreferencesResponseType
-    extends BaseResponseType
-{
+public class ArrayOfString {
 
-    @XmlElement(name = "Notification", namespace = "urn:tyler:efm:services:schema:Common")
-    protected List<NotificationType> notification;
+    @XmlElement(name = "NotificationType")
+    protected List<String> notificationType;
 
     /**
-     * Gets the value of the notification property.
+     * Gets the value of the notificationType property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a <CODE>set</CODE> method for the notification property.
+     * This is why there is not a <CODE>set</CODE> method for the notificationType property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getNotification().add(newItem);
+     *    getNotificationType().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link NotificationType }
+     * {@link String }
      * 
      * 
      */
-    public List<NotificationType> getNotification() {
-        if (notification == null) {
-            notification = new ArrayList<NotificationType>();
+    public List<String> getNotificationType() {
+        if (notificationType == null) {
+            notificationType = new ArrayList<String>();
         }
-        return this.notification;
+        return this.notificationType;
     }
 
     /**

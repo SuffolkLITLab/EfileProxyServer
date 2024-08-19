@@ -1,4 +1,15 @@
 #!/usr/bin/env python3
+
+"""
+To run you must:
+
+* have the python dependencies installed (requests and plumbum)
+* have CXF installed on the PATH env var
+* have maven and Java (17) installed locally
+* have the env variables defined (search for `os.getenv`)
+* must have installed this project with maven (`mvn install`)
+
+"""
 import os
 import requests
 from plumbum import local, FG, BG
@@ -18,6 +29,8 @@ supported_jurisdictions = [v.strip() for v in os.getenv('TYLER_JURISDICTIONS', '
 tyler_env = os.getenv('TYLER_ENV', 'stage')
 
 for juris in supported_jurisdictions:
+  # NOTE(brycew): this is wrong, we only need one copy per jurisdiction. Should all be the same
+  # TODO(brycew) how to confirm they're all the same?
   mkdir['-p', f"{juris}/{tyler_env}"] & FG
   os.chdir(f"{juris}/{tyler_env}")
   r = requests.get(f"https://{juris}-{tyler_env}.tylertech.cloud/EFM/EFMUserService.svc?singleWsdl")
@@ -57,9 +70,9 @@ os.chdir(f'{juris}/{tyler_env}')
 with open('bindings.xjb', 'w') as f:
   f.write(bindings_xjb_contents)
 
-downloaded_fs = ['EFMUserServiceSingle.svc.wsdl', 'EFMFirmServiceSingle.svc.wsdl']
-
 wsdl2java['-client', '-b', 'bindings.xjb', '-xjc-Xts', '-d', '../../../../java', '-verbose', 'ECF-4.0-FilingReviewMDEService.wsdl'] & FG
+
+downloaded_fs = ['EFMUserServiceSingle.svc.wsdl', 'EFMFirmServiceSingle.svc.wsdl']
 
 # Regenerated the Java files 
 for downloaded in downloaded_fs:

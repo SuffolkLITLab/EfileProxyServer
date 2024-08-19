@@ -54,16 +54,16 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "activityDisposition"
 })
 @XmlSeeAlso({
+    DriverLicenseWithdrawalType.class,
     ArrestType.class,
     BookingType.class,
     CitationType.class,
-    CourtOrderType.class,
-    SentenceType.class,
     TermType.class,
-    IncidentType.class,
-    DriverLicenseWithdrawalType.class,
     CourtEventType.class,
-    CaseType.class
+    SentenceType.class,
+    CourtOrderType.class,
+    CaseType.class,
+    IncidentType.class
 })
 public class ActivityType
     extends ComplexObjectType

@@ -44,10 +44,10 @@ import tyler.ecf.extensions.filingdetailresponsemessage.ServiceRecipientDetailTy
     "statusDescriptionText"
 })
 @XmlSeeAlso({
-    ServiceRecipientStatusType.class,
-    ServiceRecipientDetailType.class,
     MarriageStatusType.class,
-    FilingStatusType.class
+    FilingStatusType.class,
+    ServiceRecipientStatusType.class,
+    ServiceRecipientDetailType.class
 })
 public class StatusType
     extends ComplexObjectType

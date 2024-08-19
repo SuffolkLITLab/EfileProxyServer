@@ -64,21 +64,21 @@ import tyler.ecf.extensions.servicetypesrequestmessage.ServiceTypesRequestMessag
     "caseCourt"
 })
 @XmlSeeAlso({
-    FilingServiceQueryMessageType.class,
-    FeesCalculationQueryMessageType.class,
-    FilingStatusQueryMessageType.class,
-    FilingDetailQueryMessageType.class,
-    CaseQueryMessageType.class,
     CaseListQueryMessageType.class,
-    ServiceInformationQueryMessageType.class,
-    SecureCaseMessageType.class,
-    ServiceTypesRequestMessageType.class,
+    CaseQueryMessageType.class,
     CourtPolicyQueryMessageType.class,
     DocumentQueryMessageType.class,
-    ServiceInformationHistoryQueryMessageType.class,
+    FeesCalculationQueryMessageType.class,
     FilingListQueryMessageType.class,
+    FilingStatusQueryMessageType.class,
+    ServiceInformationQueryMessageType.class,
+    ServiceInformationHistoryQueryMessageType.class,
+    ServiceAttachCaseListQueryMessageType.class,
+    FilingServiceQueryMessageType.class,
+    FilingDetailQueryMessageType.class,
     CancelFilingMessageType.class,
-    ServiceAttachCaseListQueryMessageType.class
+    SecureCaseMessageType.class,
+    ServiceTypesRequestMessageType.class
 })
 public class QueryMessageType
     extends ComplexObjectType
