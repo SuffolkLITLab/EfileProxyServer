@@ -36,6 +36,12 @@ public class FilingError extends Exception {
   }
 
   private FilingError(Type type, String description, Optional<InterviewVariable> missingVariable) {
+    super(
+        type.toString()
+            + " "
+            + description
+            + " "
+            + missingVariable.map(v -> v.toString()).orElse(""));
     this.type = type;
     this.description = description;
     this.missingVariable = missingVariable;
