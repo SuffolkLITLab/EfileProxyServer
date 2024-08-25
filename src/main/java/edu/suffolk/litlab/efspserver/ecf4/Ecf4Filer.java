@@ -510,6 +510,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       // method", "text"));
       // }
     } catch (FilingError err) {
+      log.error("Error when preparing Filing", err);
       return Result.err(err);
     }
 
@@ -610,6 +611,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                   info, collector, apiToken, filingPort.get(), recordPort.get(), QueryType.Fees)
               .cfm;
     } catch (FilingError err) {
+      log.error("Error when preparing Filing for getFilingFees", err);
       return Result.err(err);
     }
 
