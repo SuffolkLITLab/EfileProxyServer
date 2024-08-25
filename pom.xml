@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>edu.suffolk.litlab</groupId>
     <artifactId>efspserver</artifactId>
-    <version>1.2.10</version>
+    <version>1.2.11</version>
     <name>Suffolk LITLab EFSP Proxy Server</name>
     <url>https://suffolklitlab.org</url>
     <description>an EFSP client for the AssemblyLine Project</description>
