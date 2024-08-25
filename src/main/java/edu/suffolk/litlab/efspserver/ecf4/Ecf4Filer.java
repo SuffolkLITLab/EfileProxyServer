@@ -668,6 +668,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                   info, collector, apiToken, filingPort.get(), recordPort.get(), QueryType.Review)
               .cfm;
     } catch (FilingError err) {
+      log.error("Error when preparing Filing", err);
       return Result.err(err);
     }
 

@@ -319,7 +319,7 @@ public class EcfCodesService extends CodesService {
       if (errResp.isPresent()) {
         return errResp.get();
       }
-      return cors(Response.ok(cd.getCaseCategoryWithCode(courtId, catCode)));
+      return cors(Response.ok(cd.getCaseCategoryWithCode(courtId, catCode).orElse(null)));
     }
   }
 
