@@ -450,7 +450,7 @@ public class CodeUpdater {
 
         // No longer checking for false here -- see PR.
         // Will ignore tables that don't exist.
-        cd.deleteFromTable(table, courtLocation)
+        cd.deleteFromTable(table, courtLocation);
 
         updates = updates.plus(Duration.between(deleteFromTable, Instant.now(Clock.systemUTC())));
       }
