@@ -447,11 +447,11 @@ public class CodeUpdater {
           tables);
       for (String table : tables) {
         Instant deleteFromTable = Instant.now(Clock.systemUTC());
-        if (!cd.deleteFromTable(table, courtLocation)) {
-          log.error("Couldn't delete from {} at {}, aborting", table, courtLocation);
-          cd.rollback(sp);
-          return false;
-        }
+
+        // No longer checking for false here -- see PR.
+        // Will ignore tables that don't exist.
+        cd.deleteFromTable(table, courtLocation)
+
         updates = updates.plus(Duration.between(deleteFromTable, Instant.now(Clock.systemUTC())));
       }
     }
