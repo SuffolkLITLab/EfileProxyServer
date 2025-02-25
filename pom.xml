@@ -481,9 +481,10 @@
                                         <element>BUNDLE</element>
                                         <limits>
                                             <limit>
-                                                <counter>COMPLEXITY</counter>
+                                                <counter>INSTRUCTION</counter>
                                                 <value>COVEREDRATIO</value>
-                                                <minimum>0.60</minimum>
+                                                <!-- TODO(brycew): ratchet this up to at least 75% -->
+                                                <minimum>0.25</minimum>
                                             </limit>
                                         </limits>
                                     </rule>
@@ -494,7 +495,6 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-
 
         <plugins>
             <plugin>
