@@ -50,10 +50,11 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
       DataSource ds,
       OrgMessageSender sender)
       throws URISyntaxException {
-    Optional<String> maybeJeffersonEndpoint = StdLib.GetEnv("JEFFERSON_ENDPOINT");
+    final String ENDPOINT_ENV_VAR_NAME = "JEFFERSON_ENDPOINT";
+    Optional<String> maybeJeffersonEndpoint = StdLib.GetEnv(ENDPOINT_ENV_VAR_NAME);
     if (maybeJeffersonEndpoint.isEmpty()) {
-      throw new RuntimeException(
-          "JEFFERSON_ENDPOINT needs to be the " + "defined. Did you forget to source .env?");
+      log.warn("JeffNet not being used: {} should be an env var", ENDPOINT_ENV_VAR_NAME);
+      return Optional.empty();
     }
 
     URI jeffnetUri = new URI(maybeJeffersonEndpoint.get());
