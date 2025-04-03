@@ -315,28 +315,6 @@
             <!-- lock down plugins versions to avoid Maven defaults -->
             <plugins>
 
-        <plugin>
-    <groupId>org.openapitools</groupId>
-    <artifactId>openapi-generator-maven-plugin</artifactId>
-    <!-- RELEASE_VERSION -->
-    <version>6.3.0</version>
-    <!-- /RELEASE_VERSION -->
-            <configuration>
-                <inputSpec>${project.build.directory}/generatedtest/openapi.yaml</inputSpec>
-                <generatorName>html2</generatorName>
-                <configOptions>
-                   <sourceFolder>src/gen/java/main</sourceFolder>
-                </configOptions>
-                <skipValidateSpec>true</skipValidateSpec>
-            </configuration>
-    <executions>
-        <execution>
-            <goals>
-                <goal>generate</goal>
-            </goals>
-        </execution>
-    </executions>
-</plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
@@ -357,7 +335,32 @@
           </execution>
         </executions>
 </plugin>
-        <plugin>
+            <plugin>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-maven-plugin-jakarta</artifactId>
+                <version>2.2.29</version>
+                <configuration>
+                    <outputFileName>openapi</outputFileName>
+                    <outputPath>${project.build.directory}/generatedtest</outputPath>
+                    <outputFormat>JSONANDYAML</outputFormat>
+                    <resourcePackages>
+                        <package>edu.suffolk.litlab</package>
+                    </resourcePackages>
+                    <prettyPrint>TRUE</prettyPrint>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>resolve</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+
+        <!--plugin>
           <groupId>io.swagger.core.v3</groupId>
           <artifactId>swagger-maven-plugin</artifactId>
           <version>2.0.9</version>
@@ -377,7 +380,7 @@
               </goals>
             </execution>
           </executions>
-        </plugin>
+        </plugin-->
                 <plugin>
                   <groupId>com.github.spotbugs</groupId>
                   <artifactId>spotbugs-maven-plugin</artifactId>
@@ -569,6 +572,10 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-maven-plugin-jakarta</artifactId>
             </plugin>
         </plugins>
     </build>
