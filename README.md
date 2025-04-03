@@ -60,3 +60,8 @@ firefox target/site/jacoco/index.html # or chrome, chromium, etc.
 ```
 
 You shouldn't have an active running instance of the docker compose containers before running `integration_test.py`.
+
+## Making Code Changes
+
+Everything you need should be in [CONTRIBUTING.md](CONTRIBUTING.md).
+
