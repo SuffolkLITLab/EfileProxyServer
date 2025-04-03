@@ -1,24 +1,26 @@
 package edu.suffolk.litlab.efspserver;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
 
+@Tag("Tyler-Breakable")
 public class SoapClientChooserTest {
   
   public void testJurisdictionEnvUrl(String urlExpected, String urlGenerated) throws IOException {
-    assertEquals(urlExpected, urlGenerated);
+    assertThat(urlGenerated).isEqualTo(urlExpected);
     URL url = new URL(urlGenerated);
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     int resp = conn.getResponseCode();
-    assertTrue("The generated URL (" + urlGenerated + ") returns an invalid HTTP error code: " + Integer.toString(resp), resp < 400);
+    assertTrue(resp < 400, () -> "The generated URL (" + urlGenerated + ") returns an invalid HTTP error code: " + Integer.toString(resp));
   }
 
   @Test

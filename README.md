@@ -31,8 +31,17 @@ The API token to add to the docassemble config will be printed out.
 
 ## Testing
 
-You can run tests with `mvn test`. To run integration tests
-with coverage, do the following:
+You can run tests with `mvn test`. By default, all tests will run, but you can also limit the types of tests that you run with different maven profiles.
+
+* `mvn -PnoDockerTests test` will avoid tests that use docker. The Database tests spin up little docker containers to ensure that the queries work with Postgres. However, when this server is packaged up and run in a docker container, the nested docker enginer isn't available for the tests to run. So we need a way to avoid running those tests when packaging within docker.
+* `mvn -Preproducible test` will avoid tests that changes on Tyler's side might break, i.e. anything that makes a connection to a staging server. Useful for running on PRs, as we don't want to block PRs on unrelated issues.
+* `mvn -PtylerBreakable test` will **only** run tests that make a connection to Tyler staging servers. These are important to run routinely to ensure that we are aware of potentially breaking changes from the Tyler side.
+
+These testing groups are maintained with [JUnit's Tag](https://junit.org/junit5/docs/current/user-guide/#writing-tests-tagging-and-filtering) feature; each tag is specified in the profile's `<group>` or `<excludedGroup>` in the [pom.xml](pom.xml).
+
+### Integration Tests
+
+To run integration tests with coverage, do the following:
 
 ```bash
 # download a separate jar for jacoco and extract it
