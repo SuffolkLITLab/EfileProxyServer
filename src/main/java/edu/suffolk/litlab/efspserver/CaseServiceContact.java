@@ -6,6 +6,7 @@ import java.util.UUID;
 public class CaseServiceContact {
   public final String guid;
   public final String serviceType;
+
   /** If present, it's the name of the Person Obj Id that this contact is associated with. */
   public final Optional<PartyId> partyAssociated;
 

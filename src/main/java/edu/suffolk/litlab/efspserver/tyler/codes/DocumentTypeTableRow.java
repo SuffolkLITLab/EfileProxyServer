@@ -42,15 +42,17 @@ public class DocumentTypeTableRow {
 
   public static String getDocumentTypeWithFilingCode() {
     return """
-        SELECT code, name, filingcodeid, iscourtuseonly, isdefault, efspcode, location
-        FROM documenttype
-        WHERE domain=? AND location=? AND iscourtuseonly='False' AND filingcodeid=?""";
+    SELECT code, name, filingcodeid, iscourtuseonly, isdefault, efspcode, location
+    FROM documenttype
+    WHERE domain=? AND location=? AND iscourtuseonly='False' AND filingcodeid=?\
+    """;
   }
 
   public static String getDocumentTypeNoFiling() {
     return """
-        SELECT code, name, filingcodeid, iscourtuseonly, isdefault, efspcode, location
-        FROM documenttype
-        WHERE domain=? AND location=? AND iscourtuseonly='False' AND filingcodeid=''""";
+    SELECT code, name, filingcodeid, iscourtuseonly, isdefault, efspcode, location
+    FROM documenttype
+    WHERE domain=? AND location=? AND iscourtuseonly='False' AND filingcodeid=''\
+    """;
   }
 }

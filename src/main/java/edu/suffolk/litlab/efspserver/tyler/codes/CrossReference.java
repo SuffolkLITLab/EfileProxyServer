@@ -56,10 +56,10 @@ public class CrossReference {
 
   public static String query() {
     return """
-        SELECT code, name, casetypeid, isdefault, isrequired, validationregex,
-          customvalidationfailuremessage, efspcode, location
-        FROM crossreference WHERE domain=? AND location=? AND casetypeid=?
-        """;
+    SELECT code, name, casetypeid, isdefault, isrequired, validationregex,
+      customvalidationfailuremessage, efspcode, location
+    FROM crossreference WHERE domain=? AND location=? AND casetypeid=?
+    """;
   }
 
   public boolean matchesRegex(String value) {

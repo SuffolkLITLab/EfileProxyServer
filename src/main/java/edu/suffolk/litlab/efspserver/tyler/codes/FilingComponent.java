@@ -47,10 +47,10 @@ public class FilingComponent {
 
   public static String getFilingComponents() {
     return """
-        SELECT code, name, filingcodeid, required, allowmultiple, displayorder, efspcode, location
-        FROM filingcomponent
-        WHERE domain=? AND location=? AND filingcodeid=?
-        """;
+    SELECT code, name, filingcodeid, required, allowmultiple, displayorder, efspcode, location
+    FROM filingcomponent
+    WHERE domain=? AND location=? AND filingcodeid=?
+    """;
   }
 
   @Override

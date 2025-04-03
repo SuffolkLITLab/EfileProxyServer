@@ -28,8 +28,9 @@ public class FileType {
 
   public static String fileTypeQueries() {
     return """
-        SELECT name, code, extension, location
-        FROM filetype WHERE domain=? AND location=?""";
+    SELECT name, code, extension, location
+    FROM filetype WHERE domain=? AND location=?\
+    """;
   }
 
   @Override

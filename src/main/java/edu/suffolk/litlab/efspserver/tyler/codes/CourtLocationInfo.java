@@ -7,24 +7,29 @@ import java.util.Optional;
 
 public class CourtLocationInfo {
   public String code;
+
   /**
    * The full (more) human readable name for the court. Some examples: adams -> Adams County, and
    * cook:chd -> Cook County - Chancery
    */
   public String name;
+
   /** True if the court allows filing to new cases. */
   public boolean initial;
+
   /** True if the court allows filing to existing cases. */
   public boolean subsequent;
 
   public boolean disallowcopyingenvelopemultipletimes;
   public boolean allowfilingintononindexedcase;
   public List<String> allowablecardtypes;
+
   /**
    * From Reference Guide: "The Odyssey NodeID for a court location that is integrated with Tyler's
    * Odyssey Case Manager" Not really used, since we aren't integrating.
    */
   public String odysseynodeid;
+
   /**
    * A UID for each instance of the CMS. From the Reference Guide: "This is only relevant to court
    * agencies who use the EFM as well as Odyssey Case Manager APIs. This information allows such
@@ -34,11 +39,13 @@ public class CourtLocationInfo {
   public String cmsid;
 
   public String sendservicebeforereview;
+
   /**
    * The "parent court location" of the current court, e.g. cook is parent of cook:chd. TODO(#53):
    * figure out if this needs to be fallen back on if certain codes don't exist.
    */
   public String parentnodeid;
+
   /**
    * True if this location is actually a county, as opposed to a specific office / division. Not
    * used yet. NOTE(brycew): doesn't make sense, several counties in IL have False in this entry.
@@ -47,22 +54,26 @@ public class CourtLocationInfo {
 
   public String restrictbankaccountpayment;
   public boolean allowmultipleattorneys;
+
   /**
    * True if a service contact will be emailed if they are detached from a case at this court.
    * NOTE(brycew): shouldn't have to do anything with this: only relevant to
    * OasisEcfWsCallback.notifyEvent, but just to whether certain events can happen.
    */
   public boolean sendservicecontactremovednotifications;
+
   /**
    * True if this court allows the filer to specify a maximum fee amount to which the reviewer can
    * adjust filing sduring review.
    */
   public boolean allowmaxfeeamount;
+
   /**
    * If false, the EFM will require a Party Responsible for Fees when a waiver is used at this
    * location.
    */
   public boolean transferwaivedfeestocms;
+
   /**
    * If false and paying by credit card, courts will "Authorize" the card to determine if sufficient
    * credit exists on the credit card. TODO(brycew-later): should be something we notify users of,
@@ -73,27 +84,36 @@ public class CourtLocationInfo {
   public final boolean allowreturndate;
   public final boolean showdamageamount;
   public boolean hasconditionalservicetypes;
+
   /** True if the court requires the EFSP to mask the case category and type for some types. */
   public boolean hasprotectedcasetypes;
+
   /** The list of case type codes that are required to be masked. */
   public List<String> protectedcasetypes;
+
   /** The string that you have to use to replace the case category/type if it's protected. */
   public String protectedcasereplacementstring;
 
   public boolean allowzerofeeswithoutfilingparty;
   public Optional<Boolean> allowserviceoninitial;
   public boolean allowaddservicecontactsoninitial;
+
   /** True if the court allows redaction of documents. See TODO(#39) */
   public boolean allowredaction;
+
   /** The URL for interacting with the redaction service via HTTP (?) See TODO(#39) */
   public String redactionurl;
+
   /** The URL for launching the redaction viewer/editor. See TODO(#39). */
   public String redactionviewerurl;
+
   /** True if "Forced redaction" is enabled at this court. See TODO(#39). */
   public boolean enforceredaction;
+
   /* A document type code to indicate the document type to be include for redacted documents
    * at this court. See TODO(#39). */
   public String redactiondocumenttype;
+
   /**
    * Location specific override for the Data Field Config "DocumentDescription" if 1, sets the
    * default value to be the filing code description (comparable to FilingCode) if 2, sets the
@@ -103,22 +123,27 @@ public class CourtLocationInfo {
   public String defaultdocumentdescription;
 
   public boolean allowwaiveronmail;
+
   /** TODO(#38) for follow up to this code. */
   public boolean showreturnonreject;
 
   public final boolean allowchargeupdate;
   public final boolean allowpartyid;
+
   /** The redaction fee for this location. See TODO(#39). */
   public String redactionfee;
+
   /** True if redaction fees will be waived. See TODO(#39). */
   public boolean allowwaiveronredaction;
 
   public boolean disallowelectronicserviceonnewcontacts;
+
   /**
    * If false, Individual users aren't allowed to register accounts. NOTE(brycew): assuming this is
    * only present in the System (0) location, because it doesn't make sense as a per court thing.
    */
   public boolean allowindividualregistration;
+
   /**
    * A comma delimeted list of elements to be redacted. Possible values are: AccountNumber,
    * CreditCard, DriversLicense, GovernmentID, Passport, SocialSecurityNumber, TaxDocument. See
@@ -209,30 +234,30 @@ public class CourtLocationInfo {
 
   public static String parentQuery() {
     return """
-      SELECT code, parentnodeid
-      FROM location
-      WHERE domain=? AND code=?
-        """;
+    SELECT code, parentnodeid
+    FROM location
+    WHERE domain=? AND code=?
+    """;
   }
 
   public static String fullSingleQuery() {
     return """
-        SELECT code, name, initial, subsequent, disallowcopyingenvelopemultipletimes,
-            allowfilingintononindexedcase,
-            allowablecardtypes, odysseynodeid, cmsid, sendservicebeforereview, parentnodeid,
-            iscounty, restrictbankaccountpayment, allowmultipleattorneys, sendservicecontactremovednotifications,
-            allowmaxfeeamount, transferwaivedfeestocms, skippreauth, allowreturndate, showdamageamount,
-            hasconditionalservicetypes,
-            hasprotectedcasetypes, protectedcasetypes, allowzerofeeswithoutfilingparty,
-            allowserviceoninitial, allowaddservicecontactsoninitial,
-            allowredaction, redactionurl, redactionviewerurl, enforceredaction,
-            redactiondocumenttype, defaultdocumentdescription, allowwaiveronmail, showreturnonreject,
-            protectedcasereplacementstring, allowchargeupdate, allowpartyid, redactionfee,
-            allowwaiveronredaction, disallowelectronicserviceonnewcontacts,
-            allowindividualregistration, redactiontargetconfig, allowhearing
-        FROM location
-        WHERE domain=? AND code=?
-        """;
+    SELECT code, name, initial, subsequent, disallowcopyingenvelopemultipletimes,
+        allowfilingintononindexedcase,
+        allowablecardtypes, odysseynodeid, cmsid, sendservicebeforereview, parentnodeid,
+        iscounty, restrictbankaccountpayment, allowmultipleattorneys, sendservicecontactremovednotifications,
+        allowmaxfeeamount, transferwaivedfeestocms, skippreauth, allowreturndate, showdamageamount,
+        hasconditionalservicetypes,
+        hasprotectedcasetypes, protectedcasetypes, allowzerofeeswithoutfilingparty,
+        allowserviceoninitial, allowaddservicecontactsoninitial,
+        allowredaction, redactionurl, redactionviewerurl, enforceredaction,
+        redactiondocumenttype, defaultdocumentdescription, allowwaiveronmail, showreturnonreject,
+        protectedcasereplacementstring, allowchargeupdate, allowpartyid, redactionfee,
+        allowwaiveronredaction, disallowelectronicserviceonnewcontacts,
+        allowindividualregistration, redactiontargetconfig, allowhearing
+    FROM location
+    WHERE domain=? AND code=?
+    """;
   }
 
   public static String allOrderedQuery() {
@@ -245,9 +270,9 @@ public class CourtLocationInfo {
 
   public static String fileableQuery() {
     return """
-        SELECT name, code
-        FROM location
-        WHERE domain=? AND (initial ILIKE 'true' OR subsequent ILIKE 'true')
-        """;
+    SELECT name, code
+    FROM location
+    WHERE domain=? AND (initial ILIKE 'true' OR subsequent ILIKE 'true')
+    """;
   }
 }

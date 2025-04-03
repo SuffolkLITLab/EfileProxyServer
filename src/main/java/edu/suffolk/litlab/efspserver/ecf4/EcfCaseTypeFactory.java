@@ -914,12 +914,13 @@ public class EcfCaseTypeFactory {
     if (info.getLowerCourtInfo().isPresent()) {
       var lowerInfo = info.getLowerCourtInfo().get();
       if (lowerInfo.lowerCourtCode == null || lowerInfo.lowerCourtCode.isBlank()) {
-        // Lower court code doesn't seem to actually be required on the eFileMA site and its kind of broken, so commenting this out
+        // Lower court code doesn't seem to actually be required on the eFileMA site and its kind of
+        // broken, so commenting this out
         // collector.addRequired(lowerNameVar);
         tylerAug.getValue().setLowerCourtText(Ecf4Helper.convertText(""));
       } else {
         tylerAug.getValue().setLowerCourtText(Ecf4Helper.convertText(lowerInfo.lowerCourtCode));
-      }      
+      }
       if (lowerInfo.lowerCourtJudgeName == null || lowerInfo.lowerCourtJudgeName.isBlank()) {
         InterviewVariable var =
             collector.requestVar(
@@ -945,7 +946,8 @@ public class EcfCaseTypeFactory {
       appl.getRest().add(tylerAug);
       appl.getAppellateCaseOriginalCase().add(ct);
     } else { // No lower court information at all, even docket number
-      // this info all seems to be optional, but there isn't a known way right now to reach this branch
+      // this info all seems to be optional, but there isn't a known way right now to reach this
+      // branch
       // collector.addRequired(lowerNameVar);
     }
 

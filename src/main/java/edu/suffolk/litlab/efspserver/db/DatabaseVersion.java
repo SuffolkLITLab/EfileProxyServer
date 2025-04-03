@@ -272,10 +272,11 @@ public class DatabaseVersion {
   private void update2To3() throws SQLException {
     final String alterMsgTmpls =
         """
-      ALTER TABLE submitted_filings
-        ADD COLUMN accepted_msg_template text,
-        ADD COLUMN rejected_msg_template text,
-        ADD COLUMN neutral_msg_template text""";
+        ALTER TABLE submitted_filings
+          ADD COLUMN accepted_msg_template text,
+          ADD COLUMN rejected_msg_template text,
+          ADD COLUMN neutral_msg_template text\
+        """;
 
     try (Statement st = userConn.createStatement()) {
       st.executeUpdate(alterMsgTmpls);
@@ -287,8 +288,9 @@ public class DatabaseVersion {
   private void update3To4() throws SQLException {
     final String alterTransactionWithCaseTitle =
         """
-      ALTER TABLE submitted_filings
-        ADD COLUMN case_title text""";
+        ALTER TABLE submitted_filings
+          ADD COLUMN case_title text\
+        """;
     try (Statement st = userConn.createStatement()) {
       st.executeUpdate(alterTransactionWithCaseTitle);
     }
@@ -298,14 +300,16 @@ public class DatabaseVersion {
   private void update4To5() throws SQLException {
     final String alterMsgSubjectTones =
         """
-      ALTER TABLE submitted_filings
-        ADD COLUMN accepted_msg_subject text,
-        ADD COLUMN rejected_msg_subject text,
-        ADD COLUMN neutral_msg_subject text""";
+        ALTER TABLE submitted_filings
+          ADD COLUMN accepted_msg_subject text,
+          ADD COLUMN rejected_msg_subject text,
+          ADD COLUMN neutral_msg_subject text\
+        """;
     final String alterMsgSubjects =
         """
-      ALTER TABLE message_settings
-        ADD COLUMN confirmation_subject_line text""";
+        ALTER TABLE message_settings
+          ADD COLUMN confirmation_subject_line text\
+        """;
     try (Statement st = userConn.createStatement()) {
       st.executeUpdate(alterMsgSubjectTones);
       st.executeUpdate(alterMsgSubjects);
@@ -316,13 +320,14 @@ public class DatabaseVersion {
   public void update5To6() throws SQLException {
     final String createRefundReason =
         """
-      CREATE TABLE refundreason (
-        "code" text,
-        "name" text,
-        "efspcode" text,
-        "location" text,
-        "domain" text
-      )""";
+        CREATE TABLE refundreason (
+          "code" text,
+          "name" text,
+          "efspcode" text,
+          "location" text,
+          "domain" text
+        )\
+        """;
     try (Statement st = userConn.createStatement()) {
       st.executeUpdate(createRefundReason);
     }
@@ -341,13 +346,14 @@ public class DatabaseVersion {
     }
     final String createRefundReason =
         """
-      CREATE TABLE refundreason (
-        "code" text,
-        "name" text,
-        "efspcode" text,
-        "location" text,
-        "domain" text
-      )""";
+        CREATE TABLE refundreason (
+          "code" text,
+          "name" text,
+          "efspcode" text,
+          "location" text,
+          "domain" text
+        )\
+        """;
     try (Statement st = codeConn.createStatement()) {
       st.executeUpdate(createRefundReason);
     }
@@ -368,34 +374,34 @@ public class DatabaseVersion {
     try (Statement st = codeConn.createStatement()) {
       final String shrinkOptSrv =
           """
-        ALTER TABLE optionalservices
-          ALTER COLUMN code TYPE varchar(40),
-          ALTER COLUMN filingcodeid TYPE varchar(40),
-          ALTER COLUMN domain TYPE varchar(80),
-          ALTER COLUMN location TYPE varchar(80),
-          ALTER COLUMN displayorder TYPE smallint USING displayorder::smallint,
-          ALTER COLUMN multiplier TYPE boolean USING multiplier::boolean,
-          ALTER COLUMN hasfeeprompt TYPE boolean USING hasfeeprompt::boolean
-        """;
+          ALTER TABLE optionalservices
+            ALTER COLUMN code TYPE varchar(40),
+            ALTER COLUMN filingcodeid TYPE varchar(40),
+            ALTER COLUMN domain TYPE varchar(80),
+            ALTER COLUMN location TYPE varchar(80),
+            ALTER COLUMN displayorder TYPE smallint USING displayorder::smallint,
+            ALTER COLUMN multiplier TYPE boolean USING multiplier::boolean,
+            ALTER COLUMN hasfeeprompt TYPE boolean USING hasfeeprompt::boolean
+          """;
       st.executeUpdate(shrinkOptSrv);
       final String newOptSrv_FilingList =
           """
-        CREATE TABLE optionalservices_filinglist AS
-          SELECT code, filingcodeid, domain, location FROM optionalservices
-        """;
+          CREATE TABLE optionalservices_filinglist AS
+            SELECT code, filingcodeid, domain, location FROM optionalservices
+          """;
       st.executeUpdate(newOptSrv_FilingList);
       // * split optionalservices into two tables:
       final String newOptSrv =
           """
-        ALTER TABLE optionalservices
-          DROP COLUMN filingcodeid
+          ALTER TABLE optionalservices
+            DROP COLUMN filingcodeid
           """;
       st.executeUpdate(newOptSrv);
       final String copyOptSrv =
           """
-      CREATE TABLE dedup_optionalservices AS
-        SELECT DISTINCT * FROM optionalservices
-        """;
+          CREATE TABLE dedup_optionalservices AS
+            SELECT DISTINCT * FROM optionalservices
+          """;
       st.executeUpdate(copyOptSrv);
       st.executeUpdate("DROP TABLE optionalservices");
       st.executeUpdate("ALTER TABLE dedup_optionalservices RENAME TO optionalservices");
@@ -407,43 +413,43 @@ public class DatabaseVersion {
       st.executeUpdate("CREATE INDEX ON optionalservices_filinglist (domain)");
       final String shrinkFilingCode =
           """
-        ALTER TABLE filing
-          ALTER COLUMN code TYPE varchar(40),
-          ALTER COLUMN isproposedorder TYPE boolean USING isproposedorder::boolean,
-          ALTER COLUMN iscourtuseonly TYPE boolean USING iscourtuseonly::boolean,
-          ALTER COLUMN useduedate TYPE boolean USING useduedate::boolean
+          ALTER TABLE filing
+            ALTER COLUMN code TYPE varchar(40),
+            ALTER COLUMN isproposedorder TYPE boolean USING isproposedorder::boolean,
+            ALTER COLUMN iscourtuseonly TYPE boolean USING iscourtuseonly::boolean,
+            ALTER COLUMN useduedate TYPE boolean USING useduedate::boolean
           """;
       st.executeUpdate(shrinkFilingCode);
       final String shrinkFilingComponent =
           """
-        ALTER TABLE filingcomponent
-          ALTER COLUMN code TYPE varchar(40),
-          ALTER COLUMN filingcodeid TYPE varchar(40),
-          ALTER COLUMN required TYPE boolean USING required::boolean,
-          ALTER COLUMN allowmultiple TYPE boolean USING allowmultiple::boolean,
-          ALTER COLUMN displayorder TYPE smallint USING displayorder::smallint
+          ALTER TABLE filingcomponent
+            ALTER COLUMN code TYPE varchar(40),
+            ALTER COLUMN filingcodeid TYPE varchar(40),
+            ALTER COLUMN required TYPE boolean USING required::boolean,
+            ALTER COLUMN allowmultiple TYPE boolean USING allowmultiple::boolean,
+            ALTER COLUMN displayorder TYPE smallint USING displayorder::smallint
           """;
       st.executeUpdate(shrinkFilingComponent);
       final String shrinkPartyType =
           """
-        ALTER TABLE partytype
-          ALTER COLUMN code TYPE varchar(40),
-          ALTER COLUMN isrequired TYPE boolean USING isrequired::boolean,
-          ALTER COLUMN isavailablefornewparties TYPE boolean USING isavailablefornewparties::boolean
+          ALTER TABLE partytype
+            ALTER COLUMN code TYPE varchar(40),
+            ALTER COLUMN isrequired TYPE boolean USING isrequired::boolean,
+            ALTER COLUMN isavailablefornewparties TYPE boolean USING isavailablefornewparties::boolean
           """;
       st.executeUpdate(shrinkPartyType);
       final String shrinkCaseType =
           """
-        ALTER TABLE casetype
-          ALTER COLUMN code TYPE varchar(40)
+          ALTER TABLE casetype
+            ALTER COLUMN code TYPE varchar(40)
           """;
       st.executeUpdate(shrinkCaseType);
       final String shrinkDatafieldConfig =
           """
-        ALTER TABLE datafieldconfig
-          ALTER COLUMN isvisible TYPE boolean USING isvisible::boolean,
-          ALTER COLUMN isrequired TYPE boolean USING isrequired::boolean,
-          ALTER COLUMN isreadonly TYPE boolean USING isreadonly::boolean
+          ALTER TABLE datafieldconfig
+            ALTER COLUMN isvisible TYPE boolean USING isvisible::boolean,
+            ALTER COLUMN isrequired TYPE boolean USING isrequired::boolean,
+            ALTER COLUMN isreadonly TYPE boolean USING isreadonly::boolean
           """;
       st.executeUpdate(shrinkDatafieldConfig);
       for (var tableName :
@@ -492,9 +498,9 @@ public class DatabaseVersion {
               "refundreason")) {
         st.executeUpdate(
             """
-          ALTER TABLE %s
-            ALTER COLUMN domain TYPE varchar(80),
-            ALTER COLUMN location TYPE varchar(80)
+            ALTER TABLE %s
+              ALTER COLUMN domain TYPE varchar(80),
+              ALTER COLUMN location TYPE varchar(80)
             """
                 .formatted(tableName));
       }
@@ -505,8 +511,9 @@ public class DatabaseVersion {
   public void update8To9() throws SQLException {
     final String alterUserDb =
         """
-      ALTER TABLE submitted_filings
-        ADD COLUMN envelope_id text""";
+        ALTER TABLE submitted_filings
+          ADD COLUMN envelope_id text\
+        """;
 
     try (Statement st = userConn.createStatement()) {
       st.executeUpdate(alterUserDb);

@@ -23,13 +23,13 @@ public class UpdateCodeVersions implements Job {
 
   private static final String badUpdateEmailTemplate =
       """
-    Something's wrong with the EfileProxy. On the {{external_server}} server, `UpdateCodeVersions`
-    has failed to refresh the downloaded genericodes for the jurisdiction {{jurisdiction}} (env: {{env}}).
-    Unfortunately We can't send the potential problems in this message yet, but check the logs around
-    {{error_timestamp}}.
+      Something's wrong with the EfileProxy. On the {{external_server}} server, `UpdateCodeVersions`
+      has failed to refresh the downloaded genericodes for the jurisdiction {{jurisdiction}} (env: {{env}}).
+      Unfortunately We can't send the potential problems in this message yet, but check the logs around
+      {{error_timestamp}}.
 
-    Good luck, lol.
-    - The EfileProxyServer
+      Good luck, lol.
+      - The EfileProxyServer
       """;
 
   /**

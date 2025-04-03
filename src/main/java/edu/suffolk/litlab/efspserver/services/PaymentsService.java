@@ -341,17 +341,17 @@ public class PaymentsService {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.redirectToToga");
     String errorHtml =
         """
-    <!DOCTYPE html>
-    <html>
-      <head>
-      </head>
-      <body>
-        Sorry, but an error has occured. Please restart your redirect process.
+        <!DOCTYPE html>
+        <html>
+          <head>
+          </head>
+          <body>
+            Sorry, but an error has occured. Please restart your redirect process.
 
-        The error: %s
-      </body>
-    </html>
-    """;
+            The error: %s
+          </body>
+        </html>
+        """;
     String transactionId = transactionIdGen.nextString();
     TempAccount account = new TempAccount();
     account.name = name;
@@ -387,7 +387,7 @@ public class PaymentsService {
 
     log.info("Redirecting with transactionId: " + transactionId);
     String fullHtml =
-        """
+"""
 <!DOCTYPE html>
 <html>
     <head>
@@ -412,7 +412,7 @@ public class PaymentsService {
       form.submit();
     </script>
 </html>
-                """
+"""
             .formatted(this.togaKey, transactionId, this.callbackToUsUrl, this.togaUrl);
     return Response.ok(fullHtml).build();
   }

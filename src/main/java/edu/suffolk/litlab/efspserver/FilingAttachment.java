@@ -11,6 +11,7 @@ public class FilingAttachment {
   // So, we can just say yes?
   // Provides Document Type code / BinaryFormatStandardName
   private final String documentTypeFormatStandardName;
+
   // page count?
 
   public FilingAttachment(

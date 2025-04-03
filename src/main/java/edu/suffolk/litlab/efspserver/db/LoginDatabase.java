@@ -32,19 +32,21 @@ public class LoginDatabase extends Database {
 
   private static final String atRestCreate =
       """
-           CREATE TABLE at_rest_keys (
-           "server_id" uuid PRIMARY KEY, "server_name" text, "api_key" text NOT NULL,
-           "tyler_enabled" boolean, "jeffnet_enabled" boolean,
-           "created" timestamp)""";
+      CREATE TABLE at_rest_keys (
+      "server_id" uuid PRIMARY KEY, "server_name" text, "api_key" text NOT NULL,
+      "tyler_enabled" boolean, "jeffnet_enabled" boolean,
+      "created" timestamp)\
+      """;
 
   private static final String atRestInsert =
       """
-           INSERT INTO at_rest_keys (
-               "server_id", "server_name", "api_key", "tyler_enabled",
-               "jeffnet_enabled", "created"
-           ) VALUES (
-               ?, ?, ?, ?,
-               ?, ?)""";
+      INSERT INTO at_rest_keys (
+          "server_id", "server_name", "api_key", "tyler_enabled",
+          "jeffnet_enabled", "created"
+      ) VALUES (
+          ?, ?, ?, ?,
+          ?, ?)\
+      """;
 
   private static final RandomString tokenGenerator = new RandomString();
   private final MessageDigest digest;
@@ -136,7 +138,8 @@ public class LoginDatabase extends Database {
         SELECT server_id, server_name, api_key, tyler_enabled,
             jeffnet_enabled, created
         FROM at_rest_keys
-        WHERE api_key = ?""";
+        WHERE api_key = ?\
+        """;
 
     try (PreparedStatement st = conn.prepareStatement(query)) {
       st.setString(1, hash);
@@ -167,8 +170,8 @@ public class LoginDatabase extends Database {
     String hash = makeHash(apiKey);
     final String atRestUpdate =
         """
-           UPDATE at_rest_keys SET server_name = ? WHERE server_id = ? AND api_key = ?
-    """;
+               UPDATE at_rest_keys SET server_name = ? WHERE server_id = ? AND api_key = ?
+        """;
 
     try (PreparedStatement st = conn.prepareStatement(atRestUpdate)) {
       st.setString(1, newName);
