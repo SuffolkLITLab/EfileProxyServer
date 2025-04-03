@@ -29,6 +29,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ import edu.suffolk.litlab.efspserver.tyler.codes.FilingComponent;
 import edu.suffolk.litlab.efspserver.tyler.codes.OptionalServiceCode;
 import edu.suffolk.litlab.efspserver.tyler.codes.PartyType;
 
+@Tag("Docker")
 public class DatabaseVersionTest {
 
   public static final String POSTGRES_DOCKER_NAME = "postgres:14";

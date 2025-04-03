@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
 import edu.suffolk.litlab.efspserver.db.DatabaseVersionTest;
 import edu.suffolk.litlab.efspserver.ecfcodes.CodeUpdater;
 
+@Tag("Docker")
 public class CodeDatabaseTest {
   private static Logger log = 
       LoggerFactory.getLogger(CodeDatabaseTest.class); 

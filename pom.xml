@@ -516,15 +516,10 @@
         </plugins>
     </reporting>
     
+    <!-- See the "Testing" section of the README for more information on these testing profiles. -->
     <profiles>
         <profile>
-        <!-- This profile is used because the Database tests spin up little
-             docker containers to ensure that the queries work with Postgres.
-             
-             However, when this server is packaged up and run in a docker container,
-             the nested docker enginer isn't available for the tests to run. So just
-             don't run those tests when packaging within docker.
-              -->
+        <!-- This profile excludes tests that use docker, so we can run tests when packaging from within a docker container. -->
             <id>noDockerTests</id>
             <build>
                 <plugins>
@@ -533,18 +528,43 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>${maven-surefire.version}</version>
                         <configuration>
-                            <excludes>
-                                <exclude>**/UserDatabaseTest.java</exclude>
-                                <exclude>**/LoginDatabaseTest.java</exclude>
-                                <exclude>**/CodeDatabaseTest.java</exclude>
-                                <exclude>**/CodesServiceTest.java</exclude>
-                                <exclude>**/DatabaseVersionTest.java</exclude>
-                            </excludes>
+                            <excludedGroups>Docker</excludedGroups>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
-
+        <profile>
+            <!-- This profile runs reproducible tests, i.e. non flaky tests. -->
+            <id>reproducible</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${maven-surefire.version}</version>
+                        <configuration>
+                            <excludedGroups>TylerBreakable</excludedGroups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- This profile runs tests that changes on Tyler's side might break. -->
+            <id>tylerBreakable</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${maven-surefire.version}</version>
+                        <configuration>
+                            <groups>TylerBreakable</groups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>
