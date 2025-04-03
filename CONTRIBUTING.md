@@ -9,7 +9,7 @@ See the [README.md] and [docs/setup.md] for more details here.
 [Download the google-java-format](https://github.com/google/google-java-format/releases/download/v1.16.0/google-java-format-1.16.0-all-deps.jar) tool, and once downloaded, run
 
 ```bash
-java -jar google-java-format-v1.16.0-all-deps.jar -i `find src/main/java/edu/suffolk -name *.java ! -name CodeTableConstants.java ! -name FilingCode.java`
+java -jar google-java-format-1.16.0-all-deps.jar -i `find src/main/java/edu/suffolk -name *.java ! -name CodeTableConstants.java ! -name FilingCode.java`
 ```
 
 To format all of your files.
