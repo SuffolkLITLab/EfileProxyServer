@@ -8,28 +8,33 @@ import java.sql.SQLException;
 public class CaseCategory {
   /** The Tyler specific code for this case category. E.g.: 183528 */
   public final String code;
+
   /**
    * A human understandable name for this category. Can be broad, like "Probate", or specific, like
    * "Law Magistrate: Damages over $10,000 up to $50,000
    */
   public final String name;
+
   /**
    * The ECF Case Type Schema Name. These are things like "AppellateCase", "BankruptcyCase", etc.
    * The full list is at
    * https://docs.oasis-open.org/legalxml-courtfiling/specs/ecf/v4.01/ecf-v4.01-spec/errata02/os/ecf-v4.01-spec-errata02-os-complete.html#_Toc425241622
    */
   public final String ecfcasetype;
+
   // TODO(brycew-later): turn these into enums
   /**
    * Indicates the behavior of the Procedure/Remedy code field for initial filings E.g.: (Not
    * Available, Available, Required)
    */
   public final String procedureremedyinitial;
+
   /**
    * Indicates the behavior of the Procedure/Remedy code field for subsequent filings E.g.: (Not
    * Available, Available, Required)
    */
   public final String procedureremedysubsequent;
+
   /**
    * Indicates the behavior of the DamageAmount code field for initial filings. E.g.: (Not
    * Available, Available, Required)
@@ -93,73 +98,74 @@ public class CaseCategory {
 
   public static String searchCaseCategories() {
     return """
-        SELECT DISTINCT name
-        FROM casecategory
-        WHERE domain=? AND name ILIKE ?
-        ORDER BY name
-        """;
+    SELECT DISTINCT name
+    FROM casecategory
+    WHERE domain=? AND name ILIKE ?
+    ORDER BY name
+    """;
   }
 
   public static String retrieveCaseCategoryForName() {
     return """
-        SELECT DISTINCT code, location
-        FROM casecategory
-        WHERE domain=? AND name=?
-        ORDER BY location
-        """;
+    SELECT DISTINCT code, location
+    FROM casecategory
+    WHERE domain=? AND name=?
+    ORDER BY location
+    """;
   }
 
   // TODO(#86): stop filtering out criminal categories
   public static String getCaseCategoriesForLoc() {
     return """
-        SELECT code, name, ecfcasetype, procedureremedyinitial,
-          procedureremedysubsequent, damageamountinitial, damageamountsubsequent
-        FROM casecategory WHERE domain=? AND location=? AND ecfcasetype !='CriminalCase' """;
+    SELECT code, name, ecfcasetype, procedureremedyinitial,
+      procedureremedysubsequent, damageamountinitial, damageamountsubsequent
+    FROM casecategory WHERE domain=? AND location=? AND ecfcasetype !='CriminalCase'\
+    """;
   }
 
   public static String getFileableCaseCategoryForLoc() {
     return """
-        SELECT cat.code, cat.name, cat.ecfcasetype, cat.procedureremedyinitial,
-          cat.procedureremedysubsequent, cat.damageamountinitial, cat.damageamountsubsequent
-        FROM (
-                SELECT cate.code, cate.name, cate.ecfcasetype, cate.procedureremedyinitial,
-                  cate.procedureremedysubsequent, cate.damageamountinitial,
-                  cate.damageamountsubsequent,
-                  type.code AS type_code,
-                  ROW_NUMBER() OVER(PARTITION BY cate.code ORDER BY type.code) AS RN
-                FROM casecategory as cate
-                  INNER JOIN casetype AS type
-                  ON cate.code = type.casecategory AND cate.location = type.location
-                WHERE cate.domain=? AND cate.location=? AND cate.ecfcasetype != 'CriminalCase'
-            ) cat
-        WHERE cat.RN = 1
-        """;
+    SELECT cat.code, cat.name, cat.ecfcasetype, cat.procedureremedyinitial,
+      cat.procedureremedysubsequent, cat.damageamountinitial, cat.damageamountsubsequent
+    FROM (
+            SELECT cate.code, cate.name, cate.ecfcasetype, cate.procedureremedyinitial,
+              cate.procedureremedysubsequent, cate.damageamountinitial,
+              cate.damageamountsubsequent,
+              type.code AS type_code,
+              ROW_NUMBER() OVER(PARTITION BY cate.code ORDER BY type.code) AS RN
+            FROM casecategory as cate
+              INNER JOIN casetype AS type
+              ON cate.code = type.casecategory AND cate.location = type.location
+            WHERE cate.domain=? AND cate.location=? AND cate.ecfcasetype != 'CriminalCase'
+        ) cat
+    WHERE cat.RN = 1
+    """;
   }
 
   public static String getFileableCaseCategoryForTiming() {
     return """
-        SELECT cat.code, cat.name, cat.ecfcasetype, cat.procedureremedyinitial,
-          cat.procedureremedysubsequent, cat.damageamountinitial, cat.damageamountsubsequent
-        FROM (
-                SELECT cate.code, cate.name, cate.ecfcasetype, cate.procedureremedyinitial,
-                  cate.procedureremedysubsequent, cate.damageamountinitial,
-                  cate.damageamountsubsequent,
-                  type.code AS type_code,
-                  ROW_NUMBER() OVER(PARTITION BY cate.code ORDER BY type.code) AS RN
-                FROM casecategory as cate
-                  INNER JOIN casetype AS type
-                  ON cate.code = type.casecategory AND cate.location = type.location
-                WHERE cate.domain=? AND cate.location=? AND cate.ecfcasetype != 'CriminalCase' AND type.initial ILIKE ?
-            ) cat
-        WHERE cat.RN = 1
-        """;
+    SELECT cat.code, cat.name, cat.ecfcasetype, cat.procedureremedyinitial,
+      cat.procedureremedysubsequent, cat.damageamountinitial, cat.damageamountsubsequent
+    FROM (
+            SELECT cate.code, cate.name, cate.ecfcasetype, cate.procedureremedyinitial,
+              cate.procedureremedysubsequent, cate.damageamountinitial,
+              cate.damageamountsubsequent,
+              type.code AS type_code,
+              ROW_NUMBER() OVER(PARTITION BY cate.code ORDER BY type.code) AS RN
+            FROM casecategory as cate
+              INNER JOIN casetype AS type
+              ON cate.code = type.casecategory AND cate.location = type.location
+            WHERE cate.domain=? AND cate.location=? AND cate.ecfcasetype != 'CriminalCase' AND type.initial ILIKE ?
+        ) cat
+    WHERE cat.RN = 1
+    """;
   }
 
   public static String getCaseCategoryWithCode() {
     return """
-        SELECT code, name, ecfcasetype, procedureremedyinitial,
-          procedureremedysubsequent, damageamountinitial, damageamountsubsequent
-        FROM casecategory WHERE domain=? AND location=? AND code=?
-        """;
+    SELECT code, name, ecfcasetype, procedureremedyinitial,
+      procedureremedysubsequent, damageamountinitial, damageamountsubsequent
+    FROM casecategory WHERE domain=? AND location=? AND code=?
+    """;
   }
 }

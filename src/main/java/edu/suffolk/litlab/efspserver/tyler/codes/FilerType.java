@@ -29,8 +29,9 @@ public class FilerType {
 
   public static String query() {
     return """
-      SELECT "code", "name", "default", "efspcode", "location"
-      FROM filertype
-      WHERE domain=? AND location=?""";
+    SELECT "code", "name", "default", "efspcode", "location"
+    FROM filertype
+    WHERE domain=? AND location=?\
+    """;
   }
 }

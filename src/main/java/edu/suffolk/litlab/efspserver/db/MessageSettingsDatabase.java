@@ -34,7 +34,8 @@ public class MessageSettingsDatabase extends Database {
             """
             CREATE TABLE message_settings (
             "server_id" uuid PRIMARY KEY, "from_email" text, "subject_line" text,
-            "email_template" text, "email_confirmation" text, "confirmation_subject_line" text)""";
+            "email_template" text, "email_confirmation" text, "confirmation_subject_line" text)\
+            """;
         try (Statement createSt = conn.createStatement()) {
           int retVal = createSt.executeUpdate(createQuery);
           if (retVal < 0) {
@@ -105,7 +106,8 @@ public class MessageSettingsDatabase extends Database {
         SELECT server_id, from_email, subject_line, email_template, confirmation_subject_line,
         email_confirmation
         FROM message_settings
-        WHERE server_id=?""";
+        WHERE server_id=?\
+        """;
     try (PreparedStatement st = conn.prepareStatement(query)) {
       st.setObject(1, serverId);
       ResultSet rs = st.executeQuery();

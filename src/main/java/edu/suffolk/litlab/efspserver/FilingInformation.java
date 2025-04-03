@@ -13,6 +13,7 @@ public class FilingInformation {
   private static Logger log = LoggerFactory.getLogger(FilingInformation.class);
 
   private String courtLocationId;
+
   /** Plaintiffs that are new to the case; not in the case info before this filing */
   private List<Person> newPlaintiffs = List.of();
 
@@ -47,6 +48,7 @@ public class FilingInformation {
 
   /** A tracking ID from the EFM system for the existing case. For subsequent filing. */
   private Optional<String> prevCaseId = Optional.empty();
+
   /** Existing docket number, NOT from EFM system. For subsequent filing into non-indexed cases. */
   private Optional<String> caseDocketNumber = Optional.empty();
 

@@ -53,13 +53,13 @@ public class InterviewVariable {
       choicesStr = sb.toString();
     }
     return """
-             {
-               "name": "%s",
-               "description": "%s",
-               "datatype": "%s",
-               "choices": %s
-             }
-             """
+    {
+      "name": "%s",
+      "description": "%s",
+      "datatype": "%s",
+      "choices": %s
+    }
+    """
         .formatted(name, description.replace("\"", "\\\""), datatype, choicesStr);
   }
 

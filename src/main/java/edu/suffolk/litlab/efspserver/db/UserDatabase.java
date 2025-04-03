@@ -37,18 +37,19 @@ public class UserDatabase extends Database {
       if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
         String createQuery =
             """
-             CREATE TABLE submitted_filings (
-             "user_id" uuid, "name" text, "phone_number" text,
-             "email" text, "transaction_id" uuid PRIMARY KEY, "server_id" uuid, "api_key_used" text,
-             "court_id" text, "casetype" text,
-             "submitted" date, "accepted_msg_template" text,
-             "accepted_msg_subject" text,
-             "rejected_msg_template" text,
-             "rejected_msg_subject" text,
-             "neutral_msg_template" text,
-             "neutral_msg_subject" text,
-             "case_title" text,
-             "envelope_id" text)""";
+            CREATE TABLE submitted_filings (
+            "user_id" uuid, "name" text, "phone_number" text,
+            "email" text, "transaction_id" uuid PRIMARY KEY, "server_id" uuid, "api_key_used" text,
+            "court_id" text, "casetype" text,
+            "submitted" date, "accepted_msg_template" text,
+            "accepted_msg_subject" text,
+            "rejected_msg_template" text,
+            "rejected_msg_subject" text,
+            "neutral_msg_template" text,
+            "neutral_msg_subject" text,
+            "case_title" text,
+            "envelope_id" text)\
+            """;
         try (Statement createSt = conn.createStatement()) {
           log.info("Full statement: " + createQuery);
           int retVal = createSt.executeUpdate(createQuery);
@@ -131,23 +132,24 @@ public class UserDatabase extends Database {
     }
     String insertIntoTable =
         """
-                    INSERT INTO submitted_filings (
-                        "user_id", "name",
-                        "phone_number", "email", "transaction_id", "server_id",
-                        "api_key_used", "casetype", "court_id", "submitted",
-                        "accepted_msg_template",
-                        "accepted_msg_subject",
-                        "rejected_msg_template",
-                        "rejected_msg_subject",
-                        "neutral_msg_template",
-                        "neutral_msg_subject",
-                        "case_title",
-                        "envelope_id"
-                    ) VALUES (
-                        ?, ?,
-                        ?, ?, ?, ?,
-                        ?, ?, ?, ?,
-                        ?, ?, ?, ?, ?, ?, ?, ?)""";
+        INSERT INTO submitted_filings (
+            "user_id", "name",
+            "phone_number", "email", "transaction_id", "server_id",
+            "api_key_used", "casetype", "court_id", "submitted",
+            "accepted_msg_template",
+            "accepted_msg_subject",
+            "rejected_msg_template",
+            "rejected_msg_subject",
+            "neutral_msg_template",
+            "neutral_msg_subject",
+            "case_title",
+            "envelope_id"
+        ) VALUES (
+            ?, ?,
+            ?, ?, ?, ?,
+            ?, ?, ?, ?,
+            ?, ?, ?, ?, ?, ?, ?, ?)\
+        """;
     try (PreparedStatement insertSt = conn.prepareStatement(insertIntoTable)) {
       insertSt.setObject(1, filingPartyId);
       insertSt.setString(2, name);

@@ -16,25 +16,32 @@ import org.oasis_open.docs.codelist.ns.genericode._1.Value;
 public class OptionalServiceCode {
   public final String code;
   public final String name;
+
   /**
    * An int to represent the order in which to present the optional services. Will always be
    * present, but might skip numbers or two rows might have the same value: ordering doesn't matter
    * then.
    */
   public final int displayorder;
+
   /** The Fee associated with this optional service. */
   public final String fee;
+
   /** This service is only allowed for this given filing code id. */
   public final String filingcodeid;
+
   /**
    * Uses a fee multiplier: for instance, if true, a request for 3 certified copies would have a
    * value of 3.
    */
   public final boolean multiplier;
+
   /** A textual description for a fee that has a calculated value. */
   public final String altfeedesc;
+
   /** True if the filer must provide a fee amount (?). */
   public final boolean hasfeeprompt;
+
   /** Text presented to the filer when prompting for the fee amount. */
   public final String feeprompttext;
 
@@ -137,28 +144,28 @@ public class OptionalServiceCode {
   public static void createFromOptionalServiceTable(Connection conn) throws SQLException {
     final String CREATE_MAIN =
         """
-      CREATE TABLE optionalservices (
-          "code" varchar(40),
-          "name" text,
-          "displayorder" integer,
-          "fee" text,
-          "multiplier" boolean,
-          "altfeedesc" text,
-          "hasfeeprompt" boolean,
-          "feeprompttext" text,
-          "efspcode" text,
-          "domain" varchar(80),
-          "location" varchar(80)
-      )
-          """;
+        CREATE TABLE optionalservices (
+            "code" varchar(40),
+            "name" text,
+            "displayorder" integer,
+            "fee" text,
+            "multiplier" boolean,
+            "altfeedesc" text,
+            "hasfeeprompt" boolean,
+            "feeprompttext" text,
+            "efspcode" text,
+            "domain" varchar(80),
+            "location" varchar(80)
+        )
+        """;
     final String CREATE_FL =
         """
-      CREATE TABLE optionalservices_filinglist (
-          "code" varchar(40),
-          "filingcodeid" varchar(40),
-          "domain" varchar(80),
-          "location" varchar(80)
-      )
+        CREATE TABLE optionalservices_filinglist (
+            "code" varchar(40),
+            "filingcodeid" varchar(40),
+            "domain" varchar(80),
+            "location" varchar(80)
+        )
         """;
     try (Statement createSt = conn.createStatement()) {
       createSt.executeUpdate(CREATE_MAIN);
@@ -237,18 +244,18 @@ public class OptionalServiceCode {
       throws SQLException {
     String insertMainQuery =
         """
-      INSERT INTO "optionalservices" ("code", "name", "displayorder", "fee", "multiplier", "altfeedesc", "hasfeeprompt",
-        "feeprompttext", "efspcode", "domain", "location"
-      ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-      )
+        INSERT INTO "optionalservices" ("code", "name", "displayorder", "fee", "multiplier", "altfeedesc", "hasfeeprompt",
+          "feeprompttext", "efspcode", "domain", "location"
+        ) VALUES (
+          ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+        )
         """;
     String insertFLQuery =
         """
-      INSERT INTO "optionalservices_filinglist" ("code", "filingcodeid", "domain", "location"
-      ) VALUES (
-        ?, ?, ?, ?
-      )
+        INSERT INTO "optionalservices_filinglist" ("code", "filingcodeid", "domain", "location"
+        ) VALUES (
+          ?, ?, ?, ?
+        )
         """;
     Set<DistinctOptServ> alreadyAdded = new HashSet<>();
     try (PreparedStatement stmt = conn.prepareStatement(insertMainQuery);

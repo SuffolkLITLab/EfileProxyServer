@@ -29,12 +29,13 @@ public class Transaction {
 
   public static final String query =
       """
-        SELECT name, user_id, phone_number, email, transaction_id, server_id,
-            api_key_used, casetype, court_id, submitted, accepted_msg_template,
-            accepted_msg_subject, rejected_msg_template, rejected_msg_subject,
-            neutral_msg_template, neutral_msg_subject, case_title, envelope_id
-        FROM submitted_filings
-        WHERE transaction_id = ?""";
+      SELECT name, user_id, phone_number, email, transaction_id, server_id,
+          api_key_used, casetype, court_id, submitted, accepted_msg_template,
+          accepted_msg_subject, rejected_msg_template, rejected_msg_subject,
+          neutral_msg_template, neutral_msg_subject, case_title, envelope_id
+      FROM submitted_filings
+      WHERE transaction_id = ?\
+      """;
 
   public static Transaction fromResults(ResultSet rs) throws SQLException {
     Transaction trans = new Transaction();

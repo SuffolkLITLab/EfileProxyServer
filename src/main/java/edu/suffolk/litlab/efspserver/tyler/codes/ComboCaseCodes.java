@@ -9,6 +9,7 @@ public class ComboCaseCodes {
   public final CaseCategory cat;
   public final CaseType type;
   public final List<FilingCode> filings;
+
   /**
    * String: either UUID for new parties, or Tyler PARTYID for existing parties Pair is PartyType
    * code / role code, and isOrg value isOrg is hacky, but Tyler expects us to create the exact same

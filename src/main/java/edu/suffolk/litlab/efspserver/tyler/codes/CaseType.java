@@ -12,6 +12,7 @@ public class CaseType {
   public final String code;
   public final String name;
   public final String casecategory;
+
   /** Whether the court accepts new cases of this type. */
   public final boolean initial;
 
@@ -120,9 +121,10 @@ public class CaseType {
 
   private static String getCaseTypesForCategory() {
     return """
-        SELECT code, name, casecategory, initial,
-        fee, willfileddate, efspcode, location
-        FROM casetype WHERE domain=? AND location=? AND casecategory=?""";
+    SELECT code, name, casecategory, initial,
+    fee, willfileddate, efspcode, location
+    FROM casetype WHERE domain=? AND location=? AND casecategory=?\
+    """;
   }
 
   private static String getCaseTypesForTiming() {

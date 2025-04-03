@@ -26,10 +26,12 @@ public class Person {
    * From the service contacts, attorney assignment, etc.
    */
   private final PartyId partyId;
+
   /** A random identifier for this specific object */
   private final UUID id;
 
   private String role;
+
   /** Is true if the person who's Tyler id is being used to file the form is this user. */
   private final boolean isFormFiller;
 
