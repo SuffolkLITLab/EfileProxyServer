@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
 
-@Tag("Tyler-Breakable")
+@Tag("TylerBreakable")
 public class SoapClientChooserTest {
   
   public void testJurisdictionEnvUrl(String urlExpected, String urlGenerated) throws IOException {

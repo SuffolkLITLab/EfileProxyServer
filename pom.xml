@@ -544,7 +544,7 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>${maven-surefire.version}</version>
                         <configuration>
-                            <excludedGroups>Tyler-Breakable</excludedGroups>
+                            <excludedGroups>TylerBreakable</excludedGroups>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -560,7 +560,7 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>${maven-surefire.version}</version>
                         <configuration>
-                            <groups>Tyler-Breakable</groups>
+                            <groups>TylerBreakable</groups>
                         </configuration>
                     </plugin>
                 </plugins>
