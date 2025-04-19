@@ -18,6 +18,6 @@ kill_timeout = 60
   processes = ['app']
 
 [[vm]]
-  memory = '4gb'
+  memory = '8gb'
   cpu_kind = 'shared'
   cpus = 2
