@@ -100,6 +100,8 @@ public class FilingDocDocassembleJacksonDeserializer {
       maybeDueDate =
           Optional.of(
               LocalDate.ofInstant(
+                  // TODO(brycew): why do we even pass this as a date time? Shouldn't it just be a
+                  // date?
                   Instant.parse(jsonDueDate.asText()), ZoneId.of("America/Chicago")));
     }
     String userDescription = getStringDefault(node, "filing_description", "");
