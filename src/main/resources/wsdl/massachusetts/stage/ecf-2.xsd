@@ -1,0 +1,2592 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ansi-nist="http://niem.gov/niem/ansi-nist/2.0" xmlns:ansi_d20="http://niem.gov/niem/ansi_d20/2.0" xmlns:fbi="http://niem.gov/niem/fbi/2.0" xmlns:fips_10-4="http://niem.gov/niem/fips_10-4/2.0" xmlns:fips_6-4="http://niem.gov/niem/fips_6-4/2.0" xmlns:i="http://niem.gov/niem/appinfo/2.0" xmlns:iso_4217="http://niem.gov/niem/iso_4217/2.0" xmlns:iso_639-3="http://niem.gov/niem/iso_639-3/2.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" xmlns:nonauth="http://niem.gov/niem/nonauthoritative-code/2.0" xmlns:s="http://niem.gov/niem/structures/2.0" xmlns:unece="http://niem.gov/niem/unece_rec20-misc/2.0" xmlns:usps="http://niem.gov/niem/usps_states/2.0" targetNamespace="http://niem.gov/niem/niem-core/2.0" version="1">
+	<xsd:annotation>
+		<xsd:documentation>NIEM Core includes both Universal (U) and Common (C) components.  The identities for U and C components in Core are maintained with metadata.</xsd:documentation>
+		<xsd:appinfo>
+			<i:ConformantIndicator>true</i:ConformantIndicator>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-3.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="ecf-4.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/ansi-nist/2.0" schemaLocation="ecf-5.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/ansi_d20/2.0" schemaLocation="ecf-6.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/fbi/2.0" schemaLocation="ecf-7.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/fips_10-4/2.0" schemaLocation="ecf-8.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/fips_6-4/2.0" schemaLocation="ecf-9.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/iso_4217/2.0" schemaLocation="ecf-10.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/iso_639-3/2.0" schemaLocation="ecf-11.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/nonauthoritative-code/2.0" schemaLocation="ecf-12.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-13.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/unece_rec20-misc/2.0" schemaLocation="ecf-14.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/usps_states/2.0" schemaLocation="ecf-15.xsd"/>
+	<xsd:complexType name="ActivityConveyanceAssociationType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:AssociationType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:ActivityReference"/>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:ConveyanceReference"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ActivityType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="nc:ActivityIdentification"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ActivityDateRepresentation"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ActivityDescriptionText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ActivityStatus"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="nc:ActivityDisposition"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="AddressType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:AddressRepresentation"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="AmountType">
+		<xsd:simpleContent>
+			<xsd:extension base="niem-xsd:decimal">
+				<xsd:attribute ref="nc:currencyCode" use="optional"/>
+				<xsd:attribute ref="nc:currencyText" use="optional"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="ApplicationNameType">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attributeGroup ref="s:SimpleObjectAttributeGroup"/>
+				<xsd:attribute ref="nc:applicationVersionText" use="optional"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="AssociationType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="BinaryType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:BinaryObject"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:BinaryCaptureDate"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:BinaryCapturer"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:BinaryDescriptionText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:BinaryFormatStandardName"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:BinaryLocationURI"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:BinarySizeValue"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:BinaryCategoryText"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="BiometricType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="unbounded" minOccurs="1" ref="nc:BiometricImage"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:BiometricCapturer"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CapabilityType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:CapabilityDescriptionText"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CaseDispositionDecisionType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CaseDispositionType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:DispositionType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:CaseDispositionFinalDate"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="nc:CaseDispositionDecision"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CaseType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:ActivityType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:CaseTitleText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:CaseCategoryText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:CaseTrackingID"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:CaseDocketID"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ContactInformationType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="nc:ContactMeans"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ContactEntity"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ContactEntityDescriptionText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ContactInformationDescriptionText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ContactResponder"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ConveyanceType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:TangibleItemType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ConveyanceRegistrationPlateIdentification"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DNALocusType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DNALocusCategoryText"/>
+					<xsd:element maxOccurs="2" minOccurs="1" ref="nc:DNALocusValue"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DNAType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="14" minOccurs="0" ref="nc:DNALocus"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DNAImage"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DateRangeType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:StartDate"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:EndDate"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DateType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:DateRepresentation"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DispositionType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DispositionDate"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DispositionDescriptionText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DispositionText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DispositionCategoryText"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DocumentType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DocumentApplicationName"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DocumentBinary"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="nc:DocumentCategoryText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DocumentDescriptionText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DocumentEffectiveDate"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DocumentFileControlID"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DocumentFiledDate"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="nc:DocumentIdentification"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DocumentInformationCutOffDate"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DocumentPostDate"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DocumentReceivedDate"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DocumentSequenceID"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DocumentStatus"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DocumentTitleText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DocumentLanguage"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DocumentSubmitter"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DriverLicenseAssociationType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:AssociationType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:DriverLicenseReference"/>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:PersonReference"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DriverLicenseBaseType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DriverLicenseIdentification"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DriverLicenseExpirationDate"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DriverLicenseIssueDate"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DriverLicenseRestriction"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DriverLicenseType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:DriverLicenseBaseType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DriverLicenseCommercialClass"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DriverLicenseWithdrawal"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DriverLicenseWithdrawalType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:ActivityType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DriverLicenseWithdrawalEffectiveDate"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="DrivingRestrictionType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DrivingRestrictionValue"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:DrivingRestrictionEndDate"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="EntityType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:EntityRepresentation"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="FacilityType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:FacilityIdentification"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="FingerprintSetType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:Fingerprint"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="FullTelephoneNumberType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:TelephoneNumberFullID"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:TelephoneSuffixID"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="GuardianAssociationType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:AssociationType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonGuardianReference"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonDependentReference"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="IdentificationType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:IdentificationID"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:IdentificationCategory"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:IdentificationJurisdiction"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:IdentificationSourceText"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ImageType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:BinaryType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ImmediateFamilyAssociationType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:AssociationType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:PersonParentReference"/>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:PersonChildReference"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:FamilyKinshipCategory"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="IncidentType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:ActivityType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:IncidentLocation"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="InsuranceType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:InsuranceCarrierName"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:InsuranceActiveIndicator"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:InsuranceCoverageCategory"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="InternationalTelephoneNumberType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:TelephoneCountryCodeID"/>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:TelephoneNumberID"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:TelephoneSuffixID"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ItemRegistrationType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:RegistrationJurisdiction"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ItemType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ItemDescriptionText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ItemOtherIdentification"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ItemValue"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ItemValueType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="JurisdictionType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="LengthMeasureType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:MeasureType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:LengthUnitCode"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="LocationType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:LocationAddress"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:LocationDescriptionText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:LocationName"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="MarriageStatusType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:StatusType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="MeasureType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:MeasureValue"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:MeasureUnitText"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="MetadataType">
+		<xsd:complexContent>
+			<xsd:extension base="s:MetadataType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:SensitivityText"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="NANPTelephoneNumberType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:TelephoneAreaCodeID"/>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:TelephoneExchangeID"/>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:TelephoneLineID"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:TelephoneSuffixID"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:simpleType name="NonNegativeDecimalSimpleType">
+		<xsd:restriction base="xsd:decimal">
+			<xsd:minInclusive value="0"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="NonNegativeDecimalType">
+		<xsd:simpleContent>
+			<xsd:extension base="nc:NonNegativeDecimalSimpleType">
+				<xsd:attributeGroup ref="s:SimpleObjectAttributeGroup"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="NumericType">
+		<xsd:simpleContent>
+			<xsd:extension base="niem-xsd:decimal"/>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="ObligationExemptionType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:FinancialObligationExemptionAmount"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ObligationExemptionDescriptionText"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ObligationRecurrenceType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:ObligationType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ObligationEndDate"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ObligationPeriodText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ObligationStartDate"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ObligationType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ObligationDue"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ObligationExemption"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ObligationRequirementDescriptionText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ObligationCategoryText"/>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:ObligationEntity"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ObligationRecipient"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ObligationRecurrence"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="OrganizationAssociationType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:AssociationType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="unbounded" minOccurs="2" ref="nc:OrganizationReference"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="OrganizationContactInformationAssociationType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:AssociationType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:OrganizationReference"/>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:ContactInformationReference"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ContactInformationIsPrimaryIndicator"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ContactInformationIsEmergencyIndicator"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ContactInformationIsDayIndicator"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ContactInformationIsEveningIndicator"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ContactInformationIsNightIndicator"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="OrganizationType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:OrganizationIdentification"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:OrganizationLocation"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:OrganizationName"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:OrganizationPrimaryContactInformation"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:OrganizationSubUnitName"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:OrganizationTaxIdentification"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:OrganizationUnitName"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="PersonAssociationType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:AssociationType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="unbounded" minOccurs="2" ref="nc:PersonReference"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="PersonContactInformationAssociationType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:AssociationType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:PersonReference"/>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:ContactInformationReference"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ContactInformationIsPrimaryIndicator"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ContactInformationIsHomeIndicator"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ContactInformationIsWorkIndicator"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ContactInformationIsEmergencyIndicator"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ContactInformationIsDayIndicator"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ContactInformationIsEveningIndicator"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ContactInformationIsNightIndicator"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="PersonEmploymentAssociationType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:AssociationType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:EmployeeReference"/>
+					<xsd:element maxOccurs="1" minOccurs="1" ref="nc:Employer"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="PersonLanguageType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="unbounded" minOccurs="1" ref="nc:Language"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="PersonNameTextType">
+		<xsd:simpleContent>
+			<xsd:extension base="nc:ProperNameTextType"/>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="PersonNameType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonNamePrefixText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonGivenName"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonMiddleName"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonSurName"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonNameSuffixText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonMaidenName"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonFullName"/>
+				</xsd:sequence>
+				<xsd:attribute ref="nc:personNameCommentText" use="optional"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="PersonOrganizationAssociationType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:AssociationType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="unbounded" minOccurs="1" ref="nc:PersonReference"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="1" ref="nc:OrganizationReference"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="PersonType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonBirthDate"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonCapability"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="nc:PersonCitizenship"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonDNA"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonEthnicity"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonEyeColor"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="nc:PersonFingerprintSet"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonHairColor"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonHeightMeasure"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonLanguageEnglishIndicator"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonName"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="nc:PersonOtherIdentification"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="nc:PersonPhysicalFeature"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonPrimaryLanguage"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonRace"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonSex"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonStateIdentification"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonTaxIdentification"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonWeightMeasure"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="PersonUnionAssociationType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:PersonAssociationType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonUnionCategory"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PersonUnionStatus"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="PhysicalFeatureType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:PhysicalFeatureCategory"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ProperNameTextType">
+		<xsd:simpleContent>
+			<xsd:extension base="nc:TextType"/>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="PropertyType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="RelatedActivityAssociationType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:AssociationType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="unbounded" minOccurs="2" ref="nc:ActivityReference"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ScheduleDayType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ScheduleActivityText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ScheduleDate"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ScheduleDayEndTime"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ScheduleDayStartTime"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="SpeedMeasureType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:MeasureType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:SpeedUnitCode"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="StatusType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:StatusText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:StatusDate"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="nc:StatusDescriptionText"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="StreetType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:StreetFullText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:StreetNumberText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:StreetPredirectionalText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:StreetName"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:StreetCategoryText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:StreetPostdirectionalText"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:StreetExtensionText"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="StructuredAddressType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:AddressRecipientName"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="nc:AddressDeliveryPoint"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:LocationCityName"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:LocationCounty"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:LocationState"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:LocationCountry"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:LocationPostalCode"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:LocationPostalExtensionCode"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="SupervisionType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:SupervisionFacility"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="TangibleItemType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:ItemType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ItemColor"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ItemModelYearDate"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:ItemStyle"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="TelephoneNumberType">
+		<xsd:complexContent>
+			<xsd:extension base="s:ComplexObjectType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:TelephoneNumberRepresentation"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="TextType">
+		<xsd:simpleContent>
+			<xsd:extension base="niem-xsd:string"/>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="VehicleType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:ConveyanceType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:VehicleIdentification"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:VehicleMakeCode"/>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:VehicleModelCode"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="WeightMeasureType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:MeasureType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" ref="nc:WeightUnitCode"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:attribute name="applicationVersionText" type="xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>A version of a computer application.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+	<xsd:attribute name="currencyCode" type="iso_4217:CurrencyCodeSimpleType">
+		<xsd:annotation>
+			<xsd:documentation>A unit of money or exchange.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+	<xsd:attribute name="currencyText" type="xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>A unit of money or exchange.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+	<xsd:attribute name="languageCode" type="iso_639-3:LanguageCodeSimpleType">
+		<xsd:annotation>
+			<xsd:documentation>A language in which a character string is recorded.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+	<xsd:attribute name="personNameCommentText" type="xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>A comment about a kind of name for a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+	<xsd:element name="ActivityReference" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>A single or set of related actions, events, or process steps.
+</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="ActivityType"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ActivityDate" nillable="true" substitutionGroup="nc:ActivityDateRepresentation" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date of an activity.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="ActivityDateRepresentation"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ActivityDateRange" nillable="true" substitutionGroup="nc:ActivityDateRepresentation" type="nc:DateRangeType">
+		<xsd:annotation>
+			<xsd:documentation>A period of time over which an activity occurs.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="ActivityDateRepresentation"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="ActivityDateRepresentation">
+		<xsd:annotation>
+			<xsd:documentation>A date an activity occurs.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ActivityDescriptionText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A description of an activity.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ActivityDisposition" nillable="true" type="nc:DispositionType">
+		<xsd:annotation>
+			<xsd:documentation>A result or outcome of an activity.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ActivityIdentification" nillable="true" type="nc:IdentificationType">
+		<xsd:annotation>
+			<xsd:documentation>An identification that references an activity.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ActivityStatus" nillable="true" type="nc:StatusType">
+		<xsd:annotation>
+			<xsd:documentation>A status of an activity.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Address" nillable="true" type="nc:AddressType">
+		<xsd:annotation>
+			<xsd:documentation>A postal location to which paper mail can be directed.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="AddressDeliveryPoint">
+		<xsd:annotation>
+			<xsd:documentation>A single place or unit at which mail is delivered.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="AddressDeliveryPointID" nillable="true" substitutionGroup="nc:AddressDeliveryPoint" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>An identifier of a single place or unit at which mail is delivered.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="AddressDeliveryPoint"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="AddressDeliveryPointText" nillable="true" substitutionGroup="nc:AddressDeliveryPoint" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A single place or unit at which mail is delivered.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="AddressDeliveryPoint"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="AddressFullText" nillable="true" substitutionGroup="nc:AddressRepresentation" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A complete address.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="AddressRepresentation"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="AddressPrivateMailboxText" nillable="true" substitutionGroup="nc:AddressDeliveryPoint" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A private mailbox within a company.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="AddressDeliveryPoint"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="AddressRecipientName" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A name of a person, organization, or other recipient to whom physical mail may be sent.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="AddressRepresentation">
+		<xsd:annotation>
+			<xsd:documentation>A representation of an address.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="AddressSecondaryUnitText" nillable="true" substitutionGroup="nc:AddressDeliveryPoint" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A particular unit within a larger unit or grouping at a location.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="AddressDeliveryPoint"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Association" nillable="true" type="nc:AssociationType">
+		<xsd:annotation>
+			<xsd:documentation>A connection, relationship, or involvement somehow linking people and/or things together.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Attachment" nillable="true" type="nc:BinaryType">
+		<xsd:annotation>
+			<xsd:documentation>A binary attachment to a report or document.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="BinaryBase64Object" nillable="true" substitutionGroup="nc:BinaryObject" type="niem-xsd:base64Binary">
+		<xsd:annotation>
+			<xsd:documentation>A binary encoding of data.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="BinaryObject"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="BinaryCaptureDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date on which a binary object is captured or created.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="BinaryCapturer" nillable="true" type="nc:EntityType">
+		<xsd:annotation>
+			<xsd:documentation>An entity which captured or created a binary object.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="BinaryCategoryText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A kind of object that has been encoded.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="BinaryDescriptionText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A description of a binary object.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="BinaryFormatStandardName" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A name of a standard or protocol used to classify binary content.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="BinaryLocationURI" nillable="true" type="niem-xsd:anyURI">
+		<xsd:annotation>
+			<xsd:documentation>A URL or file reference of a binary object.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="BinaryObject">
+		<xsd:annotation>
+			<xsd:documentation>A binary encoding of data.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="BinarySizeValue" nillable="true" type="nc:NonNegativeDecimalType">
+		<xsd:annotation>
+			<xsd:documentation>A size of a binary object in kilobytes.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Biometric" nillable="true" type="nc:BiometricType">
+		<xsd:annotation>
+			<xsd:documentation>Information used to measurable a biological or behavioral characteristic, which can reliably recognize the identity, or verify the claimed identity, of a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="BiometricCapturer" nillable="true" type="nc:EntityType">
+		<xsd:annotation>
+			<xsd:documentation>An entity that collected a biometric sample.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="BiometricImage" nillable="true" type="nc:ImageType">
+		<xsd:annotation>
+			<xsd:documentation>A picture of a biometric sample.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="CapabilityDescriptionText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A description of a capacity or ability.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Case" nillable="true" type="nc:CaseType">
+		<xsd:annotation>
+			<xsd:documentation>An aggregation of information about a set of related activities and events.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="CaseCategoryText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A kind of case.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="CaseDisposition" nillable="true" substitutionGroup="nc:ActivityDisposition" type="nc:CaseDispositionType">
+		<xsd:annotation>
+			<xsd:documentation>An outcome or processing of a case.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="ActivityDisposition"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="CaseDispositionDecision" nillable="true" type="nc:CaseDispositionDecisionType">
+		<xsd:annotation>
+			<xsd:documentation>A case disposition occurring as a result of some decision.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="CaseDispositionFinalDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date that all charges in a case were disposed.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="CaseDocketID" nillable="true" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>An identifier used to reference a case docket.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="CaseFiling" nillable="true" type="nc:DocumentType">
+		<xsd:annotation>
+			<xsd:documentation>A document or other piece of information filed by someone or something involved in a case.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="CaseTitleText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>An official name of a case.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="CaseTrackingID" nillable="true" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>An identifier used to track a case.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactEmailID" nillable="true" substitutionGroup="nc:ContactMeans" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>An electronic mailing address by which a person or organization may be contacted.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="ContactMeans"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactEntity" nillable="true" type="nc:EntityType">
+		<xsd:annotation>
+			<xsd:documentation>An entity that may be contacted by using the given contact information.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactEntityDescriptionText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A description, title or function of a person with the given contact information.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactFaxNumber" nillable="true" substitutionGroup="nc:ContactTelephoneNumber" type="nc:TelephoneNumberType">
+		<xsd:annotation>
+			<xsd:documentation>A telephone number for a facsimile device by which a person or organization may be contacted.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="ContactTelephoneNumber"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactInformationReference" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>Details about how to contact a person or an organization.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="ContactInformationType"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactInformation" nillable="true" type="nc:ContactInformationType">
+		<xsd:annotation>
+			<xsd:documentation>Details about how to contact a person or an organization.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactInformationDescriptionText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A description of the methods available to contact a person or organization.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactInformationIsDayIndicator" nillable="true" type="niem-xsd:boolean">
+		<xsd:annotation>
+			<xsd:documentation>True if the contact information is the daytime contact information; false otherwise.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactInformationIsEmergencyIndicator" nillable="true" type="niem-xsd:boolean">
+		<xsd:annotation>
+			<xsd:documentation>True if the contact information is the emergency contact information; false otherwise.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactInformationIsEveningIndicator" nillable="true" type="niem-xsd:boolean">
+		<xsd:annotation>
+			<xsd:documentation>True if the contact information is the late day / early night contact information; false otherwise.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactInformationIsHomeIndicator" nillable="true" type="niem-xsd:boolean">
+		<xsd:annotation>
+			<xsd:documentation>True if the contact information is the home contact information; false otherwise.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactInformationIsNightIndicator" nillable="true" type="niem-xsd:boolean">
+		<xsd:annotation>
+			<xsd:documentation>True if the contact information is the late night contact information; false otherwise.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactInformationIsPrimaryIndicator" nillable="true" type="niem-xsd:boolean">
+		<xsd:annotation>
+			<xsd:documentation>True if the contact information is the primary method for contact; false otherwise.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactInformationIsWorkIndicator" nillable="true" type="niem-xsd:boolean">
+		<xsd:annotation>
+			<xsd:documentation>True if the contact information is the employment contact information; false otherwise.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactMailingAddress" nillable="true" substitutionGroup="nc:ContactMeans" type="nc:AddressType">
+		<xsd:annotation>
+			<xsd:documentation>A postal address by which a person or organization may be contacted.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="ContactMeans"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="ContactMeans">
+		<xsd:annotation>
+			<xsd:documentation>A means of contacting someone.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactResponder" nillable="true" type="nc:PersonType">
+		<xsd:annotation>
+			<xsd:documentation>A third party person who answers a call and connects or directs the caller to the intended person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactTelephoneNumber" nillable="true" substitutionGroup="nc:ContactMeans" type="nc:TelephoneNumberType">
+		<xsd:annotation>
+			<xsd:documentation>A telephone number for a telecommunication device by which a person or organization may be contacted.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="ContactMeans"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ConveyanceReference" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>A means of transport from place to place.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="ConveyanceType"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ConveyanceColorPrimaryText" nillable="true" substitutionGroup="nc:ItemColor" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A single, upper-most, front-most, or majority color of a conveyance.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="ItemColor"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ConveyanceRegistrationPlateIdentification" nillable="true" type="nc:IdentificationType">
+		<xsd:annotation>
+			<xsd:documentation>An identification on a metal plate fixed to a conveyance.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DNAImage" nillable="true" type="nc:ImageType">
+		<xsd:annotation>
+			<xsd:documentation>An image of a DNA strand.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DNALocus" nillable="true" type="nc:DNALocusType">
+		<xsd:annotation>
+			<xsd:documentation>Location specific information regarding a person's DNA.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DNALocusCategoryText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A location within a strand of DNA that a value is determined.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DNALocusValue" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A value string for a DNA locus.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Date" nillable="true" substitutionGroup="nc:DateRepresentation" type="niem-xsd:date">
+		<xsd:annotation>
+			<xsd:documentation>A full date.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="DateRepresentation"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DateRange" nillable="true" type="nc:DateRangeType">
+		<xsd:annotation>
+			<xsd:documentation>A time period measured by a starting and ending point.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="DateRepresentation">
+		<xsd:annotation>
+			<xsd:documentation>A representation of a date.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DateTime" nillable="true" substitutionGroup="nc:DateRepresentation" type="niem-xsd:dateTime">
+		<xsd:annotation>
+			<xsd:documentation>A full date and time.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="DateRepresentation"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Disposition" nillable="true" type="nc:DispositionType">
+		<xsd:annotation>
+			<xsd:documentation>A result or outcome that is the product of handling, processing, or finalizing something.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DispositionCategoryText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A kind of disposition.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DispositionDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date a disposition occurred.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DispositionDescriptionText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A description of a disposition.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DispositionText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A result or outcome of a disposition.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentReference" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>A paper or electronic document.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="DocumentType"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Document" nillable="true" type="nc:DocumentType">
+		<xsd:annotation>
+			<xsd:documentation>A paper or electronic document.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentApplicationName" nillable="true" type="nc:ApplicationNameType">
+		<xsd:annotation>
+			<xsd:documentation>A name of an application used to create and/or display an electronic document.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentBinary" nillable="true" type="nc:BinaryType">
+		<xsd:annotation>
+			<xsd:documentation>A binary encoding of the content of a document.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentCategoryText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A kind of document; a nature or genre of the content.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentDescriptionText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A description of the content of a document.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentEffectiveDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date the information in a document takes effect.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentFileControlID" nillable="true" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>An identifier assigned to a document to locate it within a file control system.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentFiledDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date a document was filed.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentIdentification" nillable="true" type="nc:IdentificationType">
+		<xsd:annotation>
+			<xsd:documentation>An identification that references a document.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentInformationCutOffDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date after which contributions to the content of a document will no longer be accepted.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="DocumentLanguage">
+		<xsd:annotation>
+			<xsd:documentation>A language of the intellectual content of the resource.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentLanguageCode" nillable="true" substitutionGroup="nc:DocumentLanguage" type="iso_639-3:LanguageCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A language of the intellectual content of the resource. </xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="DocumentLanguage"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentPostDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date a document is posted to an information system or network.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentReceivedDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date a transmitted document was received.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentSequenceID" nillable="true" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>An identifier that determines the document order in a set of related documents.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentStatus" nillable="true" type="nc:StatusType">
+		<xsd:annotation>
+			<xsd:documentation>A status of a document.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentSubmissionFee" nillable="true" type="nc:AmountType">
+		<xsd:annotation>
+			<xsd:documentation>A fee or price required to submit a document.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentSubmitter" nillable="true" type="nc:EntityType">
+		<xsd:annotation>
+			<xsd:documentation>An entity responsible for making the resource available.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DocumentTitleText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A name given to a document.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DriverLicenseReference" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>Details about a license issued to a person granting driving privileges.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="DriverLicenseType"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DriverLicense" nillable="true" type="nc:DriverLicenseType">
+		<xsd:annotation>
+			<xsd:documentation>Details about a license issued to a person granting driving privileges.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DriverLicenseBase" nillable="true" type="nc:DriverLicenseBaseType">
+		<xsd:annotation>
+			<xsd:documentation>Details about an authorization issued to a driver granting driving privileges.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="DriverLicenseCommercialClass">
+		<xsd:annotation>
+			<xsd:documentation>A kind of commercial vehicle that a licensed driver has been examined on and approved to operate.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DriverLicenseCommercialClassCode" nillable="true" substitutionGroup="nc:DriverLicenseCommercialClass" type="ansi_d20:DriverLicenseClassCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A kind of commercial vehicle that a licensed driver has been examined on and approved to operate.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="DriverLicenseCommercialClass"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DriverLicenseExpirationDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>The date after which a driver license or driver license permit is no longer valid.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DriverLicenseIdentification" nillable="true" type="nc:IdentificationType">
+		<xsd:annotation>
+			<xsd:documentation>Details about a driver license identifier or driver license permit identifier, including the number and state.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DriverLicenseIssueDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>The date when a driver license or driver license permit is issued or renewed.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DriverLicenseRestriction" nillable="true" type="nc:DrivingRestrictionType">
+		<xsd:annotation>
+			<xsd:documentation>A restriction on a driver license or driver license permit.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DriverLicenseWithdrawal" nillable="true" type="nc:DriverLicenseWithdrawalType">
+		<xsd:annotation>
+			<xsd:documentation>Details regarding a driver license withdrawal.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DriverLicenseWithdrawalEffectiveDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date on which a driver license withdrawal becomes effective.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DrivingRestrictionCode" nillable="true" substitutionGroup="nc:DrivingRestrictionValue" type="ansi_d20:DrivingRestrictionCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A category of a driving restriction.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="DrivingRestrictionValue"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DrivingRestrictionEndDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date on which a special restriction ends.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DrivingRestrictionText" nillable="true" substitutionGroup="nc:DrivingRestrictionValue" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A category of a driving restriction.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="DrivingRestrictionValue"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="DrivingRestrictionValue">
+		<xsd:annotation>
+			<xsd:documentation>A driving restriction.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="EffectiveDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date that information take effect.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="EmployeeReference" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>A person who works for a business or a person.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="PersonType"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Employer" nillable="true" type="nc:EntityType">
+		<xsd:annotation>
+			<xsd:documentation>A business or person which employs a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="EndDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>An end date.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="EntityReference" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>A person, organization, or thing capable of bearing legal rights and responsibilities.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="EntityType"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Entity" nillable="true" type="nc:EntityType">
+		<xsd:annotation>
+			<xsd:documentation>A person, organization, or thing capable of bearing legal rights and responsibilities.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="EntityOrganizationReference" substitutionGroup="nc:EntityRepresentation" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>An organization capable of bearing legal rights and responsibilities.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="OrganizationType"/>
+				<i:Base i:name="EntityRepresentation"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="EntityOrganization" nillable="true" substitutionGroup="nc:EntityRepresentation" type="nc:OrganizationType">
+		<xsd:annotation>
+			<xsd:documentation>An organization capable of bearing legal rights and responsibilities.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="EntityRepresentation"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="EntityPersonReference" substitutionGroup="nc:EntityRepresentation" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>A person capable of bearing legal rights and responsibilities.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="PersonType"/>
+				<i:Base i:name="EntityRepresentation"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="EntityPerson" nillable="true" substitutionGroup="nc:EntityRepresentation" type="nc:PersonType">
+		<xsd:annotation>
+			<xsd:documentation>A person capable of bearing legal rights and responsibilities.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="EntityRepresentation"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="EntityRepresentation">
+		<xsd:annotation>
+			<xsd:documentation>A person, organization, or thing capable of bearing legal rights and responsibilities.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="FacilityIdentification" nillable="true" type="nc:IdentificationType">
+		<xsd:annotation>
+			<xsd:documentation>An identification assigned to a facility.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="FamilyKinshipCategory">
+		<xsd:annotation>
+			<xsd:documentation>A kind of relationship between family members.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="FamilyKinshipCode" nillable="true" substitutionGroup="nc:FamilyKinshipCategory" type="nonauth:FamilyKinshipCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A kind of relationship between family members.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="FamilyKinshipCategory"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="FamilyKinshipText" nillable="true" substitutionGroup="nc:FamilyKinshipCategory" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A kind of relationship between family members.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="FamilyKinshipCategory"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="FinancialObligationExemptionAmount" nillable="true" type="nc:AmountType">
+		<xsd:annotation>
+			<xsd:documentation>An amount of an exemption from a payment obligation.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Fingerprint" nillable="true" type="ansi-nist:FingerprintType">
+		<xsd:annotation>
+			<xsd:documentation>A representation or an encoding of the identifying characteristics of a persons fingerprints.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="FullTelephoneNumber" nillable="true" substitutionGroup="nc:TelephoneNumberRepresentation" type="nc:FullTelephoneNumberType">
+		<xsd:annotation>
+			<xsd:documentation>A full telephone number.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="TelephoneNumberRepresentation"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="GuardianAssociation" nillable="true" type="nc:GuardianAssociationType">
+		<xsd:annotation>
+			<xsd:documentation>An association between a guardian and a dependent.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Identification" nillable="true" type="nc:IdentificationType">
+		<xsd:annotation>
+			<xsd:documentation>A representation of an identity.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="IdentificationCategory">
+		<xsd:annotation>
+			<xsd:documentation>A kind of identification.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="IdentificationCategoryText" nillable="true" substitutionGroup="nc:IdentificationCategory" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A kind of identification.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="IdentificationCategory"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="IdentificationID" nillable="true" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>A value that identifies something.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="IdentificationJurisdiction">
+		<xsd:annotation>
+			<xsd:documentation>An area, region, or unit in which a unique identification is issued.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="IdentificationSourceText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A person, organization, or locale which issues an identification.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Image" nillable="true" type="nc:ImageType">
+		<xsd:annotation>
+			<xsd:documentation>A picture or visual representation of something.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ImmediateFamilyAssociation" nillable="true" type="nc:ImmediateFamilyAssociationType">
+		<xsd:annotation>
+			<xsd:documentation>An association between parents and children.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="IncidentReference" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>An occurrence or an event that may require a response.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="IncidentType"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="IncidentLocation" nillable="true" type="nc:LocationType">
+		<xsd:annotation>
+			<xsd:documentation>A location where an incident occurred.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="IncidentVehicleAssociation" nillable="true" type="nc:ActivityConveyanceAssociationType">
+		<xsd:annotation>
+			<xsd:documentation>An association between an incident and a vehicle.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Insurance" nillable="true" type="nc:InsuranceType">
+		<xsd:annotation>
+			<xsd:documentation>A coverage by a contract whereby one party agrees to indemnify or guarantee another against loss by a specified contingent event or peril.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="InsuranceActiveIndicator" nillable="true" type="niem-xsd:boolean">
+		<xsd:annotation>
+			<xsd:documentation>True if an insurance policy is active; false otherwise.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="InsuranceCarrierName" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A name of a company which underwrites an insurance policy.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="InsuranceCoverageCategory">
+		<xsd:annotation>
+			<xsd:documentation>A kind of insurance coverage.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="InsuranceCoverageCategoryText" nillable="true" substitutionGroup="nc:InsuranceCoverageCategory" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A kind of insurance coverage.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="InsuranceCoverageCategory"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="InternationalTelephoneNumber" nillable="true" substitutionGroup="nc:TelephoneNumberRepresentation" type="nc:InternationalTelephoneNumberType">
+		<xsd:annotation>
+			<xsd:documentation>An international telephone number.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="TelephoneNumberRepresentation"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Item" nillable="true" type="nc:ItemType">
+		<xsd:annotation>
+			<xsd:documentation>An article or thing.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="ItemColor">
+		<xsd:annotation>
+			<xsd:documentation>A color of an item.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ItemDescriptionText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A description of an item.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ItemModelYearDate" nillable="true" type="niem-xsd:gYear">
+		<xsd:annotation>
+			<xsd:documentation>A year in which an item was manufactured or produced.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ItemOtherIdentification" nillable="true" type="nc:IdentificationType">
+		<xsd:annotation>
+			<xsd:documentation>An identification assigned to an item.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="ItemStyle">
+		<xsd:annotation>
+			<xsd:documentation>A style of an item.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ItemValue" nillable="true" type="nc:ItemValueType">
+		<xsd:annotation>
+			<xsd:documentation>An evaluation of the monetary worth of an item.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="Language">
+		<xsd:annotation>
+			<xsd:documentation>A system of words or symbols used for communication.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LanguageCode" nillable="true" substitutionGroup="nc:Language" type="iso_639-3:LanguageCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A system of words or symbols used for communication.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="Language"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LengthUnitCode" nillable="true" type="unece:LengthCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A unit of measure of a length value.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LocationReference" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>Details about a physical location.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="LocationType"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Location" nillable="true" type="nc:LocationType">
+		<xsd:annotation>
+			<xsd:documentation>Details about a physical location.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LocationAddress" nillable="true" type="nc:AddressType">
+		<xsd:annotation>
+			<xsd:documentation>A geophysical location described by postal information.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LocationCityName" nillable="true" type="nc:ProperNameTextType">
+		<xsd:annotation>
+			<xsd:documentation>A name of a city or town.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="LocationCountry">
+		<xsd:annotation>
+			<xsd:documentation>A country, territory, dependency, or other such geopolitical subdivision of a location.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LocationCountryFIPS10-4Code" nillable="true" substitutionGroup="nc:LocationCountry" type="fips_10-4:CountryCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A country, territory, dependency, or other such geopolitical subdivision of a location.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="LocationCountry"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LocationCountryName" nillable="true" substitutionGroup="nc:LocationCountry" type="nc:ProperNameTextType">
+		<xsd:annotation>
+			<xsd:documentation>A country, territory, dependency, or other such geopolitical subdivision of a location.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="LocationCountry"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="LocationCounty">
+		<xsd:annotation>
+			<xsd:documentation>A county, parish, vicinage, or other such geopolitical subdivision of a state.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LocationCountyCode" nillable="true" substitutionGroup="nc:LocationCounty" type="fips_6-4:USCountyCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A county, parish, vicinage, or other such geopolitical subdivision of a state.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="LocationCounty"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LocationCountyName" nillable="true" substitutionGroup="nc:LocationCounty" type="nc:ProperNameTextType">
+		<xsd:annotation>
+			<xsd:documentation>A county, parish, vicinage, or other such geopolitical subdivision of a state.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="LocationCounty"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LocationDescriptionText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A description of a location.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LocationName" nillable="true" type="nc:ProperNameTextType">
+		<xsd:annotation>
+			<xsd:documentation>A name of a location.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LocationPostalCode" nillable="true" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>An identifier of a post office-assigned zone for an address.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LocationPostalExtensionCode" nillable="true" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>An identifier of a smaller area within a post office-assigned zone for an address.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LocationRouteName" nillable="true" substitutionGroup="nc:AddressDeliveryPoint" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A name and number of a postal route.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="AddressDeliveryPoint"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="LocationState">
+		<xsd:annotation>
+			<xsd:documentation>A state, commonwealth, province, or other such geopolitical subdivision of a country.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LocationStateName" nillable="true" substitutionGroup="nc:LocationState" type="nc:ProperNameTextType">
+		<xsd:annotation>
+			<xsd:documentation>A state, commonwealth, province, or other such geopolitical subdivision of a country.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="LocationState"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LocationStateUSPostalServiceCode" nillable="true" substitutionGroup="nc:LocationState" type="usps:USStateCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A state, commonwealth, province, or other such geopolitical subdivision of a country.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="LocationState"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LocationStreet" nillable="true" substitutionGroup="nc:AddressDeliveryPoint" type="nc:StreetType">
+		<xsd:annotation>
+			<xsd:documentation>A road, thoroughfare or highway.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="AddressDeliveryPoint"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="MarriageAssociation" nillable="true" type="nc:PersonUnionAssociationType">
+		<xsd:annotation>
+			<xsd:documentation>An association between two persons who are legally married to each other.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Measure" nillable="true" type="nc:MeasureType">
+		<xsd:annotation>
+			<xsd:documentation>A measurement.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="MeasureText" nillable="true" substitutionGroup="nc:MeasureValue" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A measurement value.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="MeasureValue"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="MeasureUnitText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A unit that qualifies the measurement value.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="MeasureValue">
+		<xsd:annotation>
+			<xsd:documentation>A measurement value.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Metadata" nillable="true" type="nc:MetadataType">
+		<xsd:annotation>
+			<xsd:documentation>Information that further qualifies primary data; data about data.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="NANPTelephoneNumber" nillable="true" substitutionGroup="nc:TelephoneNumberRepresentation" type="nc:NANPTelephoneNumberType">
+		<xsd:annotation>
+			<xsd:documentation>A North American Numbering Plan telephone number.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="TelephoneNumberRepresentation"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Obligation" nillable="true" type="nc:ObligationType">
+		<xsd:annotation>
+			<xsd:documentation>A thing that is owed to someone else.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ObligationCategoryText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A kind of obligation.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="ObligationDue">
+		<xsd:annotation>
+			<xsd:documentation>An amount of money or quantity of time still required to be spent in order to fulfill an obligation.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ObligationDueAmount" nillable="true" substitutionGroup="nc:ObligationDue" type="nc:AmountType">
+		<xsd:annotation>
+			<xsd:documentation>An amount of a payment obligation that has not been made.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="ObligationDue"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ObligationEndDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date on which an obligation ends.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ObligationEntity" nillable="true" type="nc:EntityType">
+		<xsd:annotation>
+			<xsd:documentation>An entity that must fulfill an obligation.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ObligationExemption" nillable="true" type="nc:ObligationExemptionType">
+		<xsd:annotation>
+			<xsd:documentation>A waival or dismissal of an obligation.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ObligationExemptionDescriptionText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A description of an exemption from an obligation.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ObligationPeriodText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>An interval or period at which an obligation is required to be fulfilled.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ObligationRecipient" nillable="true" type="nc:EntityType">
+		<xsd:annotation>
+			<xsd:documentation>An entity to whom an obligation must be fulfilled.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ObligationRecurrence" nillable="true" type="nc:ObligationRecurrenceType">
+		<xsd:annotation>
+			<xsd:documentation>A periodic basis on which an obligation must be met.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ObligationRequirementDescriptionText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A description of what is necessary in order to fulfill an obligation.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ObligationStartDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date on which an obligation begins.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="OrganizationReference" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>A unit which conducts some sort of business or operations.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="OrganizationType"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Organization" nillable="true" type="nc:OrganizationType">
+		<xsd:annotation>
+			<xsd:documentation>A unit which conducts some sort of business or operations.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="OrganizationAssociation" nillable="true" type="nc:OrganizationAssociationType">
+		<xsd:annotation>
+			<xsd:documentation>An association between an organization and another organization.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="OrganizationContactInformationAssociation" nillable="true" type="nc:OrganizationContactInformationAssociationType">
+		<xsd:annotation>
+			<xsd:documentation>An association between an organization and contact information.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="OrganizationIdentification" nillable="true" type="nc:IdentificationType">
+		<xsd:annotation>
+			<xsd:documentation>An identification that references an organization.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="OrganizationLocation" nillable="true" type="nc:LocationType">
+		<xsd:annotation>
+			<xsd:documentation>A location of an organization.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="OrganizationName" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A name of an organization.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="OrganizationPrimaryContactInformation" nillable="true" type="nc:ContactInformationType">
+		<xsd:annotation>
+			<xsd:documentation>A preferred means of contacting an organization.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="OrganizationSubUnitName" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A name of a subdivision of an organization.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="OrganizationTaxIdentification" nillable="true" type="nc:IdentificationType">
+		<xsd:annotation>
+			<xsd:documentation>A tax identification assigned to an organization.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="OrganizationUnitName" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A name of a high-level division of an organization.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonReference" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>A human being.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="PersonType"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Person" nillable="true" type="nc:PersonType">
+		<xsd:annotation>
+			<xsd:documentation>A human being.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonAssociation" nillable="true" type="nc:PersonAssociationType">
+		<xsd:annotation>
+			<xsd:documentation>An association between people.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonBirthDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date a person was born.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonCapability" nillable="true" type="nc:CapabilityType">
+		<xsd:annotation>
+			<xsd:documentation>A capacity or ability of a person for something.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonChildReference" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>A son or daughter of a person.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="PersonType"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="PersonCitizenship">
+		<xsd:annotation>
+			<xsd:documentation>A county that assigns rights, duties, and privileges to a person because of the birth or naturalization of the person in that country.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonCitizenshipFIPS10-4Code" nillable="true" substitutionGroup="nc:PersonCitizenship" type="fips_10-4:CountryCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A county that assigns rights, duties, and privileges to a person because of the birth or naturalization of the person in that country.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="PersonCitizenship"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonContactInformationAssociation" nillable="true" type="nc:PersonContactInformationAssociationType">
+		<xsd:annotation>
+			<xsd:documentation>An association between a person and contact information.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonDNA" nillable="true" type="nc:DNAType">
+		<xsd:annotation>
+			<xsd:documentation>A representation or an encoding of the identifying characteristics of a person's DNA.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonDeathDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date a person died or was declared legally dead.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonDependentReference" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>A person dependent upon the guardianship of another.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="PersonType"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonEmploymentAssociation" nillable="true" type="nc:PersonEmploymentAssociationType">
+		<xsd:annotation>
+			<xsd:documentation>An employment of a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="PersonEthnicity">
+		<xsd:annotation>
+			<xsd:documentation>A cultural lineage of a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonEthnicityCode" nillable="true" substitutionGroup="nc:PersonEthnicity" type="fbi:EthnicityCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A cultural lineage of a person.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="PersonEthnicity"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonEthnicityText" nillable="true" substitutionGroup="nc:PersonEthnicity" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A cultural lineage of a person.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="PersonEthnicity"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="PersonEyeColor">
+		<xsd:annotation>
+			<xsd:documentation>A color of the eyes of a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonEyeColorCode" nillable="true" substitutionGroup="nc:PersonEyeColor" type="fbi:EYECodeType">
+		<xsd:annotation>
+			<xsd:documentation>A color of the eyes of a person.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="PersonEyeColor"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonFingerprintSet" nillable="true" type="nc:FingerprintSetType">
+		<xsd:annotation>
+			<xsd:documentation>A representation or an encoding of the identifying characteristics of a set of a persons fingerprints.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonFullName" nillable="true" type="nc:PersonNameTextType">
+		<xsd:annotation>
+			<xsd:documentation>A complete name of a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonGangAssociation" nillable="true" type="nc:PersonOrganizationAssociationType">
+		<xsd:annotation>
+			<xsd:documentation>An association between a person and a gang.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonGivenName" nillable="true" type="nc:PersonNameTextType">
+		<xsd:annotation>
+			<xsd:documentation>A first name of a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonGuardianReference" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>A person with guardianship over another.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="PersonType"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="PersonHairColor">
+		<xsd:annotation>
+			<xsd:documentation>A color of the hair of a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonHairColorCode" nillable="true" substitutionGroup="nc:PersonHairColor" type="fbi:HAICodeType">
+		<xsd:annotation>
+			<xsd:documentation>A color of the hair of a person.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="PersonHairColor"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonHeightMeasure" nillable="true" type="nc:LengthMeasureType">
+		<xsd:annotation>
+			<xsd:documentation>A measurement of the height of a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonLanguageEnglishIndicator" nillable="true" type="niem-xsd:boolean">
+		<xsd:annotation>
+			<xsd:documentation>True if a person understands and speaks English; false otherwise.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonMaidenName" nillable="true" type="nc:PersonNameTextType">
+		<xsd:annotation>
+			<xsd:documentation>An original surname of a person before changed by marriage.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonMiddleName" nillable="true" type="nc:PersonNameTextType">
+		<xsd:annotation>
+			<xsd:documentation>A middle name of a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonName" nillable="true" type="nc:PersonNameType">
+		<xsd:annotation>
+			<xsd:documentation>A combination of names and/or titles by which a person is known.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonNamePrefixText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A title or honorific used by a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonNameSuffixText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A term appended after the family name that qualifies the name.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonOrganizationAssociation" nillable="true" type="nc:PersonOrganizationAssociationType">
+		<xsd:annotation>
+			<xsd:documentation>An association between a person and an organization.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonOtherIdentification" nillable="true" type="nc:IdentificationType">
+		<xsd:annotation>
+			<xsd:documentation>Information about an identifier with a kind that is not explicitly defined in the standard that refers to a person within a certain domain.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonParentReference" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>A father or mother of a person.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="PersonType"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonPhysicalFeature" nillable="true" type="nc:PhysicalFeatureType">
+		<xsd:annotation>
+			<xsd:documentation>A prominent or easily identifiable aspect of  a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonPrimaryLanguage" nillable="true" type="nc:PersonLanguageType">
+		<xsd:annotation>
+			<xsd:documentation>A capacity of a person for a language with which that person has the strongest familiarity.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="PersonRace">
+		<xsd:annotation>
+			<xsd:documentation>A classification of a person based on factors such as geographical locations and genetics.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonRaceCode" nillable="true" substitutionGroup="nc:PersonRace" type="fbi:RACCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A classification of a person based on factors such as geographical locations and genetics.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="PersonRace"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonRaceText" nillable="true" substitutionGroup="nc:PersonRace" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A classification of a person based on factors such as geographical locations and genetics.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="PersonRace"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="PersonSex">
+		<xsd:annotation>
+			<xsd:documentation>A gender or sex of a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonSexCode" nillable="true" substitutionGroup="nc:PersonSex" type="fbi:SEXCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A gender or sex of a person.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="PersonSex"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonStateIdentification" nillable="true" type="nc:IdentificationType">
+		<xsd:annotation>
+			<xsd:documentation>An identification of a person based on a state-issued ID card.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonSurName" nillable="true" type="nc:PersonNameTextType">
+		<xsd:annotation>
+			<xsd:documentation>A last name or family name of a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonTaxIdentification" nillable="true" type="nc:IdentificationType">
+		<xsd:annotation>
+			<xsd:documentation>An identification used to refer to a specific person within the tax system of a country.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="PersonUnionCategory">
+		<xsd:annotation>
+			<xsd:documentation>A kind of union between two people.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonUnionCategoryCode" nillable="true" substitutionGroup="nc:PersonUnionCategory" type="nonauth:MarriageCategoryCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A kind of union between two people.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="PersonUnionCategory"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonUnionStatus" nillable="true" type="nc:MarriageStatusType">
+		<xsd:annotation>
+			<xsd:documentation>A status of a union between two people.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PersonWeightMeasure" nillable="true" type="nc:WeightMeasureType">
+		<xsd:annotation>
+			<xsd:documentation>A measurement of the weight of a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="PhysicalFeatureCategory">
+		<xsd:annotation>
+			<xsd:documentation>A specific kind of physical feature.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PhysicalFeatureCategoryCode" nillable="true" substitutionGroup="nc:PhysicalFeatureCategory" type="fbi:SMTCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A specific kind of physical feature.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="PhysicalFeatureCategory"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PhysicalFeatureCategoryText" nillable="true" substitutionGroup="nc:PhysicalFeatureCategory" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A specific kind of physical feature.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="PhysicalFeatureCategory"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="RegistrationJurisdiction">
+		<xsd:annotation>
+			<xsd:documentation>A state or other jurisdictional unit where a property registration was issued.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="RelatedCaseAssociation" nillable="true" type="nc:RelatedActivityAssociationType">
+		<xsd:annotation>
+			<xsd:documentation>An association between related cases.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="RoleOf">
+		<xsd:annotation>
+			<xsd:documentation>A property of a role object. This specifies the base object, of which the role object is a function.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="RoleOfItemReference" substitutionGroup="nc:RoleOf" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>An entity of whom the role object is a function.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="ItemType"/>
+				<i:Base i:name="RoleOf"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="RoleOfOrganizationReference" substitutionGroup="nc:RoleOf" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>An organization of whom the role object is a function.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="OrganizationType"/>
+				<i:Base i:name="RoleOf"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="RoleOfPersonReference" substitutionGroup="nc:RoleOf" type="s:ReferenceType">
+		<xsd:annotation>
+			<xsd:documentation>A person of whom the role object is a function.</xsd:documentation>
+			<xsd:appinfo>
+				<i:ReferenceTarget i:name="PersonType"/>
+				<i:Base i:name="RoleOf"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ScheduleActivityText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>An activity planned to occur on a certain date and time.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ScheduleDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date for which an activity is scheduled.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ScheduleDayEndTime" nillable="true" type="niem-xsd:time">
+		<xsd:annotation>
+			<xsd:documentation>A time at which an activity is scheduled to end.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ScheduleDayStartTime" nillable="true" type="niem-xsd:time">
+		<xsd:annotation>
+			<xsd:documentation>A time at which an activity is scheduled to begin.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="SensitivityText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A sensitivity level of the information.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="SpeedUnitCode" nillable="true" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>A unit of measurement of speed.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="StartDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date on which something begins.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="StatusDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>A date a status was set, effected, or reported.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="StatusDescriptionText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A description of a status or condition of something or someone.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="StatusText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A status or condition of something or someone.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="StreetCategoryText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A kind of street.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="StreetExtensionText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>Any additional parts of a street reference that follows the street category and post directional.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="StreetFullText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A complete reference for a street.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="StreetName" nillable="true" type="nc:ProperNameTextType">
+		<xsd:annotation>
+			<xsd:documentation>A name of a street.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="StreetNumberText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A number that identifies a particular unit or location within a street.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="StreetPostdirectionalText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A direction that appears after a street name.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="StreetPredirectionalText" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>A direction that appears before a street name.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="StructuredAddress" nillable="true" substitutionGroup="nc:AddressRepresentation" type="nc:StructuredAddressType">
+		<xsd:annotation>
+			<xsd:documentation>An address.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="AddressRepresentation"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Supervision" nillable="true" type="nc:SupervisionType">
+		<xsd:annotation>
+			<xsd:documentation>A process of overseeing, supervising, or keeping track in some capacity of a person.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="SupervisionCustodyStatus" nillable="true" type="nc:StatusType">
+		<xsd:annotation>
+			<xsd:documentation>A status of the custody of a person under supervision.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="SupervisionFacility" nillable="true" type="nc:FacilityType">
+		<xsd:annotation>
+			<xsd:documentation>A facility at which a subject is being supervised.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="TelephoneAreaCodeID" nillable="true" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>A dialing code for a state or province for phone numbers in the USA, Canada, Mexico, and the Caribbean. </xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="TelephoneCountryCodeID" nillable="true" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>An international dialing code for a country.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="TelephoneExchangeID" nillable="true" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>A portion of a telephone number that usually represents a central telephone switch.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="TelephoneLineID" nillable="true" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>A portion of a telephone number that identifies the individual circuit within an exchange.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="TelephoneNumber" nillable="true" type="nc:TelephoneNumberType">
+		<xsd:annotation>
+			<xsd:documentation>A telephone number for a telecommunication device.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="TelephoneNumberFullID" nillable="true" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>A complete telephone number.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="TelephoneNumberID" nillable="true" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>A telephone number.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element abstract="true" name="TelephoneNumberRepresentation">
+		<xsd:annotation>
+			<xsd:documentation>A telephone number.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="TelephoneSuffixID" nillable="true" type="niem-xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>Additional numbers to be entered after a call connects to be directed to the appropriate place.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Vehicle" nillable="true" type="nc:VehicleType">
+		<xsd:annotation>
+			<xsd:documentation>A motor-driven conveyance designed to carry its operator, and optionally passengers and cargo, over land.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="VehicleColorPrimaryCode" nillable="true" substitutionGroup="nc:ItemColor" type="fbi:VCOCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A single, upper-most, front-most, or majority color of a vehicle.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="ItemColor"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="VehicleIdentification" nillable="true" type="nc:IdentificationType">
+		<xsd:annotation>
+			<xsd:documentation>A unique combination of alphanumeric characters that identifies a specific vehicle.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="VehicleMakeCode" nillable="true" type="fbi:VMACodeType">
+		<xsd:annotation>
+			<xsd:documentation>A manufacturer of a vehicle.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="VehicleModelCode" nillable="true" type="fbi:VMOCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A specific design or class of vehicle made by a manufacturer.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="VehicleStyleCode" nillable="true" substitutionGroup="nc:ItemStyle" type="fbi:VSTCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A style of a vehicle.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="ItemStyle"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="WeightUnitCode" nillable="true" type="unece:MassCodeType">
+		<xsd:annotation>
+			<xsd:documentation>A unit of measure of the weight value.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Year" nillable="true" substitutionGroup="nc:DateRepresentation" type="niem-xsd:gYear">
+		<xsd:annotation>
+			<xsd:documentation>A year.</xsd:documentation>
+			<xsd:appinfo>
+				<i:Base i:name="DateRepresentation"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+</xsd:schema>

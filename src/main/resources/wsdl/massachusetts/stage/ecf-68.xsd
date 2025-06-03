@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:tyler:ecf:extensions:CreateCaseMessage" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:i="http://niem.gov/niem/appinfo/2.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" xmlns:s="http://niem.gov/niem/structures/2.0" xmlns:tyler="urn:tyler:ecf:extensions:Common" targetNamespace="urn:tyler:ecf:extensions:CreateCaseMessage" version="1.0">
+	<xsd:annotation>
+		<xsd:documentation>CreateCaseMessage</xsd:documentation>
+		<xsd:appinfo>
+			<i:ConformantIndicator>true</i:ConformantIndicator>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="ecf-2.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-3.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="ecf-4.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-13.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="ecf-18.xsd"/>
+  <xsd:import namespace="urn:tyler:ecf:extensions:Common" schemaLocation="ecf-60.xsd"/>
+
+	<xsd:complexType name="CreateCaseMessageType">
+		<xsd:annotation>
+			<xsd:documentation>This describes the create case transaction between the Filing Review MDE and the Court Record MDE.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="ecf:ElectronicFilingMessageType">
+				<xsd:sequence>
+					<xsd:element ref="nc:Case"/>
+				  <xsd:element maxOccurs="unbounded" minOccurs="0" ref="tyler:CourtEvent"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="CreateCaseMessage" type="CreateCaseMessageType">
+		<xsd:annotation>
+			<xsd:documentation>This describes the create case transaction between the Filing Review MDE and the Court Record MDE.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+</xsd:schema>
