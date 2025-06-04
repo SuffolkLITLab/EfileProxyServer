@@ -38,9 +38,9 @@ newgrp docker
 ```
 
 If any of this doesn't work, checkout the official instructions for [docker](https://docs.docker.com/engine/install/ubuntu/)
-and [docker-compose-plugin](https://docs.docker.com/compose/install/linux/#install-using-the-repository).
+and [docker compose plugin](https://docs.docker.com/compose/install/linux/#install-using-the-repository).
 
-After installing docker-compose-plugin, you can download the git repo;
+After installing docker compose plugin, you can download the git repo;
 
 ```bash
 git clone https://github.com/SuffolkLITLab/EfileProxyServer
