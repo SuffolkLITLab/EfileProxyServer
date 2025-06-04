@@ -41,6 +41,8 @@ These testing groups are maintained with [JUnit's Tag](https://junit.org/junit5/
 
 ### Integration Tests
 
+Close any active running instance of the docker compose containers before running `integration_test.py`.
+
 To run integration tests with coverage, do the following:
 
 ```bash
@@ -58,8 +60,6 @@ mvn jacoco:prepare-agent verify jacoco:report
 # view the report in your browser
 firefox target/site/jacoco/index.html # or chrome, chromium, etc.
 ```
-
-You shouldn't have an active running instance of the docker compose containers before running `integration_test.py`.
 
 ## Making Code Changes
 
