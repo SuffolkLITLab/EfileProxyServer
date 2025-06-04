@@ -1,4 +1,4 @@
-FROM maven:3.8-eclipse-temurin-17-alpine
+FROM maven:3.8-eclipse-temurin-17
 # The `[]` is an optional COPY: doesn't copy if those files aren't there (https://stackoverflow.com/a/46801962/11416267)
 # They are needed for Tyler API usage, and serving the REST API as HTTPS
 COPY pom.xml LICENSE client_sign.propertie[s] quartz.properties Suffolk.pf[x] acme_user.ke[y] acme_domain.ke[y] acme_domain-chain.cr[t] extract-tls-secrets-4.0.0.ja[r] jacocoagent.ja[r] /usr/src/app/
