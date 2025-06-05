@@ -2,7 +2,7 @@
 
 There are two different ways of running this proxy server:
 
-1. Through Docker and Docker-Compose. This is how the server will run in prod,
+1. Through Docker and Docker Compose. This is how the server will run in prod,
    so you should have and know this setup.
 2. Locally on your own machine. This is only recommended for unit tests, as
    some of important unittests cannot run in a docker container. However,
@@ -12,7 +12,7 @@ These instructions are setup for Ubuntu / Windows Subsystem for Linux,
 but should be amenable for Macs.
 
 **NOTE**: it can take about 40 minutes to load all of the codes into the database when starting the proxy server
-for the first time. This only happens the first time you run it (if you are using docker-compose, `docker-compose down` remove the downloaded codes).
+for the first time. This only happens the first time you run it (if you are using docker compose, `docker compose down` remove the downloaded codes).
 
 ## Docker
 

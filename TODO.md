@@ -16,7 +16,7 @@ Full auto integration test:
   * starts up docassmble, postgres, and EFSP
     * db init for PG: https://stackoverflow.com/questions/36781984/load-postgres-dump-after-docker-compose-up
       * tyler_efm_codes_v0_1_truncated.tar.xz
-  * start docker-compose
+  * start docker compose
   * from an npm container
     * wait til DA is up
     * add the EFSP server API key (maybe hard coded from the user_transaction.sql) to DA config
