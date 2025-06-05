@@ -2,7 +2,7 @@
 
 There are two different ways of running this proxy server:
 
-1. Through Docker and Docker-Compose. This is how the server will run in prod,
+1. Through Docker and Docker Compose. This is how the server will run in prod,
    so you should have and know this setup.
 2. Locally on your own machine. This is only recommended for unit tests, as
    some of important unittests cannot run in a docker container. However,
@@ -12,23 +12,24 @@ These instructions are setup for Ubuntu / Windows Subsystem for Linux,
 but should be amenable for Macs.
 
 **NOTE**: it can take about 40 minutes to load all of the codes into the database when starting the proxy server
-for the first time. This only happens the first time you run it (if you are using docker-compose, `docker-compose down` remove the downloaded codes).
+for the first time. This only happens the first time you run it (if you are using docker compose, `docker compose down` remove the downloaded codes).
 
 ## Docker
 
 ```bash
+# Add Docker's official GPG key:
 sudo apt-get update
-sudo apt-get install ca-certificates curl gnupg
-
+sudo apt-get install ca-certificates curl
 sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
 
+# Add the repository to Apt sources:
 echo \
-  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-  
+
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
@@ -111,10 +112,10 @@ Instructions are for Linux. Start with installing everything.
 ```bash
 sudo add-apt-repository ppa:openjdk-r/ppa
 sudo apt update
-sudo apt install openjdk-15-jdk
+sudo apt install openjdk-17-jdk
 ```
 
-We are using CXF as the SOAP client which supports up to JDK 17. Maybe could go back to version 11.
+We are using CXF as the SOAP client which supports up to JDK 17.
 
 ```bash
 sudo apt install maven

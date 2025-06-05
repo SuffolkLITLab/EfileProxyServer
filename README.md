@@ -10,18 +10,18 @@ This is an abbreviated version of installation. Full details are in [setup](docs
 
 These instructions are written for Linux (specifically Ubuntu 20.04), steps for other platforms should be similar.
 
-1. [Install docker](https://docs.docker.com/engine/install/) and docker-compose.
+1. [Install docker](https://docs.docker.com/engine/install/) and [docker compose](https://docs.docker.com/compose/install/).
 2. Download this repository: In a terminal, you can run `git clone https://github.com/SuffolkLITLab/EfileProxyServer`
-3. In the same terminal change directories to where you downloaded the server: `cd EfileProxyServer`, and then build a docker image for this server. `docker-compose build`
-4. Run the server image that you just built with `docker-compose up`.
+3. In the same terminal change directories to where you downloaded the server: `cd EfileProxyServer`, and then build a docker image for this server. `docker compose build`
+4. Run the server image that you just built with `docker compose up`.
 
 ## Env file
 
-Docker env files don't work in normal bash, so if you are running things in your local shell (like when [testing](#testing)), use [direnv](https://direnv.net).
+Docker env files can't be directly used in `bash`, so if you are running things in your local shell (like when [testing](#testing)), use [direnv](https://direnv.net).
 
 ## Making API Tokens
 
-Run the following command after starting the services with `docker-compose`:
+Run the following command after starting the services with `docker compose`:
 
 ```bash
 docker exec -i efileproxyserver-efspjava-1 /usr/bin/mvn -f /usr/src/app/pom.xml exec:java@LoginDatabase -Dexec.args="servername true true"

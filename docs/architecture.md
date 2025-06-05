@@ -92,43 +92,45 @@ It is the more widely used of the databases. There is a Quartz job (setup in `ec
 
 Below is the rough outline of what calls where when in our architecture. Not all network calls are present, but this is the general gist.
 
-![A sequence diagram of the network calls](mermaid-diagram-2023-09-27-123554.svg)
-
 ```mermaid
 sequenceDiagram
+    participant Docassemble
+    participant Proxy
+    participant Tyler EFM
+    participant Court CMS
     participant User Email
     Docassemble->>Proxy: Liveness ping to courts list
     Proxy->>Docassemble: Courts response
     Docassemble->>Proxy: Create User Account
-    Proxy->>Tyler Efm:
-    Tyler Efm->>User Email: Verify email
-    User Email->>Tyler Efm: Email verified
+    Proxy->>Tyler EFM: ...
+    Tyler EFM->>User Email: Verify email
+    User Email->>Tyler EFM: Email verified
     Docassemble->>+Proxy: User login
-    Proxy->>Tyler Efm: Pass on Username and Password
-    Tyler Efm->>Proxy: Login Success
+    Proxy->>Tyler EFM: Pass on Username and Password
+    Tyler EFM->>Proxy: Login Success
     Proxy->>-Docassemble: Login Success
-    Docassemble->>Proxy: Case lookup
-    Proxy->>Tyler Efm:
-    Tyler Efm->>Court CMS:
-    Court CMS->>Tyler Efm: Cases found
-    Tyler Efm->>Proxy:
-    Proxy->> Docassemble:
+    Docassemble->>+Proxy: Case lookup
+    Proxy->>Tyler EFM: ...
+    Tyler EFM->>Court CMS: ...
+    Court CMS->>Tyler EFM: Cases found
+    Tyler EFM->>Proxy: ...
+    Proxy->>-Docassemble: ...
     Docassemble->>Proxy: Court Codes for filing
     Proxy->>Docassemble: Court Codes from DB
     Docassemble->>Proxy: Calculate payment
-    Proxy->>Tyler Efm:
-    Tyler Efm->>Proxy: Total payment breakdown
-    Proxy->>Docassemble:
+    Proxy->>Tyler EFM: ...
+    Tyler EFM->>Proxy: Total payment breakdown
+    Proxy->>Docassemble: ...
     Docassemble->>Proxy: Prepare / check filing
     Proxy->>Docassemble: Filing validated
     Docassemble->>Proxy: Submit filing
-    Proxy->>Tyler Efm: Submit vetted filing
-    Tyler Efm->>Court CMS: Put filing in clerk queue
-    Tyler Efm->>Proxy: Filing Submitted
-    Proxy->>Docassemble:
+    Proxy->>Tyler EFM: Submit vetted filing
+    Tyler EFM->>Court CMS: Put filing in clerk queue
+    Tyler EFM->>Proxy: Filing Submitted
+    Proxy->>Docassemble: ...
     Proxy->>User Email: Filing information
-    Court CMS->>Tyler Efm: Filing Accepted
-    Tyler Efm->>Proxy: Filing Assembly Callback
+    Court CMS->>Tyler EFM: Filing Accepted
+    Tyler EFM->>Proxy: Filing Assembly Callback
     Proxy->>User Email: Filing Accepted
 ```
 
