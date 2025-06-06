@@ -61,15 +61,15 @@ index 7692426c..776776b6 100644
 +      - type: bind
 +        source: .
 +        target: /tmp/secrets
-     deploy:
-       resources:
-         limits:
-           memory: 4G
 -    # Uncomment this for debugging: you can get exact SOAP envelopes being
 -    # sent by running wireshark locally
 -    #  - type: bind
 -    #    source: .
 -    #    target: /tmp/secrets
+     deploy:
+       resources:
+         limits:
+           memory: 4G
    db:
      image: "postgres:14"
      shm_size: 256m
