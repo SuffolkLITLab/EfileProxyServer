@@ -15,12 +15,14 @@ import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.CourtLocationInfo;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
@@ -47,9 +49,11 @@ import tyler.efm.services.schema.baseresponse.BaseResponseType;
 import tyler.efm.services.schema.changepasswordrequest.ChangePasswordRequestType;
 import tyler.efm.services.schema.changepasswordresponse.ChangePasswordResponseType;
 import tyler.efm.services.schema.common.NotificationType;
+import tyler.efm.services.schema.common.PagingType;
 import tyler.efm.services.schema.common.RegistrationType;
 import tyler.efm.services.schema.common.RoleLocationType;
 import tyler.efm.services.schema.common.UserType;
+import tyler.efm.services.schema.getuserlistrequest.GetUserListRequest;
 import tyler.efm.services.schema.getuserrequest.GetUserRequestType;
 import tyler.efm.services.schema.getuserresponse.GetUserResponseType;
 import tyler.efm.services.schema.notificationpreferenceslistresponse.NotificationPreferencesListResponseType;
@@ -376,7 +380,10 @@ public class AdminUserService {
 
   @GET
   @Path("/users")
-  public Response getUserList(@Context HttpHeaders httpHeaders) {
+  public Response getUserList(
+      @Context HttpHeaders httpHeaders,
+      @QueryParam("page_index") @DefaultValue("0") int pageIndex,
+      @QueryParam("page_size") @DefaultValue("10") int pageSize) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.getUserList");
       Optional<IEfmFirmService> port =
@@ -385,7 +392,13 @@ public class AdminUserService {
         return Response.status(401).build();
       }
 
-      UserListResponseType resp = port.get().getUserList();
+      var paging = new PagingType();
+      paging.setPageIndex(pageIndex);
+      paging.setPageSize(pageSize);
+
+      var req = new GetUserListRequest();
+      req.setPaging(paging);
+      UserListResponseType resp = port.get().getUserList(req);
       return TylerErrorCodes.mapTylerCodesToHttp(
           resp.getError(), () -> Response.ok(resp.getUser()).build());
     } finally {
