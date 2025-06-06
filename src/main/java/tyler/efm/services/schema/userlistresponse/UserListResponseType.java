@@ -10,6 +10,7 @@ import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 import tyler.efm.services.schema.baseresponse.BaseResponseType;
+import tyler.efm.services.schema.common.PagingType;
 import tyler.efm.services.schema.common.UserType;
 
 
@@ -24,6 +25,7 @@ import tyler.efm.services.schema.common.UserType;
  *     &lt;extension base="{urn:tyler:efm:services:schema:BaseResponse}BaseResponseType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="User" type="{urn:tyler:efm:services:schema:Common}UserType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:efm:services:schema:Common}Paging" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -34,7 +36,8 @@ import tyler.efm.services.schema.common.UserType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "UserListResponseType", propOrder = {
-    "user"
+    "user",
+    "paging"
 })
 public class UserListResponseType
     extends BaseResponseType
@@ -42,6 +45,8 @@ public class UserListResponseType
 
     @XmlElement(name = "User")
     protected List<UserType> user;
+    @XmlElement(name = "Paging", namespace = "urn:tyler:efm:services:schema:Common")
+    protected PagingType paging;
 
     /**
      * Gets the value of the user property.
@@ -70,6 +75,30 @@ public class UserListResponseType
             user = new ArrayList<UserType>();
         }
         return this.user;
+    }
+
+    /**
+     * Gets the value of the paging property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link PagingType }
+     *     
+     */
+    public PagingType getPaging() {
+        return paging;
+    }
+
+    /**
+     * Sets the value of the paging property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link PagingType }
+     *     
+     */
+    public void setPaging(PagingType value) {
+        this.paging = value;
     }
 
     /**
