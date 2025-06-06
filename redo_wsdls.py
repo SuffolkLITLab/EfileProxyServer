@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
 
+
+## TODO(bryce): use PEP-723, and get wsdl2java install automatically?
+
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#   "plumbum",
+#   "requests",
+# ]
+# ///
+
 """
 To run you must:
 
