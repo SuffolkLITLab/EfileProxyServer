@@ -23,9 +23,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Most of this class taken from the below blog post: https://dalelane.co.uk/blog/?p=1871 */
 public class EndpointReflection {
+  private static Logger log = LoggerFactory.getLogger(EndpointReflection.class);
 
   private final String baseUrl;
 
@@ -92,7 +95,11 @@ public class EndpointReflection {
     Map<String, String> toDisplay = new HashMap<>();
     for (Class<?> clazz : classes) {
       Path annotation = clazz.getAnnotation(Path.class);
-      toDisplay.put(clazz.getSimpleName(), baseUrl + annotation.value());
+      if (annotation != null) {
+        toDisplay.put(clazz.getSimpleName(), baseUrl + annotation.value());
+      } else {
+        log.warn("No @Path annotation found on {}, was expected", clazz.getSimpleName());
+      }
     }
     return toDisplay;
   }

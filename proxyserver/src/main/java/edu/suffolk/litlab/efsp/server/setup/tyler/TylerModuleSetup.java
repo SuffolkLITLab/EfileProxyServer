@@ -136,7 +136,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     this.codesDbUpdateTime = codesDbUpdateTime;
   }
 
-  private static Optional<CreationArgs> createFromEnvVars(TylerEnv maybeTylerEnv) {
+  private static Optional<CreationArgs> createFromEnvVars(TylerEnv tylerEnv) {
     Optional<String> maybeX509Password = GetEnv("X509_PASSWORD");
     if (maybeX509Password.isEmpty() || maybeX509Password.orElse("").isBlank()) {
       log.warn("If using Tyler, X509_PASSWORD can't be null. Did you forget to source .env?");
@@ -145,12 +145,12 @@ public class TylerModuleSetup implements EfmModuleSetup {
     CreationArgs args = new CreationArgs();
     args.x509Password = maybeX509Password.get();
 
-    args.tylerEnv = maybeTylerEnv;
+    args.tylerEnv = tylerEnv;
 
     args.pgUser = GetEnv("POSTGRES_USER").orElse("postgres");
     Optional<String> maybeDbPassword = GetEnv("POSTGRES_PASSWORD");
     if (maybeDbPassword.isEmpty()) {
-      log.warn("You need to define a POSTGRES_PASSWORD");
+      log.warn("You need to define a POSTGRES_PASSWORD. Tyler will not be used");
       return Optional.empty();
     }
     args.pgPassword = maybeDbPassword.get();
@@ -163,7 +163,8 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
     Optional<String> maybeTogaUrl = GetEnv("TOGA_URL");
     if (maybeTogaUrl.isEmpty()) {
-      log.warn("You need to define a TOGA_URL");
+      log.warn(
+          "You need to define a TOGA_URL. Tyler will not be used (for env '" + tylerEnv + "')");
       return Optional.empty();
     }
     args.togaUrl = maybeTogaUrl.get();
