@@ -5,6 +5,8 @@
 # dependencies = ["requests", "plumbum"]
 # ///
 
+## TODO(bryce): use PEP-723, and get wsdl2java install automatically?
+
 """
 To run you must:
 
