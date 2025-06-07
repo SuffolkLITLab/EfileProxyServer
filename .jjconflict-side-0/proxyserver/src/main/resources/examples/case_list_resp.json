@@ -1,0 +1,233 @@
+[
+    {
+        "name": "{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CivilCase-4.0}CivilCase",
+        "declaredType": "oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.CivilCaseType",
+        "scope": "jakarta.xml.bind.JAXBElement$GlobalScope",
+        "value": {
+            "id": null,
+            "rest": [
+                {
+                    "JAXBElement": {
+                        "name": "{http://niem.gov/niem/domains/jxdm/4.0}CaseAugmentation",
+                        "declaredType": "gov.niem.niem.domains.jxdm._4.CaseAugmentationType",
+                        "scope": "jakarta.xml.bind.JAXBElement$GlobalScope",
+                        "value": {
+                            "id": null,
+                            "CaseCharge": null,
+                            "CaseCourt": {
+                                "id": null,
+                                "CourtName": {
+                                    "id": null,
+                                    "value": "",
+                                    "metadata": null,
+                                    "linkMetadata": null
+                                },
+                                "metadata": null,
+                                "linkMetadata": null,
+                                "OrganizationIdentification": {
+                                    "name": "{http://niem.gov/niem/niem-core/2.0}OrganizationIdentification",
+                                    "declaredType": "gov.niem.niem.niem_core._2.IdentificationType",
+                                    "scope": "jakarta.xml.bind.JAXBElement$GlobalScope",
+                                    "value": {
+                                        "id": null,
+                                        "IdentificationID": {
+                                            "id": null,
+                                            "value": "535",
+                                            "metadata": null,
+                                            "linkMetadata": null
+                                        },
+                                        "IdentificationCategory": null,
+                                        "IdentificationJurisdiction": null,
+                                        "IdentificationSourceText": null,
+                                        "metadata": null,
+                                        "linkMetadata": null
+                                    },
+                                    "nil": false,
+                                    "globalScope": true,
+                                    "typeSubstituted": false
+                                },
+                                "OrganizationLocation": null,
+                                "OrganizationName": null,
+                                "OrganizationPrimaryContactInformation": null,
+                                "OrganizationSubUnitName": null,
+                                "OrganizationTaxIdentification": null,
+                                "OrganizationUnitName": null
+                            },
+                            "CaseCourtEvent": null,
+                            "CaseDefendantParty": null,
+                            "CaseDefenseAttorney": null,
+                            "CaseInitiatingParty": null,
+                            "CaseJudge": null,
+                            "CaseLineageCase": null,
+                            "CaseOfficial": null,
+                            "CaseOtherEntity": null,
+                            "CaseProsecutionAttorney": null,
+                            "CaseRespondentAttorney": null,
+                            "CaseRespondentParty": null,
+                            "CaseInitiatingAttorney": null,
+                            "metadata": null
+                        },
+                        "nil": false,
+                        "globalScope": true,
+                        "typeSubstituted": false
+                    }
+                },
+                {
+                    "JAXBElement": {
+                        "name": "{urn:tyler:ecf:extensions:Common}CaseAugmentation",
+                        "declaredType": "tyler.ecf.extensions.common.CaseAugmentationType",
+                        "scope": "jakarta.xml.bind.JAXBElement$GlobalScope",
+                        "value": {
+                            "id": null,
+                            "CaseTypeText": {
+                                "id": null,
+                                "value": "5994",
+                                "metadata": null,
+                                "linkMetadata": null
+                            },
+                            "FilerTypeText": null,
+                            "LowerCourtText": null,
+                            "LowerCourtJudgeText": null,
+                            "AttachServiceContactIndicator": null,
+                            "ProcedureRemedy": null,
+                            "ProviderCharge": null,
+                            "PropertyAccountNumber": null,
+                            "CivilClaimAmount": null,
+                            "ProbateEstateAmount": null,
+                            "FilingAssociation": null,
+                            "PartyService": null,
+                            "ExtendedData": null,
+                            "MaxFeeAmount": null,
+                            "CaseSecurity": null,
+                            "CaseSubTypeText": null,
+                            "PhysicalFeature": null,
+                            "ReturnDate": null,
+                            "HearingSchedule": null,
+                            "OutOfStateIndicator": null,
+                            "CitationAugmentation": null,
+                            "WillFiledDate": null,
+                            "DecedentPartyAssociation": null,
+                            "QuestionAnswer": null,
+                            "Agency": null,
+                            "LowerCourtCaseTypeText": null,
+                            "CaseAddress": null,
+                            "FeeSplit": null,
+                            "AddMeAsServiceContactPartyReference": null,
+                            "HasUserFiledIntoCaseIndicator": null,
+                            "metadata": null,
+                            "linkMetadata": null,
+                            "Language": null,
+                            "Alias": null,
+                            "CaseOfficial": null,
+                            "CaseOtherEntityAttorney": null,
+                            "CaseParticipant": null,
+                            "CaseShortTitleText": null,
+                            "OrganizationAssociation": null,
+                            "PersonAssociation": null,
+                            "PersonOrganizationAssociation": null,
+                            "RelatedCaseAssociation": null
+                        },
+                        "nil": false,
+                        "globalScope": true,
+                        "typeSubstituted": false
+                    }
+                },
+                {
+                    "JAXBElement": {
+                        "name": "{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}CauseOfActionCode",
+                        "declaredType": "gov.niem.niem.niem_core._2.TextType",
+                        "scope": "jakarta.xml.bind.JAXBElement$GlobalScope",
+                        "value": {
+                            "id": null,
+                            "value": "",
+                            "metadata": null,
+                            "linkMetadata": null
+                        },
+                        "nil": false,
+                        "globalScope": true,
+                        "typeSubstituted": false
+                    }
+                },
+                {
+                    "JAXBElement": {
+                        "name": "{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CivilCase-4.0}ClassActionIndicator",
+                        "declaredType": "gov.niem.niem.proxy.xsd._2.Boolean",
+                        "scope": "jakarta.xml.bind.JAXBElement$GlobalScope",
+                        "value": {
+                            "id": null,
+                            "value": false,
+                            "metadata": null,
+                            "linkMetadata": null
+                        },
+                        "nil": false,
+                        "globalScope": true,
+                        "typeSubstituted": false
+                    }
+                },
+                {
+                    "JAXBElement": {
+                        "name": "{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CivilCase-4.0}JuryDemandIndicator",
+                        "declaredType": "gov.niem.niem.proxy.xsd._2.Boolean",
+                        "scope": "jakarta.xml.bind.JAXBElement$GlobalScope",
+                        "value": {
+                            "id": null,
+                            "value": false,
+                            "metadata": null,
+                            "linkMetadata": null
+                        },
+                        "nil": false,
+                        "globalScope": true,
+                        "typeSubstituted": false
+                    }
+                },
+                {
+                    "JAXBElement": {
+                        "name": "{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CivilCase-4.0}ReliefTypeCode",
+                        "declaredType": "gov.niem.niem.niem_core._2.TextType",
+                        "scope": "jakarta.xml.bind.JAXBElement$GlobalScope",
+                        "value": {
+                            "id": null,
+                            "value": "",
+                            "metadata": null,
+                            "linkMetadata": null
+                        },
+                        "nil": false,
+                        "globalScope": true,
+                        "typeSubstituted": false
+                    }
+                }
+            ],
+            "metadata": null,
+            "linkMetadata": null,
+            "ActivityIdentification": null,
+            "ActivityDateRepresentation": null,
+            "ActivityDescriptionText": null,
+            "ActivityStatus": null,
+            "ActivityDisposition": null,
+            "CaseTitleText": {
+                "id": null,
+                "value": "99H85SC000016 Brown, Steven vs. Brown, John",
+                "metadata": null,
+                "linkMetadata": null
+            },
+            "CaseCategoryText": {
+                "id": null,
+                "value": "5990",
+                "metadata": null,
+                "linkMetadata": null
+            },
+            "CaseTrackingID": {
+                "id": null,
+                "value": "d6ef6cc8-f08d-4002-851a-19f93c735595",
+                "metadata": null,
+                "linkMetadata": null
+            },
+            "CaseDocketID": {
+                "id": null,
+                "value": "99H85SC000016",
+                "metadata": null,
+                "linkMetadata": null
+            }
+        }
+    }
+]

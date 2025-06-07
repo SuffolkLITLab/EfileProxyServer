@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:tyler:ecf:v5.0:extensions:reservedateresponse" xmlns:clsa="http://reference.niem.gov/niem/specification/code-lists/1.0/code-lists-schema-appinfo/" xmlns:ct="http://release.niem.gov/niem/conformanceTargets/3.0/" xmlns:ecf="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" xmlns:j="http://release.niem.gov/niem/domains/jxdm/6.0/" xmlns:local="local" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" xmlns:ns1="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/reservedateresponse" xmlns:reserveresponse="urn:tyler:ecf:v5.0:extensions:reservedateresponse" xmlns:term="http://release.niem.gov/niem/localTerminology/3.0/" xmlns:xcal="urn:ietf:params:xml:ns:icalendar-2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" ct:conformanceTargets="http://reference.niem.gov/niem/specification/naming-and-design-rules/3.0/#ExtensionSchemaDocument http://reference.niem.gov/niem/specification/code-lists/1.0/#SchemaDocument" elementFormDefault="qualified" targetNamespace="urn:tyler:ecf:v5.0:extensions:reservedateresponse" version="5.0">
+	<xs:annotation>
+		<xs:documentation> Schema for namespace urn:tyler:ecf:v5.0:extensions:reservedateresponse</xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" schemaLocation="ecf-v5-3.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/domains/jxdm/6.0/" schemaLocation="ecf-v5-15.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/niem-core/4.0/" schemaLocation="ecf-v5-5.xsd"/>
+	<xs:import namespace="urn:ietf:params:xml:ns:icalendar-2.0" schemaLocation="ecf-v5-20.xsd"/>
+	<xs:complexType name="ReserveDateResponseMessageType">
+		<xs:annotation>
+			<xs:documentation>The message returned when the a court date is reserved, generally in response to a ReserveCourtDateRequest.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ecf:ResponseMessageType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="nc:Case"/>
+					<xs:element minOccurs="0" ref="xcal:icalendar"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="reserveresponse:ReserveDateResponseMessageAugmentationPoint"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ReserveDateResponseMessage" nillable="false" type="reserveresponse:ReserveDateResponseMessageType">
+		<xs:annotation>
+			<xs:documentation>The message returned when the a court date is reserved, generally in response to a ReserveCourtDateRequest.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element abstract="true" name="ReserveDateResponseMessageAugmentationPoint">
+		<xs:annotation>
+			<xs:documentation>An augmentation</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="urn:tyler:ecf:extensions:Massachusetts" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tyler="urn:tyler:ecf:extensions:Common" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:s="http://niem.gov/niem/structures/2.0" targetNamespace="urn:tyler:ecf:extensions:Massachusetts">
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="ecf-18.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-3.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-13.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="ecf-2.xsd"/>
+	<xsd:import namespace="urn:tyler:ecf:extensions:Common" schemaLocation="ecf-60.xsd"/>
+	<xsd:complexType name="Component1Type">
+		<xsd:sequence>
+			<xsd:element ref="nc:PersonReference"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="Component2Type">
+		<xsd:sequence>
+			<xsd:element ref="ecf:EntityAssociationTypeCode"/>
+		</xsd:sequence>
+	</xsd:complexType> 
+	<xsd:complexType name="Component3Type">
+		<xsd:sequence>
+			<xsd:element ref="nc:PersonReference"/>
+			<xsd:element ref="PartyIndicator"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="RepresentativeCapacityType">
+		<xsd:complexContent>
+			<xsd:extension base="tyler:ExtendedDataType">
+				<xsd:sequence>
+					<xsd:element ref="Component1"/>
+					<xsd:element ref="Component2"/>
+					<xsd:element ref="Component3"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="Component1" type="Component1Type"/>
+	<xsd:element name="Component2" type="Component2Type"/>
+	<xsd:element name="Component3" type="Component3Type"/>
+	<xsd:element name="PartyIndicator" type="niem-xsd:boolean"/>
+	<xsd:element name="RepresentativeCapacity" type="RepresentativeCapacityType" substitutionGroup="tyler:ExtendedData"/>
+</xsd:schema>

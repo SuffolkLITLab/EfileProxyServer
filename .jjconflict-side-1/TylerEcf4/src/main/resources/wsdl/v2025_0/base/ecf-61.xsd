@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:tyler:ecf:extensions:ServiceAttachCaseListResponseMessage" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:i="http://niem.gov/niem/appinfo/2.0" xmlns:j="http://niem.gov/niem/domains/jxdm/4.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" xmlns:s="http://niem.gov/niem/structures/2.0" targetNamespace="urn:tyler:ecf:extensions:ServiceAttachCaseListResponseMessage" version="1.0">
+	<xsd:annotation>
+		<xsd:documentation>ServiceAttachCaseListResponseMessage</xsd:documentation>
+		<xsd:appinfo>
+			<i:ConformantIndicator>true</i:ConformantIndicator>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="ecf-2.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-3.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="ecf-4.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-13.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/domains/jxdm/4.0" schemaLocation="ecf-17.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="ecf-18.xsd"/>
+	<xsd:complexType name="ServiceAttachCaseListResponseMessageType">
+		<xsd:annotation>
+			<xsd:documentation>A synchronous response to a GetServiceAttachCaseListResponseMessage. </xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="ecf:QueryResponseMessageType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="nc:Case"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="ServiceAttachCaseListResponseMessage" type="ServiceAttachCaseListResponseMessageType">
+		<xsd:annotation>
+			<xsd:documentation>A synchronous response to a GetServiceAttachCaseListResponseMessage. </xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+</xsd:schema>

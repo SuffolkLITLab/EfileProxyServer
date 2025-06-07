@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:tyler:ecf:extensions:ServiceTypesResponseMessage" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:jxdm="http://niem.gov/niem/domains/jxdm/4.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" targetNamespace="urn:tyler:ecf:extensions:ServiceTypesResponseMessage">
+	<xs:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="ecf-2.xsd"/>
+	<xs:import namespace="http://niem.gov/niem/domains/jxdm/4.0" schemaLocation="ecf-17.xsd"/>
+	<xs:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="ecf-18.xsd"/>
+	<xs:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-13.xsd"/>
+	
+	<xs:complexType name="ServiceTypesResponseMessageType">
+		<xs:complexContent>
+			<xs:extension base="ecf:QueryResponseMessageType">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="ServiceType"/>				
+				</xs:sequence>
+		   </xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ServiceTypeType">
+		<xs:sequence>
+			<xs:element ref="ServiceCodeID"/>
+			<xs:element ref="Description"/>
+			<xs:element ref="IsEmailRequired"/>
+			<xs:element ref="IsStreetAddressRequired"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:element name="ServiceType" type="ServiceTypeType"/>
+	
+	<xs:element name="ServiceTypesResponseMessage" type="ServiceTypesResponseMessageType"/>
+	
+	<xs:element name="ServiceCodeID" type="nc:TextType"/>
+	<xs:element name="Description" type="nc:TextType"/>
+	<xs:element name="IsEmailRequired" type="niem-xsd:boolean"/>
+	<xs:element name="IsStreetAddressRequired" type="niem-xsd:boolean"/>
+</xs:schema>
