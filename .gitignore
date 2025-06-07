@@ -72,3 +72,6 @@ docassemble-os/
 
 # Test related
 !src/test/resources/tyler_efm_codes*.tar.gz
+
+# formatting
+google-java-format_*
