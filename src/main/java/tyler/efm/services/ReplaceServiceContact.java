@@ -8,7 +8,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import tyler.efm.services.schema.replaceservicecontactrequesttype.ReplaceServiceContactRequestType;
+import tyler.efm.services.schema.replaceservicecontactrequest.ReplaceServiceContactRequestType;
 
 
 /**
@@ -21,7 +21,7 @@ import tyler.efm.services.schema.replaceservicecontactrequesttype.ReplaceService
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="ReplaceServiceContactRequest" type="{urn:tyler:efm:services:schema:ReplaceServiceContactRequestType}ReplaceServiceContactRequestType" minOccurs="0"/&gt;
+ *         &lt;element name="ReplaceServiceContactRequest" type="{urn:tyler:efm:services:schema:ReplaceServiceContactRequest}ReplaceServiceContactRequestType" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;

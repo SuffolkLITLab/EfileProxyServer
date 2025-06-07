@@ -1,29 +1,29 @@
 
-package tyler.efm.services;
+package tyler.efm.services.schema.getuserlistrequest;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import tyler.efm.services.schema.getuserlistrequest.GetUserListRequest;
+import tyler.efm.services.schema.baserequest.BaseRequestType;
+import tyler.efm.services.schema.common.PagingType;
 
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>Java class for GetUserListRequest complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType&gt;
+ * &lt;complexType name="GetUserListRequest"&gt;
  *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *     &lt;extension base="{urn:tyler:efm:services:schema:BaseRequest}BaseRequestType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="GetUserListRequest" type="{urn:tyler:efm:services:schema:GetUserListRequest}GetUserListRequest" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:efm:services:schema:Common}Paging" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
- *     &lt;/restriction&gt;
+ *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -31,37 +31,38 @@ import tyler.efm.services.schema.getuserlistrequest.GetUserListRequest;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "getUserListRequest"
+@XmlType(name = "GetUserListRequest", propOrder = {
+    "paging"
 })
-@XmlRootElement(name = "GetUserList")
-public class GetUserList {
+public class GetUserListRequest
+    extends BaseRequestType
+{
 
-    @XmlElement(name = "GetUserListRequest")
-    protected GetUserListRequest getUserListRequest;
+    @XmlElement(name = "Paging", namespace = "urn:tyler:efm:services:schema:Common")
+    protected PagingType paging;
 
     /**
-     * Gets the value of the getUserListRequest property.
+     * Gets the value of the paging property.
      * 
      * @return
      *     possible object is
-     *     {@link GetUserListRequest }
+     *     {@link PagingType }
      *     
      */
-    public GetUserListRequest getGetUserListRequest() {
-        return getUserListRequest;
+    public PagingType getPaging() {
+        return paging;
     }
 
     /**
-     * Sets the value of the getUserListRequest property.
+     * Sets the value of the paging property.
      * 
      * @param value
      *     allowed object is
-     *     {@link GetUserListRequest }
+     *     {@link PagingType }
      *     
      */
-    public void setGetUserListRequest(GetUserListRequest value) {
-        this.getUserListRequest = value;
+    public void setPaging(PagingType value) {
+        this.paging = value;
     }
 
     /**
