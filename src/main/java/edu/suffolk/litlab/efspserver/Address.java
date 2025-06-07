@@ -11,8 +11,7 @@ public class Address {
   @JsonProperty("AddressLine2")
   private String apartmentLine;
 
-  @JsonProperty("City")
-  private String cityName;
+  @JsonProperty("City")        private String      cityName     ;
 
   @JsonProperty("State")
   private String stateName;
@@ -24,13 +23,7 @@ public class Address {
   private String countryName;
 
   /** Constructor, each address element in order as a string. No qualifications. */
-  public Address(
-      String streetLine,
-      String apartmentLine,
-      String cityName,
-      String stateName,
-      String zipCode,
-      CountryCodeSimpleType countryName) {
+  public Address(String streetLine, String apartmentLine, String cityName, String stateName, String zipCode, CountryCodeSimpleType countryName) {
     this.streetLine = streetLine;
     this.apartmentLine = apartmentLine;
     this.cityName = cityName;
