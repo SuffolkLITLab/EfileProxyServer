@@ -2,6 +2,15 @@ services:
   efspjava:
     build:
       context: .
+    # Automatically rebuild server on file changes. With some files, you still
+    # need to stop and `build` again (e.g. client_sign.properties)
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /usr/src/app/src
+        - action: rebuild
+          path: ./src
     # Necessary b/c docassemble is external to the docker network
     ports:
       - target: 9009
