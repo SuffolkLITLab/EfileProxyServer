@@ -20,7 +20,8 @@ public class TylerUrls {
           "massachusetts-prod", "wsdl/prod/massachusetts-EFMUserServiceSingle.svc.wsdl",
           "california-stage", "wsdl/stage/california-EFMUserServiceSingle.svc.wsdl",
           "texas-stage", "wsdl/stage/texas-EFMUserServiceSingle.svc.wsdl",
-          "indiana-stage", "wsdl/stage/indiana-EFMUserServiceSingle.svc.wsdl");
+          "indiana-stage", "wsdl/stage/indiana-EFMUserServiceSingle.svc.wsdl",
+          "mock-test", "wsdl/test/mock-EFMUserServiceSingle.svc.wsdl");
 
   static final Map<String, String> efmFirmWsdls =
       Map.of(
@@ -31,7 +32,8 @@ public class TylerUrls {
           "massachusetts-prod", "wsdl/prod/massachusetts-EFMFirmServiceSingle.svc.wsdl",
           "california-stage", "wsdl/stage/california-EFMFirmServiceSingle.svc.wsdl",
           "texas-stage", "wsdl/stage/texas-EFMFirmServiceSingle.svc.wsdl",
-          "indiana-stage", "wsdl/stage/indiana-EFMFirmServiceSingle.svc.wsdl");
+          "indiana-stage", "wsdl/stage/indiana-EFMFirmServiceSingle.svc.wsdl",
+          "mock-test", "wsdl/test/mock-EFMUserServiceSingle.svc.wsdl");
 
   /**
    * Gets the EfmUserService if the provided domain is present and correct.
@@ -64,6 +66,11 @@ public class TylerUrls {
   }
 
   public static String getCodeEndpointRootUrl(String jurisdiction, String env) {
+    String endpoint = System.getenv("ENDPOINT_ROOT");
+    if (endpoint != null && !endpoint.trim().isEmpty()) {
+      log.info("getCodeEndpointRootUrl() will return ENDPOINT_ROOT as a String:", endpoint);
+      return endpoint;
+    }
     if (jurisdiction.equalsIgnoreCase("california")) {
       return "https://california-efm-" + env + ".tylertech.cloud/";
     }
