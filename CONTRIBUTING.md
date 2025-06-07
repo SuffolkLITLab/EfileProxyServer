@@ -6,10 +6,11 @@ See the [README.md] and [docs/setup.md] for more details here.
 
 ## Formatting code
 
-[Download the google-java-format](https://github.com/google/google-java-format/releases/download/v1.16.0/google-java-format-1.16.0-all-deps.jar) tool, and once downloaded, run
+Download [version 1.27.0 of the native graal executable of google-java-format](https://github.com/google/google-java-format/releases/tag/v1.27.0) for your platform, and once downloaded, run
 
 ```bash
-java -jar google-java-format-1.16.0-all-deps.jar -i `find src/main/java/edu/suffolk -name *.java ! -name CodeTableConstants.java ! -name FilingCode.java`
+chmod +x google-java-format_linux-x86-64 # just once, use the name of your platform
+./google-java-format_linux-x86-64 -i `find src/main/java/edu/suffolk -name *.java ! -name CodeTableConstants.java ! -name FilingCode.java`
 ```
 
 To format all of your files.

@@ -387,7 +387,7 @@ public class PaymentsService {
 
     log.info("Redirecting with transactionId: " + transactionId);
     String fullHtml =
-        """
+"""
 <!DOCTYPE html>
 <html>
     <head>
