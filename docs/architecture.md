@@ -179,5 +179,5 @@ Rough outline: goes to the FilingReviewService, which delegates to the specific 
 * XSD: XML Schema document, the file format that most of the info about the SOAP API is stored in
 * JSON: JavaScript Object Notation: another way of storting data in a structured way. Much easier to read and edit by hand, and more flexible.
 * REST: REpresentational State Transfer: a way of interacting with other servers over the internet
-* JAX-RS: Jakarta API for RESTful Web Services: a java library / framework that lets up set up an external facing REST API. Uses a lot of annotations.
+* JAX-RS: Jakarta API for RESTful Web Services: a java library / framework that lets us set up an external facing REST API. Uses a lot of annotations.
 
