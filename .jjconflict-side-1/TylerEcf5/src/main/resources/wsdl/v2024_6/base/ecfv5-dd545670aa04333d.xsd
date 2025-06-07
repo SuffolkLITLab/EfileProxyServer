@@ -1,0 +1,1100 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="no"?><!-- edited with XMLSpy v2018 sp1 (x64) (http://www.altova.com) by Tyler Technologies (Tyler Technologies) --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:tyler:ecf:v5.0:extensions:common" xmlns:allocatedate="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/allocatedate" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:caselist="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistrequest" xmlns:caserequest="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest" xmlns:cbrn="http://release.niem.gov/niem/domains/cbrn/4.1/" xmlns:clsa="http://reference.niem.gov/niem/specification/code-lists/1.0/code-lists-schema-appinfo/" xmlns:ct="http://release.niem.gov/niem/conformanceTargets/3.0/" xmlns:docket="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/docket" xmlns:docketcallback="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/docketcallback" xmlns:ecf="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" xmlns:filing="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing" xmlns:filinglistrequest="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filinglistrequest" xmlns:filingstatusrequest="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filingstatusrequest" xmlns:j="http://release.niem.gov/niem/domains/jxdm/6.1/" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" xmlns:niem-xs="http://release.niem.gov/niem/proxy/xsd/4.0/" xmlns:policyresponse="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse" xmlns:recordreceipt="urn:tyler:ecf:v5.0:extensions:recordreceipt" xmlns:requestdaterequest="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/requestdaterequest" xmlns:reservedate="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/reservedate" xmlns:returndate="urn:tyler:ecf:v5.0:extensions:returndate" xmlns:reviewfilingcallback="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/reviewfilingcallback" xmlns:stamp="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/stampinformation" xmlns:stampinformation="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/stampinformation" xmlns:structures="http://release.niem.gov/niem/structures/4.0/" xmlns:term="http://release.niem.gov/niem/localTerminology/3.0/" xmlns:unece="http://release.niem.gov/niem/codes/unece_rec20/4.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" ct:conformanceTargets="http://reference.niem.gov/niem/specification/naming-and-design-rules/3.0/#ExtensionSchemaDocument http://reference.niem.gov/niem/specification/code-lists/1.0/#SchemaDocument" elementFormDefault="qualified" targetNamespace="urn:tyler:ecf:v5.0:extensions:common" version="5.0">
+	<xs:annotation>
+		<xs:documentation> Schema for namespace urn:tyler:ecf:v5.0:extensions:common</xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" schemaLocation="ecfv5-afe0703e358907a0.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" schemaLocation="ecfv5-ea1e0f75b69752b5.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/niem-core/4.0/" schemaLocation="ecfv5-7af13829a6695741.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/structures/4.0/" schemaLocation="ecfv5-43381e9aa490c46d.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/proxy/xsd/4.0/" schemaLocation="ecfv5-4d179e3e0bd140a9.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/domains/jxdm/6.1/" schemaLocation="ecfv5-3fca6aa6e33300e4.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/domains/cbrn/4.1/" schemaLocation="ecfv5-70ceb501f1c1cf69.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing" schemaLocation="ecfv5-849389af5da1be59.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/docket" schemaLocation="ecfv5-27236897aa077e8b.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/stampinformation" schemaLocation="ecfv5-7ca95bb88cb80500.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/allocatedate" schemaLocation="ecfv5-2e48a12cd5d55125.xsd"/>
+	<xs:import namespace="urn:tyler:ecf:v5.0:extensions:returndate" schemaLocation="ecfv5-f92089dccb563884.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/docketcallback" schemaLocation="ecfv5-ae21ebba74fbde20.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/reviewfilingcallback" schemaLocation="ecfv5-1736baee045f5cb6.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caselistrequest" schemaLocation="ecfv5-648c40f37d51888f.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caserequest" schemaLocation="ecfv5-867074778678a758.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filingstatusrequest" schemaLocation="ecfv5-ef0e78ebbcbecb1a.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/codes/unece_rec20/4.0/" schemaLocation="ecfv5-a650ff08ff88e453.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/requestdaterequest" schemaLocation="ecfv5-8168760d8fe4ec0f.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/reservedate" schemaLocation="ecfv5-73af35cdc82d51c0.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/policyresponse" schemaLocation="ecfv5-ce2b15e0e59d017e.xsd"/>
+	<xs:import namespace="urn:tyler:ecf:v5.0:extensions:recordreceipt" schemaLocation="ecfv5-5a59dc632f51d8be.xsd"/>
+	<xs:element name="AcceptDate" type="nc:DateType"/>
+	<xs:element name="AccountName" type="nc:TextType"/>
+	<xs:element name="Action" type="ActionType"/>
+	<xs:element name="ActionTimestamp" type="nc:DateType"/>
+	<xs:complexType name="ActionType">
+		<xs:sequence>
+			<xs:element ref="ContactAction"/>
+			<xs:element minOccurs="0" ref="ActionTimestamp"/>
+			<xs:element minOccurs="0" ref="FirmID"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="AdditionalVehicle" type="nc:VehicleType"/>
+	<xs:element name="AddressAugmentation" substitutionGroup="structures:ObjectAugmentationPoint" type="AddressAugmentationType"/>
+	<xs:complexType name="AddressAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="AddressSecondaryLine"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="AddMeAsServiceContactIndicator" type="niem-xs:boolean"/>
+	<xs:element name="AddressSecondaryLine" type="nc:TextType"/>
+  <xs:element name="AdministrativeCopyEmailID" substitutionGroup="nc:ContactMeansAbstract" type="niem-xs:string"/>
+	<xs:element name="Agency" type="AgencyType"/>
+	<xs:element name="AgencyOperation" type="AgencyOperationType"/>
+	<xs:simpleType name="AgencyOperationSimpleType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="add"/>
+			<xs:enumeration value="remove"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="AgencyOperationType">
+		<xs:simpleContent>
+			<xs:extension base="AgencyOperationSimpleType">
+				<xs:attributeGroup ref="structures:SimpleObjectAttributeGroup"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="AgencyType">
+		<xs:sequence>
+			<xs:element minOccurs="0" ref="FirmID"/>
+			<xs:element minOccurs="0" ref="AgencyOperation"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Alias" type="AliasType"/>
+	<xs:element name="AliasName" type="nc:TextType"/>
+	<xs:complexType name="AliasType">
+		<xs:sequence>
+			<xs:element ref="AliasName"/>
+			<xs:element maxOccurs="unbounded" ref="AliasTypeCode"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="AliasTypeCode" type="nc:TextType"/>
+	<xs:element name="AllocateCourtDateMessageAugmentation" substitutionGroup="allocatedate:AllocateCourtDateMessageAugmentationPoint" type="FilingMessageAugmentationType"/>
+	<xs:element name="Amount" type="nc:AmountType"/>
+	<xs:element name="AnswerCode" type="nc:TextType"/>
+	<xs:element name="AttachmentAugmentation" substitutionGroup="structures:ObjectAugmentationPoint" type="AttachmentAugmentationType"/>
+	<xs:complexType name="AttachmentAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="FilingComponentCode"/>
+					<xs:element minOccurs="0" ref="DocumentTypeCode"/>
+					<xs:element minOccurs="0" ref="PageCount"/>
+					<xs:element minOccurs="0" ref="OriginalFileName"/>
+					<xs:element minOccurs="0" ref="DocumentComments"/>
+					<xs:element minOccurs="0" ref="IsRedactedIndicator"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="AttachServiceContactIndicator" type="niem-xs:boolean"/>
+	<xs:element name="AttorneyIdentification" type="nc:IdentificationType"/>
+	<xs:element name="AttorneyReference" type="ReferenceType"/>
+	<xs:element name="Batch" type="BatchTypeType"/>
+	<xs:element name="BatchID" substitutionGroup="nc:IdentificationCategoryAbstract" type="niem-xs:normalizedString"/>
+	<xs:element name="BatchIdentification" type="nc:IdentificationType"/>
+	<xs:element name="BatchName" type="nc:TextType"/>
+	<xs:element name="BatchSequence" type="nc:NonNegativeDecimalType"/>
+	<xs:element name="BatchSize" type="nc:NonNegativeDecimalType"/>
+	<xs:element name="BatchStatus" type="BatchStatusType"/>
+	<xs:element name="BatchStatusCode" type="niem-xs:normalizedString"/>
+	<xs:complexType name="BatchStatusType">
+		<xs:complexContent>
+			<xs:extension base="nc:StatusType">
+				<xs:sequence>
+					<xs:element ref="BatchStatusCode"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="BatchType" type="nc:TextType"/>
+	<xs:complexType name="BatchTypeType">
+		<xs:sequence>
+			<xs:element ref="BatchIdentification"/>
+			<xs:element minOccurs="0" ref="BatchName"/>
+			<xs:element ref="BatchSize"/>
+			<xs:element ref="BatchSequence"/>
+			<xs:element minOccurs="0" ref="BatchType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Bulk" type="BulkType"/>
+	<xs:element name="BulkSize" type="nc:NonNegativeDecimalType"/>
+	<xs:element name="BulkSubmissionID" type="nc:TextType"/>
+	<xs:element name="BulkTitle" type="nc:TextType"/>
+	<xs:complexType name="BulkType">
+		<xs:sequence>
+			<xs:element minOccurs="0" ref="BulkTitle"/>
+			<xs:element ref="BulkSize"/>
+			<xs:element ref="BulkSubmissionID"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="BulkTypeCode" type="nc:TextType"/>
+	<xs:element name="CalendarCode" type="nc:TextType"/>
+	<xs:element name="CancellationCommentText" type="nc:TextType"/>
+	<xs:element name="CancellationReasonCode" type="nc:TextType"/>
+	<xs:element name="CardLast4" type="nc:NonNegativeDecimalType"/>
+	<xs:element name="CardType" type="nc:TextType"/>
+	<xs:element name="CaseAddress" type="nc:AddressType"/>
+	<xs:element name="CaseAugmentation" substitutionGroup="nc:CaseAugmentationPoint" type="CaseAugmentationType"/>
+	<xs:complexType name="CaseAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="CaseSubTypeCode"/>
+					<xs:element minOccurs="0" ref="nc:StatusText"/>
+					<xs:element minOccurs="0" ref="FiledDate"/>
+					<xs:element minOccurs="0" ref="WillFiledDate"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="QuestionAnswer"/>
+					<xs:element minOccurs="0" ref="CalendarCode"/>
+					<xs:element minOccurs="0" ref="CaseAddress"/>
+					<xs:element minOccurs="0" ref="CaseSecurity"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="CaseEvent"/>
+					<xs:element minOccurs="0" ref="PartialWaiver"/>
+					<xs:element minOccurs="0" ref="CaseDisposition"/>
+					<xs:element maxOccurs="1" minOccurs="0" ref="HasUserFiledIntoCaseIndicator"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CaseDisposition" type="nc:DispositionType"/>
+	<xs:element name="HasUserFiledIntoCaseIndicator" type="niem-xs:boolean"/>
+	<xs:element name="CaseEvent" type="CaseEventType"/>
+	<xs:complexType name="CaseEventType">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" ref="FilingEvent"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="CaseJudgeAugmentation" substitutionGroup="j:CaseOfficialAugmentationPoint" type="CaseJudgeAugmentationType"/>
+	<xs:complexType name="CaseJudgeAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="JudgeCode"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CaseNumberNormalizedText" type="nc:TextType"/>
+	<xs:element name="CaseListQueryCriteriaAugmentation" substitutionGroup="structures:ObjectAugmentationPoint" type="CaseListQueryCriteriaAugmentationType"/>
+	<xs:complexType name="CaseListQueryCriteriaAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element ref="j:CaseNumberText"/>
+					<xs:element ref="CaseNumberNormalizedText"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CaseOfficialAugmentation" substitutionGroup="j:CaseOfficialAugmentationPoint" type="CaseOfficialAugmentationType"/>
+	<xs:complexType name="CaseOfficialAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element ref="IsLead"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CaseSecurity" type="CaseSecurityType"/>
+	<xs:simpleType name="CaseSecurityType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="PublicFilingPrivateView"/>
+			<xs:enumeration value="PublicFilingPublicView"/>
+			<xs:enumeration value="PrivateFilingPrivateView"/>
+			<xs:enumeration value="PrivateFilingPublicView"/>
+			<xs:enumeration value="Sealed"/>
+			<xs:enumeration value="Expunged"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="CaseSubTypeCode" type="nc:TextType"/>
+	<xs:element name="Child" type="ChildType"/>
+	<xs:element name="ChildEnvelope" type="ChildEnvelopeType"/>
+	<xs:complexType name="ChildEnvelopeType">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" ref="Child"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ChildType">
+		<xs:sequence>
+			<xs:element ref="EnvelopeID"/>
+			<xs:element maxOccurs="unbounded" minOccurs="0" ref="FilingID"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="CivilAmount" type="nc:AmountType"/>
+	<xs:element name="CommercialVehicleIndicator" type="niem-xs:boolean"/>
+	<xs:element name="ComposableSecurityURI" type="niem-xs:anyURI"/>
+	<xs:element name="ComposableSecurityTenant" type="nc:IdentificationType"/>
+	<xs:element name="ComposableSecurityDefaultRole" type="nc:IdentificationType"/>
+	<xs:element name="UseOktaAuthentication" type="niem-xs:boolean"/>
+	<xs:element name="OktaAuthenticationURI" type="niem-xs:anyURI"/>
+	<xs:element name="ContactAction" type="nc:TextType"/>
+	<xs:element name="CourtCityStateZip" type="nc:TextType"/>
+	<xs:element name="CourtDocumentID" substitutionGroup="nc:IdentificationCategoryAbstract" type="niem-xs:normalizedString"/>
+	<xs:element name="CourtesyCopiesText" type="nc:TextType"/>
+	<xs:element name="CourtEventAugmentation" substitutionGroup="j:CourtEventAugmentationPoint" type="CourtEventAugmentationType"/>
+	<xs:complexType name="CourtEventAugmentationType">
+		<xs:annotation>
+			<xs:documentation>An augmentation type</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="CourtSchedule"/>
+					<xs:element minOccurs="0" ref="CourtRoom"/>
+					<xs:element minOccurs="0" ref="CourtStreet"/>
+					<xs:element minOccurs="0" ref="CourtCityStateZip"/>
+					<xs:element minOccurs="0" ref="FilingCode"/>
+					<xs:element minOccurs="0" ref="MotionTypeCode"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CourtRoom" type="nc:TextType"/>
+	<xs:element name="CourtroomMinutes" type="CourtroomMinutesType"/>
+	<xs:complexType name="CourtroomMinutesType">
+		<xs:sequence>
+			<xs:element ref="HearingResultCode"/>
+			<xs:element maxOccurs="unbounded" minOccurs="0" ref="j:CaseOfficial"/>
+			<xs:element maxOccurs="unbounded" minOccurs="0" ref="ecf:CaseParty"/>
+			<xs:element minOccurs="0" ref="InterpreterNeeded"/>
+			<xs:element minOccurs="0" ref="InterpreterLanguage"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="CourtSchedule" type="CourtScheduleType"/>
+	<xs:complexType name="CourtScheduleType">
+		<xs:sequence>
+			<xs:element minOccurs="0" ref="ScheduleDayStartTime"/>
+			<xs:element minOccurs="0" ref="ScheduleDayEndTime"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="CourtSplitAmount" type="SplitAmountType"/>
+	<xs:element name="CourtStreet" type="nc:TextType"/>
+	<xs:element name="CourtType" type="nc:TextType"/>
+	<xs:element name="CrossReference" type="CrossReferenceType"/>
+	<xs:complexType name="CrossReferenceType">
+		<xs:sequence>
+			<xs:element ref="ReferenceNumber"/>
+			<xs:element ref="ReferenceTypeCode"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="DamageAmountCode" type="nc:TextType"/>
+	<xs:element name="DeferredUntilDate" type="nc:DateType"/>
+	<xs:element name="DispositionAction" type="DispositionActionType"/>
+	<xs:simpleType name="DispositionActionSimpleType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="MOOT"/>
+			<xs:enumeration value="GRANTED"/>
+			<xs:enumeration value="DENIED"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="DispositionActionType">
+		<xs:annotation>
+			<xs:documentation>A data type for a disposition action.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="DispositionActionSimpleType">
+				<xs:attributeGroup ref="structures:SimpleObjectAttributeGroup"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:element name="DocketDate" type="nc:DateType"/>
+	<xs:element name="Document" type="nc:DocumentType"/>
+	<xs:element name="DocumentAugmentation" substitutionGroup="nc:DocumentAugmentationPoint" type="DocumentAugmentationType"/>
+	<xs:complexType name="DocumentAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="FilingAction"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="FilingAssociation"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="DocumentOptionalService"/>
+					<xs:element minOccurs="0" ref="FilingCommentsText"/>
+					<xs:element minOccurs="0" ref="CourtesyCopiesText"/>
+					<xs:element minOccurs="0" ref="PreliminaryCopiesText"/>
+					<xs:element minOccurs="0" ref="MotionTypeCode"/>
+					<xs:element minOccurs="0" ref="RedactionIdentification"/>
+					<xs:element minOccurs="0" ref="DispositionAction"/>
+					<xs:element minOccurs="0" ref="FilerReferenceNumber"/>
+					<xs:element minOccurs="0" ref="DueDate"/>
+					<xs:element minOccurs="0" ref="DeferredUntilDate"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DocumentComments" type="nc:TextType"/>
+	<xs:element name="DocumentOptionalService" type="DocumentOptionalServiceType"/>
+	<xs:complexType name="DocumentOptionalServiceType">
+		<xs:complexContent>
+			<xs:extension base="nc:IdentificationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="MultiplierAmount"/>
+					<xs:element minOccurs="0" ref="ServiceFeeAmount"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="PartyPayor"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="PartyPayor" type="PartyPayorType"/>
+	<xs:complexType name="PartyPayorType">
+		<xs:sequence>
+			<xs:element minOccurs="1" ref="PartyReference"/>
+			<xs:element minOccurs="1" ref="WaiverIndicator"/>
+			<xs:element minOccurs="0" ref="PaymentAccountID"/>
+			<xs:element minOccurs="0" ref="FeeAmount"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="PaymentAccountID" type="nc:TextType"/>
+	<xs:element name="DocumentSecurity" type="DocumentSecurityType"/>
+	<xs:element name="DocumentSecurityAugmentation" substitutionGroup="nc:DocumentAugmentationPoint" type="DocumentSecurityAugmentationType"/>
+	<xs:complexType name="DocumentSecurityAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element ref="DocumentSecurity"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="DocumentSecurityType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="PublicView"/>
+			<xs:enumeration value="PrivateView"/>
+			<xs:enumeration value="Sealed"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="DocumentStampInformationMessageAugmentation" substitutionGroup="stamp:DocumentStampInformationMessageAugmentationPoint" type="DocumentStampInformationMessageAugmentationType"/>
+	<xs:complexType name="DocumentStampInformationMessageAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="FilingMessageAugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="FilingProvider"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DocumentTypeCode" type="nc:TextType"/>
+	<xs:element name="DriverLicenseExpirationDate" type="nc:DateType"/>
+	<xs:element name="DriverLicenseIdentification" type="DriverLicenseIdentificationType"/>
+	<xs:complexType name="DriverLicenseIdentificationType">
+		<xs:complexContent>
+			<xs:extension base="nc:IdentificationType">
+				<xs:sequence>
+					<xs:element ref="nc:LocationStateName"/>
+					<xs:element minOccurs="0" ref="LicenseExpiration"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DriverLicenseTypeCode" substitutionGroup="nc:IdentificationCategoryAbstract" type="niem-xs:normalizedString"/>
+	<xs:element name="DueDate" type="nc:DateType"/>
+	<xs:element name="ElectronicServiceAugmentation" substitutionGroup="structures:ObjectAugmentationPoint" type="ElectronicServiceAugmentationType"/>
+	<xs:complexType name="ElectronicServiceAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="ServiceRecipient"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="EndTime" type="niem-xs:time"/>
+	<xs:element name="Envelope" type="EnvelopeType"/>
+	<xs:element name="EnvelopeFee" type="FeeType"/>
+	<xs:element name="EnvelopeID" type="nc:TextType"/>
+	<xs:element name="EnvelopeIdentification" type="nc:IdentificationType"/>
+	<xs:element name="EnvelopeLevelComment" type="nc:TextType"/>
+	<xs:complexType name="EnvelopeType">
+		<xs:sequence>
+			<xs:element ref="BatchSequence"/>
+			<xs:element ref="EnvelopeIdentification"/>
+			<xs:element maxOccurs="unbounded" minOccurs="0" ref="Filing"/>
+			<xs:element minOccurs="0" ref="nc:Case"/>
+			<xs:element minOccurs="0" ref="TotalFees"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="EstateAmount" type="nc:AmountType"/>
+	<xs:element name="ExpirationMonth" type="nc:NonNegativeDecimalType"/>
+	<xs:element name="ExpirationYear" type="nc:NonNegativeDecimalType"/>
+	<xs:element name="FeeAmount" type="niem-xs:decimal"/>
+	<xs:element name="Fees" type="nc:AmountType"/>
+	<xs:element name="FeeSplit" type="FeeSplitType"/>
+	<xs:complexType name="FeeSplitType">
+		<xs:sequence>
+			<xs:element ref="PaymentInstructionID"/>
+			<xs:element ref="CourtSplitAmount"/>
+			<xs:element ref="NonCourtSplitAmount"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FeeType">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" ref="cac:AllowanceCharge"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="FiledDate" type="nc:DateType"/>
+	<xs:element name="FilerAugmentation" substitutionGroup="nc:PersonAugmentationPoint" type="FilerAugmentationType"/>
+	<xs:complexType name="FilerAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element ref="FilerInformation"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="FilerIdentification" type="nc:IdentificationType"/>
+	<xs:element name="FilerInformation" type="FilerInformationType"/>
+	<xs:complexType name="FilerInformationType">
+		<xs:sequence>
+			<xs:element minOccurs="0" ref="FilerName"/>
+			<xs:element minOccurs="0" ref="FirmName"/>
+			<xs:element minOccurs="0" ref="nc:ContactInformation"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="FilerName" type="nc:TextType"/>
+	<xs:element name="FilerReferenceNumber" type="nc:TextType"/>
+	<xs:element name="FilerTypeCode" type="nc:TextType"/>
+	<xs:element name="Filing" type="FilingType"/>
+	<xs:element name="FilingAction" type="FilingActionType"/>
+	<xs:simpleType name="FilingActionSimpleType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="EFile">
+				<xs:annotation>
+					<xs:documentation>EFile Only</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EFileAndServe">
+				<xs:annotation>
+					<xs:documentation>EFile and Serve</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Serve">
+				<xs:annotation>
+					<xs:documentation>Service Only</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="FilingActionType">
+		<xs:annotation>
+			<xs:documentation>A data type for a filing action.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="FilingActionSimpleType">
+				<xs:attributeGroup ref="structures:SimpleObjectAttributeGroup"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:element name="FilingAssociation" type="FilingAssociationType"/>
+	<xs:complexType name="FilingAssociationType">
+		<xs:complexContent>
+			<xs:extension base="nc:AssociationType">
+				<xs:sequence>
+					<xs:element ref="PartyReference"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="FilingAttorney" type="FilingAttorneyEntityType"/>
+	<xs:complexType name="FilingAttorneyEntityType">
+		<xs:sequence>
+			<xs:element minOccurs="0" ref="nc:RoleOfPerson"/>
+			<xs:element minOccurs="0" ref="AttorneyReference"/>
+			<xs:element minOccurs="0" ref="AttorneyIdentification"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="FilingCode" type="nc:TextType"/>
+	<xs:element name="FilingCommentsText" type="nc:TextType"/>
+	<xs:element name="FilingComponentCode" type="nc:TextType"/>
+	<xs:element name="FilingEvent" type="nc:DocumentType"/>
+	<xs:element name="FilingFee" type="FeeType"/>
+	<xs:element name="FilingID" type="nc:TextType"/>
+	<xs:element name="FilingIdentification" type="nc:IdentificationType"/>
+	<xs:element name="FilingListQueryCriteriaAugmentation" substitutionGroup="structures:ObjectAugmentationPoint" type="FilingListQueryCriteriaAugmentationType"/>
+	<xs:complexType name="FilingListQueryCriteriaAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="ecf:FilingStatus"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="FilingMessageAugmentation" substitutionGroup="filing:FilingMessageAugmentationPoint" type="FilingMessageAugmentationType"/>
+	<xs:complexType name="FilingMessageAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="OriginalEnvelopeID"/>
+					<xs:element minOccurs="0" ref="ParentEnvelope"/>
+					<xs:element minOccurs="0" ref="AttachServiceContactIndicator"/>
+					<xs:element minOccurs="0" ref="FilingParty"/>
+					<xs:element minOccurs="0" ref="FilingAttorney"/>
+					<xs:element minOccurs="0" ref="ProcedureRemedy"/>
+					<xs:element minOccurs="0" ref="FilerTypeCode"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="CrossReference"/>
+					<xs:element minOccurs="0" ref="MaxFeeAmount"/>
+					<xs:element minOccurs="0" ref="CivilAmount"/>
+					<xs:element minOccurs="0" ref="EstateAmount"/>
+					<xs:element minOccurs="0" ref="HearingSchedule"/>
+					<xs:element minOccurs="0" ref="OutOfStateIndicator"/>
+					<xs:element minOccurs="0" ref="ReturnDate"/>
+					<xs:element minOccurs="0" ref="Batch"/>
+					<xs:element minOccurs="0" ref="Bulk"/>
+					<xs:element minOccurs="0" ref="ProviderCharge"/>
+					<xs:element minOccurs="0" ref="EnvelopeLevelComment"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="FeeSplit"/>
+					<xs:element minOccurs="0" ref="ReviewDate"/>
+					<xs:element minOccurs="0" ref="nc:DocumentSubmitter"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="FilingParty" type="FilingPartyEntityType"/>
+	<xs:complexType name="FilingPartyEntityType">
+		<xs:sequence>
+			<xs:element minOccurs="0" ref="PartyReference"/>
+			<xs:element minOccurs="0" ref="PartyIdentification"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="FilingProvider" type="nc:OrganizationType"/>
+	<xs:element name="FilingReference" type="ReferenceType"/>
+	<xs:element name="FilingStatusAugmentation" substitutionGroup="structures:ObjectAugmentationPoint" type="FilingStatusAugmentationType"/>
+	<xs:complexType name="FilingStatusAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="DocketDate"/>
+					<xs:element minOccurs="0" ref="AcceptDate"/>
+					<xs:element minOccurs="0" ref="ReviewCommentsText"/>
+					<xs:element minOccurs="0" ref="RejectReasonCode"/>
+					<xs:element minOccurs="0" ref="GracePeriodExpirationDate"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="FilingType">
+		<xs:complexContent>
+			<xs:extension base="nc:DocumentType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="ecf:FilingStatus"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="Document"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="FirmID" type="nc:TextType"/>
+	<xs:element name="FirmName" type="nc:TextType"/>
+	<xs:element name="GetCaseListRequestMessageAugmentation" substitutionGroup="caselist:GetCaseListRequestMessageAugmentationPoint" type="GetCaseListRequestMessageAugmentationType"/>
+	<xs:complexType name="GetCaseListRequestMessageAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="ecf:CaseTypeCode"/>
+					<xs:element minOccurs="0" ref="j:CaseNumberText"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetCaseRequestAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element ref="IncludeCriminalDetailIndicator"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="GetCaseRequestMessageAugmentation" substitutionGroup="caserequest:GetCaseRequestMessageAugmentationPoint" type="GetCaseRequestAugmentationType"/>
+	<xs:element name="GetFilingStatusRequestMessageAugmentation" substitutionGroup="filingstatusrequest:GetFilingStatusRequestMessageAugmentationPoint" type="GetFilingStatusRequestMessageAugmentationType"/>
+	<xs:complexType name="GetFilingStatusRequestMessageAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element ref="IncludeFilingDetailIndicator"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="GetPolicyResponseMessageAugmentation" substitutionGroup="policyresponse:GetPolicyResponseMessageAugmentationPoint" type="GetPolicyResponseMessageAugmentationType"/>
+	<xs:complexType name="GetPolicyResponseMessageAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element ref="TimeoutMinutes"/>
+					<xs:element ref="TimeoutResetHour"/>
+					<xs:element minOccurs="0" ref="LocationSpecificURI"/>
+					<xs:element minOccurs="0" ref="UseComposableSecurity"/>
+					<xs:element minOccurs="0" ref="ComposableSecurityURI"/>
+					<xs:element minOccurs="0" ref="ComposableSecurityTenant"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="ComposableSecurityDefaultRole"/>
+					<xs:element minOccurs="0" ref="UseOktaAuthentication"/>
+					<xs:element minOccurs="0" ref="OktaAuthenticationURI"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="BlackoutStatus"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="GroupIdentification" type="nc:IdentificationType"/>
+	<xs:element name="GracePeriodExpirationDate" type="nc:DateType"/>
+	<xs:element name="HazardousLoadIndicator" type="niem-xs:boolean"/>
+	<xs:element name="Hearing" type="HearingType"/>
+	<xs:element name="HearingCommentText" type="nc:TextType"/>
+	<xs:element name="HearingDate" type="niem-xs:date"/>
+	<xs:element name="HearingDescription" type="nc:TextType"/>
+	<xs:element name="HearingEndDateTime" type="niem-xs:dateTime"/>
+	<xs:element name="HearingFlag" type="nc:TextType"/>
+	<xs:element name="HearingID" type="nc:IdentificationType"/>
+	<xs:element name="HearingResultCode" type="nc:TextType"/>
+	<xs:element name="HearingSchedule" type="CourtEventAugmentationType"/>
+	<xs:element name="HearingStartDateTime" type="niem-xs:dateTime"/>
+	<xs:complexType name="HearingType">
+		<xs:sequence>
+			<xs:element ref="HearingID"/>
+			<xs:element minOccurs="0" ref="HearingTypeCode"/>
+			<xs:element minOccurs="0" ref="HearingDescription"/>
+			<xs:element minOccurs="0" ref="HearingFlag"/>
+			<xs:element minOccurs="0" ref="HearingCommentText"/>
+			<xs:element maxOccurs="unbounded" ref="Setting"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="HearingTypeCode" type="nc:TextType"/>
+	<xs:element name="HighOccupancyIndicator" type="niem-xs:boolean"/>
+	<xs:element name="IAmThisUserIndicator" type="niem-xs:boolean"/>
+	<xs:element name="IncludeCriminalDetailIndicator" type="niem-xs:boolean"/>
+	<xs:element name="IncludeFilingDetailIndicator" type="niem-xs:boolean"/>
+	<xs:element name="InterpreterLanguage" type="nc:TextType"/>
+	<xs:element name="InterpreterNeeded" type="niem-xs:boolean"/>
+	<xs:element name="IsCancelled" type="niem-xs:boolean"/>
+	<xs:element name="IsInFirmMasterList" type="niem-xs:boolean"/>
+	<xs:element name="IsLead" type="niem-xs:boolean"/>
+	<xs:element name="IsNewFiling" type="niem-xs:boolean"/>
+	<xs:element name="IsPublic" type="niem-xs:boolean"/>
+	<xs:element name="IsRedactedIndicator" type="niem-xs:boolean"/>
+	<xs:element name="JudgeCode" type="nc:TextType"/>
+	<xs:element name="LicenseExpiration" type="nc:DateType"/>
+	<xs:element name="LocationSpecificURI" type="niem-xs:anyURI"/>
+	<xs:element name="MailServiceIndicator" type="niem-xs:boolean"/>
+	<xs:element name="MatchingFilingAugmentation" substitutionGroup="structures:ObjectAugmentationPoint" type="MatchingFilingAugmentationType"/>
+	<xs:complexType name="MatchingFilingAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="OriginalEnvelopeID"/>
+					<xs:element minOccurs="0" ref="ParentEnvelope"/>
+					<xs:element minOccurs="0" ref="ChildEnvelope"/>
+					<xs:element minOccurs="0" ref="ProcedureRemedy"/>
+					<xs:element minOccurs="0" ref="FilerTypeCode"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="CrossReference"/>
+					<xs:element minOccurs="0" ref="ReturnDate"/>
+					<xs:element minOccurs="0" ref="EnvelopeLevelComment"/>
+					<xs:element minOccurs="0" ref="Payment"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="ServiceRecipient"/>
+					<xs:element minOccurs="0" ref="EnvelopeFee"/>
+					<xs:element minOccurs="0" ref="FilingFee"/>
+					<xs:element minOccurs="0" ref="FilingAttorney"/>
+					<xs:element minOccurs="0" ref="FilingParty"/>
+					<xs:element minOccurs="0" ref="MaxFeeAmount"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="RefundVoidCharge"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MaxFeeAmount" type="nc:AmountType"/>
+	<xs:element name="MeasureLengthType" substitutionGroup="nc:MeasureUnitAbstract" type="unece:LengthCodeType"/>
+	<xs:element name="MeasureWeightType" substitutionGroup="nc:MeasureUnitAbstract" type="unece:MassCodeType"/>
+	<xs:element name="MessageStatusAugmentation" substitutionGroup="cbrn:MessageStatusAugmentationPoint" type="MessageStatusAugmentationType"/>
+	<xs:complexType name="MessageStatusAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="nc:DocumentFiledDate"/>
+					<xs:element minOccurs="0" ref="BatchIdentification"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="BlackoutStatus"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BlackoutStatusType">
+		<xs:sequence>
+			<xs:element minOccurs="0" ref="j:CaseCourt"/>
+			<xs:element ref="ReasonDescriptionText"/>
+			<xs:element ref="BlackoutDate"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="ReasonDescriptionText" type="nc:TextType"/>
+	<xs:element name="BlackoutDate" type="nc:DateRangeType"/>
+	<xs:element name="BlackoutStatus" type="BlackoutStatusType"/>
+	<xs:element name="ModelYear" type="nc:TextType"/>
+	<xs:element name="MotionTypeCode" type="nc:TextType"/>
+	<xs:element name="MultiplierAmount" type="nc:NonNegativeDecimalType"/>
+	<xs:element name="NonCourtSplitAmount" type="SplitAmountType"/>
+	<xs:element name="NotifyDocketingCompleteAugmentation" substitutionGroup="docketcallback:NotifyDocketingCompleteMessageAugmentationPoint" type="NotifyDocketingCompleteMessageAugmentationType"/>
+	<xs:complexType name="NotifyDocketingCompleteMessageAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element ref="FilingIdentification"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="NotifyFilingMessageAugmentation" substitutionGroup="reviewfilingcallback:NotifyFilingReviewCompleteMessageAugmentationPoint" type="FilingMessageAugmentationType"/>
+	<xs:element name="OpenedDate" type="nc:DateType"/>
+	<xs:element name="OrderID" type="nc:TextType"/>
+	<xs:element name="OrganizationAugmentation" substitutionGroup="nc:OrganizationAugmentationPoint" type="OrganizationAugmentationType"/>
+	<xs:complexType name="OrganizationAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="PartyIdentification"/>
+					<xs:element minOccurs="0" ref="FilerIdentification"/>
+					<xs:element minOccurs="0" ref="GroupIdentification"/>
+					<xs:element minOccurs="0" ref="Agency"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="Alias"/>
+					<xs:element maxOccurs="1" minOccurs="0" ref="AddMeAsServiceContactIndicator"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="OriginalEnvelopeDate" type="nc:DateType"/>
+	<xs:element name="OriginalEnvelopeID" type="nc:IdentificationType"/>
+	<xs:element name="OriginalFileName" type="nc:TextType"/>
+	<xs:element name="OutOfStateIndicator" nillable="false" type="niem-xs:boolean"/>
+	<xs:element name="OutstandingBalance" type="nc:AmountType"/>
+	<xs:element name="OwnedByFirmIdentification" type="nc:IdentificationType"/>
+	<xs:element name="PageCount" type="nc:NonNegativeDecimalType"/>
+	<xs:element name="PageIndex" type="nc:NonNegativeDecimalType"/>
+	<xs:element name="PageSize" type="nc:NonNegativeDecimalType"/>
+	<xs:element name="PagingAugmentation" substitutionGroup="structures:ObjectAugmentationPoint" type="PagingAugmentationType"/>
+	<xs:complexType name="PagingAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="TotalResults"/>
+					<xs:element minOccurs="0" ref="PageIndex"/>
+					<xs:element minOccurs="0" ref="PageSize"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ParentEnvelope" type="ParentEnvelopeType"/>
+	<xs:element name="ParentEnvelopeID" type="nc:TextType"/>
+	<xs:complexType name="ParentEnvelopeType">
+		<xs:sequence>
+			<xs:element ref="EnvelopeID"/>
+			<xs:element maxOccurs="unbounded" minOccurs="0" ref="FilingID"/>
+			<xs:element minOccurs="0" ref="Submitter"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="PartialWaiver" type="PartialWaiverType"/>
+	<xs:complexType name="PartialWaiverType">
+		<xs:sequence>
+			<xs:element minOccurs="0" ref="ParentEnvelopeID"/>
+			<xs:element minOccurs="0" ref="OutstandingBalance"/>
+			<xs:element ref="WaiverDecision"/>
+			<xs:element ref="WaiverPercentage"/>
+			<xs:element minOccurs="0" ref="PaymentSystemURL"/>
+			<xs:element ref="WaiverStartDate"/>
+			<xs:element ref="WaiverEndDate"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="PartyIdentification" type="nc:IdentificationType"/>
+	<xs:element name="PartyReference" type="ReferenceType"/>
+	<xs:element name="Payment" type="PaymentType"/>
+	<xs:element name="RefundVoidCharge" type="RefundVoidChargeType"/>
+	<xs:element name="PaymentInstructionID" type="nc:TextType"/>
+	<xs:element name="PaymentSystemURL" type="nc:TextType"/>
+	<xs:complexType name="PaymentType">
+		<xs:sequence>
+			<xs:element ref="AccountName"/>
+			<xs:element ref="WaiverIndicator"/>
+			<xs:element minOccurs="0" ref="CardType"/>
+			<xs:element minOccurs="0" ref="CardLast4"/>
+			<xs:element minOccurs="0" ref="ExpirationMonth"/>
+			<xs:element minOccurs="0" ref="ExpirationYear"/>
+			<xs:element minOccurs="0" ref="TransactionAmount"/>
+			<xs:element minOccurs="0" ref="TransactionResponse"/>
+			<xs:element minOccurs="0" ref="TransactionID"/>
+			<xs:element minOccurs="0" ref="OrderID"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Comment" type="nc:TextType"/>
+	<xs:complexType name="RefundVoidChargeType">
+		<xs:sequence>
+			<xs:element minOccurs="0" ref="RefundDate"/>
+			<xs:element minOccurs="0" ref="Amount"/>
+			<xs:element minOccurs="0" ref="ReasonCodeID"/>
+			<xs:element minOccurs="0" ref="Comment"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="RefundDate" type="nc:DateType"/>
+	<xs:element name="ReasonCodeID" type="nc:TextType"/>
+	<xs:element name="RegistrationMonth" type="nc:NonNegativeDecimalType"/>
+	<xs:element name="RegistrationYear" type="nc:NonNegativeDecimalType"/>
+	<xs:element name="PersonAugmentation" substitutionGroup="nc:PersonAugmentationPoint" type="PersonAugmentationType"/>
+	<xs:complexType name="PersonAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="PartyIdentification"/>
+					<xs:element minOccurs="0" ref="AttorneyIdentification"/>
+					<xs:element minOccurs="0" ref="FilerIdentification"/>
+					<xs:element minOccurs="0" ref="GroupIdentification"/>
+					<xs:element minOccurs="0" ref="DriverLicenseIdentification"/>
+					<xs:element minOccurs="0" ref="FirmName"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="Alias"/>
+					<xs:element minOccurs="0" ref="IAmThisUserIndicator"/>
+					<xs:element minOccurs="0" ref="nc:PersonDeathDate"/>
+					<xs:element minOccurs="0" ref="SSNIdentification"/>
+					<xs:element minOccurs="0" ref="Agency"/>
+					<xs:element maxOccurs="1" minOccurs="0" ref="AddMeAsServiceContactIndicator"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="PersonEyeColorCode" substitutionGroup="nc:PersonEyeColorAbstract" type="nc:TextType"/>
+	<xs:element name="PersonHairColorCode" substitutionGroup="nc:PersonHairColorAbstract" type="nc:TextType"/>
+	<xs:element name="PersonSexCode" substitutionGroup="nc:PersonSexAbstract" type="nc:TextType"/>
+	<xs:element name="PhysicalFeatureAugmentation" substitutionGroup="structures:ObjectAugmentationPoint" type="PhysicalFeatureAugmentationType"/>
+	<xs:complexType name="PhysicalFeatureAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element ref="PhysicalFeatureDescriptionText"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="PhysicalFeatureCategoryCode" substitutionGroup="nc:PhysicalFeatureCategoryAbstract" type="nc:TextType"/>
+	<xs:element name="PhysicalFeatureDescriptionText" type="nc:TextType"/>
+	<xs:element name="PreliminaryCopiesText" type="nc:TextType"/>
+	<xs:element name="PresentPartyID" type="nc:IdentificationType"/>
+	<xs:element name="ProcedureRemedy" type="ProcedureRemedyType"/>
+	<xs:complexType name="ProcedureRemedyType">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" ref="RemedyCode"/>
+			<xs:element minOccurs="0" ref="DamageAmountCode"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="ProviderCharge" type="ProviderChargeType"/>
+	<xs:complexType name="ProviderChargeType">
+		<xs:sequence>
+			<xs:element minOccurs="0" ref="cac:AllowanceCharge"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="QuestionAnswer" type="QuestionAnswerType"/>
+	<xs:complexType name="QuestionAnswerType">
+		<xs:sequence>
+			<xs:element ref="QuestionCode"/>
+			<xs:element ref="AnswerCode"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="QuestionCode" type="nc:TextType"/>
+	<xs:element name="RecipientEmail" type="nc:TextType"/>
+	<xs:element name="RecipientFirmName" type="nc:TextType"/>
+	<xs:element name="RecipientInformation" type="RecipientInformationType"/>
+	<xs:complexType name="RecipientInformationType">
+		<xs:sequence>
+			<xs:element minOccurs="0" ref="RecipientName"/>
+			<xs:element minOccurs="0" ref="RecipientFirmName"/>
+			<xs:element minOccurs="0" ref="RecipientEmail"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="RecipientName" type="nc:TextType"/>
+	<xs:element name="RecipientPerson" type="nc:EntityType"/>
+	<xs:element name="RecordDocketingMessageAugmentation" substitutionGroup="filing:FilingMessageAugmentationPoint" type="RecordDocketingMessageAugmentationType"/>
+	<xs:complexType name="RecordDocketingMessageAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="FilingMessageAugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="DocketDate"/>
+					<xs:element minOccurs="0" ref="FilingProvider"/>
+					<xs:element minOccurs="0" ref="WaiverIndicator"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="RecordReceiptMessageAugmentation" substitutionGroup="recordreceipt:RecordReceiptMessageAugmentationPoint" type="FilingMessageAugmentationType"/>
+	<xs:element name="RedactionIdentification" type="nc:IdentificationType"/>
+	<xs:element name="ReferenceCategoryCode" substitutionGroup="nc:IdentificationCategoryAbstract" type="niem-xs:normalizedString"/>
+	<xs:element name="ReferenceNumber" type="nc:TextType"/>
+	<xs:complexType name="ReferenceType">
+		<xs:complexContent>
+			<xs:extension base="structures:ObjectType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ReferenceTypeCode" type="nc:TextType"/>
+	<xs:element name="RegistrationNumber" type="niem-xs:normalizedString"/>
+	<xs:element name="RegistrationStateName" type="niem-xs:normalizedString"/>
+	<xs:element name="RejectReasonCode" type="nc:TextType"/>
+	<xs:element name="RemedyCode" type="nc:TextType"/>
+	<xs:element name="RequestCourtDateMessageAugmentation" substitutionGroup="requestdaterequest:RequestCourtDateRequestMessageAugmentationPoint" type="FilingMessageAugmentationType"/>
+	<xs:element name="RescheduleCommentText" type="nc:TextType"/>
+	<xs:element name="RescheduleReasonCode" type="nc:TextType"/>
+	<xs:element name="RescheduleType" type="nc:TextType"/>
+	<xs:element name="ReserveCourtDateMessageAugmentation" substitutionGroup="reservedate:ReserveCourtDateMessageAugmentationPoint" type="FilingMessageAugmentationType"/>
+	<xs:element name="ReturnDate" type="nc:DateType"/>
+	<xs:element name="ReturnDateMessageAugmentation" substitutionGroup="returndate:ReturnDateMessageAugmentationPoint" type="FilingMessageAugmentationType"/>
+	<xs:element name="ReviewCommentsText" type="nc:TextType"/>
+	<xs:element name="ReviewDate" type="nc:DateType"/>
+	<xs:element name="ReviewedDocumentAugmentation" substitutionGroup="ecf:ReviewedDocumentAugmentationPoint" type="ReviewedDocumentAugmentationType"/>
+	<xs:complexType name="ReviewedDocumentAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="nc:DocumentIdentification"/>
+					<xs:element minOccurs="0" ref="IsNewFiling"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ScheduleDayEndTime" type="nc:DateType"/>
+	<xs:element name="ScheduleDayStartTime" type="nc:DateType"/>
+	<xs:element name="SchedulingAugmentation" substitutionGroup="nc:CaseAugmentationPoint" type="SchedulingAugmentationType"/>
+	<xs:complexType name="SchedulingAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="OutOfStateIndicator"/>
+					<xs:element minOccurs="0" ref="ReturnDate"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="SentDate" type="nc:DateType"/>
+	<xs:element name="ServedDate" type="nc:DateType"/>
+	<xs:element name="ServiceContactID" type="nc:IdentificationType"/>
+	<xs:element name="ServiceConsentEmail" substitutionGroup="nc:ContactMeansAbstract" type="niem-xs:string"/>
+	<xs:element name="ServiceDate" type="nc:DateType"/>
+	<xs:element name="ServiceFeeAmount" type="nc:AmountType"/>
+	<xs:element name="ServiceOpenedIndicator" type="niem-xs:boolean"/>
+	<xs:element name="ServiceRecipient" type="ServiceRecipientType"/>
+	<xs:complexType name="ServiceRecipientType">
+		<xs:complexContent>
+			<xs:extension base="nc:EntityType">
+				<xs:sequence>
+					<xs:element ref="ServiceContactID"/>
+					<xs:element minOccurs="0" ref="Status"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="ecf:CaseRepresentedParty"/>
+					<xs:element minOccurs="0" ref="RecipientPerson"/>
+					<xs:element minOccurs="0" ref="FirmName"/>
+					<xs:element minOccurs="0" ref="ServiceOpenedIndicator"/>
+					<xs:element minOccurs="0" ref="ServedDate"/>
+					<xs:element minOccurs="0" ref="OpenedDate"/>
+					<xs:element minOccurs="0" ref="MailServiceIndicator"/>
+					<xs:element minOccurs="0" ref="IsPublic"/>
+					<xs:element minOccurs="0" ref="IsInFirmMasterList"/>
+					<xs:element minOccurs="0" ref="OwnedByFirmIdentification"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="Action"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ServiceTypeCode" substitutionGroup="nc:IdentificationCategoryAbstract" type="niem-xs:normalizedString"/>
+	<xs:element name="SessionID" type="nc:IdentificationType"/>
+	<xs:element name="SessionName" type="nc:TextType"/>
+	<xs:element name="Setting" type="SettingType"/>
+	<xs:complexType name="SettingType">
+		<xs:sequence>
+			<xs:element ref="HearingDate"/>
+			<xs:element ref="HearingStartDateTime"/>
+			<xs:element ref="HearingEndDateTime"/>
+			<xs:element minOccurs="0" ref="IsCancelled"/>
+			<xs:element minOccurs="0" ref="CancellationCommentText"/>
+			<xs:element minOccurs="0" ref="CancellationReasonCode"/>
+			<xs:element minOccurs="0" ref="CourtRoom"/>
+			<xs:element ref="SessionName"/>
+			<xs:element maxOccurs="unbounded" minOccurs="0" ref="j:CaseOfficial"/>
+			<xs:element minOccurs="0" ref="RescheduleType"/>
+			<xs:element minOccurs="0" ref="RescheduleReasonCode"/>
+			<xs:element minOccurs="0" ref="RescheduleCommentText"/>
+			<xs:element minOccurs="0" ref="CourtroomMinutes"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SplitAmountType">
+		<xs:sequence>
+			<xs:element ref="FeeAmount"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="SSNIdentification" type="nc:IdentificationType"/>
+	<xs:element name="StartTime" type="niem-xs:time"/>
+	<xs:element name="Status" type="nc:TextType"/>
+	<xs:element name="StatusDocumentAugmentation" substitutionGroup="nc:DocumentAugmentationPoint" type="StatusDocumentAugmentationType"/>
+	<xs:complexType name="StatusDocumentAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="Document"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Submitter" type="nc:EntityType"/>
+	<xs:element name="SubmitterFirmName" type="nc:TextType"/>
+	<xs:element name="SubmitterInformation" type="SubmitterInformationType"/>
+	<xs:complexType name="SubmitterInformationType">
+		<xs:sequence>
+			<xs:element minOccurs="0" ref="SubmitterName"/>
+			<xs:element minOccurs="0" ref="SubmitterFirmName"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="SubmitterName" type="nc:TextType"/>
+	<xs:element name="TimeoutMinutes" type="niem-xs:decimal"/>
+	<xs:element name="TimeoutResetHour" type="niem-xs:time"/>
+	<xs:element name="TotalFees" type="nc:AmountType"/>
+	<xs:element name="TotalResults" type="nc:NonNegativeDecimalType"/>
+	<xs:element name="TransactionAmount" type="nc:AmountType"/>
+	<xs:element name="TransactionID" type="nc:TextType"/>
+	<xs:element name="TransactionResponse" type="nc:TextType"/>
+	<xs:element name="TransactionResponseText" type="nc:TextType"/>
+	<xs:element name="UseComposableSecurity" type="niem-xs:boolean"/>
+	<xs:element name="VehicleAugmentation" substitutionGroup="structures:ObjectAugmentationPoint" type="VehicleAugmentationType"/>
+	<xs:complexType name="VehicleAugmentationType">
+		<xs:complexContent>
+			<xs:extension base="structures:AugmentationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="PartyReference"/>
+					<xs:element minOccurs="0" ref="VehicleTypeCode"/>
+					<xs:element minOccurs="0" ref="RegistrationNumber"/>
+					<xs:element minOccurs="0" ref="RegistrationStateName"/>
+					<xs:element ref="CommercialVehicleIndicator"/>
+					<xs:element ref="HazardousLoadIndicator"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="AdditionalVehicle"/>
+					<xs:element minOccurs="0" ref="RegistrationDate"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="VehicleNumberAbstract"/>
+					<xs:element minOccurs="0" ref="HighOccupancyIndicator"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="VehicleColorCode" substitutionGroup="nc:ItemColorAbstract" type="nc:TextType"/>
+	<xs:element name="VehicleDOTNumber" type="nc:TextType"/>
+	<xs:element name="VehicleIdentificationNumber" substitutionGroup="VehicleNumberAbstract" type="nc:TextType"/>
+	<xs:element name="VehicleMakeCode" substitutionGroup="nc:VehicleMakeAbstract" type="nc:TextType"/>
+	<xs:element name="VehicleModelCode" substitutionGroup="nc:VehicleModelAbstract" type="nc:TextType"/>
+	<xs:element abstract="true" name="VehicleNumberAbstract" type="nc:TextType"/>
+	<xs:element name="RegistrationDate" type="VehicleRegistrationDateType"/>
+	<xs:complexType name="VehicleRegistrationDateType">
+		<xs:sequence>
+			<xs:element minOccurs="0" ref="RegistrationMonth"/>
+			<xs:element minOccurs="1" ref="RegistrationYear"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="VehicleTypeCode" type="nc:TextType"/>
+	<xs:element name="WaiverDecision" type="nc:TextType"/>
+	<xs:element name="WaiverEndDate" type="nc:DateType"/>
+	<xs:element name="WaiverIndicator" type="niem-xs:boolean"/>
+	<xs:element name="WaiverPercentage" type="nc:TextType"/>
+	<xs:element name="WaiverStartDate" type="nc:DateType"/>
+	<xs:element name="WillFiledDate" type="nc:DateType"/>
+</xs:schema>

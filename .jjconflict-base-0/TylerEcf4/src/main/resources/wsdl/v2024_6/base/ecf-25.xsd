@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:i="http://niem.gov/niem/appinfo/2.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" xmlns:s="http://niem.gov/niem/structures/2.0" xmlns:scr="http://niem.gov/niem/domains/screening/2.0" targetNamespace="http://niem.gov/niem/domains/screening/2.0" version="1">
+	<xsd:annotation>
+		<xsd:documentation>The People Screening domain provides harmonized information sharing content within the Screening Portfolio of DHS.  The Screening namespace is initially being populated with person screening information for immigrant and non-immigrant person types who have been encountered and identified by the Screening Portfolio Components.  Screening expands on encounter-related NIEM elements currently included in the Immigration and Intelligence domains.</xsd:documentation>
+		<xsd:appinfo>
+			<i:ConformantIndicator>true</i:ConformantIndicator>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-3.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="ecf-4.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="ecf-2.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-13.xsd"/>
+	<xsd:complexType name="MarriageAssociationAugmentationType">
+		<xsd:complexContent>
+			<xsd:extension base="s:AugmentationType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="scr:DivorceDecreeIndicator"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="scr:MarriageCityName"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="DivorceDecreeIndicator" nillable="true" type="niem-xsd:boolean">
+		<xsd:annotation>
+			<xsd:documentation>An indicator indicating whether the Notice of Divorce of MARRIAGE has been received by the Department of Homeland Security</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ExpirationDate" nillable="true" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>The date on which the PERSON ALERT is no loner effective.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="MarriageAssociationAugmentation" substitutionGroup="s:Augmentation" type="scr:MarriageAssociationAugmentationType">
+		<xsd:annotation>
+			<xsd:documentation>Additional information about a marriage.</xsd:documentation>
+			<xsd:appinfo>
+				<i:AppliesTo i:name="PersonUnionAssociationType" i:namespace="http://niem.gov/niem/niem-core/2.0"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="MarriageCityName" nillable="true" type="nc:TextType">
+		<xsd:annotation>
+			<xsd:documentation>The name of the city where the MARRIAGE occurred.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+</xsd:schema>

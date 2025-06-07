@@ -1,0 +1,14 @@
+.git
+.jj
+.env
+.da_env
+.devenv
+.bash_en
+docassemble/**
+docassemble-os/**
+target/**
+bin/**
+*.hprof
+*.local
+*.log
+*.zip

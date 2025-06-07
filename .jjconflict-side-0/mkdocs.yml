@@ -1,0 +1,17 @@
+site_name: Suffolk LIT Lab E-file Proxy Server
+
+theme:
+  name: readthedocs
+  highlightjs: true
+  hljs_languages:
+      - java
+      - javascript
+      - xml
+      - json
+      - yml
+      - SQL
+      - bash
+
+plugins:
+  - search
+  - awesome-nav

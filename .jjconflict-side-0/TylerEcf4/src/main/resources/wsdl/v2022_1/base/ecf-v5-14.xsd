@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="no"?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:appinfo="http://release.niem.gov/niem/appinfo/4.0/" xmlns:cbrncl="http://release.niem.gov/niem/codes/cbrncl/4.0/" xmlns:ct="http://release.niem.gov/niem/conformanceTargets/3.0/" xmlns:structures="http://release.niem.gov/niem/structures/4.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ct:conformanceTargets="http://reference.niem.gov/niem/specification/naming-and-design-rules/4.0/#ReferenceSchemaDocument" targetNamespace="http://release.niem.gov/niem/codes/cbrncl/4.0/" version="1" xsi:schemaLocation="http://release.niem.gov/niem/appinfo/4.0/ ../../../utility/appinfo/4.0/appinfo.xsd http://release.niem.gov/niem/conformanceTargets/3.0/ ../../../utility/conformanceTargets/3.0/conformanceTargets.xsd">
+  <xs:annotation>
+    <xs:documentation>Radiological and Nuclear Code List
+Publication: CBRN domain; 
+Version: 3.0; 
+Date: Oct 2013;   
+http://release.niem.gov/niem/3.0/</xs:documentation>
+  </xs:annotation>
+  <xs:import namespace="http://release.niem.gov/niem/structures/4.0/" schemaLocation="ecf-v5-7.xsd"/>
+  <xs:simpleType name="CredentialsAuthenticatedCodeSimpleType">
+    <xs:annotation>
+      <xs:documentation>A data type for the states of authentication of  credentials.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="Authenticated">
+        <xs:annotation>
+          <xs:documentation>The credentials have been authenticated.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Not Authenticated">
+        <xs:annotation>
+          <xs:documentation>The credentials have not been authenticated.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="CredentialsAuthenticatedCodeType">
+    <xs:annotation>
+      <xs:documentation>A data type for the states of authentication of  credentials.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="cbrncl:CredentialsAuthenticatedCodeSimpleType">
+        <xs:attributeGroup ref="structures:SimpleObjectAttributeGroup"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:simpleType name="MessageStatusCodeSimpleType">
+    <xs:annotation>
+      <xs:documentation>A data type that defines the various code values for  data types that defines the status of a message</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="ActivityCodeFailure">
+        <xs:annotation>
+          <xs:documentation>The message was successfully received by not successfully processed due to an activity code error.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="DataError">
+        <xs:annotation>
+          <xs:documentation>The message was successfully received by not successfully processed due to a data error.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="DeviceError">
+        <xs:annotation>
+          <xs:documentation>The message was successfully received by not successfully processed due to a device error.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="DuplicateMessage">
+        <xs:annotation>
+          <xs:documentation>The message was successfully received but not processed since it is a duplicate of a message already processed.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="ErrorAcknowledgement">
+        <xs:annotation>
+          <xs:documentation>Acknowledgement of receipt of an error message.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="InvalidSchema">
+        <xs:annotation>
+          <xs:documentation>The message was received, but was not successfully processed due to an invalid schema.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="MessageError">
+        <xs:annotation>
+          <xs:documentation>The message was received, but was not successfully processed due to an invalid message error (invalid Message Type, encoding, format, etc.)</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Other">
+        <xs:annotation>
+          <xs:documentation>The message status does not fit any known category.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Success">
+        <xs:annotation>
+          <xs:documentation>The message was sucessfully received and accepted.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="SystemError">
+        <xs:annotation>
+          <xs:documentation>The message was successfully received by not successfully processed due to a system error.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="UnknownError">
+        <xs:annotation>
+          <xs:documentation>The message was not successfully received and/or processed due to an unknown error.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="MessageStatusCodeType">
+    <xs:annotation>
+      <xs:documentation>A data type that defines the status of a message.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="cbrncl:MessageStatusCodeSimpleType">
+        <xs:attributeGroup ref="structures:SimpleObjectAttributeGroup"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:simpleType name="SystemOperatingModeCodeSimpleType">
+    <xs:annotation>
+      <xs:documentation>A data type for the operating modes of a system.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="Exercise">
+        <xs:annotation>
+          <xs:documentation>The system is in use by an exercise.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Ops">
+        <xs:annotation>
+          <xs:documentation>The system is in live operational use.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Other">
+        <xs:annotation>
+          <xs:documentation>The system is in an unspecified operating mode. A description of this model needs to be provided in the element SystemOperatingModeText.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Test">
+        <xs:annotation>
+          <xs:documentation>The system is in test operations.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Unknown">
+        <xs:annotation>
+          <xs:documentation>The operating mode of the system is unknown.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="SystemOperatingModeCodeType">
+    <xs:annotation>
+      <xs:documentation>A data type for the operating modes of a system.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="cbrncl:SystemOperatingModeCodeSimpleType">
+        <xs:attributeGroup ref="structures:SimpleObjectAttributeGroup"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+</xs:schema>

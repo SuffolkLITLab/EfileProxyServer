@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:tyler:ecf:extensions:FilingDetailResponseMessage" xmlns:a="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:AppInfo-4.0" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:i="http://niem.gov/niem/appinfo/2.0" xmlns:j="http://niem.gov/niem/domains/jxdm/4.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" xmlns:s="http://niem.gov/niem/structures/2.0" xmlns:tyler="urn:tyler:ecf:extensions:Common" targetNamespace="urn:tyler:ecf:extensions:FilingDetailResponseMessage" version="1.0">
+	<xsd:annotation>
+		<xsd:documentation>FilingDetailResponseMessage</xsd:documentation>
+		<xsd:appinfo>
+			<i:ConformantIndicator>true</i:ConformantIndicator>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="ecf-2.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-3.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="ecf-4.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-13.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="ecf-18.xsd"/>
+	<xsd:import namespace="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" schemaLocation="ecf-39.xsd"/>
+	<xsd:import namespace="urn:tyler:ecf:extensions:Common" schemaLocation="ecf-60.xsd"/>
+	<xsd:complexType name="FilingDetailResponseMessageType">
+		<xsd:annotation>
+			<xsd:documentation>A court's response to a FilingDetailQueryMessage.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent> 
+			<xsd:extension base="ecf:QueryResponseMessageType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" ref="FilingSubmissionDate"/>
+					<xsd:element minOccurs="0" ref="nc:Case"/>
+					<xsd:element minOccurs="0" ref="tyler:ProcedureRemedy"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="EnvelopeFees"/>
+					<xsd:element minOccurs="0" ref="tyler:Payment"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="nc:DocumentIdentification"/>
+					<xsd:element minOccurs="0" ref="nc:DocumentSubmitter"/>
+					<xsd:element ref="ecf:FilingStatus"/>
+					<xsd:element minOccurs="0" ref="FilingAcceptDate"/>
+					<xsd:element minOccurs="0" ref="nc:DocumentPostDate"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="ServiceRecipientDetail"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="FilingFees"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="tyler:FilingLeadDocument"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="tyler:FilingAssociationParty"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ChargeType">
+		<xsd:sequence>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" ref="cac:AllowanceCharge"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="EnvelopeFees" type="ChargeType"/>
+	<xsd:element name="FilingFees" type="ChargeType"/>
+	<xsd:element name="FilingDetailResponseMessage" type="FilingDetailResponseMessageType">
+		<xsd:annotation>
+			<xsd:documentation>A court's response to a FilingDetailQueryMessage.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="FilingSubmissionDate" type="nc:DateType"/>
+	<xsd:element name="FilingAcceptDate" type="nc:DateType"/>
+	<xsd:complexType name="ServiceRecipientDetailType">
+		<xsd:annotation>
+			<xsd:documentation>A value describing the status of electronic service on a particular recipient.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="nc:StatusType">
+				<xsd:sequence>
+					<xsd:element ref="ecf:ServiceRecipientID"/>
+					<xsd:element ref="StatusCode"/>
+					<xsd:element ref="ServedRecipient"/>
+					<xsd:element ref="tyler:FirmName"/>
+					<xsd:element ref="IsOpened"/>
+					<xsd:element minOccurs="0" ref="ServedDate"/>
+					<xsd:element minOccurs="0" ref="OpenedDate"/>
+                    <xsd:element ref="tyler:MailServiceIndicator"/>
+                    <xsd:element minOccurs="0" ref="tyler:TrackingNumber"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="ServiceRecipientDetail" type="ServiceRecipientDetailType"/>
+	<xsd:element name="StatusCode" type="xsd:normalizedString">
+		<xsd:annotation>
+			<xsd:documentation>Status of the service as determined by the system receiving the service. Allowable values defined in ECF-4.0-ValueLevelCode.gc.</xsd:documentation>
+			<xsd:appinfo>
+				<a:CodeListReference a:CanonicalURI="urn:oasis:names:tc:legalxml-courtfiling:codelist:gc:ServiceStatusCode" a:CanonicalVersionURI="urn:oasis:names:tc:legalxml-courtfiling:codelist:gc:ServiceStatusCode-4.0" a:LocationURI="../../gc/ECF-4.0-ServiceStatusCode.gc"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ServedRecipient" type="nc:EntityType">
+		<xsd:annotation>
+			<xsd:documentation>The person or organization to be served in this case</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="IsOpened" type="xsd:boolean">
+		<xsd:annotation>
+			<xsd:documentation>Indicates if the document has been served</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ServedDate" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>The time and date the document was sent</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="OpenedDate" type="nc:DateType">
+		<xsd:annotation>
+			<xsd:documentation>The time and date the document was opened</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+</xsd:schema>

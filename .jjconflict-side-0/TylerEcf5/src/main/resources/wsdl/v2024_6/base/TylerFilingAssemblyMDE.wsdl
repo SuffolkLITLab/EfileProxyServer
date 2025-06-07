@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="urn:tyler:ecf:v5.0:extensions:TylerFilingAssemblyMDE" xmlns:tns="urn:tyler:ecf:v5.0:extensions:TylerFilingAssemblyMDE" xmlns:wrappers="urn:tyler:ecf:v5.0:extensions:wrappers" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsrmp="http://docs.oasis-open.org/ws-rx/wsrmp/200702" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+	<wsp:UsingPolicy wsdl:required="true"/>
+	<wsp:Policy wsu:Id="MyPolicy">
+		<wsrmp:RMAssertion/>
+	</wsp:Policy>
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="urn:tyler:ecf:v5.0:extensions:wrappers" schemaLocation="ecfv5-602d09642dfaa9bc.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	
+	<!-- messages -->
+	<message name="NotifyBatchCompleteRequest">
+		<part name="body" element="wrappers:NotifyBatchCompleteRequest"/>
+	</message>
+	<message name="NotifyBatchCompleteResponse">
+		<part name="body" element="wrappers:NotifyBatchCompleteResponse"/>
+	</message>
+	
+	<message name="UpdateFeesRequest">
+		<part name="body" element="wrappers:UpdateFeesRequest"/>
+	</message>
+	<message name="UpdateFeesResponse">
+		<part name="body" element="wrappers:UpdateFeesResponse"/>
+	</message>
+	
+	<message name="CaptureFeesRequest">
+		<part name="body" element="wrappers:CaptureFeesRequest"/>
+	</message>
+	<message name="CaptureFeesResponse">
+		<part name="body" element="wrappers:CaptureFeesResponse"/>
+	</message>
+	
+	<message name="NotifyEnvelopeCompleteRequest">
+		<part name="body" element="wrappers:NotifyEnvelopeCompleteRequest"/>
+	</message>
+	<message name="NotifyEnvelopeCompleteResponse">
+		<part name="body" element="wrappers:NotifyEnvelopeCompleteResponse"/>
+	</message>
+	
+	<message name="NotifyServiceCompleteRequest">
+		<part name="body" element="wrappers:NotifyServiceCompleteRequest"/>
+	</message>
+	<message name="NotifyServiceCompleteResponse">
+		<part name="body" element="wrappers:NotifyServiceCompleteResponse"/>
+	</message>
+	
+	<message name="NotifyEventRequest">
+		<part name="body" element="wrappers:NotifyEventRequest"/>
+	</message>
+	<message name="NotifyEventResponse">
+		<part name="body" element="wrappers:NotifyEventResponse"/>
+	</message>
+	
+	<!-- ports -->
+	<portType name="TylerFilingAssemblyMDE">
+		<operation name="NotifyBatchComplete">
+			<input message="tns:NotifyBatchCompleteRequest"/>
+			<output message="tns:NotifyBatchCompleteResponse"/>
+		</operation>
+		
+		<operation name="UpdateFees">
+			<input message="tns:UpdateFeesRequest"/>
+			<output message="tns:UpdateFeesResponse"/>
+		</operation>
+		
+		<operation name="CaptureFees">
+			<input message="tns:CaptureFeesRequest"/>
+			<output message="tns:CaptureFeesResponse"/>
+		</operation>
+		
+		<operation name="NotifyEnvelopeComplete">
+			<input message="tns:NotifyEnvelopeCompleteRequest"/>
+			<output message="tns:NotifyEnvelopeCompleteResponse"/>
+		</operation>
+		
+		<operation name="NotifyServiceComplete">
+			<input message="tns:NotifyServiceCompleteRequest"/>
+			<output message="tns:NotifyServiceCompleteResponse"/>
+		</operation>
+		
+		<operation name="NotifyEvent">
+			<input message="tns:NotifyEventRequest"/>
+			<output message="tns:NotifyEventResponse"/>
+		</operation>
+	</portType>
+	
+	<!-- bindings -->
+	<binding name="TylerFilingAssemblyMDESoap" type="tns:TylerFilingAssemblyMDE">
+		<wsp:PolicyReference URI="#MyPolicy"/>
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="NotifyBatchComplete">
+			<!-- An operation to notify a batch is complete -->
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerFilingAssemblyMDE/NotifyBatchComplete"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		
+		<operation name="UpdateFees">
+			<!-- An operation to update fees changed during review in CMS -->
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerFilingAssemblyMDE/UpdateFees"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		
+		<operation name="CaptureFees">
+			<!-- An operation to capture fees -->
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerFilingAssemblyMDE/CaptureFees"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		
+		<operation name="NotifyEnvelopeComplete">
+			<!-- An operation to notify when an envelope has been completely reviewed -->
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerFilingAssemblyMDE/NotifyEnvelopeComplete"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		
+		<operation name="NotifyServiceComplete">
+			<!-- An operation to notify when party is served -->
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerFilingAssemblyMDE/NotifyServiceComplete"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		
+		<operation name="NotifyEvent">
+			<!-- An operation to notify of an action an efsp might be interested in -->
+			<soap:operation soapAction="urn:tyler:ecf:v5.0:extensions:TylerFilingAssemblyMDE/NotifyEvent"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+</definitions>

@@ -1,0 +1,28 @@
+services:
+  efspjava:
+    build:
+      context: .
+      target: release
+      args:
+        - CI_COMMIT_SHA
+    # Necessary b/c docassemble is external to the docker network
+    ports:
+      - target: 9009
+        published: 80
+    env_file: .env
+    depends_on:
+      - "db"
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+  db:
+    image: "postgres:14"
+    shm_size: 256m
+    env_file: .env
+    volumes:
+      - data-volume:/var/lib/postgresql/data
+      - ./config/postgres-config:/etc/postgresql
+
+volumes:
+  data-volume:

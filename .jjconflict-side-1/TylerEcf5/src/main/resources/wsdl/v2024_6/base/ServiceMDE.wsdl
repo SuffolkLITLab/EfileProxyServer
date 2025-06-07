@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+     Electronic Court Filing Web Services Service Interaction Profile Version 5.0
+     Committee Specification Draft 01 / Public Review Draft 01
+     12 February 2019
+     Copyright (c) OASIS Open 2019. All Rights Reserved.
+     Source: https://docs.oasis-open.org/legalxml-courtfiling/ecf-webservices/v5.0/csprd01/schema/
+     Latest version of narrative specification: https://docs.oasis-open.org/legalxml-courtfiling/ecf-webservices/v5.0/ecf-webservices-v5.0.html
+     TC IPR Statement: https://www.oasis-open.org/committees/legalxml-courtfiling/ipr.php 
+--><definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/ServiceMDE" xmlns:wrappers="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/wrappers" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsrmp="http://docs.oasis-open.org/ws-rx/wsrmp/200702" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/ServiceMDE">
+	<!-- The list of operations supported by the Service MDE. -->
+	<wsp:UsingPolicy wsdl:required="true"/>
+	<wsp:Policy wsu:Id="MyPolicy">
+		<wsrmp:RMAssertion/>
+	</wsp:Policy>
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/wrappers" schemaLocation="ecfv5-bc4df19763eade9e.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<!-- messages -->
+	<message name="ServeFilingRequest">
+		<part element="wrappers:ServeFilingRequest" name="body"/>
+	</message>
+	<message name="ServeFilingResponse">
+		<part element="wrappers:ServeFilingResponse" name="body"/>
+	</message>
+	<message name="ServeProcessRequest">
+		<part element="wrappers:ServeProcessRequest" name="body"/>
+	</message>
+	<message name="ServeProcessResponse">
+		<part element="wrappers:ServeProcessResponse" name="body"/>
+	</message>
+	<!-- ports -->
+	<portType name="ServiceMDE">
+		<operation name="ServeFiling">
+			<input message="tns:ServeFilingRequest"/>
+			<output message="tns:ServeFilingResponse"/>
+		</operation>
+		<operation name="ServeProcess">
+			<input message="tns:ServeProcessRequest"/>
+			<output message="tns:ServeProcessResponse"/>
+		</operation>
+	</portType>
+	<!-- bindings -->
+	<binding name="ServiceMDESoap" type="tns:ServiceMDE">
+		<wsp:PolicyReference URI="#MyPolicy"/>
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="ServeFiling">
+			<!-- An operation to serve/deliver a filing to a service recipient. -->
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/ServiceMDE/ServeFiling"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="ServeProcess">
+			<!-- An operation to serve/deliver a filing to a process server or registered agent. -->
+			<soap:operation soapAction="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/ServiceMDE/ServeProcess"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<!-- services not defined here...defined in an implementation-specific WSDL that imports this one -->
+</definitions>

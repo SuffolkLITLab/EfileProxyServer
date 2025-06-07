@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<jaxb:bindings version="3.0" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <jaxb:bindings schemaLocation="ecfv5-50c18fb2bdc50976.xsd">
+        <jaxb:globalBindings typesafeEnumMaxMembers="2048"/>
+    </jaxb:bindings>
+</jaxb:bindings>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsmp="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/ServiceMDE" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/ServiceMDE">
+	<import location="../base/ServiceMDE.wsdl" namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/ServiceMDE"/>
+	<import location="../base/ecfv5-dd545670aa04333d.xsd" namespace="urn:tyler:ecf:v5.0:extensions:common"/>
+	<import location="../base/ecfv5-criminal-extension.xsd" namespace="urn:tyler:ecf:v5.0:extensions:criminal"/>
+	<import location="../base/ecfv5-massachusetts-extension.xsd" namespace="urn:tyler:ecf:v5.0:extensions:massachusetts"/>
+	<import location="../base/ecfv5-taxdelinquency-extension.xsd" namespace="urn:tyler:ecf:v5.0:extensions:taxdelinquency"/>
+	<service name="ServiceMDEService">
+		<port binding="wsmp:ServiceMDESoap" name="ServiceMDE">
+			<soap:address location="https://illinois-stage.tylertech.cloud/efm/v5/service.svc"/>
+		</port>
+	</service>
+</definitions>

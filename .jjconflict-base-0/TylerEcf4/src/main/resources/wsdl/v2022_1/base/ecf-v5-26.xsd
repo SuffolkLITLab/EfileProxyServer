@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+     WS-Calendar Version 1.0
+     Committee Specification 01
+     30 July 2011
+     Source: http://docs.oasis-open.org/ws-calendar/ws-calendar-spec/v1.0/cs01/xsd/
+     Copyright (c) The Calendaring and Scheduling Consortium 2010-2011. All Rights Reserved.
+     Copyright (c) OASIS Open 2010-2011. All Rights Reserved. --><!-- iCalendar MS Exchange Server integration schema is
+     intended to work in conjunction with conformant
+     implementations of IETF RFC 5545
+     ( http://www.rfc-editor.org/rfc/rfc5545.txt ),
+     the normative specification of iCalendar. --><!--Bedework extensions to icalendar --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xcal="urn:ietf:params:xml:ns:icalendar-2.0" elementFormDefault="qualified" targetNamespace="urn:ietf:params:xml:ns:icalendar-2.0">
+
+  <!-- =====================================================================
+       3.7 Calendar Properties
+       ===================================================================== -->  
+            
+  <!-- ===================== Properties =================================  -->
+  <xs:include schemaLocation="ecf-v5-24.xsd"/>
+
+  <xs:element name="x-microsoft-cdo-busystatus" substitutionGroup="xcal:baseProperty" type="xcal:XMicrosoftCdoBusystatusPropType"/>
+
+  <xs:element name="x-microsoft-cdo-intendedstatus" substitutionGroup="xcal:baseProperty" type="xcal:XMicrosoftCdoIntendedstatusPropType"/>
+  
+  <xs:complexType name="XMicrosoftCdoBusystatusPropType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="xcal:TextPropertyType"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="XMicrosoftCdoIntendedstatusPropType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="xcal:TextPropertyType"/>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>
