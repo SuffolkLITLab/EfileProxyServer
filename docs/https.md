@@ -52,7 +52,7 @@ keytool -importkeystore -srckeystore my_domain.p12 -srcstoretype PKCS12 -destkey
 Refer to the sources below if you need more details:
 * ["Java TLS with Keystores" cheat-sheet](https://stackoverflow.com/a/41469242/11416267)
 * [Install a Tomcat cert](https://www.tbs-certificates.co.uk/FAQ/en/ajouter-certificat-intermediaire-keystore-java.html)
-* [How to convert *.crt and *.key to *.jks](https://community.datarobot.com/t5/data-prep/how-to-convert-crt-and-key-to-jks-file/td-p/6342)
+* [How to convert \*.crt and \*.key to \*.jks](https://community.datarobot.com/t5/data-prep/how-to-convert-crt-and-key-to-jks-file/td-p/6342)
 
 
 ## Developer Notes: Using the cert in the CXF Server
