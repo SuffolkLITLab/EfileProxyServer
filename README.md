@@ -8,18 +8,18 @@ A separate server that sits between ECF 4.0 EFMs and docassemble, and can create
 
 This is an abbreviated version of installation. Full details are in [setup](docs/setup.md).
 
-These instructions are written for Linux (specifically Ubuntu 20.04), steps for other platforms should be similar.
+These instructions are written for Linux (specifically Ubuntu 22.04), steps for other platforms should be similar.
 
 1. [Install docker](https://docs.docker.com/engine/install/) and [docker compose](https://docs.docker.com/compose/install/).
 2. Download this repository: In a terminal, you can run `git clone https://github.com/SuffolkLITLab/EfileProxyServer`
 3. In the same terminal change directories to where you downloaded the server: `cd EfileProxyServer`, and then build a docker image for this server. `docker compose build`
 4. Run the server image that you just built with `docker compose up`.
 
-## Env file
+### Env file
 
 Docker env files can't be directly used in `bash`, so if you are running things in your local shell (like when [testing](#testing)), use [direnv](https://direnv.net).
 
-## Making API Tokens
+### Making API Tokens
 
 Run the following command after starting the services with `docker compose`:
 
@@ -63,5 +63,15 @@ firefox target/site/jacoco/index.html # or chrome, chromium, etc.
 
 ## Making Code Changes
 
-Everything you need should be in [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Navigating the Code
+
+This project is written in Java, using Maven as a build system. The Java code is split into several
+different modules for better defined interfaces. Those modules include:
+
+* [TylerEfmClient](TylerEfmClient/README.md)
+* [Ecf4](Ecf4/README.md)
+* [Ecf5](Ecf5/README.md)
+* [TylerEcf4](TylerEcf4/README.md)
+* [TylerEcf5](TylerEcf5/README.md)

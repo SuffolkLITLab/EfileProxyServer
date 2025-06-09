@@ -2,7 +2,7 @@
 
 ## Building and Running
 
-See the [README.md] and [docs/setup.md] for more details here.
+See the [README.md] and [docs/setup.md] for more details on how to build locally.
 
 ## Formatting code
 
@@ -10,12 +10,10 @@ Download [version 1.27.0 of the native graal executable of google-java-format](h
 
 ```bash
 chmod +x google-java-format_linux-x86-64 # just once, use the name of your platform
-./google-java-format_linux-x86-64 -i `find src/main/java/edu/suffolk -name *.java ! -name CodeTableConstants.java ! -name FilingCode.java`
+./google-java-format_linux-x86-64 -i `find proxyserver/src/main/java/edu/suffolk -name *.java ! -name CodeTableConstants.java ! -name FilingCode.java`
 ```
 
 To format all of your files.
-
-(Note: this command might change slightly! If anything unexpected happens, see if the command in the [GitHub Action workflow](.github/workflows/formatting.yml) has changed first.)
 
 ## Linting the code
 

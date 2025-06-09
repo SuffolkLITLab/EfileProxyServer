@@ -13,7 +13,7 @@ jobs:
         run: |
           wget https://github.com/google/google-java-format/releases/download/v1.27.0/google-java-format_linux-x86-64
           chmod +x google-java-format_linux-x86-64
-          ./google-java-format_linux-x86-64 --dry-run --set-exit-if-changed `find src/main/java/edu/suffolk -name *.java ! -name CodeTableConstants.java ! -name FilingCode.java`
+          ./google-java-format_linux-x86-64 --dry-run --set-exit-if-changed `find proxyserver/src/main -name *.java ! -name CodeTableConstants.java ! -name FilingCode.java`
       - name: Help (if necessary)
         if: failure()
         run: |

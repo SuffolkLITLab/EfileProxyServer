@@ -75,7 +75,7 @@ client_sign.properties.local
 docassemble-os/
 
 # Test related
-!src/test/resources/tyler_efm_codes*.tar.gz
+!proxyserver/src/test/resources/tyler_efm_codes*.tar.gz
 
 # formatting
 google-java-format_*
