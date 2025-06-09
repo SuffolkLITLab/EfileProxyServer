@@ -5,7 +5,7 @@ COPY pom.xml LICENSE client_sign.propertie[s] quartz.properties Suffolk.pf[x] ac
 # Install all of the maven packages, so we don't have to every time we change code
 RUN mvn -f /usr/src/app/pom.xml -DskipTests clean dependency:resolve dependency:go-offline package && mvn -f /usr/src/app/pom.xml test
 COPY src /usr/src/app/src
-RUN mvn -f /usr/src/app/pom.xml -DskipTests package dependency:build-classpath -Dmdep.outputFile=cp.txt -PnoDockerTests
+RUN mvn -f /usr/src/app/pom.xml -DskipTests package -PnoDockerTests
 COPY docker_run_script.sh docker_integration_test.sh fly_startup_script.sh /usr/src/app/
 
 EXPOSE 9000
