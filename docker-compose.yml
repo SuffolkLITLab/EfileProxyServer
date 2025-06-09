@@ -13,7 +13,7 @@ services:
       - "db"
     volumes:
       - type: bind
-        source: ./src/main/config
+        source: ./proxyserver/src/main/config
         target: /tmp/tls_certs
       # Uncomment this for debugging: you can get exact SOAP envelopes being
       # sent by running wireshark locally
