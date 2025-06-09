@@ -18,11 +18,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <cxf.version>4.0.0</cxf.version>
+        <cxf.version>4.0.8</cxf.version>
         <junit.version>5.9.3</junit.version>
         <slf4j.version>2.0.7</slf4j.version>
         <jackson.version>2.14.2</jackson.version>
-        <bouncycastle.version>1.70</bouncycastle.version>
+        <bouncycastle.version>1.81</bouncycastle.version>
         <acme4j.version>2.16</acme4j.version>
         <testcontainers.version>1.18.0</testcontainers.version>
         <maven-surefire.version>3.0.0</maven-surefire.version>
@@ -108,6 +108,7 @@
             <groupId>org.ehcache</groupId>
             <artifactId>ehcache</artifactId>
             <version>3.10.8</version>
+            <classifier>jakarta</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>org.glassfish.jaxb</groupId>
@@ -138,7 +139,7 @@
         <dependency>
             <groupId>org.apache.cxf.xjc-utils</groupId>
             <artifactId>cxf-xjc-runtime</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.2</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
@@ -189,22 +190,17 @@
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcmail-jdk15on</artifactId>
+            <artifactId>bcmail-jdk18on</artifactId>
             <version>${bouncycastle.version}</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
+            <artifactId>bcpkix-jdk18on</artifactId>
             <version>${bouncycastle.version}</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>${bouncycastle.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-ext-jdk15on</artifactId>
+            <artifactId>bcprov-jdk18on</artifactId>
             <version>${bouncycastle.version}</version>
         </dependency>
         <dependency>
@@ -246,6 +242,13 @@
             <groupId>com.sendgrid</groupId>
             <artifactId>sendgrid-java</artifactId>
             <version>4.8.1</version>
+            <exclusions>
+              <exclusion>
+                <groupId>org.bouncycastle</groupId>
+                <!-- Use our jdk18on instead -->
+                <artifactId>bcprov-jdk15on</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.twilio.sdk</groupId>
