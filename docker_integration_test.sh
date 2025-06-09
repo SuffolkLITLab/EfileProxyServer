@@ -4,7 +4,7 @@ set -x
 cd /usr/src/app
 java \
     -javaagent:jacocoagent.jar=destfile=/tmp/jacoco/jacoco.exec \
-    -cp $(cat cp.txt):target/efspserver.jar \
+    -cp target/efspserver-with-deps.jar \
     edu.suffolk.litlab.efspserver.db.LoginDatabase integrationTest true true > /tmp/secrets/proxy_stuff.txt
 # Add this before the `-cp` line if needed to get exact SOAP envelopes being sent
 # -javaagent:extract-tls-secrets-4.0.0.jar=/tmp/secrets/secrets.log \
@@ -15,6 +15,5 @@ java \
 exec java \
     -javaagent:extract-tls-secrets-4.0.0.jar=/tmp/secrets/secrets.log \
     -javaagent:jacocoagent.jar=destfile=/tmp/jacoco/jacoco.exec \
-    -cp $(cat cp.txt):target/efspserver.jar \
     -XX:+HeapDumpOnOutOfMemoryError \
-    edu.suffolk.litlab.efspserver.services.EfspServer
+    -jar target/efspserver-with-deps.jar

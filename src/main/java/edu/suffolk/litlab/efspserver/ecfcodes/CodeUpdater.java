@@ -625,7 +625,7 @@ public class CodeUpdater {
    * Run with:
    *
    * <pre>
-   * java -cp $(cat cp.txt):target/efspserver.jar edu.suffolk.litlab.efspserver.ecfcodes.CodeUpdater refresh
+   * java -cp target/efspserver-with-deps.jar edu.suffolk.litlab.efspserver.ecfcodes.CodeUpdater refresh
    * </pre>
    *
    * <p>TODO(#111): use with this System property and class to try to fix parallel unmarshalling

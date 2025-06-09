@@ -24,7 +24,7 @@ Docker env files can't be directly used in `bash`, so if you are running things 
 Run the following command after starting the services with `docker compose`:
 
 ```bash
-docker exec -i efileproxyserver-efspjava-1 /usr/bin/mvn -f /usr/src/app/pom.xml exec:java@LoginDatabase -Dexec.args="servername true true"
+docker exec -i efileproxyserver-efspjava-1 /usr/bin/java -cp /usr/src/app/target/efspserver-with-deps.jar edu.suffolk.litlab.efspserver.db.LoginDatabase \"servername\" true true
 ```
 
 The API token to add to the docassemble config will be printed out.

@@ -106,7 +106,7 @@ working in. For us it's mostly `illinois-stage`.
       the pom file's exec-maven-plugin, and just runs the `main` function. The command is below:
 
       ```bash
-      mvn exec:java@XsdDownloader -Dexec.args="https://jurisdiction-env.tylertech.cloud/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf"
+      java -cp target/efspserver-with-deps.jar edu.suffolk.litlab.efspserver.XsdDownloader https://jurisdiction-env.tylertech.cloud/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf
       ```
 
       This will download all of the ECF files, giving them a single specific prefix. You'll need to move them
@@ -128,7 +128,7 @@ working in. For us it's mostly `illinois-stage`.
       ECF v5, not ECF v4. So just run:
 
       ```bash
-      mvn exec:java@XsdDownloader -Dexec.args="https://jurisdiction-env.tylertech.cloud/EFM/Schema/v5/CourtSchedulingMDE.wsdl ecf-v5"
+      java -cp target/efspserver-with-deps.jar edu.suffolk.litlab.efspserver.XsdDownloader https://jurisdiction-env.tylertech.cloud/EFM/Schema/v5/CourtSchedulingMDE.wsdl ecf-v5
       ```
 
       and move all the files to a different resource directory, this time `src/main/resources/wsdl/{tyler_env}/`.

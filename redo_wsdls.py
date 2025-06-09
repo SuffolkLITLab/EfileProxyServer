@@ -16,9 +16,9 @@ from plumbum import local, FG, BG
 
 # Check that wsdl2java and other comands are installed correctly
 wsdl2java = local.cmd.wsdl2java
-wsdl2java['-h'] & FG
-mvn = local['mvn']
-mvn['-h'] & FG
+wsdl2java['-v'] & FG
+java = local['java']
+java['--version'] & FG
 mkdir = local['mkdir']
 # mkdir['-p', 'wsdl_eater'] & FG
 os.chdir('src/main/resources/wsdl')
@@ -43,9 +43,9 @@ for juris in supported_jurisdictions:
   print('downloaded EFMFirmService')
 
   for ecf_wsdl in ['ECF-4.0-FilingReviewMDEService.wsdl', 'ECF-4.0-FilingAssemblyMDEService.wsdl', 'ECF-4.0-CourtRecordMDEService.wsdl', 'ECF-4.0-ServiceMDEService.wsdl']:
-    args = f'-Dexec.args="https://{juris}-{tyler_env}.tylertech.cloud/EFM/Schema/{ecf_wsdl} ecf"'
+    args = f'https://{juris}-{tyler_env}.tylertech.cloud/EFM/Schema/{ecf_wsdl} ecf'
     print(args)
-    mvn['-f', '../../../../../../pom.xml', 'exec:java@XsdDownloader', args] & FG
+    java['-jar', '../../../../../../target/efspserver-with-deps.jar', 'edu.suffolk.litlab.efspserver.XsdDownloader', args] & FG
     local.get('mv')['ecf.xsd', ecf_wsdl] & FG
     print(f'downloaded {ecf_wsdl}')
   os.chdir('../../')

@@ -16,8 +16,7 @@ fi
 # if needed to debug http logs:
 # https://stackoverflow.com/questions/53215038/how-to-log-request-response-using-java-net-http-httpclient
 exec java \
-    -cp $(cat cp.txt):target/efspserver.jar \
     -XX:+HeapDumpOnOutOfMemoryError \
     -XX:InitialRAMPercentage=20.0 \
     -XX:MaxRAMPercentage=75.0 \
-    edu.suffolk.litlab.efspserver.services.EfspServer
+    -jar target/efspserver-with-deps.jar

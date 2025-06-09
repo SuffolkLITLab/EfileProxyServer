@@ -82,7 +82,7 @@ index 3d903c53..57028ced 100755
  # https://stackoverflow.com/questions/53215038/how-to-log-request-response-using-java-net-http-httpclient
  exec java \
 +    -javaagent:extract-tls-secrets-4.0.0.jar=/tmp/secrets/secrets.log \
-     -cp $(cat cp.txt):target/efspserver.jar \
+     -cp target/efspserver-with-deps.jar \
      -XX:+HeapDumpOnOutOfMemoryError \
      -XX:InitialRAMPercentage=20.0 \
 ```
