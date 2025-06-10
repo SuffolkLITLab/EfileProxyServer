@@ -77,12 +77,12 @@ diff --git a/docker_run_script.sh b/docker_run_script.sh
 index 3d903c53..57028ced 100755
 --- a/docker_run_script.sh
 +++ b/docker_run_script.sh
-@@ -9,6 +9,7 @@ cd /usr/src/app
+@@ -9,6 +9,7 @@ cd /app
  # if needed to debug http logs:
  # https://stackoverflow.com/questions/53215038/how-to-log-request-response-using-java-net-http-httpclient
  exec java \
 +    -javaagent:extract-tls-secrets-4.0.0.jar=/tmp/secrets/secrets.log \
-     -cp target/efspserver-with-deps.jar \
+     -cp efspserver-with-deps.jar \
      -XX:+HeapDumpOnOutOfMemoryError \
      -XX:InitialRAMPercentage=20.0 \
 ```

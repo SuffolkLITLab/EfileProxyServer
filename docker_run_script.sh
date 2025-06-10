@@ -2,7 +2,7 @@
 
 set -ex
 
-cd /usr/src/app
+cd /app/
 
 # Customize startup if running on Fly.io.
 if [ -n "$FLY_MACHINE_ID" ]; then
@@ -19,4 +19,4 @@ exec java \
     -XX:+HeapDumpOnOutOfMemoryError \
     -XX:InitialRAMPercentage=20.0 \
     -XX:MaxRAMPercentage=75.0 \
-    -jar target/efspserver-with-deps.jar
+    -jar efspserver-with-deps.jar
