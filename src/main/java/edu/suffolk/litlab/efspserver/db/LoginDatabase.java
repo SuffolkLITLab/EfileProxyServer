@@ -273,7 +273,7 @@ public class LoginDatabase extends Database {
   }
 
   /**
-   * Example on how to trigger: java -cp target/efspserver-with-deps.jar
+   * Example on how to trigger: java -cp efspserver-with-deps.jar
    * edu.suffolk.litlab.efspserver.db.LoginDatabase localhostServer true true
    *
    * @throws ClassNotFoundException

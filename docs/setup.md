@@ -112,10 +112,10 @@ Instructions are for Linux. Start with installing everything.
 ```bash
 sudo add-apt-repository ppa:openjdk-r/ppa
 sudo apt update
-sudo apt install openjdk-17-jdk
+sudo apt install openjdk-21-jdk
 ```
 
-We are using CXF as the SOAP client which supports up to JDK 17.
+We are using CXF as the SOAP client.
 
 ```bash
 sudo apt install maven

@@ -10,7 +10,7 @@ services:
         published: 9100
       - target: 9000
         published: 9101
-    command: /bin/sh /usr/src/app/docker_integration_test.sh
+    command: /bin/sh /app/docker_integration_test.sh
     env_file: .env.test
     depends_on:
       - "db"

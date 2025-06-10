@@ -106,7 +106,7 @@ working in. For us it's mostly `illinois-stage`.
       the pom file's exec-maven-plugin, and just runs the `main` function. The command is below:
 
       ```bash
-      java -cp target/efspserver-with-deps.jar edu.suffolk.litlab.efspserver.XsdDownloader https://jurisdiction-env.tylertech.cloud/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf
+      java -cp efspserver-with-deps.jar edu.suffolk.litlab.efspserver.XsdDownloader https://jurisdiction-env.tylertech.cloud/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf
       ```
 
       This will download all of the ECF files, giving them a single specific prefix. You'll need to move them

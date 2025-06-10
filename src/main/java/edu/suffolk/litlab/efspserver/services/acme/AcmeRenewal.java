@@ -404,7 +404,7 @@ public class AcmeRenewal {
    * <p>Run with
    *
    * <pre>
-   * java -cp target/efspserver-with-deps.jar edu.suffolk.litlab.efspserver.services.acme.AcmeRenewal renew
+   * java -cp efspserver-with-deps.jar edu.suffolk.litlab.efspserver.services.acme.AcmeRenewal renew
    * </pre>
    *
    * @throws AcmeException
