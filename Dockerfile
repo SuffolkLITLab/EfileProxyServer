@@ -1,4 +1,4 @@
-FROM maven:3.8-eclipse-temurin-17 AS build
+FROM maven:3.8-eclipse-temurin-21 AS build
 # The `[]` is an optional COPY: doesn't copy if those files aren't there (https://stackoverflow.com/a/46801962/11416267)
 # They are needed for Tyler API usage, and serving the REST API as HTTPS
 COPY pom.xml /usr/app/
@@ -7,7 +7,9 @@ RUN mvn -f /usr/app/pom.xml -DskipTests clean dependency:resolve dependency:go-o
 COPY src /usr/app/src
 RUN mvn -f /usr/app/pom.xml -DskipTests package -PnoDockerTests
 COPY docker_run_script.sh docker_integration_test.sh fly_startup_script.sh /usr/app/
-FROM eclipse-temurin:17.0.15_6-jre-alpine AS release
+
+
+FROM eclipse-temurin:21.0.7_6-jre-alpine AS release
 COPY --from=build  /usr/app/target/efspserver-with-deps.jar /app/
 # The `[]` is an optional COPY: doesn't copy if those files aren't there (https://stackoverflow.com/a/46801962/11416267)
 # They are needed for Tyler API usage, and serving the REST API as HTTPS

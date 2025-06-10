@@ -1,3 +1,7 @@
+# JJ stuff in the repo
+.jj/
+
+
 target/
 
 # stuff related to running integration tests
