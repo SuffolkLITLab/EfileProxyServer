@@ -5,7 +5,7 @@
     <groupId>edu.suffolk.litlab</groupId>
     <artifactId>tyler-ecf5</artifactId>
     <name>Tyler's ECF 5</name>
-    <description>Client for Tyler's implementation of ECF 5</description>
+    <description>Generated Java files for Tyler Technologies's ECF 5 Schemas</description>
 
     <parent>
       <groupId>edu.suffolk.litlab</groupId>
@@ -16,11 +16,7 @@
     <dependencies>
         <dependency>
           <groupId>edu.suffolk.litlab</groupId>
-          <artifactId>ecf5</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>edu.suffolk.litlab</groupId>
-          <artifactId>tyler-efm-client</artifactId>
+          <artifactId>tyler-ecf4</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -29,12 +25,10 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.0</version>
         </dependency>
         <dependency>
             <groupId>jakarta.jws</groupId>
             <artifactId>jakarta.jws-api</artifactId>
-            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf.xjc-utils</groupId>

@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>edu.suffolk.litlab</groupId>
     <artifactId>tyler-ecf4</artifactId>
-    <name>Tyler's ECF 4</name>
-    <description>Client for Tyler's implementation of ECF 4</description>
+    <name>Tyler ECF 4</name>
+    <description>Generated Java files for Tyler Technologies's ECF 4 Schemas</description>
 
     <parent>
       <groupId>edu.suffolk.litlab</groupId>
@@ -14,14 +14,6 @@
     </parent>
 
     <dependencies>
-        <dependency>
-          <groupId>edu.suffolk.litlab</groupId>
-          <artifactId>ecf4</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>edu.suffolk.litlab</groupId>
-          <artifactId>tyler-efm-client</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>

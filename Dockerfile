@@ -2,8 +2,6 @@ FROM maven:3.8-eclipse-temurin-21 AS build
 # The `[]` is an optional COPY: doesn't copy if those files aren't there (https://stackoverflow.com/a/46801962/11416267)
 # They are needed for Tyler API usage, and serving the REST API as HTTPS
 COPY pom.xml /usr/app/
-COPY Ecf4 /usr/app/Ecf4/
-COPY Ecf5 /usr/app/Ecf5/
 COPY TylerEcf4 /usr/app/TylerEcf4/
 COPY TylerEcf5 /usr/app/TylerEcf5/
 COPY TylerEfmClient /usr/app/TylerEfmClient/
