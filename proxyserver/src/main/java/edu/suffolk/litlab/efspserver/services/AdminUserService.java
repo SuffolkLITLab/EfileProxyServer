@@ -5,12 +5,13 @@ import static edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes.makeResponse;
 
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
+import edu.suffolk.litlab.efsp.tyler.TylerClients;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
 import edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efspserver.tyler.TylerLogin;
-import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
 import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.CourtLocationInfo;
@@ -98,14 +99,16 @@ public class AdminUserService {
       Function<String, Result<NullValue, String>> passwordChecker) {
     this.jurisdiction = jurisdiction;
     this.passwordChecker = passwordChecker;
-    Optional<EfmUserService> maybeUserFactory = TylerUrls.getEfmUserFactory(jurisdiction, env);
+    Optional<EfmUserService> maybeUserFactory =
+        TylerClients.getEfmUserFactory(jurisdiction, TylerEnv.valueOf(env));
     if (maybeUserFactory.isEmpty()) {
       throw new RuntimeException(
           "Can't find " + jurisdiction + " in the SoapClientChooser for EfmUser");
     }
     this.userFactory = maybeUserFactory.get();
     ;
-    Optional<EfmFirmService> maybeFirmFactory = TylerUrls.getEfmFirmFactory(jurisdiction, env);
+    Optional<EfmFirmService> maybeFirmFactory =
+        TylerClients.getEfmFirmFactory(jurisdiction, TylerEnv.valueOf(env));
     if (maybeFirmFactory.isEmpty()) {
       throw new RuntimeException(
           "Can't find " + jurisdiction + " in the SoapClientChooser for EfmFirm factory");

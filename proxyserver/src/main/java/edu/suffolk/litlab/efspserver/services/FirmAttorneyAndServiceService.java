@@ -7,9 +7,10 @@ import static edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes.makeResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.suffolk.litlab.efsp.tyler.TylerClients;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes;
-import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.DataFieldRow;
 import jakarta.ws.rs.DELETE;
@@ -83,7 +84,8 @@ public class FirmAttorneyAndServiceService {
   public FirmAttorneyAndServiceService(
       String jurisdiction, String env, DataSource userDs, Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
-    Optional<EfmFirmService> maybeFirmFactory = TylerUrls.getEfmFirmFactory(jurisdiction, env);
+    Optional<EfmFirmService> maybeFirmFactory =
+        TylerClients.getEfmFirmFactory(jurisdiction, TylerEnv.valueOf(env));
     if (maybeFirmFactory.isPresent()) {
       this.firmFactory = maybeFirmFactory.get();
     } else {

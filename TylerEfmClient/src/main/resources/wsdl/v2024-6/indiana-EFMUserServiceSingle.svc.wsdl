@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions name="EfmUserService" targetNamespace="urn:tyler:efm:services"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:tns="urn:tyler:efm:services"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+	<wsdl:import location="Base-EFMUserServiceSingle.svc.wsdl"
+		namespace="urn:tyler:efm:services" />
+    <wsdl:service name="EfmUserService">
+        <wsdl:port name="BasicHttpBinding_IEfmUserService"
+            binding="tns:BasicHttpBinding_IEfmUserService">
+            <soap:address location="https://indiana-stage.tylertech.cloud/EFM/EFMUserService.svc" />
+        </wsdl:port>
+        <wsdl:port name="BasicHttpBinding_IEfmUserService1"
+            binding="tns:BasicHttpBinding_IEfmUserService1">
+            <soap:address
+                location="https://indiana-stage.tylertech.cloud/EFM/EFMUserService.svc/test" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

@@ -1,6 +1,8 @@
 package edu.suffolk.litlab.efspserver.tyler;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import edu.suffolk.litlab.efsp.tyler.TylerClients;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efspserver.services.LoginInterface;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import jakarta.xml.ws.BindingProvider;
@@ -22,7 +24,8 @@ public class TylerLogin implements LoginInterface {
 
   public TylerLogin(String jurisdiction, String env) {
     this.jurisdiction = jurisdiction;
-    Optional<EfmUserService> maybeUserFactory = TylerUrls.getEfmUserFactory(jurisdiction, env);
+    Optional<EfmUserService> maybeUserFactory =
+        TylerClients.getEfmUserFactory(jurisdiction, TylerEnv.valueOf(env));
     if (maybeUserFactory.isPresent()) {
       userServiceFactory = maybeUserFactory.get();
     } else {

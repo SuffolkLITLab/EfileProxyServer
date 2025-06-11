@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efspserver.ecfcodes;
 
+import edu.suffolk.litlab.efsp.tyler.TylerClients;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efspserver.HeaderSigner;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.StdLib;
@@ -7,7 +9,6 @@ import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
 import edu.suffolk.litlab.efspserver.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efspserver.ecf4.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
-import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
 import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import jakarta.xml.bind.JAXBException;
@@ -531,7 +532,8 @@ public class CodeUpdater {
   /** Sets up the WSDL connection to Tyler, used for `getPolicy` to get the URL. */
   private static FilingReviewMDEPort loginWithTyler(
       String jurisdiction, String env, String userEmail, String userPassword) {
-    Optional<EfmUserService> userService = TylerUrls.getEfmUserFactory(jurisdiction, env);
+    Optional<EfmUserService> userService =
+        TylerClients.getEfmUserFactory(jurisdiction, TylerEnv.valueOf(env));
     if (userService.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " in Soap chooser for EFMUser");
     }
@@ -573,7 +575,7 @@ public class CodeUpdater {
     String table = args.get(2);
     String location = (args.size() == 4) ? args.get(3) : "";
     HeaderSigner hs = new HeaderSigner(this.pathToKeystore, this.x509Password);
-    String endpoint = TylerUrls.getCodeEndpointRootUrl(jurisdiction, env);
+    String endpoint = TylerClients.getTylerServerRootUrl(jurisdiction, TylerEnv.valueOf(env));
     return downloadAndProcessZip(
         makeCodeUrl(endpoint, table, location),
         hs.signedCurrentTime().get(),
@@ -595,7 +597,7 @@ public class CodeUpdater {
     String command = args.get(0);
     try {
       cd.setAutoCommit(false);
-      String codesSite = TylerUrls.getCodeEndpointRootUrl(jurisdiction, env);
+      String codesSite = TylerClients.getTylerServerRootUrl(jurisdiction, TylerEnv.valueOf(env));
       FilingReviewMDEPort filingPort =
           loginWithTyler(
               jurisdiction,

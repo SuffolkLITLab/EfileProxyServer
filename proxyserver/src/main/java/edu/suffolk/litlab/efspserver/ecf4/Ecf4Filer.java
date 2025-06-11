@@ -5,6 +5,8 @@ import static edu.suffolk.litlab.efspserver.StdLib.strFromException;
 import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPort;
 
 import com.hubspot.algebra.Result;
+import edu.suffolk.litlab.efsp.tyler.TylerClients;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
@@ -20,7 +22,6 @@ import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
 import edu.suffolk.litlab.efspserver.tyler.QueryType;
 import edu.suffolk.litlab.efspserver.tyler.TylerLogin;
-import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
 import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.ComboCaseCodes;
@@ -148,7 +149,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       throw new RuntimeException("Cannot find " + jurisdiction + " for service mde factory");
     }
     this.serviceFactory = maybeServiceFac.get();
-    Optional<EfmFirmService> maybeFirmFactory = TylerUrls.getEfmFirmFactory(jurisdiction, env);
+    Optional<EfmFirmService> maybeFirmFactory =
+        TylerClients.getEfmFirmFactory(jurisdiction, TylerEnv.valueOf(env));
     if (maybeFirmFactory.isEmpty()) {
       throw new RuntimeException("Cannot find " + jurisdiction + " for firm mde factory");
     }

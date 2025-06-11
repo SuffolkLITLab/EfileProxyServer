@@ -1,6 +1,8 @@
 # JJ stuff in the repo
 .jj/
 
+.DS_Store
+
 
 target/
 

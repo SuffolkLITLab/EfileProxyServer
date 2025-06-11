@@ -1,0 +1,92 @@
+package edu.suffolk.litlab.efsp.tyler;
+
+import java.net.URL;
+import java.util.Map;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import tyler.efm.services.EfmFirmService;
+import tyler.efm.services.EfmUserService;
+
+public class TylerClients {
+  private static final Logger log = LoggerFactory.getLogger(TylerClients.class);
+
+  private static final String USER_WSDL = "-EFMUserServiceSingle.svc.wsdl";
+  private static final String FIRM_WSDL = "-EFMFirmServiceSingle.svc.wsdl";
+
+  private static final Map<String, TylerVersion> STAGE_VERSION_MAP =
+      Map.of(
+          "california", TylerVersion.v2024_6,
+          "illinois", TylerVersion.v2024_6,
+          "indiana", TylerVersion.v2024_6,
+          "massachusetts", TylerVersion.v2025_0,
+          "texas", TylerVersion.v2024_6);
+
+  private static final Map<String, TylerVersion> PROD_VERSION_MAP =
+      Map.of(
+          "illinois", TylerVersion.v2024_6,
+          "massachusetts", TylerVersion.v2022_1);
+
+  /**
+   * Gets the EfmUserService from the individual jursdiction and env arguments.
+   *
+   * @param jurisdiction e.g. "illinois".
+   * @param env e.g. "stage", "test", or "prod"
+   */
+  public static Optional<EfmUserService> getEfmUserFactory(String jurisdiction, TylerEnv env) {
+    var url = createLocalWsdlUrl(jurisdiction, env, USER_WSDL);
+    return url.map(u -> new EfmUserService(u));
+  }
+
+  public static Optional<EfmFirmService> getEfmFirmFactory(String jurisdiction, TylerEnv env) {
+    var url = createLocalWsdlUrl(jurisdiction, env, FIRM_WSDL);
+    return url.map(u -> new EfmFirmService(u));
+  }
+
+  /**
+   * Gets Tyler server's root URL for a given jurisdiction / Tyler Env (i.e. california stage).
+   *
+   * @param jurisdiction
+   * @param env
+   * @return
+   */
+  public static String getTylerServerRootUrl(String jurisdiction, TylerEnv envEnum) {
+    String env = envEnum.name().toLowerCase();
+    if (jurisdiction.equalsIgnoreCase("california")) {
+      return "https://california-efm-" + env + ".tylertech.cloud/";
+    }
+    if (envEnum.equals(TylerEnv.PROD)) {
+      return "https://" + jurisdiction + ".tylertech.cloud/";
+    }
+    return "https://" + jurisdiction + "-" + env + ".tylertech.cloud/";
+  }
+
+  private static Optional<URL> createLocalWsdlUrl(
+      String jurisdiction, TylerEnv tylerEnv, String suffix) {
+    if (tylerEnv.equals(TylerEnv.TEST)) {
+      log.warn("TylerEnv.TEST not supported yet (i.e. we don't call their test server)");
+      Optional.empty();
+    }
+
+    Map<String, TylerVersion> versionMap =
+        switch (tylerEnv) {
+          case TylerEnv.TEST -> Map.of();
+          case TylerEnv.STAGE -> STAGE_VERSION_MAP;
+          case TylerEnv.PROD -> PROD_VERSION_MAP;
+        };
+
+    if (!versionMap.containsKey(jurisdiction)) {
+      return Optional.empty();
+    }
+
+    String wsdlPath =
+        "wsdl/" + versionMap.get(jurisdiction).getVersionPath() + "/" + jurisdiction + suffix;
+    URL url = TylerClients.class.getClassLoader().getResource(wsdlPath);
+    if (url == null) {
+      log.warn("Could not find the wsdl at the classpath:{}", wsdlPath);
+      return Optional.empty();
+    }
+
+    return Optional.of(url);
+  }
+}
