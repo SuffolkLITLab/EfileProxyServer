@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efspserver.services;
 
 import static edu.suffolk.litlab.efspserver.StdLib.GetEnv;
 
+import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.AtRest;
@@ -23,8 +24,8 @@ import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import tyler.efm.services.EfmFirmService;
-import tyler.efm.services.IEfmFirmService;
+import tyler.efm.EfmFirmService;
+import tyler.efm.latest.services.IEfmFirmService;
 
 public class ServiceHelpers {
   private static Logger log = LoggerFactory.getLogger(ServiceHelpers.class);
@@ -148,12 +149,13 @@ public class ServiceHelpers {
     }
   }
 
-  public static Optional<IEfmFirmService> setupFirmPort(
+  public static Optional<TylerFirmClient> setupFirmPort(
       EfmFirmService firmFactory, HttpHeaders httpHeaders, DataSource userDs, String jurisdiction) {
     return setupFirmPort(firmFactory, httpHeaders, userDs, true, jurisdiction);
   }
 
-  public static Optional<IEfmFirmService> setupFirmPort(
+  // TODO(bryce): should this take not a firm service but a normal port?
+  public static Optional<TylerFirmClient> setupFirmPort(
       EfmFirmService firmFactory,
       HttpHeaders httpHeaders,
       DataSource userDs,
@@ -174,7 +176,9 @@ public class ServiceHelpers {
       } else {
         IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
         ServiceHelpers.setupServicePort((BindingProvider) port);
-        return Optional.of(port);
+        return Optional.of(
+            new TylerFirmClient(
+                firmFactory, firmFactory.getVersion(), ServiceHelpers::setupServicePort));
       }
     } catch (SQLException ex) {
       log.error(StdLib.strFromException(ex));
@@ -182,7 +186,7 @@ public class ServiceHelpers {
     }
   }
 
-  public static Optional<IEfmFirmService> setupFirmPort(
+  public static Optional<TylerFirmClient> setupFirmPort(
       EfmFirmService firmFactory, String tylerToken) {
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
@@ -190,8 +194,10 @@ public class ServiceHelpers {
       return Optional.empty();
     }
 
-    IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
-    ServiceHelpers.setupServicePort((BindingProvider) port, creds.get());
-    return Optional.of(port);
+    return Optional.of(
+        new TylerFirmClient(
+            firmFactory,
+            firmFactory.getVersion(),
+            (port) -> ServiceHelpers.setupServicePort(port, creds.get())));
   }
 }

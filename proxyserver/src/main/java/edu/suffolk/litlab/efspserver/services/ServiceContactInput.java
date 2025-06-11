@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efspserver.services;
 
-import tyler.efm.services.schema.common.AddressType;
+import tyler.efm.latest.services.schema.common.AddressType;
 
 public class ServiceContactInput {
   public String firstName;
