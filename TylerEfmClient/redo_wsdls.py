@@ -85,8 +85,8 @@ all_schemas = [
   "UserListResponse"
 ]
 
-version_dir = "v2024_6"
-jurisdiction = "illinois"
+version_dir = "v2022_1"
+jurisdiction = "massachusetts"
 
 all_packages = []
 for name in all_schemas:
@@ -99,5 +99,5 @@ downloaded_fs = ['EFMUserServiceSingle.svc.wsdl', 'EFMFirmServiceSingle.svc.wsdl
 
 # Regenerated the Java files 
 for downloaded in downloaded_fs:
-  all_args = stable_args + all_packages + ['-p', f'urn:tyler:efm:services=tyler.efm.{version_dir}.services', f'resources/wsdl/{version_dir}/{jurisdiction}-{downloaded}']
+  all_args = stable_args + all_packages + ['-p', f'urn:tyler:efm:services=tyler.efm.{version_dir}.services', f'resources/wsdl/{version_dir}/prod/{jurisdiction}-{downloaded}']
   wsdl2java.bound_command(all_args) & FG

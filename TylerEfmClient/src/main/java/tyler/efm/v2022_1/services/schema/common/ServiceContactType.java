@@ -8,6 +8,8 @@ import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
+import tyler.efm.latest.services.schema.common.AddressType;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -31,6 +33,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *         &lt;element name="PhoneNumber" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="IsPublic" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
  *         &lt;element name="IsInFirmMasterList" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
+ *         &lt;element name="IsUndeliverable" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="ServiceContactID" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="FirmID" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
@@ -53,7 +56,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "address",
     "phoneNumber",
     "isPublic",
-    "isInFirmMasterList"
+    "isInFirmMasterList",
+    "isUndeliverable"
 })
 public class ServiceContactType {
 
@@ -75,6 +79,8 @@ public class ServiceContactType {
     protected JAXBElement<Boolean> isPublic;
     @XmlElementRef(name = "IsInFirmMasterList", namespace = "urn:tyler:efm:services:schema:Common", type = JAXBElement.class, required = false)
     protected JAXBElement<Boolean> isInFirmMasterList;
+    @XmlElementRef(name = "IsUndeliverable", namespace = "urn:tyler:efm:services:schema:Common", type = JAXBElement.class, required = false)
+    protected JAXBElement<Boolean> isUndeliverable;
     @XmlAttribute(name = "ServiceContactID")
     protected String serviceContactID;
     @XmlAttribute(name = "FirmID")
@@ -298,6 +304,30 @@ public class ServiceContactType {
      */
     public void setIsInFirmMasterList(JAXBElement<Boolean> value) {
         this.isInFirmMasterList = value;
+    }
+
+    /**
+     * Gets the value of the isUndeliverable property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     *     
+     */
+    public JAXBElement<Boolean> getIsUndeliverable() {
+        return isUndeliverable;
+    }
+
+    /**
+     * Sets the value of the isUndeliverable property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     *     
+     */
+    public void setIsUndeliverable(JAXBElement<Boolean> value) {
+        this.isUndeliverable = value;
     }
 
     /**

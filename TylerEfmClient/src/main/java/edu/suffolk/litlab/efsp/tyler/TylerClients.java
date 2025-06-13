@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tyler.efm.services.EfmFirmService;
-import tyler.efm.services.EfmUserService;
+import tyler.efm.EfmFirmService;
+import tyler.efm.EfmUserService;
 
 public class TylerClients {
   private static final Logger log = LoggerFactory.getLogger(TylerClients.class);
@@ -35,19 +35,17 @@ public class TylerClients {
    */
   public static Optional<EfmUserService> getEfmUserFactory(String jurisdiction, TylerEnv env) {
     var version = getVersion(jurisdiction, env);
-    var url = version.flatMap(v -> createLocalWsdlUrl(jurisdiction, v, USER_WSDL));
-    return url.map(u -> new EfmUserService(u));
+    return version.flatMap(v -> {
+      var url = createLocalWsdlUrl(jurisdiction, env, v, USER_WSDL);
+      return url.map(u -> new EfmUserService(u, v));
+    });
   }
 
   public static Optional<EfmFirmService> getEfmFirmFactory(String jurisdiction, TylerEnv env) {
     var version = getVersion(jurisdiction, env);
     return version.flatMap(v -> {
-      var url = createLocalWsdlUrl(jurisdiction, v, FIRM_WSDL);
-      return url.map(u -> switch (v) {
-        case TylerVersion.v2022_1 -> new EfmFirmService(u);
-        case TylerVersion.v2024_6 -> new EfmFirmService(u);
-        case TylerVersion.v2025_0 -> new EfmFirmService(u);
-      });
+      var url = createLocalWsdlUrl(jurisdiction, env, v, FIRM_WSDL);
+      return url.map(u -> new EfmFirmService(u, v));
     });
   }
 
@@ -90,8 +88,8 @@ public class TylerClients {
   }
 
   private static Optional<URL> createLocalWsdlUrl(
-      String jurisdiction, TylerVersion version, String suffix) {
-    String wsdlPath = "wsdl/" + version.getVersionPath() + "/" + jurisdiction + suffix;
+      String jurisdiction, TylerEnv env, TylerVersion version, String suffix) {
+    String wsdlPath = "wsdl/" + version.getVersionPath() + "/" + env.getPath() + "/" + jurisdiction + suffix;
     URL url = TylerClients.class.getClassLoader().getResource(wsdlPath);
     if (url == null) {
       log.warn("Could not find the wsdl at the classpath:{}", wsdlPath);

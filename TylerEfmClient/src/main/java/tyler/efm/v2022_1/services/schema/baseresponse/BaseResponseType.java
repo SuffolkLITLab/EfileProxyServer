@@ -8,30 +8,11 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import tyler.efm.v2022_1.services.schema.attorneylistresponse.AttorneyListResponseType;
-import tyler.efm.v2022_1.services.schema.authenticateresponse.AuthenticateResponseType;
-import tyler.efm.v2022_1.services.schema.changepasswordresponse.ChangePasswordResponseType;
-import tyler.efm.v2022_1.services.schema.common.ErrorType;
-import tyler.efm.v2022_1.services.schema.createattorneyresponse.CreateAttorneyResponseType;
-import tyler.efm.v2022_1.services.schema.createpaymentaccountresponse.CreatePaymentAccountResponseType;
-import tyler.efm.v2022_1.services.schema.createservicecontactresponse.CreateServiceContactResponseType;
-import tyler.efm.v2022_1.services.schema.getattorneyresponse.GetAttorneyResponseType;
-import tyler.efm.v2022_1.services.schema.getfirmresponse.GetFirmResponseType;
-import tyler.efm.v2022_1.services.schema.getpaymentaccountresponse.GetPaymentAccountResponseType;
+
+import tyler.efm.latest.services.schema.common.ErrorType;
 import tyler.efm.v2022_1.services.schema.getservicecontactresponse.GetServiceContactResponseType;
 import tyler.efm.v2022_1.services.schema.getuserresponse.GetUserResponseType;
-import tyler.efm.v2022_1.services.schema.getvitalchekpaymentaccountidresponse.GetVitalChekPaymentAccountIdResponseType;
-import tyler.efm.v2022_1.services.schema.notificationpreferenceslistresponse.NotificationPreferencesListResponseType;
-import tyler.efm.v2022_1.services.schema.passwordquestionresponse.PasswordQuestionResponseType;
-import tyler.efm.v2022_1.services.schema.paymentaccountlistresponse.PaymentAccountListResponseType;
-import tyler.efm.v2022_1.services.schema.paymentaccounttypelistresponse.PaymentAccountTypeListResponseType;
-import tyler.efm.v2022_1.services.schema.registrationresponse.RegistrationResponseType;
-import tyler.efm.v2022_1.services.schema.resetpasswordresponse.ResetPasswordResponseType;
 import tyler.efm.v2022_1.services.schema.servicecontactlistresponse.ServiceContactListResponseType;
-import tyler.efm.v2022_1.services.schema.updateattorneyresponse.UpdateAttorneyResponseType;
-import tyler.efm.v2022_1.services.schema.updatepaymentaccountresponse.UpdatePaymentAccountResponseType;
-import tyler.efm.v2022_1.services.schema.updateservicecontactresponse.UpdateServiceContactResponseType;
-import tyler.efm.v2022_1.services.schema.updateuserresponse.UpdateUserResponseType;
 import tyler.efm.v2022_1.services.schema.userlistresponse.UserListResponseType;
 
 
@@ -59,30 +40,10 @@ import tyler.efm.v2022_1.services.schema.userlistresponse.UserListResponseType;
     "error"
 })
 @XmlSeeAlso({
-    RegistrationResponseType.class,
     UserListResponseType.class,
     GetUserResponseType.class,
-    UpdateUserResponseType.class,
-    GetFirmResponseType.class,
-    AttorneyListResponseType.class,
-    GetAttorneyResponseType.class,
-    UpdateAttorneyResponseType.class,
-    CreateAttorneyResponseType.class,
-    PaymentAccountTypeListResponseType.class,
-    PaymentAccountListResponseType.class,
-    GetPaymentAccountResponseType.class,
-    GetVitalChekPaymentAccountIdResponseType.class,
-    UpdatePaymentAccountResponseType.class,
-    CreatePaymentAccountResponseType.class,
     ServiceContactListResponseType.class,
-    GetServiceContactResponseType.class,
-    UpdateServiceContactResponseType.class,
-    CreateServiceContactResponseType.class,
-    ResetPasswordResponseType.class,
-    NotificationPreferencesListResponseType.class,
-    ChangePasswordResponseType.class,
-    AuthenticateResponseType.class,
-    PasswordQuestionResponseType.class
+    GetServiceContactResponseType.class
 })
 public class BaseResponseType {
 

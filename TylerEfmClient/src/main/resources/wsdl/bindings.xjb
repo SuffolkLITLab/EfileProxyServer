@@ -1,7 +1,0 @@
-<?xml version="1.0" ?>
-<jaxb:bindings version="3.0" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-<jaxb:bindings schemaLocation="v2022-1/Base-EFMFirmServiceSingle.svc.wsdl"> 
-            <jaxb:globalBindings typesafeEnumMaxMembers="1024"/>
-        </jaxb:bindings>
-</jaxb:bindings>

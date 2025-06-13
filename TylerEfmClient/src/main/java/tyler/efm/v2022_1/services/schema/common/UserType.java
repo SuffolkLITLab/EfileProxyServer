@@ -4,12 +4,16 @@ package tyler.efm.v2022_1.services.schema.common;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.datatype.XMLGregorianCalendar;
+import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlSchemaType;
 import jakarta.xml.bind.annotation.XmlType;
+import tyler.efm.latest.services.schema.common.RoleLocationType;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -29,7 +33,10 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *         &lt;element name="MiddleName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="LastName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="LastLoginDate" type="{http://www.w3.org/2001/XMLSchema}dateTime"/&gt;
- *         &lt;element name="Role" type="{urn:tyler:efm:services:schema:Common}RoleType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="Role" type="{urn:tyler:efm:services:schema:Common}RoleLocationType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="RestrictFiling" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="RestrictFilingComment" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="IsUndeliverable" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="UserID" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="FirmID" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
@@ -51,7 +58,10 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "middleName",
     "lastName",
     "lastLoginDate",
-    "role"
+    "role",
+    "restrictFiling",
+    "restrictFilingComment",
+    "isUndeliverable"
 })
 public class UserType {
 
@@ -67,8 +77,13 @@ public class UserType {
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar lastLoginDate;
     @XmlElement(name = "Role")
-    @XmlSchemaType(name = "string")
-    protected List<RoleType> role;
+    protected List<RoleLocationType> role;
+    @XmlElement(name = "RestrictFiling")
+    protected boolean restrictFiling;
+    @XmlElement(name = "RestrictFilingComment")
+    protected String restrictFilingComment;
+    @XmlElementRef(name = "IsUndeliverable", namespace = "urn:tyler:efm:services:schema:Common", type = JAXBElement.class, required = false)
+    protected JAXBElement<Boolean> isUndeliverable;
     @XmlAttribute(name = "UserID")
     protected String userID;
     @XmlAttribute(name = "FirmID")
@@ -220,15 +235,79 @@ public class UserType {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link RoleType }
+     * {@link RoleLocationType }
      * 
      * 
      */
-    public List<RoleType> getRole() {
+    public List<RoleLocationType> getRole() {
         if (role == null) {
-            role = new ArrayList<RoleType>();
+            role = new ArrayList<RoleLocationType>();
         }
         return this.role;
+    }
+
+    /**
+     * Gets the value of the restrictFiling property.
+     * 
+     */
+    public boolean isRestrictFiling() {
+        return restrictFiling;
+    }
+
+    /**
+     * Sets the value of the restrictFiling property.
+     * 
+     */
+    public void setRestrictFiling(boolean value) {
+        this.restrictFiling = value;
+    }
+
+    /**
+     * Gets the value of the restrictFilingComment property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getRestrictFilingComment() {
+        return restrictFilingComment;
+    }
+
+    /**
+     * Sets the value of the restrictFilingComment property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setRestrictFilingComment(String value) {
+        this.restrictFilingComment = value;
+    }
+
+    /**
+     * Gets the value of the isUndeliverable property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     *     
+     */
+    public JAXBElement<Boolean> getIsUndeliverable() {
+        return isUndeliverable;
+    }
+
+    /**
+     * Sets the value of the isUndeliverable property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     *     
+     */
+    public void setIsUndeliverable(JAXBElement<Boolean> value) {
+        this.isUndeliverable = value;
     }
 
     /**

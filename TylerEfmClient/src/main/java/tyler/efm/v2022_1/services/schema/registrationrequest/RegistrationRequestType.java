@@ -38,6 +38,7 @@ import tyler.efm.v2022_1.services.schema.common.RegistrationType;
  *         &lt;element name="CountryCode" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="FirmName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="PhoneNumber" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="FirmID" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -63,7 +64,8 @@ import tyler.efm.v2022_1.services.schema.common.RegistrationType;
     "zipCode",
     "countryCode",
     "firmName",
-    "phoneNumber"
+    "phoneNumber",
+    "firmID"
 })
 public class RegistrationRequestType
     extends BaseRequestType
@@ -102,6 +104,8 @@ public class RegistrationRequestType
     protected String firmName;
     @XmlElement(name = "PhoneNumber")
     protected String phoneNumber;
+    @XmlElement(name = "FirmID")
+    protected String firmID;
 
     /**
      * Gets the value of the registrationType property.
@@ -485,6 +489,30 @@ public class RegistrationRequestType
      */
     public void setPhoneNumber(String value) {
         this.phoneNumber = value;
+    }
+
+    /**
+     * Gets the value of the firmID property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getFirmID() {
+        return firmID;
+    }
+
+    /**
+     * Sets the value of the firmID property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setFirmID(String value) {
+        this.firmID = value;
     }
 
     /**
