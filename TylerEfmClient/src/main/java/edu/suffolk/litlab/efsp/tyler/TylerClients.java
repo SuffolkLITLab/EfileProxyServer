@@ -34,13 +34,21 @@ public class TylerClients {
    * @param env e.g. "stage", "test", or "prod"
    */
   public static Optional<EfmUserService> getEfmUserFactory(String jurisdiction, TylerEnv env) {
-    var url = createLocalWsdlUrl(jurisdiction, env, USER_WSDL);
+    var version = getVersion(jurisdiction, env);
+    var url = version.flatMap(v -> createLocalWsdlUrl(jurisdiction, v, USER_WSDL));
     return url.map(u -> new EfmUserService(u));
   }
 
   public static Optional<EfmFirmService> getEfmFirmFactory(String jurisdiction, TylerEnv env) {
-    var url = createLocalWsdlUrl(jurisdiction, env, FIRM_WSDL);
-    return url.map(u -> new EfmFirmService(u));
+    var version = getVersion(jurisdiction, env);
+    return version.flatMap(v -> {
+      var url = createLocalWsdlUrl(jurisdiction, v, FIRM_WSDL);
+      return url.map(u -> switch (v) {
+        case TylerVersion.v2022_1 -> new EfmFirmService(u);
+        case TylerVersion.v2024_6 -> new EfmFirmService(u);
+        case TylerVersion.v2025_0 -> new EfmFirmService(u);
+      });
+    });
   }
 
   /**
@@ -61,8 +69,7 @@ public class TylerClients {
     return "https://" + jurisdiction + "-" + env + ".tylertech.cloud/";
   }
 
-  private static Optional<URL> createLocalWsdlUrl(
-      String jurisdiction, TylerEnv tylerEnv, String suffix) {
+  private static Optional<TylerVersion> getVersion(String jurisdiction, TylerEnv tylerEnv) {
     if (tylerEnv.equals(TylerEnv.TEST)) {
       log.warn("TylerEnv.TEST not supported yet (i.e. we don't call their test server)");
       Optional.empty();
@@ -79,8 +86,12 @@ public class TylerClients {
       return Optional.empty();
     }
 
-    String wsdlPath =
-        "wsdl/" + versionMap.get(jurisdiction).getVersionPath() + "/" + jurisdiction + suffix;
+    return Optional.of(versionMap.get(jurisdiction));
+  }
+
+  private static Optional<URL> createLocalWsdlUrl(
+      String jurisdiction, TylerVersion version, String suffix) {
+    String wsdlPath = "wsdl/" + version.getVersionPath() + "/" + jurisdiction + suffix;
     URL url = TylerClients.class.getClassLoader().getResource(wsdlPath);
     if (url == null) {
       log.warn("Could not find the wsdl at the classpath:{}", wsdlPath);
