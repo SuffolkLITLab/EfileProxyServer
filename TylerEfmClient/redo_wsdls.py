@@ -85,7 +85,7 @@ all_schemas = [
   "UserListResponse"
 ]
 
-version_dir = "v2022_1"
+version_dir = "v2024_6"
 jurisdiction = "illinois"
 
 all_packages = []
