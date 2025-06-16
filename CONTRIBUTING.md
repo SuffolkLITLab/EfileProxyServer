@@ -10,7 +10,7 @@ Download [version 1.27.0 of the native graal executable of google-java-format](h
 
 ```bash
 chmod +x google-java-format_linux-x86-64 # just once, use the name of your platform
-./google-java-format_linux-x86-64 -i `find proxyserver/src/main/java/edu/suffolk -name *.java ! -name CodeTableConstants.java ! -name FilingCode.java`
+./google-java-format_linux-x86-64 -i `find proxyserver/src/ -name *.java ! -name CodeTableConstants.java ! -name FilingCode.java`
 ```
 
 To format all of your files.

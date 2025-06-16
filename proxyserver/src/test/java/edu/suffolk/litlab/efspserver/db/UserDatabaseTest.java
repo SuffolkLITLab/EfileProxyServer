@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -19,25 +18,29 @@ import org.testcontainers.utility.DockerImageName;
 
 @Tag("Docker")
 public class UserDatabaseTest {
-  
+
   private UserDatabase ud;
-  
+
   @Container
   public PostgreSQLContainer<?> postgres =
-        new PostgreSQLContainer<>(DockerImageName.parse(DatabaseVersionTest.POSTGRES_DOCKER_NAME));
-  
-  /** Start's the Container and creates the UserDatabase. 
-   * More info on the TestContainer Library at: https://www.testcontainers.org/,
-   * it's pretty nice.
+      new PostgreSQLContainer<>(DockerImageName.parse(DatabaseVersionTest.POSTGRES_DOCKER_NAME));
+
+  /**
+   * Start's the Container and creates the UserDatabase. More info on the TestContainer Library at:
+   * https://www.testcontainers.org/, it's pretty nice.
    */
-  @BeforeEach 
+  @BeforeEach
   public void setUp() throws SQLException {
     postgres.start();
-    Connection conn = DatabaseCreator.makeSingleConnection(
-        postgres.getDatabaseName(), postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+    Connection conn =
+        DatabaseCreator.makeSingleConnection(
+            postgres.getDatabaseName(),
+            postgres.getJdbcUrl(),
+            postgres.getUsername(),
+            postgres.getPassword());
     ud = new UserDatabase(conn);
   }
-  
+
   @AfterEach
   public void tearDown() throws SQLException {
     ud.close();
@@ -53,11 +56,26 @@ public class UserDatabaseTest {
     String courtId = "jefferson";
     String apiKey = "abcdef12345";
     ud.createTablesIfAbsent();
-    ud.addToTable(name, userId, 
-        Optional.empty(), email, transactionId, serverId, apiKey,
-        "Motion to File", courtId, new Timestamp(System.currentTimeMillis()),
-        "", "", "", "", "", "", "my title", "2021ENVL");
-    
+    ud.addToTable(
+        name,
+        userId,
+        Optional.empty(),
+        email,
+        transactionId,
+        serverId,
+        apiKey,
+        "Motion to File",
+        courtId,
+        new Timestamp(System.currentTimeMillis()),
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "my title",
+        "2021ENVL");
+
     Optional<Transaction> transaction = ud.findTransaction(transactionId);
     assertTrue(transaction.isPresent());
     assertEquals(transaction.get().email, email);
@@ -66,10 +84,9 @@ public class UserDatabaseTest {
     assertEquals(transaction.get().serverId, serverId);
     assertEquals(transaction.get().courtId, courtId);
     assertEquals(transaction.get().caseTitle, "my title");
-    
+
     ud.removeFromTable(transactionId);
     transaction = ud.findTransaction(transactionId);
     assertTrue(transaction.isEmpty());
   }
-
 }
