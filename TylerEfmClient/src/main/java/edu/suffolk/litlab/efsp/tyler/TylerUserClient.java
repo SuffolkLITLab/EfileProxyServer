@@ -1,6 +1,5 @@
 package edu.suffolk.litlab.efsp.tyler;
 
-import tyler.efm.Conversion;
 import tyler.efm.IEfmUserService;
 import tyler.efm.latest.services.schema.authenticaterequest.AuthenticateRequestType;
 import tyler.efm.latest.services.schema.authenticateresponse.AuthenticateResponseType;
@@ -21,58 +20,64 @@ import tyler.efm.latest.services.schema.updateuserresponse.UpdateUserResponseTyp
 
 public class TylerUserClient {
 
-    private IEfmUserService userPort;
-    private TylerVersion version;
+  private IEfmUserService userPort;
+  private TylerVersion version;
 
-    public TylerUserClient(IEfmUserService port, TylerVersion version) {
-        this.userPort = port;
-        this.version = version;
-    }
+  public TylerUserClient(IEfmUserService port, TylerVersion version) {
+    this.userPort = port;
+    this.version = version;
+  }
 
-    public AuthenticateResponseType authenticateUser(AuthenticateRequestType authenticateRequest) {
-        return userPort.authenticateUser(authenticateRequest);
-    }
+  public AuthenticateResponseType authenticateUser(AuthenticateRequestType authenticateRequest) {
+    return userPort.authenticateUser(authenticateRequest);
+  }
 
-    public UpdateUserResponseType updateUser(UpdateUserRequestType updateUserRequest) {
-        if (version.equals(TylerVersion.v2022_1)) {
-            var user = Conversion.downgrade(updateUserRequest.getUser());
-            var verUpdateUserRequest = new tyler.efm.v2022_1.services.schema.updateuserrequest.UpdateUserRequestType();
-            verUpdateUserRequest.setUser(user);
-            return userPort.updateUser(verUpdateUserRequest);
-        } else {
-            return userPort.updateUser(updateUserRequest);
-        }
+  public UpdateUserResponseType updateUser(UpdateUserRequestType updateUserRequest) {
+    if (version.equals(TylerVersion.v2022_1)) {
+      var user = Conversion.downgrade(updateUserRequest.getUser());
+      var verUpdateUserRequest =
+          new tyler.efm.v2022_1.services.schema.updateuserrequest.UpdateUserRequestType();
+      verUpdateUserRequest.setUser(user);
+      return userPort.updateUser(verUpdateUserRequest);
+    } else {
+      return userPort.updateUser(updateUserRequest);
     }
+  }
 
-    public UpdateUserResponseType updateUser(tyler.efm.v2022_1.services.schema.updateuserrequest.UpdateUserRequestType updateUserRequest) {
-        return userPort.updateUser(updateUserRequest);
-    }
+  public UpdateUserResponseType updateUser(
+      tyler.efm.v2022_1.services.schema.updateuserrequest.UpdateUserRequestType updateUserRequest) {
+    return userPort.updateUser(updateUserRequest);
+  }
 
-    public NotificationPreferencesResponseType getNotificationPreferences() {
-        return userPort.getNotificationPreferences();
-    }
+  public NotificationPreferencesResponseType getNotificationPreferences() {
+    return userPort.getNotificationPreferences();
+  }
 
-    public GetUserResponseType getUser(GetUserRequestType getUserRequest) {
-        return userPort.getUser(getUserRequest);
-    }
+  public GetUserResponseType getUser(GetUserRequestType getUserRequest) {
+    return userPort.getUser(getUserRequest);
+  }
 
-    public BaseResponseType selfResendActivationEmail(SelfResendActivationEmailRequestType selfResendActivationEmailRequest) {
-        return userPort.selfResendActivationEmail(selfResendActivationEmailRequest);
-    }
+  public BaseResponseType selfResendActivationEmail(
+      SelfResendActivationEmailRequestType selfResendActivationEmailRequest) {
+    return userPort.selfResendActivationEmail(selfResendActivationEmailRequest);
+  }
 
-    public ResetPasswordResponseType resetPassword(ResetPasswordRequestType resetPasswordRequest) {
-        return userPort.resetPassword(resetPasswordRequest);
-    }
+  public ResetPasswordResponseType resetPassword(ResetPasswordRequestType resetPasswordRequest) {
+    return userPort.resetPassword(resetPasswordRequest);
+  }
 
-    public PasswordQuestionResponseType getPasswordQuestion(GetPasswordQuestionRequestType getPasswordQuestionRequest) {
-        return userPort.getPasswordQuestion(getPasswordQuestionRequest);
-    }
+  public PasswordQuestionResponseType getPasswordQuestion(
+      GetPasswordQuestionRequestType getPasswordQuestionRequest) {
+    return userPort.getPasswordQuestion(getPasswordQuestionRequest);
+  }
 
-    public ChangePasswordResponseType changePassword(ChangePasswordRequestType changePasswordRequest) {
-        return userPort.changePassword(changePasswordRequest);
-    }
+  public ChangePasswordResponseType changePassword(
+      ChangePasswordRequestType changePasswordRequest) {
+    return userPort.changePassword(changePasswordRequest);
+  }
 
-    public BaseResponseType updateNotificationPreferences(UpdateNotificationPreferencesRequestType updateNotificationPreferencesRequest) {
-        return userPort.updateNotificationPreferences(updateNotificationPreferencesRequest);
-    }
+  public BaseResponseType updateNotificationPreferences(
+      UpdateNotificationPreferencesRequestType updateNotificationPreferencesRequest) {
+    return userPort.updateNotificationPreferences(updateNotificationPreferencesRequest);
+  }
 }

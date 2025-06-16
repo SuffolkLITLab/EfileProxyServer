@@ -78,6 +78,9 @@ docassemble-os/
 
 # Test related
 !proxyserver/src/test/resources/tyler_efm_codes*.tar.gz
+# But not elsewhere
+proxyserver/tyler_efm_codes_v0_1_truncated.tar
+proxyserver/tyler_efm_codes_v0_1_truncated.sql
 
 # formatting
 google-java-format_*

@@ -7,6 +7,7 @@ import static edu.suffolk.litlab.efspserver.services.ServiceHelpers.setupFirmPor
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efspserver.CaseServiceContact;
 import edu.suffolk.litlab.efspserver.FilingDoc;
 import edu.suffolk.litlab.efspserver.FilingInformation;
@@ -87,8 +88,7 @@ import tyler.ecf.extensions.filingservicequerymessage.ServiceContactIdentificati
 import tyler.ecf.extensions.filingserviceresponsemessage.FilingServiceResponseMessageType;
 import tyler.ecf.extensions.servicetypesrequestmessage.ServiceTypesRequestMessageType;
 import tyler.ecf.extensions.servicetypesresponsemessage.ServiceTypesResponseMessageType;
-import tyler.efm.services.EfmFirmService;
-import tyler.efm.services.IEfmFirmService;
+import tyler.efm.EfmFirmService;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
@@ -361,9 +361,9 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       long maxSize = Ecf4Helper.sizeMeasureAsBytes(maxIndivDocSize);
       long cumulativeBytes = 0;
 
-      Optional<IEfmFirmService> firmPort = setupFirmPort(firmFactory, apiToken);
+      Optional<TylerFirmClient> firmClient = setupFirmPort(firmFactory, apiToken);
       boolean isIndividual =
-          firmPort.map(port -> port.getFirm().getFirm().isIsIndividual()).orElse(true);
+          firmClient.map(port -> port.getFirm().getFirm().isIsIndividual()).orElse(true);
       Map<String, Object> filingIdToObj = new HashMap<>();
       int seqNum = 0;
       for (FilingDoc filingDoc : info.getFilings()) {

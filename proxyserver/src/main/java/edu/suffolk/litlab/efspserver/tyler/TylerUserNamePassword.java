@@ -8,7 +8,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import org.apache.cxf.headers.Header;
 import org.apache.cxf.jaxb.JAXBDataBinding;
-import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
+import tyler.efm.latest.services.schema.authenticateresponse.AuthenticateResponseType;
 
 @XmlRootElement(name = "UserNameHeader")
 public class TylerUserNamePassword {

@@ -35,18 +35,20 @@ public class TylerClients {
    */
   public static Optional<EfmUserService> getEfmUserFactory(String jurisdiction, TylerEnv env) {
     var version = getVersion(jurisdiction, env);
-    return version.flatMap(v -> {
-      var url = createLocalWsdlUrl(jurisdiction, env, v, USER_WSDL);
-      return url.map(u -> new EfmUserService(u, v));
-    });
+    return version.flatMap(
+        v -> {
+          var url = createLocalWsdlUrl(jurisdiction, env, v, USER_WSDL);
+          return url.map(u -> new EfmUserService(u, v));
+        });
   }
 
   public static Optional<EfmFirmService> getEfmFirmFactory(String jurisdiction, TylerEnv env) {
     var version = getVersion(jurisdiction, env);
-    return version.flatMap(v -> {
-      var url = createLocalWsdlUrl(jurisdiction, env, v, FIRM_WSDL);
-      return url.map(u -> new EfmFirmService(u, v));
-    });
+    return version.flatMap(
+        v -> {
+          var url = createLocalWsdlUrl(jurisdiction, env, v, FIRM_WSDL);
+          return url.map(u -> new EfmFirmService(u, v));
+        });
   }
 
   /**
@@ -89,7 +91,8 @@ public class TylerClients {
 
   private static Optional<URL> createLocalWsdlUrl(
       String jurisdiction, TylerEnv env, TylerVersion version, String suffix) {
-    String wsdlPath = "wsdl/" + version.getVersionPath() + "/" + env.getPath() + "/" + jurisdiction + suffix;
+    String wsdlPath =
+        "wsdl/" + version.getVersionPath() + "/" + env.getPath() + "/" + jurisdiction + suffix;
     URL url = TylerClients.class.getClassLoader().getResource(wsdlPath);
     if (url == null) {
       log.warn("Could not find the wsdl at the classpath:{}", wsdlPath);

@@ -7,6 +7,8 @@ import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
+import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.AtRest;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
@@ -16,12 +18,14 @@ import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.CourtLocationInfo;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
@@ -39,35 +43,36 @@ import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import tyler.efm.services.EfmFirmService;
-import tyler.efm.services.EfmUserService;
-import tyler.efm.services.IEfmFirmService;
-import tyler.efm.services.IEfmUserService;
-import tyler.efm.services.schema.adduserrolerequest.AddUserRoleRequestType;
-import tyler.efm.services.schema.baseresponse.BaseResponseType;
-import tyler.efm.services.schema.changepasswordrequest.ChangePasswordRequestType;
-import tyler.efm.services.schema.changepasswordresponse.ChangePasswordResponseType;
-import tyler.efm.services.schema.common.NotificationType;
-import tyler.efm.services.schema.common.RegistrationType;
-import tyler.efm.services.schema.common.RoleLocationType;
-import tyler.efm.services.schema.common.UserType;
-import tyler.efm.services.schema.getuserrequest.GetUserRequestType;
-import tyler.efm.services.schema.getuserresponse.GetUserResponseType;
-import tyler.efm.services.schema.notificationpreferenceslistresponse.NotificationPreferencesListResponseType;
-import tyler.efm.services.schema.notificationpreferencesresponse.NotificationPreferencesResponseType;
-import tyler.efm.services.schema.registrationrequest.RegistrationRequestType;
-import tyler.efm.services.schema.registrationresponse.RegistrationResponseType;
-import tyler.efm.services.schema.removeuserrequest.RemoveUserRequestType;
-import tyler.efm.services.schema.removeuserrolerequest.RemoveUserRoleRequestType;
-import tyler.efm.services.schema.resendactivationemailrequest.ResendActivationEmailRequestType;
-import tyler.efm.services.schema.resetpasswordrequest.ResetPasswordRequestType;
-import tyler.efm.services.schema.resetpasswordresponse.ResetPasswordResponseType;
-import tyler.efm.services.schema.resetuserpasswordrequest.ResetUserPasswordRequestType;
-import tyler.efm.services.schema.selfresendactivationemailrequest.SelfResendActivationEmailRequestType;
-import tyler.efm.services.schema.updatenotificationpreferencesrequest.UpdateNotificationPreferencesRequestType;
-import tyler.efm.services.schema.updateuserrequest.UpdateUserRequestType;
-import tyler.efm.services.schema.updateuserresponse.UpdateUserResponseType;
-import tyler.efm.services.schema.userlistresponse.UserListResponseType;
+import tyler.efm.EfmFirmService;
+import tyler.efm.EfmUserService;
+import tyler.efm.IEfmUserService;
+import tyler.efm.latest.services.schema.adduserrolerequest.AddUserRoleRequestType;
+import tyler.efm.latest.services.schema.baseresponse.BaseResponseType;
+import tyler.efm.latest.services.schema.changepasswordrequest.ChangePasswordRequestType;
+import tyler.efm.latest.services.schema.changepasswordresponse.ChangePasswordResponseType;
+import tyler.efm.latest.services.schema.common.NotificationType;
+import tyler.efm.latest.services.schema.common.PagingType;
+import tyler.efm.latest.services.schema.common.RegistrationType;
+import tyler.efm.latest.services.schema.common.RoleLocationType;
+import tyler.efm.latest.services.schema.common.UserType;
+import tyler.efm.latest.services.schema.getuserlistrequest.GetUserListRequest;
+import tyler.efm.latest.services.schema.getuserrequest.GetUserRequestType;
+import tyler.efm.latest.services.schema.getuserresponse.GetUserResponseType;
+import tyler.efm.latest.services.schema.notificationpreferenceslistresponse.NotificationPreferencesListResponseType;
+import tyler.efm.latest.services.schema.notificationpreferencesresponse.NotificationPreferencesResponseType;
+import tyler.efm.latest.services.schema.registrationrequest.RegistrationRequestType;
+import tyler.efm.latest.services.schema.registrationresponse.RegistrationResponseType;
+import tyler.efm.latest.services.schema.removeuserrequest.RemoveUserRequestType;
+import tyler.efm.latest.services.schema.removeuserrolerequest.RemoveUserRoleRequestType;
+import tyler.efm.latest.services.schema.resendactivationemailrequest.ResendActivationEmailRequestType;
+import tyler.efm.latest.services.schema.resetpasswordrequest.ResetPasswordRequestType;
+import tyler.efm.latest.services.schema.resetpasswordresponse.ResetPasswordResponseType;
+import tyler.efm.latest.services.schema.resetuserpasswordrequest.ResetUserPasswordRequestType;
+import tyler.efm.latest.services.schema.selfresendactivationemailrequest.SelfResendActivationEmailRequestType;
+import tyler.efm.latest.services.schema.updatenotificationpreferencesrequest.UpdateNotificationPreferencesRequestType;
+import tyler.efm.latest.services.schema.updateuserrequest.UpdateUserRequestType;
+import tyler.efm.latest.services.schema.updateuserresponse.UpdateUserResponseType;
+import tyler.efm.latest.services.schema.userlistresponse.UserListResponseType;
 
 /**
  * Covers all of the FirmUserManagement and UserService operations. * User Service *
@@ -132,7 +137,7 @@ public class AdminUserService {
   public Response getSelfUser(@Context HttpHeaders httpHeaders) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.getSelfUser");
-      Optional<IEfmUserService> port = setupUserPort(httpHeaders);
+      Optional<TylerUserClient> port = setupUserPort(httpHeaders);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -159,7 +164,7 @@ public class AdminUserService {
   public Response getNotificationPrefs(@Context HttpHeaders httpHeaders) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.getNotificationPrefs");
-      Optional<IEfmUserService> port = setupUserPort(httpHeaders);
+      Optional<TylerUserClient> port = setupUserPort(httpHeaders);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -179,7 +184,7 @@ public class AdminUserService {
       @Context HttpHeaders httpHeaders, List<NotificationType> notifications) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateNotificationPrefs");
-      Optional<IEfmUserService> port = setupUserPort(httpHeaders);
+      Optional<TylerUserClient> port = setupUserPort(httpHeaders);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -203,7 +208,7 @@ public class AdminUserService {
       @Context HttpHeaders httpHeaders, String emailToSendTo) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.selfResendActivationEmail");
-      Optional<IEfmUserService> port = setupUserPort(httpHeaders, false);
+      Optional<TylerUserClient> port = setupUserPort(httpHeaders, false);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -223,7 +228,7 @@ public class AdminUserService {
       @Context HttpHeaders httpHeaders, @PathParam("id") String id) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.resendActivationEmail");
-      Optional<IEfmFirmService> port =
+      Optional<TylerFirmClient> port =
           setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
@@ -249,7 +254,7 @@ public class AdminUserService {
       @Context HttpHeaders httpHeaders, @PathParam("id") String id, ResetPasswordParams params) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.resetPassword");
-      Optional<IEfmFirmService> port =
+      Optional<TylerFirmClient> port =
           setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
@@ -287,7 +292,7 @@ public class AdminUserService {
   public Response setPassword(@Context HttpHeaders httpHeaders, SetPasswordParams params) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.setPassword");
-      Optional<IEfmUserService> port = setupUserPort(httpHeaders);
+      Optional<TylerUserClient> port = setupUserPort(httpHeaders);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -318,7 +323,7 @@ public class AdminUserService {
   public Response selfResetPassword(@Context HttpHeaders httpHeaders, String emailToSend) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.selfResetPassword");
-      Optional<IEfmUserService> port = setupUserPort(httpHeaders, false);
+      Optional<TylerUserClient> port = setupUserPort(httpHeaders, false);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -356,13 +361,13 @@ public class AdminUserService {
 
       Function<GetUserRequestType, GetUserResponseType> userGetter = null;
       if (tylerId != null && !tylerId.isBlank() && tylerId.equals(id)) {
-        Optional<IEfmUserService> userPort = setupUserPort(httpHeaders);
+        Optional<TylerUserClient> userPort = setupUserPort(httpHeaders);
         if (userPort.isEmpty()) {
           return Response.status(401).build();
         }
         userGetter = (req) -> userPort.get().getUser(getUserReq);
       } else {
-        Optional<IEfmFirmService> port =
+        Optional<TylerFirmClient> port =
             setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
         if (port.isEmpty()) {
           return Response.status(401).build();
@@ -379,16 +384,25 @@ public class AdminUserService {
 
   @GET
   @Path("/users")
-  public Response getUserList(@Context HttpHeaders httpHeaders) {
+  public Response getUserList(
+      @Context HttpHeaders httpHeaders,
+      @QueryParam("page_index") @DefaultValue("0") int pageIndex,
+      @QueryParam("page_size") @DefaultValue("10") int pageSize) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.getUserList");
-      Optional<IEfmFirmService> port =
+      Optional<TylerFirmClient> port =
           setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
 
-      UserListResponseType resp = port.get().getUserList();
+      var paging = new PagingType();
+      paging.setPageIndex(pageIndex);
+      paging.setPageSize(pageSize);
+
+      var req = new GetUserListRequest();
+      req.setPaging(paging);
+      UserListResponseType resp = port.get().getUserList(req);
       return TylerErrorCodes.mapTylerCodesToHttp(
           resp.getError(), () -> Response.ok(resp.getUser()).build());
     } finally {
@@ -401,7 +415,7 @@ public class AdminUserService {
   public Response updateUser(@Context HttpHeaders httpHeaders, UserType updatedUser) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateUser");
-      Optional<IEfmUserService> port = setupUserPort(httpHeaders, true);
+      Optional<TylerUserClient> port = setupUserPort(httpHeaders, true);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -438,7 +452,7 @@ public class AdminUserService {
       @Context HttpHeaders httpHeaders, @PathParam("id") String id, UserType updatedUser) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateUserById");
-      Optional<IEfmFirmService> port =
+      Optional<TylerFirmClient> port =
           setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
@@ -492,7 +506,7 @@ public class AdminUserService {
   public Response getRoles(@Context HttpHeaders httpHeaders, @PathParam("id") String id) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.getRoles");
-      Optional<IEfmFirmService> port =
+      Optional<TylerFirmClient> port =
           setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
@@ -521,7 +535,7 @@ public class AdminUserService {
       @Context HttpHeaders httpHeaders, @PathParam("id") String id, List<RoleLocationType> toAdd) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.addRoles");
-      Optional<IEfmFirmService> port =
+      Optional<TylerFirmClient> port =
           setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
@@ -558,7 +572,7 @@ public class AdminUserService {
       @Context HttpHeaders httpHeaders, @PathParam("id") String id, List<RoleLocationType> toRm) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.removeRoles");
-      Optional<IEfmFirmService> port =
+      Optional<TylerFirmClient> port =
           setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
@@ -603,7 +617,7 @@ public class AdminUserService {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.registerUser");
       final var regType = req.getRegistrationType();
       boolean needsAuth = regType.equals(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
-      Optional<IEfmFirmService> port =
+      Optional<TylerFirmClient> port =
           setupFirmPort(firmFactory, httpHeaders, userDs, needsAuth, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
@@ -686,7 +700,7 @@ public class AdminUserService {
   public Response removeUser(@Context HttpHeaders httpHeaders, @PathParam("id") String id) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.removeUser");
-      Optional<IEfmFirmService> port =
+      Optional<TylerFirmClient> port =
           setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
@@ -706,7 +720,7 @@ public class AdminUserService {
   public Response getNotificationPreferenceList(@Context HttpHeaders httpHeaders) {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.getNotificationPreferenceList");
-      Optional<IEfmFirmService> port =
+      Optional<TylerFirmClient> port =
           setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(407).build();
@@ -721,7 +735,7 @@ public class AdminUserService {
   }
 
   /** Default needsSoapHeader to True: most ops need Tyler Authentication in the SOAP header. */
-  private Optional<IEfmUserService> setupUserPort(HttpHeaders httpHeaders) {
+  private Optional<TylerUserClient> setupUserPort(HttpHeaders httpHeaders) {
     return setupUserPort(httpHeaders, true);
   }
 
@@ -732,7 +746,7 @@ public class AdminUserService {
    * @param needsSoapHeader True if the operation needs Authenticated Tyler creds to work
    * @return false if setup didn't work, and subsequent service calls will likely fail
    */
-  private Optional<IEfmUserService> setupUserPort(
+  private Optional<TylerUserClient> setupUserPort(
       HttpHeaders httpHeaders, boolean needsSoapHeader) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
     try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
@@ -754,7 +768,7 @@ public class AdminUserService {
         List<Header> headersList = List.of(creds.get().toHeader());
         ctx.put(Header.HEADER_LIST, headersList);
       }
-      return Optional.of(port);
+      return Optional.of(new TylerUserClient(port, userFactory.getVersion()));
     } catch (SQLException ex) {
       log.error(StdLib.strFromException(ex));
       return Optional.empty();

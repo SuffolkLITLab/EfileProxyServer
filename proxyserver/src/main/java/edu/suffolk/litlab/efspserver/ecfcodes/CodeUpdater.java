@@ -47,10 +47,10 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tyler.efm.services.EfmUserService;
-import tyler.efm.services.IEfmUserService;
-import tyler.efm.services.schema.authenticaterequest.AuthenticateRequestType;
-import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
+import tyler.efm.EfmUserService;
+import tyler.efm.IEfmUserService;
+import tyler.efm.latest.services.schema.authenticaterequest.AuthenticateRequestType;
+import tyler.efm.latest.services.schema.authenticateresponse.AuthenticateResponseType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 
 /**
