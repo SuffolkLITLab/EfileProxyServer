@@ -5,7 +5,6 @@ import static edu.suffolk.litlab.efspserver.StdLib.GetEnv;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import edu.suffolk.litlab.efspserver.HttpsCallbackHandler;
 import edu.suffolk.litlab.efspserver.SendMessage;
-import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
 import edu.suffolk.litlab.efspserver.db.DatabaseVersion;
 import edu.suffolk.litlab.efspserver.db.LoginDatabase;
@@ -15,6 +14,7 @@ import edu.suffolk.litlab.efspserver.docassemble.DocassembleToFilingInformationC
 import edu.suffolk.litlab.efspserver.ecf4.TylerModuleSetup;
 import edu.suffolk.litlab.efspserver.jeffnet.JeffNetModuleSetup;
 import edu.suffolk.litlab.efspserver.services.acme.AcmeChallengeService;
+import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import jakarta.ws.rs.core.MediaType;
 import java.io.File;
 import java.security.NoSuchAlgorithmException;
@@ -80,20 +80,6 @@ public class EfspServer {
       Map<String, InterviewToFilingInformationConverter> converterMap,
       @Nullable AcmeChallengeService challengeService)
       throws SQLException, NoSuchAlgorithmException {
-    try (Connection conn = userDs.getConnection()) {
-      @SuppressWarnings("resource")
-      UserDatabase ud = new UserDatabase(conn);
-      ud.createTablesIfAbsent();
-      @SuppressWarnings("resource")
-      LoginDatabase ld = new LoginDatabase(conn);
-      ld.createTablesIfAbsent();
-      @SuppressWarnings("resource")
-      MessageSettingsDatabase md = new MessageSettingsDatabase(conn);
-      md.createTablesIfAbsent();
-    } catch (SQLException ex) {
-      log.error("SQLException: " + StdLib.strFromException(ex));
-      System.exit(2);
-    }
 
     var jurisdictionMap = new HashMap<String, JurisdictionServiceHandle>();
     var callbackMap = new HashMap<String, Optional<EfmRestCallbackInterface>>();
@@ -161,6 +147,53 @@ public class EfspServer {
     }
   }
 
+  /**
+   * Does the initial setup for databases if they don't exist or aren't up to date.
+   *
+   * @throws InterruptedException
+   */
+  private static void setupDatabases(DataSource codeDs, DataSource userDs)
+      throws NoSuchAlgorithmException, InterruptedException {
+
+    // Update / make the latest definition of the databases if necessary
+    try (Connection codeConn = codeDs.getConnection();
+        Connection userConn = userDs.getConnection()) {
+      DatabaseVersion dv = new DatabaseVersion(codeConn, userConn);
+      @SuppressWarnings("resource")
+      LoginDatabase ld = new LoginDatabase(userConn);
+      @SuppressWarnings("resource")
+      // Jurisdiction and env args can be null, we're just making the tables
+      CodeDatabase cd = new CodeDatabase(null, null, codeConn);
+      boolean brandNew = !ld.tablesExist() || !cd.tablesExist();
+
+      // Now we can tell if everything is being set up fresh. If so, we'll make everything now.
+      // If not, should assume that we're an older version, and all of the necessary tables will
+      // be made by the Database Version.
+      if (brandNew) {
+        log.info("Recognized that this might be a new DB instance: creating all tables.");
+        @SuppressWarnings("resource")
+        UserDatabase ud = new UserDatabase(userConn);
+        ud.createTablesIfAbsent();
+        ld.createTablesIfAbsent();
+        @SuppressWarnings("resource")
+        MessageSettingsDatabase md = new MessageSettingsDatabase(userConn);
+        md.createTablesIfAbsent();
+        cd.createTablesIfAbsent();
+      }
+
+      dv.createTablesIfAbsent(brandNew);
+      if (!dv.updateToLatest()) {
+        log.error("Couldn't update the database schemas: exiting now");
+        System.exit(3);
+      }
+      userConn.setAutoCommit(true);
+      codeConn.setAutoCommit(true);
+    } catch (SQLException ex) {
+      log.error("SQLException when setting up / creating tables", ex);
+      System.exit(2);
+    }
+  }
+
   public static void main(String[] args) throws Exception {
     String dbUrl = GetEnv("POSTGRES_URL").orElse("localhost");
     String dbPort = GetEnv("POSTGRES_PORT").orElse("5432"); // Default PG port
@@ -174,6 +207,15 @@ public class EfspServer {
     }
     String dbPassword = maybeDbPassword.get();
 
+    DataSource codeDs =
+        DatabaseCreator.makeDataSource(
+            dbUrl, dbPortInt, codeDatabaseName, dbUser, dbPassword, 7, 100);
+    DataSource userDs =
+        DatabaseCreator.makeDataSource(
+            dbUrl, dbPortInt, userDatabaseName, dbUser, dbPassword, 7, 100);
+
+    setupDatabases(codeDs, userDs);
+
     InterviewToFilingInformationConverter daJsonConverter =
         new DocassembleToFilingInformationConverter(
             EfspServer.class.getResourceAsStream("/taxonomy.csv"));
@@ -182,35 +224,11 @@ public class EfspServer {
             "application/json", daJsonConverter,
             "text/json", daJsonConverter);
 
-    DataSource codeDs =
-        DatabaseCreator.makeDataSource(
-            dbUrl, dbPortInt, codeDatabaseName, dbUser, dbPassword, 7, 100);
-    DataSource userDs =
-        DatabaseCreator.makeDataSource(
-            dbUrl, dbPortInt, userDatabaseName, dbUser, dbPassword, 7, 100);
-
-    try (Connection codeConn = codeDs.getConnection();
-        Connection userConn = userDs.getConnection()) {
-      DatabaseVersion dv = new DatabaseVersion(codeConn, userConn);
-      @SuppressWarnings("resource")
-      LoginDatabase ld = new LoginDatabase(userConn);
-      boolean brandNew = !ld.tablesExist();
-      dv.createTablesIfAbsent(brandNew);
-      if (!dv.updateToLatest()) {
-        log.error("Couldn't update the database schemas: exiting now");
-        System.exit(3);
-      }
-      userConn.setAutoCommit(true);
-      codeConn.setAutoCommit(true);
-    }
-
     Optional<SendMessage> sendMsg = SendMessage.create();
     if (sendMsg.isEmpty()) {
       throw new RuntimeException("You didn't pass enough info to create the SendMessage class");
     }
     OrgMessageSender sender = new OrgMessageSender(userDs, sendMsg.get());
-
-    List<EfmModuleSetup> modules = new ArrayList<>();
 
     Optional<String> tylerJurisdictions = GetEnv("TYLER_JURISDICTIONS");
     Optional<String> togaKeyStr = GetEnv("TOGA_CLIENT_KEYS");
@@ -221,6 +239,8 @@ public class EfspServer {
       log.error("TOGA_CLIENT_KEYS list should be same size as TYLER_JURISDICTIONS list.");
       throw new RuntimeException("TOGA_CLIENT_KEYS and TYLER_JURISDICTION mismatch");
     }
+
+    List<EfmModuleSetup> modules = new ArrayList<>();
     for (int idx = 0; idx < jurisdictions.size(); idx++) {
       String jurisdiction = jurisdictions.get(idx);
       if (jurisdiction.isBlank()) {

@@ -58,6 +58,23 @@ public class CodeDatabase extends CodeDatabaseAPI {
     }
   }
 
+  public boolean tablesExist() throws SQLException {
+    String tableExistsQuery = CodeTableConstants.getTableExists();
+    boolean locationExists = false;
+    boolean installedExists = false;
+    try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
+      existsSt.setString(1, "location");
+      ResultSet rs = existsSt.executeQuery();
+      locationExists = rs.next() && rs.getInt(1) > 0;
+    }
+    try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
+      existsSt.setString(1, "installedversion");
+      ResultSet rs = existsSt.executeQuery();
+      installedExists = rs.next() && rs.getInt(1) > 0;
+    }
+    return locationExists && installedExists;
+  }
+
   @Override
   public void createTablesIfAbsent() throws SQLException {
     createTableIfAbsent("location");
