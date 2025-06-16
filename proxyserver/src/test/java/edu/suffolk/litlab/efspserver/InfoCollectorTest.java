@@ -5,24 +5,23 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.suffolk.litlab.efspserver.services.AllWrongCollector;
-import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
+import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class InfoCollectorTest {
-  
+
   @Test
   public void testFailFastShouldFailOnFirstVar() {
     FailFastCollector collector = new FailFastCollector();
     assertFalse(collector.finished());
-    
+
     InterviewVariable var = new InterviewVariable("fake_var", "", "text", List.of());
     collector.addOptional(var);
     assertFalse(collector.finished());
@@ -37,7 +36,7 @@ public class InfoCollectorTest {
 
     assertFalse(collector.okToSubmit());
   }
-  
+
   @Test
   public void testFailFastShouldStopOnErr() {
     FailFastCollector collector = new FailFastCollector();
@@ -51,7 +50,7 @@ public class InfoCollectorTest {
     assertTrue(collector.finished());
     assertFalse(collector.okToSubmit());
   }
-  
+
   @Test
   public void testFailFastShouldTrackStack() {
     FailFastCollector collector = new FailFastCollector();
@@ -72,9 +71,9 @@ public class InfoCollectorTest {
     assertEquals(collector.getOptional().get(0).getName(), "one.two.bye");
     assertEquals(collector.getOptional().get(1).getName(), "one.and_again");
   }
-  
+
   @Test
-  public void testAllWrongShouldGetAll() throws JsonMappingException, JsonProcessingException { 
+  public void testAllWrongShouldGetAll() throws JsonMappingException, JsonProcessingException {
     AllWrongCollector collector = new AllWrongCollector();
     assertFalse(collector.finished());
     assertTrue(collector.okToSubmit());
@@ -89,7 +88,7 @@ public class InfoCollectorTest {
     ObjectMapper mapper = new ObjectMapper();
     // If it throws, it's not valid JSON
     mapper.readTree(json);
-    
+
     try {
       collector.error(FilingError.serverError(""));
     } catch (FilingError err) {
