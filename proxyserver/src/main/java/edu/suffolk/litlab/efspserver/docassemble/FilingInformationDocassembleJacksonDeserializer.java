@@ -136,7 +136,8 @@ public class FilingInformationDocassembleJacksonDeserializer
                 "the side of the matter that current person answering this interview is on (must"
                     + " have is_new=True)",
                 "ALPeopleList",
-                List.of());
+                List.of(),
+                Optional.empty());
         collector.addRequired(varExpected);
         throw FilingError.missingRequired(varExpected);
       }
@@ -147,7 +148,8 @@ public class FilingInformationDocassembleJacksonDeserializer
                 "the opposite side of the matter, the side that current person answering this"
                     + " interview is not on (must have is_new=True)",
                 "ALPeopleList",
-                List.of());
+                List.of(),
+                Optional.empty());
         collector.addOptional(othersExpected);
       }
       JsonNode prefLang = node.get("user_preferred_language");
@@ -162,7 +164,11 @@ public class FilingInformationDocassembleJacksonDeserializer
       if (userEmail.isEmpty() || userEmail.orElse("").isBlank()) {
         InterviewVariable var =
             new InterviewVariable(
-                "users[0].email", "Email is required for at least one user", "text", List.of());
+                "users[0].email",
+                "Email is required for at least one user",
+                "text",
+                List.of(),
+                Optional.empty());
         collector.addRequired(var);
       }
     }
@@ -181,7 +187,8 @@ public class FilingInformationDocassembleJacksonDeserializer
                 "user_started_case",
                 "True if the user is the plaintiff or petitioner",
                 "boolean",
-                List.of("true", "false"));
+                List.of("true", "false"),
+                Optional.empty());
         collector.addRequired(var);
       }
     }
@@ -369,20 +376,30 @@ public class FilingInformationDocassembleJacksonDeserializer
               collector.requestVar(
                   "party_association",
                   "Party association should be text, is" + partyAssoc.toString(),
-                  "text"));
+                  "text",
+                  List.of(),
+                  Optional.of(partyAssoc.toString())));
         }
         JsonNode contactId = servObj.get("contact_id");
         if (contactId == null || !contactId.isTextual()) {
           collector.addWrong(
               collector.requestVar(
-                  "contact_id", "Service contacts must have a contact id", "text"));
+                  "contact_id",
+                  "Service contacts must have a contact id",
+                  "text",
+                  List.of(),
+                  Optional.ofNullable(contactId).map(JsonNode::toString)));
           contactId = NullNode.getInstance();
         }
         JsonNode serviceType = servObj.get("service_type");
         if (serviceType == null || !serviceType.isTextual()) {
           collector.addWrong(
               collector.requestVar(
-                  "service_type", "Service contacts must have a service type code", "text"));
+                  "service_type",
+                  "Service contacts must have a service type code",
+                  "text",
+                  List.of(),
+                  Optional.ofNullable(serviceType).map(JsonNode::toString)));
           serviceType = NullNode.getInstance();
         }
         CaseServiceContact contact =
@@ -463,7 +480,12 @@ public class FilingInformationDocassembleJacksonDeserializer
             Optional.of(LocalDate.parse(jsonReturnDate.asText(), DateTimeFormatter.ISO_DATE));
       } catch (DateTimeParseException ex) {
         InterviewVariable var =
-            collector.requestVar("return_date", "Should be as YYYY-MM-DD+01:00", "date");
+            collector.requestVar(
+                "return_date",
+                "Should be as YYYY-MM-DD+01:00",
+                "date",
+                List.of(),
+                Optional.of(jsonReturnDate.asText()));
         collector.addWrong(var);
       }
     }

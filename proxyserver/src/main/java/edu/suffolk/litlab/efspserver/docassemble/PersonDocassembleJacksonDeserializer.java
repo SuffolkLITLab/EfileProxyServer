@@ -49,7 +49,7 @@ public class PersonDocassembleJacksonDeserializer {
       }
     } else {
       InterviewVariable var =
-          collector.requestVar("mobile_number", "A mobile or cell phone number", "text", List.of());
+          collector.requestVar("mobile_number", "A mobile or cell phone number", "text");
       collector.addOptional(var);
     }
 
@@ -67,7 +67,7 @@ public class PersonDocassembleJacksonDeserializer {
       }
     } else {
       InterviewVariable var =
-          collector.requestVar("phone_number", "A mobile or cell phone number", "text", List.of());
+          collector.requestVar("phone_number", "A mobile or cell phone number", "text");
       collector.addOptional(var);
     }
 
@@ -118,22 +118,34 @@ public class PersonDocassembleJacksonDeserializer {
 
     Optional<String> efmId = getStringMember(node, "tyler_id");
     if (node.has("is_new")) {
-      if (!node.get("is_new").isBoolean()) {
+      var isNew = node.get("is_new");
+      if (!isNew.isBoolean()) {
         collector.addWrong(
-            collector.requestVar("is_new", "if the party is new to the the case", "bool"));
+            collector.requestVar(
+                "is_new",
+                "if the party is new to the the case",
+                "bool",
+                List.of(),
+                Optional.of(isNew.toString())));
       }
-      if (node.get("is_new").asBoolean() && efmId.isPresent()) {
+      if (isNew.asBoolean() && efmId.isPresent()) {
         collector.addWrong(
             collector.requestVar(
                 "is_new",
                 "Can't have an EFM (tyler) ID on a "
                     + "brand new party to the case: their tyler id shouldn't exist yet",
-                "bool"));
+                "bool",
+                List.of(),
+                Optional.of(isNew.toString())));
       }
-      if (!node.get("is_new").asBoolean() && efmId.isEmpty()) {
+      if (!isNew.asBoolean() && efmId.isEmpty()) {
         collector.addWrong(
             collector.requestVar(
-                "tyler_id", "Can't be marked as not new, but not have an EFM ID", "text"));
+                "tyler_id",
+                "Can't be marked as not new, but not have an EFM ID",
+                "text",
+                List.of(),
+                Optional.of(isNew.toString())));
       }
       // if marked as is_new and no EFM id, that's fine! They're brand new to the case
     }

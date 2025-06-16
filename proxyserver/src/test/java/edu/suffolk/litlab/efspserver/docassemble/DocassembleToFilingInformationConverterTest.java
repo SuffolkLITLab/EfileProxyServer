@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -80,7 +81,7 @@ public class DocassembleToFilingInformationConverterTest {
         .isErr()
         .containsErr(
             FilingError.missingRequired(
-                new InterviewVariable("users[0].email", "", "text", List.of())));
+                new InterviewVariable("users[0].email", "", "text", List.of(), Optional.empty())));
   }
 
   @Test

@@ -7,12 +7,18 @@ import static org.junit.Assert.fail;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.suffolk.litlab.efspserver.services.AllWrongCollector;
 import edu.suffolk.litlab.efspserver.services.FailFastCollector;
 import edu.suffolk.litlab.efspserver.services.FilingError;
 import edu.suffolk.litlab.efspserver.services.InterviewVariable;
 import java.util.List;
+import java.util.Optional;
+import net.jqwik.api.ForAll;
+import net.jqwik.api.Property;
+import net.jqwik.api.constraints.Size;
+import net.jqwik.api.domains.Domain;
 import org.junit.jupiter.api.Test;
 
 public class InfoCollectorTest {
@@ -22,10 +28,12 @@ public class InfoCollectorTest {
     FailFastCollector collector = new FailFastCollector();
     assertFalse(collector.finished());
 
-    InterviewVariable var = new InterviewVariable("fake_var", "", "text", List.of());
+    InterviewVariable var =
+        new InterviewVariable("fake_var", "", "text", List.of(), Optional.empty());
     collector.addOptional(var);
     assertFalse(collector.finished());
-    InterviewVariable var2 = new InterviewVariable("fake_var2", "", "text", List.of());
+    InterviewVariable var2 =
+        new InterviewVariable("fake_var2", "", "text", List.of(), Optional.of("whups"));
     try {
       collector.addRequired(var2);
       fail("Should have thrown error");
@@ -95,5 +103,48 @@ public class InfoCollectorTest {
       // Expected an error to be thrown!
     }
     assertTrue(collector.finished());
+  }
+
+  @Property
+  @Domain(InterviewVariableExample.class)
+  boolean allVariablesCanSerializeToJson(@ForAll InterviewVariable var)
+      throws JsonProcessingException {
+    String json = var.toJson();
+    if (json == null) {
+      return false;
+    }
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode parsed = mapper.readTree(json);
+    if (parsed == null) {
+      return false;
+    }
+    return true;
+  }
+
+  @Property
+  @Domain(InterviewVariableExample.class)
+  boolean allCollectorsCanSerializeToJson(
+      @ForAll @Size(max = 5) List<InterviewVariable> optVars,
+      @ForAll @Size(max = 5) List<InterviewVariable> reqVars,
+      @ForAll @Size(max = 5) List<InterviewVariable> wrongVars)
+      throws JsonMappingException, JsonProcessingException, FilingError {
+    AllWrongCollector collector = new AllWrongCollector();
+    optVars.forEach(var -> collector.addOptional(var));
+    for (InterviewVariable var : reqVars) {
+      collector.addRequired(var);
+    }
+    for (InterviewVariable var : wrongVars) {
+      collector.addWrong(var);
+    }
+    var jsonSummary = collector.jsonSummary();
+    if (jsonSummary == null) {
+      return false;
+    }
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode parsed = mapper.readTree(jsonSummary);
+    if (parsed == null) {
+      return false;
+    }
+    return true;
   }
 }

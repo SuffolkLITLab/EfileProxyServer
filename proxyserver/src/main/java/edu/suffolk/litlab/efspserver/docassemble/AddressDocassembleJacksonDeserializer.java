@@ -77,7 +77,8 @@ public class AddressDocassembleJacksonDeserializer {
               .map((t) -> t.toString())
               .collect(Collectors.toList());
       InterviewVariable countryOptions =
-          collector.requestVar("country", "The 2 letter country code", "choices", countries);
+          collector.requestVar(
+              "country", "The 2 letter country code", "choices", countries, Optional.of(country));
       FilingError err = FilingError.wrongValue(countryOptions);
       collector.error(err);
       throw err;
