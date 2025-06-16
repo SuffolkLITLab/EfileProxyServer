@@ -183,7 +183,8 @@ public class EcfCourtSpecificSerializer {
               "efile_case_category",
               "",
               "choice",
-              categories.stream().map(cat -> cat.code).collect(Collectors.toList()));
+              categories.stream().map(cat -> cat.code).collect(Collectors.toList()),
+              caseCat.map(CaseCategory::getCode));
       collector.addWrong(var);
       // Foundational error: Category is sorely needed
       throw FilingError.wrongValue(var);
@@ -210,7 +211,8 @@ public class EcfCourtSpecificSerializer {
               "efile_case_type",
               "",
               "choice",
-              caseTypes.stream().map(type -> type.name).collect(Collectors.toList()));
+              caseTypes.stream().map(type -> type.name).collect(Collectors.toList()),
+              maybeType.map(CaseType::toString));
       collector.addWrong(var);
       throw FilingError.wrongValue(var);
     }
@@ -279,7 +281,8 @@ public class EcfCourtSpecificSerializer {
                   "filing_type",
                   "What filing type is this? (can't be " + maybeCodeStrs.get(idx) + ")",
                   "text",
-                  filingOptions.stream().map(f -> f.code).collect(Collectors.toList()));
+                  filingOptions.stream().map(f -> f.code).collect(Collectors.toList()),
+                  Optional.of(maybeCodeStrs.get(idx)));
           collector.addWrong(filingVar);
           collector.popAttributeStack();
           throw FilingError.missingRequired(filingVar);
@@ -447,7 +450,11 @@ public class EcfCourtSpecificSerializer {
           log.info("Can't have language: " + lang);
           collector.addWrong(
               collector.requestVar(
-                  "language", "The primary language of this person", "choice", langs));
+                  "language",
+                  "The primary language of this person",
+                  "choice",
+                  langs,
+                  Optional.of(lang)));
         }
         if (!langs.isEmpty()) {
           // TODO(brycew): currently taking the safer option: if no languages are specified, don't
@@ -482,7 +489,8 @@ public class EcfCourtSpecificSerializer {
               "party_type",
               "Legal role of the party",
               "choices",
-              partyTypes.stream().map(pt -> pt.code).collect(Collectors.toList()));
+              partyTypes.stream().map(pt -> pt.code).collect(Collectors.toList()),
+              Optional.of(per.getRole()));
       collector.addWrong(ptVar);
       tt.setValue("");
     } else {
@@ -504,7 +512,9 @@ public class EcfCourtSpecificSerializer {
     DataFieldRow phoneRow = allDataFields.getFieldRow("PartyPhone");
     if (phoneRow.isvisible) {
       List<String> numbers = contactInfo.getPhoneNumbers();
-      InterviewVariable var = collector.requestVar("phone_number", "Phone number", "text");
+      InterviewVariable var =
+          collector.requestVar(
+              "phone_number", "Phone number", "text", List.of(), Optional.of(numbers.toString()));
       if (phoneRow.isrequired && numbers.isEmpty()) {
         collector.addRequired(var);
       }
@@ -529,7 +539,8 @@ public class EcfCourtSpecificSerializer {
 
     DataFieldRow emailRow = allDataFields.getFieldRow("PartyEmail");
     if (emailRow.isvisible) {
-      InterviewVariable var = collector.requestVar("email", "Email", "email");
+      InterviewVariable var =
+          collector.requestVar("email", "Email with regex " + emailRow.regularexpression, "email");
       if (contactInfo.getEmail().isPresent()) {
         String em = contactInfo.getEmail().get();
         if (emailRow.matchRegex(em)) {
@@ -585,7 +596,11 @@ public class EcfCourtSpecificSerializer {
               .collect(Collectors.toList());
       InterviewVariable var =
           collector.requestVar(
-              "country", "County of the World, in an address", "choices", countries);
+              "country",
+              "County of the World, in an address",
+              "choices",
+              countries,
+              Optional.of(address.getCountry()));
       collector.addWrong(var);
     }
     sat.setLocationCountry(niemObjFac.createLocationCountryFIPS104Code(cct.get()));
@@ -593,7 +608,12 @@ public class EcfCourtSpecificSerializer {
       String countryString = cct.get().getValue();
       List<String> stateCodes = cd.getStateCodes(this.court.code, countryString);
       InterviewVariable var =
-          collector.requestVar("state", "State in a country", "choices", stateCodes);
+          collector.requestVar(
+              "state",
+              "State in a country",
+              "choices",
+              stateCodes,
+              Optional.of(address.getState()));
       if (stateCodes.isEmpty()) {
         FilingError err =
             FilingError.malformedInterview(
@@ -627,7 +647,12 @@ public class EcfCourtSpecificSerializer {
             name.getFirstName(),
             allDataFields.getFieldRow("PartyFirstName"),
             collector,
-            collector.requestVar("name.first", "First name of a case party", "text")));
+            collector.requestVar(
+                "name.first",
+                "First name of a case party",
+                "text",
+                List.of(),
+                Optional.of(name.getFirstName()))));
     personName.setPersonMaidenName(wrapName.apply(name.getMaidenName()));
     personName.setPersonMiddleName(
         checkName(
@@ -650,7 +675,8 @@ public class EcfCourtSpecificSerializer {
               "name.suffix",
               "Suffix of the name of the party",
               "choices",
-              suffixes.stream().map(s -> s.getName()).collect(Collectors.toList()));
+              suffixes.stream().map(s -> s.getName()).collect(Collectors.toList()),
+              Optional.of(name.getSuffix()));
       if (name.getSuffix().isBlank()) {
         if (suffixRow.isrequired) {
           // TODO(brycew-later):
@@ -801,7 +827,8 @@ public class EcfCourtSpecificSerializer {
     if (commentRow.isvisible) {
       String comment = doc.getFilingComments();
       if (!commentRow.matchRegex(comment)) {
-        InterviewVariable var = collector.requestVar("comment", "", "text");
+        InterviewVariable var =
+            collector.requestVar("comment", "", "text", List.of(), Optional.of(comment));
         collector.addWrong(var);
       }
       // I absolutely refuse to require comments from the user on each individual document.
@@ -821,7 +848,8 @@ public class EcfCourtSpecificSerializer {
               "motion_type",
               "the motion type (?)",
               "choices",
-              motionTypes.stream().map(m -> m.getCode()).collect(Collectors.toList()));
+              motionTypes.stream().map(m -> m.getCode()).collect(Collectors.toList()),
+              doc.getMotionType());
       if (doc.getMotionType().isPresent()) {
         String mt = doc.getMotionType().get();
         Optional<NameAndCode> matchedMotion =
@@ -853,7 +881,12 @@ public class EcfCourtSpecificSerializer {
           && !serviceOnInitial
           && (act.equals(FilingTypeType.E_FILE_AND_SERVE) || act.equals(FilingTypeType.SERVE))) {
         InterviewVariable var =
-            collector.requestVar("filing_action", "Cannot do service on initial filing", "text");
+            collector.requestVar(
+                "filing_action",
+                "Cannot do service on initial filing",
+                "text",
+                List.of(),
+                doc.getFilingAction().map(FilingAction::toString));
         collector.addWrong(var);
       }
       docType.setFilingAction(act);
@@ -863,10 +896,16 @@ public class EcfCourtSpecificSerializer {
       List<OptionalServiceCode> codes = cd.getOptionalServices(this.court.code, filing.code);
       var codeMap = new HashMap<String, OptionalServiceCode>();
       codes.stream().forEach(sv -> codeMap.put(sv.code, sv));
-      InterviewVariable servVar =
-          collector.requestVar("optional_services", "things the court can do", "DADict");
+      int i = 0;
       for (OptionalService serv : doc.getOptionalServices()) {
         DocumentOptionalServiceType xmlServ = tylerObjFac.createDocumentOptionalServiceType();
+        InterviewVariable servVar =
+            collector.requestVar(
+                "optional_services[" + i + "]",
+                "things the court can do",
+                "",
+                List.of(),
+                Optional.of(serv.code));
         if (!codeMap.containsKey(serv.code)) {
           collector.addWrong(servVar);
         }
@@ -963,7 +1002,12 @@ public class EcfCourtSpecificSerializer {
     attachment.setBinaryDescriptionText(Ecf4Helper.convertText(fa.getDocumentDescription()));
 
     InterviewVariable var =
-        collector.requestVar("filing_component", "Filing component: Lead or attachment", "text");
+        collector.requestVar(
+            "filing_component",
+            "Filing component: Lead or attachment",
+            "text",
+            List.of(),
+            Optional.of(fa.getFilingComponent()));
     if (components.isEmpty()) {
       log.error(
           "Filing Components List is empty! There are no other documents that can be added!"
@@ -998,13 +1042,14 @@ public class EcfCourtSpecificSerializer {
     DataFieldRow documentType = allDataFields.getFieldRow("DocumentType");
     if (documentType.isvisible) {
       List<DocumentTypeTableRow> docTypes = cd.getDocumentTypes(court.code, filing.code);
+      String docTypeStr = fa.getDocumentTypeFormatStandardName();
       InterviewVariable docTypeVar =
           collector.requestVar(
               "document_type",
               documentType.helptext + " " + documentType.validationmessage,
               "choices",
-              docTypes.stream().map(dt -> dt.code).collect(Collectors.toList()));
-      String docTypeStr = fa.getDocumentTypeFormatStandardName();
+              docTypes.stream().map(dt -> dt.code).collect(Collectors.toList()),
+              Optional.of(docTypeStr));
       if (documentType.isrequired) {
         if (docTypeStr.isBlank()) {
           collector.addRequired(docTypeVar);
@@ -1031,7 +1076,9 @@ public class EcfCourtSpecificSerializer {
           collector.requestVar(
               "file_name",
               "file name of document: regex: " + originalName.regularexpression.toString(),
-              "text");
+              "text",
+              List.of(),
+              Optional.of(fa.getFileName()));
       collector.addWrong(oriNameVar);
     }
     JAXBElement<Base64Binary> n =

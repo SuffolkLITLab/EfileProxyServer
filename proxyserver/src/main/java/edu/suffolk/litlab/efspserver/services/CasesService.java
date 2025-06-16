@@ -273,6 +273,7 @@ public class CasesService {
         // If the response has issues connecting with the CMS, we are still supposed to allow
         // for case search / e-filing. So, we'll return an error with the error code, but also any
         // cases that were still present.
+        // -15: CMS timed out, -11: CMS is unavailable, -10: some info in case might be missing
         Set<String> cmsConnectionErrors = Set.of("-11", "-15", "-10");
         if (resp.getError().stream()
             .anyMatch(err -> cmsConnectionErrors.contains(err.getErrorCode().getValue()))) {

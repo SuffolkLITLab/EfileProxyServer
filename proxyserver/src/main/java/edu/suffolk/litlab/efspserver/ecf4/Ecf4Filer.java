@@ -221,7 +221,9 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
               collector.requestVar(
                   "previous_case_id",
                   "Could not find the given case id (" + info.getPreviousCaseId().get() + ")",
-                  "text");
+                  "text",
+                  List.of(),
+                  info.getPreviousCaseId());
           collector.addWrong(filingVar);
         }
 
@@ -238,7 +240,11 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
           InterviewVariable filingVar =
               collector.requestVar(
-                  "court_bundle[i].filing_type", "What filing type is this?", "text");
+                  "court_bundle[i].filing_type",
+                  "What filing type is this?",
+                  "text",
+                  List.of(),
+                  Optional.empty());
           collector.addRequired(filingVar);
         }
         List<String> filingCodeStrs =
@@ -282,7 +288,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                   "service_contact[" + i + "].service_type",
                   "service type should be",
                   "choices",
-                  types.stream().map(t -> t.code).collect(Collectors.toList()));
+                  types.stream().map(t -> t.code).collect(Collectors.toList()),
+                  Optional.of(servContact.serviceType));
           collector.addWrong(var);
         }
         /*

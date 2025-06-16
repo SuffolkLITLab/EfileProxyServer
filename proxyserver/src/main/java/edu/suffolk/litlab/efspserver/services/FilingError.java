@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efspserver.services;
 
 import java.util.Optional;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class FilingError extends Exception {
   private static final long serialVersionUID = 1L;
@@ -78,7 +79,7 @@ public class FilingError extends Exception {
         "description": "%s"
       }
       """
-          .formatted(this.description);
+          .formatted(StringEscapeUtils.escapeJson(this.description));
     } else if (type.equals(Type.MalformedInterview)) {
       return """
       {
@@ -86,7 +87,7 @@ public class FilingError extends Exception {
         "description": "%s"
       }
       """
-          .formatted(this.description);
+          .formatted(StringEscapeUtils.escapeJson(this.description));
     } else if (missingVariable.isPresent()) { // Missing Required
       InterviewVariable var = missingVariable.get();
       return var.toJson();
@@ -97,7 +98,7 @@ public class FilingError extends Exception {
       "description": "%s"
     }
     """
-        .formatted(this.type + " :: " + this.description);
+        .formatted(this.type + " :: " + StringEscapeUtils.escapeJson(this.description));
   }
 
   public Type getType() {

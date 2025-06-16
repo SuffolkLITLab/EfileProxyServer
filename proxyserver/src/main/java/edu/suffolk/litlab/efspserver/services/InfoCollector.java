@@ -122,15 +122,21 @@ public abstract class InfoCollector {
    * @param desc
    * @param datatype
    * @param choices
+   * @param currentVal the current value (if any) of the variable in this round of processing
    * @return
    */
   public InterviewVariable requestVar(
-      String localName, String desc, String datatype, List<String> choices) {
-    return new InterviewVariable(currentAttributeStack() + localName, desc, datatype, choices);
+      String localName,
+      String desc,
+      String datatype,
+      List<String> choices,
+      Optional<String> currentVal) {
+    return new InterviewVariable(
+        currentAttributeStack() + localName, desc, datatype, choices, currentVal);
   }
 
   public InterviewVariable requestVar(String localName, String description, String datatype) {
-    return requestVar(localName, description, datatype, List.of());
+    return requestVar(localName, description, datatype, List.of(), Optional.empty());
   }
 
   public String jsonSummary() {

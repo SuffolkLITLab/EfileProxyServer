@@ -336,7 +336,9 @@ public class EcfCaseTypeFactory {
                   + " support ("
                   + comboCodes.cat.ecfcasetype
                   + ")",
-              "text");
+              "text",
+              List.of(),
+              Optional.of(comboCodes.cat.code));
       collector.addWrong(var);
       FilingError err = FilingError.wrongValue(var);
       throw err;
@@ -349,7 +351,9 @@ public class EcfCaseTypeFactory {
                   + " Case category requires an ECF case type that we don't know about or support ("
                   + comboCodes.cat.ecfcasetype
                   + ")",
-              "text");
+              "text",
+              List.of(),
+              Optional.of(comboCodes.cat.code));
       collector.addWrong(var);
       FilingError err = FilingError.wrongValue(var);
       throw err;
@@ -411,7 +415,8 @@ public class EcfCaseTypeFactory {
                 "efile_case_subtype",
                 "Sub type of the case",
                 "choices",
-                subTypes.stream().map(nac -> nac.getName()).collect(Collectors.toList()));
+                subTypes.stream().map(nac -> nac.getName()).collect(Collectors.toList()),
+                Optional.of(info.getCaseSubtypeCode()));
         collector.addWrong(subTypeVar);
       }
     }
@@ -661,7 +666,8 @@ public class EcfCaseTypeFactory {
               filerTypeName,
               "Metadata about the filer of this case",
               "choices",
-              allTypes.stream().map(t -> t.code).collect(Collectors.toList()));
+              allTypes.stream().map(t -> t.code).collect(Collectors.toList()),
+              Optional.ofNullable(filerTypeNode).map(JsonNode::toString));
       if (filerTypeNode != null && filerTypeNode.isTextual()) {
         String filerType = filerTypeNode.asText();
         Optional<FilerType> typeInfo =
@@ -730,6 +736,7 @@ public class EcfCaseTypeFactory {
       procedureView = serializer.allDataFields.getFieldRow(procedureViewName);
     }
     InterviewVariable var;
+    JsonNode proRem = miscInfo.get("procedure_remedy");
     if (procedureRemedies.isEmpty()) {
       var = collector.requestVar("procedure_remedy", "Procedure Remedy", "text");
     } else {
@@ -738,10 +745,10 @@ public class EcfCaseTypeFactory {
               "procedure_remedy",
               "Procedure Remedy",
               "choices",
-              procedureRemedies.stream().map(nac -> nac.getName()).collect(Collectors.toList()));
+              procedureRemedies.stream().map(nac -> nac.getName()).collect(Collectors.toList()),
+              Optional.ofNullable(proRem).map(JsonNode::toString));
     }
     ProcedureRemedyType type = new ProcedureRemedyType();
-    JsonNode proRem = miscInfo.get("procedure_remedy");
     if (proRem != null && !proRem.isNull() && proRem.isTextual()) {
       if (procedureView.isvisible) {
         List<NameAndCode> maybeProcedures =
@@ -789,6 +796,7 @@ public class EcfCaseTypeFactory {
           serializer.allDataFields.getFieldRow(
               "CivilCaseDamageAmount" + ((initial) ? "Initial" : "Subsequent"));
     }
+    JsonNode jsonDmg = miscInfo.get("damage_amount");
     InterviewVariable docVar;
     if (damageAmounts.isEmpty()) {
       docVar = collector.requestVar("procedure_remedy", "Procedure Remedy", "text");
@@ -798,9 +806,9 @@ public class EcfCaseTypeFactory {
               "procedure_remedy",
               "Procedure Remedy",
               "choices",
-              damageAmounts.stream().map(nac -> nac.getName()).collect(Collectors.toList()));
+              damageAmounts.stream().map(nac -> nac.getName()).collect(Collectors.toList()),
+              Optional.ofNullable(jsonDmg).map(JsonNode::toString));
     }
-    JsonNode jsonDmg = miscInfo.get("damage_amount");
     if (jsonDmg != null && !jsonDmg.isNull() && jsonDmg.isTextual()) {
       if (damageConfig.isvisible) {
         Optional<NameAndCode> maybeDmg =
@@ -909,10 +917,15 @@ public class EcfCaseTypeFactory {
 
     CaseType ct = niemObjFac.createCaseType();
 
-    InterviewVariable lowerNameVar =
-        collector.requestVar("trial_court.name", "The lower court name", "text");
     if (info.getLowerCourtInfo().isPresent()) {
       var lowerInfo = info.getLowerCourtInfo().get();
+      InterviewVariable lowerNameVar =
+          collector.requestVar(
+              "trial_court.name",
+              "The lower court name",
+              "text",
+              List.of(),
+              Optional.ofNullable(lowerInfo).map(l -> l.toString()));
       if (lowerInfo.lowerCourtCode == null || lowerInfo.lowerCourtCode.isBlank()) {
         // Lower court code doesn't seem to actually be required on the eFileMA site and its kind of
         // broken, so commenting this out

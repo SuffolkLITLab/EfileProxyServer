@@ -16,4 +16,17 @@ public class LowerCourtInfo {
     this.lowerCourtCode = lowerCourtCode;
     this.lowerCourtJudgeName = lowerCourtJudgeName;
   }
+
+  @Override
+  public String toString() {
+    return "[LowerCourtInfo: "
+        + caseTitleText
+        + ", "
+        + caseDocketId
+        + ", "
+        + lowerCourtCode
+        + ", "
+        + lowerCourtJudgeName
+        + "]";
+  }
 }

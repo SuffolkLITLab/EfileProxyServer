@@ -152,7 +152,9 @@ public class Ecfv5CaseTypeFactory {
                 collector.requestVar(
                     "party_to_attorneys",
                     "Can't find the existing party ID in the existing parties",
-                    "text"));
+                    "text",
+                    List.of(),
+                    Optional.of(partyAndAtt.getKey().toString())));
           }
           EntityType ent =
               serializeExistingParticipant(
@@ -287,7 +289,11 @@ public class Ecfv5CaseTypeFactory {
           partyTypes.stream().map(p -> p.code).collect(Collectors.toList());
       InterviewVariable ptVar =
           collector.requestVar(
-              "party_type", "Legal role of the party", "choices", partyTypeChoices);
+              "party_type",
+              "Legal role of the party",
+              "choices",
+              partyTypeChoices,
+              Optional.of(per.getRole()));
       collector.addWrong(ptVar);
     }
     EntityType ent = niemObjFac.createEntityType();
