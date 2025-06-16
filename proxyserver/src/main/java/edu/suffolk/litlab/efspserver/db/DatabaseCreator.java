@@ -114,7 +114,7 @@ public class DatabaseCreator {
           log.info("Sleeping...");
           Thread.sleep(SLEEP_TIME_MILLIS);
         } catch (InterruptedException interruptEx) {
-          log.error("Interrupted? " + interruptEx.toString());
+          log.error("Interrupted? ", interruptEx);
           // explicitly do nothing
         }
       }

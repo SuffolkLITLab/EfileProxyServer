@@ -217,4 +217,17 @@ a different way of saying the exact same thing (MA does "Public" and "Impounded"
 
 An array of additional things that the filer can ask for / purchase from the court; this is kind of a catch-all, and includes things like adding a jury trial to a case (for some courts) to requesting additional copies be printed by the court.
 
+## Actually accessing the DB through Docker
 
+```bash
+docker exec -it efileproxyserver-db-1 /bin/bash
+su postgres
+psql -l # list the available databases
+psql tyler_efm_codes
+# or
+psql user_transactions
+# Once there, some useful commands
+\dt # all tables in the database
+# Get the full size of the database.
+SELECT pg_size_pretty(SUM(pg_database_size(datname))) AS total_size FROM pg_database;
+```
