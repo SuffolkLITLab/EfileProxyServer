@@ -1,17 +1,18 @@
 package edu.suffolk.litlab.efspserver.tyler;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import edu.suffolk.litlab.efsp.tyler.TylerClients;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efspserver.services.LoginInterface;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
-import jakarta.xml.ws.BindingProvider;
 import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tyler.efm.services.EfmUserService;
-import tyler.efm.services.IEfmUserService;
-import tyler.efm.services.schema.authenticaterequest.AuthenticateRequestType;
-import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
+import tyler.efm.EfmUserService;
+import tyler.efm.latest.services.schema.authenticaterequest.AuthenticateRequestType;
+import tyler.efm.latest.services.schema.authenticateresponse.AuthenticateResponseType;
 
 public class TylerLogin implements LoginInterface {
   private static Logger log = LoggerFactory.getLogger(LoginInterface.class);
@@ -22,7 +23,8 @@ public class TylerLogin implements LoginInterface {
 
   public TylerLogin(String jurisdiction, String env) {
     this.jurisdiction = jurisdiction;
-    Optional<EfmUserService> maybeUserFactory = TylerUrls.getEfmUserFactory(jurisdiction, env);
+    Optional<EfmUserService> maybeUserFactory =
+        TylerClients.getEfmUserFactory(jurisdiction, TylerEnv.parse(env));
     if (maybeUserFactory.isPresent()) {
       userServiceFactory = maybeUserFactory.get();
     } else {
@@ -56,8 +58,8 @@ public class TylerLogin implements LoginInterface {
     if (authReq.getPassword() == null || authReq.getPassword().isBlank()) {
       return Optional.empty();
     }
-    IEfmUserService userPort = makeUserPort(userServiceFactory);
-    AuthenticateResponseType authRes = userPort.authenticateUser(authReq);
+    TylerUserClient userClient = makeUserPort(userServiceFactory);
+    AuthenticateResponseType authRes = userClient.authenticateUser(authReq);
     if (!authRes.getError().getErrorCode().equals("0")) {
       log.warn(
           "Got Tyler error when authing: "
@@ -82,10 +84,9 @@ public class TylerLogin implements LoginInterface {
    * @param EfmUserService the definition of the SOAP WSDL service
    * @return A port connection to the SOAP server
    */
-  private static IEfmUserService makeUserPort(EfmUserService userService) {
-    IEfmUserService port = userService.getBasicHttpBindingIEfmUserService();
-    ServiceHelpers.setupServicePort((BindingProvider) port);
-    return port;
+  private static TylerUserClient makeUserPort(EfmUserService userService) {
+    return new TylerUserClient(
+        userService, userService.getVersion(), ServiceHelpers::setupServicePort);
   }
 
   @Override

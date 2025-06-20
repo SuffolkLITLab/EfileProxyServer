@@ -1,5 +1,8 @@
 package edu.suffolk.litlab.efspserver.ecfcodes;
 
+import edu.suffolk.litlab.efsp.tyler.TylerClients;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efspserver.HeaderSigner;
 import edu.suffolk.litlab.efspserver.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efspserver.StdLib;
@@ -7,7 +10,6 @@ import edu.suffolk.litlab.efspserver.db.DatabaseCreator;
 import edu.suffolk.litlab.efspserver.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efspserver.ecf4.SoapClientChooser;
 import edu.suffolk.litlab.efspserver.services.ServiceHelpers;
-import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
 import edu.suffolk.litlab.efspserver.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import jakarta.xml.bind.JAXBException;
@@ -46,10 +48,9 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tyler.efm.services.EfmUserService;
-import tyler.efm.services.IEfmUserService;
-import tyler.efm.services.schema.authenticaterequest.AuthenticateRequestType;
-import tyler.efm.services.schema.authenticateresponse.AuthenticateResponseType;
+import tyler.efm.EfmUserService;
+import tyler.efm.latest.services.schema.authenticaterequest.AuthenticateRequestType;
+import tyler.efm.latest.services.schema.authenticateresponse.AuthenticateResponseType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 
 /**
@@ -531,7 +532,8 @@ public class CodeUpdater {
   /** Sets up the WSDL connection to Tyler, used for `getPolicy` to get the URL. */
   private static FilingReviewMDEPort loginWithTyler(
       String jurisdiction, String env, String userEmail, String userPassword) {
-    Optional<EfmUserService> userService = TylerUrls.getEfmUserFactory(jurisdiction, env);
+    Optional<EfmUserService> userService =
+        TylerClients.getEfmUserFactory(jurisdiction, TylerEnv.parse(env));
     if (userService.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " in Soap chooser for EFMUser");
     }
@@ -542,8 +544,9 @@ public class CodeUpdater {
       throw new RuntimeException(
           "Can't find " + jurisdiction + " in Soap Chooser for filing review factory");
     }
-    IEfmUserService userPort = userService.get().getBasicHttpBindingIEfmUserService();
-    ServiceHelpers.setupServicePort((BindingProvider) userPort);
+    TylerUserClient userPort =
+        new TylerUserClient(
+            userService.get(), userService.get().getVersion(), ServiceHelpers::setupServicePort);
     AuthenticateRequestType authReq = new AuthenticateRequestType();
     authReq.setEmail(userEmail);
     authReq.setPassword(userPassword);
@@ -573,7 +576,7 @@ public class CodeUpdater {
     String table = args.get(2);
     String location = (args.size() == 4) ? args.get(3) : "";
     HeaderSigner hs = new HeaderSigner(this.pathToKeystore, this.x509Password);
-    String endpoint = TylerUrls.getCodeEndpointRootUrl(jurisdiction, env);
+    String endpoint = TylerClients.getTylerServerRootUrl(jurisdiction, TylerEnv.parse(env));
     return downloadAndProcessZip(
         makeCodeUrl(endpoint, table, location),
         hs.signedCurrentTime().get(),
@@ -595,7 +598,7 @@ public class CodeUpdater {
     String command = args.get(0);
     try {
       cd.setAutoCommit(false);
-      String codesSite = TylerUrls.getCodeEndpointRootUrl(jurisdiction, env);
+      String codesSite = TylerClients.getTylerServerRootUrl(jurisdiction, TylerEnv.parse(env));
       FilingReviewMDEPort filingPort =
           loginWithTyler(
               jurisdiction,

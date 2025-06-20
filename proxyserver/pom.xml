@@ -21,7 +21,6 @@
 
     <properties>
         <cxf.version>4.0.8</cxf.version>
-        <junit.version>5.9.3</junit.version>
         <slf4j.version>2.0.7</slf4j.version>
         <jackson.version>2.14.2</jackson.version>
         <bouncycastle.version>1.81</bouncycastle.version>
@@ -319,6 +318,15 @@
           </resource>
         </resources>
         <plugins>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire.version}</version>
+                    <configuration>
+                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                        <trimStackTrace>false</trimStackTrace>
+                        <argLine>@{argLine}</argLine>
+                    </configuration>
+                </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -377,56 +385,4 @@
             </plugin>
         </plugins>
     </reporting>
-    
-    <!-- See the "Testing" section of the README for more information on these testing profiles. -->
-    <profiles>
-        <profile>
-        <!-- This profile excludes tests that use docker, so we can run tests when packaging from within a docker container. -->
-            <id>noDockerTests</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>${maven-surefire.version}</version>
-                        <configuration>
-                            <excludedGroups>Docker</excludedGroups>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <!-- This profile runs reproducible tests, i.e. non flaky tests. -->
-            <id>reproducible</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>${maven-surefire.version}</version>
-                        <configuration>
-                            <excludedGroups>TylerBreakable</excludedGroups>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <!-- This profile runs tests that changes on Tyler's side might break. -->
-            <id>tylerBreakable</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>${maven-surefire.version}</version>
-                        <configuration>
-                            <groups>TylerBreakable</groups>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

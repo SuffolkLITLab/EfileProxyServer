@@ -545,10 +545,10 @@ public class EcfCourtSpecificSerializer {
     return cit;
   }
 
-  public static tyler.efm.services.schema.common.AddressType serializeTylerAddress(Address myAddr)
-      throws FilingError {
-    var efmObjFac = new tyler.efm.services.schema.common.ObjectFactory();
-    tyler.efm.services.schema.common.AddressType addr = efmObjFac.createAddressType();
+  public static tyler.efm.latest.services.schema.common.AddressType serializeTylerAddress(
+      Address myAddr) throws FilingError {
+    var efmObjFac = new tyler.efm.latest.services.schema.common.ObjectFactory();
+    tyler.efm.latest.services.schema.common.AddressType addr = efmObjFac.createAddressType();
     addr.setAddressLine1(myAddr.getStreet());
     addr.setAddressLine2(myAddr.getApartment());
     addr.setCity(myAddr.getCity());

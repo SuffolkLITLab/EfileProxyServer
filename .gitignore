@@ -1,6 +1,11 @@
 # JJ stuff in the repo
 .jj/
 
+.DS_Store
+
+# Eclipse
+.metadata/
+.project
 
 target/
 
@@ -76,6 +81,8 @@ docassemble-os/
 
 # Test related
 !proxyserver/src/test/resources/tyler_efm_codes*.tar.gz
+# But not elsewhere
+proxyserver/tyler_efm_codes*
 
 # formatting
 google-java-format_*

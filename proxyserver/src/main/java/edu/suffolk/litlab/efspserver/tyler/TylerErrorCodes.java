@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tyler.efm.services.schema.baseresponse.BaseResponseType;
+import tyler.efm.latest.services.schema.baseresponse.BaseResponseType;
 
 public class TylerErrorCodes {
   private static final Logger log = LoggerFactory.getLogger(TylerErrorCodes.class);
@@ -57,7 +57,7 @@ public class TylerErrorCodes {
   }
 
   /** Returns true on errors from the Tyler / Admin side of the API. */
-  public static boolean checkErrors(tyler.efm.services.schema.common.ErrorType error) {
+  public static boolean checkErrors(tyler.efm.latest.services.schema.common.ErrorType error) {
     if (!error.getErrorCode().equals("0")) {
       log.error("Error!: " + error.getErrorCode() + ": " + error.getErrorText());
       return true;
@@ -66,7 +66,7 @@ public class TylerErrorCodes {
   }
 
   public static Response mapTylerCodesToHttp(
-      tyler.efm.services.schema.common.ErrorType error, Supplier<Response> defaultRespFunc) {
+      tyler.efm.latest.services.schema.common.ErrorType error, Supplier<Response> defaultRespFunc) {
     if (!checkErrors(error)) {
       return defaultRespFunc.get();
     }

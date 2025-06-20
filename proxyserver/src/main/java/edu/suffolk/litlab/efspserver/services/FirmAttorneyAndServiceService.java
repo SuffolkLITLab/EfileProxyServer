@@ -7,9 +7,11 @@ import static edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes.makeResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.suffolk.litlab.efsp.tyler.TylerClients;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efspserver.StdLib;
 import edu.suffolk.litlab.efspserver.tyler.TylerErrorCodes;
-import edu.suffolk.litlab.efspserver.tyler.TylerUrls;
 import edu.suffolk.litlab.efspserver.tyler.codes.CodeDatabase;
 import edu.suffolk.litlab.efspserver.tyler.codes.DataFieldRow;
 import jakarta.ws.rs.DELETE;
@@ -34,34 +36,33 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import tyler.efm.services.EfmFirmService;
-import tyler.efm.services.IEfmFirmService;
-import tyler.efm.services.schema.attachservicecontactrequest.AttachServiceContactRequestType;
-import tyler.efm.services.schema.attorneylistresponse.AttorneyListResponseType;
-import tyler.efm.services.schema.baseresponse.BaseResponseType;
-import tyler.efm.services.schema.common.AddressType;
-import tyler.efm.services.schema.common.AttorneyType;
-import tyler.efm.services.schema.common.FirmType;
-import tyler.efm.services.schema.common.ServiceContactType;
-import tyler.efm.services.schema.createattorneyrequest.CreateAttorneyRequestType;
-import tyler.efm.services.schema.createattorneyresponse.CreateAttorneyResponseType;
-import tyler.efm.services.schema.createservicecontactrequest.CreateServiceContactRequestType;
-import tyler.efm.services.schema.createservicecontactresponse.CreateServiceContactResponseType;
-import tyler.efm.services.schema.detachservicecontactrequest.DetachServiceContactRequestType;
-import tyler.efm.services.schema.getattorneyrequest.GetAttorneyRequestType;
-import tyler.efm.services.schema.getattorneyresponse.GetAttorneyResponseType;
-import tyler.efm.services.schema.getfirmresponse.GetFirmResponseType;
-import tyler.efm.services.schema.getpubliclistrequest.GetPublicListRequestType;
-import tyler.efm.services.schema.getservicecontactrequest.GetServiceContactRequestType;
-import tyler.efm.services.schema.getservicecontactresponse.GetServiceContactResponseType;
-import tyler.efm.services.schema.removeattorneyrequest.RemoveAttorneyRequestType;
-import tyler.efm.services.schema.removeservicecontactrequest.RemoveServiceContactRequestType;
-import tyler.efm.services.schema.servicecontactlistresponse.ServiceContactListResponseType;
-import tyler.efm.services.schema.updateattorneyrequest.UpdateAttorneyRequestType;
-import tyler.efm.services.schema.updateattorneyresponse.UpdateAttorneyResponseType;
-import tyler.efm.services.schema.updatefirmrequest.UpdateFirmRequestType;
-import tyler.efm.services.schema.updateservicecontactrequest.UpdateServiceContactRequestType;
-import tyler.efm.services.schema.updateservicecontactresponse.UpdateServiceContactResponseType;
+import tyler.efm.EfmFirmService;
+import tyler.efm.latest.services.schema.attachservicecontactrequest.AttachServiceContactRequestType;
+import tyler.efm.latest.services.schema.attorneylistresponse.AttorneyListResponseType;
+import tyler.efm.latest.services.schema.baseresponse.BaseResponseType;
+import tyler.efm.latest.services.schema.common.AddressType;
+import tyler.efm.latest.services.schema.common.AttorneyType;
+import tyler.efm.latest.services.schema.common.FirmType;
+import tyler.efm.latest.services.schema.common.ServiceContactType;
+import tyler.efm.latest.services.schema.createattorneyrequest.CreateAttorneyRequestType;
+import tyler.efm.latest.services.schema.createattorneyresponse.CreateAttorneyResponseType;
+import tyler.efm.latest.services.schema.createservicecontactrequest.CreateServiceContactRequestType;
+import tyler.efm.latest.services.schema.createservicecontactresponse.CreateServiceContactResponseType;
+import tyler.efm.latest.services.schema.detachservicecontactrequest.DetachServiceContactRequestType;
+import tyler.efm.latest.services.schema.getattorneyrequest.GetAttorneyRequestType;
+import tyler.efm.latest.services.schema.getattorneyresponse.GetAttorneyResponseType;
+import tyler.efm.latest.services.schema.getfirmresponse.GetFirmResponseType;
+import tyler.efm.latest.services.schema.getpubliclistrequest.GetPublicListRequestType;
+import tyler.efm.latest.services.schema.getservicecontactrequest.GetServiceContactRequestType;
+import tyler.efm.latest.services.schema.getservicecontactresponse.GetServiceContactResponseType;
+import tyler.efm.latest.services.schema.removeattorneyrequest.RemoveAttorneyRequestType;
+import tyler.efm.latest.services.schema.removeservicecontactrequest.RemoveServiceContactRequestType;
+import tyler.efm.latest.services.schema.servicecontactlistresponse.ServiceContactListResponseType;
+import tyler.efm.latest.services.schema.updateattorneyrequest.UpdateAttorneyRequestType;
+import tyler.efm.latest.services.schema.updateattorneyresponse.UpdateAttorneyResponseType;
+import tyler.efm.latest.services.schema.updatefirmrequest.UpdateFirmRequestType;
+import tyler.efm.latest.services.schema.updateservicecontactrequest.UpdateServiceContactRequestType;
+import tyler.efm.latest.services.schema.updateservicecontactresponse.UpdateServiceContactResponseType;
 
 /**
  * Service that handles the Firm, Attorney, and Service Endpoints.
@@ -77,13 +78,14 @@ public class FirmAttorneyAndServiceService {
   private final DataSource userDs;
   private final String jurisdiction;
 
-  private static final tyler.efm.services.schema.common.ObjectFactory tylerCommonObjFac =
-      new tyler.efm.services.schema.common.ObjectFactory();
+  private static final tyler.efm.latest.services.schema.common.ObjectFactory tylerCommonObjFac =
+      new tyler.efm.latest.services.schema.common.ObjectFactory();
 
   public FirmAttorneyAndServiceService(
       String jurisdiction, String env, DataSource userDs, Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
-    Optional<EfmFirmService> maybeFirmFactory = TylerUrls.getEfmFirmFactory(jurisdiction, env);
+    Optional<EfmFirmService> maybeFirmFactory =
+        TylerClients.getEfmFirmFactory(jurisdiction, TylerEnv.parse(env));
     if (maybeFirmFactory.isPresent()) {
       this.firmFactory = maybeFirmFactory.get();
     } else {
@@ -108,7 +110,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/firm")
   public Response getSelfFirm(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getSelfFirm");
-    Optional<IEfmFirmService> firmPort =
+    Optional<TylerFirmClient> firmPort =
         setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -122,7 +124,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/firm")
   public Response updateFirm(@Context HttpHeaders httpHeaders, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateFirm");
-    Optional<IEfmFirmService> firmPort =
+    Optional<TylerFirmClient> firmPort =
         setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -160,7 +162,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/attorneys")
   public Response getAttorneyList(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getAttorneyList");
-    Optional<IEfmFirmService> firmPort =
+    Optional<TylerFirmClient> firmPort =
         setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -175,7 +177,7 @@ public class FirmAttorneyAndServiceService {
   public Response getAttorney(
       @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getAttorney");
-    Optional<IEfmFirmService> firmPort =
+    Optional<TylerFirmClient> firmPort =
         setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -191,7 +193,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/attorneys")
   public Response createAttorney(@Context HttpHeaders httpHeaders, AttorneyType attorney) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.createAttorney");
-    Optional<IEfmFirmService> firmPort =
+    Optional<TylerFirmClient> firmPort =
         setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -225,7 +227,7 @@ public class FirmAttorneyAndServiceService {
   public Response updateAttorney(
       @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateAttorney");
-    Optional<IEfmFirmService> firmPort =
+    Optional<TylerFirmClient> firmPort =
         setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -258,7 +260,7 @@ public class FirmAttorneyAndServiceService {
   public Response removeAttorney(
       @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.removeAttorney");
-    Optional<IEfmFirmService> firmPort =
+    Optional<TylerFirmClient> firmPort =
         setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
@@ -274,7 +276,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/service-contacts")
   public Response getServiceContactList(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getServiceContactList");
-    Optional<IEfmFirmService> firmPort =
+    Optional<TylerFirmClient> firmPort =
         setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -288,7 +290,7 @@ public class FirmAttorneyAndServiceService {
   public Response getServiceContact(
       @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getServiceContact");
-    Optional<IEfmFirmService> firmPort =
+    Optional<TylerFirmClient> firmPort =
         setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -308,7 +310,7 @@ public class FirmAttorneyAndServiceService {
   public Response removeServiceContact(
       @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.removeServiceContact");
-    Optional<IEfmFirmService> firmPort =
+    Optional<TylerFirmClient> firmPort =
         setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -326,7 +328,7 @@ public class FirmAttorneyAndServiceService {
     try {
       ServiceContactInput input = new ObjectMapper().readValue(strInput, ServiceContactInput.class);
       MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.createServiceContact");
-      Optional<IEfmFirmService> firmPort =
+      Optional<TylerFirmClient> firmPort =
           setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
       if (firmPort.isEmpty()) {
         return Response.status(401).build();
@@ -369,7 +371,7 @@ public class FirmAttorneyAndServiceService {
   public Response attachServiceContact(
       @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.attachServiceContact");
-    Optional<IEfmFirmService> firmPort =
+    Optional<TylerFirmClient> firmPort =
         setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -411,7 +413,7 @@ public class FirmAttorneyAndServiceService {
       @PathParam("case_id") String caseId,
       @QueryParam("case_party_id") String casePartyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.detachServiceContact");
-    Optional<IEfmFirmService> firmPort =
+    Optional<TylerFirmClient> firmPort =
         setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -432,7 +434,7 @@ public class FirmAttorneyAndServiceService {
   public Response updateServiceContact(
       @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateServiceContact");
-    Optional<IEfmFirmService> firmPort =
+    Optional<TylerFirmClient> firmPort =
         setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
@@ -479,7 +481,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/service-contacts/public")
   public Response getPublicList(@Context HttpHeaders httpHeaders, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getPublicList");
-    Optional<IEfmFirmService> firmPort =
+    Optional<TylerFirmClient> firmPort =
         setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
