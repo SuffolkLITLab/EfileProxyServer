@@ -33,7 +33,7 @@ public class TylerUrls {
           "california-stage", "wsdl/stage/california-EFMFirmServiceSingle.svc.wsdl",
           "texas-stage", "wsdl/stage/texas-EFMFirmServiceSingle.svc.wsdl",
           "indiana-stage", "wsdl/stage/indiana-EFMFirmServiceSingle.svc.wsdl",
-          "mock-test", "wsdl/test/mock-EFMUserServiceSingle.svc.wsdl");
+          "mock-test", "wsdl/test/mock-EFMFirmServiceSingle.svc.wsdl");
 
   /**
    * Gets the EfmUserService if the provided domain is present and correct.
