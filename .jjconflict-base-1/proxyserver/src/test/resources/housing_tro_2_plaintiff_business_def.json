@@ -1,0 +1,180 @@
+{
+    "interview_metadata": {
+        "_class": "docassemble.base.core.DADict",
+        "instanceName": "interview_metadata",
+        "elements": {
+            "Housing_Temporary_Restraining_Order0002": {
+                "_class": "docassemble.base.core.DADict",
+                "instanceName": "interview_metadata['Housing_Temporary_Restraining_Order0002']",
+                "elements": {
+                    "title": "Housing temporary restraining order",
+                    "short title": "Housing TRO",
+                    "allowed courts": [
+                        "Boston Municipal Court",
+                        "District Court",
+                        "Housing Court"
+                    ],
+                    "preferred court": "Housing Court",
+                    "categories": [
+                        "HO-00-00-00-00"
+                    ]
+                }
+            }
+        }
+    },
+    "interview_short_title": "Ask the court for a Temporary Restraining Order",
+    "package_version_number": "playground",
+    "other_parties": {
+        "_class": "docassemble.AssemblyLine.al_general.ALPeopleList",
+        "instanceName": "other_parties",
+        "elements": [
+            {
+                "_class": "docassemble.AssemblyLine.al_general.ALIndividual",
+                "instanceName": "other_parties[0]",
+                "name": {
+                    "_class": "docassemble.base.util.IndividualName",
+                    "instanceName": "other_parties[0].name",
+                    "first": "Company LLC"
+                },
+                "address": {
+                    "_class": "docassemble.AssemblyLine.al_general.ALAddress",
+                    "instanceName": "other_parties[0].address",
+                    "address": "789 East Broadway",
+                    "unit": "",
+                    "city": "Boston",
+                    "state": "MA",
+                    "zip": "02127"
+                }
+            }
+        ],
+        "complete_attribute": null,
+        "there_are_any": true,
+        "gathered": true
+    },
+    "landlord_type": "business",
+    "preferred_court": "Housing Court",
+    "users": {
+        "_class": "docassemble.AssemblyLine.al_general.ALPeopleList",
+        "instanceName": "users",
+        "elements": [
+            {
+                "_class": "docassemble.AssemblyLine.al_general.ALIndividual",
+                "instanceName": "users[0]",
+                "name": {
+                    "_class": "docassemble.base.util.IndividualName",
+                    "instanceName": "users[0].name",
+                    "first": "Bob",
+                    "middle": "",
+                    "last": "Zombie",
+                    "suffix": ""
+                },
+                "address": {
+                    "_class": "docassemble.AssemblyLine.al_general.ALAddress",
+                    "instanceName": "users[0].address",
+                    "address": "345 Harrison Avenue",
+                    "unit": "",
+                    "city": "Boston",
+                    "state": "MA",
+                    "zip": "02118",
+                    "street_number": "345",
+                    "street": "Harrison Ave",
+                    "county": "Suffolk County",
+                    "country": "US",
+                    "postal_code": "02118",
+                    "postal_code_suffix": "3054"
+                },
+                "mobile_number": "123-456-7890",
+                "phone_number": "",
+                "email": "test@example.com"
+            },
+            {
+                "_class": "docassemble.AssemblyLine.al_general.ALIndividual",
+                "instanceName": "users[1]",
+                "name": {
+                    "_class": "docassemble.base.util.IndividualName",
+                    "instanceName": "users[1].name",
+                    "first": "Jill",
+                    "middle": "",
+                    "last": "Vampire",
+                    "suffix": ""
+                },
+                "address": {
+                    "_class": "docassemble.AssemblyLine.al_general.ALAddress",
+                    "instanceName": "users[1].address",
+                    "address": "234 Causeway Street",
+                    "unit": "",
+                    "city": "Boston",
+                    "state": "MA",
+                    "zip": "02114",
+                    "street_number": "234",
+                    "street": "Causeway St",
+                    "county": "Suffolk County",
+                    "country": "US",
+                    "postal_code": "02114"
+                }
+            }
+        ]
+    },
+    "trial_court": {
+        "_class": "docassemble.MACourts.macourts.MACourt",
+        "instanceName": "all_courts[22]",
+        "jurisdiction": [],
+        "address": {
+            "_class": "docassemble.base.util.Address",
+            "instanceName": "all_courts[22].address",
+            "address": "24 New Chardon Street",
+            "city": "Edward W. Brooke Courthouse, Boston",
+            "state": "MA",
+            "zip": "02114",
+            "county": "Suffolk County",
+            "orig_address": "24 New Chardon Street, Edward W. Brooke Courthouse, Boston, MA 02114"
+        },
+        "court_code": "01",
+        "name": "Central Division, Boston Municipal Court",
+        "department": "Boston Municipal Court",
+        "division": "Central Division",
+        "phone": "(617) 788-8600",
+        "fax": "(617) 788-8465",
+        "has_po_box": false,
+        "description": "This court serves the Downtown Boston area, Chinatown, North End, South End through Massachusetts Avenue, West End, and Beacon Hill."
+    },
+    "user_started_case": true,
+    "user_needs_interpreter": true,
+    "user_preferred_language": "Spanish",
+    "efile_case_category": "CivilCase",
+    "efile_case_type": "Motion",
+    "lead_contact": {
+        "name": {
+            "first": "Bob",
+            "middle": "hi",
+            "last": "Smith"
+        },
+        "email": "bobEmail@example.com"
+    },
+    "al_court_bundle": {
+        "proxy_enabled": true,
+        "_class": "docassemble.AssemblyLine.al_document.ALDocumentBundle",
+        "instanceName": "al_court_bundle",
+        "filing_type": "1234fake",
+        "elements": [
+            {
+                "_class": "docassemble.AssemblyLine.al_document.ALDocument",
+                "filing_type": "1234fake",
+                "instanceName": "Housing_Temporary_Restraining_Order0002_attachment",
+                "elements": {
+                    "final": {
+                        "_class": "docassemble.base.core.DAFileCollection",
+                        "instanceName": "Housing_Temporary_Restraining_Order0002_attachment[i]"
+                    }
+                },
+                "data_url": "https://www.adobe.com/support/products/enterprise/knowledgecenter/media/c4611_sample_explain.pdf",
+                "title": "Housing Temporary Restraining Order",
+                "filename": "housing_tro",
+                "proxy_enabled": true
+            }
+        ],
+        "title": "Forms to download today",
+        "filename": "housing_tro"
+    },
+    "signature": "users[0].signature"
+}

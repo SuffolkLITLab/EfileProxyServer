@@ -1,0 +1,461 @@
+{
+    "trial_court": "coles",
+    "court_id": "coles",
+    "jurisdiction_id": "illinois",
+    "user_wants_efile": true,
+    "can_check_efile": true,
+    "filing_interview_initial_or_existing": "existing_case",
+    "is_initial_filing": false,
+    "can_file_non_indexed_case": false,
+    "docket_number_from_user": "2022EV12",
+    "cms_connection_issue": false,
+    "case_was_found": true,
+    "is_nonindexed_filing": false,
+    "case_category": "190921",
+    "case_type": "205200",
+    "existing_case_parties": null,
+    "load_existing_case_defaults": true,
+    "previous_case_id": "a08f60c4-832c-48b9-8ce0-7563a6613aaa",
+    "al_form_type": "existing_case",
+    "user_ask_role": "plaintiff",
+    "user_started_case": true,
+    "is_adding_new_parties": true,
+    "users": {
+        "_class": "docassemble.AssemblyLine.al_general.ALPeopleList",
+        "instanceName": "users",
+        "elements": [
+            {
+                "_class": "docassemble.AssemblyLine.al_general.ALIndividual",
+                "instanceName": "users[0]",
+                "name": {
+                    "_class": "docassemble.base.util.IndividualName",
+                    "instanceName": "users[0].name",
+                    "first": "Bryce",
+                    "middle": "Pro Se",
+                    "last": "Willey"
+                },
+                "address": {
+                    "_class": "docassemble.AssemblyLine.al_general.ALAddress",
+                    "instanceName": "users[0].address",
+                    "location": {
+                        "_class": "docassemble.base.util.LatitudeLongitude",
+                        "instanceName": "users[0].address.location"
+                    }
+                },
+                "is_form_filler": true,
+                "email": "bryce.steven.willey+faketylerprose@gmail.com",
+                "party_type_code": "20646",
+                "party_type": "20646",
+                "attorney_adding_opts": {
+                    "_class": "docassemble.base.util.DADict",
+                    "instanceName": "users[0].attorney_adding_opts",
+                    "elements": {}
+                },
+                "attorney_ids": {
+                    "_class": "docassemble.base.util.DAList",
+                    "instanceName": "_sorted_items",
+                    "elements": []
+                },
+                "is_new": true,
+                "complete": true
+            }
+        ]
+    },
+    "plantiff": "20646",
+    "petitioner": "20646",
+    "other_parties": {
+        "_class": "docassemble.AssemblyLine.al_general.ALPeopleList",
+        "instanceName": "other_parties",
+        "elements": [],
+        "auto_gather": true,
+        "ask_number": false,
+        "minimum_number": null,
+        "object_type": {
+            "_class": "type",
+            "name": "docassemble.AssemblyLine.al_general.ALIndividual"
+        },
+        "object_type_parameters": {},
+        "complete_attribute": "complete",
+        "ask_object_type": false,
+        "there_are_any": false,
+        "gathered": true,
+        "revisit": true,
+        "review_type_table": {
+            "_class": "docassemble.base.util.DALazyTableTemplate",
+            "instanceName": "other_parties.review_type_table"
+        }
+    },
+    "existing_parties_new_atts": {
+        "_class": "docassemble.base.util.DAList",
+        "instanceName": "existing_parties_new_atts",
+        "elements": [],
+        "auto_gather": true,
+        "ask_number": false,
+        "minimum_number": null,
+        "object_type": {
+            "_class": "type",
+            "name": "docassemble.base.util.DAObject"
+        },
+        "object_type_parameters": {},
+        "complete_attribute": null,
+        "ask_object_type": false,
+        "there_are_any": false,
+        "gathered": true,
+        "revisit": true
+    },
+    "attorney_ids": [],
+    "party_to_attorneys": {
+        "users[0]": {
+            "_class": "docassemble.base.util.DAList",
+            "instanceName": "_sorted_items",
+            "elements": [],
+            "auto_gather": true,
+            "ask_number": false,
+            "minimum_number": null,
+            "there_are_any": false,
+            "gathered": true,
+            "revisit": true,
+            "object_type": null,
+            "object_type_parameters": {},
+            "complete_attribute": null,
+            "ask_object_type": false
+        }
+    },
+    "lead_contact": {
+        "_class": "docassemble.AssemblyLine.al_general.ALIndividual",
+        "instanceName": "users[0]",
+        "name": {
+            "_class": "docassemble.base.util.IndividualName",
+            "instanceName": "users[0].name",
+            "uses_parts": true,
+            "first": "Bryce",
+            "middle": "Pro Se",
+            "last": "Willey"
+        },
+        "address": {
+            "_class": "docassemble.AssemblyLine.al_general.ALAddress",
+            "instanceName": "users[0].address",
+            "location": {
+                "_class": "docassemble.base.util.LatitudeLongitude",
+                "instanceName": "users[0].address.location",
+                "gathered": false,
+                "known": false
+            },
+            "_geocoded": false,
+            "geolocated": false,
+            "city_only": false
+        },
+        "location": {
+            "_class": "docassemble.base.util.LatitudeLongitude",
+            "instanceName": "users[0].location",
+            "gathered": false,
+            "known": false
+        },
+        "previous_addresses": {
+            "_class": "docassemble.AssemblyLine.al_general.ALAddressList",
+            "instanceName": "users[0].previous_addresses",
+            "elements": [],
+            "auto_gather": true,
+            "ask_number": false,
+            "minimum_number": null,
+            "object_type": {
+                "_class": "type",
+                "name": "docassemble.AssemblyLine.al_general.ALAddress"
+            },
+            "object_type_parameters": {},
+            "complete_attribute": null,
+            "ask_object_type": false
+        },
+        "other_addresses": {
+            "_class": "docassemble.AssemblyLine.al_general.ALAddressList",
+            "instanceName": "users[0].other_addresses",
+            "elements": [],
+            "auto_gather": true,
+            "ask_number": false,
+            "minimum_number": null,
+            "object_type": {
+                "_class": "type",
+                "name": "docassemble.AssemblyLine.al_general.ALAddress"
+            },
+            "object_type_parameters": {},
+            "complete_attribute": null,
+            "ask_object_type": false
+        },
+        "mailing_address": {
+            "_class": "docassemble.AssemblyLine.al_general.ALAddress",
+            "instanceName": "users[0].mailing_address",
+            "location": {
+                "_class": "docassemble.base.util.LatitudeLongitude",
+                "instanceName": "users[0].mailing_address.location",
+                "gathered": false,
+                "known": false
+            },
+            "_geocoded": false,
+            "geolocated": false,
+            "city_only": false
+        },
+        "is_form_filler": true,
+        "email": "bryce.steven.willey+faketylerprose@gmail.com",
+        "party_type_code": "20646",
+        "party_type": "20646",
+        "attorney_adding_opts": {
+            "_class": "docassemble.base.util.DADict",
+            "instanceName": "users[0].attorney_adding_opts",
+            "elements": {},
+            "auto_gather": false,
+            "ask_number": false,
+            "minimum_number": null,
+            "object_type": null,
+            "object_type_parameters": {},
+            "complete_attribute": null,
+            "ask_object_type": false,
+            "gathered": true
+        },
+        "attorney_ids": {
+            "_class": "docassemble.base.util.DAList",
+            "instanceName": "_sorted_items",
+            "elements": [],
+            "auto_gather": true,
+            "ask_number": false,
+            "minimum_number": null,
+            "there_are_any": false,
+            "gathered": true,
+            "revisit": true,
+            "object_type": null,
+            "object_type_parameters": {},
+            "complete_attribute": null,
+            "ask_object_type": false
+        },
+        "is_new": true,
+        "complete": true
+    },
+    "missing_required_party_types": true,
+    "service_contacts": {
+        "_class": "docassemble.base.util.DAList",
+        "instanceName": "service_contacts",
+        "elements": [],
+        "auto_gather": true,
+        "ask_number": false,
+        "minimum_number": null,
+        "object_type": {
+            "_class": "type",
+            "name": "docassemble.base.util.DAObject"
+        },
+        "object_type_parameters": {},
+        "complete_attribute": "complete",
+        "ask_object_type": false,
+        "there_are_any": false,
+        "gathered": true,
+        "revisit": true
+    },
+    "al_court_bundle": {
+        "_class": "docassemble.AssemblyLine.al_document.ALDocumentBundle",
+        "instanceName": "al_court_bundle",
+        "elements": [
+            {
+                "_class": "docassemble.AssemblyLine.al_document.ALExhibitDocument",
+                "instanceName": "lead_doc",
+                "elements": {},
+                "title": "Lead Filing Doc",
+                "filename": "lead_filing_doc",
+                "always_enabled": false,
+                "exhibits": {
+                    "_class": "docassemble.AssemblyLine.al_document.ALExhibitList",
+                    "instanceName": "lead_doc.exhibits",
+                    "elements": [
+                        {
+                            "_class": "docassemble.AssemblyLine.al_document.ALExhibit",
+                            "instanceName": "lead_doc.exhibits[0]",
+                            "start_page": 1,
+                            "pages": {
+                                "_class": "docassemble.base.util.DAFileList",
+                                "instanceName": "lead_doc.exhibits[0].pages",
+                                "elements": [
+                                    {
+                                        "_class": "docassemble.base.util.DAFile",
+                                        "instanceName": "lead_doc.exhibits[0].pages[0]",
+                                        "filename": "Thesis-Cover.pdf",
+                                        "has_specific_filename": true,
+                                        "mimetype": "application/pdf",
+                                        "extension": "pdf",
+                                        "number": 162478,
+                                        "ok": true,
+                                        "_taskscreen": "0ac74021-e600-4877-9774-dd82cdebcb50",
+                                        "_taskpage": "e70b521b-fd4b-485c-b4fc-44ed6ac3a3b4",
+                                        "file_info": {
+                                            "filename": "Thesis-Cover.pdf",
+                                            "extension": "pdf",
+                                            "mimetype": "application/pdf",
+                                            "path": "/tmp/files/162478/file",
+                                            "fullpath": "/tmp/files/162478/file.pdf",
+                                            "private": true,
+                                            "persistent": false,
+                                            "encrypted": false,
+                                            "acroform": false,
+                                            "pages": 1
+                                        },
+                                        "persistent": false,
+                                        "private": true
+                                    }
+                                ],
+                                "auto_gather": true,
+                                "ask_number": false,
+                                "minimum_number": null,
+                                "there_are_any": true,
+                                "object_type": null,
+                                "object_type_parameters": {},
+                                "complete_attribute": null,
+                                "ask_object_type": false,
+                                "there_is_another": false,
+                                "gathered": true,
+                                "revisit": true
+                            },
+                            "title": "Acknowledgment",
+                            "in_progress_template": {
+                                "_class": "docassemble.base.util.DALazyTemplate",
+                                "instanceName": "lead_doc.exhibits[0].in_progress_template"
+                            },
+                            "rearrange_pages_table": {
+                                "_class": "docassemble.base.util.DALazyTableTemplate",
+                                "instanceName": "lead_doc.exhibits[0].rearrange_pages_table"
+                            },
+                            "label": "A"
+                        }
+                    ],
+                    "auto_gather": true,
+                    "ask_number": true,
+                    "minimum_number": null,
+                    "object_type": {
+                        "_class": "type",
+                        "name": "docassemble.AssemblyLine.al_document.ALExhibit"
+                    }
+                },
+                "filing_description": "",
+                "reference_number": "",
+                "has_courtesy_copies": false,
+                "filing_type": "177236",
+                "document_type_options": [
+                    [
+                        "5766",
+                        "Non-Confidential"
+                    ],
+                    [
+                        "5767",
+                        "Confidential"
+                    ]
+                ],
+                "document_type_code": "5766",
+                "document_type": "5766",
+                "motion_type_options": [],
+                "motion_type_map": {},
+                "motion_type": null,
+                "filing_component_code": "332",
+                "filing_component": "332",
+                "filing_parties": [
+                    "users[0]"
+                ],
+                "filing_action": "efile",
+                "optional_services": {
+                    "_class": "docassemble.base.util.DAList",
+                    "instanceName": "lead_doc.optional_services",
+                    "elements": []
+                },
+                "completed": true,
+                "proxy_enabled": true,
+                "data_url": "https://raw.githubusercontent.com/SuffolkLITLab/docassemble-EFSPIntegration/refs/tags/v1.2.2/docassemble/EFSPIntegration/data/sources/example_upload.pdf",
+                "page_count": 1
+            }
+        ],
+        "complete_attribute": "completed",
+        "filename": "full_bundle.pdf",
+        "title": "All forms to submit to the court"
+    },
+    "append_lead_doc": true,
+    "service_type_options": [
+        [
+            "-580",
+            "EServe"
+        ]
+    ],
+    "service_type_map": {
+        "-580": {
+            "code": "-580",
+            "name": "EServe",
+            "servicemethod": "ESERVICE",
+            "fee": "",
+            "disclaimertext": ""
+        }
+    },
+    "cross_references": {
+        "_class": "docassemble.base.util.DADict",
+        "instanceName": "cross_references",
+        "elements": {}
+    },
+    "full_court_info": {
+        "_class": "docassemble.playground116EFSPIntegration.efm_client.ApiResponse",
+        "response_code": 200,
+        "error_msg": null,
+        "data": {
+            "code": "coles",
+            "name": "Coles County",
+            "initial": true,
+            "subsequent": true,
+            "disallowcopyingenvelopemultipletimes": true,
+            "allowfilingintononindexedcase": false,
+            "allowablecardtypes": [
+                "MASTERCARD",
+                "VISA",
+                "AMEX",
+                "DISCOVER",
+                "CHECKING"
+            ],
+            "odysseynodeid": "7000",
+            "cmsid": "122",
+            "sendservicebeforereview": "False",
+            "parentnodeid": "1",
+            "iscounty": false,
+            "restrictbankaccountpayment": "False",
+            "allowmultipleattorneys": true,
+            "sendservicecontactremovednotifications": false,
+            "allowmaxfeeamount": false,
+            "transferwaivedfeestocms": false,
+            "skippreauth": false,
+            "allowreturndate": false,
+            "showdamageamount": false,
+            "hasconditionalservicetypes": false,
+            "hasprotectedcasetypes": false,
+            "protectedcasetypes": [],
+            "protectedcasereplacementstring": "CONFIDENTIAL",
+            "allowzerofeeswithoutfilingparty": false,
+            "allowserviceoninitial": {
+                "empty": false,
+                "present": true
+            },
+            "allowaddservicecontactsoninitial": true,
+            "allowredaction": false,
+            "redactionurl": "https://redaction-stage-tcm.tylertech.cloud/tisstage/OCRWeb/v3/",
+            "redactionviewerurl": "https://redaction-stage-tcm.tylertech.cloud/tisstage/viewer/index.html",
+            "enforceredaction": false,
+            "redactiondocumenttype": "",
+            "defaultdocumentdescription": "",
+            "allowwaiveronmail": false,
+            "showreturnonreject": false,
+            "allowchargeupdate": false,
+            "allowpartyid": false,
+            "redactionfee": "0",
+            "allowwaiveronredaction": false,
+            "disallowelectronicserviceonnewcontacts": false,
+            "allowindividualregistration": true,
+            "redactiontargetconfig": [],
+            "allowhearing": false
+        }
+    },
+    "allowable_card_types": [
+        "MASTERCARD",
+        "VISA",
+        "AMEX",
+        "DISCOVER",
+        "CHECKING"
+    ],
+    "tyler_payment_id": "75950d4b-f3c3-4748-8bfb-0e22790d19d7"
+}

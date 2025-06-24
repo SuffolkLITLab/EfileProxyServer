@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:tyler:ecf:extensions:NotifyServiceMessage" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:i="http://niem.gov/niem/appinfo/2.0" xmlns:j="http://niem.gov/niem/domains/jxdm/4.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" xmlns:s="http://niem.gov/niem/structures/2.0" targetNamespace="urn:tyler:ecf:extensions:NotifyServiceMessage">
+	<xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="ecf-2.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-3.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="ecf-4.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-13.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/domains/jxdm/4.0" schemaLocation="ecf-17.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="ecf-18.xsd"/>
+	<xsd:complexType name="NotifyServiceMessageType">
+		<xsd:complexContent>
+			<xsd:extension base="ecf:CaseFilingType">
+				<xsd:sequence>
+					<xsd:element ref="nc:Case"/>
+					<xsd:element maxOccurs="unbounded" ref="ServiceRecipient"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ServiceRecipientType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:EntityType">
+				<xsd:sequence>
+					<xsd:element ref="ServiceContactID"/>
+					<xsd:element minOccurs="0" ref="SentDate"/>
+					<xsd:element ref="Status"/>
+          <xsd:element minOccurs="0" ref="nc:EntityPersonReference"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="NotifyServiceMessage" type="NotifyServiceMessageType"/>
+	<xsd:element name="ServiceRecipient" type="ServiceRecipientType"/>
+	<xsd:element name="ServiceContactID" type="nc:IdentificationType"/>
+	<xsd:element name="SentDate" type="nc:DateType"/>
+	<xsd:element name="Status" type="nc:TextType"/>
+</xsd:schema>
