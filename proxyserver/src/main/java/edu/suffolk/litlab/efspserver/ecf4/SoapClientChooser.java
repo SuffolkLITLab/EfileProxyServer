@@ -27,7 +27,8 @@ public class SoapClientChooser {
           "massachusetts-prod", "wsdl/prod/massachusetts-ECF-4.0-ServiceMDEService.wsdl",
           "california-stage", "wsdl/stage/california-ECF-4.0-ServiceMDEService.wsdl",
           "texas-stage", "wsdl/stage/texas-ECF-4.0-ServiceMDEService.wsdl",
-          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-ServiceMDEService.wsdl");
+          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-ServiceMDEService.wsdl",
+          "mock-test", "wsdl/test/mock-ECF-4.0-ServiceMDEService.wsdl");
 
   static final Map<String, String> filingReviewMDEWsdls =
       Map.of(
@@ -38,7 +39,8 @@ public class SoapClientChooser {
           "massachusetts-prod", "wsdl/prod/massachusetts-ECF-4.0-FilingReviewMDEService.wsdl",
           "california-stage", "wsdl/stage/california-ECF-4.0-FilingReviewMDEService.wsdl",
           "texas-stage", "wsdl/stage/texas-ECF-4.0-FilingReviewMDEService.wsdl",
-          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-FilingReviewMDEService.wsdl");
+          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-FilingReviewMDEService.wsdl",
+          "mock-test", "wsdl/test/mock-ECF-4.0-FilingReviewMDEService.wsdl");
 
   static final Map<String, String> courtRecordMDEWsdls =
       Map.of(
@@ -49,13 +51,15 @@ public class SoapClientChooser {
           "massachusetts-prod", "wsdl/prod/massachusetts-ECF-4.0-CourtRecordMDEService.wsdl",
           "california-stage", "wsdl/stage/california-ECF-4.0-CourtRecordMDEService.wsdl",
           "texas-stage", "wsdl/stage/texas-ECF-4.0-CourtRecordMDEService.wsdl",
-          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-CourtRecordMDEService.wsdl");
+          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-CourtRecordMDEService.wsdl",
+          "mock-test", "wsdl/test/mock-ECF-4.0-CourtRecordMDEService.wsdl");
 
   static final Map<String, String> courtSchedulingMDEWsdls =
       Map.of(
           "illinois-stage", "wsdl/stage/illinois-v5-CourtSchedulingMDE.wsdl",
           "illinois-test", "wsdl/test/illinois-v5-CourtSchedulingMDE.wsdl",
-          "illinois-prod", "wsdl/prod/illinois-v5-CourtSchedulingMDE.wsdl");
+          "illinois-prod", "wsdl/prod/illinois-v5-CourtSchedulingMDE.wsdl",
+          "mock-test", "wsdl/test/mock-v5-CourtSchedulingMDE.wsdl");
 
   public static Optional<FilingReviewMDEService> getFilingReviewFactory(String wsdlDomain) {
     Optional<URL> url = urlFromString(wsdlDomain, filingReviewMDEWsdls);
@@ -104,7 +108,7 @@ public class SoapClientChooser {
     String wsdlPath = domainToWsdl.get(wsdlDomain);
     URL url = SoapClientChooser.class.getClassLoader().getResource(wsdlPath);
     if (url == null) {
-      log.info("Can not initialize the default wsdl from {}", "classpath:" + wsdlPath);
+      log.info("Can not initialize the default wsdl from {}", "classpath: " + wsdlPath);
       return Optional.empty();
     }
 
