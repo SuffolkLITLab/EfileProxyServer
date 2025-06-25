@@ -134,3 +134,8 @@ mvn test
 ## Contents of .env file
 
 See [env.example](../env.example) for the most up to date documentation for this.
+
+
+## Next steps
+
+See [developing.md](developing.md).

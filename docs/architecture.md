@@ -1,4 +1,4 @@
-# E-file Proxy Architecture
+# Architecture
 
 There's a glossary at the end with common e-filing jargon.
 If I refer to specific `*.java` files, I will use just the file name (i.e. `LoginDatabase.java`) if it's unique in the repo, or sub number of

@@ -1,0 +1,6 @@
+nav:
+  - README.md
+  - developing.md
+  - operations_guide/index.md
+  - architecture.md
+  - "*"

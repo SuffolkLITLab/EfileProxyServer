@@ -1,0 +1,7 @@
+site_name: E-file Proxy Server
+
+theme: readthedocs
+
+plugins:
+  - search
+  - awesome-nav
