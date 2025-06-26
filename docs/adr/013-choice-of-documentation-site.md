@@ -12,7 +12,7 @@ endpoint docs), there's no easy way to access this information if you don't
 have a local development environment set up (i.e. new developers or folks who
 don't work on this repo much).
 
-We should host this information on a documentation that is easily findable and
+We should host this information on a documentation site that is easily findable and
 accessible. The only real choice for where to host it is on GitHub pages, and
 IMO it should be separate from the rest of the [Assembly Line documentation](https://assemblyline.suffolklitlab.org/docs/overview).
 This ADR focuses on how to generate the static HTML that will be hosted on
@@ -62,8 +62,8 @@ GitHub pages.
 * `+` the best support when trying do stuff on GitHub pages (prebuilt actions,
   etc.)
 * `-` almost all Jekyll themes don't have good navigation
-* `-` still quite a bit of extra setup to get things setup, without adding a
-  lot of extra config and `_layout` dirs, etc.*[argument 1 con]*
+* `-` still quite a bit of extra setup to get things set up, without adding a
+  lot of extra config and `_layout` dirs, etc.
 
 ### Docusaurus
 
