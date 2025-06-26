@@ -29,7 +29,8 @@ document a Java REST server, and need to choose and focus on one.
     * automatically includes javadocs
 * `+` scoped well: more focused on HTML documentation
 * `+` still get a generated OpenAPI page
-* `-` has it's own configuration and annotations that can be not the best documented, isn't the standard that OpenAPI annotations have become in the rest of the professional world
+* `-` has it's own configuration and annotations that can sometimes be poorly documented
+* `-` isn't the well-known standard that OpenAPI annotations have become in the rest of the professional world
 
 Previously was decided to not use it because of lack of support for JDK 17, but [2.15.0-SNAPSHOT fixed this](https://github.com/stoicflame/enunciate/issues/1087).
 
@@ -57,7 +58,7 @@ Previously was decided to not use it because of lack of support for JDK 17, but 
 
 * the swagger maven plugin will generate an OpenAPI YAML specification in `openapi.yaml`, that lists all of the endpoints and what inputs they take
     * OpenAPI's HTML generator turns that into a webpage.
-    * could also to [adjust the config](https://openapi-generator.tech/docs/generators/html2) for the HTML generator, and maybe the [templates](https://github.com/OpenAPITools/openapi-generator/tree/2458743257e4d722fc7b2fd051ddb9f0dab8582e/modules/openapi-generator/src/main/resources/htmlDocs2)
+    * could also [adjust the config](https://openapi-generator.tech/docs/generators/html2) for the HTML generator, and maybe the [templates](https://github.com/OpenAPITools/openapi-generator/tree/2458743257e4d722fc7b2fd051ddb9f0dab8582e/modules/openapi-generator/src/main/resources/htmlDocs2)
 * `+` Swagger IMO gives the best UI for actually browsing and understanding the API space ata a glance.
 * `-` We will have to add [specific Annotations](https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Getting-started) to our services
   to describe them
