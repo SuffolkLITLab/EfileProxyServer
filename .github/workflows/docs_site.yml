@@ -45,18 +45,10 @@ jobs:
             mvn --batch-mode -Preproducible compile javadoc:javadoc javadoc:aggregate
             cp -r target/reports/apidocs site/apidocs
             cp -r proxyserver/target/enunciate-docs/apidocs site/endpoints
-            # Add a setting to swagger-ui to turn off the "Try it now" buttons
-            sed -i 's/url\: url/url\: url\, supportedSubmitMethods\: \[\]/' site/endpoints/ui/swagger-initializer.js
+            # Adds a setting to swagger-ui to turn off the "Try it now" buttons
+            # Not active right now, but keeping around in case we want to change
+            # sed -i 's/url\: url/url\: url\, supportedSubmitMethods\: \[\]/' site/endpoints/ui/swagger-initializer.js
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: site/
-
-  # Deployment job
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
