@@ -7,7 +7,8 @@
         <docs />
         <swagger>
           <server url="https://efile-test.suffolklitlab.org/" description="The test server" />
-          <server url="https://efile.suffolklitlab.org/" description="The production server" />
+          <!-- The Production server is commented out so we don't unintentionally make calls to it from the docs site. -->
+          <!-- server url="https://efile.suffolklitlab.org/" description="The production server" /-->
         </swagger>
 
         <java-xml-client disabled="true" />
