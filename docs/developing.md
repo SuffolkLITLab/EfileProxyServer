@@ -101,3 +101,6 @@ Some misc links that I used while researching:
 * [The original WS-Security spec document](http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0.pdf)
 * [WS-Security Policy stuff](https://www.ibm.com/docs/en/was-liberty/nd?topic=wssml-securing-web-service-by-using-ws-security-policy)
 
+## Using with Docassemble
+
+See the docs for the [docassemble-EFSPIntegration](https://github.com/SuffolkLITLab/docassemble-EFSPIntegration/) package at the main [Assembly Line documentation](https://assemblyline.suffolklitlab.org/docs/components/EFSPIntegration/overview).
