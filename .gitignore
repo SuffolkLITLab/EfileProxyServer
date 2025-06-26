@@ -86,3 +86,6 @@ proxyserver/tyler_efm_codes*
 
 # formatting
 google-java-format_*
+
+# MKDocs Output
+site

@@ -1,0 +1,8 @@
+nav:
+  - README.md
+  - developing.md
+  - operations_guide/index.md
+  - architecture.md
+  - "REST API Docs 🔗": /endpoints
+  - "Javadocs 🔗": /apidocs
+  - "*"

@@ -19,12 +19,12 @@ We are still working to improve the steps, but current the process is:
    Something like `openssl rand -base64 12` will generate 16 characters securely.
    * You can also set a `MONITORING_EMAIL` which will be used for email renewal reminders from Lets Encrypt.
 2. Start up the docker containers (see [setup.md](setup.md)).
-3. Start a bash shell inside the running container: `docker exec -it efileproxyserver-efspjava-1 /bin/sh`
+3. Start a shell inside the running container: `docker exec -it efileproxyserver-efspjava-1 /bin/sh`
 4. Change directories to the app: `cd /app`.
 5. Run the ACME renewal process: `java -cp efspserver-with-deps.jar edu.suffolk.litlab.efspserver.services.acme.AcmeRenewal renew`.
    If the renewal process succeeded, `acme-domain-chain.crt` and `tls_server_cert.jks`
    should both be present in `/tmp/tls_certs` inside the container and in `src/main/config` outside the container.
-6. Exit the bash shell you started, and rebuild and restart the java docker container.
+6. Exit the shell you started, and rebuild and restart the java docker container.
 
 The newly started container should be able to serve HTTPS correctly!
 
