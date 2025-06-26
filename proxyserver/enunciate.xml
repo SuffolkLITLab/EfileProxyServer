@@ -1,0 +1,29 @@
+<enunciate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="http://enunciate.webcohesion.com/schemas/enunciate-2.18.0.xsd">
+
+    <application root="/" />
+
+    <modules>
+        <docs />
+        <swagger>
+          <server url="https://efile-test.suffolklitlab.org/" description="The test server" />
+          <!-- The Production server is commented out so we don't unintentionally make calls to it from the docs site. -->
+          <!-- server url="https://efile.suffolklitlab.org/" description="The production server" /-->
+        </swagger>
+
+        <java-xml-client disabled="true" />
+        <php-xml-client disabled="true" />
+        <csharp-xml-client disabled="true" />
+        <c-xml-client disabled="true" />
+        <java-json-client disabled="true" />
+        <javascript-client disabled="true" />
+        <obj-c-xml-client disabled="true" />
+        <ruby-json-client disabled="true" />
+        <php-json-client disabled="true" />
+        <java-xml-client disabled="true" />
+        <jaxws disabled="true" />
+        <spring-web disabled="true" />
+        <gwt-json-overlay disabled="true" />
+    </modules>
+
+</enunciate>

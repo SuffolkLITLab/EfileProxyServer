@@ -3,6 +3,8 @@ package edu.suffolk.litlab.efspserver.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.webcohesion.enunciate.metadata.rs.ResponseCode;
+import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import edu.suffolk.litlab.efspserver.db.NewTokens;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -26,7 +28,6 @@ public class AuthenticationService {
     this.security = security;
   }
 
-  @POST
   /**
    * Log in the user to all of the requested e-filing EFMs.
    *
@@ -35,6 +36,11 @@ public class AuthenticationService {
    *     jurisdiction, can be any jurisdiction
    * @return 200 and the logged in tokens to hang on to and send in with every call
    */
+  @StatusCodes({
+    @ResponseCode(code = 200, condition = "success"),
+    @ResponseCode(code = 403, condition = "login information not valid")
+  })
+  @POST
   public Response authenticateUser(String loginInfo) {
     MDC.put(MDCWrappers.OPERATION, "AuthenticationService.authenticateUser");
     ObjectMapper mapper = new ObjectMapper();
