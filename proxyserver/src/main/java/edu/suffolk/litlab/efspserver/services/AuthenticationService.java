@@ -32,10 +32,16 @@ public class AuthenticationService {
    * Log in the user to all of the requested e-filing EFMs.
    *
    * @param loginInfo should be a JSON object, with the following keys:
-   *     * api_key: the api key for this server
-   *     * tyler-myJurisdiction: an object with these tyler jurisdiction values:
-   *         * username: Any tyler jurisdiction username. Example: 'illinois'
-   *         * password: The jurisdiction's password
+   *     <ul>
+   *       <li>api_key: the api key for this server
+   *       <li>tyler-myJurisdiction: an object ('myJurisdiction' can be any jurisdiction), with
+   *           these tyler jurisdiction values:
+   *           <ul>
+   *             <li>username: Any tyler jurisdiction username. Example: 'illinois'
+   *             <li>password: The jurisdiction's password
+   *           </ul>
+   *     </ul>
+   *
    * @return 200 and the logged in tokens to hang on to and send in with every call
    */
   @StatusCodes({
