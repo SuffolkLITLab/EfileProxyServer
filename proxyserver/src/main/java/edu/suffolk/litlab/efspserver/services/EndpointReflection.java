@@ -24,39 +24,63 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /** Most of this class taken from the below blog post: https://dalelane.co.uk/blog/?p=1871 */
 public class EndpointReflection {
+  private static Logger log = LoggerFactory.getLogger(EndpointReflection.class);
 
   private final String baseUrl;
 
   public EndpointReflection(String startUrl) {
     baseUrl = ServiceHelpers.EXTERNAL_URL + startUrl;
+    log.info("baseUrl: " + baseUrl);
   }
 
   /** Returns REST endpoints defined in Java classes in the specified package. */
   @SuppressWarnings("rawtypes")
   public List<Endpoint> findRESTEndpoints(List<Class> classes) {
     var endpoints = new HashSet<Endpoint>();
-
+    // log.info("1");
     Deque<Class> classQueue = new ArrayDeque<>();
     classQueue.addAll(classes);
+    // log.info("2");
     while (!classQueue.isEmpty()) {
+      // log.info("3");
       Class<?> clazz = classQueue.pop();
       if (clazz == null) {
+        // log.info("4");
         continue;
       }
+      // log.info("5");
       classQueue.addAll(List.of(clazz.getInterfaces()));
+      // log.info("6");
       if (clazz.getSuperclass() != null) {
+        // log.info("7");
         classQueue.add(clazz.getSuperclass());
       }
+      // log.info("8");
       Path annotation = clazz.getAnnotation(Path.class);
+      // log.info("9");
       String basePath = "/";
       if (annotation != null) {
+        // log.info("10");
         basePath = getRESTEndpointPath(clazz);
+        // log.info("findRESTEndpoints, basePath: " + basePath);
       }
+      // log.info("11");
       Method[] methods = clazz.getMethods();
+      // log.info("12");
       endpoints.addAll(makeRestEndpoints(methods, clazz, basePath));
+      log.info(endpoints.toString());
     }
+    // StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+    // System.out.println("Stack trace:");
+    // for (StackTraceElement element : stackTrace) {
+    //     log.info(element.toString());
+    // }
+    // log.info("13");
     return endpoints.stream().toList();
   }
 
@@ -92,7 +116,11 @@ public class EndpointReflection {
     Map<String, String> toDisplay = new HashMap<>();
     for (Class<?> clazz : classes) {
       Path annotation = clazz.getAnnotation(Path.class);
-      toDisplay.put(clazz.getSimpleName(), baseUrl + annotation.value());
+      if (annotation != null) {
+        toDisplay.put(clazz.getSimpleName(), baseUrl + annotation.value());
+      } else {
+        log.warn("No @Path annotation found on {}, was expected", clazz.getSimpleName());
+      }
     }
     return toDisplay;
   }
@@ -246,6 +274,11 @@ public class EndpointReflection {
 
     @Override
     public String toString() {
+      // StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+      // System.out.println("Stack trace:");
+      // for (StackTraceElement element : stackTrace) {
+      //     log.info(element.toString());
+      // }
       return method + " " + uri + ", triggering " + javaMethodName;
     }
   }
