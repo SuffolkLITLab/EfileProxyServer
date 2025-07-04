@@ -42,13 +42,12 @@ public class TylerLogin implements LoginInterface {
     if (!loginInfo.isObject()
         || !loginInfo.has("username")
         || !loginInfo.get("username").isTextual()) {
-      log.warn("Tried to login without passing in a username");
+      log.warn("Tried to login without passing in `username`");
       return Optional.empty();
     }
     String username = loginInfo.get("username").asText();
-    log.info("Invoking User Auth for " + username);
     if (!loginInfo.has("password") || !loginInfo.get("password").isTextual()) {
-      log.warn("Tried to login without passing in a password");
+      log.warn("Tried to login without passing in `password`");
       return Optional.empty();
     }
     String password = loginInfo.get("password").asText();

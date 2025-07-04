@@ -10,6 +10,8 @@
           <!-- The Production server is commented out so we don't unintentionally make calls to it from the docs site. -->
           <!-- server url="https://efile.suffolklitlab.org/" description="The production server" /-->
         </swagger>
+        <jaxrs path-sort-strategy="depth_first">
+        </jaxrs>
 
         <java-xml-client disabled="true" />
         <php-xml-client disabled="true" />
@@ -25,5 +27,4 @@
         <spring-web disabled="true" />
         <gwt-json-overlay disabled="true" />
     </modules>
-
 </enunciate>
