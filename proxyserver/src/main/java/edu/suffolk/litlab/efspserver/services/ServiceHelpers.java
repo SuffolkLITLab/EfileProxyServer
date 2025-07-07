@@ -174,8 +174,6 @@ public class ServiceHelpers {
         MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
         return setupFirmPort(firmFactory, tylerToken);
       } else {
-        IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
-        ServiceHelpers.setupServicePort((BindingProvider) port);
         return Optional.of(
             new TylerFirmClient(
                 firmFactory, firmFactory.getVersion(), ServiceHelpers::setupServicePort));

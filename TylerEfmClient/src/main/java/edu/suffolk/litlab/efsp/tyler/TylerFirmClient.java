@@ -543,7 +543,7 @@ public class TylerFirmClient {
 
   public GetFirmResponseType getFirm() {
     if (version == v2022_1) {
-      return Conversion.convert(new GetFirmResponseType(), latestPort.getFirm());
+      return Conversion.convert(new GetFirmResponseType(), v2022Port.getFirm());
     } else {
       return latestPort.getFirm();
     }
