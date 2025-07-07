@@ -58,13 +58,14 @@ Then you'll need to create or download files not present in the git repo, includ
   [`client_sign.properties.example`](../client_sign.properties.example) if you
   need to recreate it.
 
-Finally, you run the following commands to build, start, monitor, and stop the server.
+Finally, you run the following commands to build, start, monitor, and stop the server. Remove the `dev-compose.yml` argument to
+build a production version of the images instead.
 
 ```bash
-docker compose build # I encourage building the server first, so it can start immediately.
-docker compose up -d # `-d` starts it as a background process.
-docker compose logs # will print out all of the logs from the proxy server and the database
-docker compose down
+docker compose -f dev-compose.yml build # I encourage building the server first, so it can start immediately.
+docker compose -f dev-compose.yml up -d --watch # `-d` starts it as a background process, --watch will rebuild and restart the containers when code changes
+docker compose -f dev-compose.yml logs # will print out all of the logs from the proxy server and the database
+docker compose -f dev-compose.yml down
 ```
 
 ### Docassemble
