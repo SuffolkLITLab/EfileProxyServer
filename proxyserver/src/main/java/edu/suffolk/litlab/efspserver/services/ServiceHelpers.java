@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import tyler.efm.EfmFirmService;
-import tyler.efm.latest.services.IEfmFirmService;
 
 public class ServiceHelpers {
   private static Logger log = LoggerFactory.getLogger(ServiceHelpers.class);
@@ -174,8 +173,6 @@ public class ServiceHelpers {
         MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
         return setupFirmPort(firmFactory, tylerToken);
       } else {
-        IEfmFirmService port = firmFactory.getBasicHttpBindingIEfmFirmService();
-        ServiceHelpers.setupServicePort((BindingProvider) port);
         return Optional.of(
             new TylerFirmClient(
                 firmFactory, firmFactory.getVersion(), ServiceHelpers::setupServicePort));
