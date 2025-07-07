@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import tyler.efm.EfmFirmService;
-import tyler.efm.latest.services.IEfmFirmService;
 
 public class ServiceHelpers {
   private static Logger log = LoggerFactory.getLogger(ServiceHelpers.class);
