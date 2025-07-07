@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>edu.suffolk.litlab</groupId>
     <artifactId>efspserver-parent</artifactId>
-    <version>1.2.12</version>
+    <version>1.2.13</version>
     <name>EFSP Proxy Parent</name>
     <url>https://suffolklitlab.org</url>
     <description>Parent project for an EFSP client for the AssemblyLine Project</description>
@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <thisproject.version>1.2.12</thisproject.version>
+        <thisproject.version>1.2.13</thisproject.version>
         <cxf.version>4.0.8</cxf.version>
         <slf4j.version>2.0.7</slf4j.version>
         <jackson.version>2.14.2</jackson.version>
