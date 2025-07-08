@@ -16,13 +16,16 @@ import tyler.efm.latest.services.schema.common.PaymentAccountLocationDetails;
 import tyler.efm.latest.services.schema.common.PaymentAccountType;
 import tyler.efm.latest.services.schema.common.RegistrationType;
 import tyler.efm.latest.services.schema.common.RoleLocationType;
+import tyler.efm.latest.services.schema.common.RoleType;
 import tyler.efm.latest.services.schema.common.ServiceContactType;
 import tyler.efm.latest.services.schema.common.UserType;
 
 public class Conversion {
 
+  private static CustomBeanConverter converter;
+
   static {
-    var converter = new CustomBeanConverter();
+    converter = new CustomBeanConverter();
     var utils = BeanUtilsBean.getInstance().getConvertUtils();
     var classesToRegister =
         List.of(
@@ -37,6 +40,7 @@ public class Conversion {
             PaymentAccountType.class,
             RegistrationType.class,
             RoleLocationType.class,
+            RoleType.class,
             ServiceContactType.class,
             UserType.class,
             tyler.efm.v2022_1.services.schema.common.AddressType.class,
@@ -50,6 +54,7 @@ public class Conversion {
             tyler.efm.v2022_1.services.schema.common.PaymentAccountType.class,
             tyler.efm.v2022_1.services.schema.common.RegistrationType.class,
             tyler.efm.v2022_1.services.schema.common.RoleLocationType.class,
+            tyler.efm.v2022_1.services.schema.common.RoleType.class,
             tyler.efm.v2022_1.services.schema.common.ServiceContactType.class,
             tyler.efm.v2022_1.services.schema.common.UserType.class);
     for (var clazz : classesToRegister) {
@@ -58,29 +63,31 @@ public class Conversion {
   }
 
   /** Copies all of the content from the src object to the dest, returning it fluently. */
-  public static <T> T convert(T dest, Object src) {
-    copyProperties(dest, src);
-    return dest;
+  @SuppressWarnings(value = { "unchecked" })
+  public static <T> T convert(Class<T> destClass, Object src) {
+    return (T) copyProperties(destClass, src);
   }
 
-  private static void copyProperties(Object dest, Object src) {
+  private static Object copyProperties(Class<?> destClass, Object src) {
     // TODO(brycew): check to make sure the objects have the same common name?
-    try {
-      BeanUtils.copyProperties(dest, src);
-    } catch (IllegalAccessException | InvocationTargetException ex) {
-      // TODO(brycew): log here?
-      throw new RuntimeException(ex);
-    }
+    return converter.convert(destClass, src);
   }
 
   private static class CustomBeanConverter implements Converter {
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T convert(Class<T> aClass, Object o) {
       try {
-        T output = aClass.getDeclaredConstructor().newInstance();
-        BeanUtils.copyProperties(output, o);
-        return output;
+         if (aClass.isEnum()) {
+          String value = (String) o.getClass().getDeclaredMethod("value").invoke(o);
+          T output = (T) aClass.getMethod("fromValue", String.class).invoke(null, value);
+          return output;
+        } else {
+          T output = aClass.getDeclaredConstructor().newInstance();
+          BeanUtils.copyProperties(output, o);
+          return output;
+        }
       } catch (IllegalAccessException
           | InvocationTargetException
           | NoSuchMethodException
