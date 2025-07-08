@@ -10,7 +10,7 @@
     <parent>
       <groupId>edu.suffolk.litlab</groupId>
       <artifactId>efspserver-parent</artifactId>
-      <version>1.2.13</version>
+      <version>1.2.14</version>
     </parent>
 
     <dependencies>
