@@ -4,8 +4,6 @@ package edu.suffolk.litlab.efsp.tyler;
 public enum TylerEnv {
   /// i.e. the production / live environment
   PROD("prod"),
-  /// should be "identical" to PROD
-  TEST("test"),
   /// to "deploy patches and new releases prior to introduction into" PROD
   STAGE("stage");
 
@@ -24,8 +22,6 @@ public enum TylerEnv {
       return STAGE;
     } else if (value.equalsIgnoreCase(PROD.getPath())) {
       return PROD;
-    } else if (value.equalsIgnoreCase(TEST.getPath())) {
-      return TEST;
     } else {
       throw new IllegalArgumentException("Can't make a `TylerEnv` from: " + value);
     }

@@ -90,9 +90,10 @@ public class TylerFirmClient {
 
   public GetAttorneyResponseType getAttorney(GetAttorneyRequestType getAttorneyRequest) {
     if (version == v2022_1) {
-      var req = new tyler.efm.v2022_1.services.schema.getattorneyrequest.GetAttorneyRequestType();
-      var resp = v2022Port.getAttorney(Conversion.convert(req, getAttorneyRequest));
-      return Conversion.convert(new GetAttorneyResponseType(), resp);
+      var resp = v2022Port.getAttorney(Conversion.convert(
+        tyler.efm.v2022_1.services.schema.getattorneyrequest.GetAttorneyRequestType.class,
+        getAttorneyRequest));
+      return Conversion.convert(GetAttorneyResponseType.class, resp);
     } else {
       return latestPort.getAttorney(getAttorneyRequest);
     }
@@ -101,12 +102,12 @@ public class TylerFirmClient {
   public UpdatePaymentAccountResponseType updatePaymentAccount(
       UpdatePaymentAccountRequestType updatePaymentAccountRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.updatepaymentaccountrequest
-              .UpdatePaymentAccountRequestType();
       var resp =
-          v2022Port.updatePaymentAccount(Conversion.convert(req, updatePaymentAccountRequest));
-      return Conversion.convert(new UpdatePaymentAccountResponseType(), resp);
+          v2022Port.updatePaymentAccount(Conversion.convert(
+            tyler.efm.v2022_1.services.schema.updatepaymentaccountrequest
+              .UpdatePaymentAccountRequestType.class,
+              updatePaymentAccountRequest));
+      return Conversion.convert(UpdatePaymentAccountResponseType.class, resp);
     } else {
       return latestPort.updatePaymentAccount(updatePaymentAccountRequest);
     }
@@ -115,12 +116,12 @@ public class TylerFirmClient {
   public GetVitalChekPaymentAccountIdResponseType getVitalChekPaymentAccountId(
       GetPaymentAccountRequestType getPaymentAccountRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.getpaymentaccountrequest
-              .GetPaymentAccountRequestType();
       var resp =
-          v2022Port.getVitalChekPaymentAccountId(Conversion.convert(req, getPaymentAccountRequest));
-      return Conversion.convert(new GetVitalChekPaymentAccountIdResponseType(), resp);
+          v2022Port.getVitalChekPaymentAccountId(Conversion.convert(
+            tyler.efm.v2022_1.services.schema.getpaymentaccountrequest
+              .GetPaymentAccountRequestType.class,
+              getPaymentAccountRequest));
+      return Conversion.convert(GetVitalChekPaymentAccountIdResponseType.class, resp);
     } else {
       return latestPort.getVitalChekPaymentAccountId(getPaymentAccountRequest);
     }
@@ -129,10 +130,10 @@ public class TylerFirmClient {
   public ServiceContactListResponseType getPublicList(
       GetPublicListRequestType getPublicListRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.getpubliclistrequest.GetPublicListRequestType();
-      var resp = v2022Port.getPublicList(Conversion.convert(req, getPublicListRequest));
-      return Conversion.convert(new ServiceContactListResponseType(), resp);
+      var resp = v2022Port.getPublicList(Conversion.convert(
+        tyler.efm.v2022_1.services.schema.getpubliclistrequest.GetPublicListRequestType.class,
+        getPublicListRequest));
+      return Conversion.convert(ServiceContactListResponseType.class, resp);
     } else {
       return latestPort.getPublicList(getPublicListRequest);
     }
@@ -140,9 +141,10 @@ public class TylerFirmClient {
 
   public GetUserResponseType getUser(GetUserRequestType getUserRequest) {
     if (version == v2022_1) {
-      var req = new tyler.efm.v2022_1.services.schema.getuserrequest.GetUserRequestType();
-      var resp = v2022Port.getUser(Conversion.convert(req, getUserRequest));
-      return Conversion.convert(new GetUserResponseType(), resp);
+      var resp = v2022Port.getUser(Conversion.convert(
+        tyler.efm.v2022_1.services.schema.getuserrequest.GetUserRequestType.class,
+        getUserRequest));
+      return Conversion.convert(GetUserResponseType.class, resp);
     } else {
       return latestPort.getUser(getUserRequest);
     }
@@ -161,11 +163,10 @@ public class TylerFirmClient {
   public GetServiceContactResponseType getServiceContact(
       GetServiceContactRequestType getServiceContactRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.getservicecontactrequest
-              .GetServiceContactRequestType();
-      var resp = v2022Port.getServiceContact(Conversion.convert(req, getServiceContactRequest));
-      return Conversion.convert(new GetServiceContactResponseType(), resp);
+      var resp = v2022Port.getServiceContact(Conversion.convert(
+        tyler.efm.v2022_1.services.schema.getservicecontactrequest.GetServiceContactRequestType.class,
+        getServiceContactRequest));
+      return Conversion.convert(GetServiceContactResponseType.class, resp);
     } else {
       return latestPort.getServiceContact(getServiceContactRequest);
     }
@@ -174,12 +175,11 @@ public class TylerFirmClient {
   public CreatePaymentAccountResponseType createPaymentAccount(
       CreatePaymentAccountRequestType createPaymentAccountRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.createpaymentaccountrequest
-              .CreatePaymentAccountRequestType();
       var resp =
-          v2022Port.createPaymentAccount(Conversion.convert(req, createPaymentAccountRequest));
-      return Conversion.convert(new CreatePaymentAccountResponseType(), resp);
+          v2022Port.createPaymentAccount(Conversion.convert(
+            tyler.efm.v2022_1.services.schema.createpaymentaccountrequest.CreatePaymentAccountRequestType.class,
+            createPaymentAccountRequest));
+      return Conversion.convert(CreatePaymentAccountResponseType.class, resp);
     } else {
       return latestPort.createPaymentAccount(createPaymentAccountRequest);
     }
@@ -188,7 +188,7 @@ public class TylerFirmClient {
   public NotificationPreferencesListResponseType getNotificationPreferencesList() {
     if (version == v2022_1) {
       var resp = v2022Port.getNotificationPreferencesList();
-      return Conversion.convert(new NotificationPreferencesListResponseType(), resp);
+      return Conversion.convert(NotificationPreferencesListResponseType.class, resp);
     } else {
       return latestPort.getNotificationPreferencesList();
     }
@@ -197,13 +197,12 @@ public class TylerFirmClient {
   public GetPaymentAccountResponseType getGlobalPaymentAccount(
       GetPaymentAccountRequestType getGlobalPaymentAccountRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.getpaymentaccountrequest
-              .GetPaymentAccountRequestType();
       var resp =
           v2022Port.getGlobalPaymentAccount(
-              Conversion.convert(req, getGlobalPaymentAccountRequest));
-      return Conversion.convert(new GetPaymentAccountResponseType(), resp);
+              Conversion.convert(
+                tyler.efm.v2022_1.services.schema.getpaymentaccountrequest.GetPaymentAccountRequestType.class,
+                getGlobalPaymentAccountRequest));
+      return Conversion.convert(GetPaymentAccountResponseType.class, resp);
     } else {
       return latestPort.getGlobalPaymentAccount(getGlobalPaymentAccountRequest);
     }
@@ -212,13 +211,12 @@ public class TylerFirmClient {
   public UpdatePaymentAccountResponseType updateGlobalPaymentAccount(
       UpdatePaymentAccountRequestType updateGlobalPaymentAccountRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.updatepaymentaccountrequest
-              .UpdatePaymentAccountRequestType();
       var resp =
           v2022Port.updateGlobalPaymentAccount(
-              Conversion.convert(req, updateGlobalPaymentAccountRequest));
-      return Conversion.convert(new UpdatePaymentAccountResponseType(), resp);
+              Conversion.convert(
+              tyler.efm.v2022_1.services.schema.updatepaymentaccountrequest.UpdatePaymentAccountRequestType.class,
+              updateGlobalPaymentAccountRequest));
+      return Conversion.convert(UpdatePaymentAccountResponseType.class, resp);
     } else {
       return latestPort.updateGlobalPaymentAccount(updateGlobalPaymentAccountRequest);
     }
@@ -227,13 +225,13 @@ public class TylerFirmClient {
   public CreatePaymentAccountResponseType createInactivePaymentAccount(
       CreatePaymentAccountRequestType createPaymentAccountRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.createpaymentaccountrequest
-              .CreatePaymentAccountRequestType();
       var resp =
           v2022Port.createInactivePaymentAccount(
-              Conversion.convert(req, createPaymentAccountRequest));
-      return Conversion.convert(new CreatePaymentAccountResponseType(), resp);
+              Conversion.convert(
+              tyler.efm.v2022_1.services.schema.createpaymentaccountrequest
+              .CreatePaymentAccountRequestType.class,
+              createPaymentAccountRequest));
+      return Conversion.convert(CreatePaymentAccountResponseType.class, resp);
     } else {
       return latestPort.createInactivePaymentAccount(createPaymentAccountRequest);
     }
@@ -242,12 +240,11 @@ public class TylerFirmClient {
   public BaseResponseType resendActivationEmail(
       ResendActivationEmailRequestType resendActivationEmailRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.resendactivationemailrequest
-              .ResendActivationEmailRequestType();
       var resp =
-          v2022Port.resendActivationEmail(Conversion.convert(req, resendActivationEmailRequest));
-      return Conversion.convert(new BaseResponseType(), resp);
+          v2022Port.resendActivationEmail(Conversion.convert(
+            tyler.efm.v2022_1.services.schema.resendactivationemailrequest.ResendActivationEmailRequestType.class,
+            resendActivationEmailRequest));
+      return Conversion.convert(BaseResponseType.class, resp);
     } else {
       return latestPort.resendActivationEmail(resendActivationEmailRequest);
     }
@@ -256,11 +253,11 @@ public class TylerFirmClient {
   public GetPaymentAccountResponseType getPaymentAccount(
       GetPaymentAccountRequestType getPaymentAccountRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.getpaymentaccountrequest
-              .GetPaymentAccountRequestType();
-      var resp = v2022Port.getPaymentAccount(Conversion.convert(req, getPaymentAccountRequest));
-      return Conversion.convert(new GetPaymentAccountResponseType(), resp);
+      var resp = v2022Port.getPaymentAccount(Conversion.convert(
+          tyler.efm.v2022_1.services.schema.getpaymentaccountrequest
+              .GetPaymentAccountRequestType.class,
+          getPaymentAccountRequest));
+      return Conversion.convert(GetPaymentAccountResponseType.class, resp);
     } else {
       return latestPort.getPaymentAccount(getPaymentAccountRequest);
     }
@@ -269,12 +266,12 @@ public class TylerFirmClient {
   public BaseResponseType detachServiceContact(
       DetachServiceContactRequestType detachServiceContactRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.detachservicecontactrequest
-              .DetachServiceContactRequestType();
       var resp =
-          v2022Port.detachServiceContact(Conversion.convert(req, detachServiceContactRequest));
-      return Conversion.convert(new BaseResponseType(), resp);
+          v2022Port.detachServiceContact(Conversion.convert(
+          tyler.efm.v2022_1.services.schema.detachservicecontactrequest
+              .DetachServiceContactRequestType.class,
+              detachServiceContactRequest));
+      return Conversion.convert(BaseResponseType.class, resp);
     } else {
       return latestPort.detachServiceContact(detachServiceContactRequest);
     }
@@ -283,7 +280,7 @@ public class TylerFirmClient {
   public ServiceContactListResponseType getServiceContactList() {
     if (version.equals(TylerVersion.v2022_1)) {
       var resp = v2022Port.getServiceContactList();
-      return Conversion.convert(new ServiceContactListResponseType(), resp);
+      return Conversion.convert(ServiceContactListResponseType.class, resp);
     } else {
       return latestPort.getServiceContactList();
     }
@@ -293,7 +290,7 @@ public class TylerFirmClient {
   public UserListResponseType getUserList(GetUserListRequest getUserListRequest) {
     if (version.equals(TylerVersion.v2022_1)) {
       // Can ignore the paging values passed in; just return it all.
-      var resp = Conversion.convert(new UserListResponseType(), v2022Port.getUserList());
+      var resp = Conversion.convert(UserListResponseType.class, v2022Port.getUserList());
       var paging = new PagingType();
       paging.setPageIndex(0);
       paging.setPageSize(resp.getUser().size());
@@ -308,7 +305,7 @@ public class TylerFirmClient {
   public PaymentAccountTypeListResponseType getPaymentAccountTypeList() {
     if (version == v2022_1) {
       var resp = v2022Port.getPaymentAccountTypeList();
-      return Conversion.convert(new PaymentAccountTypeListResponseType(), resp);
+      return Conversion.convert(PaymentAccountTypeListResponseType.class, resp);
     } else {
       return latestPort.getPaymentAccountTypeList();
     }
@@ -316,9 +313,10 @@ public class TylerFirmClient {
 
   public BaseResponseType removeUser(RemoveUserRequestType removeUserRequest) {
     if (version == v2022_1) {
-      var req = new tyler.efm.v2022_1.services.schema.removeuserrequest.RemoveUserRequestType();
-      var resp = v2022Port.removeUser(Conversion.convert(req, removeUserRequest));
-      return Conversion.convert(new BaseResponseType(), resp);
+      var resp = v2022Port.removeUser(Conversion.convert(
+        tyler.efm.v2022_1.services.schema.removeuserrequest.RemoveUserRequestType.class,
+        removeUserRequest));
+      return Conversion.convert(BaseResponseType.class, resp);
     } else {
       return latestPort.removeUser(removeUserRequest);
     }
@@ -327,12 +325,12 @@ public class TylerFirmClient {
   public PaymentAccountListResponseType getPaymentAccountList(
       GetPaymentAccountListRequestType getPaymentAccountListRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.getpaymentaccountlistrequest
-              .GetPaymentAccountListRequestType();
       var resp =
-          v2022Port.getPaymentAccountList(Conversion.convert(req, getPaymentAccountListRequest));
-      return Conversion.convert(new PaymentAccountListResponseType(), resp);
+          v2022Port.getPaymentAccountList(Conversion.convert(
+            tyler.efm.v2022_1.services.schema.getpaymentaccountlistrequest
+              .GetPaymentAccountListRequestType.class,
+            getPaymentAccountListRequest));
+      return Conversion.convert(PaymentAccountListResponseType.class, resp);
     } else {
       return latestPort.getPaymentAccountList(getPaymentAccountListRequest);
     }
@@ -340,10 +338,10 @@ public class TylerFirmClient {
 
   public BaseResponseType removeAttorney(RemoveAttorneyRequestType removeAttorneyRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.removeattorneyrequest.RemoveAttorneyRequestType();
-      var resp = v2022Port.removeAttorney(Conversion.convert(req, removeAttorneyRequest));
-      return Conversion.convert(new CreatePaymentAccountResponseType(), resp);
+      var resp = v2022Port.removeAttorney(Conversion.convert(
+          tyler.efm.v2022_1.services.schema.removeattorneyrequest.RemoveAttorneyRequestType.class,
+          removeAttorneyRequest));
+      return Conversion.convert(CreatePaymentAccountResponseType.class, resp);
     } else {
       return latestPort.removeAttorney(removeAttorneyRequest);
     }
@@ -352,7 +350,7 @@ public class TylerFirmClient {
   public PaymentAccountListResponseType getGlobalPaymentAccountList() {
     if (version == v2022_1) {
       var resp = v2022Port.getGlobalPaymentAccountList();
-      return Conversion.convert(new PaymentAccountListResponseType(), resp);
+      return Conversion.convert(PaymentAccountListResponseType.class, resp);
     } else {
       return latestPort.getGlobalPaymentAccountList();
     }
@@ -361,13 +359,13 @@ public class TylerFirmClient {
   public BaseResponseType removeGlobalPaymentAccount(
       RemovePaymentAccountRequestType removeGlobalPaymentAccountRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.removepaymentaccountrequest
-              .RemovePaymentAccountRequestType();
       var resp =
           v2022Port.removeGlobalPaymentAccount(
-              Conversion.convert(req, removeGlobalPaymentAccountRequest));
-      return Conversion.convert(new BaseResponseType(), resp);
+              Conversion.convert(
+              tyler.efm.v2022_1.services.schema.removepaymentaccountrequest
+              .RemovePaymentAccountRequestType.class,
+                removeGlobalPaymentAccountRequest));
+      return Conversion.convert(BaseResponseType.class, resp);
     } else {
       return latestPort.removeGlobalPaymentAccount(removeGlobalPaymentAccountRequest);
     }
@@ -376,9 +374,10 @@ public class TylerFirmClient {
   public UpdateUserResponseType updateUser(UpdateUserRequestType updateUserRequest) {
     if (version.equals(TylerVersion.v2022_1)) {
       // TODO
-      var req = new tyler.efm.v2022_1.services.schema.updateuserrequest.UpdateUserRequestType();
-      var resp = v2022Port.updateUser(Conversion.convert(req, updateUserRequest.getUser()));
-      return Conversion.convert(new UpdateUserResponseType(), resp);
+      var resp = v2022Port.updateUser(Conversion.convert(
+        tyler.efm.v2022_1.services.schema.updateuserrequest.UpdateUserRequestType.class,
+        updateUserRequest.getUser()));
+      return Conversion.convert(UpdateUserResponseType.class, resp);
     } else {
       return latestPort.updateUser(updateUserRequest);
     }
@@ -387,12 +386,12 @@ public class TylerFirmClient {
   public BaseResponseType attachServiceContact(
       AttachServiceContactRequestType attachServiceContactRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.attachservicecontactrequest
-              .AttachServiceContactRequestType();
       var resp =
-          v2022Port.attachServiceContact(Conversion.convert(req, attachServiceContactRequest));
-      return Conversion.convert(new BaseResponseType(), resp);
+          v2022Port.attachServiceContact(Conversion.convert(
+            tyler.efm.v2022_1.services.schema.attachservicecontactrequest
+              .AttachServiceContactRequestType.class,
+            attachServiceContactRequest));
+      return Conversion.convert(BaseResponseType.class, resp);
     } else {
       return latestPort.attachServiceContact(attachServiceContactRequest);
     }
@@ -400,10 +399,10 @@ public class TylerFirmClient {
 
   public BaseResponseType removeUserRole(RemoveUserRoleRequestType removeUserRoleRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.removeuserrolerequest.RemoveUserRoleRequestType();
-      var resp = v2022Port.removeUserRole(Conversion.convert(req, removeUserRoleRequest));
-      return Conversion.convert(new BaseResponseType(), resp);
+      var resp = v2022Port.removeUserRole(Conversion.convert(
+        tyler.efm.v2022_1.services.schema.removeuserrolerequest.RemoveUserRoleRequestType.class,
+        removeUserRoleRequest));
+      return Conversion.convert(BaseResponseType.class, resp);
     } else {
       return latestPort.removeUserRole(removeUserRoleRequest);
     }
@@ -412,7 +411,7 @@ public class TylerFirmClient {
   public AttorneyListResponseType getAttorneyList() {
     if (version == v2022_1) {
       var resp = v2022Port.getAttorneyList();
-      return Conversion.convert(new AttorneyListResponseType(), resp);
+      return Conversion.convert(AttorneyListResponseType.class, resp);
     } else {
       return latestPort.getAttorneyList();
     }
@@ -421,12 +420,12 @@ public class TylerFirmClient {
   public UpdateServiceContactResponseType updateServiceContact(
       UpdateServiceContactRequestType updateServiceContactRequest) {
     if (version.equals(TylerVersion.v2022_1)) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.updateservicecontactrequest
-              .UpdateServiceContactRequestType();
       var resp =
-          v2022Port.updateServiceContact(Conversion.convert(req, updateServiceContactRequest));
-      return Conversion.convert(new UpdateServiceContactResponseType(), resp);
+          v2022Port.updateServiceContact(Conversion.convert(
+            tyler.efm.v2022_1.services.schema.updateservicecontactrequest
+              .UpdateServiceContactRequestType.class,
+            updateServiceContactRequest));
+      return Conversion.convert(UpdateServiceContactResponseType.class, resp);
     } else {
       return latestPort.updateServiceContact(updateServiceContactRequest);
     }
@@ -435,12 +434,12 @@ public class TylerFirmClient {
   public BaseResponseType removeServiceContact(
       RemoveServiceContactRequestType removeServiceContactRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.removeservicecontactrequest
-              .RemoveServiceContactRequestType();
       var resp =
-          v2022Port.removeServiceContact(Conversion.convert(req, removeServiceContactRequest));
-      return Conversion.convert(new BaseResponseType(), resp);
+          v2022Port.removeServiceContact(Conversion.convert(
+            tyler.efm.v2022_1.services.schema.removeservicecontactrequest
+              .RemoveServiceContactRequestType.class,
+            removeServiceContactRequest));
+      return Conversion.convert(BaseResponseType.class, resp);
     } else {
       return latestPort.removeServiceContact(removeServiceContactRequest);
     }
@@ -448,9 +447,10 @@ public class TylerFirmClient {
 
   public BaseResponseType addUserRole(AddUserRoleRequestType addUserRoleRequest) {
     if (version == v2022_1) {
-      var req = new tyler.efm.v2022_1.services.schema.adduserrolerequest.AddUserRoleRequestType();
-      var resp = v2022Port.addUserRole(Conversion.convert(req, addUserRoleRequest));
-      return Conversion.convert(new BaseResponseType(), resp);
+      var resp = v2022Port.addUserRole(Conversion.convert(
+        tyler.efm.v2022_1.services.schema.adduserrolerequest.AddUserRoleRequestType.class,
+        addUserRoleRequest));
+      return Conversion.convert(BaseResponseType.class, resp);
     } else {
       return latestPort.addUserRole(addUserRoleRequest);
     }
@@ -459,10 +459,10 @@ public class TylerFirmClient {
   public CreateAttorneyResponseType createAttorney(
       CreateAttorneyRequestType createAttorneyRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.createattorneyrequest.CreateAttorneyRequestType();
-      var resp = v2022Port.createAttorney(Conversion.convert(req, createAttorneyRequest));
-      return Conversion.convert(new CreateAttorneyResponseType(), resp);
+      var resp = v2022Port.createAttorney(Conversion.convert(
+          tyler.efm.v2022_1.services.schema.createattorneyrequest.CreateAttorneyRequestType.class,
+        createAttorneyRequest));
+      return Conversion.convert(CreateAttorneyResponseType.class, resp);
     } else {
       return latestPort.createAttorney(createAttorneyRequest);
     }
@@ -471,12 +471,12 @@ public class TylerFirmClient {
   public BaseResponseType removePaymentAccount(
       RemovePaymentAccountRequestType removePaymentAccountRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.removepaymentaccountrequest
-              .RemovePaymentAccountRequestType();
       var resp =
-          v2022Port.removePaymentAccount(Conversion.convert(req, removePaymentAccountRequest));
-      return Conversion.convert(new BaseResponseType(), resp);
+          v2022Port.removePaymentAccount(Conversion.convert(
+            tyler.efm.v2022_1.services.schema.removepaymentaccountrequest
+              .RemovePaymentAccountRequestType.class,
+            removePaymentAccountRequest));
+      return Conversion.convert(BaseResponseType.class, resp);
     } else {
       return latestPort.removePaymentAccount(removePaymentAccountRequest);
     }
@@ -485,12 +485,12 @@ public class TylerFirmClient {
   public CreateServiceContactResponseType createServiceContact(
       CreateServiceContactRequestType createServiceContactRequest) {
     if (version.equals(TylerVersion.v2022_1)) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.createservicecontactrequest
-              .CreateServiceContactRequestType();
       var resp =
-          v2022Port.createServiceContact(Conversion.convert(req, createServiceContactRequest));
-      return Conversion.convert(new CreateServiceContactResponseType(), resp);
+          v2022Port.createServiceContact(Conversion.convert(
+            tyler.efm.v2022_1.services.schema.createservicecontactrequest
+              .CreateServiceContactRequestType.class,
+            createServiceContactRequest));
+      return Conversion.convert(CreateServiceContactResponseType.class, resp);
     } else {
       return latestPort.createServiceContact(createServiceContactRequest);
     }
@@ -499,10 +499,10 @@ public class TylerFirmClient {
   public UpdateAttorneyResponseType updateAttorney(
       UpdateAttorneyRequestType updateAttorneyRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.updateattorneyrequest.UpdateAttorneyRequestType();
-      var resp = v2022Port.updateAttorney(Conversion.convert(req, updateAttorneyRequest));
-      return Conversion.convert(new UpdateAttorneyResponseType(), resp);
+      var resp = v2022Port.updateAttorney(Conversion.convert(
+        tyler.efm.v2022_1.services.schema.updateattorneyrequest.UpdateAttorneyRequestType.class,
+        updateAttorneyRequest));
+      return Conversion.convert(UpdateAttorneyResponseType.class, resp);
     } else {
       return latestPort.updateAttorney(updateAttorneyRequest);
     }
@@ -510,9 +510,10 @@ public class TylerFirmClient {
 
   public RegistrationResponseType registerUser(RegistrationRequestType registerUserRequest) {
     if (version == v2022_1) {
-      var req = new tyler.efm.v2022_1.services.schema.registrationrequest.RegistrationRequestType();
-      var resp = v2022Port.registerUser(Conversion.convert(req, registerUserRequest));
-      return Conversion.convert(new RegistrationResponseType(), resp);
+      var resp = v2022Port.registerUser(Conversion.convert(
+        tyler.efm.v2022_1.services.schema.registrationrequest.RegistrationRequestType.class,
+        registerUserRequest));
+      return Conversion.convert(RegistrationResponseType.class, resp);
     } else {
       return latestPort.registerUser(registerUserRequest);
     }
@@ -520,9 +521,10 @@ public class TylerFirmClient {
 
   public BaseResponseType updateFirm(UpdateFirmRequestType updateFirmRequest) {
     if (version == v2022_1) {
-      var req = new tyler.efm.v2022_1.services.schema.updatefirmrequest.UpdateFirmRequestType();
-      var resp = v2022Port.updateFirm(Conversion.convert(req, updateFirmRequest));
-      return Conversion.convert(new BaseResponseType(), resp);
+      var resp = v2022Port.updateFirm(Conversion.convert(
+        tyler.efm.v2022_1.services.schema.updatefirmrequest.UpdateFirmRequestType.class,
+        updateFirmRequest));
+      return Conversion.convert(BaseResponseType.class, resp);
     } else {
       return latestPort.updateFirm(updateFirmRequest);
     }
@@ -531,11 +533,11 @@ public class TylerFirmClient {
   public ResetPasswordResponseType resetUserPassword(
       ResetUserPasswordRequestType resetUserPasswordRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.resetuserpasswordrequest
-              .ResetUserPasswordRequestType();
-      var resp = v2022Port.resetUserPassword(Conversion.convert(req, resetUserPasswordRequest));
-      return Conversion.convert(new ResetPasswordResponseType(), resp);
+      var resp = v2022Port.resetUserPassword(Conversion.convert(
+          tyler.efm.v2022_1.services.schema.resetuserpasswordrequest
+              .ResetUserPasswordRequestType.class,
+          resetUserPasswordRequest));
+      return Conversion.convert(ResetPasswordResponseType.class, resp);
     } else {
       return latestPort.resetUserPassword(resetUserPasswordRequest);
     }
@@ -543,7 +545,7 @@ public class TylerFirmClient {
 
   public GetFirmResponseType getFirm() {
     if (version == v2022_1) {
-      return Conversion.convert(new GetFirmResponseType(), v2022Port.getFirm());
+      return Conversion.convert(GetFirmResponseType.class, v2022Port.getFirm());
     } else {
       return latestPort.getFirm();
     }
@@ -552,13 +554,13 @@ public class TylerFirmClient {
   public CreatePaymentAccountResponseType createGlobalPaymentAccount(
       CreatePaymentAccountRequestType createGlobalPaymentAccountRequest) {
     if (version == v2022_1) {
-      var req =
-          new tyler.efm.v2022_1.services.schema.createpaymentaccountrequest
-              .CreatePaymentAccountRequestType();
       var resp =
           v2022Port.createGlobalPaymentAccount(
-              Conversion.convert(req, createGlobalPaymentAccountRequest));
-      return Conversion.convert(new CreatePaymentAccountResponseType(), resp);
+              Conversion.convert(
+              tyler.efm.v2022_1.services.schema.createpaymentaccountrequest
+              .CreatePaymentAccountRequestType.class,
+              createGlobalPaymentAccountRequest));
+      return Conversion.convert(CreatePaymentAccountResponseType.class, resp);
     } else {
       return latestPort.createGlobalPaymentAccount(createGlobalPaymentAccountRequest);
     }

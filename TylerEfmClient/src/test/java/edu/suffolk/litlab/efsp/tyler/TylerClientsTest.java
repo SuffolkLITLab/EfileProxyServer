@@ -24,7 +24,7 @@ public class TylerClientsTest {
                 assertThat(TylerClients.getEfmUserFactory(jurisdiction, env)).isNotNull();
             }
         }
-        assertThat(TylerClients.getEfmUserFactory("texas", TylerEnv.TEST)).isEmpty();
+        assertThat(TylerClients.getEfmUserFactory("antartica", TylerEnv.STAGE)).isEmpty();
         assertThat(TylerClients.getEfmUserFactory("massachusetts", TylerEnv.PROD)).isNotEmpty();
         assertThat(TylerClients.getEfmUserFactory("illinois", TylerEnv.STAGE)).isNotEmpty();
     }

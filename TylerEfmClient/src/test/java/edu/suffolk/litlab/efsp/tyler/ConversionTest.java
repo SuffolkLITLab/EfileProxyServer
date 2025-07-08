@@ -12,26 +12,34 @@ public class ConversionTest {
   public void testAuth() {
     var oldAuth = new tyler.efm.v2022_1.services.schema.authenticaterequest.AuthenticateRequestType();
     oldAuth.setEmail("idk@idk.com");
-    var newAuth = new tyler.efm.latest.services.schema.authenticaterequest.AuthenticateRequestType();
-    Conversion.convert(newAuth, oldAuth);
-    assertThat(oldAuth.getEmail()).isEqualTo(newAuth.getEmail());
+    var newAuth = Conversion.convert(tyler.efm.latest.services.schema.authenticaterequest.AuthenticateRequestType.class, oldAuth);
+    assertThat(newAuth.getEmail()).isEqualTo(oldAuth.getEmail());
   }
 
   @Test
-  public void allRequets() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+  public void allRequests() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
     ArrayList<Class<?>> v2022_classes = new ArrayList<>();
     v2022_classes.add(tyler.efm.v2022_1.services.schema.authenticaterequest.AuthenticateRequestType.class);
     v2022_classes.add(tyler.efm.v2022_1.services.schema.updatenotificationpreferencesrequest.UpdateNotificationPreferencesRequestType.class);
+    v2022_classes.add(tyler.efm.v2022_1.services.schema.registrationrequest.RegistrationRequestType.class);
+    v2022_classes.add(tyler.efm.v2022_1.services.schema.registrationresponse.RegistrationResponseType.class);
     ArrayList<Class<?>> v2025_classes = new ArrayList<>();
     v2025_classes.add(tyler.efm.latest.services.schema.authenticaterequest.AuthenticateRequestType.class);
     v2025_classes.add(tyler.efm.latest.services.schema.updatenotificationpreferencesrequest.UpdateNotificationPreferencesRequestType.class);
+    v2025_classes.add(tyler.efm.latest.services.schema.registrationrequest.RegistrationRequestType.class);
+    v2025_classes.add(tyler.efm.latest.services.schema.registrationresponse.RegistrationResponseType.class);
     for (int i = 0; i < v2022_classes.size(); i++ ) {
-      var newObj = v2025_classes.get(i).getDeclaredConstructor().newInstance();
       var oldObj = v2022_classes.get(i).getDeclaredConstructor().newInstance();
-      var replacementObj = v2022_classes.get(i).getDeclaredConstructor().newInstance();
-      newObj = Conversion.convert(newObj, oldObj);
-      replacementObj = Conversion.convert(replacementObj, newObj);
+      var newObj = Conversion.convert(v2025_classes.get(i), oldObj);
+      var replacementObj = Conversion.convert(v2022_classes.get(i), newObj);
       assertThat(EqualsBuilder.reflectionEquals(oldObj, replacementObj)).isTrue();
     }
+  }
+
+  @Test
+  public void allEnums() {
+    var oldReg = tyler.efm.v2022_1.services.schema.common.RegistrationType.FIRM_ADMINISTRATOR;
+    var newReg = Conversion.convert(tyler.efm.latest.services.schema.common.RegistrationType.class, oldReg);
+    assertThat(newReg.value()).isEqualTo(oldReg.value());
   }
 }

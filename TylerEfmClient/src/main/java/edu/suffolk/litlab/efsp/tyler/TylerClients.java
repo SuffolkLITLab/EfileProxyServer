@@ -19,7 +19,7 @@ public class TylerClients {
           "california", TylerVersion.v2024_6,
           "illinois", TylerVersion.v2024_6,
           "indiana", TylerVersion.v2024_6,
-          "massachusetts", TylerVersion.v2025_0,
+          "massachusetts", TylerVersion.v2022_1,
           "texas", TylerVersion.v2024_6);
 
   private static final Map<String, TylerVersion> PROD_VERSION_MAP =
@@ -70,14 +70,8 @@ public class TylerClients {
   }
 
   private static Optional<TylerVersion> getVersion(String jurisdiction, TylerEnv tylerEnv) {
-    if (tylerEnv.equals(TylerEnv.TEST)) {
-      log.warn("TylerEnv.TEST not supported yet (i.e. we don't call their test server)");
-      Optional.empty();
-    }
-
     Map<String, TylerVersion> versionMap =
         switch (tylerEnv) {
-          case TylerEnv.TEST -> Map.of();
           case TylerEnv.STAGE -> STAGE_VERSION_MAP;
           case TylerEnv.PROD -> PROD_VERSION_MAP;
         };
