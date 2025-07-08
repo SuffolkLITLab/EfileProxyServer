@@ -19,7 +19,7 @@ public class TylerClients {
           "california", TylerVersion.v2024_6,
           "illinois", TylerVersion.v2024_6,
           "indiana", TylerVersion.v2024_6,
-          "massachusetts", TylerVersion.v2022_1,
+          "massachusetts", TylerVersion.v2025_0,
           "texas", TylerVersion.v2024_6);
 
   private static final Map<String, TylerVersion> PROD_VERSION_MAP =
