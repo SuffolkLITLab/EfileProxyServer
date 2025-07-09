@@ -1,0 +1,42 @@
+services:
+  efspjava:
+    extends:
+      file: docker-compose.yml
+      service: efspjava
+    build:
+      target: build
+    # Necessary b/c docassemble is external to the docker network
+    ports: !override
+      - target: 9009
+        published: 9100
+      - target: 9000
+        published: 9101
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - "db"
+    volumes:
+      - type: bind
+        source: ./proxyserver/src/main/config
+        target: /tmp/tls_certs
+      # Gets exact SOAP envelopes sent when running locally with wireshark
+      - type: bind
+        source: .
+        target: /tmp/secrets
+      - type: bind
+        source: target
+        target: /tmp/jacoco
+    # Automatically rebuild server on file changes. With some files, you still
+    # need to stop and `build` again (e.g. client_sign.properties)
+    # TODO(brycew): add a `sync` action for config files, make sure we load them when accessed
+    develop:
+      watch:
+        - action: rebuild
+          path: ./proxyserver
+  db:
+    extends:
+      file: docker-compose.yml
+      service: db
+
+volumes:
+  data-volume:

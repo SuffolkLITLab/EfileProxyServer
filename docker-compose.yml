@@ -2,6 +2,7 @@ services:
   efspjava:
     build:
       context: .
+      target: release
     # Necessary b/c docassemble is external to the docker network
     ports:
       - target: 9009
@@ -15,11 +16,6 @@ services:
       - type: bind
         source: ./proxyserver/src/main/config
         target: /tmp/tls_certs
-      # Uncomment this for debugging: you can get exact SOAP envelopes being
-      # sent by running wireshark locally
-      #- type: bind
-      #  source: .
-      #  target: /tmp/secrets
     deploy:
       resources:
         limits:

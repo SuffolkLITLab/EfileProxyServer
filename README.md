@@ -11,9 +11,13 @@ This is an abbreviated version of installation. Full details are in [setup](docs
 These instructions are written for Linux (specifically Ubuntu 22.04), steps for other platforms should be similar.
 
 1. [Install docker](https://docs.docker.com/engine/install/) and [docker compose](https://docs.docker.com/compose/install/).
-2. Download this repository: In a terminal, you can run `git clone https://github.com/SuffolkLITLab/EfileProxyServer`
-3. In the same terminal change directories to where you downloaded the server: `cd EfileProxyServer`, and then build a docker image for this server. `docker compose build`
-4. Run the server image that you just built with `docker compose up`.
+2. Then:
+    ```bash
+    git clone https://github.com/SuffolkLITLab/EfileProxyServer
+    cd EfileProxyServer
+    docker compose -f dev-compose.yml up --watch # For a development build
+    docker compose build && docker compose up -d # For a production-like build
+    ```
 
 ### Env file
 
@@ -21,11 +25,7 @@ Docker env files can't be directly used in `bash`, so if you are running things 
 
 ### Making API Tokens
 
-Run the following command after starting the services with `docker compose`:
-
-```bash
-docker exec -i efileproxyserver-efspjava-1 /usr/bin/java -cp /app/efspserver-with-deps.jar edu.suffolk.litlab.efspserver.db.LoginDatabase \"servername\" true true
-```
+When running locally, run `./local_create_api_key.sh`.
 
 The API token to add to the docassemble config will be printed out.
 
