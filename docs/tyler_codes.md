@@ -282,6 +282,9 @@ An array of additional things that the filer can ask for / purchase from the cou
  
 Technically, Tyler describes it's codes using the [genericode](https://docs.oasis-open.org/codelist/cs-genericode-1.0/doc/oasis-code-list-representation-genericode.html#_Toc190622786) standard, as is required by ECF. Only a small subset of the features of genericode are used however. Most of the information about the codes can be expressed as a SQL table, as is natural for genericode: each code has one or more columns and each entry in a code is a row. 
 
+## How to select codes for an interview
+
+In a particular user-experience, you need to balance being able to support a wide variety of case types and categories and being able to automatically select the relevant codes that a user shouldn't have to select themselves.
 
 ## Actually accessing the DB through Docker
 
