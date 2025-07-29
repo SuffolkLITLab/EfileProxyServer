@@ -1,0 +1,21 @@
+# Example fly.yml
+# You can use this as a template for the Fly.io continuous deployment GitHub workflow config file.
+# Copy into .github/workflows/fly.yml for GitHub to see this file.
+# For more details, check out:
+# https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/
+name: Fly Prod release
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    name: Deploy app to Prod
+    runs-on: ubuntu-latest
+    concurrency: deploy-prod-group    # optional: ensure only one action runs at a time
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only -c fly.production.toml
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
