@@ -4,15 +4,75 @@ Author: Bryce Willey
 
 TODO(brycew): Still in progress!
 
-Tyler codes are simply options that the end-user must make (either implicitly or explicitly) when making a filing. The choices are essentially a drop-down list of options, defined by the court and other choices they have made so far in the filing process. Each court decides which codes are available to it's filers, and every court differs.
+Tyler codes are options that the end-user must make (either implicitly or explicitly) when making a filing. The choices are a drop-down list of options, defined by the court and other choices they have made so far in the filing process. Each court decides which codes are available to its filers, and every court differs.
 
-Technically, Tyler describes it's codes using the [genericode](https://docs.oasis-open.org/codelist/cs-genericode-1.0/doc/oasis-code-list-representation-genericode.html#_Toc190622786) standard, as is required by ECF. Only a small subset of the features of genericode are used however. Most of the information about the codes can be expressed as a SQL table, as is natural for genericode: each code has one or more columns and each entry in a code is a row. We store all code information in SQL tables internally.
+We store all code information in SQL tables internally.
 
 This is not meant to be an exhaustive description of each column in all of the codes: it is an introduction into the hierarchy of the code tables, with a brief description of each.
 
-The hierarchy is shown in the below image:
+The hierarchy is shown in the below diagram:
 
-![The dependencies of the filing specific codes, as a directed graph](codes_dependencies.png)
+* The <span style="color:005500">green nodes</span> are parent nodes: you need to know its exact code before you can select its dependents.
+* The <span style="color:ff808b">pink node</span> isn't a code, but a piece of information about the filing needed to select the correct value if its dependents.
+
+```mermaid
+block-beta
+  columns 1
+  block:lvl1
+    space
+   location("location")
+   space
+  end
+  block:lvl2
+    init("Initial or\nSubsequent")
+    style init fill:#ff808b
+    casecat("Case\nCategory")
+  end
+  space
+  block:lvl3
+    space
+    casetype("Case Type")
+    dmgamt("Damage\nAmount")
+    procrem("Procedure\nRemedy")
+  end
+  block:lvl4
+    filing("Filing")
+    subtype("Case\nSubtype")
+    crossref("Cross\nReference")
+    party("Party Type")
+  end
+  style lvl4 padding:50px
+  space
+  block:lvl5
+    doc("Document\nType")
+    opt("Optional\nServices")
+    motion("Motion\nType")
+    component("Filing\nComponent")
+  end
+
+  location --> casecat
+  casecat --> casetype
+  casecat --> dmgamt
+  casecat --> procrem
+  init --> casetype
+  init --> dmgamt
+  init --> procrem
+  init --> filing
+  casetype --> filing
+  casetype --> subtype
+  casetype --> crossref
+  casetype --> party
+  filing --> doc
+  filing --> opt
+  filing --> motion
+  filing --> component
+  classDef green fill:#005500
+  class location green
+  class casecat green
+  class casetype green
+  class filing green
+```
+
 
 For example, if you want to know what party type codes are allowed to be used in a case, you need to know the following information (all of the parents above the `party type` node):
 * the location (i.e. the court)
@@ -216,6 +276,12 @@ a different way of saying the exact same thing (MA does "Public" and "Impounded"
 #### Optional Services
 
 An array of additional things that the filer can ask for / purchase from the court; this is kind of a catch-all, and includes things like adding a jury trial to a case (for some courts) to requesting additional copies be printed by the court.
+
+
+## How EfileProxyServer downloads Codes
+ 
+Technically, Tyler describes it's codes using the [genericode](https://docs.oasis-open.org/codelist/cs-genericode-1.0/doc/oasis-code-list-representation-genericode.html#_Toc190622786) standard, as is required by ECF. Only a small subset of the features of genericode are used however. Most of the information about the codes can be expressed as a SQL table, as is natural for genericode: each code has one or more columns and each entry in a code is a row. 
+
 
 ## Actually accessing the DB through Docker
 
