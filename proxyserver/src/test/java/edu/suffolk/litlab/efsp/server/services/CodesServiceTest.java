@@ -120,7 +120,9 @@ public class CodesServiceTest {
   public void testGetAll() throws JsonMappingException, JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node = mapper.readTree(getServerResponseAt("/"));
-    assertTrue(node.has("getCodesUnderCourt"), "didn't have codes post court: " + node);
+    assertTrue(
+        node.has("getCodesUnderCourt"),
+        "didn't have codes post court (`getCodesUnderCourt`): " + node);
     assertTrue(node.has("getCourtLocationCodes"), "didn't have court location codes: " + node);
     assertTrue(node.has("getCaseTypes"));
     assertTrue(node.has("getCaseSubtypes"));
@@ -145,7 +147,7 @@ public class CodesServiceTest {
   public void testGetCase() throws JsonMappingException, JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node = mapper.readTree(getServerResponseAt("/courts/adams/case_types/25361"));
-    assertTrue(node.has("getCaseSubtypes"), "didn't have case sub types. Response was: " + node);
+    assertTrue(node.has("getCaseSubtypes"), "didn't have `getCaseSubtypes`. Response was: " + node);
     assertEquals(
         ServiceHelpers.EXTERNAL_URL
             + "/jurisdictions/illinois/codes/courts/adams/case_types/25361/case_subtypes",
