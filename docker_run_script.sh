@@ -10,7 +10,7 @@ if [ -n "$FLY_MACHINE_ID" ]; then
 fi
 
 # Add this when we figure out ThreadPools and Unmarshalling (see #111)
-# -Djava.util.concurrent.ForkJoinPool.common.threadFactory=edu.suffolk.litlab.efspserver.JAXBForkJoinWorkerThreadFactory \
+# -Djava.util.concurrent.ForkJoinPool.common.threadFactory=edu.suffolk.litlab.efsp.server.JAXBForkJoinWorkerThreadFactory \
 # if needed to debug http logs:
 # https://stackoverflow.com/questions/53215038/how-to-log-request-response-using-java-net-http-httpclient
 exec java \

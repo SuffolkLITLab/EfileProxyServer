@@ -21,7 +21,7 @@ We are still working to improve the steps, but current the process is:
 2. Start up the docker containers (see [setup.md](setup.md)).
 3. Start a shell inside the running container: `docker exec -it efileproxyserver-efspjava-1 /bin/sh`
 4. Change directories to the app: `cd /app`.
-5. Run the ACME renewal process: `java -cp efspserver-with-deps.jar edu.suffolk.litlab.efspserver.services.acme.AcmeRenewal renew`.
+5. Run the ACME renewal process: `java -cp efspserver-with-deps.jar edu.suffolk.litlab.efsp.server.services.acme.AcmeRenewal renew`.
    If the renewal process succeeded, `acme-domain-chain.crt` and `tls_server_cert.jks`
    should both be present in `/tmp/tls_certs` inside the container and in `src/main/config` outside the container.
 6. Exit the shell you started, and rebuild and restart the java docker container.
@@ -63,11 +63,11 @@ needs to point to the `*.jks` file.
 
 See the following files and their code comments for the current setup.
 
-* [EfspServer.java](https://github.com/SuffolkLITLab/EfileProxyServer/blob/main/src/main/java/edu/suffolk/litlab/efspserver/services/EfspServer.java)
+* [EfspServer.java](https://github.com/SuffolkLITLab/EfileProxyServer/blob/main/src/main/java/edu/suffolk/litlab/efsp/server/EfspServer.java)
 * [ServerConfig.xml](https://github.com/SuffolkLITLab/EfileProxyServer/blob/main/src/main/config/ServerConfig.xml)
   * The ServerConfig.xml shouldn't use the `clientAuthentication` elem, as it expects our connecting clients to also have a TLS cert, which isn't how HTTPS traffic usually works.
-* [HttpsCallbackHandler.java](https://github.com/SuffolkLITLab/EfileProxyServer/blob/main/src/main/java/edu/suffolk/litlab/efspserver/HttpsCallbackHandler.java)
-* [ServiceHelpers.java](https://github.com/SuffolkLITLab/EfileProxyServer/blob/main/src/main/java/edu/suffolk/litlab/efspserver/services/ServiceHelpers.java#L74)
+* [HttpsCallbackHandler.java](https://github.com/SuffolkLITLab/EfileProxyServer/blob/main/src/main/java/edu/suffolk/litlab/efsp/server/utils/HttpsCallbackHandler.java)
+* [ServiceHelpers.java](https://github.com/SuffolkLITLab/EfileProxyServer/blob/main/src/main/java/edu/suffolk/litlab/efsp/server/utils/ServiceHelpers.java#L74)
   * The external address (i.e `ServerFactoryBean.setAddress`) needs to be `https://`, not `http://`. We use `CERT_PASSWORD` to determine if someone is trying to run with TLS, and if no `CERT_PASSWORD` is present, we use `http://`.
 
 

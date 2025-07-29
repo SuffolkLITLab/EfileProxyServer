@@ -5,7 +5,7 @@
       <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{serverId}] [%X{userId}] [%X{operation}] [%thread] %-5level %logger{50} - %msg%n</pattern>
     </encoder>
   </appender>
-  <appender name="PerServer" class="edu.suffolk.litlab.efspserver.ServerSpecificAppender">
+  <appender name="PerServer" class="edu.suffolk.litlab.efsp.server.logging.ServerSpecificAppender">
     <encoder>
       <Pattern>| %d{yyyy-MM-dd HH:mm:ss.SSS} | %X{serverId} | %X{userId} | %X{operation} | %thread | %-5level | %logger{50} |- %msg |%n</Pattern>
     </encoder>

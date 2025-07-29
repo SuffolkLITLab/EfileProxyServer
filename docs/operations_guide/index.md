@@ -39,7 +39,7 @@ The current setup keeps a single machine running at all times within the Boston 
 
 The EFSP application itself is mostly clusterable, the exceptions being:
 * the way the Tyler EFM Code Updates are scheduled right now
-* CourtPolicy data, which is currently cached in memory (see l. 21 in /src/main/java/edu/suffolk/litlab/efspserver/ecf4/PolicyCacher.java [https://github.com/SuffolkLITLab/EfileProxyServer/blob/a67c75a6690e9bd54fd4050d0c274feccf13b382/src/main/java/edu/suffolk/litlab/efspserver/ecf4/PolicyCacher.java#L12]). To honor Tyler's restriction to only hit the endpoint once per day, this cache will need to be updated so that it can be shared across all instances. Caching it in the database would be one option to achieve that.  
+* CourtPolicy data, which is currently cached in memory (see l. 21 in /src/main/java/edu/suffolk/litlab/efsp/server/ecf4/PolicyCacher.java [https://github.com/SuffolkLITLab/EfileProxyServer/blob/a67c75a6690e9bd54fd4050d0c274feccf13b382/src/main/java/edu/suffolk/litlab/efspserver/ecf4/PolicyCacher.java#L12]). To honor Tyler's restriction to only hit the endpoint once per day, this cache will need to be updated so that it can be shared across all instances. Caching it in the database would be one option to achieve that.  
 
 For a single, always running instance, nothing needs to be done.
 

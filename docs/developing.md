@@ -14,8 +14,8 @@ See the docs for the [docassemble-EFSPIntegration](https://github.com/SuffolkLIT
 ## Writing Code
 
 There are two server files that provide important features that can help you understand the server:
-* [AdminUserService.java](../src/main/java/edu/suffolk/litlab/efspserver/services/AdminUserService.java).
-* [FilingReviewService.java](../src/main/java/edu/suffolk/litlab/efspserver/services/FilingReviewService.java).
+* [AdminUserService.java](../src/main/java/edu/suffolk/litlab/efsp/server/services/AdminUserService.java).
+* [FilingReviewService.java](../src/main/java/edu/suffolk/litlab/efsp/server/services/FilingReviewService.java).
 
 See [architecture.md](architecture.md) for a description of the general architecture of the program.
 
@@ -50,7 +50,7 @@ Download [version 1.27.0 of the native graal executable of google-java-format](h
 
 ```bash
 chmod +x google-java-format_linux-x86-64 # just once, use the name of your platform
-./google-java-format_linux-x86-64 -i `find proxyserver/src/ -name *.java ! -name CodeTableConstants.java ! -name FilingCode.java`
+./google-java-format_linux-x86-64 -i `find proxyserver/src/ -name "*.java" ! -name CodeTableConstants.java ! -name FilingCode.java`
 ```
 
 To format all of your files.

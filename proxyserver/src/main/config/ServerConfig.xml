@@ -29,7 +29,7 @@
     <httpj:engine-factory bus="cxf">
         <httpj:identifiedTLSServerParameters id="secure">
             <httpj:tlsServerParameters>
-                <sec:keyManagers keyPasswordCallbackHandler="edu.suffolk.litlab.efspserver.HttpsCallbackHandler">
+                <sec:keyManagers keyPasswordCallbackHandler="edu.suffolk.litlab.efsp.server.utils.HttpsCallbackHandler">
                     <sec:keyStore file="src/main/config/tls_server_cert.jks" type="JKS"/>
                 </sec:keyManagers>
 	              <sec:certAlias>alias</sec:certAlias>

@@ -11,9 +11,9 @@ fi
 java \
     $JACOCO_ARG \
     -cp efspserver-with-deps.jar \
-    edu.suffolk.litlab.efspserver.db.LoginDatabase integrationTest true true > /tmp/secrets/proxy_stuff.txt
+    edu.suffolk.litlab.efsp.db.LoginDatabase integrationTest true true > /tmp/secrets/proxy_stuff.txt
 # Add this when we figure out ThreadPools and Unmarshalling (see #111)
-# -Djava.util.concurrent.ForkJoinPool.common.threadFactory=edu.suffolk.litlab.efspserver.JAXBForkJoinWorkerThreadFactory \
+# -Djava.util.concurrent.ForkJoinPool.common.threadFactory=edu.suffolk.litlab.efsp.server.JAXBForkJoinWorkerThreadFactory \
 # if needed to debug http logs:
 # https://stackoverflow.com/questions/53215038/how-to-log-request-response-using-java-net-http-httpclient
 exec java \
