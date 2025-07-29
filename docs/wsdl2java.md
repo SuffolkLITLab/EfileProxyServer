@@ -31,7 +31,7 @@ efspjava_1  | javax.xml.ws.soap.SOAPFaultException: Unmarshalling Error: unexpec
 efspjava_1  |   at org.apache.cxf.jaxws.JaxWsClientProxy.mapException(JaxWsClientProxy.java:195)
 efspjava_1  |   at org.apache.cxf.jaxws.JaxWsClientProxy.invoke(JaxWsClientProxy.java:145)
 efspjava_1  |   at jdk.proxy2/jdk.proxy2.$Proxy92.getPolicy(Unknown Source)
-efspjava_1  |   at edu.suffolk.litlab.efspserver.ecf4.Ecf4Filer.prepareFiling(OasisEcfFiler.java:163)
+efspjava_1  |   at edu.suffolk.litlab.efsp.server.ecf4.Ecf4Filer.prepareFiling(OasisEcfFiler.java:163)
 ```
 
 This means our generated java classes are out of date, and we'll need to update
@@ -102,11 +102,11 @@ working in. For us it's mostly `illinois-stage`.
       some nice "get me a single WSDL file" endpoint out there, and the definition of the ECF services uses a
       lot of XML schema documents (XSDs). Thus the solution is to locally download all of those XSD files, and
       make them reference the locally downloaded versions and not the server specific files they originally used.
-      That's what `edu.suffolk.litlab.efspserver.XsdDownloader` does! It should be setup through
+      That's what `edu.suffolk.litlab.efsp.utils.XsdDownloader` does! It should be setup through
       the pom file's exec-maven-plugin, and just runs the `main` function. The command is below:
 
       ```bash
-      java -cp efspserver-with-deps.jar edu.suffolk.litlab.efspserver.XsdDownloader https://jurisdiction-env.tylertech.cloud/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf
+      java -cp efspserver-with-deps.jar edu.suffolk.litlab.efsp.utils.XsdDownloader https://jurisdiction-env.tylertech.cloud/EFM/Schema/ECF-4.0-FilingReviewMDEService.wsdl ecf
       ```
 
       This will download all of the ECF files, giving them a single specific prefix. You'll need to move them
@@ -128,7 +128,7 @@ working in. For us it's mostly `illinois-stage`.
       ECF v5, not ECF v4. So just run:
 
       ```bash
-      java -cp target/efspserver-with-deps.jar edu.suffolk.litlab.efspserver.XsdDownloader https://jurisdiction-env.tylertech.cloud/EFM/Schema/v5/CourtSchedulingMDE.wsdl ecf-v5
+      java -cp target/efspserver-with-deps.jar edu.suffolk.litlab.efsp.utils.XsdDownloader https://jurisdiction-env.tylertech.cloud/EFM/Schema/v5/CourtSchedulingMDE.wsdl ecf-v5
       ```
 
       and move all the files to a different resource directory, this time `src/main/resources/wsdl/{tyler_env}/`.
