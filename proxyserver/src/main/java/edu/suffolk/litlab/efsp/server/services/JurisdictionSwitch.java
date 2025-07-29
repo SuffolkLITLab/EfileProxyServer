@@ -26,6 +26,14 @@ public class JurisdictionSwitch {
     return Response.ok(ef.pathParamsToMap(jurisdictions.keySet().stream())).build();
   }
 
+  /**
+   * Chooses the specific jurisdiction (i.e. US State or other court system) that you are filing
+   * into.
+   *
+   * @param jurisdictionId the full name of the state, usually lower case ("massachusetts", or
+   *     "illinois").
+   * @return
+   */
   @Path("{jurisdiction_id}")
   public JurisdictionServiceHandle getJurisdictionService(
       @PathParam("jurisdiction_id") String jurisdictionId) {

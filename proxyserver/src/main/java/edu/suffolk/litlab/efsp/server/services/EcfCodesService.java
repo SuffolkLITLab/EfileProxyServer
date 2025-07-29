@@ -18,9 +18,9 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.ServiceCodeType;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
+import edu.suffolk.litlab.efsp.server.utils.EndpointReflection.Endpoint;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.stdlib.StdLib;
-import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -35,8 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,11 +83,13 @@ public class EcfCodesService extends CodesService {
     this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/codes");
   }
 
+  @Override
   public Response getAll() {
     var retMap = ef.endPointsToMap(ef.findRESTEndpoints(List.of(this.getClass())));
     return cors(Response.ok(retMap));
   }
 
+  @Override
   public Response getCourts(HttpHeaders httpHeaders, boolean fileableOnly, boolean withNames) {
     try (CodeDatabase cd = cdSupplier.get()) {
       return cors(ServiceHelpers.getCourts(cd, fileableOnly, withNames));
@@ -96,28 +98,22 @@ public class EcfCodesService extends CodesService {
     }
   }
 
+  @Override
   public Response getCodesUnderCourt(String courtId) {
     var errResp = okayCourt(courtId);
     if (errResp.isPresent()) {
       return errResp.get();
     }
-    Class<?> clazz = this.getClass();
-    List<Method> subCourtMethods =
-        Stream.of(clazz.getMethods())
-            .filter(m -> underCourtMethodNames.contains(m.getName()))
-            .toList();
-    var endpoints = ef.makeRestEndpoints(subCourtMethods, clazz);
 
-    List<Method> superClassSubCourtMethods =
-        Stream.of(clazz.getSuperclass().getMethods())
-            .filter(m -> underCourtMethodNames.contains(m.getName()))
-            .toList();
-    endpoints.addAll(ef.makeRestEndpoints(superClassSubCourtMethods, clazz.getSuperclass()));
+    Predicate<Method> underCourtName = m -> underCourtMethodNames.contains(m.getName());
+    Set<Endpoint> endpoints = getEndpointsFromMethods(this.getClass(), underCourtName);
+    endpoints.addAll(getEndpointsFromMethods(this.getClass().getSuperclass(), underCourtName));
 
     var retMap = ef.endPointsToMap(replacePathParam(endpoints, Map.of("court_id", courtId)));
     return cors(Response.ok(retMap));
   }
 
+  @Override
   public Response getCourtLocationCodes(String courtId) {
     try (CodeDatabase cd = cdSupplier.get()) {
       Optional<CourtLocationInfo> info = cd.getFullLocationInfo(courtId);
@@ -130,6 +126,10 @@ public class EcfCodesService extends CodesService {
     }
   }
 
+  /**
+   * Returns detailed into on a specific case type, as well as being a HATEOS endpoint (i.e. points
+   * to other endpoints).
+   */
   @GET
   @Path("/courts/{court_id}/case_types/{case_type_id}")
   public Response getCodesUnderCaseType(
@@ -147,20 +147,14 @@ public class EcfCodesService extends CodesService {
             .build();
       }
 
-      Class<?> clazz = this.getClass();
-      Method[] methods = clazz.getMethods();
-      List<Method> subCaseMethods = new ArrayList<>();
-      for (Method method : methods) {
-        if (underCaseTypeMethodNames.contains(method.getName())) {
-          subCaseMethods.add(method);
-        }
-      }
+      Predicate<Method> underCaseType = (m) -> underCaseTypeMethodNames.contains(m.getName());
+      Set<Endpoint> endpoints = getEndpointsFromMethods(this.getClass(), underCaseType);
+      endpoints.addAll(getEndpointsFromMethods(this.getClass().getSuperclass(), underCaseType));
       var retMap =
           new HashMap<String, Object>(
               ef.endPointsToMap(
                   replacePathParam(
-                      ef.makeRestEndpoints(subCaseMethods, clazz),
-                      Map.of("court_id", courtId, "case_type_id", caseTypeId))));
+                      endpoints, Map.of("court_id", courtId, "case_type_id", caseTypeId))));
       retMap.putAll(maybeType.get().toMap());
       return cors(Response.ok(retMap));
     }
@@ -183,25 +177,21 @@ public class EcfCodesService extends CodesService {
                 .entity(
                     "\"Filing code " + filingCode + " in court " + courtId + " does not exist\""));
       }
-      Class<?> clazz = this.getClass();
-      Method[] methods = clazz.getMethods();
-      List<Method> subCaseMethods = new ArrayList<>();
-      for (Method method : methods) {
-        if (underFilingCodeMethodNames.contains(method.getName())) {
-          subCaseMethods.add(method);
-        }
-      }
+      Predicate<Method> underFilingCode = (m) -> underFilingCodeMethodNames.contains(m.getName());
+      Set<Endpoint> endpoints = getEndpointsFromMethods(this.getClass(), underFilingCode);
+      endpoints.addAll(getEndpointsFromMethods(this.getClass().getSuperclass(), underFilingCode));
 
       var retMap =
           new HashMap<String, Object>(
               ef.endPointsToMap(
                   replacePathParam(
-                      ef.makeRestEndpoints(subCaseMethods, clazz),
-                      Map.of("court_id", courtId, "filing_code_id", filingCode))));
+                      endpoints, Map.of("court_id", courtId, "filing_code_id", filingCode))));
       retMap.putAll(maybeCode.get().toMap());
       return cors(Response.ok(retMap));
     }
   }
+
+  //////////////  Search endpoints (i.e. info gathering across courts) //////////////////
 
   @GET
   @Path("/categories")
@@ -289,12 +279,10 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/categories")
-  public Response getCategories(
-      @PathParam("court_id") String courtId,
-      @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly,
-      @QueryParam("timing") String timing)
+  ////////////// Core query APIs //////////////////
+
+  @Override
+  public Response getCategories(String courtId, boolean fileableOnly, String timing)
       throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       var errResp = okayCourt(cd, courtId);
@@ -323,11 +311,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/categories/{cat_code}")
-  public Response getCategoryByCode(
-      @PathParam("court_id") String courtId, @PathParam("cat_code") String catCode)
-      throws SQLException {
+  @Override
+  public Response getCategoryByCode(String courtId, String catCode) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       var errResp = okayCourt(cd, courtId);
       if (errResp.isPresent()) {
@@ -337,14 +322,9 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/case_types")
-  public Response getCaseTypes(
-      @PathParam("court_id") String courtId,
-      @QueryParam("category_id") String categoryId,
-      @QueryParam("timing") String timing)
+  @Override
+  public Response getCaseTypes(String courtId, String categoryId, String timing)
       throws SQLException {
-
     if (categoryId == null || categoryId.isBlank()) {
       return cors(
           Response.status(400)
@@ -373,9 +353,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/name_suffixes")
-  public Response getNameSuffixes(@PathParam("court_id") String courtId) throws SQLException {
+  @Override
+  public Response getNameSuffixes(String courtId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
@@ -386,11 +365,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/case_types/{case_type_id}/case_subtypes")
-  public Response getCaseSubtypes(
-      @PathParam("court_id") String courtId, @PathParam("case_type_id") String caseTypeId)
-      throws SQLException {
+  @Override
+  public Response getCaseSubtypes(String courtId, String caseTypeId) throws SQLException {
 
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
@@ -402,9 +378,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/service_types")
-  public Response getServiceTypes(@PathParam("court_id") String courtId) throws SQLException {
+  @Override
+  public Response getServiceTypes(String courtId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
@@ -414,11 +389,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/procedures_or_remedies")
-  public Response getProcedureOrRemedies(
-      @PathParam("court_id") String courtId, @QueryParam("category_id") String categoryId)
-      throws SQLException {
+  @Override
+  public Response getProcedureOrRemedies(String courtId, String categoryId) throws SQLException {
 
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
@@ -430,13 +402,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/filing_types")
-  public Response getFilingTypes(
-      @PathParam("court_id") String courtId,
-      @QueryParam("category_id") String categoryId,
-      @QueryParam("type_id") String typeId,
-      @QueryParam("initial") boolean initial)
+  @Override
+  public Response getFilingTypes(String courtId, String categoryId, String typeId, boolean initial)
       throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
@@ -448,9 +415,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/filer_types")
-  public Response getFilerTypes(@PathParam("court_id") String courtId) throws SQLException {
+  @Override
+  public Response getFilerTypes(String courtId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
@@ -460,11 +426,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/damage_amounts")
-  public Response getDamageAmounts(
-      @PathParam("court_id") String courtId, @QueryParam("category_id") String categoryId)
-      throws SQLException {
+  @Override
+  public Response getDamageAmounts(String courtId, String categoryId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
@@ -475,16 +438,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  /**
-   * Used for when you need to populate the party types names for a case search or something similar
-   *
-   * @param courtId
-   * @return
-   * @throws SQLException
-   */
-  @GET
-  @Path("/courts/{court_id}/party_types")
-  public Response getAllPartyTypes(@PathParam("court_id") String courtId) throws SQLException {
+  @Override
+  public Response getAllPartyTypes(String courtId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
@@ -495,11 +450,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/party_types/{party_type_id}")
-  public Response getPartyTypeFromAll(
-      @PathParam("court_id") String courtId, @PathParam("party_type_id") String partyTypeId)
-      throws SQLException {
+  @Override
+  public Response getPartyTypeFromAll(String courtId, String partyTypeId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
@@ -515,11 +467,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/case_types/{case_type_id}/party_types")
-  public Response getPartyTypes(
-      @PathParam("court_id") String courtId, @PathParam("case_type_id") String caseTypeId)
-      throws SQLException {
+  @Override
+  public Response getPartyTypes(String courtId, String caseTypeId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
@@ -530,12 +479,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/case_types/{case_type_id}/party_types/{party_type_id}")
-  public Response getPartyType(
-      @PathParam("court_id") String courtId,
-      @PathParam("case_type_id") String caseTypeId,
-      @PathParam("party_type_id") String partyTypeId)
+  @Override
+  public Response getPartyType(String courtId, String caseTypeId, String partyTypeId)
       throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
@@ -553,19 +498,14 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/casetypes/{case_type_id}/cross_references")
-  public Response getCrossReferencesOld(
-      @PathParam("court_id") String courtId, @PathParam("case_type_id") String caseTypeId)
-      throws SQLException {
+  @Override
+  @Deprecated
+  public Response getCrossReferencesOld(String courtId, String caseTypeId) throws SQLException {
     return getCrossReferences(courtId, caseTypeId);
   }
 
-  @GET
-  @Path("/courts/{court_id}/case_types/{case_type_id}/cross_references")
-  public Response getCrossReferences(
-      @PathParam("court_id") String courtId, @PathParam("case_type_id") String caseTypeId)
-      throws SQLException {
+  @Override
+  public Response getCrossReferences(String courtId, String caseTypeId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
@@ -576,11 +516,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/filing_types/{filing_code_id}/document_types")
-  public Response getDocumentTypes(
-      @PathParam("court_id") String courtId, @PathParam("filing_code_id") String filingCodeId)
-      throws SQLException {
+  @Override
+  public Response getDocumentTypes(String courtId, String filingCodeId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -591,11 +528,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/filing_types/{filing_code_id}/motion_types")
-  public Response getMotionTypes(
-      @PathParam("court_id") String courtId, @PathParam("filing_code_id") String filingCodeId)
-      throws SQLException {
+  @Override
+  public Response getMotionTypes(String courtId, String filingCodeId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -606,9 +540,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/allowed_file_types")
-  public Response getAllowedFileTypes(@PathParam("court_id") String courtId) throws SQLException {
+  @Override
+  public Response getAllowedFileTypes(String courtId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -619,9 +552,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/filing_statuses")
-  public Response getFilingStatuses(@PathParam("court_id") String courtId) throws SQLException {
+  @Override
+  public Response getFilingStatuses(String courtId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -631,11 +563,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/filing_types/{filing_code_id}/filing_components")
-  public Response getFilingComponents(
-      @PathParam("court_id") String courtId, @PathParam("filing_code_id") String filingCodeId)
-      throws SQLException {
+  @Override
+  public Response getFilingComponents(String courtId, String filingCodeId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -646,11 +575,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/filing_types/{filing_code_id}/optional_services")
-  public Response getOptionalServices(
-      @PathParam("court_id") String courtId, @PathParam("filing_code_id") String filingCodeId)
-      throws SQLException {
+  @Override
+  public Response getOptionalServices(String courtId, String filingCodeId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -661,11 +587,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/countries/{country}/states")
-  public Response getStates(
-      @PathParam("court_id") String courtId, @PathParam("country") String country)
-      throws SQLException {
+  @Override
+  public Response getStates(String courtId, String country) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       List<String> stateCodes = cd.getStateCodes(courtId, country);
 
@@ -673,9 +596,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/languages")
-  public Response getLanguages(@PathParam("court_id") String courtId) throws SQLException {
+  @Override
+  public Response getLanguages(String courtId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -686,9 +608,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/datafields")
-  public Response getDataFields(@PathParam("court_id") String courtId) throws SQLException {
+  @Override
+  public Response getDataFields(String courtId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -699,13 +620,10 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/datafields/{field_name}")
+  @Override
   // TODO(brycew-later): consider a bulk way of getting multiple codes, will be
   // used heavily in the DA UI
-  public Response getDataField(
-      @PathParam("court_id") String courtId, @PathParam("field_name") String fieldName)
-      throws SQLException {
+  public Response getDataField(String courtId, String fieldName) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       var maybeErr = okayCourt(cd, courtId);
       if (maybeErr.isPresent()) {
@@ -715,11 +633,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/optional_services/{opt_serv_code}")
-  public Response getOptionalService(
-      @PathParam("court_id") String courtId, @PathParam("opt_serv_code") String optServCode)
-      throws SQLException {
+  @Override
+  public Response getOptionalService(String courtId, String optServCode) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       var maybeErr = okayCourt(cd, courtId);
       if (maybeErr.isPresent()) {
@@ -729,10 +644,8 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  @GET
-  @Path("/courts/{court_id}/disclaimer_requirements")
-  public Response getDisclaimerRequirements(@PathParam("court_id") String courtId)
-      throws SQLException {
+  @Override
+  public Response getDisclaimerRequirements(String courtId) throws SQLException {
     try (CodeDatabase cd = cdSupplier.get()) {
       if (!cd.getAllLocations().contains(courtId)) {
         return Response.status(404).entity("\"Court " + courtId + " does not exist\"").build();
@@ -758,5 +671,16 @@ public class EcfCodesService extends CodesService {
           Response.status(404).entity("\"Court " + courtId + " does not exist\"").build());
     }
     return Optional.empty();
+  }
+
+  private Set<Endpoint> getEndpointsFromMethods(Class<?> clazz, Predicate<Method> condition) {
+    List<Method> validMethods = new ArrayList<>();
+    Method[] methods = clazz.getMethods();
+    for (Method method : methods) {
+      if (condition.test(method)) {
+        validMethods.add(method);
+      }
+    }
+    return ef.makeRestEndpoints(validMethods, clazz);
   }
 }

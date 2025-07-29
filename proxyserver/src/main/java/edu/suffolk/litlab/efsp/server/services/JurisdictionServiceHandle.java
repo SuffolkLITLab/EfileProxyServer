@@ -141,6 +141,7 @@ public class JurisdictionServiceHandle {
     return adminUser.orElse(null);
   }
 
+  /** Handle ECF 'codes', or court configurations and metadata relating to filing options. */
   @Path("/codes")
   public CodesService getCodesService() {
     return codes.orElse(null);
