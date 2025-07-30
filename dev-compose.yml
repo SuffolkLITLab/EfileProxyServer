@@ -5,6 +5,8 @@ services:
       service: efspjava
     build:
       target: build
+      args:
+        - CI_COMMIT_SHA
     # Necessary b/c docassemble is external to the docker network
     ports: !override
       - target: 9009

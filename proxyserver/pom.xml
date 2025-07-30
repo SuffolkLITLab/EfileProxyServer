@@ -358,9 +358,12 @@
                             <!-- Needed for CXF to work in a fatjar https://stackoverflow.com/a/68743972/11416267 -->
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                  <manifestEntries>
-                                    <Main-Class>edu.suffolk.litlab.efsp.server.EfspServer</Main-Class>
-                                  </manifestEntries>
+                                    <manifestEntries>
+                                        <Main-Class>edu.suffolk.litlab.efsp.server.EfspServer</Main-Class>
+                                        <Build-Time>${maven.build.timestamp}</Build-Time>
+                                        <Implementation-Version>${project.version}</Implementation-Version>
+                                        <Implementation-SCM-Revision>${build.revision}</Implementation-SCM-Revision>
+                                    </manifestEntries>
                                 </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>META-INF/cxf/bus-extensions.txt</resource>
