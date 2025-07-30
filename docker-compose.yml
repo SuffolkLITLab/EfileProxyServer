@@ -3,6 +3,8 @@ services:
     build:
       context: .
       target: release
+      args:
+        - CI_COMMIT_SHA
     # Necessary b/c docassemble is external to the docker network
     ports:
       - target: 9009
