@@ -36,11 +36,12 @@ public class AuthenticationService {
    * @param loginInfo should be a JSON object, with the following keys:
    *     <ul>
    *       <li>api_key: the api key for this server
-   *       <li>tyler-myJurisdiction: an object ('myJurisdiction' can be any jurisdiction), with
-   *           these tyler jurisdiction values:
+   *       <li>tyler-myJurisdiction (e.g. tyler-illinois): an object ('myJurisdiction' can be any
+   *           jurisdiction), with these tyler jurisdiction values:
    *           <ul>
-   *             <li>username: Any tyler jurisdiction username. Example: 'illinois'
-   *             <li>password: The jurisdiction's password
+   *             <li>username: The username for a user in the given tyler jurisdiction. Example:
+   *                 'bob@example.com'
+   *             <li>password: The password for the given user.
    *           </ul>
    *     </ul>
    *     An example: <code>

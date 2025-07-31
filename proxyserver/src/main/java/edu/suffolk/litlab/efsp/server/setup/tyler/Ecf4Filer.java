@@ -243,7 +243,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
           InterviewVariable filingVar =
               collector.requestVar(
-                  "court_bundle[i].filing_type",
+                  "al_court_bundle[i].filing_type",
                   "What filing type is this?",
                   "text",
                   List.of(),

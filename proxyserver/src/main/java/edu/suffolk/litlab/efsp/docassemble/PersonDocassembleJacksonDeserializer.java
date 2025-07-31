@@ -123,7 +123,7 @@ public class PersonDocassembleJacksonDeserializer {
         collector.addWrong(
             collector.requestVar(
                 "is_new",
-                "if the party is new to the the case",
+                "if the party is new to the case",
                 "bool",
                 List.of(),
                 Optional.of(isNew.toString())));
