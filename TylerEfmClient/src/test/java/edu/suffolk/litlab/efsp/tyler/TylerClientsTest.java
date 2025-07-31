@@ -44,6 +44,6 @@ public class TylerClientsTest {
     URL url = (new URI(urlGenerated)).toURL();
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     int resp = conn.getResponseCode();
-    assertThat(resp).withFailMessage("The generated URL ({}) returns an invalid HTTP error code: {}", urlGenerated, resp).isLessThan(400);
+    assertThat(resp).withFailMessage("The generated URL (<%s>) returns an invalid HTTP error code: <%s>", urlGenerated, resp).isLessThan(400);
   }
 }
