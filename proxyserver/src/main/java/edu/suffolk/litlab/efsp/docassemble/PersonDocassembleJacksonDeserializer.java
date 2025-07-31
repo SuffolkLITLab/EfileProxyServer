@@ -96,10 +96,10 @@ public class PersonDocassembleJacksonDeserializer {
     }
     String partyType = partyJson.asText("");
 
+    boolean isFormFiller = getBoolMember(node, "is_form_filler").orElse(false);
     Optional<String> language = getStringMember(node, "prefered_language");
     Optional<String> gender = getStringMember(node, "gender");
     Optional<String> birthdateString = getStringMember(node, "date_of_birth");
-    boolean isFormFiller = getBoolMember(node, "is_form_filler").orElse(false);
     Optional<LocalDate> birthdate =
         birthdateString
             .map(

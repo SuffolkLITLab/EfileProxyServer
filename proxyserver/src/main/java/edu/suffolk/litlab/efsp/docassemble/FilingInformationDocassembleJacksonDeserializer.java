@@ -55,13 +55,11 @@ public class FilingInformationDocassembleJacksonDeserializer
    * @param topObj
    * @param potentialMember
    * @param collector
-   * @param filterFlag: the person will be skipped if that attribute is set to false.
    * @return
    * @throws FilingError
    */
   private static List<Person> collectPeople(
-      JsonNode topObj, String potentialMember, InfoCollector collector, String filterFlag)
-      throws FilingError {
+      JsonNode topObj, String potentialMember, InfoCollector collector) throws FilingError {
     if (!topObj.has(potentialMember)) {
       return List.of(); // Just an empty list: we don't know if it's required
     }
@@ -70,16 +68,10 @@ public class FilingInformationDocassembleJacksonDeserializer
       throw FilingError.malformedInterview(
           potentialMember + " isn't an List with an array attribute called '.elements'");
     }
-    List<Person> people = new ArrayList<Person>();
+    List<Person> people = new ArrayList<>();
     JsonNode peopleElements = maybePplElements.get();
     for (int i = 0; i < peopleElements.size(); i++) {
       JsonNode personJson = peopleElements.get(i);
-      if (filterFlag != null && !filterFlag.isBlank()) {
-        // Assume not setting filterFlag is the same as it being false (i.e. skipping)
-        if (!personJson.has(filterFlag) || !personJson.get(filterFlag).asBoolean(false)) {
-          continue;
-        }
-      }
       collector.pushAttributeStack(potentialMember + "[" + i + "]");
       Result<Person, FilingError> per =
           PersonDocassembleJacksonDeserializer.fromNode(personJson, collector);
@@ -106,8 +98,8 @@ public class FilingInformationDocassembleJacksonDeserializer
     entities.setCaseDocketNumber(extractNullableString(node.get("docket_number")));
     boolean isFirstIndexedFiling = entities.getPreviousCaseId().isEmpty();
 
-    List<Person> users = collectPeople(node, "users", collector, "");
-    List<Person> otherParties = collectPeople(node, "other_parties", collector, "");
+    List<Person> users = collectPeople(node, "users", collector);
+    List<Person> otherParties = collectPeople(node, "other_parties", collector);
 
     var varToPartyId = new HashMap<String, PartyId>();
     int perIdx = 0;
@@ -314,7 +306,7 @@ public class FilingInformationDocassembleJacksonDeserializer
   }
 
   private static List<String> extractAttorneyIds(JsonNode attorneyIdsJson) {
-    List<String> ids = new ArrayList<String>();
+    List<String> ids = new ArrayList<>();
     if (attorneyIdsJson != null && attorneyIdsJson.isArray()) {
       attorneyIdsJson.elements().forEachRemaining(jId -> ids.add(jId.asText()));
     }
