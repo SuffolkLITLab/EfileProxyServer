@@ -23,6 +23,7 @@ import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.setup.jeffnet.JeffNetModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.tyler.TylerModuleSetup;
 import edu.suffolk.litlab.efsp.server.utils.HttpsCallbackHandler;
+import edu.suffolk.litlab.efsp.server.utils.JsonExceptionMapper;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import edu.suffolk.litlab.efsp.server.utils.SendMessage;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
@@ -139,11 +140,7 @@ public class EfspServer {
         Map.of(
             "xml", MediaType.APPLICATION_XML,
             "json", MediaType.APPLICATION_JSON));
-    sf.setProviders(
-        List.of(
-            new JAXBElementProvider<Object>(),
-            new JacksonJsonProvider(),
-            new SoapExceptionMapper()));
+    sf.setProviders(providers());
 
     sf.setAddress(ServiceHelpers.BASE_LOCAL_URL);
     server = sf.create();
@@ -205,6 +202,14 @@ public class EfspServer {
       log.error("SQLException when setting up / creating tables", ex);
       System.exit(2);
     }
+  }
+
+  public static List<?> providers() {
+    return List.of(
+        new JAXBElementProvider<Object>(),
+        new JacksonJsonProvider(), // TODO(brycew): JAXBJSon?
+        new SoapExceptionMapper(),
+        new JsonExceptionMapper());
   }
 
   public static void main(String[] args) throws Exception {
