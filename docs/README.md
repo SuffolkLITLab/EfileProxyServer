@@ -106,7 +106,7 @@ efile proxy:
   jeffnet api token: abc123
 ```
 
-## Running unit tests without Docker
+## Running locally without Docker
 
 Instructions are for Linux. Start with installing everything.
 
@@ -115,8 +115,6 @@ sudo add-apt-repository ppa:openjdk-r/ppa
 sudo apt update
 sudo apt install openjdk-21-jdk
 ```
-
-We are using CXF as the SOAP client.
 
 ```bash
 sudo apt install maven
@@ -131,6 +129,8 @@ To run all of the unit tests in the project, use the following:
 ```bash
 mvn test 
 ```
+
+You can also run the server without docker. See [the proxyserver README](../proxyserver/README.md).
 
 ## Contents of .env file
 
