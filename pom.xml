@@ -148,6 +148,13 @@
                     <version>3.11.2</version>
                     <configuration>
                         <additionalparam>-Xdoclint:none</additionalparam>
+                        <tags>
+                            <tag>
+                                <name>responseExample</name>
+                                <placement>a</placement>
+                                <head>An example of the JSON response from this endpoint.</head>
+                            </tag>
+                        </tags>
                     </configuration>
                     <executions>
                         <execution>
