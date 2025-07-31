@@ -267,20 +267,8 @@ public class CodeUpdater {
    * Internal class, meant to pass around information between the "download zip" stage and the
    * "update postgres" stage.
    */
-  private static class DownloadedCodes {
-    final String tableName;
-    final String location;
-    final XMLStreamReader xsr;
-    final InputStream input;
-
-    public DownloadedCodes(
-        String tableName, String location, XMLStreamReader xsr, InputStream input) {
-      this.tableName = tableName;
-      this.location = location;
-      this.xsr = xsr;
-      this.input = input;
-    }
-  }
+  private record DownloadedCodes(
+      String tableName, String location, XMLStreamReader xsr, InputStream input) {}
 
   /**
    * @param authHeader The header needed to download the codes
@@ -393,12 +381,12 @@ public class CodeUpdater {
     Instant updateStart = Instant.now(Clock.systemUTC());
     for (DownloadedCodes down : downloaded.values()) {
       try {
-        cd.updateTable(down.tableName, down.location, down.xsr);
+        cd.updateTable(down.tableName(), down.location(), down.xsr());
       } catch (Exception ex) {
         log.error("Couldn't update table? {}", StdLib.strFromException(ex));
       } finally {
-        StdLib.closeQuitely(down.xsr);
-        down.input.close();
+        StdLib.closeQuitely(down.xsr());
+        down.input().close();
       }
     }
     updates = updates.plus(Duration.between(updateStart, Instant.now(Clock.systemUTC())));
