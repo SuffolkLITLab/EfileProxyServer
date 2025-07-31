@@ -150,9 +150,9 @@ public class FilingDocDocassembleJacksonDeserializer {
     if (node.has("tyler_merge_attachments")
         && node.get("tyler_merge_attachments").asBoolean(false)) {
       log.info(
-          _logName
-              + " indicated that we should only use the parent document; skipping parsing child"
-              + " elements");
+          "{} indicated that we should only use the parent document; skipping parsing child"
+              + " elements",
+          _logName);
     } else {
       if (node.has("elements") && node.get("elements").isArray()) {
         Iterable<JsonNode> nodes = node.get("elements")::elements;
@@ -179,10 +179,10 @@ public class FilingDocDocassembleJacksonDeserializer {
         NonEmptyList.<FilingAttachment>fromList(attachments);
     if (goodAttachments.isNone()) {
       log.warn(
-          "The "
-              + _logName
+          "The {}"
               + " document doesn't have sub documents / PDFs. It's possible that the document was"
-              + " turned off at runtime.");
+              + " turned off at runtime.",
+          _logName);
       return Optional.empty();
     }
     return Optional.of(

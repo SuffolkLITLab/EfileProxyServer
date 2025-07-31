@@ -366,12 +366,10 @@ public class FilingInformationDocassembleJacksonDeserializer
             realId = Optional.of(PartyId.Already(partyAssoc.asText()));
           }
           log.info(
-              "Filing party id ("
-                  + partyAssoc.asText()
-                  + ") for service party assoc ("
-                  + servObj.get("contact_id").asText()
-                  + "): "
-                  + realId);
+              "Filing party id ({}) for service party assoc ({}): {}",
+              partyAssoc.asText(),
+              servObj.get("contact_id").asText(),
+              realId);
         } else if (partyAssoc != null && !partyAssoc.isNull()) {
           log.warn("What is party_association? should be text: {}", partyAssoc);
           collector.addWrong(
