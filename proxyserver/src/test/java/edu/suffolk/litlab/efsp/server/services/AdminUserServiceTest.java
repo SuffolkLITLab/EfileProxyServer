@@ -49,8 +49,7 @@ public class AdminUserServiceTest {
     sf.setAddress(ENDPOINT_ADDRESS);
     Map<Object, Object> extensionMappings = Map.of("json", MediaType.APPLICATION_JSON);
     sf.setExtensionMappings(extensionMappings);
-    List<?> providers = EfspServer.providers();
-    sf.setProviders(providers);
+    sf.setProviders(EfspServer.providers());
     server = sf.create();
   }
 
@@ -71,7 +70,7 @@ public class AdminUserServiceTest {
     client.accept("application/json");
     client.type(MediaType.APPLICATION_JSON);
     client.path("/users");
-    Response resp = client.post("{\"email\": \"\", \"registrationType\": \"Individual\"}");
+    Response resp = client.post("{\"email\": \"\", \"registrationType\": \"BAD_VALUE\"}");
     assertThat(resp.getStatus()).isEqualTo(400);
   }
 }

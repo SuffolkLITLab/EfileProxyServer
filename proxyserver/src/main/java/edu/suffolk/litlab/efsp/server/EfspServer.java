@@ -2,7 +2,12 @@ package edu.suffolk.litlab.efsp.server;
 
 import static edu.suffolk.litlab.efsp.stdlib.StdLib.GetEnv;
 
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonXmlBindJsonProvider;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule;
+
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.db.DatabaseVersion;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
@@ -205,9 +210,11 @@ public class EfspServer {
   }
 
   public static List<?> providers() {
+    JsonMapper mapper = JsonMapper.builder().configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true).build();
+    //.addModule(new JakartaXmlBindAnnotationModule())
     return List.of(
         new JAXBElementProvider<Object>(),
-        new JacksonJsonProvider(), // TODO(brycew): JAXBJSon?
+        new JacksonXmlBindJsonProvider(mapper, JacksonXmlBindJsonProvider.DEFAULT_ANNOTATIONS),
         new SoapExceptionMapper(),
         new JsonExceptionMapper());
   }
