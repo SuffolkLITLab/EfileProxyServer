@@ -797,7 +797,7 @@ public class AdminUserService {
       Optional<TylerFirmClient> port =
           setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
       if (port.isEmpty()) {
-        return Response.status(407).build();
+        return Response.status(401).build();
       }
 
       NotificationPreferencesListResponseType resp = port.get().getNotificationPreferencesList();
