@@ -150,6 +150,11 @@
                         <additionalparam>-Xdoclint:none</additionalparam>
                         <tags>
                             <tag>
+                                <name>requestExample</name>
+                                <placement>a</placement>
+                                <head>An example of the JSON request to this endpoint.</head>
+                            </tag>
+                            <tag>
                                 <name>responseExample</name>
                                 <placement>a</placement>
                                 <head>An example of the JSON response from this endpoint.</head>
