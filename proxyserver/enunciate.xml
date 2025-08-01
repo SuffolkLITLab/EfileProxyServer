@@ -13,6 +13,10 @@
         <jaxrs path-sort-strategy="depth_first">
         </jaxrs>
 
+        <!-- Complicated: it's not enabled on our client interfaces, but is being used for our SOAP calls to Tyler. -->
+        <jaxb disabled="true" />
+        <jackson disabled="true" />
+
         <java-xml-client disabled="true" />
         <php-xml-client disabled="true" />
         <csharp-xml-client disabled="true" />
