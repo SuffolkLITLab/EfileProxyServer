@@ -43,13 +43,15 @@ public class AuthenticationService {
    *             <li>password: The jurisdiction's password
    *           </ul>
    *     </ul>
-   *
+   *     An example: <code>
+   *     {"api_key": "abc123", "tyler-illinois": {"username": "bob@example.com", "password": "my_P@ssword1"}}
+   *     </code>
    * @return 200 and the logged in tokens to hang on to and send in with every call
+   * @responseExample application/json {"tokens": {"TYLER-TOKEN-ILLINOIS":
+   *     "bob@example.com:12345678-1234-1234-1234-12345678abcd", "TYLER-ID-illinois":
+   *     "12345678-1234-1234-1234-12345678abdc"}}
    */
-  @StatusCodes({
-    @ResponseCode(code = 200, condition = "success"),
-    @ResponseCode(code = 403, condition = "login information not valid")
-  })
+  @StatusCodes({@ResponseCode(code = 403, condition = "login information not valid")})
   @POST
   public Response authenticateUser(String loginInfo) {
     MDC.put(MDCWrappers.OPERATION, "AuthenticationService.authenticateUser");

@@ -5,6 +5,8 @@ import static edu.suffolk.litlab.efsp.tyler.TylerErrorCodes.makeResponse;
 
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
+import com.webcohesion.enunciate.metadata.rs.ResponseCode;
+import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
@@ -78,13 +80,35 @@ import tyler.efm.latest.services.schema.updateuserresponse.UpdateUserResponseTyp
 import tyler.efm.latest.services.schema.userlistresponse.UserListResponseType;
 
 /**
- * Covers all of the FirmUserManagement and UserService operations. * User Service *
- * AuthenticateUser * ChangePassword * ResetPassword * GetUser (User Service) * UpdateUser (User
- * Service) * GetNotificationPreferences * UpdateNotificationPreferences * SelfResendActivationEmail
- * * Firm User Management * RegisterUser: PUT on /users * AddUserRole: POST on /users/{id}/role *
- * GetUser: GET on /users/{id} * GetUserList: GET on /users * RemoveUser: DELETE on /users/{id} *
- * RemoveUserRole: DELETE on /users/{id}/role * ResendActivationEmail * ResetUserPassword *
- * UpdateUser: POST on /users/{id} * GetNotificationPreferencesList
+ * Covers all of the FirmUserManagement and UserService operations.
+ *
+ * <p><strong>User Service</strong>
+ *
+ * <ul>
+ *   <li>AuthenticateUser
+ *   <li>ChangePassword
+ *   <li>ResetPassword
+ *   <li>GetUser (User Service)
+ *   <li>UpdateUser (User Service)
+ *   <li>GetNotificationPreferences
+ *   <li>UpdateNotificationPreferences
+ *   <li>SelfResendActivationEmail
+ * </ul>
+ *
+ * <strong>Firm User Management</strong>
+ *
+ * <ul>
+ *   <li>RegisterUser: PUT on /users
+ *   <li>AddUserRole: POST on /users/{id}/role
+ *   <li>GetUser: GET on /users/{id}
+ *   <li>GetUserList: GET on /users
+ *   <li>RemoveUser: DELETE on /users/{id}
+ *   <li>RemoveUserRole: DELETE on /users/{id}/role
+ *   <li>ResendActivationEmail
+ *   <li>ResetUserPassword
+ *   <li>UpdateUser: POST on /users/{id}
+ *   <li>GetNotificationPreferencesList
+ * </ul>
  *
  * @author brycew
  */
@@ -251,6 +275,24 @@ public class AdminUserService {
     public String newPassword;
   }
 
+  /**
+   * @param httpHeaders Should include the "X-API-KEY" and "TYLER-TOKEN-<jurisdiction>" headers
+   *     (should be logged in as a firm admin user).
+   * @param id The UUID of the user to reset the password for.
+   * @param params The email and newPassword to replace the existing password. The new password
+   *     should match the complexity requirements for the jurisdiction. For example: <code>
+   *   { "email": "bob@example.com", "newPassword": "wow_new_P@ssword1"}
+   *   </code>
+   * @return The password hash as a string, if successful
+   */
+  @StatusCodes({
+    @ResponseCode(
+        code = 400,
+        condition = "Password doesn't match complexity requirements (see data_fields)"),
+    @ResponseCode(
+        code = 401,
+        condition = "API Key not present / Not currently logged in as a firm admin")
+  })
   @POST
   @Path("/users/{id}/password")
   public Response resetPassword(
@@ -609,11 +651,38 @@ public class AdminUserService {
   }
 
   /**
-   * For RegisterUser.
+   * To register a new user.
    *
-   * @param req
-   * @return
+   * @param req the registration request: An example:
+   *     <pre>
+   *   <code>
+   *   {
+   *     "registrationType": "INDIVIDUAL",
+   *     "email": "bob@example.com",
+   *     "firstName": "Bob",
+   *     "middleName": "",
+   *     "lastName": "Brown",
+   *     "streetAddressLine1": "123 Main St",
+   *     "streetAddressLine2": "Apt 1",
+   *     "city": "Boston",
+   *     "stateCode": "MA",
+   *     "zipCode": "02125",
+   *     "countryCode": "US",
+   *     "phoneNumber": "617-333-1234"
+   *   }
+   *   </code>
+   *   </pre>
+   *
+   * @return The object with the user's password hash, their user ID, and their firm ID.
+   *     (TODO(bryce): get example).
    */
+  @StatusCodes({
+    @ResponseCode(
+        code = 400,
+        condition = "Password doesn't match complexity requirements (see data_fields)"),
+    @ResponseCode(code = 401, condition = "API Key not present"),
+    @ResponseCode(code = 422, condition = "Missing some required attribute")
+  })
   @POST
   @Path("/users")
   public Response registerUser(

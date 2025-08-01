@@ -134,6 +134,11 @@ public class CasesService {
   /**
    * Gets all possible cases associated with either a party's name or a docket number.
    *
+   * <p>Should exither provide the docker_number, business name, or all parts of a participant's
+   * name.
+   *
+   * @return A list of cases.
+   * @responseExample application/json classpath:examples/case_list_resp.json
    * @throws JsonProcessingException
    */
   @GET
