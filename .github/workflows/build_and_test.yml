@@ -15,4 +15,4 @@ jobs:
           distribution: 'adopt'
           cache: 'maven'
       - name: Build with Maven
-        run: mvn --batch-mode -Preproducible package
+        run: mvn --batch-mode -Preproducible package javadoc:javadoc

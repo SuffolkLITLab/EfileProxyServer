@@ -276,7 +276,7 @@ public class AdminUserService {
   }
 
   /**
-   * @param httpHeaders Should include the "X-API-KEY" and "TYLER-TOKEN-<jurisdiction>" headers
+   * @param httpHeaders Should include the "X-API-KEY" and "TYLER-TOKEN-{jurisdiction}" headers
    *     (should be logged in as a firm admin user).
    * @param id The UUID of the user to reset the password for.
    * @param params The email and newPassword to replace the existing password. The new password
