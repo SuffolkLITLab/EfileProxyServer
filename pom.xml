@@ -1,14 +1,20 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>edu.suffolk.litlab</groupId>
     <artifactId>efspserver-parent</artifactId>
     <version>1.2.16</version>
-    <name>EFSP Proxy Parent</name>
-    <url>https://suffolklitlab.org</url>
-    <description>Parent project for an EFSP client for the AssemblyLine Project</description>
     <packaging>pom</packaging>
+    <name>EFSP Proxy Parent</name>
+    <description>Parent project for an EFSP client for the AssemblyLine Project</description>
+    <url>https://suffolklitlab.org</url>
+
+    <modules>
+        <module>TylerEfmClient</module>
+        <module>TylerEcf4</module>
+        <module>TylerEcf5</module>
+        <module>proxyserver</module>
+    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,53 +28,46 @@
         <junit.version>5.9.3</junit.version>
     </properties>
 
-    <modules>
-      <module>TylerEfmClient</module>
-      <module>TylerEcf4</module>
-      <module>TylerEcf5</module>
-      <module>proxyserver</module>
-    </modules>
-
     <dependencyManagement>
-      <dependencies>
-        <dependency>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-lang3</artifactId>
-          <version>3.12.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf.xjc-utils</groupId>
-            <artifactId>cxf-xjc-runtime</artifactId>
-            <version>4.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.jws</groupId>
-            <artifactId>jakarta.jws-api</artifactId>
-            <version>3.0.0</version>
-        </dependency>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.12.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf.xjc-utils</groupId>
+                <artifactId>cxf-xjc-runtime</artifactId>
+                <version>4.0.2</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>4.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.jws</groupId>
+                <artifactId>jakarta.jws-api</artifactId>
+                <version>3.0.0</version>
+            </dependency>
 
-        <!-- This project! Dumb that maven makes us specify these here, but whatever-->
-        <dependency>
-          <groupId>edu.suffolk.litlab</groupId>
-          <artifactId>tyler-efm-client</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>edu.suffolk.litlab</groupId>
-          <artifactId>tyler-ecf4</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>edu.suffolk.litlab</groupId>
-          <artifactId>tyler-ecf5</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
+            <!-- This project! Dumb that maven makes us specify these here, but whatever-->
+            <dependency>
+                <groupId>edu.suffolk.litlab</groupId>
+                <artifactId>tyler-efm-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>edu.suffolk.litlab</groupId>
+                <artifactId>tyler-ecf4</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>edu.suffolk.litlab</groupId>
+                <artifactId>tyler-ecf5</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
     </dependencyManagement>
 
     <build>
@@ -92,17 +91,17 @@
                     </executions>
                 </plugin>
                 <plugin>
-                  <groupId>com.github.spotbugs</groupId>
-                  <artifactId>spotbugs-maven-plugin</artifactId>
-                  <version>4.7.2.1</version>
-                  <dependencies>
-                    <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
-                    <dependency>
-                      <groupId>com.github.spotbugs</groupId>
-                      <artifactId>spotbugs</artifactId>
-                      <version>4.7.3</version>
-                    </dependency>
-                  </dependencies>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>4.7.2.1</version>
+                    <dependencies>
+                        <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
+                        <dependency>
+                            <groupId>com.github.spotbugs</groupId>
+                            <artifactId>spotbugs</artifactId>
+                            <version>4.7.3</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>biz.lermitage.oga</groupId>
@@ -193,10 +192,10 @@
                         </execution>
                         <execution>
                             <id>default-report</id>
-                            <phase>verify</phase>
                             <goals>
                                 <goal>report</goal>
                             </goals>
+                            <phase>verify</phase>
                         </execution>
                         <execution>
                             <id>default-check</id>
@@ -273,12 +272,12 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
         </plugins>
-     </build>
+    </build>
 
     <!-- See the "Testing" section of the README for more information on these testing profiles. -->
     <profiles>
         <profile>
-        <!-- This profile excludes tests that use docker, so we can run tests when packaging from within a docker container. -->
+            <!-- This profile excludes tests that use docker, so we can run tests when packaging from within a docker container. -->
             <id>noDockerTests</id>
             <build>
                 <plugins>
