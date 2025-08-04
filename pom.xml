@@ -249,6 +249,11 @@
                                 <exclude>**/un/unece/uncefact/**</exclude>
                             </excludes>
                         </java>
+                        <pom>
+                            <sortPom>
+                                <nrOfIndentSpace>4</nrOfIndentSpace>
+                            </sortPom>
+                        </pom>
                     </configuration>
                     <executions>
                         <execution>

@@ -46,7 +46,7 @@ help you understand our goals / non-goals.
 
 #### Formatting code
 
-Code formatting is done with [Spotless](https://github.com/diffplug/spotless/tree/main?tab=readme-ov-file#%EF%B8%8F-spotless-for-maven).
+Java and POM formatting is done with [Spotless](https://github.com/diffplug/spotless/tree/main?tab=readme-ov-file#%EF%B8%8F-spotless-for-maven).
 
 ```bash
 mvn spotless:apply
