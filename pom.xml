@@ -221,6 +221,44 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>2.46.1</version>
+                    <configuration>
+                        <java>
+                            <googleJavaFormat>
+                                <version>1.28.0</version>
+                                <formatJavadoc>true</formatJavadoc>
+                            </googleJavaFormat>
+                            <excludes>
+                                <!-- Will likely stay off: lots of things that need to stay consistent in that file. -->
+                                <exclude>**/CodeTableConstants.java</exclude>
+                                <!-- TODO: was turned off because formatting didn't handle multiline strings well. Turn back on eventually. -->
+                                <exclude>**/FilingCode.java</exclude>
+
+                                <!-- Don't format the auto generated stuff. -->
+                                <exclude>**/gov/niem/**</exclude>
+                                <exclude>**/https/docs_oasis_open_org/**</exclude>
+                                <exclude>**/ietf/params/**</exclude>
+                                <exclude>**/oasis/names/**</exclude>
+                                <exclude>**/org/oasis_open/**</exclude>
+                                <exclude>**/org/w3/**</exclude>
+                                <exclude>**/tyler/efm/**</exclude>
+                                <exclude>**/tyler/ecf/**</exclude>
+                                <exclude>**/un/unece/uncefact/**</exclude>
+                            </excludes>
+                        </java>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <phase>compile</phase>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
 
