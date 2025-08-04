@@ -209,8 +209,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       }
 
       EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo);
-      boolean isInitialFiling =
-          info.getPreviousCaseId().isEmpty() && info.getCaseDocketNumber().isEmpty();
+      boolean isInitialFiling = info.isInitialFiling();
       boolean isFirstIndexedFiling = info.getPreviousCaseId().isEmpty();
       ComboCaseCodes allCodes;
       if (!isFirstIndexedFiling) {
