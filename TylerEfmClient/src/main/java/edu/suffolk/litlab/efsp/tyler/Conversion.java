@@ -63,7 +63,7 @@ public class Conversion {
   }
 
   /** Copies all of the content from the src object to the dest, returning it fluently. */
-  @SuppressWarnings(value = { "unchecked" })
+  @SuppressWarnings(value = {"unchecked"})
   public static <T> T convert(Class<T> destClass, Object src) {
     return (T) copyProperties(destClass, src);
   }
@@ -79,7 +79,7 @@ public class Conversion {
     @SuppressWarnings("unchecked")
     public <T> T convert(Class<T> aClass, Object o) {
       try {
-         if (aClass.isEnum()) {
+        if (aClass.isEnum()) {
           String value = (String) o.getClass().getDeclaredMethod("value").invoke(o);
           T output = (T) aClass.getMethod("fromValue", String.class).invoke(null, value);
           return output;
