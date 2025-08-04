@@ -2105,7 +2105,7 @@
     },
     "completed": true,
     "proxy_enabled": true,
-    "data_url": "http://africau.edu/images/default/sample.pdf",
+    "data_url": "https://raw.githubusercontent.com/SuffolkLITLab/docassemble-EFSPIntegration/refs/tags/v1.2.2/docassemble/EFSPIntegration/data/sources/example_upload.pdf",
     "page_count": 1
   },
   "filing_description_datafield": {
@@ -2397,7 +2397,7 @@
         },
         "completed": true,
         "proxy_enabled": true,
-        "data_url": "http://africau.edu/images/default/sample.pdf",
+        "data_url": "https://raw.githubusercontent.com/SuffolkLITLab/docassemble-EFSPIntegration/refs/tags/v1.2.2/docassemble/EFSPIntegration/data/sources/example_upload.pdf",
         "page_count": 1
       }
     ],
