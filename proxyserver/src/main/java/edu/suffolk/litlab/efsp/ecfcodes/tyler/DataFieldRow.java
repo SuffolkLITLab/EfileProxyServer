@@ -49,6 +49,12 @@ public class DataFieldRow {
     this.location = location;
   }
 
+  // Used for testing.
+  public DataFieldRow(
+      String code, String name, boolean isvisible, boolean isrequired, String location) {
+    this(code, name, isvisible, isrequired, "", "", "", "", "", "", false, location);
+  }
+
   /**
    * According to the Tyler docs, if some data field is not defined, it defaults to isVisible=False,
    * and isRequired=False. Everything else will be empty

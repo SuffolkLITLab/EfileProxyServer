@@ -17,14 +17,20 @@ import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import ecf4.latest.tyler.ecf.extensions.common.CapabilityType;
+import edu.suffolk.litlab.efsp.docassemble.FilingDocDocassembleJacksonDeserializer;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CrossReference;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
 import edu.suffolk.litlab.efsp.model.Name;
+import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.utils.AllWrongCollector;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
@@ -32,6 +38,7 @@ import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -65,25 +72,15 @@ public class EcfCourtSpecificSerializerTest {
     when(cd.getCrossReference("cook:cd1", caseType)).thenReturn(refs);
     when(cd.getCrossReference("adams", caseType)).thenReturn(blank);
     when(cd.getLanguageNames("not_real")).thenReturn(List.of("English", "Polish", "Spanish"));
+    when(cd.getAllowedFileTypes("not_real"))
+        .thenReturn(List.of(new FileType("PDF", "pdf", ".pdf", "not_real")));
     when(cd.getDataFields(eq("not_real")))
         .thenReturn(
             new DataFields(
                 List.of(
                     Map.of(
                         "PartyGender",
-                        new DataFieldRow(
-                            "PartyGender",
-                            "Party Gender",
-                            true,
-                            false,
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            false,
-                            ""),
+                        new DataFieldRow("PartyGender", "Party Gender", true, false, ""),
                         "PartyPhone",
                         new DataFieldRow(
                             "PartyPhone",
@@ -97,7 +94,10 @@ public class EcfCourtSpecificSerializerTest {
                             "^(\\+0?1\\s)?\\(?\\d{3}\\)?\\d{3}\\d{4}$",
                             "",
                             false,
-                            "")))));
+                            ""),
+                        "DocumentDescription",
+                        new DataFieldRow(
+                            "DocumentDescription", "Document Description", true, false, "")))));
     collector = new FailFastCollector();
   }
 
@@ -301,5 +301,51 @@ public class EcfCourtSpecificSerializerTest {
     } catch (FilingError err) {
       // Expected!
     }
+  }
+
+  @Test
+  public void shouldParseDoc() throws IOException, FilingError {
+    collector = new AllWrongCollector();
+    CourtLocationInfo loc = new CourtLocationInfo();
+    loc.code = "not_real";
+    loc.allowserviceoninitial = CourtLocationInfo.BoolOrDefault.TRUE;
+
+    CaseCategory caseCategory = new CaseCategory("7", "Civil", null, null, null, null, null);
+    CaseType caseType = new CaseType("100", "Divorce", "7", "true", "100", null, null, "not_real");
+    FilingCode filing =
+        new FilingCode(
+            "200",
+            "Initial Filing",
+            "100",
+            "7",
+            "100",
+            "0",
+            false,
+            null,
+            null,
+            null,
+            false,
+            false,
+            null,
+            "not_real");
+
+    var varToPartyId = Map.of("users[0]", PartyId.CurrentFilingNew("abc"));
+    JsonNode node = readFile("one_attachment.json");
+    var doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 2, collector);
+
+    EcfCourtSpecificSerializer cookSer = new EcfCourtSpecificSerializer(cd, loc);
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode miscNode = mapper.createObjectNode();
+    var xmlDoc =
+        cookSer.filingDocToXml(
+            doc.get(), true, caseCategory, caseType, filing, true, miscNode, collector);
+    assertThat(xmlDoc.getValue().getDocumentSequenceID().getValue()).isEqualTo("2");
+    assertThat(xmlDoc.getValue().getDocumentDescriptionText().getValue())
+        .isEqualTo("The Motion to Stay Eviction for Bob Ma");
+  }
+
+  private JsonNode readFile(String jsonFile) throws IOException {
+    ObjectMapper mapper = new ObjectMapper();
+    return mapper.readTree(this.getClass().getResourceAsStream("/filingdocs/" + jsonFile));
   }
 }
