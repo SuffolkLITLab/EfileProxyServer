@@ -1,22 +1,21 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>edu.suffolk.litlab</groupId>
+        <artifactId>efspserver-parent</artifactId>
+        <version>1.2.16</version>
+    </parent>
     <groupId>edu.suffolk.litlab</groupId>
     <artifactId>tyler-ecf5</artifactId>
     <name>Tyler's ECF 5</name>
     <description>Generated Java files for Tyler Technologies's ECF 5 Schemas</description>
 
-    <parent>
-      <groupId>edu.suffolk.litlab</groupId>
-      <artifactId>efspserver-parent</artifactId>
-      <version>1.2.16</version>
-    </parent>
-
     <dependencies>
         <dependency>
-          <groupId>edu.suffolk.litlab</groupId>
-          <artifactId>tyler-ecf4</artifactId>
+            <groupId>edu.suffolk.litlab</groupId>
+            <artifactId>tyler-ecf4</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

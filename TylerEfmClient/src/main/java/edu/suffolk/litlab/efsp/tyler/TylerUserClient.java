@@ -60,9 +60,12 @@ public class TylerUserClient {
 
   public AuthenticateResponseType authenticateUser(AuthenticateRequestType authenticateRequest) {
     if (version == v2022_1) {
-      var resp = v2022Port.authenticateUser(Conversion.convert(
-        tyler.efm.v2022_1.services.schema.authenticaterequest.AuthenticateRequestType.class,
-        authenticateRequest));
+      var resp =
+          v2022Port.authenticateUser(
+              Conversion.convert(
+                  tyler.efm.v2022_1.services.schema.authenticaterequest.AuthenticateRequestType
+                      .class,
+                  authenticateRequest));
       return Conversion.convert(AuthenticateResponseType.class, resp);
     } else {
       return latestPort.authenticateUser(authenticateRequest);
@@ -71,9 +74,11 @@ public class TylerUserClient {
 
   public UpdateUserResponseType updateUser(UpdateUserRequestType updateUserRequest) {
     if (version == v2022_1) {
-      var resp = v2022Port.updateUser(Conversion.convert(
-        tyler.efm.v2022_1.services.schema.updateuserrequest.UpdateUserRequestType.class,
-        updateUserRequest));
+      var resp =
+          v2022Port.updateUser(
+              Conversion.convert(
+                  tyler.efm.v2022_1.services.schema.updateuserrequest.UpdateUserRequestType.class,
+                  updateUserRequest));
       return Conversion.convert(UpdateUserResponseType.class, resp);
     } else {
       return latestPort.updateUser(updateUserRequest);
@@ -91,9 +96,11 @@ public class TylerUserClient {
 
   public GetUserResponseType getUser(GetUserRequestType getUserRequest) {
     if (version == v2022_1) {
-      var resp = v2022Port.getUser(Conversion.convert(
-        tyler.efm.v2022_1.services.schema.getuserrequest.GetUserRequestType.class,
-        getUserRequest));
+      var resp =
+          v2022Port.getUser(
+              Conversion.convert(
+                  tyler.efm.v2022_1.services.schema.getuserrequest.GetUserRequestType.class,
+                  getUserRequest));
       return Conversion.convert(GetUserResponseType.class, resp);
     } else {
       return latestPort.getUser(getUserRequest);
@@ -106,8 +113,9 @@ public class TylerUserClient {
       var resp =
           v2022Port.selfResendActivationEmail(
               Conversion.convert(
-              tyler.efm.v2022_1.services.schema.selfresendactivationemailrequest.SelfResendActivationEmailRequestType.class,
-                selfResendActivationEmailRequest));
+                  tyler.efm.v2022_1.services.schema.selfresendactivationemailrequest
+                      .SelfResendActivationEmailRequestType.class,
+                  selfResendActivationEmailRequest));
       return Conversion.convert(BaseResponseType.class, resp);
     } else {
       return latestPort.selfResendActivationEmail(selfResendActivationEmailRequest);
@@ -116,9 +124,12 @@ public class TylerUserClient {
 
   public ResetPasswordResponseType resetPassword(ResetPasswordRequestType resetPasswordRequest) {
     if (version == v2022_1) {
-      var resp = v2022Port.resetPassword(Conversion.convert(
-        tyler.efm.v2022_1.services.schema.resetpasswordrequest.ResetPasswordRequestType.class,
-        resetPasswordRequest));
+      var resp =
+          v2022Port.resetPassword(
+              Conversion.convert(
+                  tyler.efm.v2022_1.services.schema.resetpasswordrequest.ResetPasswordRequestType
+                      .class,
+                  resetPasswordRequest));
       return Conversion.convert(ResetPasswordResponseType.class, resp);
     } else {
       return latestPort.resetPassword(resetPasswordRequest);
@@ -128,9 +139,12 @@ public class TylerUserClient {
   public PasswordQuestionResponseType getPasswordQuestion(
       GetPasswordQuestionRequestType getPasswordQuestionRequest) {
     if (version == v2022_1) {
-      var resp = v2022Port.getPasswordQuestion(Conversion.convert(
-        tyler.efm.v2022_1.services.schema.getpasswordquestionrequest.GetPasswordQuestionRequestType.class,
-        getPasswordQuestionRequest));
+      var resp =
+          v2022Port.getPasswordQuestion(
+              Conversion.convert(
+                  tyler.efm.v2022_1.services.schema.getpasswordquestionrequest
+                      .GetPasswordQuestionRequestType.class,
+                  getPasswordQuestionRequest));
       return Conversion.convert(PasswordQuestionResponseType.class, resp);
     } else {
       return latestPort.getPasswordQuestion(getPasswordQuestionRequest);
@@ -140,9 +154,12 @@ public class TylerUserClient {
   public ChangePasswordResponseType changePassword(
       ChangePasswordRequestType changePasswordRequest) {
     if (version == v2022_1) {
-      var resp = v2022Port.changePassword(Conversion.convert(
-          tyler.efm.v2022_1.services.schema.changepasswordrequest.ChangePasswordRequestType.class,
-        changePasswordRequest));
+      var resp =
+          v2022Port.changePassword(
+              Conversion.convert(
+                  tyler.efm.v2022_1.services.schema.changepasswordrequest.ChangePasswordRequestType
+                      .class,
+                  changePasswordRequest));
       return Conversion.convert(ChangePasswordResponseType.class, resp);
     } else {
       return latestPort.changePassword(changePasswordRequest);
@@ -155,8 +172,8 @@ public class TylerUserClient {
       var resp =
           v2022Port.updateNotificationPreferences(
               Conversion.convert(
-                tyler.efm.v2022_1.services.schema.updatenotificationpreferencesrequest
-                  .UpdateNotificationPreferencesRequestType.class,
+                  tyler.efm.v2022_1.services.schema.updatenotificationpreferencesrequest
+                      .UpdateNotificationPreferencesRequestType.class,
                   updateNotificationPreferencesRequest));
       return Conversion.convert(BaseResponseType.class, resp);
     } else {

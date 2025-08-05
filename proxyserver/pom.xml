@@ -1,12 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>edu.suffolk.litlab</groupId>
-    <artifactId>efspserver</artifactId>
-    <name>Suffolk LITLab EFSP Proxy Server</name>
-    <url>https://suffolklitlab.org</url>
-    <description>an EFSP client for the AssemblyLine Project</description>
     <!-- to find dependencies that have been changed to a different group / artifact id, run `mvn biz.lermitage.oga:oga-maven-plugin:check` -->
     <!-- TODO(#108): CXF is still using javax / jaxb and not jakarta namespaces, and won't until version 4.0.
          Our code now also seems to be tied up with newer versions of the libraries. Until then
@@ -14,10 +8,15 @@
     <!-- to quickly find dependencies that can be updated, run `mvn versions:display-dependency-updates` -->
 
     <parent>
-      <groupId>edu.suffolk.litlab</groupId>
-      <artifactId>efspserver-parent</artifactId>
-      <version>1.2.16</version>
+        <groupId>edu.suffolk.litlab</groupId>
+        <artifactId>efspserver-parent</artifactId>
+        <version>1.2.16</version>
     </parent>
+    <groupId>edu.suffolk.litlab</groupId>
+    <artifactId>efspserver</artifactId>
+    <name>Suffolk LITLab EFSP Proxy Server</name>
+    <description>an EFSP client for the AssemblyLine Project</description>
+    <url>https://suffolklitlab.org</url>
 
     <properties>
         <cxf.version>4.0.8</cxf.version>
@@ -124,12 +123,13 @@
                     <groupId>org.glassfish.jaxb</groupId>
                     <artifactId>jaxb-runtime</artifactId>
                 </exclusion>
-             </exclusions>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>4.0.2</version><!--$NO-MVN-MAN-VER$-->
+            <version>4.0.2</version>
+            <!--$NO-MVN-MAN-VER$-->
         </dependency>
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
@@ -255,11 +255,11 @@
             <artifactId>sendgrid-java</artifactId>
             <version>4.8.1</version>
             <exclusions>
-              <exclusion>
-                <groupId>org.bouncycastle</groupId>
-                <!-- Use our jdk18on instead -->
-                <artifactId>bcprov-jdk15on</artifactId>
-              </exclusion>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <!-- Use our jdk18on instead -->
+                    <artifactId>bcprov-jdk15on</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -313,31 +313,31 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>net.jqwik</groupId>
-          <artifactId>jqwik</artifactId>
-          <version>1.9.3</version>
-          <scope>test</scope>
+            <groupId>net.jqwik</groupId>
+            <artifactId>jqwik</artifactId>
+            <version>1.9.3</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>
         <resources>
-          <resource>
-            <directory>src/main/resources</directory>
-            <filtering>true</filtering>
-          </resource>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/resources</directory>
+            </resource>
         </resources>
         <plugins>
-                <plugin>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven-surefire.version}</version>
-                    <configuration>
-                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                        <trimStackTrace>false</trimStackTrace>
-                        <argLine>@{argLine}</argLine>
-                    </configuration>
-                </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire.version}</version>
+                <configuration>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <trimStackTrace>false</trimStackTrace>
+                    <argLine>@{argLine}</argLine>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -350,10 +350,10 @@
                     <execution>
                         <!-- https://stackoverflow.com/a/76639555/11416267 -->
                         <id>shade-jar-with-dependencies</id>
-                        <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <phase>package</phase>
                         <configuration>
                             <!-- Needed for CXF to work in a fatjar https://stackoverflow.com/a/68743972/11416267 -->
                             <transformers>
@@ -371,14 +371,14 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                             </transformers>
                             <filters>
-                              <filter>
-                                <artifact>*:*</artifact>
-                                <excludes>
-                                  <exclude>META-INF/*.SF</exclude>
-                                  <exclude>META-INF/*.DSA</exclude>
-                                  <exclude>META-INF/*.RSA</exclude>
-                                </excludes>
-                              </filter>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
                             </filters>
                             <finalName>${project.build.finalName}-with-deps</finalName>
                         </configuration>
@@ -389,17 +389,20 @@
                 <groupId>com.webcohesion.enunciate</groupId>
                 <artifactId>enunciate-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
-    
+
     <reporting>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.3.0</version>
-                <configuration>
-                </configuration>
+                <configuration/>
             </plugin>
         </plugins>
     </reporting>
