@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 public class ServiceHelpers {
-  private static Logger log = LoggerFactory.getLogger(ServiceHelpers.class);
+  private static final Logger log = LoggerFactory.getLogger(ServiceHelpers.class);
 
   /**
    * One of the ways that you can communicate over ECF. For more information, see
