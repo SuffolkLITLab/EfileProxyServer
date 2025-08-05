@@ -751,7 +751,7 @@ public class AdminUserService {
             httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
         MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
         Optional<TylerUserNamePassword> creds =
-            ServiceHelpers.userCredsFromAuthorization(tylerToken);
+            TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
         if (creds.isEmpty()) {
           return Optional.empty();
         }

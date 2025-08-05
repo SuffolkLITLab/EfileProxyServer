@@ -73,19 +73,6 @@ public class ServiceHelpers {
     REST_CALLBACK_URL = EXTERNAL_URL + "/filingreview/jurisdictions/%s/courts/%s/filing/status";
   }
 
-  public static Optional<TylerUserNamePassword> userCredsFromAuthorization(
-      String userColonPassword) {
-    if (userColonPassword == null) {
-      return Optional.empty();
-    }
-    if (!userColonPassword.contains(":")) {
-      return Optional.empty();
-    }
-    String email = userColonPassword.split(":")[0];
-    String password = userColonPassword.split(":")[1];
-    return Optional.of(new TylerUserNamePassword(email, password));
-  }
-
   /**
    * Sets up a connection to Tyler's SOAP API WITHOUT any Auth headers, but does handle the X.509
    * certificate and signing parameters.
@@ -184,7 +171,8 @@ public class ServiceHelpers {
 
   public static Optional<TylerFirmClient> setupFirmPort(
       TylerFirmFactory firmFactory, String tylerToken) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds from {}?", tylerToken);
       return Optional.empty();
