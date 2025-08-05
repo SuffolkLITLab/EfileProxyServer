@@ -169,6 +169,7 @@ public class CourtLocationInfo {
     this.showdamageamount = false;
     this.allowchargeupdate = false;
     this.allowpartyid = false;
+    this.allowserviceoninitial = BoolOrDefault.DEFAULT;
   }
 
   public CourtLocationInfo(ResultSet rs) throws SQLException {
