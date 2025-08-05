@@ -45,7 +45,7 @@ public class FilingDocDocassembleJacksonDeserializer {
 
   /** Parses a filing from the DA Json Object. Used by Deserializers that include filings. */
   public static Optional<FilingDoc> fromNode(
-      JsonNode node, Map<String, PartyId> varToPartyId, boolean isLeadDoc, InfoCollector collector)
+      JsonNode node, Map<String, PartyId> varToPartyId, int sequenceNum, InfoCollector collector)
       throws FilingError {
     if (!node.isObject()) {
       FilingError err =
@@ -200,7 +200,7 @@ public class FilingDocDocassembleJacksonDeserializer {
             courtesyCopies,
             preliminaryCopies,
             action,
-            isLeadDoc));
+            sequenceNum));
   }
 
   private static Optional<FilingAttachment> getAttachment(JsonNode node, InfoCollector collector)
