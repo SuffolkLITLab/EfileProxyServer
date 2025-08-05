@@ -53,7 +53,6 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.serviceinformationresponse
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.CourtRecordMDEPort;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.headers.Header;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.slf4j.Logger;
@@ -455,10 +454,7 @@ public class CasesService {
     httpClientPolicy.setReceiveTimeout(180_000);
     http.setClient(httpClientPolicy);
 
-    ServiceHelpers.setupServicePort((BindingProvider) port);
-    Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    List<Header> headersList = List.of(creds.get().toHeader());
-    ctx.put(Header.HEADER_LIST, headersList);
+    ServiceHelpers.setupServicePort((BindingProvider) port, creds.get());
     return Optional.of(port);
   }
 }
