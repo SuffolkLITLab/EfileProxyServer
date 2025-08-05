@@ -71,7 +71,7 @@ public class FilingInformationToJeffNetTest {
                 .map(p -> PartyId.CurrentFilingNew(p.getIdString()))
                 .collect(Collectors.toList()),
             NonEmptyList.fromList(fj.data.List.list(fa)).some(),
-            true);
+            0);
     info.setFilings(List.of(filingDoc));
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node = mapper.readTree("{\"tyler_filing_type\": \"27967\"}");

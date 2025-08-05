@@ -400,7 +400,6 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         JAXBElement<DocumentType> result =
             serializer.filingDocToXml(
                 filingDoc,
-                seqNum,
                 isInitialFiling,
                 allCodes.cat,
                 allCodes.type,
@@ -410,7 +409,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                 collector);
         collector.popAttributeStack();
         filingIdToObj.put(filingDoc.getIdString(), result.getValue());
-        if (filingDoc.isLead()) {
+        if (filingDoc.sequenceNum() == 0) {
           cfm.getFilingLeadDocument().add(result);
         } else {
           cfm.getFilingConnectedDocument().add(result);

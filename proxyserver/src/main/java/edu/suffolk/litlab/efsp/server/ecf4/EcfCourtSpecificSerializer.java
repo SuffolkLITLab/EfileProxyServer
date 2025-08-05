@@ -714,7 +714,6 @@ public class EcfCourtSpecificSerializer {
 
   public JAXBElement<DocumentType> filingDocToXml(
       FilingDoc doc,
-      int sequenceNum,
       boolean isInitialFiling,
       CaseCategory caseCategory,
       CaseType motionType,
@@ -774,7 +773,7 @@ public class EcfCourtSpecificSerializer {
       }
     }
 
-    docType.setDocumentSequenceID(Ecf4Helper.convertString(Integer.toString(sequenceNum)));
+    docType.setDocumentSequenceID(Ecf4Helper.convertString(Integer.toString(doc.sequenceNum())));
 
     DocumentMetadataType metadata = ecfOf.createDocumentMetadataType();
     metadata.setRegisterActionDescriptionText(Ecf4Helper.convertText(filing.code));
@@ -960,7 +959,7 @@ public class EcfCourtSpecificSerializer {
     docType.getDocumentRendition().add(rendition);
     docType.setId(doc.getIdString());
 
-    if (doc.isLead()) {
+    if (doc.sequenceNum() == 0) { // default to the first doc being the lead one.
       return tylerObjFac.createFilingLeadDocument(docType);
     } else {
       return tylerObjFac.createFilingConnectedDocument(docType);
