@@ -132,14 +132,14 @@ public class Ecf4Helper {
   }
 
   public static gov.niem.niem.niem_core._2.IdentificationType convertId(String idStr) {
-    gov.niem.niem.niem_core._2.IdentificationType id = niemCoreObjFac.createIdentificationType();
+    var id = niemCoreObjFac.createIdentificationType();
     id.setIdentificationID(convertString(idStr));
     return id;
   }
 
   public static gov.niem.niem.niem_core._2.IdentificationType convertId(
       String idStr, String category) {
-    gov.niem.niem.niem_core._2.IdentificationType id = niemCoreObjFac.createIdentificationType();
+    var id = niemCoreObjFac.createIdentificationType();
     id.setIdentificationID(convertString(idStr));
     id.setIdentificationCategory(
         niemCoreObjFac.createIdentificationCategoryText(convertText(category)));
@@ -154,7 +154,7 @@ public class Ecf4Helper {
   }
 
   public static gov.niem.niem.proxy.xsd._2.Base64Binary convertBase64(final byte[] rawContent) {
-    gov.niem.niem.proxy.xsd._2.Base64Binary binaryString = niemProxyObjFac.createBase64Binary();
+    var binaryString = niemProxyObjFac.createBase64Binary();
     // We don't need to encode Base64? For some strange reason, JAXB does it for us.
     // See https://stackoverflow.com/a/7224025
     // binaryString.setValue(Base64.getEncoder().encode(rawContent));
@@ -164,8 +164,7 @@ public class Ecf4Helper {
 
   public static CourtType convertCourtType(String courtId) {
     CourtType court = jxObjFac.createCourtType();
-    JAXBElement<gov.niem.niem.niem_core._2.IdentificationType> idType =
-        niemCoreObjFac.createOrganizationIdentification(Ecf4Helper.convertId(courtId));
+    var idType = niemCoreObjFac.createOrganizationIdentification(Ecf4Helper.convertId(courtId));
     court.setOrganizationIdentification(idType);
     return court;
   }

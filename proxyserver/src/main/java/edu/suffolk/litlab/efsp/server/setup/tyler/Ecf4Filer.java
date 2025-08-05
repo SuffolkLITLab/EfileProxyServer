@@ -481,8 +481,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     ServiceReceiptMessageType receipt = port.get().serveFiling(cfm);
     StringBuilder sb = new StringBuilder();
     boolean anyErrors = false;
-    for (oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType err :
-        receipt.getError()) {
+    for (var err : receipt.getError()) {
       if (!err.getErrorCode().getValue().equalsIgnoreCase("0")) {
         anyErrors = true;
         sb.append("\n  * " + err.getErrorText().getValue());
@@ -781,10 +780,10 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     if (submitterId != null && !submitterId.isBlank()) {
       IdentificationType id = niemObjFac.createIdentificationType();
       id.setIdentificationID(Ecf4Helper.convertString(submitterId));
-      gov.niem.niem.niem_core._2.PersonType per = niemObjFac.createPersonType();
-      per.getPersonOtherIdentification().add(id);
+      var person = niemObjFac.createPersonType();
+      person.getPersonOtherIdentification().add(id);
       EntityType entity = niemObjFac.createEntityType();
-      entity.setEntityRepresentation(niemObjFac.createEntityPerson(per));
+      entity.setEntityRepresentation(niemObjFac.createEntityPerson(person));
       m.setDocumentSubmitter(entity);
     } else {
       m.setDocumentSubmitter(null);

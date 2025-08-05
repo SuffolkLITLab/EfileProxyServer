@@ -119,9 +119,8 @@ public class EcfCaseTypeFactory {
   /** TODO(brycew): finish this function, lots of possible rabbit holes here. */
   public static Optional<Map<PartyId, Person>> getCaseParticipants(
       gov.niem.niem.niem_core._2.CaseType filedCase) {
-    Map<PartyId, Person> existingParticipants = new HashMap<>();
-    Optional<tyler.ecf.extensions.common.CaseAugmentationType> maybeAug =
-        getCaseAugmentation(filedCase);
+    var existingParticipants = new HashMap<PartyId, Person>();
+    var maybeAug = getCaseAugmentation(filedCase);
     if (maybeAug.isEmpty()) {
       return Optional.empty();
     }
