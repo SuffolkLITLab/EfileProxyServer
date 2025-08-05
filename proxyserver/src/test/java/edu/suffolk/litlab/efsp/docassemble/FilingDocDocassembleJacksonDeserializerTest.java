@@ -49,11 +49,11 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   public void testWeirdJsonShouldBeEmpty()
       throws JsonMappingException, JsonProcessingException, FilingError {
     ObjectMapper m = new ObjectMapper();
-    assertThatThrownBy(() -> fromNode(m.readTree("null"), varToPartyId, true, collector))
+    assertThatThrownBy(() -> fromNode(m.readTree("null"), varToPartyId, 0, collector))
         .isInstanceOf(FilingError.class);
-    assertThatThrownBy(() -> fromNode(m.readTree("[]"), varToPartyId, true, collector))
+    assertThatThrownBy(() -> fromNode(m.readTree("[]"), varToPartyId, 0, collector))
         .isInstanceOf(FilingError.class);
-    doc = fromNode(m.readTree("{}"), varToPartyId, true, collector);
+    doc = fromNode(m.readTree("{}"), varToPartyId, 0, collector);
     assertThat(doc).isEmpty();
   }
 
@@ -61,7 +61,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   @Test
   public void noAttachmentsShouldLoadDocument() throws FilingError, IOException {
     JsonNode node = readFile("old_style_doc.json");
-    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);
@@ -71,7 +71,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   @Test
   public void oneAttachmentShouldLoadDocument() throws FilingError, IOException {
     JsonNode node = readFile("one_attachment.json");
-    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);
@@ -84,7 +84,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   @Test
   public void partyIdNotPresent() throws IOException, FilingError {
     JsonNode node = readFile("one_attachment.json");
-    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, Map.of(), true, collector);
+    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, Map.of(), 0, collector);
     assertThat(doc).isPresent();
     var parties = doc.get().getFilingPartyIds();
     assertThat(parties.size()).isEqualTo(1);
@@ -94,7 +94,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   @Test
   public void oneEnabledOneDisabledShouldLoadOneAttachment() throws FilingError, IOException {
     JsonNode node = readFile("one_enabled_one_disabled.json");
-    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);
@@ -104,14 +104,14 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   @Test
   public void noEnabledShouldFilingError() throws IOException, FilingError {
     JsonNode node = readFile("fail_no_enabled_attachment.json");
-    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
     assertThat(doc).as("Document shouldn't have parsed").isEmpty();
   }
 
   @Test
   public void shouldFallbackToParentDocIfNoEnabled() throws FilingError, IOException {
     JsonNode node = readFile("fallback_to_upper_doc.json");
-    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);
@@ -122,7 +122,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   @Test
   public void noDocTypesShouldBeEmptyStrings() throws IOException, FilingError {
     JsonNode node = readFile("fail_missing_doc_types.json");
-    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);
@@ -132,7 +132,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   @Test
   public void twoAttachmentsShouldLoadTwoAttachments() throws FilingError, IOException {
     JsonNode node = readFile("two_attachments.json");
-    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(2);
@@ -146,7 +146,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   @Test
   public void hasOptionalServicesShouldParse() throws FilingError, IOException {
     JsonNode node = readFile("has_optional_services.json");
-    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
     assertThat(doc).isPresent();
     var optionalServices = doc.get().getOptionalServices();
     assertThat(optionalServices).hasSize(1);
@@ -157,7 +157,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   public void filingActionShouldAlwaysParse() throws IOException, FilingError {
     for (var emptyData : List.of("null", "\"\"", "\"clearly_wrong\"")) {
       JsonNode node = readTemplate("template_filing_action.json", emptyData);
-      doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+      doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
       assertThat(doc).isPresent();
       assertThat(doc.get().getFilingAction()).isEmpty();
     }
@@ -169,7 +169,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
             "\"e_file_and_serve\"",
             "\"serve\"")) {
       JsonNode node = readTemplate("template_filing_action.json", data);
-      doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+      doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
       assertThat(doc).isPresent();
       assertThat(doc.get().getFilingAction()).isPresent();
     }
@@ -178,7 +178,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   @Test
   public void testTylerMergeAttachments() throws IOException, FilingError {
     JsonNode node = readFile("tyler_merge_attachments.json");
-    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+    doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);
@@ -202,7 +202,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
               // TODO: weird behavior: local date parses based on server's timezone? Should fix
               new InputSaved("\"2024-02-29T01:19:00.123Z\"", "2024-02-28"))) {
         JsonNode node = readTemplate(INPUT_FILE, testData.dateInput);
-        doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+        doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
         assertThat(doc).isPresent();
         assertThat(doc.get().getDueDate()).isPresent();
         assertThat(doc.get().getDueDate().get()).isEqualTo(testData.savedDate);
@@ -217,7 +217,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
               )) { // TODO(brycew): Should also include an empty and blank string, but those error
         // right now
         JsonNode node = readTemplate(INPUT_FILE, emptyData);
-        doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, true, collector);
+        doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 0, collector);
         assertThat(doc).isPresent();
         assertThat(doc.get().getDueDate()).isEmpty();
       }
@@ -238,7 +238,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
         assertThatThrownBy(
                 () ->
                     FilingDocDocassembleJacksonDeserializer.fromNode(
-                        node, varToPartyId, true, collector))
+                        node, varToPartyId, 0, collector))
             .withFailMessage("Failed on %s", badData)
             .isInstanceOf(DateTimeParseException.class);
       }
@@ -262,7 +262,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
         assertThatThrownBy(
                 () ->
                     FilingDocDocassembleJacksonDeserializer.fromNode(
-                        node, varToPartyId, true, collector))
+                        node, varToPartyId, 0, collector))
             .withFailMessage("Using %s", badData)
             .isInstanceOf(FilingError.class);
       }
