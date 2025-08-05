@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
@@ -48,7 +49,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -97,7 +97,7 @@ public class PaymentsService {
   private final String togaUrl;
   private final EfmFirmService firmFactory;
   private final Supplier<CodeDatabase> cdSupplier;
-  private final DataSource userDs;
+  private final Supplier<LoginDatabase> ldSupplier;
   private final String jurisdiction;
 
   public PaymentsService(
@@ -105,7 +105,7 @@ public class PaymentsService {
       String env,
       String togaKey,
       String togaUrl,
-      DataSource userDs,
+      Supplier<LoginDatabase> ldSupplier,
       Supplier<CodeDatabase> cdSupplier) {
     this.callbackToUsUrl =
         ServiceHelpers.EXTERNAL_URL + "/jurisdictions/" + jurisdiction + "/payments/toga-account";
@@ -123,7 +123,7 @@ public class PaymentsService {
           jurisdiction + "-" + env + " not in SoapClientChooser for EFMFirm");
     }
     this.cdSupplier = cdSupplier;
-    this.userDs = userDs;
+    this.ldSupplier = ldSupplier;
   }
 
   @GET
@@ -139,7 +139,7 @@ public class PaymentsService {
   public Response getGlobalPaymentList(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getGlobalPaymentList");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -154,7 +154,7 @@ public class PaymentsService {
       @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getGlobalPaymentAccount");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -170,7 +170,7 @@ public class PaymentsService {
   public Response createGlobalWaiverAccount(@Context HttpHeaders httpHeaders, String accountName) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.createGlobalWaiverAccount");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -183,7 +183,7 @@ public class PaymentsService {
       @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId, String json) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.updateGlobalPaymentAccount");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -206,7 +206,7 @@ public class PaymentsService {
       @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.removeGlobalPaymentAccount");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -223,7 +223,7 @@ public class PaymentsService {
       @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getPaymentAccount");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -241,7 +241,7 @@ public class PaymentsService {
       @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.removePaymentAccount");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -259,7 +259,7 @@ public class PaymentsService {
       throws SQLException {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getPaymentAccountList");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -284,7 +284,7 @@ public class PaymentsService {
   public Response createWaiverAccount(@Context HttpHeaders httpHeaders, String accountName) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.createWaiverAccount");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -298,7 +298,7 @@ public class PaymentsService {
       throws JsonMappingException, JsonProcessingException {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.updatePaymentAccount");
     Optional<TylerFirmClient> firmPort =
-        ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -320,7 +320,7 @@ public class PaymentsService {
   public Response getPaymentAccountTypeList(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getPaymentAccountTypeList");
     Optional<TylerFirmClient> firmPort =
-        ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }

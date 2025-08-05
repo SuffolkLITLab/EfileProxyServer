@@ -17,8 +17,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import javax.sql.DataSource;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,19 +148,22 @@ public class ServiceHelpers {
   }
 
   public static Optional<TylerFirmClient> setupFirmPort(
-      EfmFirmService firmFactory, HttpHeaders httpHeaders, DataSource userDs, String jurisdiction) {
-    return setupFirmPort(firmFactory, httpHeaders, userDs, true, jurisdiction);
+      EfmFirmService firmFactory,
+      HttpHeaders httpHeaders,
+      Supplier<LoginDatabase> ldSupplier,
+      String jurisdiction) {
+    return setupFirmPort(firmFactory, httpHeaders, ldSupplier, true, jurisdiction);
   }
 
   // TODO(bryce): should this take not a firm service but a normal port?
   public static Optional<TylerFirmClient> setupFirmPort(
       EfmFirmService firmFactory,
       HttpHeaders httpHeaders,
-      DataSource userDs,
+      Supplier<LoginDatabase> ldSupplier,
       boolean needsSoapHeader,
       String jurisdiction) {
     String activeToken = httpHeaders.getHeaderString("X-API-KEY");
-    try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
+    try (LoginDatabase ld = ldSupplier.get()) {
       Optional<AtRest> atRest = ld.getAtRestInfo(activeToken);
       if (atRest.isEmpty()) {
         log.warn("Couldn't find server api key");

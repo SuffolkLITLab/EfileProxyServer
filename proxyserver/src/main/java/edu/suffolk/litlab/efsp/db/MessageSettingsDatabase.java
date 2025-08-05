@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,15 @@ public class MessageSettingsDatabase extends Database {
 
   public MessageSettingsDatabase(Connection conn) {
     super(conn);
+  }
+
+  public static MessageSettingsDatabase fromDS(DataSource ds) {
+    try {
+      return new MessageSettingsDatabase(ds.getConnection());
+    } catch (SQLException ex) {
+      log.error("In MessageSettingsDatabase constructor, can't get connection: ", ex);
+      throw new RuntimeException(ex);
+    }
   }
 
   @Override

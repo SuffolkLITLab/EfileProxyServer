@@ -70,7 +70,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.sql.DataSource;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
@@ -103,17 +102,17 @@ public class CourtSchedulingService {
   private final String jurisdiction;
 
   private final Supplier<CodeDatabase> cdSupplier;
-  private final DataSource userDs;
+  private final Supplier<LoginDatabase> ldSupplier;
 
   public CourtSchedulingService(
       Map<String, InterviewToFilingInformationConverter> converterMap,
       String jurisdiction,
       String env,
-      DataSource userDs,
+      Supplier<LoginDatabase> ldSupplier,
       Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
     this.cdSupplier = cdSupplier;
-    this.userDs = userDs;
+    this.ldSupplier = ldSupplier;
     var maybeSchedFactory = SoapClientChooser.getCourtSchedulingFactory(jurisdiction, env);
     if (maybeSchedFactory.isEmpty()) {
       throw new RuntimeException(
@@ -532,7 +531,7 @@ public class CourtSchedulingService {
   private Optional<CourtSchedulingMDE> setupSchedulingPort(HttpHeaders httpHeaders) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
     Optional<TylerUserNamePassword> creds = Optional.empty();
-    try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
+    try (LoginDatabase ld = ldSupplier.get()) {
       Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
       if (atRest.isEmpty()) {
         log.warn("Couldn't checkLogin");

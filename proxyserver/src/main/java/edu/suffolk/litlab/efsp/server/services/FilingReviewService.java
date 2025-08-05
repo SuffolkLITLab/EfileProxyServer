@@ -44,8 +44,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -63,12 +63,14 @@ public class FilingReviewService {
 
   private final Map<String, EfmRestCallbackInterface> callbackInterfaces;
   private final OrgMessageSender msgSender;
-  private final DataSource ds;
+  private final Supplier<LoginDatabase> ldSupplier;
+  private final Supplier<UserDatabase> udSupplier;
   private final EndpointReflection ef;
 
   public FilingReviewService(
       String jurisdiction,
-      DataSource ds,
+      Supplier<LoginDatabase> ldSupplier,
+      Supplier<UserDatabase> udSupplier,
       Map<String, InterviewToFilingInformationConverter> converterMap,
       Map<String, EfmFilingInterface> filingInterfaces,
       Map<String, EfmRestCallbackInterface> callbackInterfaces,
@@ -76,7 +78,8 @@ public class FilingReviewService {
     this.converterMap = converterMap;
     this.filingInterfaces = filingInterfaces;
     this.callbackInterfaces = callbackInterfaces;
-    this.ds = ds;
+    this.ldSupplier = ldSupplier;
+    this.udSupplier = udSupplier;
     this.msgSender = msgSender;
     this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/filingreview");
   }
@@ -361,7 +364,7 @@ public class FilingReviewService {
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
     Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     Optional<AtRest> atRest = Optional.empty();
-    try (LoginDatabase ld = new LoginDatabase(ds.getConnection())) {
+    try (LoginDatabase ld = ldSupplier.get()) {
       atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
       if (activeToken.isEmpty() || atRest.isEmpty()) {
         return Response.status(401).entity("Not logged in to file with " + courtId).build();
@@ -405,7 +408,7 @@ public class FilingReviewService {
     String neutralTemplate = getStringDefault(miscInfo, "neutral_contents", "");
     String neutralSubject = getStringDefault(miscInfo, "neutral_subject", "");
 
-    try (UserDatabase ud = new UserDatabase(ds.getConnection())) {
+    try (UserDatabase ud = udSupplier.get()) {
       // TODO(brycew): this is going to send case type code (i.e. random numbers to the user.
       // Should avoid if possible, but would have to return the full info from the Filer object
       // TODO(brycew): this also sends "the carroll has received", instead of "the Carrol County
@@ -552,7 +555,7 @@ public class FilingReviewService {
 
   private Optional<String> getActiveToken(HttpHeaders httpHeaders, String orgHeaderKey) {
     String serverKey = httpHeaders.getHeaderString("X-API-KEY");
-    try (LoginDatabase ld = new LoginDatabase(ds.getConnection())) {
+    try (LoginDatabase ld = ldSupplier.get()) {
       Optional<AtRest> atRest = ld.getAtRestInfo(serverKey);
       if (atRest.isEmpty()) {
         return Optional.empty();

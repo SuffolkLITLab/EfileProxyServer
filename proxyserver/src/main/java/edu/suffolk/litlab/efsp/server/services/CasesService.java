@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
-import javax.sql.DataSource;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseListQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseParticipantType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistresponsemessage_4.CaseListResponseMessageType;
@@ -77,13 +76,16 @@ public class CasesService {
           new oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.ObjectFactory();
   private final oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf =
       new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-  private final DataSource userDs;
+  private final Supplier<LoginDatabase> ldSupplier;
   private final Supplier<CodeDatabase> cdSupplier;
   private final String jurisdiction;
   private final EndpointReflection ef;
 
   public CasesService(
-      String jurisdiction, String env, DataSource userDs, Supplier<CodeDatabase> cdSupplier) {
+      String jurisdiction,
+      String env,
+      Supplier<LoginDatabase> ldSupplier,
+      Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
     Optional<CourtRecordMDEService> maybeRecords =
         SoapClientChooser.getCourtRecordFactory(jurisdiction, env);
@@ -92,7 +94,7 @@ public class CasesService {
     }
     this.recordFactory = maybeRecords.get();
     this.cdSupplier = cdSupplier;
-    this.userDs = userDs;
+    this.ldSupplier = ldSupplier;
     this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/cases");
   }
 
@@ -432,7 +434,7 @@ public class CasesService {
     Optional<AtRest> atRest = Optional.empty();
     String tylerToken =
         httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-    try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
+    try (LoginDatabase ld = ldSupplier.get()) {
       atRest = ld.getAtRestInfo(apiKey);
       if (atRest.isEmpty()) {
         log.warn("Couldn't checkLogin");

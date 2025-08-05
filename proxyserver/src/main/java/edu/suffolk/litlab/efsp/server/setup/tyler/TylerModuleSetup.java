@@ -4,6 +4,8 @@ import static edu.suffolk.litlab.efsp.stdlib.StdLib.GetEnv;
 
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
+import edu.suffolk.litlab.efsp.db.LoginDatabase;
+import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeUpdater;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
@@ -285,7 +287,6 @@ public class TylerModuleSetup implements EfmModuleSetup {
         };
 
     EfmFilingInterface filer = new Ecf4Filer(jurisdiction, env, cdSupplier);
-
     for (String court : getCourts()) {
       filingMap.put(court, filer);
       getCallback().ifPresent(call -> callbackMap.put(court, call));
@@ -315,23 +316,31 @@ public class TylerModuleSetup implements EfmModuleSetup {
           return Result.nullOk();
         };
 
+    Supplier<LoginDatabase> ldSupplier = () -> LoginDatabase.fromDS(this.userDs);
+    Supplier<UserDatabase> udSupplier = () -> UserDatabase.fromDS(this.userDs);
+
     var adminUser =
-        new AdminUserService(jurisdiction, env, this.userDs, cdSupplier, passwordChecker);
-    var cases = new CasesService(jurisdiction, env, this.userDs, cdSupplier);
+        new AdminUserService(jurisdiction, env, ldSupplier, cdSupplier, passwordChecker);
+    var cases = new CasesService(jurisdiction, env, ldSupplier, cdSupplier);
     var codes = new EcfCodesService(jurisdiction, cdSupplier);
     Optional<CourtSchedulingService> courtScheduler = Optional.empty();
     if (jurisdiction == "illinois") {
       courtScheduler =
           Optional.of(
-              new CourtSchedulingService(converterMap, jurisdiction, env, userDs, cdSupplier));
+              new CourtSchedulingService(converterMap, jurisdiction, env, ldSupplier, cdSupplier));
     }
     var filingReview =
         new FilingReviewService(
-            getJurisdiction(), this.userDs, converterMap, filingMap, callbackMap, this.sender);
-    var firmAttorney =
-        new FirmAttorneyAndServiceService(jurisdiction, env, this.userDs, cdSupplier);
+            getJurisdiction(),
+            ldSupplier,
+            udSupplier,
+            converterMap,
+            filingMap,
+            callbackMap,
+            this.sender);
+    var firmAttorney = new FirmAttorneyAndServiceService(jurisdiction, env, ldSupplier, cdSupplier);
     var payments =
-        new PaymentsService(jurisdiction, env, this.togaKey, this.togaUrl, this.userDs, cdSupplier);
+        new PaymentsService(jurisdiction, env, this.togaKey, this.togaUrl, ldSupplier, cdSupplier);
     JurisdictionServiceHandle handle =
         new JurisdictionServiceHandle(
             getJurisdiction(),
