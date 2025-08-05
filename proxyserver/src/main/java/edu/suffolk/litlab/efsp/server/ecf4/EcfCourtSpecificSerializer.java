@@ -27,7 +27,6 @@ import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.stdlib.NonEmptyString;
-import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
@@ -50,7 +49,6 @@ import gov.niem.niem.niem_core._2.StructuredAddressType;
 import gov.niem.niem.niem_core._2.TelephoneNumberType;
 import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.proxy.xsd._2.Base64Binary;
-import gov.niem.niem.proxy.xsd._2.Decimal;
 import gov.niem.niem.usps_states._2.USStateCodeSimpleType;
 import gov.niem.niem.usps_states._2.USStateCodeType;
 import jakarta.xml.bind.JAXBElement;
@@ -561,10 +559,9 @@ public class EcfCourtSpecificSerializer {
     addr.setAddressLine1(myAddr.getStreet());
     addr.setAddressLine2(myAddr.getApartment());
     addr.setCity(myAddr.getCity());
-    FailFastCollector collector = new FailFastCollector();
-    Optional<CountryCodeType> cct = strToCountryCode(myAddr.getCountry(), collector);
-    if (cct.isEmpty()) {
-      throw FilingError.serverError("Country Code is wrong");
+    var cct = Ecf4Helper.strToCountryCode(myAddr.getCountry());
+    if (cct.isErr()) {
+      throw FilingError.serverError("Country Code is wrong: " + myAddr.getCountry());
     }
     addr.setState(myAddr.getState());
     addr.setZipCode(myAddr.getZip());
@@ -586,8 +583,8 @@ public class EcfCourtSpecificSerializer {
     ProperNameTextType pntt = niemObjFac.createProperNameTextType();
     pntt.setValue(address.getCity());
     sat.setLocationCityName(pntt);
-    Optional<CountryCodeType> cct = strToCountryCode(address.getCountry(), collector);
-    if (cct.isEmpty()) {
+    var cctResult = Ecf4Helper.strToCountryCode(address.getCountry());
+    if (cctResult.isErr()) {
       List<String> countries =
           Arrays.stream(CountryCodeSimpleType.values())
               .map((t) -> t.toString())
@@ -601,9 +598,10 @@ public class EcfCourtSpecificSerializer {
               Optional.of(address.getCountry()));
       collector.addWrong(var);
     }
-    sat.setLocationCountry(niemObjFac.createLocationCountryFIPS104Code(cct.get()));
-    if (!fillStateCode(address.getState(), cct.get(), sat)) {
-      String countryString = cct.get().getValue();
+    CountryCodeType cct = cctResult.unwrapOrElseThrow();
+    sat.setLocationCountry(niemObjFac.createLocationCountryFIPS104Code(cct));
+    if (!fillStateCode(address.getState(), cct, sat)) {
+      String countryString = cct.getValue();
       List<String> stateCodes = cd.getStateCodes(this.court.code, countryString);
       InterviewVariable var =
           collector.requestVar(
@@ -913,9 +911,7 @@ public class EcfCourtSpecificSerializer {
           if (serv.feeAmount.isEmpty()) {
             collector.addWrong(servVar.appendDesc(": needs fee prompt"));
           } else {
-            Decimal dec = new Decimal();
-            dec.setValue(serv.feeAmount.get());
-            xmlServ.setFeeAmount(dec);
+            xmlServ.setFeeAmount(Ecf4Helper.convertDecimal(serv.feeAmount.get()));
           }
         }
         if (!codeSettings.hasfeeprompt && serv.feeAmount.isPresent()) {
@@ -925,9 +921,7 @@ public class EcfCourtSpecificSerializer {
           if (serv.multiplier.isEmpty()) {
             collector.addWrong(servVar.appendDesc(": needs multiplier"));
           } else {
-            Decimal dec = new Decimal();
-            dec.setValue(new BigDecimal(serv.multiplier.get()));
-            xmlServ.setMultiplier(dec);
+            xmlServ.setMultiplier(Ecf4Helper.convertDecimal(serv.multiplier.get()));
           }
         }
         docType.getDocumentOptionalService().add(xmlServ);
@@ -1167,14 +1161,6 @@ public class EcfCourtSpecificSerializer {
         return descriptionRow.defaultvalueexpression;
       }
     }
-  }
-
-  // TODO(brycew): don't need the Optional anyy more
-  private static Optional<CountryCodeType> strToCountryCode(
-      String country, InfoCollector collector) {
-    CountryCodeType cct = new CountryCodeType();
-    cct.setValue(country);
-    return Optional.of(cct);
   }
 
   /** True if it worked. */

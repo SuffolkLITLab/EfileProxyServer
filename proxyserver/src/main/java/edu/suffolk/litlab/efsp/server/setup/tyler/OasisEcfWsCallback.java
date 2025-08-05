@@ -102,14 +102,11 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     }
     StringBuilder docText = new StringBuilder();
     if (doc instanceof tyler.ecf.extensions.common.ReviewedDocumentType tylerDoc) {
-      if (tylerDoc.getDocumentDescriptionText() != null
-          && tylerDoc.getDocumentDescriptionText().getValue() != null
-          && tylerDoc.getDocumentDescriptionText().getValue().isBlank()) {
-        docText
-            .append("The document (")
-            .append(tylerDoc.getDocumentDescriptionText().getValue())
-            .append(") ");
-      }
+      var description = Ecf4Helper.getNonEmptyText(tylerDoc.getDocumentDescriptionText());
+      description.ifPresent(
+          desc -> {
+            docText.append("The document (").append(desc).append(") ");
+          });
       if (tylerDoc.getDocumentBinary() != null
           && tylerDoc.getDocumentBinary().getBinaryDescriptionText() != null) {
         docText
@@ -126,23 +123,20 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
         }
       }
 
-      if (tylerDoc.getFilingReviewCommentsText() != null
-          && tylerDoc.getFilingReviewCommentsText().getValue() != null
-          && !tylerDoc.getFilingReviewCommentsText().getValue().isBlank()) {
-        docText
-            .append(" has the following review comments: ")
-            .append(tylerDoc.getFilingReviewCommentsText().getValue());
-      }
+      var maybeComments = Ecf4Helper.getNonEmptyText(tylerDoc.getFilingReviewCommentsText());
+      maybeComments.ifPresent(
+          comments -> {
+            docText.append(" has the following review comments: ").append(comments);
+          });
 
-      if (tylerDoc.getRejectReasonText() != null
-          && tylerDoc.getRejectReasonText().getValue() != null
-          && !tylerDoc.getRejectReasonText().getValue().isBlank()) {
+      var maybeRejectText = Ecf4Helper.getNonEmptyText(tylerDoc.getRejectReasonText());
+      if (maybeRejectText.isPresent()) {
         if (courtInfo.showreturnonreject) {
           docText.append(", was returned for the following reason: ");
         } else {
           docText.append(", was rejected for the following reason: ");
         }
-        docText.append(tylerDoc.getRejectReasonText().getValue());
+        docText.append(maybeRejectText.get());
       }
     } else {
       docText.append("The review was about the document ");

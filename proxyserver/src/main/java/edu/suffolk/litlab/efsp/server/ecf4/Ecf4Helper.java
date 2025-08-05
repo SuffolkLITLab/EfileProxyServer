@@ -1,12 +1,16 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
+import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import gov.niem.niem.domains.jxdm._4.CourtType;
+import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
+import gov.niem.niem.fips_10_4._2.CountryCodeType;
 import gov.niem.niem.niem_core._2.DateType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.MeasureType;
 import gov.niem.niem.niem_core._2.TextType;
+import gov.niem.niem.proxy.xsd._2.Decimal;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
@@ -14,6 +18,7 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import java.io.File;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -60,8 +65,6 @@ public class Ecf4Helper {
     try {
       datatypeFac = DatatypeFactory.newInstance();
     } catch (DatatypeConfigurationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
       throw new RuntimeException(e);
     }
   }
@@ -88,6 +91,13 @@ public class Ecf4Helper {
     gov.niem.niem.proxy.xsd._2.Boolean val = new gov.niem.niem.proxy.xsd._2.Boolean();
     val.setValue(bool);
     return val;
+  }
+
+  public static Optional<String> getNonEmptyText(TextType text) {
+    if (text != null && text.getValue() != null && !text.getValue().isBlank()) {
+      return Optional.of(text.getValue());
+    }
+    return Optional.empty();
   }
 
   /**
@@ -144,6 +154,25 @@ public class Ecf4Helper {
     id.setIdentificationCategory(
         niemCoreObjFac.createIdentificationCategoryText(convertText(category)));
     return id;
+  }
+
+  public static Decimal convertDecimal(BigDecimal deci) {
+    Decimal xml = new Decimal();
+    xml.setValue(deci);
+    return xml;
+  }
+
+  /**
+   * Convert an int to a BigDecimal to an XML Decimal
+   *
+   * <p>Weird conversion, but the multiplier on optional services is a Decimal for some reason? "I
+   * need 2.3 copies of this sent to my office", lmao.
+   *
+   * @param val
+   * @return
+   */
+  public static Decimal convertDecimal(int val) {
+    return convertDecimal(new BigDecimal(val));
   }
 
   /** Converts a Java string to a URI. */
@@ -252,6 +281,19 @@ public class Ecf4Helper {
     QName qname = new QName("suffolk.test.objectToXml", "objectToXml");
     JAXBElement<T> pp = new JAXBElement<T>(qname, toXmlClazz, toXml);
     mar.marshal(pp, outfile);
+  }
+
+  /** Turn a given string into a country type. */
+  public static Result<CountryCodeType, IllegalArgumentException> strToCountryCode(String country) {
+    CountryCodeType cct = new CountryCodeType();
+    try {
+      // Trigger an illegal argument exception if not valid
+      CountryCodeSimpleType.fromValue(country);
+      cct.setValue(country);
+      return Result.ok(cct);
+    } catch (IllegalArgumentException ex) {
+      return Result.err(ex);
+    }
   }
 
   public static <T extends QueryMessageType> T prep(T newMsg, String courtId) {
