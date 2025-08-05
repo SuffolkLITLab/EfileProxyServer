@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efsp.tyler;
 
+import static edu.suffolk.litlab.efsp.Jurisdiction.*;
+
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import java.net.URL;
 import java.util.Map;
@@ -17,17 +19,17 @@ public class TylerClients {
 
   private static final Map<Jurisdiction, TylerVersion> STAGE_VERSION_MAP =
       Map.of(
-          Jurisdiction.CALIFORNIA, TylerVersion.v2024_6,
-          Jurisdiction.ILLINOIS, TylerVersion.v2024_6,
-          Jurisdiction.INDIANA, TylerVersion.v2024_6,
-          Jurisdiction.MASSACHUSETTS, TylerVersion.v2025_0,
-          Jurisdiction.TEXAS, TylerVersion.v2024_6,
-          Jurisdiction.VERMONT, TylerVersion.v2024_6);
+          CALIFORNIA, TylerVersion.v2024_6,
+          ILLINOIS, TylerVersion.v2024_6,
+          INDIANA, TylerVersion.v2024_6,
+          MASSACHUSETTS, TylerVersion.v2025_0,
+          TEXAS, TylerVersion.v2024_6,
+          VERMONT, TylerVersion.v2024_6);
 
   private static final Map<Jurisdiction, TylerVersion> PROD_VERSION_MAP =
       Map.of(
-          Jurisdiction.ILLINOIS, TylerVersion.v2024_6,
-          Jurisdiction.MASSACHUSETTS, TylerVersion.v2022_1);
+          ILLINOIS, TylerVersion.v2024_6,
+          MASSACHUSETTS, TylerVersion.v2022_1);
 
   /**
    * Gets the EfmUserService from the individual jursdiction and env arguments.
@@ -86,14 +88,9 @@ public class TylerClients {
 
   private static Optional<URL> createLocalWsdlUrl(
       TylerDomain domain, TylerVersion version, String suffix) {
-    String wsdlPath =
-        "wsdl/"
-            + version.getVersionPath()
-            + "/"
-            + domain.env().getName()
-            + "/"
-            + domain.jurisdiction().getName()
-            + suffix;
+    var envName = domain.env().getName();
+    var jurisName = domain.jurisdiction().getName();
+    String wsdlPath = "wsdl/" + version.getVersionPath() + "/" + envName + "/" + jurisName + suffix;
     URL url = TylerClients.class.getClassLoader().getResource(wsdlPath);
     if (url == null) {
       log.warn("Could not find the wsdl at the classpath:{}", wsdlPath);

@@ -18,10 +18,10 @@ import edu.suffolk.litlab.efsp.server.services.impl.EfmFilingInterface;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
+import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
-import edu.suffolk.litlab.efsp.utils.Hasher;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import edu.suffolk.litlab.efsp.utils.NeverSubmitCollector;
@@ -32,6 +32,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.container.ResourceContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
@@ -121,6 +122,7 @@ public class FilingReviewService {
 
   @GET
   @Path("/courts/{court_id}/filings/{filing_id}/status")
+  @NeedsAuthorization
   public Response getFilingStatus(
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
@@ -143,6 +145,7 @@ public class FilingReviewService {
   /** If 0 is passed for court, search all courts. */
   @GET
   @Path("/courts/{court_id}/filings")
+  @NeedsAuthorization
   public Response getFilingList(
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
@@ -175,6 +178,7 @@ public class FilingReviewService {
 
   @GET
   @Path("/courts/{court_id}/filing/check")
+  @NeedsAuthorization
   public Response checkFilingForReview(
       @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.checkFilingForReview");
@@ -213,6 +217,7 @@ public class FilingReviewService {
 
   @POST
   @Path("/courts/{court_id}/filing/fees")
+  @NeedsAuthorization
   public Response calculateFilingFees(
       @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.calculateFilingFees");
@@ -248,6 +253,7 @@ public class FilingReviewService {
 
   @GET
   @Path("/courts/{court_id}/filing/servicetypes")
+  @NeedsAuthorization
   public Response getServiceTypes(
       @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getServiceTypes");
@@ -282,6 +288,7 @@ public class FilingReviewService {
 
   @GET
   @Path("/courts/{court_id}/policy")
+  @NeedsAuthorization
   public Response getPolicy(
       @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getPolicy");
@@ -327,6 +334,7 @@ public class FilingReviewService {
 
   @POST
   @Path("/courts/{court_id}/filings")
+  @NeedsAuthorization
   public Response submitFilingForReview(
       @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.submitFilingForReview");
@@ -472,6 +480,7 @@ public class FilingReviewService {
 
   @GET
   @Path("/courts/{court_id}/filings/{filing_id}")
+  @NeedsAuthorization
   public Response getFilingDetails(
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
@@ -494,6 +503,7 @@ public class FilingReviewService {
 
   @GET
   @Path("/courts/{court_id}/filings/{filing_id}/service/{contact_id}")
+  @NeedsAuthorization
   public Response getFilingService(
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
@@ -515,8 +525,9 @@ public class FilingReviewService {
 
   @DELETE
   @Path("/courts/{court_id}/filings/{filing_id}")
+  @NeedsAuthorization
   public Response cancelFiling(
-      @Context HttpHeaders httpHeaders,
+      @Context ResourceContext context,
       @PathParam("court_id") String courtId,
       @PathParam("filing_id") String filingId) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.cancelFiling");
@@ -525,31 +536,8 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    var activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
-    if (activeToken.isEmpty()) {
-      return Response.status(401).entity("Not logged in to file with " + courtId).build();
-    }
     var toRet = filer.cancelFiling(courtId, filingId, activeToken.get());
     return toRet;
-  }
-
-  private Optional<String> getActiveToken(HttpHeaders httpHeaders, String orgHeaderKey) {
-    String serverKey = httpHeaders.getHeaderString("X-API-KEY");
-    try (LoginDatabase ld = ldSupplier.get()) {
-      Optional<AtRest> atRest = ld.getAtRestInfo(serverKey);
-      if (atRest.isEmpty()) {
-        return Optional.empty();
-      }
-      String orgToken = httpHeaders.getHeaderString(orgHeaderKey);
-      if (orgToken == null || orgToken.isBlank()) {
-        return Optional.empty();
-      }
-      MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(orgToken));
-      return Optional.of(orgToken);
-    } catch (SQLException ex) {
-      log.error("SQL Error", ex);
-      return Optional.empty();
-    }
   }
 
   private Result<EfmFilingInterface, Response> checkFilingInterfaces(String courtId) {
