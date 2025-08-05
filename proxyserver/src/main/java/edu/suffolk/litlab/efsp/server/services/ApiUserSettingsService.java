@@ -16,15 +16,15 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-import javax.sql.DataSource;
+import java.util.function.Supplier;
 
 @Path("/api_user_settings")
 @Produces({MediaType.APPLICATION_JSON})
 public class ApiUserSettingsService {
-  private final DataSource ds;
+  private final Supplier<LoginDatabase> ldSupplier;
 
-  public ApiUserSettingsService(DataSource ds) {
-    this.ds = ds;
+  public ApiUserSettingsService(Supplier<LoginDatabase> ldSupplier) {
+    this.ldSupplier = ldSupplier;
   }
 
   @GET
@@ -39,7 +39,7 @@ public class ApiUserSettingsService {
   @GET
   @Path("/name")
   public Response getName(@Context HttpHeaders httpHeaders) {
-    try (LoginDatabase ld = new LoginDatabase(ds.getConnection())) {
+    try (LoginDatabase ld = ldSupplier.get()) {
       Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
       if (atRest.isEmpty()) {
         return Response.status(401).entity("\"Not logged in to efile\"").build();
@@ -55,7 +55,7 @@ public class ApiUserSettingsService {
   @GET
   @Path("/serverid")
   public Response getServerId(@Context HttpHeaders httpHeaders) {
-    try (LoginDatabase ld = new LoginDatabase(ds.getConnection())) {
+    try (LoginDatabase ld = ldSupplier.get()) {
       Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
       if (atRest.isEmpty()) {
         return Response.status(401).entity("\"Not logged in to efile\"").build();
@@ -72,7 +72,7 @@ public class ApiUserSettingsService {
   @Path("/name")
   public Response changeName(@Context HttpHeaders httpHeaders, String newName) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
-    try (LoginDatabase ld = new LoginDatabase(ds.getConnection())) {
+    try (LoginDatabase ld = ldSupplier.get()) {
       Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
       if (atRest.isEmpty()) {
         return Response.status(401).entity("\"Not logged in to efile\"").build();
@@ -90,7 +90,7 @@ public class ApiUserSettingsService {
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   @Path("/logs")
   public Response getLogs(@Context HttpHeaders httpHeaders) {
-    try (LoginDatabase ld = new LoginDatabase(ds.getConnection())) {
+    try (LoginDatabase ld = ldSupplier.get()) {
       Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
       if (atRest.isEmpty()) {
         return Response.status(401).entity("\"Not logged in to efile\"").build();

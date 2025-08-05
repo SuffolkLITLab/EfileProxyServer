@@ -44,7 +44,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import javax.sql.DataSource;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,15 +117,15 @@ public class AdminUserService {
 
   private final EfmUserService userFactory;
   private final EfmFirmService firmFactory;
-  private final DataSource userDs;
   private final Function<String, Result<NullValue, String>> passwordChecker;
+  private final Supplier<LoginDatabase> ldSupplier;
   private final Supplier<CodeDatabase> cdSupplier;
   private final String jurisdiction;
 
   public AdminUserService(
       String jurisdiction,
       String env,
-      DataSource userDs,
+      Supplier<LoginDatabase> ldSupplier,
       Supplier<CodeDatabase> cdSupplier,
       Function<String, Result<NullValue, String>> passwordChecker) {
     this.jurisdiction = jurisdiction;
@@ -147,7 +146,7 @@ public class AdminUserService {
     }
     this.firmFactory = maybeFirmFactory.get();
     this.cdSupplier = cdSupplier;
-    this.userDs = userDs;
+    this.ldSupplier = ldSupplier;
   }
 
   @GET
@@ -256,7 +255,7 @@ public class AdminUserService {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.resendActivationEmail");
       Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -300,7 +299,7 @@ public class AdminUserService {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.resetPassword");
       Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -413,7 +412,7 @@ public class AdminUserService {
         userGetter = (req) -> userPort.get().getUser(getUserReq);
       } else {
         Optional<TylerFirmClient> port =
-            setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+            setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
         if (port.isEmpty()) {
           return Response.status(401).build();
         }
@@ -436,7 +435,7 @@ public class AdminUserService {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.getUserList");
       Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -498,7 +497,7 @@ public class AdminUserService {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateUserById");
       Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -554,7 +553,7 @@ public class AdminUserService {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.getRoles");
       Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -583,7 +582,7 @@ public class AdminUserService {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.addRoles");
       Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -620,7 +619,7 @@ public class AdminUserService {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.removeRoles");
       Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -692,7 +691,7 @@ public class AdminUserService {
       final var regType = req.getRegistrationType();
       boolean needsAuth = regType.equals(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
       Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, userDs, needsAuth, jurisdiction);
+          setupFirmPort(firmFactory, httpHeaders, ldSupplier, needsAuth, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -775,7 +774,7 @@ public class AdminUserService {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.removeUser");
       Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -795,7 +794,7 @@ public class AdminUserService {
     try {
       MDC.put(MDCWrappers.OPERATION, "AdminUserService.getNotificationPreferenceList");
       Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
       if (port.isEmpty()) {
         return Response.status(401).build();
       }
@@ -823,7 +822,7 @@ public class AdminUserService {
   private Optional<TylerUserClient> setupUserPort(
       HttpHeaders httpHeaders, boolean needsSoapHeader) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
-    try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
+    try (LoginDatabase ld = ldSupplier.get()) {
       Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
       if (atRest.isEmpty()) {
         return Optional.empty();

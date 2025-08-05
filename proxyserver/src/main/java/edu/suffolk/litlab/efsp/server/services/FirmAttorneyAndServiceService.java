@@ -7,6 +7,7 @@ import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.server.services.api.ServiceContactInput;
@@ -35,7 +36,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
-import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -78,14 +78,17 @@ public class FirmAttorneyAndServiceService {
 
   private final EfmFirmService firmFactory;
   private final Supplier<CodeDatabase> cdSupplier;
-  private final DataSource userDs;
+  private final Supplier<LoginDatabase> ldSupplier;
   private final String jurisdiction;
 
   private static final tyler.efm.latest.services.schema.common.ObjectFactory tylerCommonObjFac =
       new tyler.efm.latest.services.schema.common.ObjectFactory();
 
   public FirmAttorneyAndServiceService(
-      String jurisdiction, String env, DataSource userDs, Supplier<CodeDatabase> cdSupplier) {
+      String jurisdiction,
+      String env,
+      Supplier<LoginDatabase> ldSupplier,
+      Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
     Optional<EfmFirmService> maybeFirmFactory =
         TylerClients.getEfmFirmFactory(jurisdiction, TylerEnv.parse(env));
@@ -96,7 +99,7 @@ public class FirmAttorneyAndServiceService {
           jurisdiction + "-" + env + " not in SoapClientChooser for EFMFirm");
     }
     this.cdSupplier = cdSupplier;
-    this.userDs = userDs;
+    this.ldSupplier = ldSupplier;
   }
 
   @GET
@@ -114,7 +117,7 @@ public class FirmAttorneyAndServiceService {
   public Response getSelfFirm(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getSelfFirm");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -128,7 +131,7 @@ public class FirmAttorneyAndServiceService {
   public Response updateFirm(@Context HttpHeaders httpHeaders, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateFirm");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -166,7 +169,7 @@ public class FirmAttorneyAndServiceService {
   public Response getAttorneyList(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getAttorneyList");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -181,7 +184,7 @@ public class FirmAttorneyAndServiceService {
       @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getAttorney");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -197,7 +200,7 @@ public class FirmAttorneyAndServiceService {
   public Response createAttorney(@Context HttpHeaders httpHeaders, AttorneyType attorney) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.createAttorney");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -231,7 +234,7 @@ public class FirmAttorneyAndServiceService {
       @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateAttorney");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -264,7 +267,7 @@ public class FirmAttorneyAndServiceService {
       @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.removeAttorney");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -280,7 +283,7 @@ public class FirmAttorneyAndServiceService {
   public Response getServiceContactList(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getServiceContactList");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -294,7 +297,7 @@ public class FirmAttorneyAndServiceService {
       @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getServiceContact");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -314,7 +317,7 @@ public class FirmAttorneyAndServiceService {
       @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.removeServiceContact");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -332,7 +335,7 @@ public class FirmAttorneyAndServiceService {
       ServiceContactInput input = new ObjectMapper().readValue(strInput, ServiceContactInput.class);
       MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.createServiceContact");
       Optional<TylerFirmClient> firmPort =
-          setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
       if (firmPort.isEmpty()) {
         return Response.status(401).build();
       }
@@ -375,7 +378,7 @@ public class FirmAttorneyAndServiceService {
       @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.attachServiceContact");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -417,7 +420,7 @@ public class FirmAttorneyAndServiceService {
       @QueryParam("case_party_id") String casePartyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.detachServiceContact");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -438,7 +441,7 @@ public class FirmAttorneyAndServiceService {
       @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateServiceContact");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -485,7 +488,7 @@ public class FirmAttorneyAndServiceService {
   public Response getPublicList(@Context HttpHeaders httpHeaders, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getPublicList");
     Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, userDs, jurisdiction);
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }

@@ -19,11 +19,10 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-import javax.sql.DataSource;
+import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -33,10 +32,13 @@ import org.slf4j.MDC;
 public class MessageSettingsService {
   private static Logger log = LoggerFactory.getLogger(MessageSettingsService.class);
 
-  private final DataSource ds;
+  private final Supplier<LoginDatabase> ldSupplier;
+  private final Supplier<MessageSettingsDatabase> mdSupplier;
 
-  public MessageSettingsService(DataSource ds) {
-    this.ds = ds;
+  public MessageSettingsService(
+      Supplier<LoginDatabase> ldSupplier, Supplier<MessageSettingsDatabase> mdSupplier) {
+    this.ldSupplier = ldSupplier;
+    this.mdSupplier = mdSupplier;
   }
 
   @GET
@@ -53,8 +55,8 @@ public class MessageSettingsService {
   @Path("/settings")
   public Response getMsgSettings(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "MessageSettingsService.getMsgSettings");
-    OrgMessageSender orgMsg = new OrgMessageSender(ds, null);
-    try (LoginDatabase ld = new LoginDatabase(ds.getConnection())) {
+    OrgMessageSender orgMsg = new OrgMessageSender(mdSupplier, null);
+    try (LoginDatabase ld = ldSupplier.get()) {
       Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
       if (atRest.isEmpty()) {
         return Response.status(401).entity("\"Not logged in to efile\"").build();
@@ -72,31 +74,33 @@ public class MessageSettingsService {
   @PATCH
   @Path("/settings")
   public Response setMsgSettings(@Context HttpHeaders httpHeaders, String newInfoStr) {
-    try (Connection conn = ds.getConnection()) {
+    Optional<AtRest> atRest = Optional.empty();
+    try (LoginDatabase ld = ldSupplier.get()) {
       MDC.put(MDCWrappers.OPERATION, "MessageSettingsService.setMsgSettings");
-      @SuppressWarnings("resource")
-      LoginDatabase ld = new LoginDatabase(conn);
-      Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
-      if (atRest.isEmpty()) {
-        return Response.status(401).entity("\"Not logged in to efile\"").build();
-      }
-      if (newInfoStr == null || newInfoStr.isBlank()) {
-        MDCWrappers.removeAllMDCs();
-        return Response.status(200).build();
-      }
-      ObjectMapper mapper = new ObjectMapper();
+      atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
+    } catch (SQLException ex) {
+      log.error("Error when trying to update settings: " + StdLib.strFromException(ex));
+      return Response.status(500).build();
+    }
+    if (atRest.isEmpty()) {
+      return Response.status(401).entity("\"Not logged in to efile\"").build();
+    }
+    if (newInfoStr == null || newInfoStr.isBlank()) {
+      MDCWrappers.removeAllMDCs();
+      return Response.status(200).build();
+    }
+    ObjectMapper mapper = new ObjectMapper();
 
-      JsonNode node;
-      try {
-        node = mapper.readTree(newInfoStr);
-      } catch (JsonProcessingException e) {
-        log.error("You need to pass a JSON string to /settings; we got " + newInfoStr);
-        return Response.status(400).build();
-      }
-      MessageInfo newInfo = new MessageInfo(node);
+    JsonNode node;
+    try {
+      node = mapper.readTree(newInfoStr);
+    } catch (JsonProcessingException e) {
+      log.error("You need to pass a JSON string to /settings; we got " + newInfoStr);
+      return Response.status(400).build();
+    }
+    MessageInfo newInfo = new MessageInfo(node);
 
-      @SuppressWarnings("resource")
-      var md = new MessageSettingsDatabase(conn);
+    try (var md = mdSupplier.get()) {
       MessageInfo existingInfo =
           md.findMessageInfo(atRest.get().serverId)
               .orElse(new MessageInfo(atRest.get().serverId, null, null, null, null, null));
@@ -104,7 +108,6 @@ public class MessageSettingsService {
       existingInfo.subjectLine = newInfo.subjectLine;
       existingInfo.fromEmail = newInfo.fromEmail;
       md.updateTable(existingInfo);
-      MDCWrappers.removeAllMDCs();
       return Response.status(200).build();
     } catch (SQLException ex) {
       log.error("Error when trying to update settings: " + StdLib.strFromException(ex));

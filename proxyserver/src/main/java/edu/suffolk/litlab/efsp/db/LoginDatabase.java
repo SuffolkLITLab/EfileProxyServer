@@ -64,11 +64,9 @@ public class LoginDatabase extends Database {
 
   public static LoginDatabase fromDS(DataSource ds) {
     try {
-      LoginDatabase cd = new LoginDatabase(ds.getConnection());
-      return cd;
+      return new LoginDatabase(ds.getConnection());
     } catch (SQLException ex) {
-      log.error(
-          "In LoginDatabase constructor, can't get connection: " + StdLib.strFromException(ex));
+      log.error("In LoginDatabase constructor, can't get connection: ", ex);
       throw new RuntimeException(ex);
     }
   }

@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import org.apache.cxf.Bus;
@@ -107,15 +108,18 @@ public class EfspServer {
       callbackMap.put(mod.getJurisdiction(), maybeCallback);
     }
 
+    Supplier<LoginDatabase> ldSupplier = () -> LoginDatabase.fromDS(userDs);
+    Supplier<MessageSettingsDatabase> mdSupplier = () -> MessageSettingsDatabase.fromDS(userDs);
+
     Map<Class<?>, SingletonResourceProvider> services =
         new HashMap<Class<?>, SingletonResourceProvider>();
     services.put(RootService.class, new SingletonResourceProvider(new RootService()));
     services.put(
         MessageSettingsService.class,
-        new SingletonResourceProvider(new MessageSettingsService(userDs)));
+        new SingletonResourceProvider(new MessageSettingsService(ldSupplier, mdSupplier)));
     services.put(
         ApiUserSettingsService.class,
-        new SingletonResourceProvider(new ApiUserSettingsService(userDs)));
+        new SingletonResourceProvider(new ApiUserSettingsService(ldSupplier)));
     services.put(
         AuthenticationService.class,
         new SingletonResourceProvider(new AuthenticationService(security)));
@@ -248,7 +252,8 @@ public class EfspServer {
     if (sendMsg.isEmpty()) {
       throw new RuntimeException("You didn't pass enough info to create the SendMessage class");
     }
-    OrgMessageSender sender = new OrgMessageSender(userDs, sendMsg.get());
+    Supplier<MessageSettingsDatabase> mdSupplier = () -> MessageSettingsDatabase.fromDS(userDs);
+    OrgMessageSender sender = new OrgMessageSender(mdSupplier, sendMsg.get());
 
     Optional<String> tylerJurisdictions = GetEnv("TYLER_JURISDICTIONS");
     Optional<String> togaKeyStr = GetEnv("TOGA_CLIENT_KEYS");

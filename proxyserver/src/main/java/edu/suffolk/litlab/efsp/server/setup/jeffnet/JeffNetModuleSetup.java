@@ -1,6 +1,8 @@
 package edu.suffolk.litlab.efsp.server.setup.jeffnet;
 
 import com.opencsv.exceptions.CsvValidationException;
+import edu.suffolk.litlab.efsp.db.LoginDatabase;
+import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.server.EfspServer;
 import edu.suffolk.litlab.efsp.server.services.CourtsOnlyCodesService;
 import edu.suffolk.litlab.efsp.server.services.FilingReviewService;
@@ -20,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,9 +98,18 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
       getCallback().ifPresent(call -> callbackMap.put(court, call));
     }
 
+    Supplier<LoginDatabase> ldSupplier = () -> LoginDatabase.fromDS(this.userDs);
+    Supplier<UserDatabase> udSupplier = () -> UserDatabase.fromDS(this.userDs);
+
     var filingReview =
         new FilingReviewService(
-            getJurisdiction(), this.userDs, converterMap, filingMap, callbackMap, this.sender);
+            getJurisdiction(),
+            ldSupplier,
+            udSupplier,
+            converterMap,
+            filingMap,
+            callbackMap,
+            this.sender);
     var codes =
         new CourtsOnlyCodesService(getJurisdiction(), Map.of("jefferson", "Jefferson Parish"));
     return new JurisdictionServiceHandle(getJurisdiction(), filingReview, codes);

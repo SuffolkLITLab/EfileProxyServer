@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ public class OrgMessageSender {
   private static Logger log = LoggerFactory.getLogger(OrgMessageSender.class);
 
   private final SendMessage sendMsg;
-  private final DataSource ds;
+  private final Supplier<MessageSettingsDatabase> mdSupplier;
 
   private String defaultFrom = "massaccess@suffolk.edu";
   private String defaultSubject = "An update on your filing";
@@ -70,17 +70,17 @@ public class OrgMessageSender {
       Court Forms Online
       """;
 
-  public OrgMessageSender(DataSource ds, SendMessage sendMsg) {
-    this.ds = ds;
+  public OrgMessageSender(Supplier<MessageSettingsDatabase> mdSupplier, SendMessage sendMsg) {
+    this.mdSupplier = mdSupplier;
     this.sendMsg = sendMsg;
   }
 
   public MessageInfo getSettings(UUID serverId) {
     Optional<MessageInfo> maybeInfo = Optional.empty();
-    try (var md = new MessageSettingsDatabase(ds.getConnection())) {
+    try (MessageSettingsDatabase md = mdSupplier.get()) {
       maybeInfo = md.findMessageInfo(serverId);
     } catch (SQLException ex) {
-      log.error("Couldn't connect to message db: using defaults: " + StdLib.strFromException(ex));
+      log.error("Couldn't connect to message settings database", ex);
     }
 
     if (maybeInfo.isPresent()) {
