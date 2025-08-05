@@ -939,7 +939,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   private Optional<FilingReviewMDEPort> setupFilingPort(String apiToken) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
     if (creds.isEmpty()) {
       return Optional.empty();
     }
@@ -952,7 +953,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   private Optional<ServiceMDEPort> setupServicePort(String apiToken) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
     if (creds.isEmpty()) {
       return Optional.empty();
     }
@@ -965,7 +967,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   private Optional<CourtRecordMDEPort> setupRecordPort(String apiToken) {
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(apiToken);
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
     if (creds.isEmpty()) {
       return Optional.empty();
     }

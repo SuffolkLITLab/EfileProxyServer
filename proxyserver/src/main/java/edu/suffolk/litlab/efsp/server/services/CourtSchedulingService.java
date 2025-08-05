@@ -539,7 +539,7 @@ public class CourtSchedulingService {
       String tylerToken =
           httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
       MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
-      creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
+      creds = TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
     } catch (SQLException ex) {
       log.error("SQL error with Scheduling port", ex);
       return Optional.empty();
@@ -560,7 +560,8 @@ public class CourtSchedulingService {
     String tylerToken =
         httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
 
-    Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       return Optional.empty();
     }
