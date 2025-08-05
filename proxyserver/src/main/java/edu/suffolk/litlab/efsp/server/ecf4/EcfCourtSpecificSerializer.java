@@ -91,9 +91,11 @@ public class EcfCourtSpecificSerializer {
       new gov.niem.niem.niem_core._2.ObjectFactory();
   private static final gov.niem.niem.niem_core._2.ObjectFactory coreObjFac =
       new gov.niem.niem.niem_core._2.ObjectFactory();
+  private static final gov.niem.niem.iso_639_3._2.ObjectFactory iso639Fac =
+      new gov.niem.niem.iso_639_3._2.ObjectFactory();
   private static final tyler.ecf.extensions.common.ObjectFactory tylerObjFac =
       new tyler.ecf.extensions.common.ObjectFactory();
-  static final oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf =
+  private static final oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf =
       new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
 
   public EcfCourtSpecificSerializer(CodeDatabase cd, CourtLocationInfo court) {
@@ -458,8 +460,7 @@ public class EcfCourtSpecificSerializer {
           // TODO(brycew): need to have an ISO 639_2 (language codes) converter, from general
           // language name
           /// https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes
-          final var lctOf = new gov.niem.niem.iso_639_3._2.ObjectFactory();
-          LanguageCodeType lct = lctOf.createLanguageCodeType();
+          LanguageCodeType lct = iso639Fac.createLanguageCodeType();
           PersonLanguageType plt = niemObjFac.createPersonLanguageType();
           plt.getLanguage().add(niemObjFac.createLanguageCode(lct));
           pt.setPersonPrimaryLanguage(plt);
@@ -619,9 +620,9 @@ public class EcfCourtSpecificSerializer {
       collector.addWrong(var);
     }
     sat.setLocationPostalCode(Ecf4Helper.convertString(address.getZip()));
-    gov.niem.niem.niem_core._2.AddressType at = niemObjFac.createAddressType();
-    at.setAddressRepresentation(niemObjFac.createStructuredAddress(sat));
-    return niemObjFac.createContactMailingAddress(at);
+    var addressType = niemObjFac.createAddressType();
+    addressType.setAddressRepresentation(niemObjFac.createStructuredAddress(sat));
+    return niemObjFac.createContactMailingAddress(addressType);
   }
 
   /**
