@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
-import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
@@ -24,6 +23,7 @@ import edu.suffolk.litlab.efsp.server.ecf4.SoapClientChooser;
 import edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
+import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
@@ -101,7 +101,6 @@ public class CourtSchedulingService {
   private final String jurisdiction;
 
   private final Supplier<CodeDatabase> cdSupplier;
-  private final Supplier<LoginDatabase> ldSupplier;
 
   public CourtSchedulingService(
       Map<String, InterviewToFilingInformationConverter> converterMap,
@@ -111,7 +110,6 @@ public class CourtSchedulingService {
       Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
     this.cdSupplier = cdSupplier;
-    this.ldSupplier = ldSupplier;
     var maybeSchedFactory = SoapClientChooser.getCourtSchedulingFactory(jurisdiction, env);
     if (maybeSchedFactory.isEmpty()) {
       throw new RuntimeException(
@@ -217,6 +215,7 @@ public class CourtSchedulingService {
 
   @POST
   @Path("/courts/{court_id}/return_date")
+  @NeedsAuthorization
   public Response getReturnDate(
       @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars)
       throws SQLException, JAXBException {
@@ -407,6 +406,7 @@ public class CourtSchedulingService {
 
   @POST
   @Path("/courts/{court_id}/reserve_date")
+  @NeedsAuthorization
   public Response reserveCourtDateSync(
       @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String paramStr)
       throws JsonMappingException,
@@ -528,22 +528,10 @@ public class CourtSchedulingService {
   }
 
   private Optional<CourtSchedulingMDE> setupSchedulingPort(HttpHeaders httpHeaders) {
-    String apiKey = httpHeaders.getHeaderString("X-API-KEY");
     Optional<TylerUserNamePassword> creds = Optional.empty();
-    try (LoginDatabase ld = ldSupplier.get()) {
-      Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
-      if (atRest.isEmpty()) {
-        log.warn("Couldn't checkLogin");
-        return Optional.empty();
-      }
-      String tylerToken =
-          httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-      MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
-      creds = TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
-    } catch (SQLException ex) {
-      log.error("SQL error with Scheduling port", ex);
-      return Optional.empty();
-    }
+    String tylerToken =
+        httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
+    creds = TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds?");
       return Optional.empty();

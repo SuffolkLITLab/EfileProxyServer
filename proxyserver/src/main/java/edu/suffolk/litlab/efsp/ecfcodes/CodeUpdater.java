@@ -10,6 +10,7 @@ import edu.suffolk.litlab.efsp.server.utils.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
@@ -514,9 +515,9 @@ public class CodeUpdater {
 
   /** Sets up the WSDL connection to Tyler, used for `getPolicy` to get the URL. */
   private static FilingReviewMDEPort loginWithTyler(
-      String jurisdiction, String env, String userEmail, String userPassword) {
+      TylerJurisdiction jurisdiction, TylerEnv env, String userEmail, String userPassword) {
     Optional<TylerUserFactory> userFactory =
-        TylerClients.getEfmUserFactory(jurisdiction, TylerEnv.parse(env));
+        TylerClients.getEfmUserFactory(jurisdiction, env);
     if (userFactory.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " in Soap chooser for EFMUser");
     }
@@ -541,7 +542,7 @@ public class CodeUpdater {
   }
 
   /** Downloads a single codes zip. For Debugging. */
-  public boolean downloadIndiv(List<String> args, String jurisdiction, String env) {
+  public boolean downloadIndiv(List<String> args, TylerJurisdiction jurisdiction, TylerEnv env) {
     if (args.size() < 3) {
       log.error(
           "Need to pass in args: downloadIndiv <jurisdiction> <table> <location or blank for"
@@ -574,7 +575,7 @@ public class CodeUpdater {
   }
 
   public static boolean executeCommand(
-      CodeDatabase cd, String jurisdiction, String env, List<String> args, String x509Password) {
+      CodeDatabase cd, TylerJurisdiction jurisdiction, TylerEnv env, List<String> args, String x509Password) {
     SoapX509CallbackHandler.setX509Password(x509Password);
     String command = args.get(0);
     try {

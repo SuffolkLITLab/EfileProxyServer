@@ -25,6 +25,7 @@ import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efsp.server.utils.UpdateCodeVersions;
 import edu.suffolk.litlab.efsp.stdlib.StdLib;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -56,7 +57,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
   private final String pgDb;
   private final String pgUser;
   private final String pgPassword;
-  private final String tylerJurisdiction;
+  private final TylerJurisdiction tylerJurisdiction;
   private final String x509Password;
   private final DataSource codeDs;
   private final DataSource userDs;
@@ -81,7 +82,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   /** Use this factory method instead of the class constructor. */
   public static Optional<TylerModuleSetup> create(
-      String jurisdiction,
+      TylerJurisdiction jurisdiction,
       String togaKey,
       Map<String, InterviewToFilingInformationConverter> converterMap,
       DataSource codeDs,
@@ -99,7 +100,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   private TylerModuleSetup(
       CreationArgs args,
-      String jurisdiction,
+      TylerJurisdiction jurisdiction,
       String togaKey,
       Map<String, InterviewToFilingInformationConverter> converterMap,
       DataSource codeDs,
@@ -252,7 +253,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
   }
 
   @Override
-  public String getJurisdiction() {
+  public TylerJurisdiction getJurisdiction() {
     return tylerJurisdiction;
   }
 

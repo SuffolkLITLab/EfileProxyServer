@@ -9,6 +9,7 @@ import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.db.model.MessageInfo;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
+import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
@@ -43,6 +44,7 @@ public class MessageSettingsService {
   @GET
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
+  @NeedsAuthorization
   public Response getAll() {
     EndpointReflection ef = new EndpointReflection("");
     return Response.ok(
@@ -52,6 +54,7 @@ public class MessageSettingsService {
 
   @GET
   @Path("/settings")
+  @NeedsAuthorization
   public Response getMsgSettings(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "MessageSettingsService.getMsgSettings");
     OrgMessageSender orgMsg = new OrgMessageSender(mdSupplier, null);
@@ -70,6 +73,7 @@ public class MessageSettingsService {
 
   @PATCH
   @Path("/settings")
+  @NeedsAuthorization
   public Response setMsgSettings(@Context HttpHeaders httpHeaders, String newInfoStr) {
     Optional<AtRest> atRest = Optional.empty();
     try (LoginDatabase ld = ldSupplier.get()) {

@@ -13,6 +13,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.server.services.api.ServiceContactInput;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
+import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
@@ -113,6 +114,7 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/firm")
+  @NeedsAuthorization
   public Response getSelfFirm(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getSelfFirm");
     Optional<TylerFirmClient> firmPort =
@@ -127,6 +129,7 @@ public class FirmAttorneyAndServiceService {
 
   @PATCH
   @Path("/firm")
+  @NeedsAuthorization
   public Response updateFirm(@Context HttpHeaders httpHeaders, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateFirm");
     Optional<TylerFirmClient> firmPort =
@@ -165,6 +168,7 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/attorneys")
+  @NeedsAuthorization
   public Response getAttorneyList(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getAttorneyList");
     Optional<TylerFirmClient> firmPort =
@@ -179,6 +183,7 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/attorneys/{attorney_id}")
+  @NeedsAuthorization
   public Response getAttorney(
       @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getAttorney");
@@ -196,6 +201,7 @@ public class FirmAttorneyAndServiceService {
 
   @POST
   @Path("/attorneys")
+  @NeedsAuthorization
   public Response createAttorney(@Context HttpHeaders httpHeaders, AttorneyType attorney) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.createAttorney");
     Optional<TylerFirmClient> firmPort =
@@ -229,6 +235,7 @@ public class FirmAttorneyAndServiceService {
 
   @PATCH
   @Path("/attorneys/{attorney_id}")
+  @NeedsAuthorization
   public Response updateAttorney(
       @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateAttorney");
@@ -262,6 +269,7 @@ public class FirmAttorneyAndServiceService {
 
   @DELETE
   @Path("/attorneys/{attorney_id}")
+  @NeedsAuthorization
   public Response removeAttorney(
       @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.removeAttorney");
@@ -279,6 +287,7 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/service-contacts")
+  @NeedsAuthorization
   public Response getServiceContactList(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getServiceContactList");
     Optional<TylerFirmClient> firmPort =
@@ -292,6 +301,7 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/service-contacts/{contact_id}")
+  @NeedsAuthorization
   public Response getServiceContact(
       @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getServiceContact");
@@ -312,6 +322,7 @@ public class FirmAttorneyAndServiceService {
 
   @DELETE
   @Path("/service-contacts/{contact_id}")
+  @NeedsAuthorization
   public Response removeServiceContact(
       @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.removeServiceContact");
@@ -329,6 +340,7 @@ public class FirmAttorneyAndServiceService {
 
   @POST
   @Path("/service-contacts")
+  @NeedsAuthorization
   public Response createServiceContact(@Context HttpHeaders httpHeaders, String strInput) {
     try {
       ServiceContactInput input = new ObjectMapper().readValue(strInput, ServiceContactInput.class);
@@ -370,6 +382,7 @@ public class FirmAttorneyAndServiceService {
    */
   @PUT
   @Path("/service-contacts/{contact_id}/cases")
+  @NeedsAuthorization
   public Response attachServiceContact(
       @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.attachServiceContact");
@@ -409,6 +422,7 @@ public class FirmAttorneyAndServiceService {
 
   @DELETE
   @Path("/service-contacts/{contact_id}/cases/{case_id}")
+  @NeedsAuthorization
   public Response detachServiceContact(
       @Context HttpHeaders httpHeaders,
       @PathParam("contact_id") String contactId,
@@ -433,6 +447,7 @@ public class FirmAttorneyAndServiceService {
 
   @PATCH
   @Path("/service-contacts/{contact_id}")
+  @NeedsAuthorization
   public Response updateServiceContact(
       @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateServiceContact");
@@ -481,6 +496,7 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/service-contacts/public")
+  @NeedsAuthorization
   public Response getPublicList(@Context HttpHeaders httpHeaders, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getPublicList");
     Optional<TylerFirmClient> firmPort =

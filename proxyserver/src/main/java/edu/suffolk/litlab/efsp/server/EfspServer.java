@@ -22,6 +22,7 @@ import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.setup.jeffnet.JeffNetModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.tyler.TylerModuleSetup;
+import edu.suffolk.litlab.efsp.server.utils.AuthenticateRequestInterceptor;
 import edu.suffolk.litlab.efsp.server.utils.HttpsCallbackHandler;
 import edu.suffolk.litlab.efsp.server.utils.JsonExceptionMapper;
 import edu.suffolk.litlab.efsp.server.utils.ObservabilityHeadersInterceptor;
@@ -30,6 +31,7 @@ import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import edu.suffolk.litlab.efsp.server.utils.SendMessage;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapExceptionMapper;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import jakarta.ws.rs.core.MediaType;
 import java.io.File;
@@ -42,6 +44,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
+
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import org.apache.cxf.Bus;
@@ -146,7 +150,7 @@ public class EfspServer {
         Map.of(
             "xml", MediaType.APPLICATION_XML,
             "json", MediaType.APPLICATION_JSON));
-    sf.setProviders(providers());
+    sf.setProviders(providers(ldSupplier));
 
     sf.setAddress(ServiceHelpers.BASE_LOCAL_URL);
     server = sf.create();
@@ -210,14 +214,15 @@ public class EfspServer {
     }
   }
 
-  public static List<?> providers() {
+  public static List<?> providers(Supplier<LoginDatabase> ldSupplier) {
     return List.of(
         new JAXBElementProvider<Object>(),
         new JacksonJsonProvider(), // TODO(brycew): JAXBJSon?
         new SoapExceptionMapper(),
         new JsonExceptionMapper(),
         new ObservabilityHeadersInterceptor(),
-        new ObservabilityResetInterceptor());
+        new ObservabilityResetInterceptor(),
+        new AuthenticateRequestInterceptor(ldSupplier));
   }
 
   public static void main(String[] args) throws Exception {
@@ -260,7 +265,7 @@ public class EfspServer {
     Optional<String> tylerJurisdictions = GetEnv("TYLER_JURISDICTIONS");
     Optional<String> togaKeyStr = GetEnv("TOGA_CLIENT_KEYS");
     Optional<String> tylerEnv = GetEnv("TYLER_ENV");
-    List<String> jurisdictions = List.of(tylerJurisdictions.orElse("").split(" "));
+    List<TylerJurisdiction> jurisdictions = Stream.of(tylerJurisdictions.orElse("").split(" ")).map(TylerJurisdiction::valueOf).toList();
     List<String> togaKeys = List.of(togaKeyStr.orElse("").split(" "));
     if (jurisdictions.size() > 0 && jurisdictions.size() != togaKeys.size()) {
       log.error("TOGA_CLIENT_KEYS list should be same size as TYLER_JURISDICTIONS list.");
@@ -269,10 +274,7 @@ public class EfspServer {
 
     List<EfmModuleSetup> modules = new ArrayList<>();
     for (int idx = 0; idx < jurisdictions.size(); idx++) {
-      String jurisdiction = jurisdictions.get(idx);
-      if (jurisdiction.isBlank()) {
-        continue;
-      }
+      TylerJurisdiction jurisdiction = jurisdictions.get(idx);
       TylerModuleSetup.create(jurisdiction, togaKeys.get(idx), converterMap, codeDs, userDs, sender)
           .ifPresent(mod -> modules.add(mod));
     }

@@ -13,6 +13,7 @@ import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
+import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.stdlib.RandomString;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
@@ -35,7 +36,6 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriInfo;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -91,9 +91,6 @@ public class PaymentsService {
       </html>
       """;
 
-  // Set by some JAX magic.
-  @Context UriInfo uri;
-
   private final RandomString transactionIdGen;
   private final String togaKey;
   private final String togaUrl;
@@ -138,6 +135,7 @@ public class PaymentsService {
 
   @GET
   @Path("/global-accounts")
+  @NeedsAuthorization
   public Response getGlobalPaymentList(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getGlobalPaymentList");
     Optional<TylerFirmClient> firmPort =
@@ -152,6 +150,7 @@ public class PaymentsService {
 
   @GET
   @Path("/global-accounts/{account_id}")
+  @NeedsAuthorization
   public Response getGlobalPaymentAccount(
       @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getGlobalPaymentAccount");
@@ -180,6 +179,7 @@ public class PaymentsService {
    */
   @POST
   @Path("/global-accounts")
+  @NeedsAuthorization
   public Response createGlobalWaiverAccount(@Context HttpHeaders httpHeaders, String accountName) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.createGlobalWaiverAccount");
     Optional<TylerFirmClient> firmPort =
@@ -192,6 +192,7 @@ public class PaymentsService {
 
   @PATCH
   @Path("/global-accounts/{account_id}")
+  @NeedsAuthorization
   public Response updateGlobalPaymentAccount(
       @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId, String json) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.updateGlobalPaymentAccount");
@@ -215,6 +216,7 @@ public class PaymentsService {
 
   @DELETE
   @Path("/global-accounts/{account_id}")
+  @NeedsAuthorization
   public Response removeGlobalPaymentAccount(
       @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.removeGlobalPaymentAccount");
@@ -232,6 +234,7 @@ public class PaymentsService {
 
   @GET
   @Path("/payment-accounts/{account_id}")
+  @NeedsAuthorization
   public Response getPaymentAccount(
       @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getPaymentAccount");
@@ -250,6 +253,7 @@ public class PaymentsService {
 
   @DELETE
   @Path("/payment-accounts/{account_id}")
+  @NeedsAuthorization
   public Response removePaymentAccount(
       @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.removePaymentAccount");
@@ -267,6 +271,7 @@ public class PaymentsService {
 
   @GET
   @Path("/payment-accounts")
+  @NeedsAuthorization
   public Response getPaymentAccountList(
       @Context HttpHeaders httpHeaders, @DefaultValue("") @QueryParam("court_id") String courtId)
       throws SQLException {
@@ -305,6 +310,7 @@ public class PaymentsService {
    */
   @POST
   @Path("/payment-accounts")
+  @NeedsAuthorization
   public Response createWaiverAccount(@Context HttpHeaders httpHeaders, String accountName) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.createWaiverAccount");
     Optional<TylerFirmClient> firmPort =
@@ -325,6 +331,7 @@ public class PaymentsService {
    */
   @PATCH
   @Path("/payment-accounts/{account_id}")
+  @NeedsAuthorization
   public Response updatePaymentAccount(
       @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId, String json)
       throws JsonMappingException, JsonProcessingException {
@@ -349,6 +356,7 @@ public class PaymentsService {
 
   @GET
   @Path("/types")
+  @NeedsAuthorization
   public Response getPaymentAccountTypeList(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getPaymentAccountTypeList");
     Optional<TylerFirmClient> firmPort =

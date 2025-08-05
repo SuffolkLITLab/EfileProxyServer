@@ -2,6 +2,8 @@ package edu.suffolk.litlab.efsp.ecfcodes.tyler;
 
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseAPI;
 import edu.suffolk.litlab.efsp.stdlib.SQLFunction;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import jakarta.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -43,12 +45,12 @@ public class CodeDatabase extends CodeDatabaseAPI {
   /** The DNS domain (tyler jurisdiction + tyler environment, illinois-stage). */
   private final String tylerDomain;
 
-  public CodeDatabase(String jurisdiction, String env, Connection conn) {
+  public CodeDatabase(TylerJurisdiction jurisdiction, TylerEnv env, Connection conn) {
     super(conn);
-    this.tylerDomain = jurisdiction + "-" + env;
+    this.tylerDomain = jurisdiction.getName() + "-" + env.getPath();
   }
 
-  public static CodeDatabase fromDS(String jurisdiction, String env, DataSource ds) {
+  public static CodeDatabase fromDS(TylerJurisdiction jurisdiction, TylerEnv env, DataSource ds) {
     try {
       CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection());
       return cd;

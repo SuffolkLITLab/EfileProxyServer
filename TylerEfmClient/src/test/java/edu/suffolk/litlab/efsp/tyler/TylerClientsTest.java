@@ -2,6 +2,8 @@ package edu.suffolk.litlab.efsp.tyler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static edu.suffolk.litlab.efsp.tyler.TylerJurisdiction.*;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -16,38 +18,37 @@ public class TylerClientsTest {
 
   @Test
   public void allFactoriesShouldNotThrow() {
-    for (String jurisdiction :
-        List.of("texas", "massachusetts", "illinois", "indiana", "california", "wales")) {
+    for (var jurisdiction :
+        List.of(TEXAS, MASSACHUSETTS, ILLINOIS, INDIANA, CALIFORNIA)) {
       for (TylerEnv env : TylerEnv.values()) {
         assertThat(TylerClients.getEfmFirmFactory(jurisdiction, env)).isNotNull();
         assertThat(TylerClients.getEfmUserFactory(jurisdiction, env)).isNotNull();
       }
     }
-    assertThat(TylerClients.getEfmUserFactory("antartica", TylerEnv.STAGE)).isEmpty();
-    assertThat(TylerClients.getEfmUserFactory("massachusetts", TylerEnv.PROD)).isNotEmpty();
-    assertThat(TylerClients.getEfmUserFactory("illinois", TylerEnv.STAGE)).isNotEmpty();
+    assertThat(TylerClients.getEfmUserFactory(MASSACHUSETTS, TylerEnv.PROD)).isNotEmpty();
+    assertThat(TylerClients.getEfmUserFactory(ILLINOIS, TylerEnv.STAGE)).isNotEmpty();
   }
 
   @Test
   public void testJurisdictionEnvUrls() throws IOException, URISyntaxException {
     testJurisdictionEnvUrl(
         "https://texas-stage.tylertech.cloud/",
-        TylerClients.getTylerServerRootUrl("texas", TylerEnv.STAGE));
+        TylerClients.getTylerServerRootUrl(TEXAS, TylerEnv.STAGE));
     testJurisdictionEnvUrl(
         "https://texas.tylertech.cloud/",
-        TylerClients.getTylerServerRootUrl("texas", TylerEnv.PROD));
+        TylerClients.getTylerServerRootUrl(TEXAS, TylerEnv.PROD));
     testJurisdictionEnvUrl(
         "https://massachusetts-stage.tylertech.cloud/",
-        TylerClients.getTylerServerRootUrl("massachusetts", TylerEnv.STAGE));
+        TylerClients.getTylerServerRootUrl(MASSACHUSETTS, TylerEnv.STAGE));
     testJurisdictionEnvUrl(
         "https://massachusetts.tylertech.cloud/",
-        TylerClients.getTylerServerRootUrl("massachusetts", TylerEnv.PROD));
+        TylerClients.getTylerServerRootUrl(MASSACHUSETTS, TylerEnv.PROD));
     testJurisdictionEnvUrl(
         "https://illinois-stage.tylertech.cloud/",
-        TylerClients.getTylerServerRootUrl("illinois", TylerEnv.STAGE));
+        TylerClients.getTylerServerRootUrl(ILLINOIS, TylerEnv.STAGE));
     testJurisdictionEnvUrl(
         "https://illinois.tylertech.cloud/",
-        TylerClients.getTylerServerRootUrl("illinois", TylerEnv.PROD));
+        TylerClients.getTylerServerRootUrl(ILLINOIS, TylerEnv.PROD));
   }
 
   public void testJurisdictionEnvUrl(String urlExpected, String urlGenerated)

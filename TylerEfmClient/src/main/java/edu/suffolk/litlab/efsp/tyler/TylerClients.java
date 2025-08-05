@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efsp.tyler;
 
+import static edu.suffolk.litlab.efsp.tyler.TylerJurisdiction.*;
+
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
@@ -14,18 +16,18 @@ public class TylerClients {
   private static final String USER_WSDL = "-EFMUserServiceSingle.svc.wsdl";
   private static final String FIRM_WSDL = "-EFMFirmServiceSingle.svc.wsdl";
 
-  private static final Map<String, TylerVersion> STAGE_VERSION_MAP =
+  private static final Map<TylerJurisdiction, TylerVersion> STAGE_VERSION_MAP =
       Map.of(
-          "california", TylerVersion.v2024_6,
-          "illinois", TylerVersion.v2024_6,
-          "indiana", TylerVersion.v2024_6,
-          "massachusetts", TylerVersion.v2025_0,
-          "texas", TylerVersion.v2024_6);
+          CALIFORNIA, TylerVersion.v2024_6,
+          ILLINOIS, TylerVersion.v2024_6,
+          INDIANA, TylerVersion.v2024_6,
+          MASSACHUSETTS, TylerVersion.v2025_0,
+          TEXAS, TylerVersion.v2024_6);
 
-  private static final Map<String, TylerVersion> PROD_VERSION_MAP =
+  private static final Map<TylerJurisdiction, TylerVersion> PROD_VERSION_MAP =
       Map.of(
-          "illinois", TylerVersion.v2024_6,
-          "massachusetts", TylerVersion.v2022_1);
+          ILLINOIS, TylerVersion.v2024_6,
+          MASSACHUSETTS, TylerVersion.v2022_1);
 
   /**
    * Gets the EfmUserService from the individual jursdiction and env arguments.
@@ -33,7 +35,7 @@ public class TylerClients {
    * @param jurisdiction e.g. "illinois".
    * @param env e.g. "stage", "test", or "prod"
    */
-  public static Optional<TylerUserFactory> getEfmUserFactory(String jurisdiction, TylerEnv env) {
+  public static Optional<TylerUserFactory> getEfmUserFactory(TylerJurisdiction jurisdiction, TylerEnv env) {
     var version = getVersion(jurisdiction, env);
     return version.flatMap(
         v -> {
@@ -42,7 +44,7 @@ public class TylerClients {
         });
   }
 
-  public static Optional<TylerFirmFactory> getEfmFirmFactory(String jurisdiction, TylerEnv env) {
+  public static Optional<TylerFirmFactory> getEfmFirmFactory(TylerJurisdiction jurisdiction, TylerEnv env) {
     var version = getVersion(jurisdiction, env);
     return version.flatMap(
         v -> {
@@ -58,19 +60,19 @@ public class TylerClients {
    * @param envEnum
    * @return
    */
-  public static String getTylerServerRootUrl(String jurisdiction, TylerEnv envEnum) {
+  public static String getTylerServerRootUrl(TylerJurisdiction jurisdiction, TylerEnv envEnum) {
     String env = envEnum.name().toLowerCase();
-    if (jurisdiction.equalsIgnoreCase("california")) {
+    if (jurisdiction == CALIFORNIA) {
       return "https://california-efm-" + env + ".tylertech.cloud/";
     }
     if (envEnum.equals(TylerEnv.PROD)) {
-      return "https://" + jurisdiction + ".tylertech.cloud/";
+      return "https://" + jurisdiction.toString().toLowerCase() + ".tylertech.cloud/";
     }
-    return "https://" + jurisdiction + "-" + env + ".tylertech.cloud/";
+    return "https://" + jurisdiction.toString().toLowerCase() + "-" + env + ".tylertech.cloud/";
   }
 
-  private static Optional<TylerVersion> getVersion(String jurisdiction, TylerEnv tylerEnv) {
-    Map<String, TylerVersion> versionMap =
+  private static Optional<TylerVersion> getVersion(TylerJurisdiction jurisdiction, TylerEnv tylerEnv) {
+    Map<TylerJurisdiction, TylerVersion> versionMap =
         switch (tylerEnv) {
           case TylerEnv.STAGE -> STAGE_VERSION_MAP;
           case TylerEnv.PROD -> PROD_VERSION_MAP;
@@ -84,9 +86,9 @@ public class TylerClients {
   }
 
   private static Optional<URL> createLocalWsdlUrl(
-      String jurisdiction, TylerEnv env, TylerVersion version, String suffix) {
+      TylerJurisdiction jurisdiction, TylerEnv env, TylerVersion version, String suffix) {
     String wsdlPath =
-        "wsdl/" + version.getVersionPath() + "/" + env.getPath() + "/" + jurisdiction + suffix;
+        "wsdl/" + version.getVersionPath() + "/" + env.getPath() + "/" + jurisdiction.toString().toLowerCase() + suffix;
     URL url = TylerClients.class.getClassLoader().getResource(wsdlPath);
     if (url == null) {
       log.warn("Could not find the wsdl at the classpath:{}", wsdlPath);

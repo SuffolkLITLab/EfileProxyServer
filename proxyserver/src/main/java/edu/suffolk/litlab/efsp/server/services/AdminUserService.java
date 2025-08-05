@@ -8,18 +8,19 @@ import com.hubspot.algebra.Result;
 import com.webcohesion.enunciate.metadata.rs.ResponseCode;
 import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
-import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
+import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
@@ -119,25 +120,25 @@ public class AdminUserService {
   private final Function<String, Result<NullValue, String>> passwordChecker;
   private final Supplier<LoginDatabase> ldSupplier;
   private final Supplier<CodeDatabase> cdSupplier;
-  private final String jurisdiction;
+  private final TylerJurisdiction jurisdiction;
 
   public AdminUserService(
-      String jurisdiction,
-      String env,
+      TylerJurisdiction jurisdiction,
+      TylerEnv env,
       Supplier<LoginDatabase> ldSupplier,
       Supplier<CodeDatabase> cdSupplier,
       Function<String, Result<NullValue, String>> passwordChecker) {
     this.jurisdiction = jurisdiction;
     this.passwordChecker = passwordChecker;
     Optional<TylerUserFactory> maybeUserFactory =
-        TylerClients.getEfmUserFactory(jurisdiction, TylerEnv.parse(env));
+        TylerClients.getEfmUserFactory(jurisdiction, env);
     if (maybeUserFactory.isEmpty()) {
       throw new RuntimeException(
           "Can't find " + jurisdiction + " in the SoapClientChooser for EfmUser");
     }
     this.userFactory = maybeUserFactory.get();
     Optional<TylerFirmFactory> maybeFirmFactory =
-        TylerClients.getEfmFirmFactory(jurisdiction, TylerEnv.parse(env));
+        TylerClients.getEfmFirmFactory(jurisdiction, env);
     if (maybeFirmFactory.isEmpty()) {
       throw new RuntimeException(
           "Can't find " + jurisdiction + " in the SoapClientChooser for EfmFirm factory");
@@ -158,6 +159,7 @@ public class AdminUserService {
 
   @GET
   @Path("/user")
+  @NeedsAuthorization
   public Response getSelfUser(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.getSelfUser");
     Optional<TylerUserClient> port = setupUserPort(httpHeaders);
@@ -181,6 +183,7 @@ public class AdminUserService {
 
   @GET
   @Path("/user/notification-preferences")
+  @NeedsAuthorization
   public Response getNotificationPrefs(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.getNotificationPrefs");
     Optional<TylerUserClient> port = setupUserPort(httpHeaders);
@@ -196,6 +199,7 @@ public class AdminUserService {
 
   @PATCH
   @Path("/user/notification-preferences")
+  @NeedsAuthorization
   public Response updateNotificationPrefs(
       @Context HttpHeaders httpHeaders, List<NotificationType> notifications) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateNotificationPrefs");
@@ -216,6 +220,7 @@ public class AdminUserService {
 
   @POST
   @Path("/user/resend-activation-email")
+  @NeedsAuthorization
   public Response selfResendActivationEmail(
       @Context HttpHeaders httpHeaders, String emailToSendTo) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.selfResendActivationEmail");
@@ -232,6 +237,7 @@ public class AdminUserService {
 
   @POST
   @Path("/users/{id}/resend-activation-email")
+  @NeedsAuthorization
   public Response resendActivationEmail(
       @Context HttpHeaders httpHeaders, @PathParam("id") String id) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.resendActivationEmail");
@@ -272,6 +278,7 @@ public class AdminUserService {
   })
   @POST
   @Path("/users/{id}/password")
+  @NeedsAuthorization
   public Response resetPassword(
       @Context HttpHeaders httpHeaders, @PathParam("id") String id, ResetPasswordParams params) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.resetPassword");
@@ -305,6 +312,7 @@ public class AdminUserService {
 
   @POST
   @Path("/user/password")
+  @NeedsAuthorization
   public Response setPassword(@Context HttpHeaders httpHeaders, SetPasswordParams params) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.setPassword");
     Optional<TylerUserClient> port = setupUserPort(httpHeaders);
@@ -330,6 +338,7 @@ public class AdminUserService {
 
   @POST
   @Path("/user/password/reset")
+  @NeedsAuthorization
   public Response selfResetPassword(@Context HttpHeaders httpHeaders, String emailToSend) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.selfResetPassword");
     Optional<TylerUserClient> port = setupUserPort(httpHeaders, false);
@@ -357,6 +366,7 @@ public class AdminUserService {
    */
   @GET
   @Path("/users/{id}")
+  @NeedsAuthorization
   public Response getUser(@Context HttpHeaders httpHeaders, @PathParam("id") String id) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.getUser");
     String tylerId =
@@ -386,6 +396,7 @@ public class AdminUserService {
 
   @GET
   @Path("/users")
+  @NeedsAuthorization
   public Response getUserList(
       @Context HttpHeaders httpHeaders,
       @QueryParam("page_index") @DefaultValue("0") int pageIndex,
@@ -410,6 +421,7 @@ public class AdminUserService {
 
   @PATCH
   @Path("/user")
+  @NeedsAuthorization
   public Response updateUser(@Context HttpHeaders httpHeaders, UserType updatedUser) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateUser");
     Optional<TylerUserClient> port = setupUserPort(httpHeaders, true);
@@ -442,6 +454,7 @@ public class AdminUserService {
    */
   @PATCH
   @Path("/users/{id}")
+  @NeedsAuthorization
   public Response updateUserById(
       @Context HttpHeaders httpHeaders, @PathParam("id") String id, UserType updatedUser) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateUserById");
@@ -495,6 +508,7 @@ public class AdminUserService {
    */
   @GET
   @Path("/users/{id}/roles")
+  @NeedsAuthorization
   public Response getRoles(@Context HttpHeaders httpHeaders, @PathParam("id") String id) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.getRoles");
     Optional<TylerFirmClient> port =
@@ -519,6 +533,7 @@ public class AdminUserService {
    */
   @POST
   @Path("/users/{id}/roles")
+  @NeedsAuthorization
   public Response addRoles(
       @Context HttpHeaders httpHeaders, @PathParam("id") String id, List<RoleLocationType> toAdd) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.addRoles");
@@ -552,6 +567,7 @@ public class AdminUserService {
    */
   @DELETE
   @Path("/users/{id}/roles")
+  @NeedsAuthorization
   public Response removeRoles(
       @Context HttpHeaders httpHeaders, @PathParam("id") String id, List<RoleLocationType> toRm) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.removeRoles");
@@ -619,6 +635,7 @@ public class AdminUserService {
   })
   @POST
   @Path("/users")
+  @NeedsAuthorization
   public Response registerUser(
       @Context HttpHeaders httpHeaders, final RegistrationRequestType req) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.registerUser");
@@ -697,6 +714,7 @@ public class AdminUserService {
    */
   @DELETE
   @Path("/users/{id}")
+  @NeedsAuthorization
   public Response removeUser(@Context HttpHeaders httpHeaders, @PathParam("id") String id) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.removeUser");
     Optional<TylerFirmClient> port =
@@ -713,6 +731,7 @@ public class AdminUserService {
 
   @GET
   @Path("/notification-options")
+  @NeedsAuthorization
   public Response getNotificationPreferenceList(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.getNotificationPreferenceList");
     Optional<TylerFirmClient> port =
@@ -740,38 +759,27 @@ public class AdminUserService {
    */
   private Optional<TylerUserClient> setupUserPort(
       HttpHeaders httpHeaders, boolean needsSoapHeader) {
-    String apiKey = httpHeaders.getHeaderString("X-API-KEY");
-    try (LoginDatabase ld = ldSupplier.get()) {
-      Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
-      if (atRest.isEmpty()) {
+    if (needsSoapHeader) {
+      String tylerToken =
+          httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
+      Optional<TylerUserNamePassword> creds =
+          TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
+      if (creds.isEmpty()) {
         return Optional.empty();
       }
-      if (needsSoapHeader) {
-        String tylerToken =
-            httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-        MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
-        Optional<TylerUserNamePassword> creds =
-            TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
-        if (creds.isEmpty()) {
-          return Optional.empty();
-        }
-        Consumer<BindingProvider> setup =
-            (BindingProvider bp) -> {
-              ServiceHelpers.setupServicePort(bp);
-              Map<String, Object> ctx = bp.getRequestContext();
-              List<Header> headersList = List.of(creds.get().toHeader());
-              ctx.put(Header.HEADER_LIST, headersList);
-            };
-        return Optional.of(userFactory.makeUserClient(setup));
-      } else {
-        // Creates a connection to Tyler's SOAP API WITHOUT any Auth headers. Can be used to make an
-        // Auth
-        // request, or can have the header inserted later.
-        return Optional.of(userFactory.makeUserClient(ServiceHelpers::setupServicePort));
-      }
-    } catch (SQLException ex) {
-      log.error("SQL error: ", ex);
-      return Optional.empty();
+      Consumer<BindingProvider> setup =
+          (BindingProvider bp) -> {
+            ServiceHelpers.setupServicePort(bp);
+            Map<String, Object> ctx = bp.getRequestContext();
+            List<Header> headersList = List.of(creds.get().toHeader());
+            ctx.put(Header.HEADER_LIST, headersList);
+          };
+      return Optional.of(userFactory.makeUserClient(setup));
+    } else {
+      // Creates a connection to Tyler's SOAP API WITHOUT any Auth headers. Can be used to make an
+      // Auth
+      // request, or can have the header inserted later.
+      return Optional.of(userFactory.makeUserClient(ServiceHelpers::setupServicePort));
     }
   }
 }

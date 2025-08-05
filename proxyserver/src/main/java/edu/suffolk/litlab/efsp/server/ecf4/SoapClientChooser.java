@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
@@ -63,8 +66,8 @@ public class SoapClientChooser {
   }
 
   public static Optional<FilingReviewMDEService> getFilingReviewFactory(
-      String jurisdiction, String env) {
-    return getFilingReviewFactory(jurisdiction + "-" + env);
+      TylerJurisdiction jurisdiction, TylerEnv env) {
+    return getFilingReviewFactory(jurisdiction.getName() + "-" + env.getPath());
   }
 
   public static Optional<ServiceMDEService> getServiceFactory(String wsdlDomain) {
