@@ -154,7 +154,9 @@ These three endpoints each deal with the same large request payload: the entire 
                     "filename": "something.pdf",
                     "document_description": "The clerk told me this document was needed", // The filer provided description of the document
                     "data_url": "https://our-server.com/secure_pdf/10498274.pdf?key=outher", // the URL where the proxy server can access the PDF"
-                    "proxy_enabled": true
+                    "proxy_enabled": true,
+                    // Need to precalculate this
+                    "page_count": 1
                 },
                 { ... }
             ]
@@ -168,5 +170,33 @@ These three endpoints each deal with the same large request payload: the entire 
         "email": "cool_dude1@example.com", // email is required
     },
     "return_date": "YYYY-MM-DD+01:00",
+
+
+    "cross_references": {
+        // The keys are the cross reference codes
+        "87374": "99502",
+        "76343": "12345"
+    },
+    "amount_in_controversy": "103.43",
+    // Used for return_date / court scheduling
+    "out_of_state": false,
+    // Optional metadata about the filer, no bearing on e-filing functionality
+    "filer_type": "429",
+    // Some locations let you set an amount that you are willing to pay, to allow the reviewer to adjust / correct your filing, even if it would be more expensive. Optional.
+    "max_fee_amount": "200.00",
+    // The procedure remedy code (e.g. garnishment, class action).
+    "procedure_remedy": "669",
+    // The damage amount code (e.g. "under $1000, etc.)
+    "damage_amount": "670",
+
+    // Per filing you can customize the email response that your users will get. You can put the email subject / body HTML for the possible responses in these variables.
+    "email_confirmation_subject": "Your filing was submitted",
+    "email_confirmation_contents": "<html><body><h1>Your Filing was submitted</h1>...</body></html>",
+    "acceptance_subject": "Your filing was accepted",
+    "acceptance_contents": "<html><body><h1>Your Filing was accepted</h1>...</body></html>",
+    "rejected_subject": "Your filing was rejected",
+    "rejected_contents": "<html><body><h1>Your Filing was rejected</h1>...</body></html>",
+    "neutral_subject": "Your filing was responded to",
+    "neutral_contents": "<html><body><h1>Your Filing was responded to</h1>...</body></html>"
 }
 ```
