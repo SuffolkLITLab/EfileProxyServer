@@ -86,7 +86,7 @@ public class EcfCaseTypeFactoryTest {
   @Test
   public void shouldUnpackTylerCaseCorrectly()
       throws FileNotFoundException, JAXBException, XMLStreamException {
-    gov.niem.niem.niem_core._2.CaseType myCase =
+    var myCase =
         readFromFile(this.getClass().getResourceAsStream("/case_resp.xml")).getCase().getValue();
     System.out.println(
         Ecf4Helper.objectToXmlStrOrError(myCase, gov.niem.niem.niem_core._2.CaseType.class));
