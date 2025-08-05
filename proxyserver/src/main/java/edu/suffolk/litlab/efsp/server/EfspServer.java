@@ -22,6 +22,7 @@ import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.setup.jeffnet.JeffNetModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.tyler.TylerModuleSetup;
+import edu.suffolk.litlab.efsp.server.utils.AuthenticateRequestInterceptor;
 import edu.suffolk.litlab.efsp.server.utils.EnumExceptionMapper;
 import edu.suffolk.litlab.efsp.server.utils.JsonExceptionMapper;
 import edu.suffolk.litlab.efsp.server.utils.ObservabilityHeadersInterceptor;
@@ -70,7 +71,9 @@ public class EfspServer {
       OrgMessageSender sender,
       List<EfmModuleSetup> modules,
       SecurityHub security,
-      Map<String, InterviewToFilingInformationConverter> converterMap)
+      Map<String, InterviewToFilingInformationConverter> converterMap,
+      List<Jurisdiction> jurisdictions,
+      Optional<TylerEnv> env)
       throws SQLException, NoSuchAlgorithmException {
 
     var jurisdictionMap = new HashMap<Jurisdiction, JurisdictionServiceHandle>();
@@ -112,7 +115,7 @@ public class EfspServer {
         Map.of(
             "xml", MediaType.APPLICATION_XML,
             "json", MediaType.APPLICATION_JSON));
-    sf.setProviders(providers());
+    sf.setProviders(providers(ldSupplier, jurisdictions, env));
 
     sf.setAddress(ServiceHelpers.BASE_LOCAL_URL);
     server = sf.create();
@@ -172,7 +175,10 @@ public class EfspServer {
     }
   }
 
-  public static List<?> providers() {
+  public static List<?> providers(
+      Supplier<LoginDatabase> ldSupplier,
+      List<Jurisdiction> jurisdictions,
+      Optional<TylerEnv> env) {
     return List.of(
         new JAXBElementProvider<Object>(),
         new JacksonJsonProvider(), // TODO(brycew): JAXBJSon?
@@ -180,7 +186,8 @@ public class EfspServer {
         new JsonExceptionMapper(),
         new EnumExceptionMapper(),
         new ObservabilityHeadersInterceptor(),
-        new ObservabilityResetInterceptor());
+        new ObservabilityResetInterceptor(),
+        new AuthenticateRequestInterceptor(ldSupplier, jurisdictions, env));
   }
 
   public static void main(String[] args) throws Exception {
@@ -269,7 +276,9 @@ public class EfspServer {
 
     Supplier<LoginDatabase> ldSupplier = () -> LoginDatabase.fromDS(userDs);
     SecurityHub security = new SecurityHub(ldSupplier, tylerEnv, jurisdictions);
-    EfspServer server = new EfspServer(codeDs, userDs, sender, modules, security, converterMap);
+    EfspServer server =
+        new EfspServer(
+            codeDs, userDs, sender, modules, security, converterMap, jurisdictions, tylerEnv);
 
     Runtime.getRuntime()
         .addShutdownHook(

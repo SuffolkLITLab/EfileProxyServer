@@ -39,6 +39,11 @@ public class TylerUserNamePassword {
     return Optional.of(new TylerUserNamePassword(email, password));
   }
 
+  // TODO(brycew): unsure if I should be overriding toString instead? Seems leaky security-wise
+  public String toCredsString() {
+    return userName + ":" + password;
+  }
+
   public String getUserName() {
     return userName;
   }

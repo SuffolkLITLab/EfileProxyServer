@@ -27,8 +27,10 @@ public class TylerClientsTest {
         assertThat(TylerClients.getEfmUserFactory(domain)).isNotNull();
       }
     }
-    assertThat(TylerClients.getEfmUserFactory(new TylerDomain(MASSACHUSETTS, PROD))).isNotEmpty();
-    assertThat(TylerClients.getEfmUserFactory(new TylerDomain(ILLINOIS, STAGE))).isNotEmpty();
+    assertThat(TylerClients.getEfmUserFactory(new TylerDomain(MASSACHUSETTS, TylerEnv.PROD)))
+        .isNotEmpty();
+    assertThat(TylerClients.getEfmUserFactory(new TylerDomain(ILLINOIS, TylerEnv.STAGE)))
+        .isNotEmpty();
   }
 
   @Test

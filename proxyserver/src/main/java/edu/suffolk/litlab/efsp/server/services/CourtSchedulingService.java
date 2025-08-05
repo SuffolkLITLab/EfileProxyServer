@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efsp.server.services;
 
+import static edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization.AuthType.CASE_MDE;
+import static edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization.AuthType.SCHEDULE_MDE;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.isNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,14 +35,12 @@ import ecf4.latest.tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateRespon
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
-import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
-import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCourtSpecificSerializer;
@@ -48,27 +48,41 @@ import edu.suffolk.litlab.efsp.server.ecf4.Ecfv5CaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
+import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
-import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
-import edu.suffolk.litlab.efsp.utils.Hasher;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
+import gov.niem.release.niem.domains.cbrn._4.MessageContentErrorType;
+import gov.niem.release.niem.domains.cbrn._4.MessageErrorType;
+import gov.niem.release.niem.domains.cbrn._4.MessageStatusType;
+import gov.niem.release.niem.domains.jxdm._6.CourtEventType;
+import gov.niem.release.niem.niem_core._4.CaseType;
+import gov.niem.release.niem.niem_core._4.DateRangeType;
+import gov.niem.release.niem.niem_core._4.DateType;
+import gov.niem.release.niem.niem_core._4.IdentificationType;
+import gov.niem.release.niem.proxy.xsd._4.Duration;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ReserveCourtDateRequestType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ReturnDateRequestType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ReserveCourtDateMessageType;
+import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ResourceContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBException;
-import jakarta.xml.ws.BindingProvider;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -83,9 +97,16 @@ import java.util.stream.Stream;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import org.apache.cxf.headers.Header;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
+import oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
+import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.CourtRecordMDEPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import tyler.ecf.v5_0.extensions.common.CourtScheduleType;
+import tyler.ecf.v5_0.extensions.reservedateresponse.ReserveDateResponseMessageType;
+import tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
+import tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateResponseMessageType;
 
 @Produces({MediaType.APPLICATION_JSON})
 public class CourtSchedulingService {
@@ -102,11 +123,9 @@ public class CourtSchedulingService {
   private final ecf4.latest.gov.niem.release.niem.niem_core._4.ObjectFactory niemObjFac;
   private final ecf4.latest.gov.niem.release.niem.proxy.xsd._4.ObjectFactory proxyObjFac;
   private final Map<String, InterviewToFilingInformationConverter> converterMap;
-  private final CourtRecordMDEService recordFactory;
   private final Jurisdiction jurisdiction;
 
   private final Supplier<CodeDatabase> cdSupplier;
-  private final Supplier<LoginDatabase> ldSupplier;
 
   public CourtSchedulingService(
       Map<String, InterviewToFilingInformationConverter> converterMap,
@@ -115,13 +134,6 @@ public class CourtSchedulingService {
       Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = domain.jurisdiction();
     this.cdSupplier = cdSupplier;
-    this.ldSupplier = ldSupplier;
-    var maybeSchedFactory = SoapClientChooser.getCourtSchedulingFactory(domain);
-    if (maybeSchedFactory.isEmpty()) {
-      throw new RuntimeException(
-          "Can't find " + domain + " in the SoapClientChooser for CourtScheduler");
-    }
-    this.schedFactory = maybeSchedFactory.get();
     this.converterMap = converterMap;
     this.oasisWrapObjFac =
         new ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers
@@ -131,11 +143,6 @@ public class CourtSchedulingService {
             .ObjectFactory();
     this.niemObjFac = new ecf4.latest.gov.niem.release.niem.niem_core._4.ObjectFactory();
     this.proxyObjFac = new ecf4.latest.gov.niem.release.niem.proxy.xsd._4.ObjectFactory();
-    Optional<CourtRecordMDEService> maybeCourt = SoapClientChooser.getCourtRecordFactory(domain);
-    if (maybeCourt.isEmpty()) {
-      throw new RuntimeException("Cannot find " + domain + " for court record factory");
-    }
-    this.recordFactory = maybeCourt.get();
   }
 
   @GET
@@ -224,12 +231,13 @@ public class CourtSchedulingService {
 
   @POST
   @Path("/courts/{court_id}/return_date")
+  @NeedsAuthorization(permissions = {SCHEDULE_MDE, CASE_MDE})
   public Response getReturnDate(
-      @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars)
+      @Context ResourceContext context, @PathParam("court_id") String courtId, String allVars)
       throws SQLException, JAXBException {
     MDC.put(MDCWrappers.OPERATION, "CourtSchedulingService.getReturnDate");
-    Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort(httpHeaders);
-    if (maybeServ.isEmpty()) {
+    CourtSchedulingMDE maybeServ = context.getResource(CourtSchedulingMDE.class);
+    if (maybeServ == null) {
       return Response.status(401).build();
     }
     try (CodeDatabase cd = cdSupplier.get()) {
@@ -269,8 +277,8 @@ public class CourtSchedulingService {
         ComboCaseCodes allCodes;
         Optional<Map<PartyId, Person>> existingParties = Optional.empty();
         if (!isFirstIndexedFiling) {
-          Optional<CourtRecordMDEPort> recordPort = setupRecordPort(httpHeaders);
-          if (recordPort.isEmpty()) {
+          CourtRecordMDEPort recordPort = context.getResource(CourtRecordMDEPort.class);
+          if (recordPort == null) {
             return Response.status(500)
                 .entity("Can't make connection to retrieve court records for subsequent case")
                 .build();
@@ -279,7 +287,7 @@ public class CourtSchedulingService {
           Ecf4Helper.prep(query, info.getCourtLocation());
           query.setCaseTrackingID(Ecf4Helper.convertString(info.getPreviousCaseId().get()));
           query.setCaseQueryCriteria(EcfCaseTypeFactory.getCriteria());
-          CaseResponseMessageType resp = recordPort.get().getCase(query);
+          CaseResponseMessageType resp = recordPort.getCase(query);
           String catCode = resp.getCase().getValue().getCaseCategoryText().getValue();
           String typeCode =
               EcfCaseTypeFactory.getCaseAugmentation(resp.getCase().getValue())
@@ -352,7 +360,7 @@ public class CourtSchedulingService {
         log.info(
             "Full msg: " + Ecfv5XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
         ReturnDateResponseMessageType resp =
-            maybeServ.get().getReturnDate(r).getReturnDateResponseMessage();
+            maybeServ.getReturnDate(r).getReturnDateResponseMessage();
         log.info(
             "Full resp: "
                 + Ecfv5XmlHelper.objectToXmlStrOrError(resp, ReturnDateResponseMessageType.class));
@@ -394,7 +402,7 @@ public class CourtSchedulingService {
           log.info(
               "New full msg: "
                   + Ecfv5XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
-          resp = maybeServ.get().getReturnDate(r).getReturnDateResponseMessage();
+          resp = maybeServ.getReturnDate(r).getReturnDateResponseMessage();
           log.info(
               "New full resp: "
                   + Ecfv5XmlHelper.objectToXmlStrOrError(
@@ -416,6 +424,7 @@ public class CourtSchedulingService {
 
   @POST
   @Path("/courts/{court_id}/reserve_date")
+  @NeedsAuthorization
   public Response reserveCourtDateSync(
       @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String paramStr)
       throws JsonMappingException,
@@ -538,53 +547,6 @@ public class CourtSchedulingService {
           }
         });
     return Response.ok(ret).build();
-  }
-
-  private Optional<CourtSchedulingMDE> setupSchedulingPort(HttpHeaders httpHeaders) {
-    String apiKey = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<TylerUserNamePassword> creds = Optional.empty();
-    try (LoginDatabase ld = ldSupplier.get()) {
-      Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
-      if (atRest.isEmpty()) {
-        log.warn("Couldn't checkLogin");
-        return Optional.empty();
-      }
-      String tylerToken =
-          httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-      MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(tylerToken));
-      creds = TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
-    } catch (SQLException ex) {
-      log.error("SQL error with Scheduling port", ex);
-      return Optional.empty();
-    }
-    if (creds.isEmpty()) {
-      log.warn("No creds?");
-      return Optional.empty();
-    }
-    CourtSchedulingMDE serv = schedFactory.getCourtSchedulingMDEPort();
-    ServiceHelpers.setupServicePort((BindingProvider) serv);
-    Map<String, Object> ctx = ((BindingProvider) serv).getRequestContext();
-    List<Header> headersList = List.of(creds.get().toHeader());
-    ctx.put(Header.HEADER_LIST, headersList);
-    return Optional.of(serv);
-  }
-
-  private Optional<CourtRecordMDEPort> setupRecordPort(HttpHeaders httpHeaders) {
-    String tylerToken =
-        httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-
-    Optional<TylerUserNamePassword> creds =
-        TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
-    if (creds.isEmpty()) {
-      return Optional.empty();
-    }
-
-    CourtRecordMDEPort port = recordFactory.getCourtRecordMDEPort();
-    ServiceHelpers.setupServicePort((BindingProvider) port);
-    Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    List<Header> headersList = List.of(creds.get().toHeader());
-    ctx.put(Header.HEADER_LIST, headersList);
-    return Optional.of(port);
   }
 
   private static void setupReq(CaseFilingType cft, String courtId) {

@@ -108,7 +108,7 @@ public class AdminUserServiceTest {
     sf.setAddress(ENDPOINT_ADDRESS);
     Map<Object, Object> extensionMappings = Map.of("json", MediaType.APPLICATION_JSON);
     sf.setExtensionMappings(extensionMappings);
-    List<?> providers = EfspServer.providers();
+    List<?> providers = EfspServer.providers(() -> ld);
     sf.setProviders(providers);
     server = sf.create();
 
