@@ -9,22 +9,16 @@ import com.webcohesion.enunciate.metadata.rs.ResponseCode;
 import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
-import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
-import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
-import edu.suffolk.litlab.efsp.tyler.TylerClients;
+import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
-import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
-import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
-import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
-import edu.suffolk.litlab.efsp.utils.Hasher;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
@@ -34,20 +28,17 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.container.ResourceContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.xml.ws.BindingProvider;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -116,8 +107,6 @@ import tyler.efm.latest.services.schema.userlistresponse.UserListResponseType;
 public class AdminUserService {
   private static final Logger log = LoggerFactory.getLogger(AdminUserService.class);
 
-  private final TylerUserFactory userFactory;
-  private final TylerFirmFactory firmFactory;
   private final Function<String, Result<NullValue, String>> passwordChecker;
   private final Supplier<LoginDatabase> ldSupplier;
   private final Supplier<CodeDatabase> cdSupplier;
@@ -130,17 +119,6 @@ public class AdminUserService {
       Function<String, Result<NullValue, String>> passwordChecker) {
     this.jurisdiction = domain.jurisdiction();
     this.passwordChecker = passwordChecker;
-    Optional<TylerUserFactory> maybeUserFactory = TylerClients.getEfmUserFactory(domain);
-    if (maybeUserFactory.isEmpty()) {
-      throw new RuntimeException("Can't find " + domain + " in the SoapClientChooser for EfmUser");
-    }
-    this.userFactory = maybeUserFactory.get();
-    Optional<TylerFirmFactory> maybeFirmFactory = TylerClients.getEfmFirmFactory(domain);
-    if (maybeFirmFactory.isEmpty()) {
-      throw new RuntimeException(
-          "Can't find " + domain + " in the SoapClientChooser for EfmFirm factory");
-    }
-    this.firmFactory = maybeFirmFactory.get();
     this.cdSupplier = cdSupplier;
     this.ldSupplier = ldSupplier;
   }
@@ -156,10 +134,11 @@ public class AdminUserService {
 
   @GET
   @Path("/user")
-  public Response getSelfUser(@Context HttpHeaders httpHeaders) {
+  @NeedsAuthorization(permissions = {NeedsAuthorization.AuthType.USER_PORT})
+  public Response getSelfUser(@Context ResourceContext context, @Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.getSelfUser");
-    Optional<TylerUserClient> port = setupUserPort(httpHeaders);
-    if (port.isEmpty()) {
+    TylerUserClient port = context.getResource(TylerUserClient.class);
+    if (port == null) {
       return Response.status(401).build();
     }
     String userId = httpHeaders.getHeaderString(TylerLogin.getHeaderId(jurisdiction));
@@ -172,12 +151,13 @@ public class AdminUserService {
 
     GetUserRequestType req = new GetUserRequestType();
     req.setUserID(userId);
-    GetUserResponseType resp = port.get().getUser(req);
+    GetUserResponseType resp = port.getUser(req);
     return makeResponse(resp, () -> Response.ok(resp.getUser()).build());
   }
 
   @GET
   @Path("/user/notification-preferences")
+  @NeedsAuthorization
   public Response getNotificationPrefs(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.getNotificationPrefs");
     Optional<TylerUserClient> port = setupUserPort(httpHeaders);
@@ -192,6 +172,7 @@ public class AdminUserService {
 
   @PATCH
   @Path("/user/notification-preferences")
+  @NeedsAuthorization
   public Response updateNotificationPrefs(
       @Context HttpHeaders httpHeaders, List<NotificationType> notifications) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateNotificationPrefs");
@@ -212,6 +193,7 @@ public class AdminUserService {
 
   @POST
   @Path("/user/resend-activation-email")
+  @NeedsAuthorization
   public Response selfResendActivationEmail(
       @Context HttpHeaders httpHeaders, String emailToSendTo) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.selfResendActivationEmail");
@@ -228,6 +210,7 @@ public class AdminUserService {
 
   @POST
   @Path("/users/{id}/resend-activation-email")
+  @NeedsAuthorization
   public Response resendActivationEmail(
       @Context HttpHeaders httpHeaders, @PathParam("id") String id) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.resendActivationEmail");
@@ -268,6 +251,7 @@ public class AdminUserService {
   })
   @POST
   @Path("/users/{id}/password")
+  @NeedsAuthorization
   public Response resetPassword(
       @Context HttpHeaders httpHeaders, @PathParam("id") String id, ResetPasswordParams params) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.resetPassword");
@@ -297,6 +281,7 @@ public class AdminUserService {
 
   @POST
   @Path("/user/password")
+  @NeedsAuthorization
   public Response setPassword(@Context HttpHeaders httpHeaders, SetPasswordParams params) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.setPassword");
     Optional<TylerUserClient> port = setupUserPort(httpHeaders);
@@ -319,6 +304,7 @@ public class AdminUserService {
 
   @POST
   @Path("/user/password/reset")
+  @NeedsAuthorization
   public Response selfResetPassword(@Context HttpHeaders httpHeaders, String emailToSend) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.selfResetPassword");
     Optional<TylerUserClient> port = setupUserPort(httpHeaders, false);
@@ -342,6 +328,7 @@ public class AdminUserService {
    */
   @GET
   @Path("/users/{id}")
+  @NeedsAuthorization
   public Response getUser(@Context HttpHeaders httpHeaders, @PathParam("id") String id) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.getUser");
     String tylerId =
@@ -370,6 +357,7 @@ public class AdminUserService {
 
   @GET
   @Path("/users")
+  @NeedsAuthorization
   public Response getUserList(
       @Context HttpHeaders httpHeaders,
       @QueryParam("page_index") @DefaultValue("0") int pageIndex,
@@ -393,6 +381,7 @@ public class AdminUserService {
 
   @PATCH
   @Path("/user")
+  @NeedsAuthorization
   public Response updateUser(@Context HttpHeaders httpHeaders, UserType updatedUser) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateUser");
     Optional<TylerUserClient> port = setupUserPort(httpHeaders, true);
@@ -425,6 +414,7 @@ public class AdminUserService {
    */
   @PATCH
   @Path("/users/{id}")
+  @NeedsAuthorization
   public Response updateUserById(
       @Context HttpHeaders httpHeaders, @PathParam("id") String id, UserType updatedUser) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateUserById");
@@ -478,6 +468,7 @@ public class AdminUserService {
    */
   @GET
   @Path("/users/{id}/roles")
+  @NeedsAuthorization
   public Response getRoles(@Context HttpHeaders httpHeaders, @PathParam("id") String id) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.getRoles");
     Optional<TylerFirmClient> port =
@@ -501,6 +492,7 @@ public class AdminUserService {
    */
   @POST
   @Path("/users/{id}/roles")
+  @NeedsAuthorization
   public Response addRoles(
       @Context HttpHeaders httpHeaders, @PathParam("id") String id, List<RoleLocationType> toAdd) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.addRoles");
@@ -534,6 +526,7 @@ public class AdminUserService {
    */
   @DELETE
   @Path("/users/{id}/roles")
+  @NeedsAuthorization
   public Response removeRoles(
       @Context HttpHeaders httpHeaders, @PathParam("id") String id, List<RoleLocationType> toRm) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.removeRoles");
@@ -601,6 +594,7 @@ public class AdminUserService {
   })
   @POST
   @Path("/users")
+  @NeedsAuthorization
   public Response registerUser(
       @Context HttpHeaders httpHeaders, final RegistrationRequestType req) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.registerUser");
@@ -696,6 +690,7 @@ public class AdminUserService {
    */
   @DELETE
   @Path("/users/{id}")
+  @NeedsAuthorization
   public Response removeUser(@Context HttpHeaders httpHeaders, @PathParam("id") String id) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.removeUser");
     Optional<TylerFirmClient> port =
@@ -712,6 +707,7 @@ public class AdminUserService {
 
   @GET
   @Path("/notification-options")
+  @NeedsAuthorization
   public Response getNotificationPreferenceList(@Context HttpHeaders httpHeaders) {
     MDC.put(MDCWrappers.OPERATION, "AdminUserService.getNotificationPreferenceList");
     Optional<TylerFirmClient> port =
@@ -722,54 +718,5 @@ public class AdminUserService {
 
     NotificationPreferencesListResponseType resp = port.get().getNotificationPreferencesList();
     return makeResponse(resp, () -> Response.ok(resp.getNotificationListItem()).build());
-  }
-
-  /** Default needsSoapHeader to True: most ops need Tyler Authentication in the SOAP header. */
-  private Optional<TylerUserClient> setupUserPort(HttpHeaders httpHeaders) {
-    return setupUserPort(httpHeaders, true);
-  }
-
-  /**
-   * Creates a connection to Tyler's SOAP API that is has the right Auth Headers.
-   *
-   * @param httpHeaders The context tag from the server method
-   * @param needsSoapHeader True if the operation needs Authenticated Tyler creds to work
-   * @return false if setup didn't work, and subsequent service calls will likely fail
-   */
-  private Optional<TylerUserClient> setupUserPort(
-      HttpHeaders httpHeaders, boolean needsSoapHeader) {
-    String apiKey = httpHeaders.getHeaderString("X-API-KEY");
-    try (LoginDatabase ld = ldSupplier.get()) {
-      Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
-      if (atRest.isEmpty()) {
-        return Optional.empty();
-      }
-      if (needsSoapHeader) {
-        String tylerToken =
-            httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-        MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(tylerToken));
-        Optional<TylerUserNamePassword> creds =
-            TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
-        if (creds.isEmpty()) {
-          return Optional.empty();
-        }
-        Consumer<BindingProvider> setup =
-            (BindingProvider bp) -> {
-              ServiceHelpers.setupServicePort(bp);
-              Map<String, Object> ctx = bp.getRequestContext();
-              List<Header> headersList = List.of(creds.get().toHeader());
-              ctx.put(Header.HEADER_LIST, headersList);
-            };
-        return Optional.of(userFactory.makeUserClient(setup));
-      } else {
-        // Creates a connection to Tyler's SOAP API WITHOUT any Auth headers. Can be used to make an
-        // Auth
-        // request, or can have the header inserted later.
-        return Optional.of(userFactory.makeUserClient(ServiceHelpers::setupServicePort));
-      }
-    } catch (SQLException ex) {
-      log.error("SQL error: ", ex);
-      return Optional.empty();
-    }
   }
 }

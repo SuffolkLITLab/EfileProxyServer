@@ -34,7 +34,6 @@ import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
-import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
@@ -48,7 +47,6 @@ import gov.niem.niem.niem_core._2.TextType;
 import gov.niem.niem.proxy.xsd._2.Date;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.ws.BindingProvider;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
@@ -82,7 +80,6 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.CourtRecordMDEPort;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingReviewMDEPort;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.ServiceMDEPort;
-import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tyler.ecf.extensions.cancelfilingmessage.CancelFilingMessageType;
@@ -167,9 +164,9 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   private CoreMessageAndNames prepareFiling(
       FilingInformation info,
       InfoCollector collector,
-      String apiToken,
       FilingReviewMDEPort filingPort,
       CourtRecordMDEPort recordPort,
+      TylerFirmClient firmClient,
       QueryType queryType)
       throws FilingError {
     String existingCaseTitle = null;
@@ -470,7 +467,10 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   private Result<FilingResult, FilingError> serveFilingIfReady(
-      CoreFilingMessageType cfm, FilingInformation info, InfoCollector collector, String apiToken) {
+      CoreFilingMessageType cfm,
+      FilingInformation info,
+      InfoCollector collector,
+      ServiceMDEPort servicePort) {
     Optional<ServiceMDEPort> port = setupServicePort(apiToken);
     if (port.isEmpty()) {
       return Result.err(
@@ -507,7 +507,11 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
 
   @Override
   public Result<FilingResult, FilingError> submitFilingIfReady(
-      FilingInformation info, InfoCollector collector, String apiToken, ApiChoice choice) {
+      FilingInformation info,
+      InfoCollector collector,
+      FilingReviewMDEPort reviewPort,
+      CourtRecordMDEPort recordPort,
+      ApiChoice choice) {
     FilingReviewMDEPort filingPort;
     CoreFilingMessageType cfm;
     String existingCaseTitle = null;
@@ -545,7 +549,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     }
 
     if (choice.equals(ApiChoice.ServiceApi)) {
-      return serveFilingIfReady(cfm, info, collector, apiToken);
+      return serveFilingIfReady(cfm, info, collector, servicePort);
     }
 
     var wsOf =
@@ -696,7 +700,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   @Override
-  public Result<Response, FilingError> getServiceTypes(FilingInformation info, String apiToken) {
+  public Result<Response, FilingError> getServiceTypes(
+      FilingInformation info, FilingReviewMDEPort reviewPort, CourtRecordMDEPort recordPort) {
     Optional<CourtLocationInfo> court = getCourtInfo(info);
     if (court.isEmpty()) {
       return Result.ok(Response.status(404).entity("No court " + info.getCourtLocation()).build());
@@ -744,7 +749,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       String submitterId,
       java.time.LocalDate startDate,
       java.time.LocalDate beforeDate,
-      String apiToken) {
+      FilingReviewMDEPort reviewPort) {
     try {
       List<String> courtIds = getAllLocations();
       if (courtId != null && !courtId.equals("0") && !courtIds.contains(courtId)) {
@@ -830,7 +835,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   @Override
-  public Response getFilingStatus(String courtId, String filingId, String apiToken) {
+  public Response getFilingStatus(String courtId, String filingId, FilingReviewMDEPort reviewPort) {
     try {
       List<String> courtIds = getAllLocations();
       if (!courtIds.contains(courtId)) {
@@ -854,7 +859,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
 
   @Override
   public Response getFilingService(
-      String courtId, String filingId, String contactId, String apiToken) {
+      String courtId, String filingId, String contactId, FilingReviewMDEPort reviewPort) {
     Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
     if (port.isEmpty()) {
       return Response.status(403).build();
@@ -870,7 +875,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   @Override
-  public Response getFilingDetails(String courtId, String filingId, String apiToken) {
+  public Response getFilingDetails(
+      String courtId, String filingId, FilingReviewMDEPort reviewPort) {
     try {
       List<String> courtIds = getAllLocations();
       if (!courtIds.contains(courtId)) {
@@ -892,7 +898,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   @Override
-  public Response getPolicy(String courtId, String apiToken) {
+  public Response getPolicy(String courtId, FilingReviewMDEPort reviewPort) {
     try {
       List<String> courtIds = getAllLocations();
       if (!courtIds.contains(courtId)) {
@@ -911,7 +917,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   @Override
-  public Response cancelFiling(String courtId, String filingId, String apiToken) {
+  public Response cancelFiling(String courtId, String filingId, FilingReviewMDEPort reviewPort) {
     try {
       List<String> courtIds = getAllLocations();
       if (!courtIds.contains(courtId)) {
@@ -950,60 +956,5 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
 
   private static <T extends QueryMessageType> T prep(T newMsg, String courtId) {
     return Ecf4Helper.prep(newMsg, courtId);
-  }
-
-  private Optional<FilingReviewMDEPort> setupFilingPort(String apiToken) {
-    Optional<TylerUserNamePassword> creds =
-        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
-    if (creds.isEmpty()) {
-      return Optional.empty();
-    }
-
-    FilingReviewMDEPort port = makeFilingPort();
-    Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    List<Header> headersList = List.of(creds.get().toHeader());
-    ctx.put(Header.HEADER_LIST, headersList);
-    return Optional.of(port);
-  }
-
-  private Optional<ServiceMDEPort> setupServicePort(String apiToken) {
-    Optional<TylerUserNamePassword> creds =
-        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
-    if (creds.isEmpty()) {
-      return Optional.empty();
-    }
-
-    ServiceMDEPort port = makeServicePort();
-    Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    List<Header> headersList = List.of(creds.get().toHeader());
-    ctx.put(Header.HEADER_LIST, headersList);
-    return Optional.of(port);
-  }
-
-  private Optional<CourtRecordMDEPort> setupRecordPort(String apiToken) {
-    Optional<TylerUserNamePassword> creds =
-        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
-    if (creds.isEmpty()) {
-      return Optional.empty();
-    }
-
-    CourtRecordMDEPort port = recordFactory.getCourtRecordMDEPort();
-    ServiceHelpers.setupServicePort((BindingProvider) port);
-    Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    List<Header> headersList = List.of(creds.get().toHeader());
-    ctx.put(Header.HEADER_LIST, headersList);
-    return Optional.of(port);
-  }
-
-  private FilingReviewMDEPort makeFilingPort() {
-    FilingReviewMDEPort port = filingFactory.getFilingReviewMDEPort();
-    ServiceHelpers.setupServicePort((BindingProvider) port);
-    return port;
-  }
-
-  private ServiceMDEPort makeServicePort() {
-    ServiceMDEPort port = serviceFactory.getServiceMDEPort();
-    ServiceHelpers.setupServicePort((BindingProvider) port);
-    return port;
   }
 }

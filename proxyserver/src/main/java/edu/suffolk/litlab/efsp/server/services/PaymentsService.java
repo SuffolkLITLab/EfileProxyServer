@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efsp.server.services;
 
-import static edu.suffolk.litlab.efsp.server.utils.ServiceHelpers.setupFirmPort;
+import static edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization.AuthType.FIRM_PORT;
 import static edu.suffolk.litlab.efsp.tyler.TylerErrorCodes.makeResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,10 +10,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.webcohesion.enunciate.metadata.rs.ResponseCode;
 import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import edu.suffolk.litlab.efsp.Jurisdiction;
-import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
+import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.stdlib.RandomString;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
@@ -33,11 +33,11 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.container.ResourceContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriInfo;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -93,23 +93,15 @@ public class PaymentsService {
       </html>
       """;
 
-  // Set by some JAX magic.
-  @Context UriInfo uri;
-
   private final RandomString transactionIdGen;
   private final String togaKey;
   private final String togaUrl;
   private final TylerFirmFactory firmFactory;
   private final Supplier<CodeDatabase> cdSupplier;
-  private final Supplier<LoginDatabase> ldSupplier;
   private final Jurisdiction jurisdiction;
 
   public PaymentsService(
-      TylerDomain domain,
-      String togaKey,
-      String togaUrl,
-      Supplier<LoginDatabase> ldSupplier,
-      Supplier<CodeDatabase> cdSupplier) {
+      TylerDomain domain, String togaKey, String togaUrl, Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = domain.jurisdiction();
     this.callbackToUsUrl =
         ServiceHelpers.EXTERNAL_URL
@@ -128,7 +120,6 @@ public class PaymentsService {
       throw new RuntimeException(domain + " not in SoapClientChooser for EFMFirm");
     }
     this.cdSupplier = cdSupplier;
-    this.ldSupplier = ldSupplier;
   }
 
   @GET
@@ -142,32 +133,34 @@ public class PaymentsService {
 
   @GET
   @Path("/global-accounts")
-  public Response getGlobalPaymentList(@Context HttpHeaders httpHeaders) {
+  @NeedsAuthorization(permissions = {FIRM_PORT})
+  public Response getGlobalPaymentList(@Context ResourceContext context) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getGlobalPaymentList");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
       return Response.status(403).build();
     }
 
-    PaymentAccountListResponseType accounts = firmPort.get().getGlobalPaymentAccountList();
+    PaymentAccountListResponseType accounts = firmPort.getGlobalPaymentAccountList();
     return makeResponse(accounts, () -> Response.ok(accounts.getPaymentAccount()).build());
   }
 
   @GET
   @Path("/global-accounts/{account_id}")
+  @NeedsAuthorization(permissions = {FIRM_PORT})
   public Response getGlobalPaymentAccount(
-      @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId) {
+      @Context ResourceContext context, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getGlobalPaymentAccount");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
       return Response.status(403).build();
     }
 
     GetPaymentAccountRequestType req = new GetPaymentAccountRequestType();
     req.setPaymentAccountID(accountId);
-    GetPaymentAccountResponseType account = firmPort.get().getGlobalPaymentAccount(req);
+    GetPaymentAccountResponseType account = firmPort.getGlobalPaymentAccount(req);
     return makeResponse(account, () -> Response.ok(account.getPaymentAccount()).build());
   }
 
@@ -184,24 +177,26 @@ public class PaymentsService {
    */
   @POST
   @Path("/global-accounts")
-  public Response createGlobalWaiverAccount(@Context HttpHeaders httpHeaders, String accountName) {
+  @NeedsAuthorization(permissions = {FIRM_PORT})
+  public Response createGlobalWaiverAccount(@Context ResourceContext context, String accountName) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.createGlobalWaiverAccount");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
       return Response.status(403).build();
     }
-    return createWaiverAccount(true, accountName, firmPort.get());
+    return createWaiverAccount(true, accountName, firmPort);
   }
 
   @PATCH
   @Path("/global-accounts/{account_id}")
+  @NeedsAuthorization(permissions = {FIRM_PORT})
   public Response updateGlobalPaymentAccount(
-      @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId, String json) {
+      @Context ResourceContext context, @PathParam("account_id") String accountId, String json) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.updateGlobalPaymentAccount");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
       return Response.status(403).build();
     }
 
@@ -210,74 +205,78 @@ public class PaymentsService {
         () -> {
           GetPaymentAccountRequestType query = new GetPaymentAccountRequestType();
           query.setPaymentAccountID(accountId);
-          return firmPort.get().getGlobalPaymentAccount(query);
+          return firmPort.getGlobalPaymentAccount(query);
         },
         (UpdatePaymentAccountRequestType newAccount) -> {
-          return firmPort.get().updateGlobalPaymentAccount(newAccount);
+          return firmPort.updateGlobalPaymentAccount(newAccount);
         });
   }
 
   @DELETE
   @Path("/global-accounts/{account_id}")
+  @NeedsAuthorization(permissions = {FIRM_PORT})
   public Response removeGlobalPaymentAccount(
-      @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId) {
+      @Context ResourceContext context, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.removeGlobalPaymentAccount");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
       return Response.status(403).build();
     }
 
     RemovePaymentAccountRequestType req = new RemovePaymentAccountRequestType();
     req.setPaymentAccountID(accountId);
-    BaseResponseType resp = firmPort.get().removeGlobalPaymentAccount(req);
+    BaseResponseType resp = firmPort.removeGlobalPaymentAccount(req);
     return makeResponse(resp, () -> Response.ok().build());
   }
 
   @GET
   @Path("/payment-accounts/{account_id}")
+  @NeedsAuthorization(permissions = {FIRM_PORT})
   public Response getPaymentAccount(
-      @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId) {
+      @Context ResourceContext context, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getPaymentAccount");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
       return Response.status(403).build();
     }
 
     GetPaymentAccountRequestType req = new GetPaymentAccountRequestType();
     req.setPaymentAccountID(accountId);
-    GetPaymentAccountResponseType resp = firmPort.get().getPaymentAccount(req);
+    GetPaymentAccountResponseType resp = firmPort.getPaymentAccount(req);
 
     return makeResponse(resp, () -> Response.ok(resp.getPaymentAccount()).build());
   }
 
   @DELETE
   @Path("/payment-accounts/{account_id}")
+  @NeedsAuthorization(permissions = {FIRM_PORT})
   public Response removePaymentAccount(
-      @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId) {
+      @Context ResourceContext context, @PathParam("account_id") String accountId) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.removePaymentAccount");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
       return Response.status(403).build();
     }
 
     RemovePaymentAccountRequestType req = new RemovePaymentAccountRequestType();
     req.setPaymentAccountID(accountId);
-    BaseResponseType resp = firmPort.get().removePaymentAccount(req);
+    BaseResponseType resp = firmPort.removePaymentAccount(req);
     return makeResponse(resp, () -> Response.ok().build());
   }
 
   @GET
   @Path("/payment-accounts")
+  @NeedsAuthorization(permissions = {FIRM_PORT})
   public Response getPaymentAccountList(
-      @Context HttpHeaders httpHeaders, @DefaultValue("") @QueryParam("court_id") String courtId)
+      @Context ResourceContext context, @DefaultValue("") @QueryParam("court_id") String courtId)
       throws SQLException {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getPaymentAccountList");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
       return Response.status(403).build();
     }
     GetPaymentAccountListRequestType req =
@@ -292,7 +291,7 @@ public class PaymentsService {
       req.setCourtIdentifier(courtId);
     }
 
-    PaymentAccountListResponseType list = firmPort.get().getPaymentAccountList(req);
+    PaymentAccountListResponseType list = firmPort.getPaymentAccountList(req);
     return makeResponse(list, () -> Response.ok(list.getPaymentAccount()).build());
   }
 
@@ -309,14 +308,15 @@ public class PaymentsService {
    */
   @POST
   @Path("/payment-accounts")
-  public Response createWaiverAccount(@Context HttpHeaders httpHeaders, String accountName) {
+  @NeedsAuthorization(permissions = {FIRM_PORT})
+  public Response createWaiverAccount(@Context ResourceContext context, String accountName) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.createWaiverAccount");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
       return Response.status(403).build();
     }
-    return createWaiverAccount(false, accountName, firmPort.get());
+    return createWaiverAccount(false, accountName, firmPort);
   }
 
   /**
@@ -329,13 +329,14 @@ public class PaymentsService {
    */
   @PATCH
   @Path("/payment-accounts/{account_id}")
+  @NeedsAuthorization(permissions = {FIRM_PORT})
   public Response updatePaymentAccount(
-      @Context HttpHeaders httpHeaders, @PathParam("account_id") String accountId, String json)
+      @Context ResourceContext context, @PathParam("account_id") String accountId, String json)
       throws JsonMappingException, JsonProcessingException {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.updatePaymentAccount");
-    Optional<TylerFirmClient> firmPort =
-        ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
       return Response.status(403).build();
     }
 
@@ -344,24 +345,25 @@ public class PaymentsService {
         () -> {
           GetPaymentAccountRequestType query = new GetPaymentAccountRequestType();
           query.setPaymentAccountID(accountId);
-          return firmPort.get().getPaymentAccount(query);
+          return firmPort.getPaymentAccount(query);
         },
         (UpdatePaymentAccountRequestType newAccount) -> {
-          return firmPort.get().updatePaymentAccount(newAccount);
+          return firmPort.updatePaymentAccount(newAccount);
         });
   }
 
   @GET
   @Path("/types")
-  public Response getPaymentAccountTypeList(@Context HttpHeaders httpHeaders) {
+  @NeedsAuthorization(permissions = {FIRM_PORT})
+  public Response getPaymentAccountTypeList(@Context ResourceContext context) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.getPaymentAccountTypeList");
-    Optional<TylerFirmClient> firmPort =
-        ServiceHelpers.setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
       return Response.status(403).build();
     }
 
-    PaymentAccountTypeListResponseType types = firmPort.get().getPaymentAccountTypeList();
+    PaymentAccountTypeListResponseType types = firmPort.getPaymentAccountTypeList();
     return makeResponse(types, () -> Response.ok(types.getPaymentAccountType()).build());
   }
 

@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efsp.server.services;
 
-import static edu.suffolk.litlab.efsp.server.utils.ServiceHelpers.setupFirmPort;
+import static edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization.AuthType.FIRM_PORT;
 import static edu.suffolk.litlab.efsp.tyler.TylerErrorCodes.makeResponse;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
 
@@ -14,11 +14,10 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.server.services.api.ServiceContactInput;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
-import edu.suffolk.litlab.efsp.tyler.TylerClients;
+import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
-import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
@@ -28,8 +27,8 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.container.ResourceContext;
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.net.URI;
@@ -76,9 +75,7 @@ import tyler.efm.latest.services.schema.updateservicecontactresponse.UpdateServi
 public class FirmAttorneyAndServiceService {
   private static Logger log = LoggerFactory.getLogger(FirmAttorneyAndServiceService.class);
 
-  private final TylerFirmFactory firmFactory;
   private final Supplier<CodeDatabase> cdSupplier;
-  private final Supplier<LoginDatabase> ldSupplier;
   private final Jurisdiction jurisdiction;
 
   private static final tyler.efm.latest.services.schema.common.ObjectFactory tylerCommonObjFac =
@@ -87,14 +84,7 @@ public class FirmAttorneyAndServiceService {
   public FirmAttorneyAndServiceService(
       TylerDomain domain, Supplier<LoginDatabase> ldSupplier, Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = domain.jurisdiction();
-    Optional<TylerFirmFactory> maybeFirmFactory = TylerClients.getEfmFirmFactory(domain);
-    if (maybeFirmFactory.isPresent()) {
-      this.firmFactory = maybeFirmFactory.get();
-    } else {
-      throw new RuntimeException(domain + " not in SoapClientChooser for EFMFirm");
-    }
     this.cdSupplier = cdSupplier;
-    this.ldSupplier = ldSupplier;
   }
 
   @GET
@@ -109,29 +99,31 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/firm")
-  public Response getSelfFirm(@Context HttpHeaders httpHeaders) {
+  @NeedsAuthorization(permissions = {FIRM_PORT})
+  public Response getSelfFirm(@Context ResourceContext context) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getSelfFirm");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
-      return Response.status(401).build();
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
+      return Response.status(403).build();
     }
 
-    GetFirmResponseType firm = firmPort.get().getFirm();
+    GetFirmResponseType firm = firmPort.getFirm();
     return makeResponse(firm, () -> Response.ok(firm.getFirm()).build());
   }
 
   @PATCH
   @Path("/firm")
-  public Response updateFirm(@Context HttpHeaders httpHeaders, String json) {
+  @NeedsAuthorization(permissions = {FIRM_PORT})
+  public Response updateFirm(@Context ResourceContext context, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateFirm");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
-      return Response.status(401).build();
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
+      return Response.status(403).build();
     }
 
-    GetFirmResponseType existing = firmPort.get().getFirm();
+    GetFirmResponseType existing = firmPort.getFirm();
     FirmType firm = existing.getFirm();
     ObjectMapper mapper = new ObjectMapper();
     try {
@@ -152,7 +144,7 @@ public class FirmAttorneyAndServiceService {
 
       UpdateFirmRequestType updateReq = new UpdateFirmRequestType();
       updateReq.setFirm(firm);
-      BaseResponseType resp = firmPort.get().updateFirm(updateReq);
+      BaseResponseType resp = firmPort.updateFirm(updateReq);
       return makeResponse(resp, () -> Response.ok().build());
     } catch (JsonProcessingException e) {
       return Response.status(400).entity("The Body passed should be proper JSON: " + e).build();
@@ -161,42 +153,45 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/attorneys")
-  public Response getAttorneyList(@Context HttpHeaders httpHeaders) {
+  @NeedsAuthorization(permissions = {FIRM_PORT})
+  public Response getAttorneyList(@Context ResourceContext context) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getAttorneyList");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
       return Response.status(403).build();
     }
 
-    AttorneyListResponseType resp = firmPort.get().getAttorneyList();
+    AttorneyListResponseType resp = firmPort.getAttorneyList();
     return makeResponse(resp, () -> Response.ok(resp.getAttorney()).build());
   }
 
   @GET
   @Path("/attorneys/{attorney_id}")
+  @NeedsAuthorization(permissions = {FIRM_PORT})
   public Response getAttorney(
-      @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId) {
+      @Context ResourceContext context, @PathParam("attorney_id") String attorneyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getAttorney");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
       return Response.status(403).build();
     }
 
     GetAttorneyRequestType req = new GetAttorneyRequestType();
     req.setAttorneyID(attorneyId);
-    GetAttorneyResponseType resp = firmPort.get().getAttorney(req);
+    GetAttorneyResponseType resp = firmPort.getAttorney(req);
     return makeResponse(resp, () -> Response.ok(resp.getAttorney()).build());
   }
 
   @POST
   @Path("/attorneys")
-  public Response createAttorney(@Context HttpHeaders httpHeaders, AttorneyType attorney) {
+  @NeedsAuthorization(permissions = {FIRM_PORT})
+  public Response createAttorney(@Context ResourceContext context, AttorneyType attorney) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.createAttorney");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
       return Response.status(403).build();
     }
     CreateAttorneyRequestType req = new CreateAttorneyRequestType();
@@ -219,24 +214,25 @@ public class FirmAttorneyAndServiceService {
       return Response.status(500).build();
     }
 
-    CreateAttorneyResponseType resp = firmPort.get().createAttorney(req);
+    CreateAttorneyResponseType resp = firmPort.createAttorney(req);
     return makeResponse(resp, () -> Response.ok("\"" + resp.getAttorneyID() + "\"").build());
   }
 
   @PATCH
   @Path("/attorneys/{attorney_id}")
+  @NeedsAuthorization(permissions = {FIRM_PORT})
   public Response updateAttorney(
-      @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId, String json) {
+      @Context ResourceContext context, @PathParam("attorney_id") String attorneyId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateAttorney");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
       return Response.status(403).build();
     }
 
     GetAttorneyRequestType req = new GetAttorneyRequestType();
     req.setAttorneyID(attorneyId);
-    GetAttorneyResponseType existingResp = firmPort.get().getAttorney(req);
+    GetAttorneyResponseType existingResp = firmPort.getAttorney(req);
     AttorneyType att = existingResp.getAttorney();
 
     ObjectMapper mapper = new ObjectMapper();
@@ -249,7 +245,7 @@ public class FirmAttorneyAndServiceService {
 
       UpdateAttorneyRequestType updateReq = new UpdateAttorneyRequestType();
       updateReq.setAttorney(att);
-      UpdateAttorneyResponseType resp = firmPort.get().updateAttorney(updateReq);
+      UpdateAttorneyResponseType resp = firmPort.updateAttorney(updateReq);
       return makeResponse(resp, () -> Response.ok("\"" + resp.getAttorneyID() + "\"").build());
     } catch (JsonProcessingException e) {
       return Response.status(400).entity("The Body passed should be proper JSON: " + e).build();
@@ -258,43 +254,46 @@ public class FirmAttorneyAndServiceService {
 
   @DELETE
   @Path("/attorneys/{attorney_id}")
+  @NeedsAuthorization(permissions = {FIRM_PORT})
   public Response removeAttorney(
-      @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId) {
+      @Context ResourceContext context, @PathParam("attorney_id") String attorneyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.removeAttorney");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
       return Response.status(403).build();
     }
 
     RemoveAttorneyRequestType req = new RemoveAttorneyRequestType();
     req.setAttorneyID(attorneyId);
-    BaseResponseType resp = firmPort.get().removeAttorney(req);
+    BaseResponseType resp = firmPort.removeAttorney(req);
     return makeResponse(resp, () -> Response.ok().build());
   }
 
   @GET
   @Path("/service-contacts")
-  public Response getServiceContactList(@Context HttpHeaders httpHeaders) {
+  @NeedsAuthorization(permissions = {FIRM_PORT})
+  public Response getServiceContactList(@Context ResourceContext context) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getServiceContactList");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
-      return Response.status(401).build();
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
+      return Response.status(403).build();
     }
-    ServiceContactListResponseType resp = firmPort.get().getServiceContactList();
+    ServiceContactListResponseType resp = firmPort.getServiceContactList();
     return makeResponse(resp, () -> Response.ok(resp.getServiceContact()).build());
   }
 
   @GET
   @Path("/service-contacts/{contact_id}")
+  @NeedsAuthorization(permissions = {FIRM_PORT})
   public Response getServiceContact(
-      @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId) {
+      @Context ResourceContext context, @PathParam("contact_id") String contactId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getServiceContact");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
-      return Response.status(401).build();
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
+      return Response.status(403).build();
     }
     if (contactId == null || contactId.isBlank() || contactId.equals("None")) {
       return Response.status(400).build();
@@ -302,38 +301,40 @@ public class FirmAttorneyAndServiceService {
 
     GetServiceContactRequestType req = new GetServiceContactRequestType();
     req.setServiceContactID(contactId);
-    GetServiceContactResponseType resp = firmPort.get().getServiceContact(req);
+    GetServiceContactResponseType resp = firmPort.getServiceContact(req);
     return makeResponse(resp, () -> Response.ok(resp.getServiceContact()).build());
   }
 
   @DELETE
   @Path("/service-contacts/{contact_id}")
+  @NeedsAuthorization(permissions = {FIRM_PORT})
   public Response removeServiceContact(
-      @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId) {
+      @Context ResourceContext context, @PathParam("contact_id") String contactId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.removeServiceContact");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
-      return Response.status(401).build();
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
+      return Response.status(403).build();
     }
 
     RemoveServiceContactRequestType req = new RemoveServiceContactRequestType();
     req.setServiceContactID(contactId);
-    BaseResponseType resp = firmPort.get().removeServiceContact(req);
+    BaseResponseType resp = firmPort.removeServiceContact(req);
     return makeResponse(resp, () -> Response.ok().build());
   }
 
   @POST
   @Path("/service-contacts")
-  public Response createServiceContact(@Context HttpHeaders httpHeaders, String strInput) {
+  @NeedsAuthorization(permissions = {FIRM_PORT})
+  public Response createServiceContact(@Context ResourceContext context, String strInput) {
+    MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.createServiceContact");
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
+      return Response.status(403).build();
+    }
     try {
       ServiceContactInput input = new ObjectMapper().readValue(strInput, ServiceContactInput.class);
-      MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.createServiceContact");
-      Optional<TylerFirmClient> firmPort =
-          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-      if (firmPort.isEmpty()) {
-        return Response.status(401).build();
-      }
 
       CreateServiceContactRequestType req = new CreateServiceContactRequestType();
       ServiceContactType contact = new ServiceContactType();
@@ -349,7 +350,7 @@ public class FirmAttorneyAndServiceService {
       contact.setPhoneNumber(input.phoneNumber);
       req.setServiceContact(contact);
       log.info("Making new service contact: {} ({})", contact, input.firstName);
-      CreateServiceContactResponseType resp = firmPort.get().createServiceContact(req);
+      CreateServiceContactResponseType resp = firmPort.createServiceContact(req);
       log.info("Got response: {}", resp.getError().getErrorCode());
       log.info("Got response id: {}", resp.getServiceContactID());
       return makeResponse(
@@ -366,13 +367,14 @@ public class FirmAttorneyAndServiceService {
    */
   @PUT
   @Path("/service-contacts/{contact_id}/cases")
+  @NeedsAuthorization(permissions = {FIRM_PORT})
   public Response attachServiceContact(
-      @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId, String json) {
+      @Context ResourceContext context, @PathParam("contact_id") String contactId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.attachServiceContact");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
-      return Response.status(401).build();
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
+      return Response.status(403).build();
     }
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node;
@@ -391,7 +393,7 @@ public class FirmAttorneyAndServiceService {
     if (node.has("casePartyId") && node.get("casePartyId").isTextual()) {
       req.setCasePartyID(node.get("casePartyId").asText());
     }
-    BaseResponseType resp = firmPort.get().attachServiceContact(req);
+    BaseResponseType resp = firmPort.attachServiceContact(req);
     String errorCode = resp.getError().getErrorCode();
     if (errorCode.equals("85")
         || errorCode.equals("87")
@@ -405,16 +407,17 @@ public class FirmAttorneyAndServiceService {
 
   @DELETE
   @Path("/service-contacts/{contact_id}/cases/{case_id}")
+  @NeedsAuthorization(permissions = {FIRM_PORT})
   public Response detachServiceContact(
-      @Context HttpHeaders httpHeaders,
+      @Context ResourceContext context,
       @PathParam("contact_id") String contactId,
       @PathParam("case_id") String caseId,
       @QueryParam("case_party_id") String casePartyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.detachServiceContact");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
-      return Response.status(401).build();
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
+      return Response.status(403).build();
     }
 
     DetachServiceContactRequestType req = new DetachServiceContactRequestType();
@@ -423,19 +426,20 @@ public class FirmAttorneyAndServiceService {
     if (casePartyId != null && !casePartyId.isBlank()) {
       req.setCasePartyID(casePartyId);
     }
-    BaseResponseType resp = firmPort.get().detachServiceContact(req);
+    BaseResponseType resp = firmPort.detachServiceContact(req);
     return makeResponse(resp, () -> Response.ok().build());
   }
 
   @PATCH
   @Path("/service-contacts/{contact_id}")
+  @NeedsAuthorization(permissions = {FIRM_PORT})
   public Response updateServiceContact(
-      @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId, String json) {
+      @Context ResourceContext context, @PathParam("contact_id") String contactId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateServiceContact");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
-      return Response.status(401).build();
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
+      return Response.status(403).build();
     }
     if (contactId == null || contactId.isBlank() || contactId.equals("None")) {
       return Response.status(400).build();
@@ -443,7 +447,7 @@ public class FirmAttorneyAndServiceService {
 
     GetServiceContactRequestType getReq = new GetServiceContactRequestType();
     getReq.setServiceContactID(contactId);
-    GetServiceContactResponseType getResp = firmPort.get().getServiceContact(getReq);
+    GetServiceContactResponseType getResp = firmPort.getServiceContact(getReq);
     if (TylerErrorCodes.hasError(getResp)) {
       return Response.status(404).entity("No service contact with id " + contactId).build();
     }
@@ -471,18 +475,19 @@ public class FirmAttorneyAndServiceService {
     }
     UpdateServiceContactRequestType req = new UpdateServiceContactRequestType();
     req.setServiceContact(contact);
-    UpdateServiceContactResponseType resp = firmPort.get().updateServiceContact(req);
+    UpdateServiceContactResponseType resp = firmPort.updateServiceContact(req);
     return makeResponse(resp, () -> Response.ok("\"" + resp.getServiceContactID() + "\"").build());
   }
 
   @GET
   @Path("/service-contacts/public")
-  public Response getPublicList(@Context HttpHeaders httpHeaders, String json) {
+  @NeedsAuthorization(permissions = {FIRM_PORT})
+  public Response getPublicList(@Context ResourceContext context, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getPublicList");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-    if (firmPort.isEmpty()) {
-      return Response.status(401).build();
+    TylerFirmClient firmPort = context.getResource(TylerFirmClient.class);
+    if (firmPort == null) {
+      log.warn("Couldn't find firm port (but call should have already aborted)");
+      return Response.status(403).build();
     }
     ObjectMapper mapper = new ObjectMapper();
     GetPublicListRequestType msg = new GetPublicListRequestType();
@@ -492,7 +497,7 @@ public class FirmAttorneyAndServiceService {
       getStringMember(node, "lastName").ifPresent(last -> msg.setFirstName(last));
       getStringMember(node, "firmName").ifPresent(firmName -> msg.setFirstName(firmName));
       getStringMember(node, "email").ifPresent(email -> msg.setFirstName(email));
-      ServiceContactListResponseType resp = firmPort.get().getPublicList(msg);
+      ServiceContactListResponseType resp = firmPort.getPublicList(msg);
       // For "PublicServiceContactShowEmail" Datafield, we force API keys: the restriction of
       // "programmatic harvesting of emails" will have to be done on the DA side
       boolean showFirmName = false;

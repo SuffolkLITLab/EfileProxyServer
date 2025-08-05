@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efsp.server.services;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
+import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -37,6 +38,7 @@ public class ApiUserSettingsService {
 
   @GET
   @Path("/name")
+  @NeedsAuthorization
   public Response getName(@Context HttpHeaders httpHeaders) {
     try (LoginDatabase ld = ldSupplier.get()) {
       Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
@@ -51,6 +53,7 @@ public class ApiUserSettingsService {
 
   @GET
   @Path("/serverid")
+  @NeedsAuthorization
   public Response getServerId(@Context HttpHeaders httpHeaders) {
     try (LoginDatabase ld = ldSupplier.get()) {
       Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
@@ -65,6 +68,7 @@ public class ApiUserSettingsService {
 
   @POST
   @Path("/name")
+  @NeedsAuthorization
   public Response changeName(@Context HttpHeaders httpHeaders, String newName) {
     String apiKey = httpHeaders.getHeaderString("X-API-KEY");
     try (LoginDatabase ld = ldSupplier.get()) {
@@ -82,6 +86,7 @@ public class ApiUserSettingsService {
   @GET
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   @Path("/logs")
+  @NeedsAuthorization
   public Response getLogs(@Context HttpHeaders httpHeaders) {
     try (LoginDatabase ld = ldSupplier.get()) {
       Optional<AtRest> atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));

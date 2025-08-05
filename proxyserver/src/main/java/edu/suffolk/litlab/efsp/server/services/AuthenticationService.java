@@ -52,6 +52,8 @@ public class AuthenticationService {
    *     "bob@example.com:12345678-1234-1234-1234-12345678abcd", "TYLER-ID-illinois":
    *     "12345678-1234-1234-1234-12345678abdc"}}
    */
+  // TODO: why do we only allow the API Key in the body? Should definitely allow it in
+  // the header too. Should transition to that.
   @StatusCodes({@ResponseCode(code = 403, condition = "login information not valid")})
   @POST
   public Response authenticateUser(String loginInfo) {

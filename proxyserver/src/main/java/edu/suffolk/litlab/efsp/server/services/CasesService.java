@@ -5,21 +5,18 @@ import static edu.suffolk.litlab.efsp.server.utils.EndpointReflection.replacePat
 import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
-import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.model.Name;
-import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.ecf4.SoapClientChooser;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
+import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
-import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
-import edu.suffolk.litlab.efsp.utils.Hasher;
 import gov.niem.niem.niem_core._2.CaseType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.TextType;
@@ -33,7 +30,6 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.ws.BindingProvider;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -53,10 +49,6 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryRespons
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.serviceinformationquerymessage_4.ServiceInformationQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.serviceinformationresponsemessage_4.ServiceInformationResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.CourtRecordMDEPort;
-import org.apache.cxf.endpoint.Client;
-import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.transport.http.HTTPConduit;
-import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -77,7 +69,6 @@ public class CasesService {
           new oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.ObjectFactory();
   private final oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory ecfOf =
       new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-  private final Supplier<LoginDatabase> ldSupplier;
   private final Supplier<CodeDatabase> cdSupplier;
   private final Jurisdiction jurisdiction;
   private final EndpointReflection ef;
@@ -91,7 +82,6 @@ public class CasesService {
     }
     this.recordFactory = maybeRecords.get();
     this.cdSupplier = cdSupplier;
-    this.ldSupplier = ldSupplier;
     this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction.getName() + "/cases");
   }
 
@@ -142,6 +132,7 @@ public class CasesService {
    */
   @GET
   @Path("/courts/{court_id}/cases")
+  @NeedsAuthorization
   public Response getCaseList(
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
@@ -246,6 +237,7 @@ public class CasesService {
 
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}")
+  @NeedsAuthorization
   public Response getCase(
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
@@ -322,6 +314,7 @@ public class CasesService {
   @SuppressWarnings("static-method")
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}/documents")
+  @NeedsAuthorization
   public Response getDocument(
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
@@ -331,6 +324,7 @@ public class CasesService {
 
   @GET
   @Path("/courts/{court_id}/service-contacts/{service_contact_id}/cases")
+  @NeedsAuthorization
   public Response getServiceAttachCaseList(
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
@@ -358,6 +352,7 @@ public class CasesService {
 
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}/service-information")
+  @NeedsAuthorization
   public Response getServiceInformation(
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
@@ -386,6 +381,7 @@ public class CasesService {
 
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}/service-information-history")
+  @NeedsAuthorization
   public Response getServiceInformationHistory(
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
@@ -417,42 +413,5 @@ public class CasesService {
     return resp.getError().size() > 1
         || (resp.getError().size() == 1
             && !resp.getError().get(0).getErrorCode().getValue().equals("0"));
-  }
-
-  private Optional<CourtRecordMDEPort> setupRecordPort(HttpHeaders httpHeaders) {
-    String apiKey = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<AtRest> atRest = Optional.empty();
-    String tylerToken =
-        httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-    try (LoginDatabase ld = ldSupplier.get()) {
-      atRest = ld.getAtRestInfo(apiKey);
-      if (atRest.isEmpty()) {
-        log.warn("Couldn't checkLogin");
-        return Optional.empty();
-      }
-      MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(tylerToken));
-    } catch (SQLException ex) {
-      log.error("SQL error with record port", ex);
-      return Optional.empty();
-    }
-    Optional<TylerUserNamePassword> creds =
-        TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
-    if (creds.isEmpty()) {
-      log.warn("No creds?");
-      return Optional.empty();
-    }
-
-    CourtRecordMDEPort port = recordFactory.getCourtRecordMDEPort();
-
-    // Sometimes, getCases takes an incredibly long time. Bump timeout to 3 minutes
-    Client client = ClientProxy.getClient(port);
-    HTTPConduit http = (HTTPConduit) client.getConduit();
-    HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
-    httpClientPolicy.setConnectionTimeout(180_000);
-    httpClientPolicy.setReceiveTimeout(180_000);
-    http.setClient(httpClientPolicy);
-
-    ServiceHelpers.setupServicePort((BindingProvider) port, creds.get());
-    return Optional.of(port);
   }
 }
