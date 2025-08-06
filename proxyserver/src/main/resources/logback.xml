@@ -14,7 +14,7 @@
     <then>
       <appender name="SYSLOG-TLS" class="com.papertrailapp.logback.Syslog4jAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
-          <pattern>%-5level %logger{35}: %m%n%xEx</pattern>
+          <pattern>[%X{serverId}] [%X{userId}] [%X{operation}] %-5level %logger{35}: %m%n%rEx</pattern>
         </layout>
 
         <syslogConfig class="org.productivity.java.syslog4j.impl.net.tcp.ssl.SSLTCPNetSyslogConfig">
