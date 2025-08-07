@@ -2,19 +2,19 @@
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{serverId}] [%X{userId}] [%X{operation}] [%thread] %-5level %logger{50} - %msg %rEx%n</pattern>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [server=%X{serverId}] [user=%X{userId}] [session=%X{sessionId}] [corr=%X{correlationId}] [req=%X{requestId}] [op=%X{operation}] %-5level %logger{40} - %msg %rEx%n</pattern>
     </encoder>
   </appender>
   <appender name="PerServer" class="edu.suffolk.litlab.efsp.server.logging.ServerSpecificAppender">
     <encoder>
-      <Pattern>| %d{yyyy-MM-dd HH:mm:ss.SSS} | %X{serverId} | %X{userId} | %X{operation} | %thread | %-5level | %logger{50} |- %msg | %rEx |%n</Pattern>
+      <Pattern>| %d{yyyy-MM-dd HH:mm:ss.SSS} | %X{serverId} | %X{userId} | %X{sessionId} | %X{correlationId} | %X{requestId} | %X{operation} | %thread | %-5level | %logger{40} |- %msg | %rEx |%n</Pattern>
     </encoder>
   </appender>
   <if condition='isDefined("PAPERTRAIL_HOST")'>
     <then>
       <appender name="SYSLOG-TLS" class="com.papertrailapp.logback.Syslog4jAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
-          <pattern>[%X{serverId}] [%X{userId}] [%X{operation}] %-5level %logger{35}: %m%n%rEx</pattern>
+          <pattern>[server=%X{serverId}] [user=%X{userId}] [session=%X{sessionId}] [corr=%X{correlationId}] [req=%X{requestId}] [op=%X{operation}] %-5level %logger{35}: %m%n%rEx</pattern>
         </layout>
 
         <syslogConfig class="org.productivity.java.syslog4j.impl.net.tcp.ssl.SSLTCPNetSyslogConfig">
