@@ -666,7 +666,8 @@ public class AdminUserService {
    *     "stateCode": "MA",
    *     "zipCode": "02125",
    *     "countryCode": "US",
-   *     "phoneNumber": "617-333-1234"
+   *     "phoneNumber": "617-333-1234",
+   *     "password": "MyP@ssword"
    *   }
    *   </code>
    *   </pre>
@@ -701,19 +702,17 @@ public class AdminUserService {
 
       if (regType.equals(RegistrationType.FIRM_ADMINISTRATOR)
           || regType.equals(RegistrationType.INDIVIDUAL)) {
-        for (var entry :
-            Map.of(
-                    "streetAddressLine1", req.getStreetAddressLine1(),
-                    "city", req.getCity(),
-                    "stateCode", req.getStateCode(),
-                    "zipCode", req.getZipCode(),
-                    "countryCode", req.getCountryCode(),
-                    "phoneNumber", req.getPhoneNumber())
-                .entrySet()) {
-          if (nullOrBlank(entry.getValue())) {
-            return Response.status(422)
-                .entity("You are missing " + entry.getKey() + ", which is required")
-                .build();
+        record Required(String val, String msg) {}
+        for (var requiredVar :
+            List.of(
+                new Required(req.getStreetAddressLine1(), "Missing required 'streetAddressLine1'"),
+                new Required(req.getCity(), "Missing required 'city'"),
+                new Required(req.getStateCode(), "Missing required 'stateCode'"),
+                new Required(req.getZipCode(), "Missing required 'zipCode'"),
+                new Required(req.getPhoneNumber(), "Missing required 'phoneNumber'"),
+                new Required(req.getPassword(), "Missing required 'password'"))) {
+          if (nullOrBlank(requiredVar.val)) {
+            return Response.status(422).entity(requiredVar.msg).build();
           }
         }
       }

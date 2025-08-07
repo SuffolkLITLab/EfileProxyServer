@@ -163,6 +163,21 @@ public class AdminUserServiceTest {
     }
 
     @Test
+    public void testMissingPasswordToRegisterUser() {
+      Response resp =
+          client.post(
+              """
+      {
+        "email": "bob@example.com", "registrationType": "INDIVIDUAL",
+        "streetAddressLine1": "123 Main St", "city": "Boston", "stateCode": "MA",
+        "zipCode": "02127", "countryCode": "US", "phoneNumber": "6173331234"
+      }
+    """);
+      assertThat(resp.getStatus()).isEqualTo(422);
+      assertThat(resp.readEntity(String.class)).contains("password");
+    }
+
+    @Test
     public void testBadPassword() {
 
       String badReq =
