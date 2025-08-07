@@ -33,21 +33,21 @@ public class TylerClients {
    * @param jurisdiction e.g. "illinois".
    * @param env e.g. "stage", "test", or "prod"
    */
-  public static Optional<EfmUserService> getEfmUserFactory(String jurisdiction, TylerEnv env) {
+  public static Optional<TylerUserFactory> getEfmUserFactory(String jurisdiction, TylerEnv env) {
     var version = getVersion(jurisdiction, env);
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(jurisdiction, env, v, USER_WSDL);
-          return url.map(u -> new EfmUserService(u, v));
+          return url.map(u -> new TylerUserFactory(new EfmUserService(u), v));
         });
   }
 
-  public static Optional<EfmFirmService> getEfmFirmFactory(String jurisdiction, TylerEnv env) {
+  public static Optional<TylerFirmFactory> getEfmFirmFactory(String jurisdiction, TylerEnv env) {
     var version = getVersion(jurisdiction, env);
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(jurisdiction, env, v, FIRM_WSDL);
-          return url.map(u -> new EfmFirmService(u, v));
+          return url.map(u -> new TylerFirmFactory(new EfmFirmService(u), v));
         });
   }
 

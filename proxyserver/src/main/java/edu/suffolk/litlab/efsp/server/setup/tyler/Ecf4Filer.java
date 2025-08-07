@@ -33,6 +33,7 @@ import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
+import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
@@ -95,7 +96,6 @@ import tyler.ecf.extensions.filingservicequerymessage.ServiceContactIdentificati
 import tyler.ecf.extensions.filingserviceresponsemessage.FilingServiceResponseMessageType;
 import tyler.ecf.extensions.servicetypesrequestmessage.ServiceTypesRequestMessageType;
 import tyler.ecf.extensions.servicetypesresponsemessage.ServiceTypesResponseMessageType;
-import tyler.efm.EfmFirmService;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
@@ -118,7 +118,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   private final gov.niem.niem.proxy.xsd._2.ObjectFactory proxyObjFac;
   private final CourtRecordMDEService recordFactory;
   private final FilingReviewMDEService filingFactory;
-  private final EfmFirmService firmFactory;
+  private final TylerFirmFactory firmFactory;
   private final ServiceMDEService serviceFactory;
   private static final PolicyCacher policyCacher = new PolicyCacher();
   private final String jurisdiction;
@@ -156,7 +156,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       throw new RuntimeException("Cannot find " + jurisdiction + " for service mde factory");
     }
     this.serviceFactory = maybeServiceFac.get();
-    Optional<EfmFirmService> maybeFirmFactory =
+    Optional<TylerFirmFactory> maybeFirmFactory =
         TylerClients.getEfmFirmFactory(jurisdiction, TylerEnv.parse(env));
     if (maybeFirmFactory.isEmpty()) {
       throw new RuntimeException("Cannot find " + jurisdiction + " for firm mde factory");

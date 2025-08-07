@@ -18,6 +18,7 @@ import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
+import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
@@ -39,7 +40,6 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import tyler.efm.EfmFirmService;
 import tyler.efm.latest.services.schema.attachservicecontactrequest.AttachServiceContactRequestType;
 import tyler.efm.latest.services.schema.attorneylistresponse.AttorneyListResponseType;
 import tyler.efm.latest.services.schema.baseresponse.BaseResponseType;
@@ -76,7 +76,7 @@ import tyler.efm.latest.services.schema.updateservicecontactresponse.UpdateServi
 public class FirmAttorneyAndServiceService {
   private static Logger log = LoggerFactory.getLogger(FirmAttorneyAndServiceService.class);
 
-  private final EfmFirmService firmFactory;
+  private final TylerFirmFactory firmFactory;
   private final Supplier<CodeDatabase> cdSupplier;
   private final Supplier<LoginDatabase> ldSupplier;
   private final String jurisdiction;
@@ -90,7 +90,7 @@ public class FirmAttorneyAndServiceService {
       Supplier<LoginDatabase> ldSupplier,
       Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
-    Optional<EfmFirmService> maybeFirmFactory =
+    Optional<TylerFirmFactory> maybeFirmFactory =
         TylerClients.getEfmFirmFactory(jurisdiction, TylerEnv.parse(env));
     if (maybeFirmFactory.isPresent()) {
       this.firmFactory = maybeFirmFactory.get();

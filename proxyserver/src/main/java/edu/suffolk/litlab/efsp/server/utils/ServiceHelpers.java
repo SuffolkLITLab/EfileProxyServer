@@ -8,6 +8,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
 import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
+import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
@@ -23,7 +24,6 @@ import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import tyler.efm.EfmFirmService;
 
 public class ServiceHelpers {
   private static Logger log = LoggerFactory.getLogger(ServiceHelpers.class);
@@ -148,7 +148,7 @@ public class ServiceHelpers {
   }
 
   public static Optional<TylerFirmClient> setupFirmPort(
-      EfmFirmService firmFactory,
+      TylerFirmFactory firmFactory,
       HttpHeaders httpHeaders,
       Supplier<LoginDatabase> ldSupplier,
       String jurisdiction) {
@@ -157,7 +157,7 @@ public class ServiceHelpers {
 
   // TODO(bryce): should this take not a firm service but a normal port?
   public static Optional<TylerFirmClient> setupFirmPort(
-      EfmFirmService firmFactory,
+      TylerFirmFactory firmFactory,
       HttpHeaders httpHeaders,
       Supplier<LoginDatabase> ldSupplier,
       boolean needsSoapHeader,
@@ -175,9 +175,7 @@ public class ServiceHelpers {
         MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
         return setupFirmPort(firmFactory, tylerToken);
       } else {
-        return Optional.of(
-            new TylerFirmClient(
-                firmFactory, firmFactory.getVersion(), ServiceHelpers::setupServicePort));
+        return Optional.of(firmFactory.makeFirmClient(ServiceHelpers::setupServicePort));
       }
     } catch (SQLException ex) {
       log.error(StdLib.strFromException(ex));
@@ -186,7 +184,7 @@ public class ServiceHelpers {
   }
 
   public static Optional<TylerFirmClient> setupFirmPort(
-      EfmFirmService firmFactory, String tylerToken) {
+      TylerFirmFactory firmFactory, String tylerToken) {
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds from " + tylerToken + "?");
@@ -194,9 +192,6 @@ public class ServiceHelpers {
     }
 
     return Optional.of(
-        new TylerFirmClient(
-            firmFactory,
-            firmFactory.getVersion(),
-            (port) -> ServiceHelpers.setupServicePort(port, creds.get())));
+        firmFactory.makeFirmClient((port) -> ServiceHelpers.setupServicePort(port, creds.get())));
   }
 }
