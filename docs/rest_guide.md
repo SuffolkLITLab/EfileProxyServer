@@ -4,6 +4,18 @@ While most of Suffolk's work is on [docassemble](docassemble.org) and integrates
 
 Note that all of these endpoints start with `/jurisdictions/{jurisdiction_id}`, in order to handle the different jurisdictions like Massachusetts or Illinois. These will be replaced with `...` to focus on the unique parts of the endpoints.
 
+## Headers for all calls
+
+There are several headers that you will need to pass on all or most of your calls to the proxy server.
+Note that all HTTP headers are case insensitive, i.e. `X-API-KEY`, `X-Api-Key`, and `x-api-key` are equivalent.
+
+* `X-API-KEY`: the API Key to the proxy server. This will be given to you by the server admin.
+* `TYLER-TOKEN-{jurisdiction}`: Once you have authenticated an user with the `/authenticate` endpoint, you'll recieve back this key-value pair in the JSON response. It should be put in the Headers as you receive it in order to complete other actions as that user, such as administrative tasks, case searches, and making filings into cases.
+    * For example: `TYLER-TOKEN-ILLINOIS: bwilley@suffolk.edu:eb5cf7fd-...` (with a full UUID)
+* `efsp-session-id` (optional): a UUID that gets included in all log messages. Intended to be the same UUID for an entire user "session" on the client's side (e.g. a whole docassemble interview).
+* `efsp-correlation-id` (optional): a UUID that gets included in all log messages. Intended to be the same UUID for all calls needed to generate a specific page, i.e. what the client would consider as a single operation.
+* `efsp-request-id` (optional): a UUID that gets included in all log messages. Should be different for each call (if not included, on will be generated for you).
+
 ## Account creation and login
 
 TODO
