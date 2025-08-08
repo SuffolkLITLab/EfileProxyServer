@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efsp.tyler;
 
 import jakarta.ws.rs.core.Response;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
@@ -48,6 +49,18 @@ public class TylerErrorCodes {
           Map.entry("344", 422) // Doesn't handle cross references
           );
 
+  // The list of codes that we shouldn't error log on / shouldn't send error notification emails
+  // for.
+  private static List<String> nonAlertingCodes =
+      List.of(
+          "-4", // Authentication failed, invalid/expired authentication token or email/password
+          // combination
+          "52", // The Email Address is already in use.
+          "55", // No user is registered with that email address.
+          "60", // Username not found
+          "78" // User has already been activated.
+          );
+
   public static boolean hasError(BaseResponseType resp) {
     return checkErrors(resp.getError());
   }
@@ -58,11 +71,17 @@ public class TylerErrorCodes {
 
   /** Returns true on errors from the Tyler / Admin side of the API. */
   public static boolean checkErrors(tyler.efm.latest.services.schema.common.ErrorType error) {
-    if (!error.getErrorCode().equals("0")) {
-      log.error("Error!: " + error.getErrorCode() + ": " + error.getErrorText());
-      return true;
+    var code = error.getErrorCode();
+    if (code.equals("0")) {
+      return false;
     }
-    return false;
+
+    if (nonAlertingCodes.contains(code)) {
+      log.warn("Got a non-urgent erroring response from Tyler: {}: {}", code, error.getErrorText());
+    } else {
+      log.error("Error from Tyler!: {}: {}", code, error.getErrorText());
+    }
+    return true;
   }
 
   public static Response mapTylerCodesToHttp(
