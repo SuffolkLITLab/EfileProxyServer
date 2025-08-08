@@ -20,7 +20,9 @@ import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
+import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
+import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -48,8 +50,6 @@ import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import tyler.efm.EfmFirmService;
-import tyler.efm.EfmUserService;
 import tyler.efm.latest.services.schema.adduserrolerequest.AddUserRoleRequestType;
 import tyler.efm.latest.services.schema.baseresponse.BaseResponseType;
 import tyler.efm.latest.services.schema.changepasswordrequest.ChangePasswordRequestType;
@@ -115,8 +115,8 @@ import tyler.efm.latest.services.schema.userlistresponse.UserListResponseType;
 public class AdminUserService {
   private static final Logger log = LoggerFactory.getLogger(AdminUserService.class);
 
-  private final EfmUserService userFactory;
-  private final EfmFirmService firmFactory;
+  private final TylerUserFactory userFactory;
+  private final TylerFirmFactory firmFactory;
   private final Function<String, Result<NullValue, String>> passwordChecker;
   private final Supplier<LoginDatabase> ldSupplier;
   private final Supplier<CodeDatabase> cdSupplier;
@@ -130,15 +130,14 @@ public class AdminUserService {
       Function<String, Result<NullValue, String>> passwordChecker) {
     this.jurisdiction = jurisdiction;
     this.passwordChecker = passwordChecker;
-    Optional<EfmUserService> maybeUserFactory =
+    Optional<TylerUserFactory> maybeUserFactory =
         TylerClients.getEfmUserFactory(jurisdiction, TylerEnv.parse(env));
     if (maybeUserFactory.isEmpty()) {
       throw new RuntimeException(
           "Can't find " + jurisdiction + " in the SoapClientChooser for EfmUser");
     }
     this.userFactory = maybeUserFactory.get();
-    ;
-    Optional<EfmFirmService> maybeFirmFactory =
+    Optional<TylerFirmFactory> maybeFirmFactory =
         TylerClients.getEfmFirmFactory(jurisdiction, TylerEnv.parse(env));
     if (maybeFirmFactory.isEmpty()) {
       throw new RuntimeException(
@@ -667,7 +666,8 @@ public class AdminUserService {
    *     "stateCode": "MA",
    *     "zipCode": "02125",
    *     "countryCode": "US",
-   *     "phoneNumber": "617-333-1234"
+   *     "phoneNumber": "617-333-1234",
+   *     "password": "MyP@ssword"
    *   }
    *   </code>
    *   </pre>
@@ -702,19 +702,17 @@ public class AdminUserService {
 
       if (regType.equals(RegistrationType.FIRM_ADMINISTRATOR)
           || regType.equals(RegistrationType.INDIVIDUAL)) {
-        for (var entry :
-            Map.of(
-                    "streetAddressLine1", req.getStreetAddressLine1(),
-                    "city", req.getCity(),
-                    "stateCode", req.getStateCode(),
-                    "zipCode", req.getZipCode(),
-                    "countryCode", req.getCountryCode(),
-                    "phoneNumber", req.getPhoneNumber())
-                .entrySet()) {
-          if (nullOrBlank(entry.getValue())) {
-            return Response.status(422)
-                .entity("You are missing " + entry.getKey() + ", which is required")
-                .build();
+        record Required(String val, String msg) {}
+        for (var requiredVar :
+            List.of(
+                new Required(req.getStreetAddressLine1(), "Missing required 'streetAddressLine1'"),
+                new Required(req.getCity(), "Missing required 'city'"),
+                new Required(req.getStateCode(), "Missing required 'stateCode'"),
+                new Required(req.getZipCode(), "Missing required 'zipCode'"),
+                new Required(req.getPhoneNumber(), "Missing required 'phoneNumber'"),
+                new Required(req.getPassword(), "Missing required 'password'"))) {
+          if (nullOrBlank(requiredVar.val)) {
+            return Response.status(422).entity(requiredVar.msg).build();
           }
         }
       }
@@ -843,14 +841,12 @@ public class AdminUserService {
               List<Header> headersList = List.of(creds.get().toHeader());
               ctx.put(Header.HEADER_LIST, headersList);
             };
-        return Optional.of(new TylerUserClient(userFactory, userFactory.getVersion(), setup));
+        return Optional.of(userFactory.makeUserClient(setup));
       } else {
         // Creates a connection to Tyler's SOAP API WITHOUT any Auth headers. Can be used to make an
         // Auth
         // request, or can have the header inserted later.
-        return Optional.of(
-            new TylerUserClient(
-                userFactory, userFactory.getVersion(), ServiceHelpers::setupServicePort));
+        return Optional.of(userFactory.makeUserClient(ServiceHelpers::setupServicePort));
       }
     } catch (SQLException ex) {
       log.error(StdLib.strFromException(ex));

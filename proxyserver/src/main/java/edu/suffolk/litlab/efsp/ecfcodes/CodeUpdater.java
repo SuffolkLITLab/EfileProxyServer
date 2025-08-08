@@ -11,6 +11,7 @@ import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
+import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.ws.BindingProvider;
@@ -48,7 +49,6 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tyler.efm.EfmUserService;
 import tyler.efm.latest.services.schema.authenticaterequest.AuthenticateRequestType;
 import tyler.efm.latest.services.schema.authenticateresponse.AuthenticateResponseType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
@@ -520,9 +520,9 @@ public class CodeUpdater {
   /** Sets up the WSDL connection to Tyler, used for `getPolicy` to get the URL. */
   private static FilingReviewMDEPort loginWithTyler(
       String jurisdiction, String env, String userEmail, String userPassword) {
-    Optional<EfmUserService> userService =
+    Optional<TylerUserFactory> userFactory =
         TylerClients.getEfmUserFactory(jurisdiction, TylerEnv.parse(env));
-    if (userService.isEmpty()) {
+    if (userFactory.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " in Soap chooser for EFMUser");
     }
     log.info("Getting filing factory for {} {}", jurisdiction, env);
@@ -532,9 +532,7 @@ public class CodeUpdater {
       throw new RuntimeException(
           "Can't find " + jurisdiction + " in Soap Chooser for filing review factory");
     }
-    TylerUserClient userPort =
-        new TylerUserClient(
-            userService.get(), userService.get().getVersion(), ServiceHelpers::setupServicePort);
+    TylerUserClient userPort = userFactory.get().makeUserClient(ServiceHelpers::setupServicePort);
     AuthenticateRequestType authReq = new AuthenticateRequestType();
     authReq.setEmail(userEmail);
     authReq.setPassword(userPassword);

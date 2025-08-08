@@ -1,9 +1,9 @@
 package tyler.efm;
 
 import java.net.URL;
+
 import javax.xml.namespace.QName;
 
-import edu.suffolk.litlab.efsp.tyler.TylerVersion;
 import jakarta.xml.ws.WebEndpoint;
 import jakarta.xml.ws.WebServiceClient;
 import jakarta.xml.ws.WebServiceFeature;
@@ -23,15 +23,8 @@ public class EfmFirmService extends Service {
     public static final QName SERVICE = new QName("urn:tyler:efm:services", "EfmFirmService");
     public static final QName BasicHttpBindingIEfmFirmService = new QName("urn:tyler:efm:services", "BasicHttpBinding_IEfmFirmService");
 
-    private final TylerVersion version;
-
-    public EfmFirmService(URL wsdlLocation, TylerVersion version) {
+    public EfmFirmService(URL wsdlLocation) {
         super(wsdlLocation, SERVICE);
-        this.version = version;
-    }
-
-    public TylerVersion getVersion() {
-        return version;
     }
 
     /**
