@@ -361,13 +361,9 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public void setupGlobals() {
-    Supplier<CodeDatabase> cdSupplier =
-        () -> {
-          return CodeDatabase.fromDS(getJurisdiction(), this.tylerEnv, this.codeDs);
-        };
-
-    OasisEcfWsCallback implementor =
-        new OasisEcfWsCallback(tylerJurisdiction, tylerEnv, cdSupplier, userDs, sender);
+    Supplier<CodeDatabase> makeCD = () -> CodeDatabase.fromDS(tylerJurisdiction, tylerEnv, codeDs);
+    Supplier<UserDatabase> makeUD = () -> UserDatabase.fromDS(userDs);
+    OasisEcfWsCallback implementor = new OasisEcfWsCallback(makeCD, makeUD, sender);
     String baseLocalUrl = ServiceHelpers.BASE_LOCAL_URL;
     String address =
         baseLocalUrl + "/jurisdictions/" + tylerJurisdiction + ServiceHelpers.ASSEMBLY_PORT;
@@ -378,8 +374,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     log.info("Address : " + jaxWsEndpoint.getAddress());
     log.info("Bean name: " + jaxWsEndpoint.getBeanName());
 
-    OasisEcfv5WsCallback impl2 =
-        new OasisEcfv5WsCallback(tylerJurisdiction, tylerEnv, codeDs, userDs, sender);
+    OasisEcfv5WsCallback impl2 = new OasisEcfv5WsCallback(makeCD, makeUD, sender);
     String v5Address =
         baseLocalUrl + "/jurisdictions/" + tylerJurisdiction + ServiceHelpers.ASSEMBLY_PORT_V5;
     EndpointImpl jaxWsV5Endpoint = (EndpointImpl) jakarta.xml.ws.Endpoint.publish(v5Address, impl2);

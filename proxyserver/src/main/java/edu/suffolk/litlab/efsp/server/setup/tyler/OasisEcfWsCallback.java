@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
-import javax.sql.DataSource;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.CardAccountType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentRenditionType;
@@ -56,18 +55,16 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
 
   private final ObjectFactory recepitFac;
   private final Supplier<CodeDatabase> cdSupplier;
-  private final DataSource userDs;
+  private final Supplier<UserDatabase> udSupplier;
   private final OrgMessageSender msgSender;
 
   public OasisEcfWsCallback(
-      String jurisdiction,
-      String env,
       Supplier<CodeDatabase> cdSupplier,
-      DataSource userDs,
+      Supplier<UserDatabase> udSupplier,
       OrgMessageSender msgSender) {
     this.recepitFac = new ObjectFactory();
     this.cdSupplier = cdSupplier;
-    this.userDs = userDs;
+    this.udSupplier = udSupplier;
     this.msgSender = msgSender;
   }
 
@@ -294,7 +291,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       }
     }
     Optional<Transaction> trans = Optional.empty();
-    try (UserDatabase ud = new UserDatabase(userDs.getConnection())) {
+    try (UserDatabase ud = udSupplier.get()) {
       trans = ud.findTransaction(UUID.fromString(filingId));
     } catch (SQLException e) {
       log.error("Couldn't connect to the SQL database to get the transaction: " + e.toString());
