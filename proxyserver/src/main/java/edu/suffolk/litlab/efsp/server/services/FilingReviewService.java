@@ -177,43 +177,42 @@ public class FilingReviewService {
   @Path("/courts/{court_id}/filing/check")
   public Response checkFilingForReview(
       @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars) {
-    MDC.put(MDCWrappers.OPERATION, "FilingReviewService.checkFilingForReview");
-    MediaType mediaType = httpHeaders.getMediaType();
-    if (mediaType == null) {
-      mediaType = MediaType.valueOf("application/json");
-    }
-    Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
-    if (checked.isErr()) {
-      return checked.unwrapErrOrElseThrow();
-    }
-    EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
-    if (activeToken.isEmpty()) {
-      return Response.status(401).entity("Not logged in to file with " + courtId).build();
-    }
-    if (!converterMap.containsKey(mediaType.toString())) {
-      return Response.status(415).entity("We only support " + converterMap.keySet()).build();
-    }
-    InfoCollector collector = new NeverSubmitCollector();
-    Result<FilingInformation, FilingError> res =
-        converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
-    if (res.isErr()) {
-      log.warn(res.toString());
-      log.info("All vars for check, on error:" + allVars);
-      MDCWrappers.removeAllMDCs();
-      return Response.status(400).entity(collector.jsonSummary()).build();
-    }
-    FilingInformation info = res.unwrapOrElseThrow();
-    info.setCourtLocation(courtId);
-    Result<NullValue, FilingError> resEfm = filer.checkFiling(info, activeToken.get(), collector);
-    if (resEfm.isErr()) {
-      log.warn(resEfm.toString());
-      log.info("All vars for check, on error:" + allVars);
-      MDCWrappers.removeAllMDCs();
+    try {
+      MDC.put(MDCWrappers.OPERATION, "FilingReviewService.checkFilingForReview");
+      MediaType mediaType = httpHeaders.getMediaType();
+      if (mediaType == null) {
+        mediaType = MediaType.valueOf("application/json");
+      }
+      Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
+      if (checked.isErr()) {
+        return checked.unwrapErrOrElseThrow();
+      }
+      EfmFilingInterface filer = checked.unwrapOrElseThrow();
+      Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
+      if (activeToken.isEmpty()) {
+        return Response.status(401).entity("Not logged in to file with " + courtId).build();
+      }
+      if (!converterMap.containsKey(mediaType.toString())) {
+        return Response.status(415).entity("We only support " + converterMap.keySet()).build();
+      }
+      InfoCollector collector = new NeverSubmitCollector();
+      Result<FilingInformation, FilingError> res =
+          converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
+      if (res.isErr()) {
+        log.error("Error on traverseInterview: {}", res.toString());
+        return Response.status(400).entity(collector.jsonSummary()).build();
+      }
+      FilingInformation info = res.unwrapOrElseThrow();
+      info.setCourtLocation(courtId);
+      Result<NullValue, FilingError> resEfm = filer.checkFiling(info, activeToken.get(), collector);
+      if (resEfm.isErr()) {
+        log.error("Error on checkFiling: {}", resEfm.toString());
+        return Response.ok(collector.jsonSummary()).build();
+      }
       return Response.ok(collector.jsonSummary()).build();
+    } finally {
+      MDCWrappers.removeAllMDCs();
     }
-    MDCWrappers.removeAllMDCs();
-    return Response.ok(collector.jsonSummary()).build();
   }
 
   @POST
@@ -237,13 +236,12 @@ public class FilingReviewService {
     if (!converterMap.containsKey(mediaType.toString())) {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     }
-    log.trace("Court id: " + courtId);
-    log.info("All vars:" + allVars);
+    log.trace("Court id: {}", courtId);
     InfoCollector collector = new FailFastCollector();
     Result<FilingInformation, FilingError> res =
         converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
     if (res.isErr()) {
-      log.warn("In fees: " + res.toString());
+      log.error("Error when calculating filing fees: {}", res.toString());
       MDCWrappers.removeAllMDCs();
       return Response.status(400).entity(collector.jsonSummary()).build();
     }
@@ -470,8 +468,7 @@ public class FilingReviewService {
       EfmFilingInterface filer,
       String courtId,
       MediaType mediaType) {
-    log.trace("Court id: " + courtId);
-    log.trace("All vars: " + allVars.substring(0, Integer.min(100, allVars.length() - 1)));
+    log.trace("Court id: {}", courtId);
     if (!converterMap.containsKey(mediaType.toString())) {
       return Result.err(
           Response.status(415).entity("We only support " + converterMap.keySet()).build());
