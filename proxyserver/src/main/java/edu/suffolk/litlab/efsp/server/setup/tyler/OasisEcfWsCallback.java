@@ -69,6 +69,9 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   }
 
   private static String chargeToStr(AllowanceChargeType charge) {
+    if (charge == null) {
+      return "";
+    }
     StringBuilder chargeReason = new StringBuilder();
     String amountText = Ecf4Helper.amountToString(charge.getAmount());
     chargeReason.append(amountText);
@@ -78,6 +81,9 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     charge.getPaymentMeans().stream()
         .forEach(
             m -> {
+              if (m == null) {
+                return;
+              }
               CardAccountType acct = m.getCardAccount();
               if (acct != null) {
                 String cardInfo = "";
