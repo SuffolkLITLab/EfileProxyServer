@@ -10,12 +10,10 @@ import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.services.api.UpdateMessageStatus;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import gov.niem.niem.domains.jxdm._4.CaseAugmentationType;
 import gov.niem.niem.niem_core._2.IdentificationType;
 import gov.niem.niem.niem_core._2.TextType;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -51,9 +49,9 @@ import tyler.ecf.extensions.servicecallbackmessage.ServiceCallbackMessageType;
     endpointInterface =
         "oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingAssemblyMDEPort")
 public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
-  private static Logger log = LoggerFactory.getLogger(Ecf4Filer.class);
+  private static Logger log = LoggerFactory.getLogger(OasisEcfWsCallback.class);
 
-  private final ObjectFactory recepitFac;
+  private static final ObjectFactory receiptFac = new ObjectFactory();
   private final Supplier<CodeDatabase> cdSupplier;
   private final Supplier<UserDatabase> udSupplier;
   private final OrgMessageSender msgSender;
@@ -62,16 +60,12 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       Supplier<CodeDatabase> cdSupplier,
       Supplier<UserDatabase> udSupplier,
       OrgMessageSender msgSender) {
-    this.recepitFac = new ObjectFactory();
     this.cdSupplier = cdSupplier;
     this.udSupplier = udSupplier;
     this.msgSender = msgSender;
   }
 
   private static String chargeToStr(AllowanceChargeType charge) {
-    if (charge == null) {
-      return "";
-    }
     StringBuilder chargeReason = new StringBuilder();
     String amountText = Ecf4Helper.amountToString(charge.getAmount());
     chargeReason.append(amountText);
@@ -79,11 +73,9 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       chargeReason.append(" for ").append(charge.getAllowanceChargeReason().getValue());
     }
     charge.getPaymentMeans().stream()
+        .filter(m -> m != null)
         .forEach(
             m -> {
-              if (m == null) {
-                return;
-              }
               CardAccountType acct = m.getCardAccount();
               if (acct != null) {
                 String cardInfo = "";
@@ -96,13 +88,18 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
                 if (acct.getExpiryDate() != null && acct.getExpiryDate().getValue() != null) {
                   cardInfo += " (exp " + acct.getExpiryDate().getValue().toString() + ")";
                 }
-                chargeReason.append(" paid for using " + cardInfo);
+                if (!cardInfo.isBlank()) {
+                  chargeReason.append(" paid for using " + cardInfo);
+                }
               }
             });
     return chargeReason.toString();
   }
 
   private static String documentToStr(ReviewedDocumentType doc, CourtLocationInfo courtInfo) {
+    if (doc == null) {
+      return "";
+    }
     StringBuilder docText = new StringBuilder();
     if (doc instanceof tyler.ecf.extensions.common.ReviewedDocumentType tylerDoc) {
       if (tylerDoc.getDocumentDescriptionText() != null
@@ -168,7 +165,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   }
 
   private static String reviewedFilingMessageText(
-      ReviewFilingCallbackMessageType revFiling, Transaction trans, CourtLocationInfo courtInfo) {
+      ReviewFilingCallbackMessageType revFiling, CourtLocationInfo courtInfo) {
     StringBuilder messageText = new StringBuilder();
     if (revFiling.getReviewedLeadDocument() != null
         && revFiling.getReviewedLeadDocument().getValue() != null) {
@@ -188,24 +185,22 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
           .append('\n')
           .append(
               filingStat.getStatusDescriptionText().stream()
+                  .filter(des -> des != null)
                   .reduce(
-                      "",
-                      (des, tt) -> des + ((tt != null) ? tt.getValue() : ""),
-                      (des1, des2) -> des1 + ". " + des2));
+                      "", (all, des) -> all + des.getValue(), (des1, des2) -> des1 + ". " + des2));
     }
     return messageText.toString();
   }
 
-  private String reviewedFilingStatusText(
-      ReviewFilingCallbackMessageType revFiling, Transaction trans) {
+  private String reviewedFilingStatusText(FilingStatusType filingStat, Transaction trans) {
     List<NameAndCode> names = List.of();
     try (CodeDatabase cd = cdSupplier.get()) {
       names = cd.getFilingStatuses(trans.courtId);
     } catch (SQLException ex) {
-      log.error("In ECF v4 callback, couldn't get codes db: " + StdLib.strFromException(ex));
+      log.error("In ECF v4 callback, couldn't get codes db", ex);
+      return "";
     }
 
-    FilingStatusType filingStat = revFiling.getFilingStatus();
     if (filingStat != null) {
       final String replyCode = filingStat.getFilingStatusCode();
       Optional<String> statusText =
@@ -214,23 +209,23 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
               .map(nac -> nac.getName())
               .findFirst();
 
-      String statusCode = replyCode;
-      if (replyCode == null || replyCode.isBlank()) {
-        if (filingStat.getStatusText() != null) {
-          statusCode = filingStat.getStatusText().getValue();
-        } else {
-          statusCode = "";
-        }
-      }
-      return statusText.orElse(statusCode);
+      return statusText.orElseGet(
+          () -> {
+            if (replyCode != null && !replyCode.isBlank()) {
+              return replyCode;
+            }
+            if (filingStat.getStatusText() != null
+                && filingStat.getStatusText().getValue() != null) {
+              return filingStat.getStatusText().getValue();
+            }
+            return "";
+          });
     } else {
       return "unknown";
     }
   }
 
-  private static UpdateMessageStatus reviewedFilingStatusCode(
-      ReviewFilingCallbackMessageType revFiling) {
-    FilingStatusType filingStat = revFiling.getFilingStatus();
+  private static UpdateMessageStatus parseFilingStatusCode(FilingStatusType filingStat) {
     if (filingStat != null) {
       final String replyCode = filingStat.getFilingStatusCode();
       return UpdateMessageStatus.fromStr(replyCode);
@@ -239,32 +234,57 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     }
   }
 
+  private static void stripDocumentObjects(ReviewedDocumentType doc) {
+    if (doc == null) {
+      return;
+    }
+    if (doc.getDocumentBinary() != null) {
+      doc.getDocumentBinary().setBinaryObject(null);
+    }
+    if (doc.getDocumentRendition() != null) {
+      for (var renDoc : doc.getDocumentRendition()) {
+        if (renDoc.getDocumentBinary() != null) {
+          renDoc.getDocumentBinary().setBinaryObject(null);
+        }
+      }
+    }
+  }
+
   @Override
   public MessageReceiptMessageType notifyFilingReviewComplete(
       NotifyFilingReviewCompleteRequestMessageType msg) {
-    if (msg.getReviewFilingCallbackMessage() != null) {
-      var leadDoc = msg.getReviewFilingCallbackMessage().getReviewedLeadDocument();
-      if (leadDoc != null
-          && leadDoc.getValue() != null
-          && leadDoc.getValue().getDocumentBinary() != null) {
-        msg.getReviewFilingCallbackMessage()
-            .getReviewedLeadDocument()
-            .getValue()
-            .getDocumentBinary()
-            .setBinaryObject(null);
+    MDC.put(MDCWrappers.OPERATION, "notifyFilingReviewComplete");
+
+    MessageReceiptMessageType reply = receiptFac.createMessageReceiptMessageType();
+    Ecf4Helper.setupReplys(reply);
+    if (msg == null) {
+      log.error("Tyler sent a null message! Why??");
+      MDCWrappers.removeAllMDCs();
+      return error(reply, "705", "NotifyFilingReviewComplete message not found");
+    }
+
+    PaymentMessageType payment = msg.getPaymentReceiptMessage();
+    ReviewFilingCallbackMessageType revFiling = msg.getReviewFilingCallbackMessage();
+
+    if (revFiling != null) {
+      var leadDoc = revFiling.getReviewedLeadDocument();
+      if (leadDoc != null && leadDoc.getValue() != null) {
+        stripDocumentObjects(leadDoc.getValue());
+      }
+      var sideDocs = revFiling.getReviewedConnectedDocument();
+      if (sideDocs != null) {
+        for (var sideDoc : sideDocs) {
+          if (sideDoc != null && sideDoc.getValue() != null) {
+            stripDocumentObjects(sideDoc.getValue());
+          }
+        }
       }
     }
     // The bare minimum: get the Document ID, see if we have it in the db, send email response
-    PaymentMessageType payment = msg.getPaymentReceiptMessage();
-    ReviewFilingCallbackMessageType revFiling = msg.getReviewFilingCallbackMessage();
-    MessageReceiptMessageType reply = recepitFac.createMessageReceiptMessageType();
-    Ecf4Helper.setupReplys(reply);
     // This shouldn't happen, but I don't trust this XML BS
     if (payment == null || revFiling == null) {
-      log.error(
-          "Why did Tyler send us a notifyFilingReviewComplete without either a filing"
-              + " review or a payment receipt?");
-      log.error(msg.toString());
+      log.error("Tyler sent a message w/o filing review or payment receipt? Full msg: {}", msg);
+      MDCWrappers.removeAllMDCs();
       return error(reply, "705", "NotifyFilingReviewComplete message not found");
     }
 
@@ -281,7 +301,8 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       // most of them.
     }
     if (filingId.isBlank()) {
-      log.error("Got back a review filing that has a blank / no FILINGID? " + revFiling.toString());
+      log.error("Got back a review filing that has a blank / no FILINGID? {}", revFiling);
+      MDCWrappers.removeAllMDCs();
       return error(reply, "720", "Filing code not found in message");
     }
     Optional<CaseAugmentationType> jAug =
@@ -296,75 +317,70 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
         }
       }
     }
-    Optional<Transaction> trans = Optional.empty();
+    Optional<Transaction> maybeTrans = Optional.empty();
     try (UserDatabase ud = udSupplier.get()) {
-      trans = ud.findTransaction(UUID.fromString(filingId));
+      maybeTrans = ud.findTransaction(UUID.fromString(filingId));
+      if (maybeTrans.isEmpty()) {
+        log.warn("No transaction on record for filingId: {}, no one to send to", filingId);
+        return error(reply, "724", "Filing ID " + filingId + " not found");
+      }
     } catch (SQLException e) {
-      log.error("Couldn't connect to the SQL database to get the transaction: " + e.toString());
+      log.error("Couldn't connect to SQL DB to get transaction", e);
       return error(reply, "-1", "Server error");
+    } finally {
+      MDCWrappers.removeAllMDCs();
     }
-    if (trans.isEmpty()) {
-      log.warn("No transaction on record for filingId: " + filingId + " no one to send to");
-      return error(reply, "724", "Filing ID " + filingId + " not found");
-    }
+    Transaction trans = maybeTrans.get();
+
+    MDC.put(MDCWrappers.SERVER_ID, trans.serverId.toString());
+    log.info(
+        "Full NotifyFilingReviewComplete msg: {}",
+        Ecf4Helper.objectToXmlStrOrError(msg, NotifyFilingReviewCompleteRequestMessageType.class));
 
     // Handle payment stuff: Address is usually empty, it's all in Payment and AllowanceCharges
-    List<String> charges = new ArrayList<>();
-    for (AllowanceChargeType charge : payment.getAllowanceCharge()) {
-      charges.add(chargeToStr(charge));
-    }
-
-    MDC.put(MDCWrappers.SERVER_ID, trans.get().serverId.toString());
-    log.info(
-        "Full NotifyFilingReviewComplete msg: "
-            + Ecf4Helper.objectToXmlStrOrError(
-                msg, NotifyFilingReviewCompleteRequestMessageType.class));
+    List<String> charges =
+        payment.getAllowanceCharge().stream()
+            .filter(c -> c != null)
+            .map(OasisEcfWsCallback::chargeToStr)
+            .toList();
 
     // Trust in Tyler's courtId over ours, maybe location can change on their side
-    String courtId = (courtIdFromMsg.isBlank()) ? trans.get().courtId : courtIdFromMsg;
+    String courtId = (courtIdFromMsg.isBlank()) ? trans.courtId : courtIdFromMsg;
     String caseName = revFiling.getCase().getValue().getCaseTitleText().getValue();
     Optional<CourtLocationInfo> courtInfo = Optional.empty();
     try (CodeDatabase cd = cdSupplier.get()) {
       courtInfo = cd.getFullLocationInfo(courtId);
       if (courtInfo.isEmpty()) {
         log.warn(
-            "Court "
-                + courtId
-                + " no longer exists in codes? ("
-                + courtIdFromMsg
-                + " from msg, "
-                + trans.get().courtId
-                + " from db)");
+            "Court {} no longer exists in codes? ({} from msg, {} from db)",
+            courtId,
+            courtIdFromMsg,
+            trans.courtId);
         MDCWrappers.removeAllMDCs();
         return error(reply, "70", "Location " + courtId + " not found");
       }
     } catch (SQLException ex) {
-      log.error("In ECF v4 callback, couldn't get codes db: " + StdLib.strFromException(ex));
+      log.error("In ECF v4 callback, couldn't get codes db", ex);
       courtInfo = Optional.of(new CourtLocationInfo());
       courtInfo.get().name = courtId;
     }
 
     reply.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
-    String statusText = reviewedFilingStatusText(revFiling, trans.get());
-    String messageText = reviewedFilingMessageText(revFiling, trans.get(), courtInfo.get());
+    String statusText = reviewedFilingStatusText(revFiling.getFilingStatus(), trans);
+    String messageText = reviewedFilingMessageText(revFiling, courtInfo.get());
 
-    UpdateMessageStatus status = reviewedFilingStatusCode(revFiling);
-
-    log.info("Filing status: " + statusText + ";; " + messageText + ";; " + status.toString());
+    UpdateMessageStatus status = parseFilingStatusCode(revFiling.getFilingStatus());
+    log.info(
+        "Replying to litigant with: status: `{}` (statusText: `{}`), messageText: `{}`, courtName: {}",
+        status,
+        statusText,
+        messageText,
+        courtInfo.get().name);
     boolean success =
         msgSender.sendMessage(
-            trans.get(), status, statusText, messageText, null, courtInfo.get().name, caseName);
-    log.info(
-        "Replying to litigant with: status: "
-            + status
-            + ", statusText: "
-            + statusText
-            + ", messageText: "
-            + messageText
-            + ", courtName: "
-            + courtInfo.get().name);
+            trans, status, statusText, messageText, null, courtInfo.get().name, caseName);
     if (!success) {
-      log.error("Couldn't properly send message to " + trans.get().name + "!");
+      log.error("Couldn't properly send message for transaction ID {}!", trans.transactionId);
     }
     MDCWrappers.removeAllMDCs();
     return ok(reply);
@@ -374,7 +390,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   public MessageReceiptMessageType notifyEvent(EventCallbackMessageType eventCallbackMessage) {
     log.info("Full NotifyEvent msg" + eventCallbackMessage);
     // TODO(brycew): not going to do anything with for now
-    MessageReceiptMessageType reply = recepitFac.createMessageReceiptMessageType();
+    MessageReceiptMessageType reply = receiptFac.createMessageReceiptMessageType();
     Ecf4Helper.setupReplys(reply);
     return ok(reply);
   }
@@ -387,7 +403,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
             + Ecf4Helper.objectToXmlStrOrError(
                 serviceCallbackMessage, ServiceCallbackMessageType.class));
     // TODO(brycew): not going to do anything with for now
-    MessageReceiptMessageType reply = recepitFac.createMessageReceiptMessageType();
+    MessageReceiptMessageType reply = receiptFac.createMessageReceiptMessageType();
     Ecf4Helper.setupReplys(reply);
     return ok(reply);
   }

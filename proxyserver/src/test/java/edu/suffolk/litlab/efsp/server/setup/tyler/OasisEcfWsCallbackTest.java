@@ -61,11 +61,12 @@ public class OasisEcfWsCallbackTest {
   @DisplayName("`notifyFilingReviewComplete`")
   class NotifyFilingReviewCompleteTest {
 
-    private final String filingId = "12345678-1234-1234-1234-12345678abcd";
+    private final UUID filingId = UUID.fromString("12345678-1234-1234-1234-12345678abcd");
     private final String userEmail = "bob@example.com";
     private final String docketNumber = "2022CR0001";
     private final String repNumber = "1234567";
     private final String caseTitle = "Brown vs Brown";
+    private final String courtId = "adams";
 
     private String sentMsg;
     private UpdateMessageStatus status;
@@ -80,16 +81,17 @@ public class OasisEcfWsCallbackTest {
       trans.name = "Bob Brown";
       trans.phoneNumber = Optional.empty();
       trans.email = userEmail;
-      trans.transactionId = UUID.fromString(filingId);
-      trans.courtId = "adams";
+      trans.transactionId = filingId;
+      trans.courtId = courtId;
       trans.caseTitle = caseTitle;
       trans.serverId = UUID.randomUUID();
-      when(mockUd.findTransaction(eq(UUID.fromString(filingId)))).thenReturn(Optional.of(trans));
+      when(mockUd.findTransaction(eq(filingId))).thenReturn(Optional.of(trans));
 
       var courtInfo = new CourtLocationInfo();
-      courtInfo.code = "adams";
+      courtInfo.code = courtId;
       courtInfo.name = "Adams County";
-      when(mockCd.getFullLocationInfo(eq("adams"))).thenReturn(Optional.of(courtInfo));
+      courtInfo.showreturnonreject = false;
+      when(mockCd.getFullLocationInfo(eq(courtId))).thenReturn(Optional.of(courtInfo));
       when(mockSender.sendMessage(
               any(),
               any(),
@@ -107,10 +109,10 @@ public class OasisEcfWsCallbackTest {
       // cb.notifyFilingReviewComplete(null);
       cb.notifyFilingReviewComplete(new NotifyFilingReviewCompleteRequestMessageType());
 
-      when(mockCd.getFullLocationInfo(eq("adams"))).thenReturn(Optional.empty());
+      when(mockCd.getFullLocationInfo(eq(courtId))).thenReturn(Optional.empty());
       cb.notifyFilingReviewComplete(makeMsg(null, null));
 
-      when(mockUd.findTransaction(eq(UUID.fromString(filingId)))).thenReturn(Optional.empty());
+      when(mockUd.findTransaction(eq(filingId))).thenReturn(Optional.empty());
       cb.notifyFilingReviewComplete(makeMsg(null, null));
 
       verifyNoInteractions(mockSender);
@@ -118,7 +120,6 @@ public class OasisEcfWsCallbackTest {
 
     @Example
     public void testSuccessfulPlain() {
-
       when(mockSender.sendMessage(
               any(),
               any(),
@@ -129,22 +130,12 @@ public class OasisEcfWsCallbackTest {
               nullable(String.class)))
           .thenAnswer(
               (invoc) -> {
-                sentMsg = invoc.getArgument(3, String.class);
                 status = invoc.getArgument(1, UpdateMessageStatus.class);
+                sentMsg = invoc.getArgument(3, String.class);
                 return true;
               });
 
       cb.notifyFilingReviewComplete(makeMsg(null, null));
-
-      verify(mockSender)
-          .sendMessage(
-              any(),
-              any(),
-              nullable(String.class),
-              nullable(String.class),
-              nullable(String.class),
-              nullable(String.class),
-              nullable(String.class));
 
       assertThat(sentMsg).isEqualTo("\nfiling has been accepted by the court");
       assertThat(status).isEqualTo(UpdateMessageStatus.ACCEPTED);
@@ -167,9 +158,7 @@ public class OasisEcfWsCallbackTest {
               nullable(String.class));
     }
 
-    // add a J case aug
-    // add filingdocs
-    // add charge
+    // TODO: add a J case aug
     private NotifyFilingReviewCompleteRequestMessageType makeMsg(
         AllowanceChargeType charge, ReviewedDocumentType doc) {
       var msg = new NotifyFilingReviewCompleteRequestMessageType();
@@ -184,7 +173,7 @@ public class OasisEcfWsCallbackTest {
       var msg = new ReviewFilingCallbackMessageType();
       msg.setDocumentFiledDate(Ecf4Helper.convertDate(LocalDate.of(2025, 07, 04)));
       var idType = new IdentificationType();
-      idType.setIdentificationID(Ecf4Helper.convertString(filingId));
+      idType.setIdentificationID(Ecf4Helper.convertString(filingId.toString()));
       idType.setIdentificationCategory(
           niemOf.createIdentificationCategoryText(Ecf4Helper.convertText("FILINGID")));
       msg.getDocumentIdentification().add(idType);

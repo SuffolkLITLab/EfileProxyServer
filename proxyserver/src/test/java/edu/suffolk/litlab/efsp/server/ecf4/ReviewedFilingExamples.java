@@ -4,6 +4,7 @@ import gov.niem.niem.niem_core._2.BinaryType;
 import java.time.LocalDate;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.function.Supplier;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import net.jqwik.api.Arbitraries;
@@ -25,23 +26,22 @@ public class ReviewedFilingExamples extends DomainContextBase {
           .ObjectFactory
       commonOf =
           new oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ObjectFactory();
+
   private static final DatatypeFactory dateFactory = DatatypeFactory.newDefaultInstance();
+
+  static final Supplier<Arbitrary<String>> strs = () -> Arbitraries.strings().injectNull(0.2);
 
   @Provide
   public Arbitrary<ReviewedDocumentType> docs() {
-    return Combinators.combine(
-            Arbitraries.strings().injectNull(0.2),
-            Arbitraries.strings().injectNull(0.2),
-            Arbitraries.strings().injectNull(0.2),
-            Arbitraries.strings().injectNull(0.2))
+    return Combinators.combine(strs.get(), strs.get(), strs.get(), strs.get())
         .as(
-            (a, b, c, d) -> {
+            (str1, str2, str3, str4) -> {
               var doc = new ReviewedDocumentType();
-              doc.setDocumentDescriptionText(Ecf4Helper.convertText(a));
+              doc.setDocumentDescriptionText(Ecf4Helper.convertText(str1));
               doc.setDocumentBinary(new BinaryType());
-              doc.getDocumentBinary().setBinaryDescriptionText(Ecf4Helper.convertText(b));
-              doc.setFilingReviewCommentsText(Ecf4Helper.convertText(c));
-              doc.setRejectReasonText(Ecf4Helper.convertText(d));
+              doc.getDocumentBinary().setBinaryDescriptionText(Ecf4Helper.convertText(str2));
+              doc.setFilingReviewCommentsText(Ecf4Helper.convertText(str3));
+              doc.setRejectReasonText(Ecf4Helper.convertText(str4));
 
               return doc;
             });
@@ -61,7 +61,7 @@ public class ReviewedFilingExamples extends DomainContextBase {
                   amount.setValue(value);
                   return amount;
                 });
-    Arbitrary<String> reasons = Arbitraries.strings().injectNull(0.1);
+    Arbitrary<String> reasons = strs.get();
     Arbitrary<List<PaymentMeansType>> means = paymentMeans().injectNull(0.2).list().ofMaxSize(3);
     return Builders.withBuilder(() -> new AllowanceChargeType())
         .use(amounts)
@@ -86,8 +86,8 @@ public class ReviewedFilingExamples extends DomainContextBase {
 
   @Provide
   public Arbitrary<PaymentMeansType> paymentMeans() {
-    Arbitrary<String> cardTypes = Arbitraries.strings();
-    Arbitrary<String> idTypes = Arbitraries.strings();
+    Arbitrary<String> cardTypes = strs.get();
+    Arbitrary<String> idTypes = strs.get();
     Arbitrary<XMLGregorianCalendar> dates = dates();
 
     return Builders.withBuilder(() -> new CardAccountType())
