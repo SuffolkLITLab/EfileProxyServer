@@ -73,7 +73,7 @@ public class SendMessage {
     if (sendingMethod.equalsIgnoreCase("sendgrid")) {
       Optional<String> maybeKey = GetEnv("SENDGRID_API_KEY");
       if (maybeKey.isEmpty()) {
-        log.warn("Need SENDGRID_API_KEY if sending method is " + sendingMethod);
+        log.warn("Need SENDGRID_API_KEY if sending method is {}", sendingMethod);
         return Optional.empty();
       }
       sendgridApiKey = maybeKey.get();
@@ -174,8 +174,8 @@ public class SendMessage {
       return (success) ? 200 : 400; // Should remove the status code and make this a void method
     } else {
       log.error(
-          "No email method not correctly specified. Should be sendgrid or smtp, is: "
-              + sendingMethod);
+          "No email method not correctly specified. Should be sendgrid or smtp, is: {}",
+          sendingMethod);
       return 400;
     }
   }
@@ -223,7 +223,7 @@ public class SendMessage {
       Transport.send(msg);
       return true;
     } catch (MessagingException mex) {
-      log.error("Email send failed, exception: " + mex);
+      log.error("Email send failed, exception: ", mex);
       return false;
     }
   }
@@ -262,7 +262,7 @@ public class SendMessage {
     request.setEndpoint("mail/send");
     request.setBody(mail.build());
     Response response = sg.api(request);
-    log.info(response.getStatusCode() + " " + response.getHeaders() + " " + response.getBody());
+    log.info("{} {} {}", response.getStatusCode(), response.getHeaders(), response.getBody());
     return response.getStatusCode();
   }
 

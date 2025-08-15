@@ -77,8 +77,8 @@ public class Monitor {
                       "massaccess@suffolk.edu", subject, monitoringEmail, template, context);
                 } catch (IOException ex) {
                   log.error(
-                      "Failed to notify that an updated failed, hope someone checks the logs\n\n"
-                          + StdLib.strFromException(ex));
+                      "Failed to notify that an updated failed, hope someone checks the logs\n\n",
+                      ex);
                 }
               },
               () -> {

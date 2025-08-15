@@ -66,7 +66,7 @@ public class LoginDatabaseTest {
     assertTrue(doNothing.isPresent());
     assertTrue(doNothing.get().getTokens().isEmpty());
 
-    log.info("TylerOnly key: " + tylerOnly);
+    log.info("TylerOnly key: {}", tylerOnly);
     Optional<NewTokens> activeTyler = ld.login(tylerOnly, "{\"tyler\": {}}", okFunctions);
     assertTrue(activeTyler.isPresent());
     Optional<NewTokens> repeatLogin = ld.login(tylerOnly, "{\"tyler\": {}}", okFunctions);

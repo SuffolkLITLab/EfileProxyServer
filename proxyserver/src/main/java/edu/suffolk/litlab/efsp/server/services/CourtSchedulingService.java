@@ -25,7 +25,6 @@ import edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
@@ -209,9 +208,9 @@ public class CourtSchedulingService {
     m.setOutOfStateIndicator(Ecfv5XmlHelper.convertBool(false));
     r.setReturnDateMessage(m);
 
-    log.info("Full msg: " + Ecfv5XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
+    log.info("Full msg: {}", Ecfv5XmlHelper.objectToXmlStrOrError(r, ReturnDateRequestType.class));
     ReturnDateResponseMessageType resp = maybeServ.get().getReturnDate(r).getReturnDateResponseMessage();
-    log.info("Full resp: " + Ecfv5XmlHelper.objectToXmlStrOrError(resp, ReturnDateResponseMessageType.class));
+    log.info("Full resp: {}", Ecfv5XmlHelper.objectToXmlStrOrError(resp, ReturnDateResponseMessageType.class));
     return Response.ok(resp).build();
   }
   */
@@ -415,7 +414,7 @@ public class CourtSchedulingService {
           DatatypeConfigurationException,
           SQLException {
     MDC.put(MDCWrappers.OPERATION, "CourtSchedulingService.reserveCourtDateSync");
-    log.info("AllParams: " + paramStr);
+    log.info("AllParams: {}", paramStr);
     JsonMapper mapper = new JsonMapper();
     JsonNode params = mapper.readTree(paramStr);
 
@@ -542,7 +541,7 @@ public class CourtSchedulingService {
       MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
       creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex));
+      log.error("SQL error with Scheduling port", ex);
       return Optional.empty();
     }
     if (creds.isEmpty()) {
@@ -586,8 +585,7 @@ public class CourtSchedulingService {
   private static boolean hasError(ResponseMessageType rt) {
     MessageStatusType ms = rt.getMessageStatus();
     String errorCodeText = ms.getMessageHandlingError().getErrorCodeText().getValue();
-    log.info("Ms: " + ms);
-    log.info("error code: " + errorCodeText);
+    log.info("Message status: {}, error code: {}", ms, errorCodeText);
     return !ms.getMessageContentError().isEmpty()
         || (!errorCodeText.isBlank() && !errorCodeText.equals("0"));
   }

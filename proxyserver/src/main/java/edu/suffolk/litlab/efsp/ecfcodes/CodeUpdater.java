@@ -190,7 +190,7 @@ public class CodeUpdater {
     } catch (IOException ex) {
       // Some system codes (everything but "country", "state", "filingstatus", "datafieldconfig",
       // and "servicetype") are expected to 500. Not really sure why they give us bad URLs.
-      log.warn("Skipping " + toRead + ", got exception accessing zip: " + ex.toString());
+      log.warn("Skipping {}, got exception accessing zip: ", toRead, ex);
       return false;
     }
   }
@@ -234,7 +234,7 @@ public class CodeUpdater {
               cd.updateTable(urlSuffix.getKey(), "0", is);
               return true;
             } catch (final Exception e1) {
-              log.error(StdLib.strFromException(e1));
+              log.error("Error when updating table", e1);
               return false;
             }
           };
@@ -296,7 +296,7 @@ public class CodeUpdater {
                   toDownload.tableName,
                   new DownloadedCodes(toDownload.tableName, location, sr, urlStream));
             } catch (IOException | XMLStreamException e) {
-              log.error(StdLib.strFromException(e));
+              log.error("Error when downloading XMLs", e);
             }
           }
         });
@@ -314,12 +314,7 @@ public class CodeUpdater {
             policies.put(location, p);
           } catch (SOAPFaultException ex) {
             log.warn(
-                "Got a SOAP Fault excption when getting the policy for "
-                    + location
-                    + " in "
-                    + jurisdiction
-                    + ": "
-                    + StdLib.strFromException(ex));
+                "Got a SOAP excption getting policy for {} in {}: ", location, jurisdiction, ex);
           }
         });
     return policies;
@@ -383,7 +378,7 @@ public class CodeUpdater {
       try {
         cd.updateTable(down.tableName(), down.location(), down.xsr());
       } catch (Exception ex) {
-        log.error("Couldn't update table? {}", StdLib.strFromException(ex));
+        log.error("Couldn't update table?", ex);
       } finally {
         StdLib.closeQuitely(down.xsr());
         down.input().close();
@@ -555,7 +550,7 @@ public class CodeUpdater {
     }
 
     if (!jurisdiction.equalsIgnoreCase(args.get(1))) {
-      log.warn(args.get(1) + " is not " + jurisdiction + ", not downloading here");
+      log.warn("{} is not {}, not downloading here", args.get(1), jurisdiction);
       return false;
     }
 
@@ -571,7 +566,7 @@ public class CodeUpdater {
           try (FileOutputStream fw = new FileOutputStream(newFile)) {
             fw.write(in.readAllBytes());
           } catch (IOException e) {
-            log.error(StdLib.strFromException(e));
+            log.error("Error when writing xml", e);
             return false;
           }
           return true;
@@ -601,11 +596,11 @@ public class CodeUpdater {
       } else if (command.equalsIgnoreCase("downloadIndiv")) {
         return cu.downloadIndiv(args, jurisdiction, env);
       } else {
-        log.error("Command " + command + " isn't a real command");
+        log.error("Command {} isn't a real command", command);
         return false;
       }
     } catch (SQLException | IOException | JAXBException e) {
-      log.error("Exception when doing code updating! " + StdLib.strFromException(e));
+      log.error("Exception when doing code updating! ", e);
       return false;
     }
   }

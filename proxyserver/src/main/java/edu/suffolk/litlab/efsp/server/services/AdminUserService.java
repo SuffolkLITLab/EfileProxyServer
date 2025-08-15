@@ -15,7 +15,6 @@ import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
@@ -732,7 +731,7 @@ public class AdminUserService {
           }
         }
       } catch (SQLException e) {
-        log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
+        log.error("Couldn't get connection to Codes db:", e);
         return Response.status(500).build();
       }
 
@@ -849,7 +848,7 @@ public class AdminUserService {
         return Optional.of(userFactory.makeUserClient(ServiceHelpers::setupServicePort));
       }
     } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex));
+      log.error("SQL error: ", ex);
       return Optional.empty();
     }
   }

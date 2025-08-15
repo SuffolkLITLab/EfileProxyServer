@@ -256,11 +256,9 @@ public class EcfCourtSpecificSerializer {
     collector.pushAttributeStack("al_court_bundle[i]");
     if (filingOptions.isEmpty()) {
       log.error(
-          "Need a filing type! FilingTypes are empty, so "
-              + caseCategory
-              + " and "
-              + type
-              + " are restricted");
+          "Need a filing type! FilingTypes are empty, so {} and {} are restricted",
+          caseCategory,
+          type);
       InterviewVariable var =
           collector.requestVar("filing_type", "What type of filing is this?", "text");
       collector.addWrong(var);
@@ -447,7 +445,7 @@ public class EcfCourtSpecificSerializer {
         String lang = per.getLanguage().get();
         List<String> langs = cd.getLanguageNames(this.court.code);
         if (!langs.isEmpty() && !langs.contains(lang)) {
-          log.info("Can't have language: " + lang);
+          log.info("Can't have language: {}", lang);
           collector.addWrong(
               collector.requestVar(
                   "language",
@@ -1011,8 +1009,8 @@ public class EcfCourtSpecificSerializer {
     if (components.isEmpty()) {
       log.error(
           "Filing Components List is empty! There are no other documents that can be added!"
-              + " Stopping at "
-              + fa.getFileName());
+              + " Stopping at {}",
+          fa.getFileName());
       collector.addRequired(var);
     }
 
@@ -1021,12 +1019,7 @@ public class EcfCourtSpecificSerializer {
             .filter(c -> c.code.equalsIgnoreCase(fa.getFilingComponent()))
             .findFirst();
     if (filtered.isEmpty()) {
-      log.error(
-          "Filing Components ("
-              + components
-              + ") don't match \""
-              + fa.getFilingComponent()
-              + "\".");
+      log.error("Filing Components ({}) don't match `{}`.", components, fa.getFilingComponent());
       collector.addRequired(var);
     }
 
@@ -1065,8 +1058,7 @@ public class EcfCourtSpecificSerializer {
       }
     }
 
-    // log.info("Filing code: " + filing.code + " " + filing.name + ": " + docType + "///////" +
-    // attachment);
+    // log.info("Filing code: {} {}: {}///////{}", filing.code, filing.name, docType, attachment);
     // TODO(#62): DO this: make the file downloadable from the Proxy server
     DataFieldRow originalName = allDataFields.getFieldRow("OriginalFileName");
     if (originalName.matchRegex(fa.getFileName()) && fa.getFileName().length() < 50) {
@@ -1207,7 +1199,7 @@ public class EcfCourtSpecificSerializer {
         // sat.setLocationState(coreObjFac.createLocationStateUSPostalServiceCode(stateCode));
         // return true;
       } catch (IllegalArgumentException ex) {
-        log.error("DevOps ERROR: " + ex);
+        log.error("DevOps ERROR: ", ex);
         return false;
       }
     }

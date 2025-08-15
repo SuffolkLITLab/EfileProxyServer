@@ -105,12 +105,12 @@ public class JeffNetFiler implements EfmFilingInterface {
 
     try {
       String finalStr = mapper.writeValueAsString(info);
-      log.debug("Final Json object: " + finalStr);
+      log.debug("Final Json object: {}", finalStr);
 
-      log.info("Sending to " + this.filingEndpoint);
+      log.info("Sending to {}", this.filingEndpoint);
       log.info(
-          "They'll send back to "
-              + ServiceHelpers.REST_CALLBACK_URL.formatted("louisiana", info.getCourtLocation()));
+          "They'll send back to {}",
+          ServiceHelpers.REST_CALLBACK_URL.formatted("louisiana", info.getCourtLocation()));
       HttpClient client = HttpClient.newBuilder().build();
       HttpRequest request =
           HttpRequest.newBuilder()
@@ -121,7 +121,7 @@ public class JeffNetFiler implements EfmFilingInterface {
               .uri(this.filingEndpoint)
               .build();
       HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-      log.info("Got response code: " + response.body() + " " + response.statusCode());
+      log.info("Got response code: {} {}", response.statusCode(), response.body());
       if (response.statusCode() != 200) {
         return Result.err(FilingError.serverError(response.statusCode() + " " + response.body()));
       }

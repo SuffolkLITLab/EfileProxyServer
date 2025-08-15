@@ -50,7 +50,7 @@ public class CourtsOnlyCodesService extends CodesService {
   public Response getCodesUnderCourt(String courtId) {
     var errResp = okayCourt(courtId);
     if (errResp.isPresent()) {
-      log.info("Wrong court queried?: " + courtId + " in jurisdiction " + jurisdiction);
+      log.info("Wrong court queried?: {} in jurisdiction {}", courtId, jurisdiction);
       return errResp.get();
     }
     Class<?> clazz = this.getClass();
@@ -74,7 +74,7 @@ public class CourtsOnlyCodesService extends CodesService {
           Response.ok(
               Map.of("name", this.courts.get(courtId), "code", courtId, "efmType", "jeffnet")));
     } else {
-      log.info("Wrong court queried?: " + courtId + " in jurisdiction " + jurisdiction);
+      log.info("Wrong court queried?: {} in jurisdiction {}", courtId, jurisdiction);
       return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));
     }
   }
