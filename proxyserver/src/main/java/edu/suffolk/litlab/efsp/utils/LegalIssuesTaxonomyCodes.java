@@ -80,15 +80,15 @@ public class LegalIssuesTaxonomyCodes {
   }
 
   private void getEcfCases(String category, Set<String> runningCases) {
-    log.info("Trying key: " + category);
+    log.info("Trying key: {}", category);
     if (!taxonomyGraph.containsKey(category)) {
       return;
     }
 
     InternalNode node = taxonomyGraph.get(category);
-    log.info("At node: " + node.title);
+    log.info("At node: {}", node.title);
     if (node.caseCategory.isPresent()) {
-      log.info("Adding " + node.caseCategory.get() + " to running");
+      log.info("Adding {} to running", node.caseCategory.get());
       runningCases.add(node.caseCategory.get());
       // TODO(brycew-later): should we exit early and not add the ECF case types from parent?
       // Example: Money is usually Civil, but the Bankruptcy sub cat is just Bankruptcy

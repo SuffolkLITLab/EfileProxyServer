@@ -73,7 +73,7 @@ public class CodesServiceTest {
       for (String table : tables) {
         cd.createTableIfAbsent(table);
         String filename = "/" + "adams" + "_" + table + "_test.xml";
-        log.info("Updating from file: " + filename);
+        log.info("Updating from file: {}", filename);
         cd.updateTable(table, "adams", this.getClass().getResourceAsStream(filename));
       }
     }
@@ -112,7 +112,7 @@ public class CodesServiceTest {
     client.accept("application/json");
     client.path(path);
     Response resp = client.get();
-    log.info("resp: " + resp);
+    log.info("resp: {}", resp);
     return resp.readEntity(String.class);
   }
 

@@ -235,8 +235,8 @@ public class EcfCaseTypeFactory {
             association.setFilingReference(filingRt);
             toReturn.add(association);
           } else {
-            log.warn("When adding filing associations, Party " + partyId + " isn't an object?");
-            log.warn("Parties that do exist: " + List.of(partyIdToRefObj.keySet().toArray()));
+            log.warn("When adding filing associations, Party {} isn't an object?", partyId);
+            log.warn("Parties that do exist: {}", List.of(partyIdToRefObj.keySet().toArray()));
           }
         }
       }
@@ -392,9 +392,9 @@ public class EcfCaseTypeFactory {
     var ecfAug = tylerObjFac.createCaseAugmentationType();
 
     if (comboCodes.type.code.isEmpty()) {
-      log.warn("Type's code is empty?: " + comboCodes);
+      log.warn("Type's code is empty?: {}", comboCodes);
     } else {
-      log.info("Setting case type text to " + comboCodes.type.toString());
+      log.info("Setting case type text to {}", comboCodes.type.toString());
       ecfAug.setCaseTypeText(Ecf4Helper.convertText(comboCodes.type.code));
     }
 
@@ -495,7 +495,7 @@ public class EcfCaseTypeFactory {
             .distinct();
     Iterable<PartyId> iterator = stream::iterator;
     for (PartyId partyId : iterator) {
-      log.info("Referenced PartyId (" + partyId + ")");
+      log.info("Referenced PartyId ({})", partyId);
       if (partyId.isAlreadyInCase()) {
         if (partyId.getIdentificationString().contains(" ")) {
           FilingError err =
@@ -511,7 +511,7 @@ public class EcfCaseTypeFactory {
         var pInfo = comboCodes.partyInfo.get(partyId.getIdentificationString());
         boolean isOrg = false;
         if (pInfo == null) {
-          log.warn("PartyId (" + partyId + ") has null info in combocodes. Why? Assuming person");
+          log.warn("PartyId ({}) has null info in combocodes. Why? Assuming person", partyId);
           log.warn(
               "Service contacts: "
                   + info.getServiceContacts().stream()
@@ -556,21 +556,19 @@ public class EcfCaseTypeFactory {
 
     DataFieldRow attRow = serializer.allDataFields.getFieldRow("PartyAttorney");
     for (Map.Entry<PartyId, List<String>> partyAttys : info.getPartyAttorneyMap().entrySet()) {
-      log.info("Setting Attorneys for : " + partyAttys.getKey());
+      log.info("Setting Attorneys for : {}", partyAttys.getKey());
       Object partyObj;
       if (partyIdToRefObj.containsKey(partyAttys.getKey().getIdString())) {
         partyObj = partyIdToRefObj.get(partyAttys.getKey().getIdString());
       } else if (partyIdToRefObj.isEmpty()) {
         log.warn(
-            "No current filing parties, but "
-                + partyAttys.getKey().getIdString()
-                + " is in the current filing?");
+            "No current filing parties, but {} is in the current filing?",
+            partyAttys.getKey().getIdString());
         continue;
       } else {
         log.warn(
-            "Can't handle current filing participant ("
-                + partyAttys.getKey().getIdString()
-                + ") not already added?!");
+            "Can't handle current filing participant ({}) not already added?!",
+            partyAttys.getKey().getIdString());
         continue;
       }
       ReferenceType repdRef = structObjFac.createReferenceType();
@@ -715,7 +713,7 @@ public class EcfCaseTypeFactory {
       }
     }
 
-    log.info("Full ecfAug: " + ecfAug);
+    // log.info("Full ecfAug: {}", ecfAug);
     return Pair.of(tylerObjFac.createCaseAugmentation(ecfAug), partyIdToRefObj);
   }
 

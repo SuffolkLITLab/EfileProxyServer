@@ -65,7 +65,7 @@ public class AuthenticationService {
       }
       apiKey = node.get("api_key").asText();
     } catch (JsonProcessingException e) {
-      log.error(e.toString());
+      log.error("JSON Processing error: ", e);
       return Response.status(401).build();
     }
     if (apiKey == null || apiKey.isBlank()) {

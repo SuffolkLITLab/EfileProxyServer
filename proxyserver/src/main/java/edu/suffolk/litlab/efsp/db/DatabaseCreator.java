@@ -95,14 +95,14 @@ public class DatabaseCreator {
         ResultSet rs = tempConn.getMetaData().getCatalogs();
         boolean needToMakeDb = true;
         while (rs.next()) {
-          log.debug("Database: " + rs.getString(1));
+          log.debug("Database: {}", rs.getString(1));
           if (rs.getString(1).equals(pgDb)) {
             needToMakeDb = false;
           }
         }
-        log.debug("Need to make DB: " + needToMakeDb);
+        log.debug("Need to make DB: {}", needToMakeDb);
         if (needToMakeDb) {
-          log.info("Making a database named " + pgDb);
+          log.info("Making a database named {}", pgDb);
           try (Statement st = tempConn.createStatement()) {
             st.executeUpdate("CREATE DATABASE " + pgDb);
           }

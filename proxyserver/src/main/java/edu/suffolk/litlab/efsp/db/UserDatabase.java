@@ -62,10 +62,10 @@ public class UserDatabase extends Database {
             "envelope_id" text)\
             """;
         try (Statement createSt = conn.createStatement()) {
-          log.info("Full statement: " + createQuery);
+          log.info("Full statement: {}", createQuery);
           int retVal = createSt.executeUpdate(createQuery);
           if (retVal < 0) {
-            log.warn("Issue when creating submitted_filings: retVal == " + retVal);
+            log.warn("Issue when creating submitted_filings: retVal == {}", retVal);
           }
         }
       }

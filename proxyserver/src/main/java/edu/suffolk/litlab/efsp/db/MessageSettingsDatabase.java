@@ -50,7 +50,7 @@ public class MessageSettingsDatabase extends Database {
         try (Statement createSt = conn.createStatement()) {
           int retVal = createSt.executeUpdate(createQuery);
           if (retVal < 0) {
-            log.warn("Issue when creating \"message_settings\" table: retVal == " + retVal);
+            log.warn("Issue when creating `message_settings` table: retVal == {}", retVal);
           }
         }
       }
@@ -134,10 +134,10 @@ public class MessageSettingsDatabase extends Database {
         return Optional.of(info);
       }
     } catch (SQLException e) {
-      log.error("Exception getting message settings: " + e);
+      log.error("Exception getting message settings", e);
       return Optional.empty();
     }
-    log.warn("No settings for " + serverId.toString());
+    log.warn("No settings for {}", serverId);
     return Optional.empty();
   }
 }

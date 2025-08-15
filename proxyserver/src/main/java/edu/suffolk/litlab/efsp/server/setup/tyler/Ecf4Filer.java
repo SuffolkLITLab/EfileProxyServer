@@ -28,7 +28,6 @@ import edu.suffolk.litlab.efsp.server.ecf4.QueryType;
 import edu.suffolk.litlab.efsp.server.ecf4.SoapClientChooser;
 import edu.suffolk.litlab.efsp.server.services.impl.EfmCheckableFilingInterface;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
@@ -671,7 +670,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     try (CodeDatabase cd = cdSupplier.get()) {
       return cd.getFullLocationInfo(info.getCourtLocation());
     } catch (SQLException ex) {
-      log.error("IN EcfEfiler, can't get CodesDB: " + StdLib.strFromException(ex));
+      log.error("IN EcfEfiler, can't get CodesDB: ", ex);
       return Optional.empty();
     }
   }
@@ -738,7 +737,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         return Response.status(404).entity("Court " + courtId + " not in jurisdiction").build();
       }
     } catch (SQLException ex) {
-      log.error("Couldn't connect to database?" + ex);
+      log.error("Couldn't connect to database?", ex);
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
     }
     log.info(
@@ -796,7 +795,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         range.setEndDate(niemEnd);
         m.getDateRange().add(range);
       } catch (DatatypeConfigurationException ex) {
-        log.error("Why is datatypeconfigurationexception checked?: " + ex);
+        log.error("Why is datatypeconfigurationexception checked?: ", ex);
         return Response.status(500).build();
       }
     }
@@ -804,7 +803,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         "Final query: " + Ecf4Helper.objectToXmlStrOrError(m, FilingListQueryMessageType.class));
     FilingListResponseMessageType resp = port.get().getFilingList(m);
     for (MatchingFilingType match : resp.getMatchingFiling()) {
-      log.trace("Matched: " + match.getCaseTrackingID() + ", " + match);
+      log.trace("Matched: {}, {}", match.getCaseTrackingID(), match);
     }
     return Ecf4Helper.makeResponse(
         resp,
@@ -924,7 +923,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       List<Disclaimer> disclaimers = cd.getDisclaimerRequirements(courtId);
       return Response.status(200).entity(disclaimers).build();
     } catch (SQLException ex) {
-      log.error("In disclaimer get, couldn't get codes db: " + StdLib.strFromException(ex));
+      log.error("In disclaimer get, couldn't get codes db: ", ex);
       return Response.status(500).build();
     }
   }

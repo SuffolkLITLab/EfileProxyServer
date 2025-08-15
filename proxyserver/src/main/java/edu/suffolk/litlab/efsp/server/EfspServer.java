@@ -281,7 +281,7 @@ public class EfspServer {
               + "Please check your environment variables and try again.");
       throw new RuntimeException("No filer modules available");
     }
-    log.info("Starting Server with the following Filers: " + modules);
+    log.info("Starting Server with the following Filers: {}", modules);
 
     SecurityHub security = new SecurityHub(userDs, tylerEnv, jurisdictions);
     AcmeChallengeService challengeService = null;
@@ -302,7 +302,7 @@ public class EfspServer {
                 log.info("Stopping servers");
                 server.stopServers();
                 for (EfmModuleSetup mod : modules) {
-                  log.info("Stopping module " + mod.getJurisdiction());
+                  log.info("Stopping module {}", mod.getJurisdiction());
                   mod.shutdown();
                 }
               }

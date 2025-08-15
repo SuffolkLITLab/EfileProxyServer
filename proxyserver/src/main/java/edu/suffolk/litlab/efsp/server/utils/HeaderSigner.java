@@ -117,14 +117,8 @@ public class HeaderSigner {
     try {
       byte[] signedBytes = signPkcs7(content.getBytes("UTF-8"), setUpProvider(loadKeyStore()));
       return Optional.of(Base64.getEncoder().encodeToString(signedBytes));
-    } catch (GeneralSecurityException ex) {
-      log.error("Exception when trying to sign info with a X509 cert: " + ex);
-    } catch (OperatorCreationException ex) {
-      log.error("Exception when trying to sign info with a X509 cert: " + ex);
-    } catch (CMSException ex) {
-      log.error("Exception when trying to sign info with a X509 cert: " + ex);
-    } catch (IOException ex) {
-      log.error("Exception when trying to sign info with a X509 cert: " + ex);
+    } catch (Exception ex) {
+      log.error("Exception when trying to sign info with a X509 cert: ", ex);
     }
     return Optional.empty();
   }

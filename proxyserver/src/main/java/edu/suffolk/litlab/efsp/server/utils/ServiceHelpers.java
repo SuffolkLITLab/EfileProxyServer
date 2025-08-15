@@ -6,7 +6,6 @@ import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
@@ -178,7 +177,7 @@ public class ServiceHelpers {
         return Optional.of(firmFactory.makeFirmClient(ServiceHelpers::setupServicePort));
       }
     } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex));
+      log.error("SQL Error with firm port: ", ex);
       return Optional.empty();
     }
   }
@@ -187,7 +186,7 @@ public class ServiceHelpers {
       TylerFirmFactory firmFactory, String tylerToken) {
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
-      log.warn("No creds from " + tylerToken + "?");
+      log.warn("No creds from {}?", tylerToken);
       return Optional.empty();
     }
 

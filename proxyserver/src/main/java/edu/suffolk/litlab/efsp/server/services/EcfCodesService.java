@@ -20,7 +20,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.ServiceCodeType;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection.Endpoint;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -295,7 +294,7 @@ public class EcfCodesService extends CodesService {
       }
 
       Optional<Boolean> isInitial = Optional.empty();
-      log.info("Timing input: " + timing);
+      log.info("Timing input: {}", timing);
       if (timing == null || timing.isBlank()) {
         isInitial = Optional.empty();
       } else if (timing.equalsIgnoreCase("Initial")) {
@@ -303,9 +302,9 @@ public class EcfCodesService extends CodesService {
       } else if (timing.equalsIgnoreCase("Subsequent")) {
         isInitial = Optional.of(false);
       } else {
-        log.warn("timing param expected to be initial / subsequent: was: " + timing);
+        log.warn("timing param expected to be initial / subsequent: was: {}", timing);
       }
-      log.info("Timing pass along: " + isInitial);
+      log.info("Timing pass along: {}", isInitial);
       List<CaseCategory> categories = cd.getFilableCaseCategories(courtId, isInitial);
       return cors(Response.ok(categories));
     }
@@ -345,7 +344,7 @@ public class EcfCodesService extends CodesService {
       } else if (timing.equalsIgnoreCase("Subsequent")) {
         isInitial = Optional.of(false);
       } else {
-        log.warn("timing param expected to be initial / subsequent: was: " + timing);
+        log.warn("timing param expected to be initial / subsequent: was: {}", timing);
       }
       List<CaseType> caseTypes = cd.getCaseTypesFor(courtId, categoryId, isInitial);
 
@@ -660,7 +659,7 @@ public class EcfCodesService extends CodesService {
     try (CodeDatabase cd = cdSupplier.get()) {
       return okayCourt(cd, courtId);
     } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex));
+      log.error("SQL Error when checking court", ex);
       return Optional.of(Response.status(500).entity("Error in server database").build());
     }
   }
