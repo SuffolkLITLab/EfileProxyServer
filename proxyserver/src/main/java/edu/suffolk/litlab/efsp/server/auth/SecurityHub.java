@@ -3,7 +3,6 @@ package edu.suffolk.litlab.efsp.server.auth;
 import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.NewTokens;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +70,7 @@ public class SecurityHub {
     try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
       return ld.login(apiKey, jsonLoginInfo, loginFunctions);
     } catch (SQLException e) {
-      log.error(StdLib.strFromException(e));
+      log.error("SQL error when logging in: ", e);
       return Optional.empty();
     }
   }

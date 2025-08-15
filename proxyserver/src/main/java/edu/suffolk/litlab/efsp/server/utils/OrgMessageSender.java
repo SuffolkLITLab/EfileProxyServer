@@ -4,7 +4,6 @@ import edu.suffolk.litlab.efsp.db.MessageSettingsDatabase;
 import edu.suffolk.litlab.efsp.db.model.MessageInfo;
 import edu.suffolk.litlab.efsp.db.model.Transaction;
 import edu.suffolk.litlab.efsp.server.services.api.UpdateMessageStatus;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -177,13 +176,13 @@ public class OrgMessageSender {
             sendMsg.sendEmail(msgSettings.fromEmail, subject, trans.email, template, templateVars);
         return (result == 200 || result == 202 || result == 204);
       } catch (IOException e) {
-        log.error(StdLib.strFromException(e));
+        log.error("Error when sending email", e);
         return false;
       }
     }
 
     // TODO(brycew-later): handle sending SMS as well
-    log.warn("Can't send to this email: " + trans.email);
+    log.warn("Can't send to this email: {}", trans.email);
     return false;
   }
 
@@ -200,7 +199,7 @@ public class OrgMessageSender {
       String envelopeId) {
     MessageInfo msgSettings = getSettings(serverId);
     if (emailTemplate == null || emailTemplate.isBlank()) {
-      log.warn("given email template was blank (" + emailTemplate + "), using default");
+      log.warn("given email template was blank ({}), using default", emailTemplate);
       emailTemplate = msgSettings.emailConfirmation;
     }
     if (emailSubject == null || emailSubject.isBlank()) {
@@ -223,7 +222,7 @@ public class OrgMessageSender {
                 msgSettings.fromEmail, emailSubject, email, emailTemplate, templateVars);
         return (result == 200 || result == 202 || result == 204);
       } catch (IOException e) {
-        log.error(StdLib.strFromException(e));
+        log.error("Error when sending confirmation", e);
         return false;
       }
     }

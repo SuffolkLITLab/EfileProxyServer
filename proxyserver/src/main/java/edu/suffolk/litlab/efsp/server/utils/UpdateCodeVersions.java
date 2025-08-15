@@ -4,7 +4,6 @@ import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeUpdater;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.server.logging.Monitor;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -55,7 +54,7 @@ public class UpdateCodeVersions implements Job {
         CodeDatabase cd = new CodeDatabase(jurisdiction, env, conn)) {
       success = CodeUpdater.executeCommand(cd, jurisdiction, env, List.of("refresh"), x509Password);
     } catch (SQLException e) {
-      log.error("Couldn't connect to Codes db from Job Executor: " + StdLib.strFromException(e));
+      log.error("Couldn't connect to Codes db from Job Executor: ", e);
       success = false;
     }
     if (!success) {

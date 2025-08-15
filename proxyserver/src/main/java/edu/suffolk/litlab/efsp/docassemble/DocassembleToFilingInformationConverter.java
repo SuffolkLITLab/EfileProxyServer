@@ -35,10 +35,10 @@ public class DocassembleToFilingInformationConverter extends InterviewToFilingIn
       }
       return Result.ok(info);
     } catch (JsonExtractException ex) {
-      log.warn("Got extract Exception: " + ex);
+      log.warn("Got extract Exception: ", ex);
       return Result.err(ex.getError());
     } catch (JsonProcessingException ex) {
-      log.warn("Parsing Exception: " + ex);
+      log.warn("Parsing Exception: ", ex);
       return Result.err(FilingError.malformedInterview("JsonParsing Exception: " + ex));
     }
   }

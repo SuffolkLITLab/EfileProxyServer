@@ -131,7 +131,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
     Optional<String> maybeTylerEnv = GetEnv("TYLER_ENV");
     if (maybeTylerEnv.isPresent()) {
-      log.info("Using " + maybeTylerEnv.get() + " for TYLER_ENV");
+      log.info("Using {} for TYLER_ENV", maybeTylerEnv.get());
       args.tylerEnv = maybeTylerEnv.get();
     } else {
       log.info("Not using any TYLER_ENV, maybe prod?");
@@ -189,13 +189,13 @@ public class TylerModuleSetup implements EfmModuleSetup {
               List.of("replacesome", testOnlyLocation),
               this.x509Password);
         } else {
-          log.info("Downloading all codes for " + tylerJurisdiction + ": please wait a bit");
+          log.info("Downloading all codes for {}: please wait a bit", tylerJurisdiction);
           CodeUpdater.executeCommand(
               cd, tylerJurisdiction, tylerEnv, List.of("replaceall"), this.x509Password);
         }
       }
     } catch (SQLException e) {
-      log.error("SQL Exception: " + StdLib.strFromException(e));
+      log.error("SQL Exception: ", e);
       throw new RuntimeException(e);
     }
     log.info("Done checking table if absent");
@@ -246,7 +246,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
             immediateTrigger);
       }
     } catch (SchedulerException se) {
-      log.error("Scheduler Exception: " + StdLib.strFromException(se));
+      log.error("Scheduler Exception: ", se);
       throw new RuntimeException(se);
     }
   }
@@ -268,7 +268,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
       allCourts.remove("1");
       return allCourts;
     } catch (SQLException ex) {
-      log.error("SQL error when getting courts to route to Tyler: " + ex);
+      log.error("SQL error when getting courts to route to Tyler: ", ex);
       return Set.of();
     }
   }
@@ -300,7 +300,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
           try (CodeDatabase cd = cdSupplier.get()) {
             globalPasswordRow = cd.getDataField("0", "GlobalPassword");
           } catch (SQLException e) {
-            log.error("Couldn't get connection to Codes db:" + StdLib.strFromException(e));
+            log.error("Couldn't get connection to Codes db:", e);
           }
           if (globalPasswordRow.isvisible
               && globalPasswordRow.isrequired
@@ -367,20 +367,20 @@ public class TylerModuleSetup implements EfmModuleSetup {
     String baseLocalUrl = ServiceHelpers.BASE_LOCAL_URL;
     String address =
         baseLocalUrl + "/jurisdictions/" + tylerJurisdiction + ServiceHelpers.ASSEMBLY_PORT;
-    log.info("Starting NFRC callback server at " + address);
+    log.info("Starting NFRC callback server at {}", address);
     EndpointImpl jaxWsEndpoint =
         (EndpointImpl) jakarta.xml.ws.Endpoint.publish(address, implementor);
-    log.info("Wsdl location: " + jaxWsEndpoint.getWsdlLocation());
-    log.info("Address : " + jaxWsEndpoint.getAddress());
-    log.info("Bean name: " + jaxWsEndpoint.getBeanName());
+    log.info("Wsdl location: {}", jaxWsEndpoint.getWsdlLocation());
+    log.info("Address : {}", jaxWsEndpoint.getAddress());
+    log.info("Bean name: {}", jaxWsEndpoint.getBeanName());
 
     OasisEcfv5WsCallback impl2 = new OasisEcfv5WsCallback(makeCD, makeUD, sender);
     String v5Address =
         baseLocalUrl + "/jurisdictions/" + tylerJurisdiction + ServiceHelpers.ASSEMBLY_PORT_V5;
     EndpointImpl jaxWsV5Endpoint = (EndpointImpl) jakarta.xml.ws.Endpoint.publish(v5Address, impl2);
-    log.info("V5 Wsdl location: " + jaxWsV5Endpoint.getWsdlLocation());
-    log.info("V5 Address : " + jaxWsV5Endpoint.getAddress());
-    log.info("V5 Bean name: " + jaxWsV5Endpoint.getBeanName());
+    log.info("V5 Wsdl location: {}", jaxWsV5Endpoint.getWsdlLocation());
+    log.info("V5 Address : {}", jaxWsV5Endpoint.getAddress());
+    log.info("V5 Bean name: {}", jaxWsV5Endpoint.getBeanName());
 
     /*
     Endpoint cxfEndpoint = jaxWsEndpoint.getServer().getEndpoint();
@@ -408,7 +408,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
       try {
         scheduler.shutdown();
       } catch (SchedulerException e) {
-        log.error("SchedulerException on shutdown: " + e.toString());
+        log.error("SchedulerException on shutdown: ", e);
       }
     }
   }

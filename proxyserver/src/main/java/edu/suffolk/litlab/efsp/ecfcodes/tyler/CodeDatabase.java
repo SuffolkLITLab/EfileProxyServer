@@ -2,7 +2,6 @@ package edu.suffolk.litlab.efsp.ecfcodes.tyler;
 
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseAPI;
 import edu.suffolk.litlab.efsp.stdlib.SQLFunction;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import jakarta.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -54,7 +53,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       CodeDatabase cd = new CodeDatabase(jurisdiction, env, ds.getConnection());
       return cd;
     } catch (SQLException e) {
-      log.error("In CodeDatabase constructor, can't get connection: " + StdLib.strFromException(e));
+      log.error("In CodeDatabase constructor, can't get connection: ", e);
       throw new RuntimeException(e);
     }
   }
@@ -91,7 +90,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       throw new SQLException();
     }
     if (tableName.contains("(") || tableName.contains(")") || tableName.contains(" ")) {
-      log.warn("Must be valid table name: " + tableName + " is not");
+      log.warn("Must be valid table name: {} is not", tableName);
       return;
     }
 
@@ -110,7 +109,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         } else {
           String createQuery = CodeTableConstants.getCreateTable(tableName);
           if (createQuery.isEmpty()) {
-            log.warn("Will not create table with name: " + tableName);
+            log.warn("Will not create table with name: {}", tableName);
             return;
           }
           try (Statement createSt = conn.createStatement()) {
@@ -128,7 +127,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       throw new SQLException();
     }
     if (tableName.contains("(") || tableName.contains(")") || tableName.contains(" ")) {
-      log.warn("Must be a valid table name: " + tableName + " is not");
+      log.warn("Must be a valid table name: {} is not", tableName);
       return;
     }
 
@@ -160,7 +159,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       throw new SQLException("Null connection!");
     }
     if (tableName.contains("(") || tableName.contains(")") || tableName.contains(" ")) {
-      log.warn("Must be valid table name: " + tableName + " is not");
+      log.warn("Must be valid table name: {} is not", tableName);
       return;
     }
 
@@ -192,8 +191,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       update.setString(5, doc.getIdentification().getVersion());
       update.executeUpdate();
     } catch (SQLException ex) {
-      log.error(
-          "Tried to execute an insert, but failed! Exception: {}", StdLib.strFromException(ex));
+      log.error("Tried to execute an insert, but failed! Exception", ex);
       log.error("Going to rollback updates to this table");
       throw ex;
     }
@@ -372,7 +370,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
               CaseCategory newCat = new CaseCategory(rs);
               return Optional.of(newCat);
             } else {
-              log.warn("No categories for code " + caseCatCode + " at " + courtLocationId);
+              log.warn("No categories for code {} at {}", caseCatCode, courtLocationId);
               return Optional.empty();
             }
           }
@@ -513,7 +511,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       }
       return DataFieldRow.MissingDataField(dataName);
     } catch (SQLException ex) {
-      log.error("SQLException: " + ex.toString());
+      log.error("SQLException: ", ex);
       return DataFieldRow.MissingDataField(dataName);
     }
   }
@@ -545,7 +543,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       }
       return dataFields;
     } catch (SQLException ex) {
-      log.error("SQLException: " + ex.toString());
+      log.error("SQLException: ", ex);
       return List.of();
     }
   }
@@ -589,7 +587,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       }
       return new DataFields(allDataFields);
     } catch (SQLException ex) {
-      log.error("SQLException: " + ex.toString());
+      log.error("SQLException: ", ex);
       return new DataFields();
     }
   }
@@ -612,7 +610,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       }
       return names;
     } catch (SQLException ex) {
-      log.error("SQLExeception: " + ex);
+      log.error("SQLExeception: ", ex);
       return List.of();
     }
   }
@@ -707,11 +705,11 @@ public class CodeDatabase extends CodeDatabaseAPI {
     try {
       String vacuum = CodeTableConstants.vacuumAnalyzeAll();
       try (PreparedStatement vacuumSt = conn.prepareStatement(vacuum)) {
-        log.info("Full vacuum statement: " + vacuumSt.toString());
+        log.info("Full vacuum statement: {}", vacuumSt);
         vacuumSt.executeUpdate();
       }
     } catch (SQLException ex) {
-      log.error("Error when vacuuming in " + this.tylerDomain + ": " + StdLib.strFromException(ex));
+      log.error("Error when vacuuming in {}", this.tylerDomain, ex);
     }
   }
 
@@ -897,7 +895,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       }
       return docTypes;
     } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex));
+      log.error("SQL Error when getting document types", ex);
       return List.of();
     }
   }
@@ -920,7 +918,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       }
       return motions;
     } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex));
+      log.error("SQL Error when getting motion types", ex);
       return List.of();
     }
   }
@@ -942,7 +940,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       }
       return motions;
     } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex));
+      log.error("SQL Error when getting name suffixes", ex);
       return List.of();
     }
   }
@@ -965,7 +963,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       }
       return components;
     } catch (SQLException ex) {
-      log.error("SQLException: " + ex.toString());
+      log.error("SQLException: ", ex);
       return List.of();
     }
   }
@@ -999,7 +997,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       }
       return stateCodes;
     } catch (SQLException ex) {
-      log.error("Got a SQL exception in StateCodes: " + ex);
+      log.error("Got a SQL exception in StateCodes: ", ex);
       return List.of();
     }
   }
@@ -1055,7 +1053,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       }
       return names;
     } catch (SQLException ex) {
-      log.error("SQLExecption: " + ex);
+      log.error("SQLExecption: ", ex);
       return List.of();
     }
   }
@@ -1165,7 +1163,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     try (PreparedStatement st = conn.prepareStatement(query)) {
       st.setString(1, this.tylerDomain);
       ResultSet rs = st.executeQuery();
-      log.info("Query was " + st.toString());
+      log.info("Query was {}", st);
       while (rs.next()) {
         if (!courtTables.containsKey(rs.getString(1))) {
           courtTables.put(rs.getString(1), new ArrayList<>());
@@ -1221,11 +1219,9 @@ public class CodeDatabase extends CodeDatabaseAPI {
     boolean tableHasCourt = !deleteFromTableStr.isBlank();
     if (!tableHasCourt) {
       log.warn(
-          "Cannot remove the "
-              + courtLocation
-              + " from "
-              + tableName
-              + ", a table with no court locations");
+          "Cannot remove the {} from {}, a table with no court locations",
+          courtLocation,
+          tableName);
       return false;
     }
     try (PreparedStatement st = conn.prepareStatement(deleteFromTableStr)) {
@@ -1257,7 +1253,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       rs.close();
       return locs;
     } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex));
+      log.error("SQL Error when getting all locations: ", ex);
       return List.of();
     }
   }
@@ -1318,7 +1314,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
               CourtLocationInfo info = new CourtLocationInfo(rs);
               return Optional.of(info);
             } else {
-              log.warn("CourtLocation " + courtId + " not found!");
+              log.warn("CourtLocation {} not found!", courtId);
               return Optional.empty();
             }
           }
@@ -1341,17 +1337,11 @@ public class CodeDatabase extends CodeDatabaseAPI {
         if (rs.next()) {
           currentCourt = rs.getString(2);
         } else {
-          log.warn("CourtLocation " + currentCourt + ", ancestor of " + courtId + " not found!");
+          log.warn("CourtLocation {}, ancestor of {} not found!", currentCourt, courtId);
           return parentList;
         }
       } catch (SQLException ex) {
-        log.error(
-            "CourtLocation "
-                + currentCourt
-                + ", ancestor of "
-                + courtId
-                + " made a SQL error: "
-                + StdLib.strFromException(ex));
+        log.error("CourtLocation {}, ancestor of {} made a SQL error: ", currentCourt, courtId, ex);
         return parentList;
       }
     }
@@ -1385,7 +1375,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     try {
       return sup.get();
     } catch (SQLException ex) {
-      log.error("SQL excption: " + ex);
+      log.error("SQL excption: ", ex);
       return List.of();
     }
   }
@@ -1398,7 +1388,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     try {
       return sup.get();
     } catch (SQLException ex) {
-      log.error("SQL excption: " + ex);
+      log.error("SQL excption: ", ex);
       return Optional.empty();
     }
   }

@@ -1,6 +1,5 @@
 package edu.suffolk.litlab.efsp.server.services.acme;
 
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -194,11 +193,11 @@ public class AcmeRenewal {
     try (FileWriter fw = new FileWriter(DOMAIN_CHAIN_FILE)) {
       certificate.writeCertificate(fw);
     }
-    log.info("Writing things to a jks file: " + JKS_OUT_FILE_PATH);
+    log.info("Writing things to a jks file: {}", JKS_OUT_FILE_PATH);
     try (FileOutputStream fos = new FileOutputStream(JKS_OUT_FILE_PATH)) {
       fos.write(convertPEMToJKS(DOMAIN_KEY_FILE, DOMAIN_CHAIN_FILE, certPassword));
     } catch (Exception ex) {
-      log.error("Error on cert conversion: " + StdLib.strFromException(ex));
+      log.error("Error on cert conversion: ", ex);
     }
   }
 
@@ -218,7 +217,7 @@ public class AcmeRenewal {
       }
       AccountBuilder ab = new AccountBuilder().agreeToTermsOfService().useKeyPair(accountKey);
       if (email != null && !email.isBlank()) {
-        log.info("Using " + email + " for account and contact email");
+        log.info("Using {} for account and contact email", email);
         ab.addEmail(email);
       }
       login = ab.createLogin(session);
@@ -421,7 +420,7 @@ public class AcmeRenewal {
       try (FileOutputStream fos = new FileOutputStream(JKS_OUT_FILE_PATH)) {
         fos.write(convertPEMToJKS(DOMAIN_KEY_FILE, DOMAIN_CHAIN_FILE, password));
       } catch (Exception ex) {
-        log.error("Error on cert conversion: " + StdLib.strFromException(ex));
+        log.error("Error on cert conversion: ", ex);
       }
       return;
     }

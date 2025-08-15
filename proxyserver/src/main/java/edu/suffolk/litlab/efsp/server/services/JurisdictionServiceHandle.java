@@ -113,9 +113,9 @@ public class JurisdictionServiceHandle {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAll() {
     EndpointReflection ef = new EndpointReflection("/jurisdictions/" + jurisdiction);
-    var x = ef.findRESTEndpoints(List.of(JurisdictionServiceHandle.class));
-    log.info("All endpoints for servicehandle: " + x);
-    var map = ef.endPointsToMap(x);
+    var endpoints = ef.findRESTEndpoints(List.of(JurisdictionServiceHandle.class));
+    log.info("All endpoints for servicehandle: {}", endpoints);
+    var map = ef.endPointsToMap(endpoints);
     ArrayList<String> keysToRemove = new ArrayList<>();
     for (String key : map.keySet()) {
       var val = map.get(key);
@@ -132,7 +132,7 @@ public class JurisdictionServiceHandle {
     for (String key : keysToRemove) {
       map.remove(key);
     }
-    log.info("Hitting HATEOS endpoint for " + jurisdiction + ": map: " + map);
+    log.info("Hitting HATEOS endpoint for {}: map: {}", jurisdiction, map);
     return Response.ok(map).build();
   }
 

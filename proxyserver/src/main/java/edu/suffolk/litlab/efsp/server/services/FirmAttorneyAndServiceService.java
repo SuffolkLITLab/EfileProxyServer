@@ -13,7 +13,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.server.services.api.ServiceContactInput;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
@@ -353,15 +352,15 @@ public class FirmAttorneyAndServiceService {
           tylerCommonObjFac.createServiceContactTypeIsInFirmMasterList(input.isInFirmMaster));
       contact.setPhoneNumber(input.phoneNumber);
       req.setServiceContact(contact);
-      log.info("Making new service contact: " + contact + "(" + input.firstName + ")");
+      log.info("Making new service contact: {} ({})", contact, input.firstName);
       CreateServiceContactResponseType resp = firmPort.get().createServiceContact(req);
-      log.info("Got response: " + resp.getError().getErrorCode());
-      log.info("Got response id: " + resp.getServiceContactID());
+      log.info("Got response: {}", resp.getError().getErrorCode());
+      log.info("Got response id: {}", resp.getServiceContactID());
       MDCWrappers.removeAllMDCs();
       return makeResponse(
           resp, () -> Response.ok("\"" + resp.getServiceContactID() + "\"").build());
     } catch (JsonProcessingException ex) {
-      log.info("JsonProcessingException: " + StdLib.strFromException(ex));
+      log.info("JsonProcessingException: ", ex);
       return Response.status(400).entity("\"Cannot read service contact input\"").build();
     } finally {
       MDCWrappers.removeAllMDCs();
@@ -508,7 +507,7 @@ public class FirmAttorneyAndServiceService {
         DataFieldRow row = cd.getDataField("1", "PublicServiceContactShowFreeFormFirmName");
         showFirmName = row.isvisible;
       } catch (SQLException ex) {
-        log.error("getPublicList can't get CD: " + StdLib.strFromException(ex));
+        log.error("getPublicList can't get CD: ", ex);
       }
       final boolean showFreeFormFirmName = showFirmName;
       return makeResponse(

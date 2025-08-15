@@ -8,7 +8,6 @@ import edu.suffolk.litlab.efsp.db.model.NewTokens;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeTableConstants;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.stdlib.RandomString;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -85,10 +84,10 @@ public class LoginDatabase extends Database {
       ResultSet rs = existsSt.executeQuery();
       if (!rs.next() || rs.getInt(1) <= 0) { // There's no table! Make one
         try (Statement createSt = conn.createStatement()) {
-          log.info("Full statement: " + createSt.toString());
+          log.info("Full statement: {}", createSt.toString());
           int retVal = createSt.executeUpdate(createQuery);
           if (retVal < 0) {
-            log.warn("Issue when creating " + tableName + ": retVal == " + retVal);
+            log.warn("Issue when creating {}: retVal == {}", tableName, retVal);
           }
         }
       }
@@ -145,7 +144,7 @@ public class LoginDatabase extends Database {
       st.setString(1, hash);
       ResultSet rs = st.executeQuery();
       if (!rs.next()) {
-        log.warn("API Key hash not present in at rest: " + hash);
+        log.warn("API Key hash not present in at rest: {}", hash);
         return Optional.empty();
       }
       AtRest atRest = new AtRest();
@@ -158,7 +157,7 @@ public class LoginDatabase extends Database {
       MDC.put(MDCWrappers.SERVER_ID, atRest.serverId.toString());
       return Optional.of(atRest);
     } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex));
+      log.error("SQL error when logging in", ex);
       return Optional.empty();
     }
   }
@@ -180,7 +179,7 @@ public class LoginDatabase extends Database {
       st.executeUpdate();
       return true;
     } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex));
+      log.error("SQL error when updating server name", ex);
       return false;
     }
   }
@@ -224,13 +223,13 @@ public class LoginDatabase extends Database {
     try {
       loginInfo = mapper.readTree(jsonLoginInfo);
     } catch (JsonProcessingException e) {
-      log.error("Error processing login json:" + e.toString());
+      log.error("Error processing login json:", e);
       return Optional.empty();
     }
 
     // TODO(brycew-later): the only hacky part, how can this be modulized?
     if (!loginInfo.isObject()) {
-      log.error("Can't login with a json that's not an object: " + loginInfo.toPrettyString());
+      log.error("Can't login with a json that's not an object: {}", loginInfo.toPrettyString());
       return Optional.empty();
     }
     var newTokens = new HashMap<String, String>();
@@ -244,7 +243,7 @@ public class LoginDatabase extends Database {
       // jurisdiction
       if (!loginFunctions.containsKey(orgName)) {
         log.error(
-            "There is no " + orgName + " to login to: loginFunctions: " + loginFunctions.keySet());
+            "There is no {} to login to: loginFunctions: {}", orgName, loginFunctions.keySet());
         return Optional.empty();
       }
 
@@ -253,17 +252,16 @@ public class LoginDatabase extends Database {
         permissionsName = orgName.split("-")[0];
       }
       if (!atRest.enabled.containsKey(permissionsName) || !atRest.enabled.get(permissionsName)) {
-        log.error(
-            "There is no " + permissionsName + " to login to: enabled map: " + atRest.enabled);
+        log.error("There is no {} to login to: enabled map: {}", permissionsName, atRest.enabled);
         return Optional.empty();
       }
       Optional<Map<String, String>> maybeNewTokens =
           loginFunctions.get(orgName).apply(loginInfo.get(orgName));
       if (maybeNewTokens.isEmpty()) {
-        log.warn("Couldn't login to " + orgName);
+        log.warn("Couldn't login to {}", orgName);
         return Optional.empty();
       }
-      log.info("New tokens: " + maybeNewTokens.get());
+      log.info("New tokens for {}", orgName);
       newTokens.putAll(maybeNewTokens.get());
     }
     if (newTokens.isEmpty()) {

@@ -71,7 +71,7 @@ public class AddressDocassembleJacksonDeserializer {
     try {
       countryCode = CountryCodeSimpleType.fromValue(country);
     } catch (IllegalArgumentException ex) {
-      log.error("Country " + country + " isn't a valid country: " + ex);
+      log.error("Country {} isn't a valid country", country, ex);
       List<String> countries =
           Arrays.stream(CountryCodeSimpleType.values())
               .map((t) -> t.toString())

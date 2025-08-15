@@ -31,7 +31,7 @@ public interface EfmModuleSetup {
             s -> {
               Optional<String> maybeVar = StdLib.GetEnv(s);
               if (maybeVar.isEmpty()) {
-                log.warn("You need " + s + " as an env var");
+                log.warn("You need {} as an env var", s);
               }
               return maybeVar;
             })
