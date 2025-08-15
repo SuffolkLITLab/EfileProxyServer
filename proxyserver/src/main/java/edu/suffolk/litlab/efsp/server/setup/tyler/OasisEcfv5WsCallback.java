@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import javax.sql.DataSource;
+import java.util.function.Supplier;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.CardAccountType;
 import org.slf4j.Logger;
@@ -53,22 +53,16 @@ import org.slf4j.LoggerFactory;
 public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
   private static Logger log = LoggerFactory.getLogger(Ecf4Filer.class);
 
-  private final DataSource codeDs;
-  private final DataSource userDs;
+  private final Supplier<CodeDatabase> cdSupplier;
+  private final Supplier<UserDatabase> udSupplier;
   private final OrgMessageSender msgSender;
-  private final String jurisdiction;
-  private final String env;
 
   public OasisEcfv5WsCallback(
-      String jurisdiction,
-      String env,
-      DataSource codeDs,
-      DataSource userDs,
+      Supplier<CodeDatabase> cdSupplier,
+      Supplier<UserDatabase> udSupplier,
       OrgMessageSender msgSender) {
-    this.jurisdiction = jurisdiction;
-    this.env = env;
-    this.codeDs = codeDs;
-    this.userDs = userDs;
+    this.cdSupplier = cdSupplier;
+    this.udSupplier = udSupplier;
     this.msgSender = msgSender;
   }
 
@@ -167,7 +161,7 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
   private String reviewedFilingStatusText(
       NotifyFilingReviewCompleteMessageType revFiling, Transaction trans) {
     List<NameAndCode> names = List.of();
-    try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
+    try (CodeDatabase cd = cdSupplier.get()) {
       names = cd.getFilingStatuses(trans.courtId);
     } catch (SQLException ex) {
       log.error("In ECF v4 callback, couldn't get codes db: " + StdLib.strFromException(ex));
@@ -265,7 +259,7 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
               "Filing code not found in message"));
       return reply;
     }
-    try (UserDatabase ud = new UserDatabase(userDs.getConnection())) {
+    try (UserDatabase ud = udSupplier.get()) {
       Optional<Transaction> trans = ud.findTransaction(UUID.fromString(filingId));
       if (trans.isEmpty()) {
         log.warn("No transaction on record for filingId: " + filingId + " no one to send to");
@@ -281,7 +275,7 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
       UpdateMessageStatus status = reviewedFilingStatusCode(revFiling);
       String courtName =
           trans.get().courtId.substring(0, 1).toUpperCase() + trans.get().courtId.substring(1);
-      try (CodeDatabase cd = new CodeDatabase(jurisdiction, env, codeDs.getConnection())) {
+      try (CodeDatabase cd = cdSupplier.get()) {
         courtName =
             cd.getFullLocationInfo(trans.get().courtId).map(li -> li.name).orElse(courtName);
       } catch (SQLException ex) {
