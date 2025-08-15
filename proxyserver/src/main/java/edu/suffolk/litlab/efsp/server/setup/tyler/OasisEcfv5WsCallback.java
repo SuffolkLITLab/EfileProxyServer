@@ -7,7 +7,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.server.services.api.UpdateMessageStatus;
 import edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import gov.niem.release.niem.codes.cbrncl._4.CredentialsAuthenticatedCodeSimpleType;
 import gov.niem.release.niem.codes.cbrncl._4.CredentialsAuthenticatedCodeType;
 import gov.niem.release.niem.codes.cbrncl._4.MessageStatusCodeSimpleType;
@@ -164,7 +163,7 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
     try (CodeDatabase cd = cdSupplier.get()) {
       names = cd.getFilingStatuses(trans.courtId);
     } catch (SQLException ex) {
-      log.error("In ECF v4 callback, couldn't get codes db: " + StdLib.strFromException(ex));
+      log.error("In ECF v4 callback, couldn't get codes db: ", ex);
     }
 
     FilingStatusType filingStat = revFiling.getFilingStatus();
@@ -203,7 +202,7 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
 
   @Override
   public NotifyCourtDateResponseType notifyCourtDate(NotifyCourtDateRequestType body) {
-    log.info("Full NotifyCourtDate msg" + body);
+    log.info("Full NotifyCourtDate msg {}", body);
     NotifyCourtDateResponseType reply = new NotifyCourtDateResponseType();
     reply.setMessageStatus(ok());
     return reply;
@@ -212,7 +211,7 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
   @Override
   public NotifyFilingReviewCompleteResponseType notifyFilingReviewComplete(
       NotifyFilingReviewCompleteRequestType body) {
-    log.info("Full NotifyFilingReviewComplete msg" + body);
+    log.info("Full NotifyFilingReviewComplete msg: {}", body);
     // The bare minimum: get the Document ID, see if we have it in the db, send email response
     NotifyFilingReviewCompleteMessageType revFiling = body.getNotifyFilingReviewCompleteMessage();
     PaymentMessageType payment = body.getPaymentMessage();
@@ -222,8 +221,8 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
     if (payment == null || revFiling == null) {
       log.error(
           "Why did Tyler send us a notifyFilingReviewComplete without either a filing"
-              + " review or a payment receipt?");
-      log.error(body.toString());
+              + " review or a payment receipt?: {}",
+          body);
       reply.setMessageStatus(
           error(
               MessageStatusCodeSimpleType.DATA_ERROR,
@@ -251,7 +250,7 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
       // most of them.
     }
     if (filingId.isBlank()) {
-      log.error("Got back a review filing that has a blank / no FILINGID? " + revFiling.toString());
+      log.error("Got back a review filing that has a blank / no FILINGID? {}", revFiling);
       reply.setMessageStatus(
           error(
               MessageStatusCodeSimpleType.ACTIVITY_CODE_FAILURE,
@@ -262,7 +261,7 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
     try (UserDatabase ud = udSupplier.get()) {
       Optional<Transaction> trans = ud.findTransaction(UUID.fromString(filingId));
       if (trans.isEmpty()) {
-        log.warn("No transaction on record for filingId: " + filingId + " no one to send to");
+        log.warn("No transaction on record for filingId: {} no one to send to", filingId);
         reply.setMessageStatus(
             error(
                 MessageStatusCodeSimpleType.ACTIVITY_CODE_FAILURE,
@@ -279,17 +278,17 @@ public class OasisEcfv5WsCallback implements FilingAssemblyMDE {
         courtName =
             cd.getFullLocationInfo(trans.get().courtId).map(li -> li.name).orElse(courtName);
       } catch (SQLException ex) {
-        log.error("In ECF v4 callback, couldn't get codes db: " + StdLib.strFromException(ex));
+        log.error("In ECF v4 callback, couldn't get codes db: ", ex);
       }
       boolean success =
           msgSender.sendMessage(trans.get(), status, statusText, messageText, null, courtName);
       if (!success) {
-        log.error("Couldn't properly send message to " + trans.get().name + "!");
+        log.error("Couldn't properly send message to {}!", trans.get().name);
       }
       reply.setMessageStatus(ok());
       return reply;
     } catch (SQLException e) {
-      log.error("Couldn't connect to the SQL database to get the transaction: " + e.toString());
+      log.error("Couldn't connect to the SQL database to get the transaction: ", e);
       reply.setMessageStatus(error(MessageStatusCodeSimpleType.SYSTEM_ERROR, "-1", "Server error"));
       return reply;
     }

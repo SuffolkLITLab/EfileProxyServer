@@ -77,7 +77,7 @@ public class CodeDatabaseTest {
       cd.createTableIfAbsent(table);
       for (String court : entry.getValue()) {
         String filename = "/" + court + "_" + table + "_test.xml";
-        log.info("Updating from file: " + filename);
+        log.info("Updating from file: {}", filename);
         cd.updateTable(table, court, this.getClass().getResourceAsStream(filename));
       }
     }

@@ -17,7 +17,6 @@ import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
@@ -261,7 +260,7 @@ public class FilingReviewService {
     if (mediaType == null) {
       mediaType = MediaType.valueOf("application/json");
     }
-    log.trace("Court id: " + courtId);
+    log.trace("Court id: {}", courtId);
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
@@ -368,7 +367,7 @@ public class FilingReviewService {
         return Response.status(401).entity("Not logged in to file with " + courtId).build();
       }
     } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex));
+      log.error("SQL Error: ", ex);
     }
     Result<FilingInformation, Response> maybeInfo =
         parseFiling(httpHeaders, allVars, filer, courtId, mediaType);
@@ -434,17 +433,15 @@ public class FilingReviewService {
 
     } catch (SQLException ex) {
       log.error(
-          "Couldn't add info to the database! Logging here for posterity: "
-              + "%s %s %s %s %s"
-                  .formatted(
-                      user.getName().getFullName(),
-                      user.getId(),
-                      phoneNumber,
-                      user.getContactInfo().getEmail(),
-                      result,
-                      info.getCaseTypeCode(),
-                      ts));
-      log.error("Error: " + ex);
+          "Couldn't add info to the database! Logging here for posterity: {}, {}, {}, {}, {}, {}, {}",
+          user.getName().getFullName(),
+          user.getId(),
+          phoneNumber,
+          user.getContactInfo().getEmail(),
+          result,
+          info.getCaseTypeCode(),
+          ts,
+          ex);
       return Response.ok().entity("Submitted, but error saving info to database").build();
     }
     msgSender.sendConfirmation(
@@ -563,7 +560,7 @@ public class FilingReviewService {
       }
       return Optional.of(orgToken);
     } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex));
+      log.error("SQL Error", ex);
       return Optional.empty();
     }
   }

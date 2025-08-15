@@ -1,7 +1,5 @@
 package edu.suffolk.litlab.efsp.db;
 
-import static edu.suffolk.litlab.efsp.stdlib.StdLib.strFromException;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -56,7 +54,7 @@ public class DatabaseVersion {
         PreparedStatement pst = userConn.prepareStatement(createSt);
         int retVal = pst.executeUpdate();
         if (retVal < 0) {
-          log.warn("Issue when creating schema_version: retVal == " + retVal);
+          log.warn("Issue when creating schema_version: retVal == {}", retVal);
         }
         if (brandNew) {
           setSchemaVersion(CURRENT_VERSION);
@@ -101,7 +99,7 @@ public class DatabaseVersion {
       while (onDiskVersion < CURRENT_VERSION) {
         System.out.println(onDiskVersion + " " + CURRENT_VERSION);
         Savepoint savepoint = userConn.setSavepoint("beginning_update");
-        log.info("Updating database from version " + onDiskVersion + " to " + (onDiskVersion + 1));
+        log.info("Updating database from version {} to {}", onDiskVersion, onDiskVersion + 1);
         try {
           boolean successful = updateDatabase(onDiskVersion);
           if (!successful) {
@@ -110,24 +108,21 @@ public class DatabaseVersion {
           onDiskVersion += 1;
         } catch (SQLException ex) {
           log.error(
-              "Couldn't update from version "
-                  + onDiskVersion
-                  + " to "
-                  + CURRENT_VERSION
-                  + ": "
-                  + strFromException(ex)
-                  + ": , reverting to on disk db");
+              "Couldn't update from version {} to {}, reverting to on-disk db",
+              onDiskVersion,
+              CURRENT_VERSION,
+              ex);
           try {
             userConn.rollback(savepoint);
           } catch (SQLException rollbackEx) {
-            log.error("Couldn't rollback! Error: " + strFromException(rollbackEx));
+            log.error("Couldn't rollback! Error", rollbackEx);
             return false;
           }
           return false;
         }
       }
     } catch (SQLException ex) {
-      log.error("Couldn't setup updating to latest! Error: " + strFromException(ex));
+      log.error("Couldn't setup updating to latest! Error: ", ex);
       return false;
     }
     return true;

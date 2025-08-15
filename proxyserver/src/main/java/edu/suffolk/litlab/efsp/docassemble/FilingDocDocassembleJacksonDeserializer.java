@@ -65,7 +65,7 @@ public class FilingDocDocassembleJacksonDeserializer {
     } else {
       InterviewVariable filingVar =
           collector.requestVar("filing_type", "What filing type is this?", "text");
-      log.warn("filing_type not present in the info!: " + node);
+      log.warn("filing_type not present in the info!: {}", node);
       // Optional for non-tyler ones. Will be enforced at the tyler level
       collector.addOptional(
           filingVar.appendDesc(
@@ -138,11 +138,10 @@ public class FilingDocDocassembleJacksonDeserializer {
             .map(
                 fp -> {
                   if (varToPartyId.containsKey(fp)) {
-                    log.info(
-                        "Filing party id in " + _logName + ": " + fp + ": " + varToPartyId.get(fp));
+                    log.info("Filing party id in {}: {}: {}", _logName, fp, varToPartyId.get(fp));
                     return varToPartyId.get(fp);
                   }
-                  log.info("Existing filing party id in doc: " + fp);
+                  log.info("Existing filing party id in doc: {}", fp);
                   return PartyId.Already(fp);
                 })
             .collect(Collectors.toList());
@@ -170,7 +169,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       }
     }
     if (attachments.isEmpty()) {
-      log.info("No attachments present in " + _logName);
+      log.info("No attachments present in {}", _logName);
       Optional<FilingAttachment> attachment = getAttachment(node, collector);
       if (attachment.isPresent()) {
         attachments = fj.data.List.single(attachment.get());
@@ -221,7 +220,7 @@ public class FilingDocDocassembleJacksonDeserializer {
     }
     String documentDescription = getStringDefault(node, "document_description", fileName);
     if (!node.has("proxy_enabled") || !node.get("proxy_enabled").asBoolean(false)) {
-      log.info(fileName + " isn't proxy enabled");
+      log.info("{} isn't proxy enabled", fileName);
       return Optional.empty();
     }
 

@@ -388,7 +388,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
 
   @Override
   public MessageReceiptMessageType notifyEvent(EventCallbackMessageType eventCallbackMessage) {
-    log.info("Full NotifyEvent msg" + eventCallbackMessage);
+    log.info("Full NotifyEvent msg {}", eventCallbackMessage);
     // TODO(brycew): not going to do anything with for now
     MessageReceiptMessageType reply = receiptFac.createMessageReceiptMessageType();
     Ecf4Helper.setupReplys(reply);

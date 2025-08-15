@@ -10,7 +10,6 @@ import edu.suffolk.litlab.efsp.db.model.MessageInfo;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.Path;
@@ -64,7 +63,7 @@ public class MessageSettingsService {
       MessageInfo info = orgMsg.getSettings(atRest.get().serverId);
       return Response.ok(info).build();
     } catch (SQLException ex) {
-      log.error("Couldn't get email settings for server: " + StdLib.strFromException(ex));
+      log.error("Couldn't get email settings for server: ", ex);
       return Response.status(500).build();
     } finally {
       MDCWrappers.removeAllMDCs();
@@ -79,7 +78,7 @@ public class MessageSettingsService {
       MDC.put(MDCWrappers.OPERATION, "MessageSettingsService.setMsgSettings");
       atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
     } catch (SQLException ex) {
-      log.error("Error when trying to update settings: " + StdLib.strFromException(ex));
+      log.error("Error when trying to update settings: ", ex);
       return Response.status(500).build();
     }
     if (atRest.isEmpty()) {
@@ -95,7 +94,7 @@ public class MessageSettingsService {
     try {
       node = mapper.readTree(newInfoStr);
     } catch (JsonProcessingException e) {
-      log.error("You need to pass a JSON string to /settings; we got " + newInfoStr);
+      log.error("You need to pass a JSON string to /settings; we got {}", newInfoStr, e);
       return Response.status(400).build();
     }
     MessageInfo newInfo = new MessageInfo(node);
@@ -110,7 +109,7 @@ public class MessageSettingsService {
       md.updateTable(existingInfo);
       return Response.status(200).build();
     } catch (SQLException ex) {
-      log.error("Error when trying to update settings: " + StdLib.strFromException(ex));
+      log.error("Error when trying to update settings: ", ex);
       return Response.status(500).build();
     } finally {
       MDCWrappers.removeAllMDCs();

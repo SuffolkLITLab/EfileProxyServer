@@ -386,10 +386,10 @@ public class PaymentsService {
     account.loginInfo = tylerInfo;
     account.originalUrl = originalUrl;
     account.errorUrl = errorUrl;
-    log.info("Going back to original url: " + originalUrl);
+    log.info("Going back to original url: {}", originalUrl);
     tempAccounts.put(transactionId, account);
 
-    log.info("Redirecting with transactionId: " + transactionId);
+    log.info("Redirecting with transactionId: {}", transactionId);
     String fullHtml =
 """
 <!DOCTYPE html>
@@ -461,7 +461,7 @@ public class PaymentsService {
   public Response makeNewPaymentAccount(
       @Context HttpHeaders httpHeaders, @FormParam("ResponseXML") String body) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.makeNewPaymentAccount");
-    log.info("Making new payment account with Tyler's response: " + body);
+    log.info("Making new payment account with Tyler's response: {}", body);
     try {
       JAXBContext jaxContext = JAXBContext.newInstance(TogaResponseXml.class);
       Unmarshaller unmar = jaxContext.createUnmarshaller();
@@ -470,14 +470,14 @@ public class PaymentsService {
 
       CreatePaymentAccountRequestType createAccount = new CreatePaymentAccountRequestType();
       if (!tempAccounts.containsKey(resp.transactionId)) {
-        log.warn("Response transaction id for: " + resp.transactionId + " not there!");
+        log.warn("Response transaction id for: {} not there!", resp.transactionId);
         return Response.status(404).entity(paymentsErrorHtml).build();
       }
       TempAccount tempInfo = tempAccounts.get(resp.transactionId);
       Optional<TylerFirmClient> maybeFirmPort =
           ServiceHelpers.setupFirmPort(firmFactory, tempInfo.loginInfo);
       if (maybeFirmPort.isEmpty()) {
-        log.warn("Couldn't get the firm port for " + resp.transactionId);
+        log.warn("Couldn't get the firm port for {}", resp.transactionId);
         return Response.status(403).entity(paymentsErrorHtml).build();
       }
       TylerFirmClient firmPort = maybeFirmPort.get();
@@ -512,13 +512,12 @@ public class PaymentsService {
       }
       if (TylerErrorCodes.hasError(accountResp)) {
         log.error(
-            accountResp.getError().getErrorCode() + " " + accountResp.getError().getErrorText());
+            "{} {}", accountResp.getError().getErrorCode(), accountResp.getError().getErrorText());
         return Response.status(302).header("Location", tempInfo.errorUrl).build();
       }
       return Response.status(302).header("Location", tempInfo.originalUrl).build();
     } catch (JAXBException jaxbEx) {
-      log.error("Couldn't process the TOGA response in XML: " + body);
-      log.error(jaxbEx.toString());
+      log.error("Couldn't process the TOGA response in XML: {}", body, jaxbEx);
       return Response.status(400).entity(paymentsErrorHtml).build();
     }
   }
@@ -572,9 +571,9 @@ public class PaymentsService {
         tylerCommonObjFac.createPaymentAccountLocationDetails();
     newAccount.setPaymentAccountLocationDetails(locationDetails);
     newAccount.setAccountName(accountName);
-    log.info("newAccount: " + newAccount);
+    log.info("newAccount: {}", newAccount);
     createAccount.setPaymentAccount(newAccount);
-    log.info("createAccount: " + createAccount);
+    log.info("createAccount: {}", createAccount);
     CreatePaymentAccountResponseType resp;
     if (global) {
       resp = firmPort.createGlobalPaymentAccount(createAccount);

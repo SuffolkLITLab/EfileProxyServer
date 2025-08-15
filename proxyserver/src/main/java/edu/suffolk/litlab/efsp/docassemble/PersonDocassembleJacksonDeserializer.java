@@ -154,7 +154,7 @@ public class PersonDocassembleJacksonDeserializer {
     Person per =
         Person.FromInput(
             name, info, gender, language, birthdate, !isPer, isFormFiller, partyType, efmId);
-    log.debug("Read in a new person: " + per.getName().getFullName());
+    log.debug("Read in a new person: {}", per.getName().getFullName());
     return Result.ok(per);
   }
 }

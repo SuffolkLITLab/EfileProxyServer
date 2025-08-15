@@ -83,7 +83,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       collector.popAttributeStack();
       if (per.isErr()) {
         FilingError ex = per.unwrapErrOrElseThrow();
-        log.warn("Person exception: " + ex);
+        log.warn("Person exception: ", ex);
         collector.error(ex);
       }
 
@@ -220,7 +220,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       if (metadataElems.size() >= 1) {
         String key = metadataElems.fieldNames().next();
         if (metadataElems.size() > 1) {
-          log.warn("Only the first metadata element will be looked at: " + key);
+          log.warn("Only the first metadata element will be looked at: {}", key);
         }
         metadata = metadataElems.get(key).get("elements");
       }
@@ -233,7 +233,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       List<String> categories = new ArrayList<String>();
       metadata.get("categories").forEach((cat) -> categories.add(cat.asText()));
       entities.setCaseCategoryCode(String.join(", ", categories));
-      log.info("Categories: " + categories.toString());
+      log.info("Categories: {}", categories);
     } else if (isFirstIndexedFiling) {
       InterviewVariable var = collector.requestVar("efile_case_category", "", "text");
       collector.addRequired(var);
@@ -260,7 +260,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
 
     // Get the interview metadablock TODO(brycew-later): just one for now
-    // log.info("Keyset: " + metadataElems.fieldNames());
+    // log.info("Keyset: {}", metadataElems.fieldNames());
 
     entities.setFilings(
         extractFilingDocs(
@@ -288,7 +288,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       collector.popAttributeStack();
       if (per.isErr()) {
         FilingError ex = per.unwrapErrOrElseThrow();
-        log.warn("Person exception: " + ex);
+        log.warn("Person exception: ", ex);
         collector.error(ex);
         entities.setLeadContact(null);
       } else {
@@ -323,7 +323,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       JsonNode maybePartyToAttorney, Map<String, PartyId> varToPartyId) {
     Map<PartyId, List<String>> partyToAttorney = new HashMap<>();
     Optional<JsonNode> partyToAttorneyJson = JsonHelpers.unwrapDADict(maybePartyToAttorney);
-    log.info("" + varToPartyId);
+    log.info("varToPartyId: {}", varToPartyId);
     if (partyToAttorneyJson.isPresent()) {
       Iterable<Entry<String, JsonNode>> fields = partyToAttorneyJson.get()::fields;
       for (Entry<String, JsonNode> elem : fields) {
@@ -334,7 +334,7 @@ public class FilingInformationDocassembleJacksonDeserializer
         } else {
           realId = PartyId.Already(userStr);
         }
-        log.info("filing party for attorney map: " + userStr + ": " + realId);
+        log.info("filing party for attorney map: {}: {}", userStr, realId);
         // Get the attorney elements (just strings in a list or DAList) into this Java List
         var theseAttorneys = new ArrayList<String>();
         JsonHelpers.unwrapDAList(elem.getValue())
@@ -371,7 +371,7 @@ public class FilingInformationDocassembleJacksonDeserializer
                   + "): "
                   + realId);
         } else if (partyAssoc != null && !partyAssoc.isNull()) {
-          log.warn("What is party_association? should be text: " + partyAssoc);
+          log.warn("What is party_association? should be text: {}", partyAssoc);
           collector.addWrong(
               collector.requestVar(
                   "party_association",
@@ -449,7 +449,7 @@ public class FilingInformationDocassembleJacksonDeserializer
         collector.popAttributeStack();
         maybeDoc.ifPresent(
             doc -> {
-              log.info("Adding this doc to filingDocs:" + doc.toString());
+              log.info("Adding this doc to filingDocs: {}", doc);
               filingDocs.add(doc);
             });
       } catch (FilingError err) {

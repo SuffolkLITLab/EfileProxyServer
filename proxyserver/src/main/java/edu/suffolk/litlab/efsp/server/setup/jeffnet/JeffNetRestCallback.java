@@ -65,21 +65,20 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
             new ByteArrayInputStream(statusReport.getBytes(StandardCharsets.UTF_8));
         resp = (FileResponse) unmar.unmarshal(stream);
       } catch (JAXBException jaxbEx) {
-        log.error("Couldn't process the status report in XML or JSON: " + statusReport);
-        log.error(jaxbEx.toString());
+        log.error("Couldn't process the status report in XML or JSON: {}", statusReport, jaxbEx);
         return Response.status(400).build();
       }
     }
     try (UserDatabase ud = new UserDatabase(ds.getConnection())) {
       Optional<Transaction> maybeTrans = ud.findTransaction(UUID.fromString(resp.transactionId));
       if (maybeTrans.isEmpty()) {
-        log.error("Transaction " + resp.transactionId + " isn't present in the database!");
+        log.error("Transaction {} isn't present in the database!", resp.transactionId);
         return Response.status(404).build();
       }
       Transaction transaction = maybeTrans.get();
       MDC.put(MDCWrappers.SERVER_ID, transaction.serverId.toString());
       if (transaction.apiKeyUsed == null || !transaction.apiKeyUsed.equals(callbackApiKey)) {
-        log.error("Call with API key " + callbackApiKey + " didn't match original API key!");
+        log.error("Call with API key {} didn't match original API key!", callbackApiKey);
         return Response.status(401).build();
       }
       // Done all the checks: now sending the message to the user
@@ -99,7 +98,7 @@ public class JeffNetRestCallback implements EfmRestCallbackInterface {
         return Response.status(500).build();
       }
     } catch (SQLException e) {
-      log.error("Couldn't connect to the SQL database to get the transaction: \n" + e.toString());
+      log.error("Couldn't connect to the SQL database to get the transaction: ", e);
       return Response.status(500).build();
     }
   }

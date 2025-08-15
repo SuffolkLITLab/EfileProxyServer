@@ -16,7 +16,6 @@ import edu.suffolk.litlab.efsp.server.ecf4.SoapClientChooser;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import gov.niem.niem.niem_core._2.CaseType;
 import gov.niem.niem.niem_core._2.EntityType;
@@ -186,7 +185,7 @@ public class CasesService {
         }
       }
     } catch (SQLException e) {
-      log.error("can't get connection: " + StdLib.strFromException(e));
+      log.error("can't get connection: ", e);
       return Response.status(500).build();
     }
 
@@ -264,7 +263,7 @@ public class CasesService {
     try (CodeDatabase cd = cdSupplier.get()) {
       Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId);
       if (locationInfo.isEmpty()) {
-        log.warn("Can't find court location for " + courtId + " when getting case");
+        log.warn("Can't find court location for {} when getting case", courtId);
         return Response.status(404).entity("No court " + courtId).build();
       }
       CaseQueryMessageType query = new CaseQueryMessageType();
@@ -311,7 +310,7 @@ public class CasesService {
       }
       return Response.status(responseCode).entity(resp.getCase()).build();
     } catch (SQLException e) {
-      log.error("can't get connection: " + StdLib.strFromException(e));
+      log.error("can't get connection: ", e);
       return Response.status(500).build();
     } finally {
       MDCWrappers.removeAllMDCs();
@@ -442,7 +441,7 @@ public class CasesService {
       }
       MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
     } catch (SQLException ex) {
-      log.error(StdLib.strFromException(ex));
+      log.error("SQL error with record port", ex);
       return Optional.empty();
     }
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
