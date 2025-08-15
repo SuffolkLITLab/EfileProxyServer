@@ -44,6 +44,7 @@ public class TylerErrorCodes {
           Map.entry("95", 400), // Invalid FilingAttorneyID
           Map.entry("96", 400), // Invalid FilingPartyID
           Map.entry("97", 400), // Invalid PaymentID
+          Map.entry("168", 400), // Lower court code not found
           Map.entry("169", 422), // Invalid birthdate
           Map.entry("170", 422), // Invalid password (when making an account? TODO(brycew))
           Map.entry("344", 422) // Doesn't handle cross references

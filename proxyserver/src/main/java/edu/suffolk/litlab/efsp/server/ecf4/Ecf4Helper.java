@@ -17,6 +17,7 @@ import java.io.StringWriter;
 import java.time.LocalDate;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
@@ -271,38 +272,40 @@ public class Ecf4Helper {
 
   public static Response makeResponse(
       QueryResponseMessageType resp, Supplier<Response> defaultRespFunc) {
-    return mapTylerCodesToHttp(resp.getError(), defaultRespFunc);
+    return mapTylerCodesToHttp(checkErrors(resp.getError()), defaultRespFunc);
   }
 
   /** Returns true on errors from the ECF side of the API. They work the same as the Tyler ones. */
-  public static boolean checkErrors(
+  public record Error(String code, String text) {}
+
+  public static Optional<Error> checkError(
       oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType error) {
-    if (error.getErrorCode() != null && !error.getErrorCode().getValue().equals("0")) {
-      log.error(
-          "Error!: " + error.getErrorCode().getValue() + ": " + error.getErrorText().getValue());
-      return true;
+    var errCode = error.getErrorCode();
+    if (errCode != null && !errCode.getValue().equals("0")) {
+      log.error("Error!: {}: {}", errCode.getValue(), error.getErrorText().getValue());
+      return Optional.of(new Error(errCode.getValue(), error.getErrorText().getValue()));
     }
-    return false;
+    return Optional.empty();
   }
 
-  public static Response mapTylerCodesToHttp(
-      List<oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType> errors,
-      Supplier<Response> defaultRespFunc) {
-    for (var error : errors) {
-      if (!checkErrors(error)) {
-        continue;
-      }
+  public static List<Error> checkErrors(
+      List<oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType> errors) {
+    return errors.stream().flatMap(err -> checkError(err).stream()).toList();
+  }
 
-      if (TylerErrorCodes.tylerToHttp.containsKey(error.getErrorCode().getValue())) {
-        return Response.status(TylerErrorCodes.tylerToHttp.get(error.getErrorCode().getValue()))
-            .entity(error.getErrorText().getValue())
+  public static Response mapTylerCodesToHttp(List<Error> err, Supplier<Response> defaultResp) {
+    if (!err.isEmpty()) {
+      var mainErr = err.getFirst();
+      if (TylerErrorCodes.tylerToHttp.containsKey(mainErr.code)) {
+        return Response.status(TylerErrorCodes.tylerToHttp.get(mainErr.code))
+            .entity(mainErr.text)
             .build();
       }
 
       // 422 as semantic issues covers most of the error codes
-      return Response.status(422).entity(error.getErrorText().getValue()).build();
+      return Response.status(422).entity(mainErr.text).build();
     }
-    return defaultRespFunc.get();
+    return defaultResp.get();
   }
 
   public static void setupReplys(CaseFilingType reply) {
