@@ -259,7 +259,6 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     Ecf4Helper.setupReplys(reply);
     if (msg == null) {
       log.error("Tyler sent a null message! Why??");
-      MDCWrappers.removeAllMDCs();
       return error(reply, "705", "NotifyFilingReviewComplete message not found");
     }
 
@@ -284,7 +283,6 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     // This shouldn't happen, but I don't trust this XML BS
     if (payment == null || revFiling == null) {
       log.error("Tyler sent a message w/o filing review or payment receipt? Full msg: {}", msg);
-      MDCWrappers.removeAllMDCs();
       return error(reply, "705", "NotifyFilingReviewComplete message not found");
     }
 
@@ -305,7 +303,6 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     }
     if (filingId.isBlank()) {
       log.error("Got back a review filing that has a blank / no FILINGID? {}", revFiling);
-      MDCWrappers.removeAllMDCs();
       return error(reply, "720", "Filing code not found in message");
     }
     Optional<CaseAugmentationType> jAug =
@@ -331,7 +328,6 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       log.error("Couldn't connect to SQL DB to get transaction", e);
       return error(reply, "-1", "Server error");
     } finally {
-      MDCWrappers.removeAllMDCs();
     }
     Transaction trans = maybeTrans.get();
 
@@ -359,7 +355,6 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
             courtId,
             courtIdFromMsg,
             trans.courtId);
-        MDCWrappers.removeAllMDCs();
         return error(reply, "70", "Location " + courtId + " not found");
       }
     } catch (SQLException ex) {
@@ -385,7 +380,6 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     if (!success) {
       log.error("Couldn't properly send message for transaction ID {}!", trans.transactionId);
     }
-    MDCWrappers.removeAllMDCs();
     return ok(reply);
   }
 

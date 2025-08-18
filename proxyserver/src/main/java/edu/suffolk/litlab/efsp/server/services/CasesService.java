@@ -232,7 +232,6 @@ public class CasesService {
     CaseListResponseMessageType resp = maybePort.get().getCaseList(query);
     log.info(Ecf4Helper.objectToXmlStrOrError(resp, CaseListResponseMessageType.class));
 
-    MDCWrappers.removeAllMDCs();
     if (hasError(resp)) {
       // If the response has issues connecting with the CMS, we are still supposed to allow
       // for case search / e-filing. So, we'll return an error with the error code, but also any
@@ -256,7 +255,6 @@ public class CasesService {
     MDC.put(MDCWrappers.OPERATION, "CasesService.getCase");
     Optional<CourtRecordMDEPort> maybePort = setupRecordPort(httpHeaders);
     if (maybePort.isEmpty()) {
-      MDCWrappers.removeAllMDCs();
       return Response.status(401).build();
     }
 
@@ -312,8 +310,6 @@ public class CasesService {
     } catch (SQLException e) {
       log.error("can't get connection: ", e);
       return Response.status(500).build();
-    } finally {
-      MDCWrappers.removeAllMDCs();
     }
   }
 
@@ -356,7 +352,6 @@ public class CasesService {
     query.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     ServiceAttachCaseListResponseMessageType resp = maybePort.get().getServiceAttachCaseList(query);
-    MDCWrappers.removeAllMDCs();
     if (hasError(resp)) {
       return Response.status(400).entity(resp.getError()).build();
     }
@@ -385,7 +380,6 @@ public class CasesService {
     query.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     ServiceInformationResponseMessageType resp = maybePort.get().getServiceInformation(query);
-    MDCWrappers.removeAllMDCs();
     if (hasError(resp)) {
       return Response.status(400).entity(resp.getError()).build();
     }
@@ -415,7 +409,6 @@ public class CasesService {
     query.setSendingMDEProfileCode(ServiceHelpers.MDE_PROFILE_CODE);
     ServiceInformationHistoryResponseMessageType resp =
         maybePort.get().getServiceInformationHistory(query);
-    MDCWrappers.removeAllMDCs();
     if (hasError(resp)) {
       return Response.status(400).entity(resp.getError()).build();
     }
@@ -447,7 +440,6 @@ public class CasesService {
     Optional<TylerUserNamePassword> creds = ServiceHelpers.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
       log.warn("No creds?");
-      MDCWrappers.removeAllMDCs();
       return Optional.empty();
     }
 

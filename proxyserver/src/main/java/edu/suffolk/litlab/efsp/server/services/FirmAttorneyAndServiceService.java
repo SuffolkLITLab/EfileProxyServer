@@ -356,14 +356,11 @@ public class FirmAttorneyAndServiceService {
       CreateServiceContactResponseType resp = firmPort.get().createServiceContact(req);
       log.info("Got response: {}", resp.getError().getErrorCode());
       log.info("Got response id: {}", resp.getServiceContactID());
-      MDCWrappers.removeAllMDCs();
       return makeResponse(
           resp, () -> Response.ok("\"" + resp.getServiceContactID() + "\"").build());
     } catch (JsonProcessingException ex) {
       log.info("JsonProcessingException: ", ex);
       return Response.status(400).entity("\"Cannot read service contact input\"").build();
-    } finally {
-      MDCWrappers.removeAllMDCs();
     }
   }
 
