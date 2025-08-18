@@ -291,6 +291,9 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     // Now for the review filing
     String filingId = "";
     for (IdentificationType id : revFiling.getDocumentIdentification()) {
+      if (id == null) {
+        continue;
+      }
       if (id.getIdentificationCategory().getValue() instanceof TextType category) {
         if (category.getValue() != null && category.getValue().equalsIgnoreCase("FILINGID")) {
           filingId = id.getIdentificationID().getValue();
