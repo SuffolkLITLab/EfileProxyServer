@@ -133,7 +133,6 @@ public class FilingReviewService {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
     var toRet = filer.getFilingStatus(courtId, filingId, activeToken.get());
-    MDCWrappers.removeAllMDCs();
     return toRet;
   }
 
@@ -167,8 +166,6 @@ public class FilingReviewService {
               "Dates given were incorrect, should be of the form: yyyy-MM-dd (ISO_LOCAL_DATE): "
                   + ex)
           .build();
-    } finally {
-      MDCWrappers.removeAllMDCs();
     }
   }
 
@@ -176,42 +173,38 @@ public class FilingReviewService {
   @Path("/courts/{court_id}/filing/check")
   public Response checkFilingForReview(
       @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "FilingReviewService.checkFilingForReview");
-      MediaType mediaType = httpHeaders.getMediaType();
-      if (mediaType == null) {
-        mediaType = MediaType.valueOf("application/json");
-      }
-      Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
-      if (checked.isErr()) {
-        return checked.unwrapErrOrElseThrow();
-      }
-      EfmFilingInterface filer = checked.unwrapOrElseThrow();
-      Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
-      if (activeToken.isEmpty()) {
-        return Response.status(401).entity("Not logged in to file with " + courtId).build();
-      }
-      if (!converterMap.containsKey(mediaType.toString())) {
-        return Response.status(415).entity("We only support " + converterMap.keySet()).build();
-      }
-      InfoCollector collector = new NeverSubmitCollector();
-      Result<FilingInformation, FilingError> res =
-          converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
-      if (res.isErr()) {
-        log.error("Error on traverseInterview: {}", res.toString());
-        return Response.status(400).entity(collector.jsonSummary()).build();
-      }
-      FilingInformation info = res.unwrapOrElseThrow();
-      info.setCourtLocation(courtId);
-      Result<NullValue, FilingError> resEfm = filer.checkFiling(info, activeToken.get(), collector);
-      if (resEfm.isErr()) {
-        log.error("Error on checkFiling: {}", resEfm.toString());
-        return Response.ok(collector.jsonSummary()).build();
-      }
-      return Response.ok(collector.jsonSummary()).build();
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "FilingReviewService.checkFilingForReview");
+    MediaType mediaType = httpHeaders.getMediaType();
+    if (mediaType == null) {
+      mediaType = MediaType.valueOf("application/json");
     }
+    Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
+    if (checked.isErr()) {
+      return checked.unwrapErrOrElseThrow();
+    }
+    EfmFilingInterface filer = checked.unwrapOrElseThrow();
+    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
+    if (activeToken.isEmpty()) {
+      return Response.status(401).entity("Not logged in to file with " + courtId).build();
+    }
+    if (!converterMap.containsKey(mediaType.toString())) {
+      return Response.status(415).entity("We only support " + converterMap.keySet()).build();
+    }
+    InfoCollector collector = new NeverSubmitCollector();
+    Result<FilingInformation, FilingError> res =
+        converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
+    if (res.isErr()) {
+      log.error("Error on traverseInterview: {}", res.toString());
+      return Response.status(400).entity(collector.jsonSummary()).build();
+    }
+    FilingInformation info = res.unwrapOrElseThrow();
+    info.setCourtLocation(courtId);
+    Result<NullValue, FilingError> resEfm = filer.checkFiling(info, activeToken.get(), collector);
+    if (resEfm.isErr()) {
+      log.error("Error on checkFiling: {}", resEfm.toString());
+      return Response.ok(collector.jsonSummary()).build();
+    }
+    return Response.ok(collector.jsonSummary()).build();
   }
 
   @POST
@@ -241,13 +234,11 @@ public class FilingReviewService {
         converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
     if (res.isErr()) {
       log.error("Error when calculating filing fees: {}", res.toString());
-      MDCWrappers.removeAllMDCs();
       return Response.status(400).entity(collector.jsonSummary()).build();
     }
     FilingInformation info = res.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
     Result<Response, FilingError> fees = filer.getFilingFees(info, activeToken.get());
-    MDCWrappers.removeAllMDCs();
     return fees.match(err -> Response.status(400).entity(err.toJson()).build(), respon -> respon);
   }
 
@@ -271,20 +262,17 @@ public class FilingReviewService {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
     if (!converterMap.containsKey(mediaType.toString())) {
-      MDCWrappers.removeAllMDCs();
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     }
     InfoCollector collector = new FailFastCollector();
     Result<FilingInformation, FilingError> res =
         converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
     if (res.isErr()) {
-      MDCWrappers.removeAllMDCs();
       return Response.status(400).entity(collector.jsonSummary()).build();
     }
     FilingInformation info = res.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
     Result<Response, FilingError> fees = filer.getServiceTypes(info, activeToken.get());
-    MDCWrappers.removeAllMDCs();
     return fees.match(err -> Response.status(400).entity(err.toJson()).build(), respon -> respon);
   }
 
@@ -304,7 +292,6 @@ public class FilingReviewService {
     }
 
     var toRet = filer.getPolicy(courtId, activeToken.get());
-    MDCWrappers.removeAllMDCs();
     return toRet;
   }
 
@@ -319,7 +306,6 @@ public class FilingReviewService {
       return Response.status(404).entity("Court " + courtId + " doesn't exist").build();
     }
     var toRet = callbackInterfaces.get(courtId).statusCallback(httpHeaders, statusReport);
-    MDCWrappers.removeAllMDCs();
     return toRet;
   }
 
@@ -341,7 +327,6 @@ public class FilingReviewService {
       @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.submitFilingForReview");
     var toRet = fileOrServe(httpHeaders, courtId, allVars, EfmFilingInterface.ApiChoice.FileApi);
-    MDCWrappers.removeAllMDCs();
     return toRet;
   }
 
@@ -500,7 +485,6 @@ public class FilingReviewService {
       }
       return filer.getFilingDetails(courtId, filingId, activeToken.get());
     } finally {
-      MDCWrappers.removeAllMDCs();
     }
   }
 
@@ -522,7 +506,6 @@ public class FilingReviewService {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
     var toRet = filer.getFilingService(courtId, filingId, contactId, activeToken.get());
-    MDCWrappers.removeAllMDCs();
     return toRet;
   }
 
@@ -543,7 +526,6 @@ public class FilingReviewService {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
     var toRet = filer.cancelFiling(courtId, filingId, activeToken.get());
-    MDCWrappers.removeAllMDCs();
     return toRet;
   }
 

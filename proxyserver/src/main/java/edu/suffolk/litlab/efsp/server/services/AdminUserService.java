@@ -159,112 +159,92 @@ public class AdminUserService {
   @GET
   @Path("/user")
   public Response getSelfUser(@Context HttpHeaders httpHeaders) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.getSelfUser");
-      Optional<TylerUserClient> port = setupUserPort(httpHeaders);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-      String tylerId =
-          httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-      if (tylerId == null || tylerId.isBlank()) {
-        return Response.status(500)
-            .entity(
-                "Server does not have a Tyler UUID for the current account. Can you give it to me?")
-            .build();
-      }
-
-      GetUserRequestType req = new GetUserRequestType();
-      req.setUserID(tylerId);
-      GetUserResponseType resp = port.get().getUser(req);
-      return makeResponse(resp, () -> Response.ok(resp.getUser()).build());
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.getSelfUser");
+    Optional<TylerUserClient> port = setupUserPort(httpHeaders);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+    String tylerId =
+        httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
+    if (tylerId == null || tylerId.isBlank()) {
+      return Response.status(500)
+          .entity(
+              "Server does not have a Tyler UUID for the current account. Can you give it to me?")
+          .build();
+    }
+
+    GetUserRequestType req = new GetUserRequestType();
+    req.setUserID(tylerId);
+    GetUserResponseType resp = port.get().getUser(req);
+    return makeResponse(resp, () -> Response.ok(resp.getUser()).build());
   }
 
   @GET
   @Path("/user/notification-preferences")
   public Response getNotificationPrefs(@Context HttpHeaders httpHeaders) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.getNotificationPrefs");
-      Optional<TylerUserClient> port = setupUserPort(httpHeaders);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-
-      NotificationPreferencesResponseType notifResp = port.get().getNotificationPreferences();
-
-      return TylerErrorCodes.mapTylerCodesToHttp(
-          notifResp.getError(), () -> Response.ok(notifResp.getNotification()).build());
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.getNotificationPrefs");
+    Optional<TylerUserClient> port = setupUserPort(httpHeaders);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+
+    NotificationPreferencesResponseType notifResp = port.get().getNotificationPreferences();
+
+    return TylerErrorCodes.mapTylerCodesToHttp(
+        notifResp.getError(), () -> Response.ok(notifResp.getNotification()).build());
   }
 
   @PATCH
   @Path("/user/notification-preferences")
   public Response updateNotificationPrefs(
       @Context HttpHeaders httpHeaders, List<NotificationType> notifications) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateNotificationPrefs");
-      Optional<TylerUserClient> port = setupUserPort(httpHeaders);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-
-      UpdateNotificationPreferencesRequestType updateNotif =
-          new UpdateNotificationPreferencesRequestType();
-      for (NotificationType nt : notifications) {
-        updateNotif.getNotification().add(nt);
-      }
-
-      BaseResponseType notifResp = port.get().updateNotificationPreferences(updateNotif);
-      return TylerErrorCodes.mapTylerCodesToHttp(notifResp.getError(), () -> Response.ok().build());
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateNotificationPrefs");
+    Optional<TylerUserClient> port = setupUserPort(httpHeaders);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+
+    UpdateNotificationPreferencesRequestType updateNotif =
+        new UpdateNotificationPreferencesRequestType();
+    for (NotificationType nt : notifications) {
+      updateNotif.getNotification().add(nt);
+    }
+
+    BaseResponseType notifResp = port.get().updateNotificationPreferences(updateNotif);
+    return TylerErrorCodes.mapTylerCodesToHttp(notifResp.getError(), () -> Response.ok().build());
   }
 
   @POST
   @Path("/user/resend-activation-email")
   public Response selfResendActivationEmail(
       @Context HttpHeaders httpHeaders, String emailToSendTo) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.selfResendActivationEmail");
-      Optional<TylerUserClient> port = setupUserPort(httpHeaders, false);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-
-      SelfResendActivationEmailRequestType req = new SelfResendActivationEmailRequestType();
-      req.setEmail(emailToSendTo);
-      BaseResponseType resp = port.get().selfResendActivationEmail(req);
-      return makeResponse(resp, () -> Response.noContent().build());
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.selfResendActivationEmail");
+    Optional<TylerUserClient> port = setupUserPort(httpHeaders, false);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+
+    SelfResendActivationEmailRequestType req = new SelfResendActivationEmailRequestType();
+    req.setEmail(emailToSendTo);
+    BaseResponseType resp = port.get().selfResendActivationEmail(req);
+    return makeResponse(resp, () -> Response.noContent().build());
   }
 
   @POST
   @Path("/users/{id}/resend-activation-email")
   public Response resendActivationEmail(
       @Context HttpHeaders httpHeaders, @PathParam("id") String id) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.resendActivationEmail");
-      Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-
-      ResendActivationEmailRequestType req = new ResendActivationEmailRequestType();
-      req.setUserID(id);
-      BaseResponseType resp = port.get().resendActivationEmail(req);
-      return makeResponse(resp, () -> Response.noContent().build());
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.resendActivationEmail");
+    Optional<TylerFirmClient> port =
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+
+    ResendActivationEmailRequestType req = new ResendActivationEmailRequestType();
+    req.setUserID(id);
+    BaseResponseType resp = port.get().resendActivationEmail(req);
+    return makeResponse(resp, () -> Response.noContent().build());
   }
 
   public static class ResetPasswordParams {
@@ -294,34 +274,28 @@ public class AdminUserService {
   @Path("/users/{id}/password")
   public Response resetPassword(
       @Context HttpHeaders httpHeaders, @PathParam("id") String id, ResetPasswordParams params) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.resetPassword");
-      Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-
-      // The "1" is the default for all courts. There's no way to enforce court specific passwords
-      Result<NullValue, String> passwordGood = passwordChecker.apply(params.newPassword);
-      if (passwordGood.isErr()) {
-        return Response.status(400)
-            .entity(passwordGood.expectErr("invalid internal state"))
-            .build();
-      }
-      ResetUserPasswordRequestType resetReq = new ResetUserPasswordRequestType();
-      resetReq.setUserID(id);
-      resetReq.setEmail(params.email);
-      resetReq.setPassword(params.newPassword);
-      ResetPasswordResponseType resp = port.get().resetUserPassword(resetReq);
-      return TylerErrorCodes.mapTylerCodesToHttp(
-          resp.getError(),
-          () -> {
-            return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
-          });
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.resetPassword");
+    Optional<TylerFirmClient> port =
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+
+    // The "1" is the default for all courts. There's no way to enforce court specific passwords
+    Result<NullValue, String> passwordGood = passwordChecker.apply(params.newPassword);
+    if (passwordGood.isErr()) {
+      return Response.status(400).entity(passwordGood.expectErr("invalid internal state")).build();
+    }
+    ResetUserPasswordRequestType resetReq = new ResetUserPasswordRequestType();
+    resetReq.setUserID(id);
+    resetReq.setEmail(params.email);
+    resetReq.setPassword(params.newPassword);
+    ResetPasswordResponseType resp = port.get().resetUserPassword(resetReq);
+    return TylerErrorCodes.mapTylerCodesToHttp(
+        resp.getError(),
+        () -> {
+          return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
+        });
   }
 
   public static class SetPasswordParams {
@@ -332,57 +306,47 @@ public class AdminUserService {
   @POST
   @Path("/user/password")
   public Response setPassword(@Context HttpHeaders httpHeaders, SetPasswordParams params) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.setPassword");
-      Optional<TylerUserClient> port = setupUserPort(httpHeaders);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-      Result<NullValue, String> passwordGood = passwordChecker.apply(params.newPassword);
-      if (passwordGood.isErr()) {
-        return Response.status(400)
-            .entity(passwordGood.expectErr("invalid internal state"))
-            .build();
-      }
-      ChangePasswordRequestType change = new ChangePasswordRequestType();
-      change.setOldPassword(params.currentPassword);
-      change.setNewPassword(params.newPassword);
-      change.setPasswordQuestion("");
-      change.setPasswordAnswer("");
-      ChangePasswordResponseType resp = port.get().changePassword(change);
-      return TylerErrorCodes.mapTylerCodesToHttp(
-          resp.getError(),
-          () -> {
-            return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
-          });
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.setPassword");
+    Optional<TylerUserClient> port = setupUserPort(httpHeaders);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+    Result<NullValue, String> passwordGood = passwordChecker.apply(params.newPassword);
+    if (passwordGood.isErr()) {
+      return Response.status(400).entity(passwordGood.expectErr("invalid internal state")).build();
+    }
+    ChangePasswordRequestType change = new ChangePasswordRequestType();
+    change.setOldPassword(params.currentPassword);
+    change.setNewPassword(params.newPassword);
+    change.setPasswordQuestion("");
+    change.setPasswordAnswer("");
+    ChangePasswordResponseType resp = port.get().changePassword(change);
+    return TylerErrorCodes.mapTylerCodesToHttp(
+        resp.getError(),
+        () -> {
+          return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
+        });
   }
 
   @POST
   @Path("/user/password/reset")
   public Response selfResetPassword(@Context HttpHeaders httpHeaders, String emailToSend) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.selfResetPassword");
-      Optional<TylerUserClient> port = setupUserPort(httpHeaders, false);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-
-      ResetPasswordRequestType reset = new ResetPasswordRequestType();
-      reset.setEmail(emailToSend);
-      ResetPasswordResponseType resp = port.get().resetPassword(reset);
-      // TODO(brycew-later): why would we reply with the password hash? They still shouldn't be able
-      // to log in?
-      return TylerErrorCodes.mapTylerCodesToHttp(
-          resp.getError(),
-          () -> {
-            return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
-          });
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.selfResetPassword");
+    Optional<TylerUserClient> port = setupUserPort(httpHeaders, false);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+
+    ResetPasswordRequestType reset = new ResetPasswordRequestType();
+    reset.setEmail(emailToSend);
+    ResetPasswordResponseType resp = port.get().resetPassword(reset);
+    // TODO(brycew-later): why would we reply with the password hash? They still shouldn't be able
+    // to log in?
+    return TylerErrorCodes.mapTylerCodesToHttp(
+        resp.getError(),
+        () -> {
+          return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
+        });
   }
 
   /**
@@ -394,34 +358,30 @@ public class AdminUserService {
   @GET
   @Path("/users/{id}")
   public Response getUser(@Context HttpHeaders httpHeaders, @PathParam("id") String id) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.getUser");
-      String tylerId =
-          httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-      GetUserRequestType getUserReq = new GetUserRequestType();
-      getUserReq.setUserID(id);
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.getUser");
+    String tylerId =
+        httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
+    GetUserRequestType getUserReq = new GetUserRequestType();
+    getUserReq.setUserID(id);
 
-      Function<GetUserRequestType, GetUserResponseType> userGetter = null;
-      if (tylerId != null && !tylerId.isBlank() && tylerId.equals(id)) {
-        Optional<TylerUserClient> userPort = setupUserPort(httpHeaders);
-        if (userPort.isEmpty()) {
-          return Response.status(401).build();
-        }
-        userGetter = (req) -> userPort.get().getUser(getUserReq);
-      } else {
-        Optional<TylerFirmClient> port =
-            setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-        if (port.isEmpty()) {
-          return Response.status(401).build();
-        }
-        userGetter = (req) -> port.get().getUser(getUserReq);
+    Function<GetUserRequestType, GetUserResponseType> userGetter = null;
+    if (tylerId != null && !tylerId.isBlank() && tylerId.equals(id)) {
+      Optional<TylerUserClient> userPort = setupUserPort(httpHeaders);
+      if (userPort.isEmpty()) {
+        return Response.status(401).build();
       }
-      var userRes = userGetter.apply(getUserReq);
-      return TylerErrorCodes.mapTylerCodesToHttp(
-          userRes.getError(), () -> Response.ok(userRes.getUser()).build());
-    } finally {
-      MDCWrappers.removeAllMDCs();
+      userGetter = (req) -> userPort.get().getUser(getUserReq);
+    } else {
+      Optional<TylerFirmClient> port =
+          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+      if (port.isEmpty()) {
+        return Response.status(401).build();
+      }
+      userGetter = (req) -> port.get().getUser(getUserReq);
     }
+    var userRes = userGetter.apply(getUserReq);
+    return TylerErrorCodes.mapTylerCodesToHttp(
+        userRes.getError(), () -> Response.ok(userRes.getUser()).build());
   }
 
   @GET
@@ -430,55 +390,47 @@ public class AdminUserService {
       @Context HttpHeaders httpHeaders,
       @QueryParam("page_index") @DefaultValue("0") int pageIndex,
       @QueryParam("page_size") @DefaultValue("20") int pageSize) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.getUserList");
-      Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-
-      var paging = new PagingType();
-      paging.setPageIndex(pageIndex);
-      paging.setPageSize(pageSize);
-
-      var req = new GetUserListRequest();
-      req.setPaging(paging);
-      UserListResponseType resp = port.get().getUserList(req);
-      return TylerErrorCodes.mapTylerCodesToHttp(
-          resp.getError(), () -> Response.ok(resp.getUser()).build());
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.getUserList");
+    Optional<TylerFirmClient> port =
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+
+    var paging = new PagingType();
+    paging.setPageIndex(pageIndex);
+    paging.setPageSize(pageSize);
+
+    var req = new GetUserListRequest();
+    req.setPaging(paging);
+    UserListResponseType resp = port.get().getUserList(req);
+    return TylerErrorCodes.mapTylerCodesToHttp(
+        resp.getError(), () -> Response.ok(resp.getUser()).build());
   }
 
   @PATCH
   @Path("/user")
   public Response updateUser(@Context HttpHeaders httpHeaders, UserType updatedUser) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateUser");
-      Optional<TylerUserClient> port = setupUserPort(httpHeaders, true);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-      // Ensure the user exists already.
-      GetUserRequestType getUserReq = new GetUserRequestType();
-      getUserReq.setUserID(httpHeaders.getHeaderString(TylerLogin.getHeaderId(jurisdiction)));
-      GetUserResponseType userRes = port.get().getUser(getUserReq);
-      if (TylerErrorCodes.checkErrors(userRes.getError())) {
-        return Response.status(401, userRes.getError().getErrorText()).build();
-      }
-
-      UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser);
-      UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
-      if (TylerErrorCodes.checkErrors(updateResp.getError())) {
-        return Response.status(401).entity(updateResp.getError().getErrorText()).build();
-      }
-
-      return Response.noContent().build();
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateUser");
+    Optional<TylerUserClient> port = setupUserPort(httpHeaders, true);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+    // Ensure the user exists already.
+    GetUserRequestType getUserReq = new GetUserRequestType();
+    getUserReq.setUserID(httpHeaders.getHeaderString(TylerLogin.getHeaderId(jurisdiction)));
+    GetUserResponseType userRes = port.get().getUser(getUserReq);
+    if (TylerErrorCodes.checkErrors(userRes.getError())) {
+      return Response.status(401, userRes.getError().getErrorText()).build();
+    }
+
+    UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser);
+    UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
+    if (TylerErrorCodes.checkErrors(updateResp.getError())) {
+      return Response.status(401).entity(updateResp.getError().getErrorText()).build();
+    }
+
+    return Response.noContent().build();
   }
 
   /**
@@ -492,31 +444,27 @@ public class AdminUserService {
   @Path("/users/{id}")
   public Response updateUserById(
       @Context HttpHeaders httpHeaders, @PathParam("id") String id, UserType updatedUser) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateUserById");
-      Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-      // Ensure the user exists already.
-      GetUserRequestType getUserReq = new GetUserRequestType();
-      getUserReq.setUserID(id);
-      GetUserResponseType userRes = port.get().getUser(getUserReq);
-      if (TylerErrorCodes.checkErrors(userRes.getError())) {
-        return Response.status(401, userRes.getError().getErrorText()).build();
-      }
-
-      UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser);
-      UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
-      if (TylerErrorCodes.checkErrors(updateResp.getError())) {
-        return Response.status(401).entity(updateResp.getError().getErrorText()).build();
-      }
-
-      return Response.noContent().build();
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.updateUserById");
+    Optional<TylerFirmClient> port =
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+    // Ensure the user exists already.
+    GetUserRequestType getUserReq = new GetUserRequestType();
+    getUserReq.setUserID(id);
+    GetUserResponseType userRes = port.get().getUser(getUserReq);
+    if (TylerErrorCodes.checkErrors(userRes.getError())) {
+      return Response.status(401, userRes.getError().getErrorText()).build();
+    }
+
+    UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser);
+    UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
+    if (TylerErrorCodes.checkErrors(updateResp.getError())) {
+      return Response.status(401).entity(updateResp.getError().getErrorText()).build();
+    }
+
+    return Response.noContent().build();
   }
 
   private static UpdateUserRequestType updateUser(UserType existingUser, UserType updatedUser) {
@@ -548,22 +496,18 @@ public class AdminUserService {
   @GET
   @Path("/users/{id}/roles")
   public Response getRoles(@Context HttpHeaders httpHeaders, @PathParam("id") String id) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.getRoles");
-      Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-
-      GetUserRequestType getUserReq = new GetUserRequestType();
-      getUserReq.setUserID(id);
-      GetUserResponseType userRes = port.get().getUser(getUserReq);
-      return TylerErrorCodes.mapTylerCodesToHttp(
-          userRes.getError(), () -> Response.ok(userRes.getUser().getRole()).build());
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.getRoles");
+    Optional<TylerFirmClient> port =
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+
+    GetUserRequestType getUserReq = new GetUserRequestType();
+    getUserReq.setUserID(id);
+    GetUserResponseType userRes = port.get().getUser(getUserReq);
+    return TylerErrorCodes.mapTylerCodesToHttp(
+        userRes.getError(), () -> Response.ok(userRes.getUser().getRole()).build());
   }
 
   /**
@@ -577,30 +521,26 @@ public class AdminUserService {
   @Path("/users/{id}/roles")
   public Response addRoles(
       @Context HttpHeaders httpHeaders, @PathParam("id") String id, List<RoleLocationType> toAdd) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.addRoles");
-      Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-
-      for (RoleLocationType role : toAdd) {
-        AddUserRoleRequestType addRole = new AddUserRoleRequestType();
-        addRole.setLocation(role.getLocation());
-        addRole.setRole(role.getRoleName());
-        addRole.setUserID(id);
-        // TODO(brycew-later): this won't be consistent if it fails part way through?
-        BaseResponseType resp = port.get().addUserRole(addRole);
-        if (TylerErrorCodes.checkErrors(resp.getError())) {
-          return Response.status(401).entity(resp.getError().getErrorText()).build();
-        }
-      }
-
-      return Response.noContent().build();
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.addRoles");
+    Optional<TylerFirmClient> port =
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+
+    for (RoleLocationType role : toAdd) {
+      AddUserRoleRequestType addRole = new AddUserRoleRequestType();
+      addRole.setLocation(role.getLocation());
+      addRole.setRole(role.getRoleName());
+      addRole.setUserID(id);
+      // TODO(brycew-later): this won't be consistent if it fails part way through?
+      BaseResponseType resp = port.get().addUserRole(addRole);
+      if (TylerErrorCodes.checkErrors(resp.getError())) {
+        return Response.status(401).entity(resp.getError().getErrorText()).build();
+      }
+    }
+
+    return Response.noContent().build();
   }
 
   /**
@@ -614,33 +554,29 @@ public class AdminUserService {
   @Path("/users/{id}/roles")
   public Response removeRoles(
       @Context HttpHeaders httpHeaders, @PathParam("id") String id, List<RoleLocationType> toRm) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.removeRoles");
-      Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-      if (toRm == null) {
-        return Response.ok().build();
-      }
-
-      for (RoleLocationType role : toRm) {
-        RemoveUserRoleRequestType rmRole = new RemoveUserRoleRequestType();
-        rmRole.setLocation(role.getLocation());
-        rmRole.setRole(role.getRoleName());
-        rmRole.setUserID(id);
-        // TODO(brycew-later): this won't be consistent if it fails part way through?
-        BaseResponseType resp = port.get().removeUserRole(rmRole);
-        if (TylerErrorCodes.checkErrors(resp.getError())) {
-          return Response.status(401).entity(resp.getError().getErrorText()).build();
-        }
-      }
-
-      return Response.ok().build();
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.removeRoles");
+    Optional<TylerFirmClient> port =
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+    if (toRm == null) {
+      return Response.ok().build();
+    }
+
+    for (RoleLocationType role : toRm) {
+      RemoveUserRoleRequestType rmRole = new RemoveUserRoleRequestType();
+      rmRole.setLocation(role.getLocation());
+      rmRole.setRole(role.getRoleName());
+      rmRole.setUserID(id);
+      // TODO(brycew-later): this won't be consistent if it fails part way through?
+      BaseResponseType resp = port.get().removeUserRole(rmRole);
+      if (TylerErrorCodes.checkErrors(resp.getError())) {
+        return Response.status(401).entity(resp.getError().getErrorText()).build();
+      }
+    }
+
+    return Response.ok().build();
   }
 
   private static boolean nullOrBlank(String str) {
@@ -685,78 +621,72 @@ public class AdminUserService {
   @Path("/users")
   public Response registerUser(
       @Context HttpHeaders httpHeaders, final RegistrationRequestType req) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.registerUser");
-      final var regType = req.getRegistrationType();
-      boolean needsAuth = regType.equals(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
-      Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, ldSupplier, needsAuth, jurisdiction);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-      if (req.getCountryCode() == null || req.getCountryCode().isBlank()) {
-        // By default, assume US.
-        req.setCountryCode("US");
-      }
-
-      if (regType.equals(RegistrationType.FIRM_ADMINISTRATOR)
-          || regType.equals(RegistrationType.INDIVIDUAL)) {
-        record Required(String val, String msg) {}
-        for (var requiredVar :
-            List.of(
-                new Required(req.getStreetAddressLine1(), "Missing required 'streetAddressLine1'"),
-                new Required(req.getCity(), "Missing required 'city'"),
-                new Required(req.getStateCode(), "Missing required 'stateCode'"),
-                new Required(req.getZipCode(), "Missing required 'zipCode'"),
-                new Required(req.getPhoneNumber(), "Missing required 'phoneNumber'"),
-                new Required(req.getPassword(), "Missing required 'password'"))) {
-          if (nullOrBlank(requiredVar.val)) {
-            return Response.status(422).entity(requiredVar.msg).build();
-          }
-        }
-      }
-      if (regType.equals(RegistrationType.FIRM_ADMINISTRATOR) && nullOrBlank(req.getFirmName())) {
-        return Response.status(422).entity("You are missing firmName, which is required").build();
-      }
-
-      // The "1" is the default for all courts. There's no way to enforce court specific passwords
-      try (CodeDatabase cd = cdSupplier.get()) {
-        Optional<CourtLocationInfo> system = cd.getFullLocationInfo("0");
-        if (system.isPresent()) {
-          if (regType.equals(RegistrationType.INDIVIDUAL)
-              && !system.get().allowindividualregistration) {
-            return Response.status(400)
-                .entity("System does not allow individual registration")
-                .build();
-          }
-        }
-      } catch (SQLException e) {
-        log.error("Couldn't get connection to Codes db:", e);
-        return Response.status(500).build();
-      }
-
-      Result<NullValue, String> passwordGood = passwordChecker.apply(req.getPassword());
-      if (passwordGood.isErr()) {
-        return Response.status(400)
-            .entity(passwordGood.expectErr("invalid internal state"))
-            .build();
-      }
-
-      RegistrationResponseType regResp = port.get().registerUser(req);
-      log.info(
-          "Created new user with requested "
-              + req.getRegistrationType()
-              + ", firm id: "
-              + regResp.getFirmID()
-              + " and user id: "
-              + regResp.getUserID());
-      if (!TylerErrorCodes.checkErrors(regResp.getError())) {
-        return Response.created(URI.create(regResp.getUserID())).entity(regResp).build();
-      }
-      return makeResponse(regResp, () -> Response.ok(regResp).build());
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.registerUser");
+    final var regType = req.getRegistrationType();
+    boolean needsAuth = regType.equals(RegistrationType.FIRM_ADMIN_NEW_MEMBER);
+    Optional<TylerFirmClient> port =
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, needsAuth, jurisdiction);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+    if (req.getCountryCode() == null || req.getCountryCode().isBlank()) {
+      // By default, assume US.
+      req.setCountryCode("US");
+    }
+
+    if (regType.equals(RegistrationType.FIRM_ADMINISTRATOR)
+        || regType.equals(RegistrationType.INDIVIDUAL)) {
+      record Required(String val, String msg) {}
+      for (var requiredVar :
+          List.of(
+              new Required(req.getStreetAddressLine1(), "Missing required 'streetAddressLine1'"),
+              new Required(req.getCity(), "Missing required 'city'"),
+              new Required(req.getStateCode(), "Missing required 'stateCode'"),
+              new Required(req.getZipCode(), "Missing required 'zipCode'"),
+              new Required(req.getPhoneNumber(), "Missing required 'phoneNumber'"),
+              new Required(req.getPassword(), "Missing required 'password'"))) {
+        if (nullOrBlank(requiredVar.val)) {
+          return Response.status(422).entity(requiredVar.msg).build();
+        }
+      }
+    }
+    if (regType.equals(RegistrationType.FIRM_ADMINISTRATOR) && nullOrBlank(req.getFirmName())) {
+      return Response.status(422).entity("You are missing firmName, which is required").build();
+    }
+
+    // The "1" is the default for all courts. There's no way to enforce court specific passwords
+    try (CodeDatabase cd = cdSupplier.get()) {
+      Optional<CourtLocationInfo> system = cd.getFullLocationInfo("0");
+      if (system.isPresent()) {
+        if (regType.equals(RegistrationType.INDIVIDUAL)
+            && !system.get().allowindividualregistration) {
+          return Response.status(400)
+              .entity("System does not allow individual registration")
+              .build();
+        }
+      }
+    } catch (SQLException e) {
+      log.error("Couldn't get connection to Codes db:", e);
+      return Response.status(500).build();
+    }
+
+    Result<NullValue, String> passwordGood = passwordChecker.apply(req.getPassword());
+    if (passwordGood.isErr()) {
+      return Response.status(400).entity(passwordGood.expectErr("invalid internal state")).build();
+    }
+
+    RegistrationResponseType regResp = port.get().registerUser(req);
+    log.info(
+        "Created new user with requested "
+            + req.getRegistrationType()
+            + ", firm id: "
+            + regResp.getFirmID()
+            + " and user id: "
+            + regResp.getUserID());
+    if (!TylerErrorCodes.checkErrors(regResp.getError())) {
+      return Response.created(URI.create(regResp.getUserID())).entity(regResp).build();
+    }
+    return makeResponse(regResp, () -> Response.ok(regResp).build());
   }
 
   /**
@@ -768,40 +698,32 @@ public class AdminUserService {
   @DELETE
   @Path("/users/{id}")
   public Response removeUser(@Context HttpHeaders httpHeaders, @PathParam("id") String id) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.removeUser");
-      Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-
-      RemoveUserRequestType rmUser = new RemoveUserRequestType();
-      rmUser.setUserID(id);
-      BaseResponseType resp = port.get().removeUser(rmUser);
-      return TylerErrorCodes.mapTylerCodesToHttp(resp.getError(), () -> Response.ok().build());
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.removeUser");
+    Optional<TylerFirmClient> port =
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+
+    RemoveUserRequestType rmUser = new RemoveUserRequestType();
+    rmUser.setUserID(id);
+    BaseResponseType resp = port.get().removeUser(rmUser);
+    return TylerErrorCodes.mapTylerCodesToHttp(resp.getError(), () -> Response.ok().build());
   }
 
   @GET
   @Path("/notification-options")
   public Response getNotificationPreferenceList(@Context HttpHeaders httpHeaders) {
-    try {
-      MDC.put(MDCWrappers.OPERATION, "AdminUserService.getNotificationPreferenceList");
-      Optional<TylerFirmClient> port =
-          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
-      if (port.isEmpty()) {
-        return Response.status(401).build();
-      }
-
-      NotificationPreferencesListResponseType resp = port.get().getNotificationPreferencesList();
-      return TylerErrorCodes.mapTylerCodesToHttp(
-          resp.getError(), () -> Response.ok(resp.getNotificationListItem()).build());
-    } finally {
-      MDCWrappers.removeAllMDCs();
+    MDC.put(MDCWrappers.OPERATION, "AdminUserService.getNotificationPreferenceList");
+    Optional<TylerFirmClient> port =
+        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    if (port.isEmpty()) {
+      return Response.status(401).build();
     }
+
+    NotificationPreferencesListResponseType resp = port.get().getNotificationPreferencesList();
+    return TylerErrorCodes.mapTylerCodesToHttp(
+        resp.getError(), () -> Response.ok(resp.getNotificationListItem()).build());
   }
 
   /** Default needsSoapHeader to True: most ops need Tyler Authentication in the SOAP header. */

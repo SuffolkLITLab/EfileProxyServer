@@ -74,7 +74,6 @@ public class AuthenticationService {
     }
     log.info("Invoking User Auth for an apiKey");
     Optional<NewTokens> activeToken = security.login(apiKey, loginInfo);
-    MDCWrappers.removeAllMDCs();
     return activeToken
         .map((toks) -> Response.ok(toks).build())
         .orElse(Response.status(403).build());

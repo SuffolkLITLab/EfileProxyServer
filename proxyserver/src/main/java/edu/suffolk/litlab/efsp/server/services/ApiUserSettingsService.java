@@ -3,7 +3,6 @@ package edu.suffolk.litlab.efsp.server.services;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
-import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -47,8 +46,6 @@ public class ApiUserSettingsService {
       return Response.ok("\"" + atRest.get().serverName + "\"").build();
     } catch (SQLException ex) {
       return Response.status(500).build();
-    } finally {
-      MDCWrappers.removeAllMDCs();
     }
   }
 
@@ -63,8 +60,6 @@ public class ApiUserSettingsService {
       return Response.ok("\"" + atRest.get().serverId + "\"").build();
     } catch (SQLException ex) {
       return Response.status(500).build();
-    } finally {
-      MDCWrappers.removeAllMDCs();
     }
   }
 
@@ -81,8 +76,6 @@ public class ApiUserSettingsService {
       return Response.ok("\"" + newName + "\"").build();
     } catch (SQLException ex) {
       return Response.status(500).build();
-    } finally {
-      MDCWrappers.removeAllMDCs();
     }
   }
 
@@ -104,8 +97,6 @@ public class ApiUserSettingsService {
           .build();
     } catch (SQLException ex) {
       return Response.status(500).build();
-    } finally {
-      MDCWrappers.removeAllMDCs();
     }
   }
 }

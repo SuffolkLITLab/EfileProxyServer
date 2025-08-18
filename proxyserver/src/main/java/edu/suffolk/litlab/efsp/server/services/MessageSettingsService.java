@@ -65,8 +65,6 @@ public class MessageSettingsService {
     } catch (SQLException ex) {
       log.error("Couldn't get email settings for server: ", ex);
       return Response.status(500).build();
-    } finally {
-      MDCWrappers.removeAllMDCs();
     }
   }
 
@@ -85,7 +83,6 @@ public class MessageSettingsService {
       return Response.status(401).entity("\"Not logged in to efile\"").build();
     }
     if (newInfoStr == null || newInfoStr.isBlank()) {
-      MDCWrappers.removeAllMDCs();
       return Response.status(200).build();
     }
     ObjectMapper mapper = new ObjectMapper();
@@ -111,8 +108,6 @@ public class MessageSettingsService {
     } catch (SQLException ex) {
       log.error("Error when trying to update settings: ", ex);
       return Response.status(500).build();
-    } finally {
-      MDCWrappers.removeAllMDCs();
     }
   }
 }
