@@ -24,6 +24,7 @@ import edu.suffolk.litlab.efsp.server.setup.jeffnet.JeffNetModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.tyler.TylerModuleSetup;
 import edu.suffolk.litlab.efsp.server.utils.HttpsCallbackHandler;
 import edu.suffolk.litlab.efsp.server.utils.JsonExceptionMapper;
+import edu.suffolk.litlab.efsp.server.utils.ObservabilityResetInterceptor;
 import edu.suffolk.litlab.efsp.server.utils.ObservabilityHeadersInterceptor;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import edu.suffolk.litlab.efsp.server.utils.SendMessage;
@@ -149,6 +150,7 @@ public class EfspServer {
 
     sf.setAddress(ServiceHelpers.BASE_LOCAL_URL);
     sf.getInInterceptors().add(new ObservabilityHeadersInterceptor());
+    sf.getOutInterceptors().add(new ObservabilityResetInterceptor());
     server = sf.create();
   }
 
