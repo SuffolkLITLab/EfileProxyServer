@@ -20,11 +20,13 @@ public class ObservabilityHeadersInterceptor extends AbstractInDatabindingInterc
   private static final String REQUEST_ID = "efsp-request-id";
 
   public ObservabilityHeadersInterceptor() {
+    // See https://cxf.apache.org/docs/interceptors.html for phase descriptions
     super(Phase.UNMARSHAL);
   }
 
   @Override
   public void handleMessage(Message message) throws Fault {
+    @SuppressWarnings("unchecked")
     var headers = (Map<String, List<String>>) message.get(Message.PROTOCOL_HEADERS);
     try {
       String sessionId = handleHeaderString(headers, SESSION_ID);
@@ -38,7 +40,7 @@ public class ObservabilityHeadersInterceptor extends AbstractInDatabindingInterc
       String requestId = handleHeaderString(headers, REQUEST_ID);
       if (requestId == null) {
         requestId = UUID.randomUUID().toString();
-        log.info("Using generated string `{}` as requestId", requestId);
+        log.trace("Using generated string `{}` as requestId", requestId);
       }
       MDC.put(MDCWrappers.REQUEST_ID, requestId);
     } catch (IllegalArgumentException ex) {
@@ -61,7 +63,7 @@ public class ObservabilityHeadersInterceptor extends AbstractInDatabindingInterc
       // We only want to put safe strings into our logs; this one doesn't look safe.
       return null;
     }
-    log.info("Read in `{}` from the {} header, will use in MDC", val, headerKey);
+    log.trace("Read in `{}` from the {} header, will use in MDC", val, headerKey);
     return val;
   }
 }
