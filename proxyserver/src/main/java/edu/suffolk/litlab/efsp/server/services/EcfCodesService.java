@@ -226,11 +226,25 @@ public class EcfCodesService extends CodesService {
     }
   }
 
+  public enum DesiredResult {
+    NAMES,
+    COURT_COVERAGE;
+  }
+
   @GET
   @Path("/filing_types")
-  public Response searchFilingTypes(@QueryParam("search") String searchTerm) throws SQLException {
+  public Response searchFilingTypes(
+      @QueryParam("search") String searchTerm, @QueryParam("result") DesiredResult desiredResult)
+      throws SQLException {
+    if (desiredResult == null) {
+      desiredResult = DesiredResult.NAMES;
+    }
     try (CodeDatabase cd = cdSupplier.get()) {
-      return cors(Response.ok(cd.searchFilingType(searchTerm)));
+      return switch (desiredResult) {
+        case DesiredResult.NAMES -> cors(Response.ok(cd.searchFilingType(searchTerm)));
+        case DesiredResult.COURT_COVERAGE ->
+            cors(Response.ok(cd.courtCoverageFilingType(searchTerm)));
+      };
     }
   }
 

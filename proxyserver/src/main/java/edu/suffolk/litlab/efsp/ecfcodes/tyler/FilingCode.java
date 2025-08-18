@@ -91,6 +91,19 @@ public class FilingCode {
     st.setString(2, searchTerm);
     return st;
   }
+
+  public static PreparedStatement prepCourtCoverageQuery(Connection conn, String domain, String searchTerm) throws SQLException {
+    final String search = """
+        SELECT DISTINCT location
+        FROM filing
+        WHERE domain=? AND casecategory='' AND casetypeid='' AND name ILIKE ?
+        ORDER BY location
+        """;
+    PreparedStatement st = conn.prepareStatement(search);
+    st.setString(1, domain);
+    st.setString(2, searchTerm);
+    return st;
+  }
   
   public static PreparedStatement prepRetrieveQuery(Connection conn, String domain, String filingName) throws SQLException {
     String retrieve = """
