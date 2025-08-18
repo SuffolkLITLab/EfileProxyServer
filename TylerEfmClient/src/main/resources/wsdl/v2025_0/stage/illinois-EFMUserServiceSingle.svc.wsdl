@@ -8,7 +8,8 @@
     <wsdl:service name="EfmUserService">
         <wsdl:port name="BasicHttpBinding_IEfmUserService"
             binding="tns:BasicHttpBinding_IEfmUserService">
-            <soap:address location="https://illinois-stage.tylertech.cloud/EFM/EFMUserService.svc" />
+            <!--soap:address location="https://illinois-stage.tylertech.cloud/EFM/EFMUserService.svc" /-->
+            <soap:address location="http://host.docker.internal:8080/EFM/EFMUserService.svc" />
         </wsdl:port>
         <wsdl:port name="BasicHttpBinding_IEfmUserService1"
             binding="tns:BasicHttpBinding_IEfmUserService1">
