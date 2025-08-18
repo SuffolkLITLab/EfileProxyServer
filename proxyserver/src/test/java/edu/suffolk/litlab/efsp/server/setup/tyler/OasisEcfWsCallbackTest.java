@@ -106,8 +106,9 @@ public class OasisEcfWsCallbackTest {
     @Example
     public void testFailedShouldNotSendEmail() throws SQLException {
       // Just make sure we don't throw exceptions
-      // cb.notifyFilingReviewComplete(null);
+      cb.notifyFilingReviewComplete(null);
       cb.notifyFilingReviewComplete(new NotifyFilingReviewCompleteRequestMessageType());
+      cb.notifyFilingReviewComplete(makeNullIdMsg());
 
       when(mockCd.getFullLocationInfo(eq(courtId))).thenReturn(Optional.empty());
       cb.notifyFilingReviewComplete(makeMsg(null, null));
@@ -165,6 +166,18 @@ public class OasisEcfWsCallbackTest {
       msg.setReviewFilingCallbackMessage(makeMsgType(doc));
       var paymentMsg = new PaymentMessageType();
       paymentMsg.getAllowanceCharge().add(charge);
+      msg.setPaymentReceiptMessage(paymentMsg);
+      return msg;
+    }
+
+    private NotifyFilingReviewCompleteRequestMessageType makeNullIdMsg() {
+      var msg = new NotifyFilingReviewCompleteRequestMessageType();
+      var rev = new ReviewFilingCallbackMessageType();
+      rev.setDocumentFiledDate(Ecf4Helper.convertDate(LocalDate.of(2025, 07, 04)));
+      rev.getDocumentIdentification().add(null);
+      msg.setReviewFilingCallbackMessage(rev);
+      var paymentMsg = new PaymentMessageType();
+      paymentMsg.getAllowanceCharge().add(null);
       msg.setPaymentReceiptMessage(paymentMsg);
       return msg;
     }
