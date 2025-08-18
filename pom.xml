@@ -254,14 +254,15 @@
                             </sortPom>
                         </pom>
                     </configuration>
-                    <executions>
+                    <!-- If you want, run check when you run `mvn compile` -->
+                    <!--executions>
                         <execution>
                             <goals>
                                 <goal>check</goal>
                             </goals>
-                            <phase>compile</phase>
+                            <phase>verify</phase>
                         </execution>
-                    </executions>
+                    </executions-->
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -270,6 +271,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
