@@ -7,6 +7,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.webcohesion.enunciate.metadata.rs.ResponseCode;
+import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
@@ -165,6 +167,17 @@ public class PaymentsService {
     return makeResponse(account, () -> Response.ok(account.getPaymentAccount()).build());
   }
 
+  /**
+   * Creates a new global waiver account, which can be used for all filers in this EFSP.
+   *
+   * <p>Access to this API should be gated at the client level. (TODO: should be gated here too, but
+   * required new server admin features to be tied to a single Tyler account).
+   *
+   * @param httpHeaders
+   * @param accountName The body should of this should be the waiver account's name.
+   * @return The UUID of this new account, to be used as the `tyler_payment_id` attribute when
+   *     filing.
+   */
   @POST
   @Path("/global-accounts")
   public Response createGlobalWaiverAccount(@Context HttpHeaders httpHeaders, String accountName) {
@@ -279,6 +292,17 @@ public class PaymentsService {
     return makeResponse(list, () -> Response.ok(list.getPaymentAccount()).build());
   }
 
+  /**
+   * Creates a new waiver account. To create a non-waiver account, see /new-toga-account.
+   *
+   * @param httpHeaders
+   * @param accountName The body should of this should be the waiver account's name. If the user is
+   *     manually creating this account, it should be given by them. If you are automatically
+   *     creating the waiver account, it's name should be tied to the form the user is submitting
+   *     with it (as these are linked on the courts side usually).
+   * @return The UUID of this new account, to be used as the `tyler_payment_id` attribute when
+   *     filing.
+   */
   @POST
   @Path("/payment-accounts")
   public Response createWaiverAccount(@Context HttpHeaders httpHeaders, String accountName) {
@@ -291,6 +315,14 @@ public class PaymentsService {
     return createWaiverAccount(false, accountName, firmPort.get());
   }
 
+  /**
+   * Edits payment account information.
+   *
+   * <p>Can only edit the <code>account_name</code> and whether it is <code>active</code>.
+   *
+   * <p>To edit information like the card or bank account number, you will need to create a whole
+   * new form of payment.
+   */
   @PATCH
   @Path("/payment-accounts/{account_id}")
   public Response updatePaymentAccount(
@@ -329,6 +361,30 @@ public class PaymentsService {
     return makeResponse(types, () -> Response.ok(types.getPaymentAccountType()).build());
   }
 
+  /**
+   * An endpoint that generates HTML+JS in order to send a user to Tyler's site where payment
+   * information can be securely entered. Should be visited with a form submission from the user's
+   * browser, so they can be securely redirected to Tyler's site.
+   *
+   * <p>The HTML will generate a form submission from the user's browser targeted to Tyler's payment
+   * page, using Javascript.
+   *
+   * <p>Tyler will redirect the user to back to <code>/payments/toga-account</code> once payment
+   * info is entered.
+   *
+   * @param name The desired name of the account
+   * @param global whether the new payment type should be global or not (should be false in most
+   *     cases).
+   * @param typeCode a valid string code from <code>/types</code> (getPaymentAccountTypeList).
+   * @param typeCodeId (optional, deprecated) the numerical code ID of the payment; used if Tyler
+   *     responds back with an invalid type.
+   * @param tylerInfo the login / token information of an authenticated Tyler user. Include here
+   *     instead of the headers since this page is reached via a form submission. The info is saved
+   *     to act as the user on Tyler's redirection response.
+   * @param originalUrl If entry on Tyler's site is successful, forwards the user to this URL.
+   * @param errorUrl If there's an error from Tyler's side, forwards the user to this URL.
+   * @return an HTML page that the user should visit directly
+   */
   @POST
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Path("/new-toga-account")
@@ -338,7 +394,7 @@ public class PaymentsService {
       @FormParam("account_name") String name,
       @FormParam("global") boolean global,
       @FormParam("type_code") String typeCode,
-      @FormParam("type_code_id") int typeCodeId,
+      @Deprecated @FormParam("type_code_id") int typeCodeId,
       @FormParam("tyler_info") String tylerInfo,
       @FormParam("original_url") String originalUrl,
       @FormParam("error_url") String errorUrl) {
@@ -361,7 +417,7 @@ public class PaymentsService {
     account.name = name;
     account.global = global;
     if (typeCode.equals("WV")) {
-      String err = "Don't need TOGA to create a Waiver: send a POST to /waiver-accounts";
+      String err = "Don't need TOGA to create a Waiver: send a POST to /payment-accounts";
       log.error(err);
       return Response.status(422).entity(errorHtml.formatted(err)).build();
     }
@@ -455,6 +511,27 @@ public class PaymentsService {
     String paymentTimestamp;
   }
 
+  /**
+   * The endpoint that Tyler calls when the user enters their payment info into Tyler's system.
+   * <code>/payments/new-toga-account</code> will always be called before this endpoint.
+   *
+   * @param httpHeaders
+   * @param body XML that adheres to TogaResponseXml.
+   */
+  @StatusCodes({
+    @ResponseCode(
+        code = 302,
+        condition =
+            "when creating the payment account succeeds or fails, redirects to either originalUrl or errorUrl given to /new-toga-account"),
+    @ResponseCode(code = 400, condition = "when the 'ResponseXML' param doesn't contain valid XML"),
+    @ResponseCode(
+        code = 403,
+        condition =
+            "when the saved Tyler Token can't be used to create a payment method (i.e. for a firm filer without the permission)"),
+    @ResponseCode(
+        code = 404,
+        condition = "when the 'ResponseXML' contains a transactionId that doesn't exist")
+  })
   @POST
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Path("/toga-account")

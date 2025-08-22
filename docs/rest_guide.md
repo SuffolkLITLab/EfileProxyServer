@@ -28,6 +28,32 @@ TODO
 
 TODO
 
+## Query / create payment types
+
+The two main ways that filers can pay the court are with waivers and with other methods (credit cards, banks, etc.). Waivers are usually accompanied by a document the filer completes to
+demonstrate to the court that they need a waiver (see [the section on submitting](#calculate-payment-check-filing-and-submitting)).
+Since waivers don't require the user to enter sensitive information, their creation
+is simpler than other methods.
+
+To create a new waiver, you can `POST` to [.../payments/payment-accounts](https://projects.suffolklitlab.org/EfileProxyServer/endpoints/ui/index.html#/JurisdictionSwitch/createWaiverAccount) with the desired waiver account name as the request body, and it
+will be created. The court will later verify the status of this waiver when reviewing
+the user's filing (TODO: some currently unsupported jurisdictions have a more complicated process).
+
+To create new payment methods other than a waiver, like a credit card or bank account,
+Tyler requires that users enter their payment information on their site for security
+reasons. The steps are as follows:
+
+1. The user's browser should make an XML form submission to [.../payments/new-toga-account](https://projects.suffolklitlab.org/EfileProxyServer/endpoints/ui/index.html#/JurisdictionSwitch/redirectToToga). This submission will forward the user to this server, which will save the submitted information and make an additional forward to Tyler's payments page. See [this working example](https://github.com/SuffolkLITLab/docassemble-EFSPIntegration/blob/85d9222eb0f4e7a6e74b04c7950efe689d81e3cc/docassemble/EFSPIntegration/data/questions/toga_payments.yml#L64-L105) for some JavaScript that should work. The params that need to be passed in the form submission:
+    * `account_name`: what the name of the account should be (i.e. "Personal checking")
+    * `global`: should usually be `false`
+    * `type_code`: the code for the type of payment account that's being created. This
+        should be pulled from [.../payments/types](https://projects.suffolklitlab.org/EfileProxyServer/endpoints/ui/index.html#/JurisdictionSwitch/getPaymentAccountTypeList).
+    * `tyler_info`: the token that usually goes in the `TYLER-TOKEN-{jurisdiction}` header, but has to go here since the user's browser is completing the query.
+    * `original_url`: the URL that the user should be redirected to on a successful payment account creation.
+    * `error_url`: the URL that the user should be redirected to on a failed payment account creation.
+2. On Tyler's payment page, the user will securely enter their payment information.
+3. After the user submits their payment information, Tyler's page will forward the user back to this server, which creates the payment account, and then, depending on if the process succeeds or fails, will forward the user to one of two given URLs where your client can handle the status of the process. 
+
 ## Calculate payment, check filing, and submitting
 
 These three endpoints each deal with the same large request payload: the entire filing.
