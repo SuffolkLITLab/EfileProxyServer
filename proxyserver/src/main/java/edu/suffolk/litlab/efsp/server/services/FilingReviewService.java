@@ -540,6 +540,7 @@ public class FilingReviewService {
       if (orgToken == null || orgToken.isBlank()) {
         return Optional.empty();
       }
+      MDC.put(MDCWrappers.USER_ID, ld.makeHash(orgToken));
       return Optional.of(orgToken);
     } catch (SQLException ex) {
       log.error("SQL Error", ex);
