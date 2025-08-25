@@ -41,6 +41,7 @@
   <!-- Ignoring "WARN  org.eclipse.jetty.server.handler.ContextHandler - Unimplemented getRequestCharacterEncoding() - use org.eclipse.jetty.servlet.ServletContextHandler" -->
   <logger name="org.eclipse.jetty.server.handler.ContextHandler" level="ERROR"/>
   <!--logger name="org.eclipse.jetty" level="DEBUG"/-->
+  <!--logger name="edu.suffolk.litlab.efsp" level="TRACE"/-->
 
   <root level="info">
     <appender-ref ref="STDOUT" />

@@ -1,33 +1,32 @@
 package edu.suffolk.litlab.efsp.server.utils;
 
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.PreMatching;
+import jakarta.ws.rs.ext.Provider;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
-import org.apache.cxf.interceptor.AbstractInDatabindingInterceptor;
-import org.apache.cxf.interceptor.Fault;
-import org.apache.cxf.message.Message;
-import org.apache.cxf.phase.Phase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
 
-public class ObservabilityHeadersInterceptor extends AbstractInDatabindingInterceptor {
+@Component
+@Provider
+@PreMatching // lets this run on all requests, not just those that match an endpoint
+public class ObservabilityHeadersInterceptor implements ContainerRequestFilter {
   private static final Logger log = LoggerFactory.getLogger(ObservabilityHeadersInterceptor.class);
 
   private static final String SESSION_ID = "efsp-session-id";
   private static final String CORRELATION_ID = "efsp-correlation-id";
   private static final String REQUEST_ID = "efsp-request-id";
 
-  public ObservabilityHeadersInterceptor() {
-    // See https://cxf.apache.org/docs/interceptors.html for phase descriptions
-    super(Phase.UNMARSHAL);
-  }
-
   @Override
-  public void handleMessage(Message message) throws Fault {
-    @SuppressWarnings("unchecked")
-    var headers = (Map<String, List<String>>) message.get(Message.PROTOCOL_HEADERS);
+  public void filter(ContainerRequestContext requestContext) throws IOException {
+    var headers = requestContext.getHeaders();
     try {
       String sessionId = handleHeaderString(headers, SESSION_ID);
       if (sessionId != null) {

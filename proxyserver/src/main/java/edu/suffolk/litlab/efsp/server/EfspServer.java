@@ -149,8 +149,6 @@ public class EfspServer {
     sf.setProviders(providers());
 
     sf.setAddress(ServiceHelpers.BASE_LOCAL_URL);
-    sf.getInInterceptors().add(new ObservabilityHeadersInterceptor());
-    sf.getOutInterceptors().add(new ObservabilityResetInterceptor());
     server = sf.create();
   }
 
@@ -217,7 +215,9 @@ public class EfspServer {
         new JAXBElementProvider<Object>(),
         new JacksonJsonProvider(), // TODO(brycew): JAXBJSon?
         new SoapExceptionMapper(),
-        new JsonExceptionMapper());
+        new JsonExceptionMapper(),
+        new ObservabilityHeadersInterceptor(),
+        new ObservabilityResetInterceptor());
   }
 
   public static void main(String[] args) throws Exception {
