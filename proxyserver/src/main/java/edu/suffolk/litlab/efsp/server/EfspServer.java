@@ -34,11 +34,13 @@ import jakarta.ws.rs.core.MediaType;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.apache.cxf.endpoint.Server;
@@ -220,13 +222,32 @@ public class EfspServer {
       throw new RuntimeException("TOGA_CLIENT_KEYS and TYLER_JURISDICTION mismatch");
     }
 
+    LocalTime codesUpdateTime = LocalTime.of(2, 13);
+    if (tylerEnv.isPresent()) {
+      try (var is =
+          EfspServer.class.getResourceAsStream(
+              "/application." + tylerEnv.get().getName() + ".properties")) {
+        Properties properties = new Properties();
+        properties.load(is);
+        String time = properties.getProperty("edu.suffolk.litlab.efsp.codeUpdateTime");
+        codesUpdateTime = LocalTime.parse(time);
+      }
+    }
+
     List<EfmModuleSetup> modules = new ArrayList<>();
     for (int idx = 0; idx < jurisdictions.size(); idx++) {
       String jurisdiction = jurisdictions.get(idx);
       if (jurisdiction.isBlank()) {
         continue;
       }
-      TylerModuleSetup.create(jurisdiction, togaKeys.get(idx), converterMap, codeDs, userDs, sender)
+      TylerModuleSetup.create(
+              jurisdiction,
+              togaKeys.get(idx),
+              codesUpdateTime,
+              converterMap,
+              codeDs,
+              userDs,
+              sender)
           .ifPresent(mod -> modules.add(mod));
     }
     JeffNetModuleSetup.create(converterMap, userDs, sender).ifPresent(mod -> modules.add(mod));
