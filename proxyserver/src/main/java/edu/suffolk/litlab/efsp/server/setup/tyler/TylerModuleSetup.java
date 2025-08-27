@@ -28,6 +28,7 @@ import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -62,13 +63,14 @@ public class TylerModuleSetup implements EfmModuleSetup {
   private final DataSource codeDs;
   private final DataSource userDs;
   private final Map<String, InterviewToFilingInformationConverter> converterMap;
+  private final TylerEnv tylerEnv;
+  private final LocalTime codesDbUpdateTime;
 
   // Payments Stuff
   private final String togaKey;
   private final String togaUrl;
   private OrgMessageSender sender;
   private Scheduler scheduler;
-  private TylerEnv tylerEnv;
 
   public static class CreationArgs {
     public String pgUrl;
@@ -84,6 +86,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
   public static Optional<TylerModuleSetup> create(
       String jurisdiction,
       String togaKey,
+      LocalTime codesDbUpdateTime,
       Map<String, InterviewToFilingInformationConverter> converterMap,
       DataSource codeDs,
       DataSource userDs,
@@ -95,13 +98,21 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
     return Optional.of(
         new TylerModuleSetup(
-            args.get(), jurisdiction, togaKey, converterMap, codeDs, userDs, sender));
+            args.get(),
+            jurisdiction,
+            togaKey,
+            codesDbUpdateTime,
+            converterMap,
+            codeDs,
+            userDs,
+            sender));
   }
 
   private TylerModuleSetup(
       CreationArgs args,
       String jurisdiction,
       String togaKey,
+      LocalTime codesDbUpdateTime,
       Map<String, InterviewToFilingInformationConverter> converterMap,
       DataSource codeDs,
       DataSource userDs,
@@ -119,6 +130,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     this.togaKey = togaKey;
     this.togaUrl = args.togaUrl;
     this.sender = sender;
+    this.codesDbUpdateTime = codesDbUpdateTime;
   }
 
   private static Optional<CreationArgs> createFromEnvVars() {
@@ -215,16 +227,18 @@ public class TylerModuleSetup implements EfmModuleSetup {
       scheduler.start();
 
       // Always schedule daily codes update.
+      int hour = codesDbUpdateTime.getHour();
+      int min = codesDbUpdateTime.getMinute();
       var r = new Random();
       String triggerName = "trigger-" + this.tylerJurisdiction + "-" + this.tylerEnv;
       Trigger trigger =
           TriggerBuilder.newTrigger()
               .withIdentity(triggerName, "codesdb-group")
               .startNow()
-              .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(2, 13 + r.nextInt(4)))
+              .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(hour, min + r.nextInt(4)))
               .build();
 
-      log.info("Scheduling daily Tyler EFM code update job.");
+      log.info("Scheduling daily Tyler EFM code update job around {}", codesDbUpdateTime);
       scheduler.scheduleJob(
           buildJob("job-" + this.tylerJurisdiction + "-" + this.tylerEnv), trigger);
 
