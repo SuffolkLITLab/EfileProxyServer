@@ -27,7 +27,7 @@ ARG CI_COMMIT_SHA
 LABEL git-commit=$CI_COMMIT_SHA
 COPY --from=build  /app/proxyserver/target/efspserver-with-deps.jar /app/
 COPY config /app/
-COPY LICENSE config/client_sign.propertie[s] config/quartz.properties config/Suffolk.pf[x] /app/
+COPY LICENSE /app/
 COPY Docker/docker_run_script.sh Docker/fly_startup_script.sh /app/
 
 EXPOSE 9000
