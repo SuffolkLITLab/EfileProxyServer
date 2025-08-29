@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.server.setup;
 
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.server.services.JurisdictionServiceHandle;
 import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import java.util.List;
@@ -22,7 +23,7 @@ public interface EfmModuleSetup {
 
   Optional<EfmRestCallbackInterface> getCallback();
 
-  String getJurisdiction();
+  Jurisdiction getJurisdiction();
 
   void setupGlobals();
 

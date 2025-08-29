@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efsp.server.services;
 
 import static edu.suffolk.litlab.efsp.server.utils.EndpointReflection.replacePathParam;
 
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
@@ -77,9 +78,9 @@ public class EcfCodesService extends CodesService {
   private final Supplier<CodeDatabase> cdSupplier;
   private final EndpointReflection ef;
 
-  public EcfCodesService(String jurisdiction, Supplier<CodeDatabase> cdSupplier) {
+  public EcfCodesService(Jurisdiction jurisdiction, Supplier<CodeDatabase> cdSupplier) {
     this.cdSupplier = cdSupplier;
-    this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/codes");
+    this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction.getName() + "/codes");
   }
 
   @Override

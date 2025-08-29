@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.db.model.NewTokens;
@@ -46,7 +47,7 @@ public class SecurityHubTest {
     when(userFactory.makeUserClient(any())).thenReturn(tylerUserClient);
 
     mockClients = Mockito.mockStatic(TylerClients.class);
-    when(TylerClients.getEfmUserFactory(any(), any())).thenReturn(Optional.of(userFactory));
+    when(TylerClients.getEfmUserFactory(any())).thenReturn(Optional.of(userFactory));
   }
 
   @AfterAll
@@ -57,7 +58,7 @@ public class SecurityHubTest {
   @BeforeEach
   public void setup() {
     ld = mock(LoginDatabase.class);
-    hub = new SecurityHub(() -> ld, Optional.of(TylerEnv.STAGE), List.of("illinois"));
+    hub = new SecurityHub(() -> ld, Optional.of(TylerEnv.STAGE), List.of(Jurisdiction.ILLINOIS));
   }
 
   @Test

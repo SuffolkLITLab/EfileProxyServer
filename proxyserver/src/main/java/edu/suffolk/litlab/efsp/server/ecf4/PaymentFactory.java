@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import java.math.BigDecimal;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentMeansType;
@@ -13,7 +14,7 @@ import oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.PaymentMe
 import tyler.ecf.extensions.common.ProviderChargeType;
 
 public class PaymentFactory {
-  public static PaymentMessageType makePaymentMessage(String paymentId, String jurisdiction) {
+  public static PaymentMessageType makePaymentMessage(String paymentId, Jurisdiction jurisdiction) {
     var ecfObjFac =
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.ObjectFactory();
     PaymentMessageType pmt = ecfObjFac.createPaymentMessageType();
@@ -29,7 +30,8 @@ public class PaymentFactory {
     return pmt;
   }
 
-  public static ProviderChargeType makeProviderChargeType(String paymentId, String jurisdiction) {
+  public static ProviderChargeType makeProviderChargeType(
+      String paymentId, Jurisdiction jurisdiction) {
     tyler.ecf.extensions.common.ObjectFactory tylerObjFac =
         new tyler.ecf.extensions.common.ObjectFactory();
     ProviderChargeType pct = tylerObjFac.createProviderChargeType();
@@ -38,7 +40,7 @@ public class PaymentFactory {
   }
 
   private static AllowanceChargeType makeAllowanceChargeType(
-      String paymentId, String jurisdiction) {
+      String paymentId, Jurisdiction jurisdiction) {
     var cacObjFac =
         new oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory();
     var cbcObjFac =

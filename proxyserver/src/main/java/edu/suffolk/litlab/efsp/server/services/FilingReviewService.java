@@ -6,6 +6,7 @@ import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringDefault;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
@@ -68,7 +69,7 @@ public class FilingReviewService {
   private final EndpointReflection ef;
 
   public FilingReviewService(
-      String jurisdiction,
+      Jurisdiction jurisdiction,
       Supplier<LoginDatabase> ldSupplier,
       Supplier<UserDatabase> udSupplier,
       Map<String, InterviewToFilingInformationConverter> converterMap,
@@ -81,7 +82,7 @@ public class FilingReviewService {
     this.ldSupplier = ldSupplier;
     this.udSupplier = udSupplier;
     this.msgSender = msgSender;
-    this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/filingreview");
+    this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction.getName() + "/filingreview");
   }
 
   @GET

@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.server.services;
 
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -12,9 +13,9 @@ import java.util.Map;
 @Path("/jurisdictions")
 public class JurisdictionSwitch {
 
-  private final Map<String, JurisdictionServiceHandle> jurisdictions;
+  private final Map<Jurisdiction, JurisdictionServiceHandle> jurisdictions;
 
-  public JurisdictionSwitch(Map<String, JurisdictionServiceHandle> jurisdictions) {
+  public JurisdictionSwitch(Map<Jurisdiction, JurisdictionServiceHandle> jurisdictions) {
     this.jurisdictions = jurisdictions;
   }
 
@@ -23,7 +24,9 @@ public class JurisdictionSwitch {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAll() {
     EndpointReflection ef = new EndpointReflection("/jurisdictions");
-    return Response.ok(ef.pathParamsToMap(jurisdictions.keySet().stream())).build();
+    return Response.ok(
+            ef.pathParamsToMap(jurisdictions.keySet().stream().map(Jurisdiction::getName)))
+        .build();
   }
 
   /**
@@ -37,6 +40,7 @@ public class JurisdictionSwitch {
   @Path("{jurisdiction_id}")
   public JurisdictionServiceHandle getJurisdictionService(
       @PathParam("jurisdiction_id") String jurisdictionId) {
-    return jurisdictions.get(jurisdictionId);
+    Jurisdiction jurisdiction = Jurisdiction.parse(jurisdictionId);
+    return jurisdictions.get(jurisdiction);
   }
 }

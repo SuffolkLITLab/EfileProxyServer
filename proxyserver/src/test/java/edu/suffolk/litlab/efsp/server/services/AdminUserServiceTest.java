@@ -8,12 +8,14 @@ import static org.mockito.Mockito.when;
 
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.server.EfspServer;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
@@ -69,8 +71,8 @@ public class AdminUserServiceTest {
     when(userFactory.makeUserClient(any())).thenReturn(tylerUserClient);
 
     mockClients = Mockito.mockStatic(TylerClients.class);
-    when(TylerClients.getEfmFirmFactory(any(), any())).thenReturn(Optional.of(firmFactory));
-    when(TylerClients.getEfmUserFactory(any(), any())).thenReturn(Optional.of(userFactory));
+    when(TylerClients.getEfmFirmFactory(any())).thenReturn(Optional.of(firmFactory));
+    when(TylerClients.getEfmUserFactory(any())).thenReturn(Optional.of(userFactory));
   }
 
   private void startServer() {
@@ -98,7 +100,11 @@ public class AdminUserServiceTest {
     sf.setResourceProvider(
         AdminUserService.class,
         new SingletonResourceProvider(
-            new AdminUserService("illinois", TylerEnv.STAGE, () -> ld, () -> cd, passwordChecker)));
+            new AdminUserService(
+                new TylerDomain(Jurisdiction.ILLINOIS, TylerEnv.STAGE),
+                () -> ld,
+                () -> cd,
+                passwordChecker)));
     sf.setAddress(ENDPOINT_ADDRESS);
     Map<Object, Object> extensionMappings = Map.of("json", MediaType.APPLICATION_JSON);
     sf.setExtensionMappings(extensionMappings);

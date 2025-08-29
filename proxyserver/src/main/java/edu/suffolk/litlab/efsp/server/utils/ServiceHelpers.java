@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efsp.server.utils;
 
 import static edu.suffolk.litlab.efsp.stdlib.StdLib.GetEnv;
 
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
@@ -123,7 +124,7 @@ public class ServiceHelpers {
       TylerFirmFactory firmFactory,
       HttpHeaders httpHeaders,
       Supplier<LoginDatabase> ldSupplier,
-      String jurisdiction) {
+      Jurisdiction jurisdiction) {
     return setupFirmPort(firmFactory, httpHeaders, ldSupplier, true, jurisdiction);
   }
 
@@ -133,7 +134,7 @@ public class ServiceHelpers {
       HttpHeaders httpHeaders,
       Supplier<LoginDatabase> ldSupplier,
       boolean needsSoapHeader,
-      String jurisdiction) {
+      Jurisdiction jurisdiction) {
     String activeToken = httpHeaders.getHeaderString("X-API-KEY");
     try (LoginDatabase ld = ldSupplier.get()) {
       Optional<AtRest> atRest = ld.getAtRestInfo(activeToken);

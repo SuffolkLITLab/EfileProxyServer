@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efsp.server.setup.jeffnet;
 
 import com.opencsv.exceptions.CsvValidationException;
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.server.EfspServer;
@@ -79,8 +80,8 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
   }
 
   @Override
-  public String getJurisdiction() {
-    return "louisiana";
+  public Jurisdiction getJurisdiction() {
+    return Jurisdiction.LOUISIANA;
   }
 
   public Set<String> getCourts() {

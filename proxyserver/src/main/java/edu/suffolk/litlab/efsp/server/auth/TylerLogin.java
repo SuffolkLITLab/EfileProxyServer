@@ -1,9 +1,10 @@
 package edu.suffolk.litlab.efsp.server.auth;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
-import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
 import java.util.Map;
@@ -18,21 +19,20 @@ public class TylerLogin implements LoginInterface {
 
   private final TylerUserFactory userServiceFactory;
   private static final String HEADER_KEY_PREFIX = "TYLER-TOKEN";
-  private final String jurisdiction;
+  private final Jurisdiction jurisdiction;
 
-  public TylerLogin(String jurisdiction, TylerEnv env) {
-    this.jurisdiction = jurisdiction;
-    Optional<TylerUserFactory> maybeUserFactory = TylerClients.getEfmUserFactory(jurisdiction, env);
+  public TylerLogin(TylerDomain domain) {
+    this.jurisdiction = domain.jurisdiction();
+    Optional<TylerUserFactory> maybeUserFactory = TylerClients.getEfmUserFactory(domain);
     if (maybeUserFactory.isPresent()) {
       userServiceFactory = maybeUserFactory.get();
     } else {
-      throw new RuntimeException(
-          jurisdiction + "-" + env + " not in SoapClientChooser for EFMUser");
+      throw new RuntimeException(domain + " not in SoapClientChooser for EFMUser");
     }
   }
 
-  public static String getHeaderKeyFromJurisdiction(String jurisdiction) {
-    return HEADER_KEY_PREFIX + "-" + jurisdiction.toUpperCase();
+  public static String getHeaderKeyFromJurisdiction(Jurisdiction jurisdiction) {
+    return HEADER_KEY_PREFIX + "-" + jurisdiction.getName().toUpperCase();
   }
 
   @Override
@@ -82,10 +82,10 @@ public class TylerLogin implements LoginInterface {
 
   @Override
   public String getLoginName() {
-    return "tyler-" + this.jurisdiction;
+    return "tyler-" + this.jurisdiction.getName();
   }
 
-  public static String getHeaderId(String jurisdiction) {
-    return "TYLER-ID-" + jurisdiction;
+  public static String getHeaderId(Jurisdiction jurisdiction) {
+    return "TYLER-ID-" + jurisdiction.getName().toUpperCase();
   }
 }

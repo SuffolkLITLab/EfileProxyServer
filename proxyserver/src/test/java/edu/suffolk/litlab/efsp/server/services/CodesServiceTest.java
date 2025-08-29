@@ -7,11 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.db.DatabaseVersionTest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.server.EfspServer;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -56,7 +58,7 @@ public class CodesServiceTest {
             100);
     Supplier<CodeDatabase> cdSupplier =
         () -> {
-          return CodeDatabase.fromDS("illinois", TylerEnv.STAGE, ds);
+          return CodeDatabase.fromDS(new TylerDomain(Jurisdiction.ILLINOIS, TylerEnv.STAGE), ds);
         };
     try (CodeDatabase cd = cdSupplier.get()) {
       cd.createTablesIfAbsent();
@@ -81,7 +83,7 @@ public class CodesServiceTest {
     sf.setResourceClasses(EcfCodesService.class);
     sf.setResourceProvider(
         EcfCodesService.class,
-        new SingletonResourceProvider(new EcfCodesService("illinois", cdSupplier)));
+        new SingletonResourceProvider(new EcfCodesService(Jurisdiction.ILLINOIS, cdSupplier)));
     sf.setAddress(ENDPOINT_ADDRESS);
     Map<Object, Object> extensionMappings =
         Map.of(

@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efsp.server.services;
 
 import static edu.suffolk.litlab.efsp.server.utils.EndpointReflection.replacePathParam;
 
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -21,11 +22,11 @@ public class CourtsOnlyCodesService extends CodesService {
 
   private final Map<String, String> courts; // map court code names to full names
   private final EndpointReflection ef;
-  private final String jurisdiction;
+  private final Jurisdiction jurisdiction;
 
-  public CourtsOnlyCodesService(String jurisdiction, Map<String, String> courts) {
+  public CourtsOnlyCodesService(Jurisdiction jurisdiction, Map<String, String> courts) {
     this.jurisdiction = jurisdiction;
-    this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/codes");
+    this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction.getName() + "/codes");
     this.courts = courts;
   }
 

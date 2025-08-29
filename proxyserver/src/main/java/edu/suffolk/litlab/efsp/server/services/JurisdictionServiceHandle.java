@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.server.services;
 
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -22,10 +23,10 @@ public class JurisdictionServiceHandle {
   private final FilingReviewService filingReview;
   private final Optional<FirmAttorneyAndServiceService> firmAttorneyAndService;
   private final Optional<PaymentsService> payments;
-  private final String jurisdiction;
+  private final Jurisdiction jurisdiction;
 
   public JurisdictionServiceHandle(
-      String jurisdiction,
+      Jurisdiction jurisdiction,
       AdminUserService au,
       CasesService c,
       CodesService codes,
@@ -45,7 +46,7 @@ public class JurisdictionServiceHandle {
   }
 
   public JurisdictionServiceHandle(
-      String jurisdiction,
+      Jurisdiction jurisdiction,
       AdminUserService au,
       CasesService c,
       CodesService codes,
@@ -65,7 +66,7 @@ public class JurisdictionServiceHandle {
   }
 
   public JurisdictionServiceHandle(
-      String jurisdiction, FilingReviewService filingReview, CodesService codes) {
+      Jurisdiction jurisdiction, FilingReviewService filingReview, CodesService codes) {
     this(
         jurisdiction,
         Optional.empty(),
@@ -77,7 +78,7 @@ public class JurisdictionServiceHandle {
         Optional.empty());
   }
 
-  public JurisdictionServiceHandle(String jurisdiction, FilingReviewService filingReview) {
+  public JurisdictionServiceHandle(Jurisdiction jurisdiction, FilingReviewService filingReview) {
     this(
         jurisdiction,
         Optional.empty(),
@@ -90,7 +91,7 @@ public class JurisdictionServiceHandle {
   }
 
   private JurisdictionServiceHandle(
-      String jurisdiction,
+      Jurisdiction jurisdiction,
       Optional<AdminUserService> adminUser,
       Optional<CasesService> cases,
       Optional<CodesService> codes,
@@ -112,7 +113,7 @@ public class JurisdictionServiceHandle {
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection("/jurisdictions/" + jurisdiction);
+    EndpointReflection ef = new EndpointReflection("/jurisdictions/" + jurisdiction.getName());
     var endpoints = ef.findRESTEndpoints(List.of(JurisdictionServiceHandle.class));
     log.info("All endpoints for servicehandle: {}", endpoints);
     var map = ef.endPointsToMap(endpoints);

@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efsp.server.services;
 import static edu.suffolk.litlab.efsp.server.utils.EndpointReflection.replacePathParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
@@ -16,7 +17,7 @@ import edu.suffolk.litlab.efsp.server.ecf4.SoapClientChooser;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
-import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.Hasher;
 import gov.niem.niem.niem_core._2.CaseType;
@@ -78,24 +79,20 @@ public class CasesService {
       new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
   private final Supplier<LoginDatabase> ldSupplier;
   private final Supplier<CodeDatabase> cdSupplier;
-  private final String jurisdiction;
+  private final Jurisdiction jurisdiction;
   private final EndpointReflection ef;
 
   public CasesService(
-      String jurisdiction,
-      TylerEnv env,
-      Supplier<LoginDatabase> ldSupplier,
-      Supplier<CodeDatabase> cdSupplier) {
-    this.jurisdiction = jurisdiction;
-    Optional<CourtRecordMDEService> maybeRecords =
-        SoapClientChooser.getCourtRecordFactory(jurisdiction, env);
+      TylerDomain domain, Supplier<LoginDatabase> ldSupplier, Supplier<CodeDatabase> cdSupplier) {
+    this.jurisdiction = domain.jurisdiction();
+    Optional<CourtRecordMDEService> maybeRecords = SoapClientChooser.getCourtRecordFactory(domain);
     if (maybeRecords.isEmpty()) {
-      throw new RuntimeException("Can't find " + jurisdiction + " for court record factory");
+      throw new RuntimeException("Can't find " + domain + " for court record factory");
     }
     this.recordFactory = maybeRecords.get();
     this.cdSupplier = cdSupplier;
     this.ldSupplier = ldSupplier;
-    this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/cases");
+    this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction.getName() + "/cases");
   }
 
   @GET

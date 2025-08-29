@@ -1,7 +1,10 @@
 package edu.suffolk.litlab.efsp.tyler;
 
+import static edu.suffolk.litlab.efsp.Jurisdiction.*;
+import static edu.suffolk.litlab.efsp.tyler.TylerEnv.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -16,41 +19,41 @@ public class TylerClientsTest {
 
   @Test
   public void allFactoriesShouldNotThrow() {
-    for (String jurisdiction :
-        List.of("texas", "massachusetts", "illinois", "indiana", "california", "wales")) {
+    for (Jurisdiction jurisdiction :
+        List.of(TEXAS, MASSACHUSETTS, ILLINOIS, INDIANA, CALIFORNIA, VERMONT)) {
       for (TylerEnv env : TylerEnv.values()) {
-        assertThat(TylerClients.getEfmFirmFactory(jurisdiction, env)).isNotNull();
-        assertThat(TylerClients.getEfmUserFactory(jurisdiction, env)).isNotNull();
+        var domain = new TylerDomain(jurisdiction, env);
+        assertThat(TylerClients.getEfmFirmFactory(domain)).isNotNull();
+        assertThat(TylerClients.getEfmUserFactory(domain)).isNotNull();
       }
     }
-    assertThat(TylerClients.getEfmUserFactory("antartica", TylerEnv.STAGE)).isEmpty();
-    assertThat(TylerClients.getEfmUserFactory("massachusetts", TylerEnv.PROD)).isNotEmpty();
-    assertThat(TylerClients.getEfmUserFactory("illinois", TylerEnv.STAGE)).isNotEmpty();
+    assertThat(TylerClients.getEfmUserFactory(new TylerDomain(MASSACHUSETTS, PROD))).isNotEmpty();
+    assertThat(TylerClients.getEfmUserFactory(new TylerDomain(ILLINOIS, STAGE))).isNotEmpty();
   }
 
   @Test
   public void testJurisdictionEnvUrls() throws IOException, URISyntaxException {
     testJurisdictionEnvUrl(
         "https://texas-stage.tylertech.cloud/",
-        TylerClients.getTylerServerRootUrl("texas", TylerEnv.STAGE));
+        TylerClients.getTylerServerRootUrl(new TylerDomain(TEXAS, STAGE)));
     testJurisdictionEnvUrl(
         "https://texas.tylertech.cloud/",
-        TylerClients.getTylerServerRootUrl("texas", TylerEnv.PROD));
+        TylerClients.getTylerServerRootUrl(new TylerDomain(TEXAS, PROD)));
     testJurisdictionEnvUrl(
         "https://massachusetts-stage.tylertech.cloud/",
-        TylerClients.getTylerServerRootUrl("massachusetts", TylerEnv.STAGE));
+        TylerClients.getTylerServerRootUrl(new TylerDomain(MASSACHUSETTS, STAGE)));
     testJurisdictionEnvUrl(
         "https://massachusetts.tylertech.cloud/",
-        TylerClients.getTylerServerRootUrl("massachusetts", TylerEnv.PROD));
+        TylerClients.getTylerServerRootUrl(new TylerDomain(MASSACHUSETTS, PROD)));
     testJurisdictionEnvUrl(
         "https://illinois-stage.tylertech.cloud/",
-        TylerClients.getTylerServerRootUrl("illinois", TylerEnv.STAGE));
+        TylerClients.getTylerServerRootUrl(new TylerDomain(ILLINOIS, STAGE)));
     testJurisdictionEnvUrl(
         "https://illinois.tylertech.cloud/",
-        TylerClients.getTylerServerRootUrl("illinois", TylerEnv.PROD));
+        TylerClients.getTylerServerRootUrl(new TylerDomain(ILLINOIS, PROD)));
   }
 
-  public void testJurisdictionEnvUrl(String urlExpected, String urlGenerated)
+  private void testJurisdictionEnvUrl(String urlExpected, String urlGenerated)
       throws IOException, URISyntaxException {
     assertThat(urlGenerated).isEqualTo(urlExpected);
     URL url = (new URI(urlGenerated)).toURL();

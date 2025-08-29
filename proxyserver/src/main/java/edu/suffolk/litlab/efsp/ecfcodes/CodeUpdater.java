@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.ecfcodes;
 
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeTableConstants.UnsupportedTableException;
@@ -11,6 +12,7 @@ import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
@@ -315,7 +317,7 @@ public class CodeUpdater {
   }
 
   private static Map<String, CourtPolicyResponseMessageType> streamPolicies(
-      Stream<String> locations, String jurisdiction, FilingReviewMDEPort filingPort) {
+      Stream<String> locations, TylerDomain domain, FilingReviewMDEPort filingPort) {
     var policies = new ConcurrentHashMap<String, CourtPolicyResponseMessageType>();
     locations.forEach(
         location -> {
@@ -324,8 +326,7 @@ public class CodeUpdater {
             CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
             policies.put(location, p);
           } catch (SOAPFaultException ex) {
-            log.warn(
-                "Got a SOAP excption getting policy for {} in {}: ", location, jurisdiction, ex);
+            log.warn("Got a SOAP excption getting policy for {} in {}: ", location, domain, ex);
           }
         });
     return policies;
@@ -567,17 +568,17 @@ public class CodeUpdater {
 
   /** Sets up the WSDL connection to Tyler, used for `getPolicy` to get the URL. */
   private static FilingReviewMDEPort loginWithTyler(
-      String jurisdiction, TylerEnv env, String userEmail, String userPassword) {
-    Optional<TylerUserFactory> userFactory = TylerClients.getEfmUserFactory(jurisdiction, env);
+      TylerDomain domain, String userEmail, String userPassword) {
+    Optional<TylerUserFactory> userFactory = TylerClients.getEfmUserFactory(domain);
     if (userFactory.isEmpty()) {
-      throw new RuntimeException("Can't find " + jurisdiction + " in Soap chooser for EFMUser");
+      throw new RuntimeException("Can't find " + domain + " in Soap chooser for EFMUser");
     }
-    log.info("Getting filing factory for {} {}", jurisdiction, env);
+    log.info("Getting filing factory for {}", domain);
     Optional<FilingReviewMDEService> filingFactory =
-        SoapClientChooser.getFilingReviewFactory(jurisdiction, env);
+        SoapClientChooser.getFilingReviewFactory(domain);
     if (filingFactory.isEmpty()) {
       throw new RuntimeException(
-          "Can't find " + jurisdiction + " in Soap Chooser for filing review factory");
+          "Can't find " + domain + " in Soap Chooser for filing review factory");
     }
     TylerUserClient userPort = userFactory.get().makeUserClient(ServiceHelpers::setupServicePort);
     AuthenticateRequestType authReq = new AuthenticateRequestType();
@@ -593,7 +594,7 @@ public class CodeUpdater {
   }
 
   /** Downloads a single codes zip. For Debugging. */
-  public boolean downloadIndiv(List<String> args, String jurisdiction, TylerEnv env) {
+  public boolean downloadIndiv(List<String> args, TylerDomain domain) {
     if (args.size() < 3) {
       log.error(
           "Need to pass in args: downloadIndiv <jurisdiction> <table> <location or blank for"
@@ -601,15 +602,17 @@ public class CodeUpdater {
       return false;
     }
 
-    if (!jurisdiction.equalsIgnoreCase(args.get(1))) {
-      log.warn("{} is not {}, not downloading here", args.get(1), jurisdiction);
+    var jurisdictionArg = Jurisdiction.parse(args.get(1));
+
+    if (domain.jurisdiction() != jurisdictionArg) {
+      log.warn("{} is not {}, not downloading here", jurisdictionArg, domain);
       return false;
     }
 
     String table = args.get(2);
     String location = (args.size() == 4) ? args.get(3) : "";
     HeaderSigner hs = new HeaderSigner(this.pathToKeystore, this.x509Password);
-    String endpoint = TylerClients.getTylerServerRootUrl(jurisdiction, env);
+    String endpoint = TylerClients.getTylerServerRootUrl(domain);
     return downloadAndProcessZip(
         makeCodeUrl(endpoint, table, location),
         hs.signedCurrentTime().get(),
@@ -627,20 +630,16 @@ public class CodeUpdater {
 
   public static boolean executeCommand(
       Supplier<CodeDatabaseAPI> cdSupplier,
-      String jurisdiction,
-      TylerEnv env,
+      TylerDomain domain,
       List<String> args,
       String x509Password) {
     SoapX509CallbackHandler.setX509Password(x509Password);
     String command = args.get(0);
     try {
-      String codesSite = TylerClients.getTylerServerRootUrl(jurisdiction, env);
+      String codesSite = TylerClients.getTylerServerRootUrl(domain);
       FilingReviewMDEPort filingPort =
           loginWithTyler(
-              jurisdiction,
-              env,
-              System.getenv("TYLER_USER_EMAIL"),
-              System.getenv("TYLER_USER_PASSWORD"));
+              domain, System.getenv("TYLER_USER_EMAIL"), System.getenv("TYLER_USER_PASSWORD"));
       CodeUpdater cu = new CodeUpdater(System.getenv("PATH_TO_KEYSTORE"), x509Password);
       if (command.equalsIgnoreCase("replaceall")) {
         return cu.replaceAll(codesSite, filingPort, cdSupplier.get());
@@ -650,7 +649,7 @@ public class CodeUpdater {
       } else if (command.equalsIgnoreCase("refresh")) {
         return cu.updateAll(codesSite, filingPort, cdSupplier.get());
       } else if (command.equalsIgnoreCase("downloadIndiv")) {
-        return cu.downloadIndiv(args, jurisdiction, env);
+        return cu.downloadIndiv(args, domain);
       } else {
         log.error("Command {} isn't a real command", command);
         return false;
@@ -662,7 +661,7 @@ public class CodeUpdater {
   }
 
   /** Should just be called from main. */
-  private static CodeDatabaseAPI makeCodeDatabase(String jurisdiction, TylerEnv env) {
+  private static CodeDatabaseAPI makeCodeDatabase(TylerDomain domain) {
     try {
       DataSource ds =
           DatabaseCreator.makeDataSource(
@@ -674,7 +673,7 @@ public class CodeUpdater {
               10,
               100);
 
-      return CodeDatabase.fromDS(jurisdiction, env, ds);
+      return CodeDatabase.fromDS(domain, ds);
     } catch (Exception ex) {
       throw new RuntimeException(ex);
     }
@@ -697,18 +696,18 @@ public class CodeUpdater {
       System.exit(1);
     }
 
-    List<String> jurisdictions = List.of(System.getenv("TYLER_JURISDICTIONS").split(" "));
-    var env = TylerEnv.parse(System.getenv("TYLER_ENV"));
-    for (String jurisdiction : jurisdictions) {
+    List<Jurisdiction> jurisdictions =
+        Stream.of(System.getenv("TYLER_JURISDICTIONS").split(" "))
+            .map(Jurisdiction::parse)
+            .toList();
+    TylerEnv env = TylerEnv.parse(System.getenv("TYLER_ENV"));
+    for (var jurisdiction : jurisdictions) {
+      MDC.put(MDCWrappers.USER_ID, jurisdiction.getName());
+      var domain = new TylerDomain(jurisdiction, env);
       // Reusing USER for Jurisdiction, SESSION for the court / location, and REQUEST for the table
       // name.
-      MDC.put(MDCWrappers.USER_ID, jurisdiction);
       executeCommand(
-          () -> makeCodeDatabase(jurisdiction, env),
-          jurisdiction,
-          env,
-          List.of(args),
-          System.getenv("X509_PASSWORD"));
+          () -> makeCodeDatabase(domain), domain, List.of(args), System.getenv("X509_PASSWORD"));
     }
   }
 }

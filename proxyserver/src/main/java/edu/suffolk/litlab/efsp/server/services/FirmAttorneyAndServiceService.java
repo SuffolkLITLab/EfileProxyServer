@@ -7,6 +7,7 @@ import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
@@ -14,7 +15,7 @@ import edu.suffolk.litlab.efsp.server.services.api.ServiceContactInput;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
-import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
@@ -78,23 +79,19 @@ public class FirmAttorneyAndServiceService {
   private final TylerFirmFactory firmFactory;
   private final Supplier<CodeDatabase> cdSupplier;
   private final Supplier<LoginDatabase> ldSupplier;
-  private final String jurisdiction;
+  private final Jurisdiction jurisdiction;
 
   private static final tyler.efm.latest.services.schema.common.ObjectFactory tylerCommonObjFac =
       new tyler.efm.latest.services.schema.common.ObjectFactory();
 
   public FirmAttorneyAndServiceService(
-      String jurisdiction,
-      TylerEnv env,
-      Supplier<LoginDatabase> ldSupplier,
-      Supplier<CodeDatabase> cdSupplier) {
-    this.jurisdiction = jurisdiction;
-    Optional<TylerFirmFactory> maybeFirmFactory = TylerClients.getEfmFirmFactory(jurisdiction, env);
+      TylerDomain domain, Supplier<LoginDatabase> ldSupplier, Supplier<CodeDatabase> cdSupplier) {
+    this.jurisdiction = domain.jurisdiction();
+    Optional<TylerFirmFactory> maybeFirmFactory = TylerClients.getEfmFirmFactory(domain);
     if (maybeFirmFactory.isPresent()) {
       this.firmFactory = maybeFirmFactory.get();
     } else {
-      throw new RuntimeException(
-          jurisdiction + "-" + env + " not in SoapClientChooser for EFMFirm");
+      throw new RuntimeException(domain + " not in SoapClientChooser for EFMFirm");
     }
     this.cdSupplier = cdSupplier;
     this.ldSupplier = ldSupplier;
@@ -104,7 +101,7 @@ public class FirmAttorneyAndServiceService {
   @Path("/")
   public Response getAll() {
     EndpointReflection ef =
-        new EndpointReflection("/jurisdictions/" + jurisdiction + "/firmattorneyservice");
+        new EndpointReflection("/jurisdictions/" + jurisdiction.getName() + "/firmattorneyservice");
     return Response.ok(
             ef.endPointsToMap(ef.findRESTEndpoints(List.of(FirmAttorneyAndServiceService.class))))
         .build();

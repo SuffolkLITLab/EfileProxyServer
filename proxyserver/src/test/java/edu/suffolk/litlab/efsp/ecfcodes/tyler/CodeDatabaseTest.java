@@ -5,9 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.db.DatabaseVersionTest;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeUpdater;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -43,7 +45,7 @@ public class CodeDatabaseTest {
             postgres.getJdbcUrl(),
             postgres.getUsername(),
             postgres.getPassword());
-    cd = new CodeDatabase("illinois", TylerEnv.STAGE, conn);
+    cd = new CodeDatabase(new TylerDomain(Jurisdiction.ILLINOIS, TylerEnv.STAGE), conn);
     cd.createTablesIfAbsent();
   }
 
