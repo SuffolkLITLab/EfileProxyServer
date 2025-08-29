@@ -16,3 +16,11 @@ jobs:
           cache: 'maven'
       - name: Build with Maven
         run: mvn --batch-mode -Preproducible verify javadoc:javadoc
+
+  dockerimage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build whole Dockerfile
+        run: docker build --target release --tag test-efspjava-image .
