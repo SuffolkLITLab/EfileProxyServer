@@ -2,7 +2,7 @@ FROM maven:3.8-eclipse-temurin-21 AS build
 ARG CI_COMMIT_SHA
 LABEL git-commit=$CI_COMMIT_SHA
 # The `[]` is an optional COPY: doesn't copy if those files aren't there (https://stackoverflow.com/a/46801962/11416267)
-# They are needed for Tyler API usage, and serving the REST API as HTTPS
+# They are needed for Tyler API usage
 COPY pom.xml /app/
 COPY TylerEcf4 /app/TylerEcf4/
 COPY TylerEcf5 /app/TylerEcf5/
@@ -13,7 +13,7 @@ RUN mvn -f /app/pom.xml -DskipTests clean dependency:resolve dependency:go-offli
 
 COPY proxyserver /app/proxyserver
 RUN mvn -f /app/pom.xml -DskipTests package -PnoDockerTests -Dbuild.revision=$CI_COMMIT_SHA && cp /app/proxyserver/target/efspserver-with-deps.jar /app/
-COPY LICENSE client_sign.propertie[s] quartz.properties Suffolk.pf[x] acme_user.ke[y] acme_domain.ke[y] acme_domain-chain.cr[t] extract-tls-secrets-4.0.0.ja[r] jacocoagent.ja[r] /app/
+COPY LICENSE client_sign.propertie[s] quartz.properties Suffolk.pf[x] extract-tls-secrets-4.0.0.ja[r] jacocoagent.ja[r] /app/
 COPY docker_run_dev.sh /app/
 
 EXPOSE 9000
@@ -25,8 +25,8 @@ LABEL git-commit=$CI_COMMIT_SHA
 COPY --from=build  /app/proxyserver/target/efspserver-with-deps.jar /app/
 COPY --from=build  /app/proxyserver/src/main/config /app/src/main/config/
 # The `[]` is an optional COPY: doesn't copy if those files aren't there (https://stackoverflow.com/a/46801962/11416267)
-# They are needed for Tyler API usage, and serving the REST API as HTTPS
-COPY LICENSE client_sign.propertie[s] quartz.properties Suffolk.pf[x] acme_user.ke[y] acme_domain.ke[y] acme_domain-chain.cr[t] /app/
+# They are needed for Tyler API usage
+COPY LICENSE client_sign.propertie[s] quartz.properties Suffolk.pf[x] /app/
 COPY docker_run_script.sh fly_startup_script.sh /app/
 
 EXPOSE 9000

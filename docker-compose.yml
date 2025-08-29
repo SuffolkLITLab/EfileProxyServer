@@ -9,15 +9,9 @@ services:
     ports:
       - target: 9009
         published: 80
-      - target: 9000
-        published: 443
     env_file: .env
     depends_on:
       - "db"
-    volumes:
-      - type: bind
-        source: ./proxyserver/src/main/config
-        target: /tmp/tls_certs
     deploy:
       resources:
         limits:
@@ -28,7 +22,7 @@ services:
     env_file: .env
     volumes:
       - data-volume:/var/lib/postgresql/data
-      - ./postgres-config:/etc/postgresql
+      - ./config/postgres-config:/etc/postgresql
 
 volumes:
   data-volume:
