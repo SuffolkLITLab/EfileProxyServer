@@ -11,7 +11,6 @@ import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.docassemble.DocassembleToFilingInformationConverter;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.server.auth.SecurityHub;
-import edu.suffolk.litlab.efsp.server.services.AcmeChallengeService;
 import edu.suffolk.litlab.efsp.server.services.ApiUserSettingsService;
 import edu.suffolk.litlab.efsp.server.services.AuthenticationService;
 import edu.suffolk.litlab.efsp.server.services.JurisdictionServiceHandle;
@@ -22,7 +21,6 @@ import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.setup.jeffnet.JeffNetModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.tyler.TylerModuleSetup;
-import edu.suffolk.litlab.efsp.server.utils.HttpsCallbackHandler;
 import edu.suffolk.litlab.efsp.server.utils.JsonExceptionMapper;
 import edu.suffolk.litlab.efsp.server.utils.ObservabilityHeadersInterceptor;
 import edu.suffolk.litlab.efsp.server.utils.ObservabilityResetInterceptor;
@@ -32,7 +30,6 @@ import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapExceptionMapper;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import jakarta.ws.rs.core.MediaType;
-import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -42,11 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
 import javax.sql.DataSource;
-import org.apache.cxf.Bus;
-import org.apache.cxf.BusFactory;
-import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
@@ -59,34 +52,7 @@ public class EfspServer {
   private static Logger log = LoggerFactory.getLogger(EfspServer.class);
 
   private JAXRSServerFactoryBean sf;
-  private JAXRSServerFactoryBean acmeSf;
   private Server server;
-  private Server acmeServer;
-
-  private static final File CERT_KEY_STORE = new File("src/main/config/tls_server_cert.jks");
-
-  // BusFactory.setDefaultBus needs to happen before other CXF code, so use a static block
-  static {
-    // Creating the Bus will immediately unlock the JKS file in `ServerConfig.xml`, so we set
-    // CallbackHandler's CertPassword before we create the factory.
-    Optional<String> certPassword = GetEnv("CERT_PASSWORD");
-    if (certPassword.isPresent() && CERT_KEY_STORE.isFile()) {
-      HttpsCallbackHandler.setCertPassword(certPassword.get());
-      SpringBusFactory factory = new SpringBusFactory();
-      Bus bus = factory.createBus("src/main/config/ServerConfig.xml");
-      // bus.setProperty(HttpServerEngineSupport.ENABLE_HTTP2, true);
-      BusFactory.setDefaultBus(bus);
-    } else {
-      if (certPassword.isEmpty()) {
-        log.warn("Didn't enter a CERT_PASSWORD. Falling back to HTTP. Did you pass an .env file?");
-      }
-      if (!CERT_KEY_STORE.isFile()) {
-        log.warn(
-            CERT_KEY_STORE.getAbsolutePath()
-                + " doesn't exist, needed to run HTTPS. Falling back to HTTP.");
-      }
-    }
-  }
 
   protected EfspServer(
       DataSource codeDs,
@@ -94,8 +60,7 @@ public class EfspServer {
       OrgMessageSender sender,
       List<EfmModuleSetup> modules,
       SecurityHub security,
-      Map<String, InterviewToFilingInformationConverter> converterMap,
-      @Nullable AcmeChallengeService challengeService)
+      Map<String, InterviewToFilingInformationConverter> converterMap)
       throws SQLException, NoSuchAlgorithmException {
 
     var jurisdictionMap = new HashMap<String, JurisdictionServiceHandle>();
@@ -127,15 +92,6 @@ public class EfspServer {
     services.put(
         JurisdictionSwitch.class,
         new SingletonResourceProvider(new JurisdictionSwitch(jurisdictionMap)));
-    if (challengeService != null && !ServiceHelpers.BASE_ACME_URL.isBlank()) {
-      services.put(AcmeChallengeService.class, new SingletonResourceProvider(challengeService));
-      acmeSf = new JAXRSServerFactoryBean();
-      acmeSf.setResourceClasses(AcmeChallengeService.class);
-      acmeSf.setResourceProvider(
-          AcmeChallengeService.class, new SingletonResourceProvider(challengeService));
-      acmeSf.setAddress(ServiceHelpers.BASE_ACME_URL);
-      acmeServer = acmeSf.create();
-    }
 
     sf = new JAXRSServerFactoryBean();
     sf.setResourceClasses(new ArrayList<Class<?>>(services.keySet()));
@@ -156,10 +112,6 @@ public class EfspServer {
     if (server != null) {
       server.stop();
       server.destroy();
-    }
-    if (acmeServer != null) {
-      acmeServer.stop();
-      acmeServer.destroy();
     }
   }
 
@@ -286,15 +238,7 @@ public class EfspServer {
     log.info("Starting Server with the following Filers: {}", modules);
 
     SecurityHub security = new SecurityHub(userDs, tylerEnv, jurisdictions);
-    AcmeChallengeService challengeService = null;
-    boolean useLetsEncrypt =
-        GetEnv("USE_LETSENCRYPT").map(str -> Boolean.parseBoolean(str)).orElse(false);
-    if (useLetsEncrypt) {
-      log.info("Using lets encrypt!");
-      challengeService = new AcmeChallengeService();
-    }
-    EfspServer server =
-        new EfspServer(codeDs, userDs, sender, modules, security, converterMap, challengeService);
+    EfspServer server = new EfspServer(codeDs, userDs, sender, modules, security, converterMap);
 
     Runtime.getRuntime()
         .addShutdownHook(

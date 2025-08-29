@@ -23,7 +23,6 @@
         <slf4j.version>2.0.7</slf4j.version>
         <jackson.version>2.14.2</jackson.version>
         <bouncycastle.version>1.81</bouncycastle.version>
-        <acme4j.version>2.16</acme4j.version>
         <testcontainers.version>1.18.0</testcontainers.version>
         <jacoco.skip>false</jacoco.skip>
         <skipTestsOnBuild>true</skipTestsOnBuild>
@@ -214,16 +213,6 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.5.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.shredzone.acme4j</groupId>
-            <artifactId>acme4j-client</artifactId>
-            <version>${acme4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.shredzone.acme4j</groupId>
-            <artifactId>acme4j-utils</artifactId>
-            <version>${acme4j.version}</version>
         </dependency>
         <dependency>
             <groupId>com.hubspot</groupId>

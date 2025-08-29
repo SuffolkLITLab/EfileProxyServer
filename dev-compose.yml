@@ -11,16 +11,11 @@ services:
     ports: !override
       - target: 9009
         published: 9100
-      - target: 9000
-        published: 9101
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
       - "db"
     volumes:
-      - type: bind
-        source: ./proxyserver/src/main/config
-        target: /tmp/tls_certs
       # Gets exact SOAP envelopes sent when running locally with wireshark
       - type: bind
         source: .

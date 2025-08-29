@@ -12,7 +12,6 @@ import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.ws.BindingProvider;
-import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -41,33 +40,19 @@ public class ServiceHelpers {
   public static String ASSEMBLY_PORT_V5 = "/filingassembly/callbacks/FilingAssemblyMDEPortEcfv5";
   private static String EXTERNAL_DOMAIN = GetEnv("EXTERNAL_DOMAIN").orElse("filingassemblymde.com");
   public static final String BASE_LOCAL_URL;
-  public static final String BASE_ACME_URL;
   public static final String EXTERNAL_URL;
   public static final String SERVICE_URL;
   public static final String REST_CALLBACK_URL;
 
   static {
-    Optional<String> certPassword = GetEnv("CERT_PASSWORD");
-    File CERT_KEY_STORE = new File("src/main/config/tls_server_cert.jks");
-
-    // The 9000 is hard coded (we'll always be running on 9000 inside the docker
-    // container,
-    // but might be mapped to other things outside of it)
+    // The 9009 is hard coded (we'll always be running on 9009 inside the docker
+    // container, but might be mapped to other things outside of it)
+    // TODO: don't overwrite this part of the HTTP?
     if (EXTERNAL_DOMAIN.startsWith("http://")) {
       EXTERNAL_DOMAIN = EXTERNAL_DOMAIN.substring(7);
     }
-    if (EXTERNAL_DOMAIN.startsWith("https://")) {
-      EXTERNAL_DOMAIN = EXTERNAL_DOMAIN.substring(8);
-    }
-    if (certPassword.isPresent() && CERT_KEY_STORE.isFile()) {
-      EXTERNAL_URL = "https://" + EXTERNAL_DOMAIN;
-      BASE_LOCAL_URL = "https://0.0.0.0:9000";
-      BASE_ACME_URL = "http://0.0.0.0:9009";
-    } else {
-      EXTERNAL_URL = "http://" + EXTERNAL_DOMAIN;
-      BASE_LOCAL_URL = "http://0.0.0.0:9009";
-      BASE_ACME_URL = "";
-    }
+    EXTERNAL_URL = "http://" + EXTERNAL_DOMAIN;
+    BASE_LOCAL_URL = "http://0.0.0.0:9009";
 
     SERVICE_URL = EXTERNAL_URL + ASSEMBLY_PORT;
     REST_CALLBACK_URL = EXTERNAL_URL + "/filingreview/jurisdictions/%s/courts/%s/filing/status";
