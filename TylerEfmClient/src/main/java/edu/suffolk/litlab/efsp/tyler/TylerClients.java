@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.tyler;
 
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
@@ -14,40 +15,39 @@ public class TylerClients {
   private static final String USER_WSDL = "-EFMUserServiceSingle.svc.wsdl";
   private static final String FIRM_WSDL = "-EFMFirmServiceSingle.svc.wsdl";
 
-  private static final Map<String, TylerVersion> STAGE_VERSION_MAP =
+  private static final Map<Jurisdiction, TylerVersion> STAGE_VERSION_MAP =
       Map.of(
-          "california", TylerVersion.v2024_6,
-          "illinois", TylerVersion.v2024_6,
-          "indiana", TylerVersion.v2024_6,
-          "massachusetts", TylerVersion.v2025_0,
-          "texas", TylerVersion.v2024_6,
-          "vermont", TylerVersion.v2024_6);
+          Jurisdiction.CALIFORNIA, TylerVersion.v2024_6,
+          Jurisdiction.ILLINOIS, TylerVersion.v2024_6,
+          Jurisdiction.INDIANA, TylerVersion.v2024_6,
+          Jurisdiction.MASSACHUSETTS, TylerVersion.v2025_0,
+          Jurisdiction.TEXAS, TylerVersion.v2024_6,
+          Jurisdiction.VERMONT, TylerVersion.v2024_6);
 
-  private static final Map<String, TylerVersion> PROD_VERSION_MAP =
+  private static final Map<Jurisdiction, TylerVersion> PROD_VERSION_MAP =
       Map.of(
-          "illinois", TylerVersion.v2024_6,
-          "massachusetts", TylerVersion.v2022_1);
+          Jurisdiction.ILLINOIS, TylerVersion.v2024_6,
+          Jurisdiction.MASSACHUSETTS, TylerVersion.v2022_1);
 
   /**
    * Gets the EfmUserService from the individual jursdiction and env arguments.
    *
-   * @param jurisdiction e.g. "illinois".
-   * @param env e.g. "stage", "test", or "prod"
+   * @param domain e.g. Jurisdiction.ILLINOIS, TylerEnv.STAGE.
    */
-  public static Optional<TylerUserFactory> getEfmUserFactory(String jurisdiction, TylerEnv env) {
-    var version = getVersion(jurisdiction, env);
+  public static Optional<TylerUserFactory> getEfmUserFactory(TylerDomain domain) {
+    var version = getVersion(domain);
     return version.flatMap(
         v -> {
-          var url = createLocalWsdlUrl(jurisdiction, env, v, USER_WSDL);
+          var url = createLocalWsdlUrl(domain, v, USER_WSDL);
           return url.map(u -> new TylerUserFactory(new EfmUserService(u), v));
         });
   }
 
-  public static Optional<TylerFirmFactory> getEfmFirmFactory(String jurisdiction, TylerEnv env) {
-    var version = getVersion(jurisdiction, env);
+  public static Optional<TylerFirmFactory> getEfmFirmFactory(TylerDomain domain) {
+    var version = getVersion(domain);
     return version.flatMap(
         v -> {
-          var url = createLocalWsdlUrl(jurisdiction, env, v, FIRM_WSDL);
+          var url = createLocalWsdlUrl(domain, v, FIRM_WSDL);
           return url.map(u -> new TylerFirmFactory(new EfmFirmService(u), v));
         });
   }
@@ -55,39 +55,45 @@ public class TylerClients {
   /**
    * Gets Tyler server's root URL for a given jurisdiction / Tyler Env (i.e. california stage).
    *
-   * @param jurisdiction
-   * @param envEnum
+   * <p>TODO(brycew): turn this into a URL type? Find where it's used.
+   *
+   * @param domain
    * @return
    */
-  public static String getTylerServerRootUrl(String jurisdiction, TylerEnv envEnum) {
-    String env = envEnum.name().toLowerCase();
-    if (jurisdiction.equalsIgnoreCase("california")) {
-      return "https://california-efm-" + env + ".tylertech.cloud/";
+  public static String getTylerServerRootUrl(TylerDomain domain) {
+    if (domain.jurisdiction() == Jurisdiction.CALIFORNIA) {
+      return "https://california-efm-" + domain.env().getName() + ".tylertech.cloud/";
     }
-    if (envEnum.equals(TylerEnv.PROD)) {
-      return "https://" + jurisdiction + ".tylertech.cloud/";
+    if (domain.env() == TylerEnv.PROD) {
+      return "https://" + domain.jurisdiction().getName() + ".tylertech.cloud/";
     }
-    return "https://" + jurisdiction + "-" + env + ".tylertech.cloud/";
+    return "https://" + domain.getName() + ".tylertech.cloud/";
   }
 
-  private static Optional<TylerVersion> getVersion(String jurisdiction, TylerEnv tylerEnv) {
-    Map<String, TylerVersion> versionMap =
-        switch (tylerEnv) {
+  private static Optional<TylerVersion> getVersion(TylerDomain domain) {
+    Map<Jurisdiction, TylerVersion> versionMap =
+        switch (domain.env()) {
           case TylerEnv.STAGE -> STAGE_VERSION_MAP;
           case TylerEnv.PROD -> PROD_VERSION_MAP;
         };
 
-    if (!versionMap.containsKey(jurisdiction)) {
+    if (!versionMap.containsKey(domain.jurisdiction())) {
       return Optional.empty();
     }
 
-    return Optional.of(versionMap.get(jurisdiction));
+    return Optional.of(versionMap.get(domain.jurisdiction()));
   }
 
   private static Optional<URL> createLocalWsdlUrl(
-      String jurisdiction, TylerEnv env, TylerVersion version, String suffix) {
+      TylerDomain domain, TylerVersion version, String suffix) {
     String wsdlPath =
-        "wsdl/" + version.getVersionPath() + "/" + env.getPath() + "/" + jurisdiction + suffix;
+        "wsdl/"
+            + version.getVersionPath()
+            + "/"
+            + domain.env().getName()
+            + "/"
+            + domain.jurisdiction().getName()
+            + suffix;
     URL url = TylerClients.class.getClassLoader().getResource(wsdlPath);
     if (url == null) {
       log.warn("Could not find the wsdl at the classpath:{}", wsdlPath);

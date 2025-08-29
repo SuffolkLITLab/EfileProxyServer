@@ -13,22 +13,16 @@ public enum TylerEnv {
     this.name = name;
   }
 
-  // ** Used for when the env determines a URL / filepath. */
-  public String getPath() {
-    return name;
-  }
-
   public String getName() {
     return name;
   }
 
   public static TylerEnv parse(String value) {
-    if (value.equalsIgnoreCase(STAGE.getName())) {
-      return STAGE;
-    } else if (value.equalsIgnoreCase(PROD.getName())) {
-      return PROD;
-    } else {
-      throw new IllegalArgumentException("Can't make a `TylerEnv` from: `" + value + "`'");
+    for (var env : TylerEnv.values()) {
+      if (value.equalsIgnoreCase(env.getName())) {
+        return env;
+      }
     }
+    throw new IllegalArgumentException("Can't make a `TylerEnv` from: `" + value + "`");
   }
 }

@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class OptionalServiceCode {
   public final String code;
@@ -224,34 +223,7 @@ public class OptionalServiceCode {
     }
   }
 
-  private static class DistinctOptServ {
-    public String code;
-    public String domain;
-    public String location;
-
-    DistinctOptServ() {}
-
-    @Override
-    public boolean equals(Object object) {
-      if (object == null || !(object instanceof DistinctOptServ)) {
-        return false;
-      }
-
-      DistinctOptServ other = (DistinctOptServ) object;
-      return this.code.equals(other.code)
-          && this.domain.equals(other.domain)
-          && this.location.equals(other.location);
-    }
-
-    @Override
-    public int hashCode() {
-      return (new HashCodeBuilder(17, 31)
-          .append(code)
-          .append(domain)
-          .append(location)
-          .toHashCode());
-    }
-  }
+  private static record DistinctOptServ(String code, String domain, String location) {}
 
   public static void updateOptionalServiceTable(
       String courtName, String tylerDomain, Iterator<Map<String, String>> rows, Connection conn)
@@ -277,14 +249,14 @@ public class OptionalServiceCode {
       while (rows.hasNext()) {
         var r = rows.next();
         // HACK(brycew): jeez, this is horrible. Figure a better option
-        DistinctOptServ dis = new DistinctOptServ();
+        String colCode = "";
         for (var entry : r.entrySet()) {
           String colName = entry.getKey();
           String valString = entry.getValue();
           if (colName.equals("code")) {
             stmt.setString(1, valString);
             stmtFilingList.setString(1, valString);
-            dis.code = valString;
+            colCode = valString;
           } else if (colName.equals("filingcodeid")) {
             stmtFilingList.setString(2, valString);
           } else if (colName.equals("name")) {
@@ -307,10 +279,9 @@ public class OptionalServiceCode {
         }
         stmt.setString(10, tylerDomain);
         stmtFilingList.setString(3, tylerDomain);
-        dis.domain = tylerDomain;
         stmt.setString(11, courtName);
         stmtFilingList.setString(4, courtName);
-        dis.location = courtName;
+        var dis = new DistinctOptServ(colCode, tylerDomain, courtName);
 
         stmtFilingList.addBatch();
         if (alreadyAdded.contains(dis)) {

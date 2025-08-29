@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efsp.server;
 import static edu.suffolk.litlab.efsp.stdlib.StdLib.GetEnv;
 
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.db.DatabaseVersion;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
@@ -29,6 +30,7 @@ import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import edu.suffolk.litlab.efsp.server.utils.SendMessage;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapExceptionMapper;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import jakarta.ws.rs.core.MediaType;
@@ -44,6 +46,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import javax.sql.DataSource;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
@@ -70,8 +73,8 @@ public class EfspServer {
       Map<String, InterviewToFilingInformationConverter> converterMap)
       throws SQLException, NoSuchAlgorithmException {
 
-    var jurisdictionMap = new HashMap<String, JurisdictionServiceHandle>();
-    var callbackMap = new HashMap<String, Optional<EfmRestCallbackInterface>>();
+    var jurisdictionMap = new HashMap<Jurisdiction, JurisdictionServiceHandle>();
+    var callbackMap = new HashMap<Jurisdiction, Optional<EfmRestCallbackInterface>>();
     for (EfmModuleSetup mod : modules) {
       mod.preSetup();
       mod.setupGlobals();
@@ -138,7 +141,7 @@ public class EfspServer {
       LoginDatabase ld = new LoginDatabase(userConn);
       @SuppressWarnings("resource")
       // Jurisdiction and env args can be null, we're just making the tables
-      CodeDatabase cd = new CodeDatabase(null, env.orElse(TylerEnv.STAGE), codeConn);
+      CodeDatabase cd = new CodeDatabase(new TylerDomain(null, null), codeConn);
       boolean brandNew = !ld.tablesExist() || !cd.tablesExist();
 
       // Now we can tell if everything is being set up fresh. If so, we'll make everything now.
@@ -218,9 +221,11 @@ public class EfspServer {
     Supplier<MessageSettingsDatabase> mdSupplier = () -> MessageSettingsDatabase.fromDS(userDs);
     OrgMessageSender sender = new OrgMessageSender(mdSupplier, sendMsg.get());
 
-    Optional<String> tylerJurisdictions = GetEnv("TYLER_JURISDICTIONS");
     Optional<String> togaKeyStr = GetEnv("TOGA_CLIENT_KEYS");
-    List<String> jurisdictions = List.of(tylerJurisdictions.orElse("").split(" "));
+    List<Jurisdiction> jurisdictions =
+        Stream.of(GetEnv("TYLER_JURISDICTIONS").orElse("").split(" "))
+            .map(Jurisdiction::parse)
+            .toList();
     List<String> togaKeys = List.of(togaKeyStr.orElse("").split(" "));
     if (jurisdictions.size() > 0 && jurisdictions.size() != togaKeys.size()) {
       log.error("TOGA_CLIENT_KEYS list should be same size as TYLER_JURISDICTIONS list.");
@@ -241,12 +246,10 @@ public class EfspServer {
 
     List<EfmModuleSetup> modules = new ArrayList<>();
     for (int idx = 0; idx < jurisdictions.size(); idx++) {
-      String jurisdiction = jurisdictions.get(idx);
-      if (jurisdiction.isBlank()) {
-        continue;
-      }
+      var jurisdiction = jurisdictions.get(idx);
       TylerModuleSetup.create(
               jurisdiction,
+              tylerEnv,
               togaKeys.get(idx),
               codesUpdateTime,
               converterMap,

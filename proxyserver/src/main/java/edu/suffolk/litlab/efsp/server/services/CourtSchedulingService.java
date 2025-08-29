@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.hubspot.algebra.Result;
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
@@ -25,7 +26,7 @@ import edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
-import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
@@ -100,24 +101,23 @@ public class CourtSchedulingService {
   private final gov.niem.release.niem.proxy.xsd._4.ObjectFactory proxyObjFac;
   private final Map<String, InterviewToFilingInformationConverter> converterMap;
   private final CourtRecordMDEService recordFactory;
-  private final String jurisdiction;
+  private final Jurisdiction jurisdiction;
 
   private final Supplier<CodeDatabase> cdSupplier;
   private final Supplier<LoginDatabase> ldSupplier;
 
   public CourtSchedulingService(
       Map<String, InterviewToFilingInformationConverter> converterMap,
-      String jurisdiction,
-      TylerEnv env,
+      TylerDomain domain,
       Supplier<LoginDatabase> ldSupplier,
       Supplier<CodeDatabase> cdSupplier) {
-    this.jurisdiction = jurisdiction;
+    this.jurisdiction = domain.jurisdiction();
     this.cdSupplier = cdSupplier;
     this.ldSupplier = ldSupplier;
-    var maybeSchedFactory = SoapClientChooser.getCourtSchedulingFactory(jurisdiction, env);
+    var maybeSchedFactory = SoapClientChooser.getCourtSchedulingFactory(domain);
     if (maybeSchedFactory.isEmpty()) {
       throw new RuntimeException(
-          "Can't find " + jurisdiction + " in the SoapClientChooser for CourtScheduler");
+          "Can't find " + domain + " in the SoapClientChooser for CourtScheduler");
     }
     this.schedFactory = maybeSchedFactory.get();
     this.converterMap = converterMap;
@@ -127,10 +127,9 @@ public class CourtSchedulingService {
         new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ObjectFactory();
     this.niemObjFac = new gov.niem.release.niem.niem_core._4.ObjectFactory();
     this.proxyObjFac = new gov.niem.release.niem.proxy.xsd._4.ObjectFactory();
-    Optional<CourtRecordMDEService> maybeCourt =
-        SoapClientChooser.getCourtRecordFactory(jurisdiction, env);
+    Optional<CourtRecordMDEService> maybeCourt = SoapClientChooser.getCourtRecordFactory(domain);
     if (maybeCourt.isEmpty()) {
-      throw new RuntimeException("Cannot find " + jurisdiction + " for court record factory");
+      throw new RuntimeException("Cannot find " + domain + " for court record factory");
     }
     this.recordFactory = maybeCourt.get();
   }

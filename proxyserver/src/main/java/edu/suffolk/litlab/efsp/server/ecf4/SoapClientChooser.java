@@ -1,6 +1,9 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
-import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import static edu.suffolk.litlab.efsp.Jurisdiction.*;
+import static edu.suffolk.litlab.efsp.tyler.TylerEnv.*;
+
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE_Service;
 import java.net.URL;
 import java.util.Map;
@@ -19,53 +22,67 @@ public class SoapClientChooser {
 
   private static final Logger log = LoggerFactory.getLogger(SoapClientChooser.class);
 
-  // TODO(#284): finish this refactor to use TylerEnvs instead of strings
-  private static final Map<String, URL> serviceMDEWsdls =
+  private static final Map<TylerDomain, URL> serviceMDEWsdls =
       Map.of(
-          "illinois-stage", getRes("wsdl/stage/illinois-ECF-4.0-ServiceMDEService.wsdl"),
-          "illinois-test", getRes("wsdl/test/illinois-ECF-4.0-ServiceMDEService.wsdl"),
-          "illinois-prod", getRes("wsdl/prod/illinois-ECF-4.0-ServiceMDEService.wsdl"),
-          "massachusetts-stage", getRes("wsdl/stage/massachusetts-ECF-4.0-ServiceMDEService.wsdl"),
-          "massachusetts-prod", getRes("wsdl/prod/massachusetts-ECF-4.0-ServiceMDEService.wsdl"),
-          "california-stage", getRes("wsdl/stage/california-ECF-4.0-ServiceMDEService.wsdl"),
-          "texas-stage", getRes("wsdl/stage/texas-ECF-4.0-ServiceMDEService.wsdl"),
-          "indiana-stage", getRes("wsdl/stage/indiana-ECF-4.0-ServiceMDEService.wsdl"),
-          "vermont-stage", getRes("wsdl/stage/vermont-ECF-4.0-ServiceMDEService.wsdl"));
+          new TylerDomain(ILLINOIS, STAGE),
+              getRes("wsdl/stage/illinois-ECF-4.0-ServiceMDEService.wsdl"),
+          new TylerDomain(ILLINOIS, PROD),
+              getRes("wsdl/prod/illinois-ECF-4.0-ServiceMDEService.wsdl"),
+          new TylerDomain(MASSACHUSETTS, STAGE),
+              getRes("wsdl/stage/massachusetts-ECF-4.0-ServiceMDEService.wsdl"),
+          new TylerDomain(MASSACHUSETTS, PROD),
+              getRes("wsdl/prod/massachusetts-ECF-4.0-ServiceMDEService.wsdl"),
+          new TylerDomain(CALIFORNIA, STAGE),
+              getRes("wsdl/stage/california-ECF-4.0-ServiceMDEService.wsdl"),
+          new TylerDomain(TEXAS, STAGE), getRes("wsdl/stage/texas-ECF-4.0-ServiceMDEService.wsdl"),
+          new TylerDomain(INDIANA, STAGE),
+              getRes("wsdl/stage/indiana-ECF-4.0-ServiceMDEService.wsdl"),
+          new TylerDomain(VERMONT, STAGE),
+              getRes("wsdl/stage/vermont-ECF-4.0-ServiceMDEService.wsdl"));
 
-  private static final Map<String, URL> filingReviewMDEWsdls =
+  private static final Map<TylerDomain, URL> filingReviewMDEWsdls =
       Map.of(
-          "illinois-stage", getRes("wsdl/stage/illinois-ECF-4.0-FilingReviewMDEService.wsdl"),
-          "illinois-test", getRes("wsdl/test/illinois-ECF-4.0-FilingReviewMDEService.wsdl"),
-          "illinois-prod", getRes("wsdl/prod/illinois-ECF-4.0-FilingReviewMDEService.wsdl"),
-          "massachusetts-stage",
+          new TylerDomain(ILLINOIS, STAGE),
+              getRes("wsdl/stage/illinois-ECF-4.0-FilingReviewMDEService.wsdl"),
+          new TylerDomain(ILLINOIS, PROD),
+              getRes("wsdl/prod/illinois-ECF-4.0-FilingReviewMDEService.wsdl"),
+          new TylerDomain(MASSACHUSETTS, STAGE),
               getRes("wsdl/stage/massachusetts-ECF-4.0-FilingReviewMDEService.wsdl"),
-          "massachusetts-prod",
+          new TylerDomain(MASSACHUSETTS, PROD),
               getRes("wsdl/prod/massachusetts-ECF-4.0-FilingReviewMDEService.wsdl"),
-          "california-stage", getRes("wsdl/stage/california-ECF-4.0-FilingReviewMDEService.wsdl"),
-          "texas-stage", getRes("wsdl/stage/texas-ECF-4.0-FilingReviewMDEService.wsdl"),
-          "indiana-stage", getRes("wsdl/stage/indiana-ECF-4.0-FilingReviewMDEService.wsdl"),
-          "vermont-stage", getRes("wsdl/stage/vermont-ECF-4.0-FilingReviewMDEService.wsdl"));
+          new TylerDomain(CALIFORNIA, STAGE),
+              getRes("wsdl/stage/california-ECF-4.0-FilingReviewMDEService.wsdl"),
+          new TylerDomain(TEXAS, STAGE),
+              getRes("wsdl/stage/texas-ECF-4.0-FilingReviewMDEService.wsdl"),
+          new TylerDomain(INDIANA, STAGE),
+              getRes("wsdl/stage/indiana-ECF-4.0-FilingReviewMDEService.wsdl"),
+          new TylerDomain(VERMONT, STAGE),
+              getRes("wsdl/stage/vermont-ECF-4.0-FilingReviewMDEService.wsdl"));
 
-  private static final Map<String, URL> courtRecordMDEWsdls =
+  private static final Map<TylerDomain, URL> courtRecordMDEWsdls =
       Map.of(
-          "illinois-stage", getRes("wsdl/stage/illinois-ECF-4.0-CourtRecordMDEService.wsdl"),
-          "illinois-test", getRes("wsdl/test/illinois-ECF-4.0-CourtRecordMDEService.wsdl"),
-          "illinois-prod", getRes("wsdl/prod/illinois-ECF-4.0-CourtRecordMDEService.wsdl"),
-          "massachusetts-stage",
+          new TylerDomain(ILLINOIS, STAGE),
+              getRes("wsdl/stage/illinois-ECF-4.0-CourtRecordMDEService.wsdl"),
+          new TylerDomain(ILLINOIS, PROD),
+              getRes("wsdl/prod/illinois-ECF-4.0-CourtRecordMDEService.wsdl"),
+          new TylerDomain(MASSACHUSETTS, STAGE),
               getRes("wsdl/stage/massachusetts-ECF-4.0-CourtRecordMDEService.wsdl"),
-          "massachusetts-prod",
+          new TylerDomain(MASSACHUSETTS, PROD),
               getRes("wsdl/prod/massachusetts-ECF-4.0-CourtRecordMDEService.wsdl"),
-          "california-stage", getRes("wsdl/stage/california-ECF-4.0-CourtRecordMDEService.wsdl"),
-          "texas-stage", getRes("wsdl/stage/texas-ECF-4.0-CourtRecordMDEService.wsdl"),
-          "indiana-stage", getRes("wsdl/stage/indiana-ECF-4.0-CourtRecordMDEService.wsdl"),
-          "vermont-stage", getRes("wsdl/stage/vermont-ECF-4.0-CourtRecordMDEService.wsdl"));
+          new TylerDomain(CALIFORNIA, STAGE),
+              getRes("wsdl/stage/california-ECF-4.0-CourtRecordMDEService.wsdl"),
+          new TylerDomain(TEXAS, STAGE),
+              getRes("wsdl/stage/texas-ECF-4.0-CourtRecordMDEService.wsdl"),
+          new TylerDomain(INDIANA, STAGE),
+              getRes("wsdl/stage/indiana-ECF-4.0-CourtRecordMDEService.wsdl"),
+          new TylerDomain(VERMONT, STAGE),
+              getRes("wsdl/stage/vermont-ECF-4.0-CourtRecordMDEService.wsdl"));
 
-  private static final Map<String, URL> courtSchedulingMDEWsdls =
+  private static final Map<TylerDomain, URL> courtSchedulingMDEWsdls =
       Map.of(
-          "illinois-stage",
-          getRes("wsdl/stage/illinois-v5-CourtSchedulingMDE.wsdl"),
-          "illinois-prod",
-          getRes("wsdl/prod/illinois-v5-CourtSchedulingMDE.wsdl"));
+          new TylerDomain(ILLINOIS, STAGE),
+              getRes("wsdl/stage/illinois-v5-CourtSchedulingMDE.wsdl"),
+          new TylerDomain(ILLINOIS, PROD), getRes("wsdl/prod/illinois-v5-CourtSchedulingMDE.wsdl"));
 
   private static URL getRes(String wsdlPath) {
     URL url = SoapClientChooser.class.getClassLoader().getResource(wsdlPath);
@@ -76,46 +93,28 @@ public class SoapClientChooser {
     return url;
   }
 
-  public static Optional<FilingReviewMDEService> getFilingReviewFactory(String wsdlDomain) {
-    Optional<URL> url = urlFromString(wsdlDomain, filingReviewMDEWsdls);
+  public static Optional<FilingReviewMDEService> getFilingReviewFactory(TylerDomain wsdlDomain) {
+    Optional<URL> url = urlFrom(wsdlDomain, filingReviewMDEWsdls);
     return url.map(u -> new FilingReviewMDEService(u));
   }
 
-  public static Optional<FilingReviewMDEService> getFilingReviewFactory(
-      String jurisdiction, TylerEnv env) {
-    return getFilingReviewFactory(jurisdiction + "-" + env.getName());
-  }
-
-  public static Optional<ServiceMDEService> getServiceFactory(String wsdlDomain) {
-    Optional<URL> url = urlFromString(wsdlDomain, serviceMDEWsdls);
+  public static Optional<ServiceMDEService> getServiceFactory(TylerDomain wsdlDomain) {
+    Optional<URL> url = urlFrom(wsdlDomain, serviceMDEWsdls);
     return url.map(u -> new ServiceMDEService(u));
   }
 
-  public static Optional<ServiceMDEService> getServiceFactory(String jurisdiction, TylerEnv env) {
-    return getServiceFactory(jurisdiction + "-" + env.getName());
-  }
-
-  public static Optional<CourtRecordMDEService> getCourtRecordFactory(String wsdlDomain) {
-    Optional<URL> url = urlFromString(wsdlDomain, courtRecordMDEWsdls);
+  public static Optional<CourtRecordMDEService> getCourtRecordFactory(TylerDomain wsdlDomain) {
+    Optional<URL> url = urlFrom(wsdlDomain, courtRecordMDEWsdls);
     return url.map(u -> new CourtRecordMDEService(u));
   }
 
-  public static Optional<CourtRecordMDEService> getCourtRecordFactory(
-      String jurisdiction, TylerEnv env) {
-    return getCourtRecordFactory(jurisdiction + "-" + env.getName());
-  }
-
-  public static Optional<CourtSchedulingMDE_Service> getCourtSchedulingFactory(String wsdlDomain) {
-    Optional<URL> url = urlFromString(wsdlDomain, courtSchedulingMDEWsdls);
+  public static Optional<CourtSchedulingMDE_Service> getCourtSchedulingFactory(
+      TylerDomain wsdlDomain) {
+    Optional<URL> url = urlFrom(wsdlDomain, courtSchedulingMDEWsdls);
     return url.map(u -> new CourtSchedulingMDE_Service(u));
   }
 
-  public static Optional<CourtSchedulingMDE_Service> getCourtSchedulingFactory(
-      String jurisdiction, TylerEnv env) {
-    return getCourtSchedulingFactory(jurisdiction + "-" + env.getName());
-  }
-
-  private static Optional<URL> urlFromString(String wsdlDomain, Map<String, URL> domainToWsdl) {
+  private static Optional<URL> urlFrom(TylerDomain wsdlDomain, Map<TylerDomain, URL> domainToWsdl) {
     if (!domainToWsdl.containsKey(wsdlDomain)) {
       return Optional.empty();
     }

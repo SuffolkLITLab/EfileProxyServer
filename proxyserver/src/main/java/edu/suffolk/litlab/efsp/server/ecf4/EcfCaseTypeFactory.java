@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
@@ -64,9 +65,9 @@ public class EcfCaseTypeFactory {
       ecfCommonObjFac;
   private final gov.niem.niem.niem_core._2.ObjectFactory of;
   private final gov.niem.niem.structures._2.ObjectFactory structObjFac;
-  private final String jurisdiction;
+  private final Jurisdiction jurisdiction;
 
-  public EcfCaseTypeFactory(CodeDatabase cd, String jurisdiction) {
+  public EcfCaseTypeFactory(CodeDatabase cd, Jurisdiction jurisdiction) {
     this.cd = cd;
     this.tylerObjFac = new tyler.ecf.extensions.common.ObjectFactory();
     this.ecfCommonObjFac =
