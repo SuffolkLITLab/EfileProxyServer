@@ -59,11 +59,11 @@ public class TylerClients {
    * @return
    */
   public static String getTylerServerRootUrl(String jurisdiction, TylerEnv envEnum) {
-    String env = envEnum.name().toLowerCase();
+    String env = envEnum.getPath();
     if (jurisdiction.equalsIgnoreCase("california")) {
       return "https://california-efm-" + env + ".tylertech.cloud/";
     }
-    if (envEnum.equals(TylerEnv.PROD)) {
+    if (envEnum == TylerEnv.PROD) {
       return "https://" + jurisdiction + ".tylertech.cloud/";
     }
     return "https://" + jurisdiction + "-" + env + ".tylertech.cloud/";

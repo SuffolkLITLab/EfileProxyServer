@@ -12,6 +12,7 @@ import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.db.DatabaseVersionTest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
@@ -56,7 +57,7 @@ public class CodesServiceTest {
             100);
     Supplier<CodeDatabase> cdSupplier =
         () -> {
-          return CodeDatabase.fromDS("illinois", "stage", ds);
+          return CodeDatabase.fromDS("illinois", TylerEnv.STAGE, ds);
         };
     try (CodeDatabase cd = cdSupplier.get()) {
       cd.createTablesIfAbsent();

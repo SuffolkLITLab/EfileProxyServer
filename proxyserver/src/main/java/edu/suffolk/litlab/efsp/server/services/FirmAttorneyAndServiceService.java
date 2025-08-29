@@ -85,12 +85,11 @@ public class FirmAttorneyAndServiceService {
 
   public FirmAttorneyAndServiceService(
       String jurisdiction,
-      String env,
+      TylerEnv env,
       Supplier<LoginDatabase> ldSupplier,
       Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
-    Optional<TylerFirmFactory> maybeFirmFactory =
-        TylerClients.getEfmFirmFactory(jurisdiction, TylerEnv.parse(env));
+    Optional<TylerFirmFactory> maybeFirmFactory = TylerClients.getEfmFirmFactory(jurisdiction, env);
     if (maybeFirmFactory.isPresent()) {
       this.firmFactory = maybeFirmFactory.get();
     } else {

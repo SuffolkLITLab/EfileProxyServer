@@ -25,6 +25,7 @@ import edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
@@ -106,7 +107,7 @@ public class CourtSchedulingService {
   public CourtSchedulingService(
       Map<String, InterviewToFilingInformationConverter> converterMap,
       String jurisdiction,
-      String env,
+      TylerEnv env,
       Supplier<LoginDatabase> ldSupplier,
       Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
