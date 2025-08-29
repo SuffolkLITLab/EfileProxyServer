@@ -11,7 +11,6 @@ import com.opencsv.exceptions.CsvValidationException;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.Person;
-import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
@@ -32,7 +31,7 @@ public class DocassembleToFilingInformationConverterTest {
   public void setUp() throws CsvValidationException, IOException {
     converter =
         new DocassembleToFilingInformationConverter(
-            this.getClass().getResourceAsStream("/taxonomy.csv"), Optional.of(TylerEnv.STAGE));
+            this.getClass().getResourceAsStream("/taxonomy.csv"), Optional.empty());
   }
 
   private String getFileContents(String inFileName) throws IOException {
