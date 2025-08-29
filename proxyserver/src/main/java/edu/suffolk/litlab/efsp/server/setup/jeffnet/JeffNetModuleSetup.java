@@ -79,7 +79,7 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
   }
 
   @Override
-  public String getJurisdiction() {
+  public String getJurisdictionId() {
     return "louisiana";
   }
 
@@ -103,7 +103,7 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
 
     var filingReview =
         new FilingReviewService(
-            getJurisdiction(),
+            getJurisdictionId(),
             ldSupplier,
             udSupplier,
             converterMap,
@@ -111,8 +111,8 @@ public class JeffNetModuleSetup implements EfmModuleSetup {
             callbackMap,
             this.sender);
     var codes =
-        new CourtsOnlyCodesService(getJurisdiction(), Map.of("jefferson", "Jefferson Parish"));
-    return new JurisdictionServiceHandle(getJurisdiction(), filingReview, codes);
+        new CourtsOnlyCodesService(getJurisdictionId(), Map.of("jefferson", "Jefferson Parish"));
+    return new JurisdictionServiceHandle(getJurisdictionId(), filingReview, codes);
   }
 
   @Override

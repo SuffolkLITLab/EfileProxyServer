@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.oasis_open.docs.codelist.ns.genericode._1.CodeListDocument;
 import org.oasis_open.docs.codelist.ns.genericode._1.Column;
 import org.oasis_open.docs.codelist.ns.genericode._1.Value;
@@ -210,34 +209,7 @@ public class OptionalServiceCode {
     }
   }
 
-  private static class DistinctOptServ {
-    public String code;
-    public String domain;
-    public String location;
-
-    DistinctOptServ() {}
-
-    @Override
-    public boolean equals(Object object) {
-      if (object == null || !(object instanceof DistinctOptServ)) {
-        return false;
-      }
-
-      DistinctOptServ other = (DistinctOptServ) object;
-      return this.code.equals(other.code)
-          && this.domain.equals(other.domain)
-          && this.location.equals(other.location);
-    }
-
-    @Override
-    public int hashCode() {
-      return (new HashCodeBuilder(17, 31)
-          .append(code)
-          .append(domain)
-          .append(location)
-          .toHashCode());
-    }
-  }
+  private static record DistinctOptServ(String code, String domain, String location) {}
 
   public static void updateOptionalServiceTable(
       String courtName, String tylerDomain, CodeListDocument doc, Connection conn)
@@ -262,14 +234,14 @@ public class OptionalServiceCode {
         PreparedStatement stmtFilingList = conn.prepareStatement(insertFLQuery)) {
       for (var r : doc.getSimpleCodeList().getRow()) {
         // HACK(brycew): jeez, this is horrible. Figure a better option
-        DistinctOptServ dis = new DistinctOptServ();
+        String colCode = "";
         for (Value v : r.getValue()) {
           Column c = (Column) v.getColumnRef();
           String colName = c.getId();
           if (colName.equals("code")) {
             stmt.setString(1, v.getSimpleValue().getValue());
             stmtFilingList.setString(1, v.getSimpleValue().getValue());
-            dis.code = v.getSimpleValue().getValue();
+            colCode = v.getSimpleValue().getValue();
           } else if (colName.equals("filingcodeid")) {
             stmtFilingList.setString(2, v.getSimpleValue().getValue());
           } else if (colName.equals("name")) {
@@ -292,10 +264,9 @@ public class OptionalServiceCode {
         }
         stmt.setString(10, tylerDomain);
         stmtFilingList.setString(3, tylerDomain);
-        dis.domain = tylerDomain;
         stmt.setString(11, courtName);
         stmtFilingList.setString(4, courtName);
-        dis.location = courtName;
+        var dis = new DistinctOptServ(colCode, tylerDomain, courtName);
 
         stmtFilingList.addBatch();
         if (alreadyAdded.contains(dis)) {

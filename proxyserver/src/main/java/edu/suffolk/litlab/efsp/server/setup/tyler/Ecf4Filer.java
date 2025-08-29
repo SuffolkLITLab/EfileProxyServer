@@ -29,9 +29,10 @@ import edu.suffolk.litlab.efsp.server.ecf4.SoapClientChooser;
 import edu.suffolk.litlab.efsp.server.services.impl.EfmCheckableFilingInterface;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
-import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
@@ -118,12 +119,12 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   private final TylerFirmFactory firmFactory;
   private final ServiceMDEService serviceFactory;
   private static final PolicyCacher policyCacher = new PolicyCacher();
-  private final String jurisdiction;
+  private final TylerJurisdiction jurisdiction;
 
-  public Ecf4Filer(String jurisdiction, String env, Supplier<CodeDatabase> cdSupplier) {
-    this.jurisdiction = jurisdiction;
+  public Ecf4Filer(TylerDomain domain, Supplier<CodeDatabase> cdSupplier) {
+    this.jurisdiction = domain.jurisdiction();
     this.cdSupplier = cdSupplier;
-    TylerLogin login = new TylerLogin(jurisdiction, env);
+    TylerLogin login = new TylerLogin(domain);
     this.headerKey = login.getHeaderKey();
     statusObjFac =
         new oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4
@@ -135,28 +136,24 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     commonObjFac = new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
     niemObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
     proxyObjFac = new gov.niem.niem.proxy.xsd._2.ObjectFactory();
-    Optional<CourtRecordMDEService> maybeCourt =
-        SoapClientChooser.getCourtRecordFactory(jurisdiction, env);
+    Optional<CourtRecordMDEService> maybeCourt = SoapClientChooser.getCourtRecordFactory(domain);
     if (maybeCourt.isEmpty()) {
-      throw new RuntimeException("Cannot find " + jurisdiction + " for court record factory");
+      throw new RuntimeException("Cannot find " + domain + " for court record factory");
     }
     this.recordFactory = maybeCourt.get();
-    Optional<FilingReviewMDEService> maybeReview =
-        SoapClientChooser.getFilingReviewFactory(jurisdiction, env);
+    Optional<FilingReviewMDEService> maybeReview = SoapClientChooser.getFilingReviewFactory(domain);
     if (maybeReview.isEmpty()) {
-      throw new RuntimeException("Cannot find " + jurisdiction + " for filing review factory");
+      throw new RuntimeException("Cannot find " + domain + " for filing review factory");
     }
     this.filingFactory = maybeReview.get();
-    Optional<ServiceMDEService> maybeServiceFac =
-        SoapClientChooser.getServiceFactory(jurisdiction, env);
+    Optional<ServiceMDEService> maybeServiceFac = SoapClientChooser.getServiceFactory(domain);
     if (maybeServiceFac.isEmpty()) {
-      throw new RuntimeException("Cannot find " + jurisdiction + " for service mde factory");
+      throw new RuntimeException("Cannot find " + domain + " for service mde factory");
     }
     this.serviceFactory = maybeServiceFac.get();
-    Optional<TylerFirmFactory> maybeFirmFactory =
-        TylerClients.getEfmFirmFactory(jurisdiction, TylerEnv.parse(env));
+    Optional<TylerFirmFactory> maybeFirmFactory = TylerClients.getEfmFirmFactory(domain);
     if (maybeFirmFactory.isEmpty()) {
-      throw new RuntimeException("Cannot find " + jurisdiction + " for firm mde factory");
+      throw new RuntimeException("Cannot find " + domain + " for firm mde factory");
     }
     this.firmFactory = maybeFirmFactory.get();
   }

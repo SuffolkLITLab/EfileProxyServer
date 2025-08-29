@@ -25,6 +25,9 @@ import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efsp.server.utils.UpdateCodeVersions;
 import edu.suffolk.litlab.efsp.stdlib.StdLib;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -56,7 +59,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
   private final String pgDb;
   private final String pgUser;
   private final String pgPassword;
-  private final String tylerJurisdiction;
+  private final TylerDomain tylerDomain;
   private final String x509Password;
   private final DataSource codeDs;
   private final DataSource userDs;
@@ -67,27 +70,27 @@ public class TylerModuleSetup implements EfmModuleSetup {
   private final String togaUrl;
   private OrgMessageSender sender;
   private Scheduler scheduler;
-  private String tylerEnv;
 
   public static class CreationArgs {
     public String pgUrl;
     public String pgDb;
     public String pgUser;
     public String pgPassword;
-    public String tylerEnv;
+    public TylerEnv tylerEnv;
     public String x509Password;
     public String togaUrl;
   }
 
   /** Use this factory method instead of the class constructor. */
   public static Optional<TylerModuleSetup> create(
-      String jurisdiction,
+      TylerJurisdiction jurisdiction,
+      Optional<TylerEnv> env,
       String togaKey,
       Map<String, InterviewToFilingInformationConverter> converterMap,
       DataSource codeDs,
       DataSource userDs,
       OrgMessageSender sender) {
-    Optional<CreationArgs> args = createFromEnvVars();
+    Optional<CreationArgs> args = createFromEnvVars(env);
     if (args.isEmpty()) {
       return Optional.empty();
     }
@@ -99,7 +102,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   private TylerModuleSetup(
       CreationArgs args,
-      String jurisdiction,
+      TylerJurisdiction jurisdiction,
       String togaKey,
       Map<String, InterviewToFilingInformationConverter> converterMap,
       DataSource codeDs,
@@ -112,15 +115,14 @@ public class TylerModuleSetup implements EfmModuleSetup {
     this.pgDb = args.pgDb;
     this.pgUser = args.pgUser;
     this.pgPassword = args.pgPassword;
-    this.tylerJurisdiction = jurisdiction;
-    this.tylerEnv = args.tylerEnv;
+    this.tylerDomain = new TylerDomain(jurisdiction, args.tylerEnv);
     this.x509Password = args.x509Password;
     this.togaKey = togaKey;
     this.togaUrl = args.togaUrl;
     this.sender = sender;
   }
 
-  private static Optional<CreationArgs> createFromEnvVars() {
+  private static Optional<CreationArgs> createFromEnvVars(Optional<TylerEnv> maybeTylerEnv) {
     Optional<String> maybeX509Password = GetEnv("X509_PASSWORD");
     if (maybeX509Password.isEmpty() || maybeX509Password.orElse("").isBlank()) {
       log.warn("If using Tyler, X509_PASSWORD can't be null. Did you forget to source .env?");
@@ -129,12 +131,11 @@ public class TylerModuleSetup implements EfmModuleSetup {
     CreationArgs args = new CreationArgs();
     args.x509Password = maybeX509Password.get();
 
-    Optional<String> maybeTylerEnv = GetEnv("TYLER_ENV");
     if (maybeTylerEnv.isPresent()) {
       log.info("Using {} for TYLER_ENV", maybeTylerEnv.get());
       args.tylerEnv = maybeTylerEnv.get();
     } else {
-      log.info("Not using any TYLER_ENV, maybe prod?");
+      log.error("Not using any TYLER_ENV. Something definitely going to break later");
     }
 
     args.pgUser = GetEnv("POSTGRES_USER").orElse("postgres");
@@ -167,31 +168,23 @@ public class TylerModuleSetup implements EfmModuleSetup {
     SoapX509CallbackHandler.setX509Password(x509Password);
 
     log.info("Checking table if absent");
-    try (CodeDatabase cd = new CodeDatabase(tylerJurisdiction, tylerEnv, codeDs.getConnection())) {
+    try (CodeDatabase cd = new CodeDatabase(tylerDomain, codeDs.getConnection())) {
       cd.createTablesIfAbsent();
       List<String> locations = cd.getAllLocations();
-      log.info(
-          "All locations for " + this.tylerJurisdiction + "-" + this.tylerEnv + ": " + locations);
+      log.info("All locations for {}: {}", tylerDomain, locations);
       boolean downloadAll = (cd.getAllLocations().size() == 0);
       if (downloadAll) {
         String testOnlyLocation = StdLib.GetEnv("_TEST_ONLY_LOCATION").orElse("");
         if (!testOnlyLocation.isBlank()) {
           log.info(
-              "Downloading just codes for "
-                  + testOnlyLocation
-                  + " in "
-                  + tylerJurisdiction
-                  + ": please wait a bit");
+              "Downloading just codes for {} in {}: please wait a bit",
+              testOnlyLocation,
+              tylerDomain);
           CodeUpdater.executeCommand(
-              cd,
-              tylerJurisdiction,
-              tylerEnv,
-              List.of("replacesome", testOnlyLocation),
-              this.x509Password);
+              cd, tylerDomain, List.of("replacesome", testOnlyLocation), this.x509Password);
         } else {
-          log.info("Downloading all codes for {}: please wait a bit", tylerJurisdiction);
-          CodeUpdater.executeCommand(
-              cd, tylerJurisdiction, tylerEnv, List.of("replaceall"), this.x509Password);
+          log.info("Downloading all codes for {}: please wait a bit", tylerDomain);
+          CodeUpdater.executeCommand(cd, tylerDomain, List.of("replaceall"), this.x509Password);
         }
       }
     } catch (SQLException e) {
@@ -215,7 +208,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
       // Always schedule daily codes update.
       var r = new Random();
-      String triggerName = "trigger-" + this.tylerJurisdiction + "-" + this.tylerEnv;
+      String triggerName = "trigger-" + tylerDomain.getName();
       Trigger trigger =
           TriggerBuilder.newTrigger()
               .withIdentity(triggerName, "codesdb-group")
@@ -224,8 +217,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
               .build();
 
       log.info("Scheduling daily Tyler EFM code update job.");
-      scheduler.scheduleJob(
-          buildJob("job-" + this.tylerJurisdiction + "-" + this.tylerEnv), trigger);
+      scheduler.scheduleJob(buildJob("job-" + tylerDomain.getName()), trigger);
 
       if (scheduleImmediately) {
         // Schedule immediate codes update.
@@ -234,16 +226,12 @@ public class TylerModuleSetup implements EfmModuleSetup {
         // by external cron
         Trigger immediateTrigger =
             TriggerBuilder.newTrigger()
-                .withIdentity(
-                    "trigger-immediate-" + this.tylerJurisdiction + "-" + this.tylerEnv,
-                    "codesdb-group")
+                .withIdentity("trigger-immediate-" + tylerDomain.getName(), "codesdb-group")
                 .startNow()
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(20))
                 .build();
         log.info("Scheduling immediate Tyler EFM code update job.");
-        scheduler.scheduleJob(
-            buildJob("job-immediate-" + this.tylerJurisdiction + "-" + this.tylerEnv),
-            immediateTrigger);
+        scheduler.scheduleJob(buildJob("job-immediate-" + tylerDomain.getName()), immediateTrigger);
       }
     } catch (SchedulerException se) {
       log.error("Scheduler Exception: ", se);
@@ -252,12 +240,12 @@ public class TylerModuleSetup implements EfmModuleSetup {
   }
 
   @Override
-  public String getJurisdiction() {
-    return tylerJurisdiction;
+  public String getJurisdictionId() {
+    return tylerDomain.jurisdiction().getName();
   }
 
   public Set<String> getCourts() {
-    try (CodeDatabase cd = new CodeDatabase(tylerJurisdiction, tylerEnv, codeDs.getConnection())) {
+    try (CodeDatabase cd = new CodeDatabase(tylerDomain, codeDs.getConnection())) {
       Set<String> allCourts = new HashSet<String>(cd.getAllLocations());
       // 0 and 1 are special "system" courts that have defaults for all courts.
       // They aren't available for filing
@@ -278,15 +266,12 @@ public class TylerModuleSetup implements EfmModuleSetup {
     var filingMap = new HashMap<String, EfmFilingInterface>();
     var callbackMap = new HashMap<String, EfmRestCallbackInterface>();
 
-    final String jurisdiction = getJurisdiction();
-    final String env = this.tylerEnv;
-
     Supplier<CodeDatabase> cdSupplier =
         () -> {
-          return CodeDatabase.fromDS(jurisdiction, env, this.codeDs);
+          return CodeDatabase.fromDS(tylerDomain, this.codeDs);
         };
 
-    EfmFilingInterface filer = new Ecf4Filer(jurisdiction, env, cdSupplier);
+    EfmFilingInterface filer = new Ecf4Filer(tylerDomain, cdSupplier);
     for (String court : getCourts()) {
       filingMap.put(court, filer);
       getCallback().ifPresent(call -> callbackMap.put(court, call));
@@ -319,31 +304,30 @@ public class TylerModuleSetup implements EfmModuleSetup {
     Supplier<LoginDatabase> ldSupplier = () -> LoginDatabase.fromDS(this.userDs);
     Supplier<UserDatabase> udSupplier = () -> UserDatabase.fromDS(this.userDs);
 
-    var adminUser =
-        new AdminUserService(jurisdiction, env, ldSupplier, cdSupplier, passwordChecker);
-    var cases = new CasesService(jurisdiction, env, ldSupplier, cdSupplier);
-    var codes = new EcfCodesService(jurisdiction, cdSupplier);
+    var adminUser = new AdminUserService(tylerDomain, ldSupplier, cdSupplier, passwordChecker);
+    var cases = new CasesService(tylerDomain, ldSupplier, cdSupplier);
+    var codes = new EcfCodesService(tylerDomain.jurisdiction(), cdSupplier);
     Optional<CourtSchedulingService> courtScheduler = Optional.empty();
-    if (jurisdiction == "illinois") {
+    if (tylerDomain.jurisdiction() == TylerJurisdiction.ILLINOIS) {
       courtScheduler =
           Optional.of(
-              new CourtSchedulingService(converterMap, jurisdiction, env, ldSupplier, cdSupplier));
+              new CourtSchedulingService(converterMap, tylerDomain, ldSupplier, cdSupplier));
     }
     var filingReview =
         new FilingReviewService(
-            getJurisdiction(),
+            getJurisdictionId(),
             ldSupplier,
             udSupplier,
             converterMap,
             filingMap,
             callbackMap,
             this.sender);
-    var firmAttorney = new FirmAttorneyAndServiceService(jurisdiction, env, ldSupplier, cdSupplier);
+    var firmAttorney = new FirmAttorneyAndServiceService(tylerDomain, ldSupplier, cdSupplier);
     var payments =
-        new PaymentsService(jurisdiction, env, this.togaKey, this.togaUrl, ldSupplier, cdSupplier);
+        new PaymentsService(tylerDomain, this.togaKey, this.togaUrl, ldSupplier, cdSupplier);
     JurisdictionServiceHandle handle =
         new JurisdictionServiceHandle(
-            getJurisdiction(),
+            getJurisdictionId(),
             adminUser,
             cases,
             codes,
@@ -361,12 +345,15 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public void setupGlobals() {
-    Supplier<CodeDatabase> makeCD = () -> CodeDatabase.fromDS(tylerJurisdiction, tylerEnv, codeDs);
+    Supplier<CodeDatabase> makeCD = () -> CodeDatabase.fromDS(tylerDomain, codeDs);
     Supplier<UserDatabase> makeUD = () -> UserDatabase.fromDS(userDs);
     OasisEcfWsCallback implementor = new OasisEcfWsCallback(makeCD, makeUD, sender);
     String baseLocalUrl = ServiceHelpers.BASE_LOCAL_URL;
     String address =
-        baseLocalUrl + "/jurisdictions/" + tylerJurisdiction + ServiceHelpers.ASSEMBLY_PORT;
+        baseLocalUrl
+            + "/jurisdictions/"
+            + tylerDomain.jurisdiction().getName()
+            + ServiceHelpers.ASSEMBLY_PORT;
     log.info("Starting NFRC callback server at {}", address);
     EndpointImpl jaxWsEndpoint =
         (EndpointImpl) jakarta.xml.ws.Endpoint.publish(address, implementor);
@@ -375,7 +362,10 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
     OasisEcfv5WsCallback impl2 = new OasisEcfv5WsCallback(makeCD, makeUD, sender);
     String v5Address =
-        baseLocalUrl + "/jurisdictions/" + tylerJurisdiction + ServiceHelpers.ASSEMBLY_PORT_V5;
+        baseLocalUrl
+            + "/jurisdictions/"
+            + tylerDomain.jurisdiction().getName()
+            + ServiceHelpers.ASSEMBLY_PORT_V5;
     EndpointImpl jaxWsV5Endpoint = (EndpointImpl) jakarta.xml.ws.Endpoint.publish(v5Address, impl2);
     log.info("V5 Address : {}", jaxWsV5Endpoint.getAddress());
     log.info("V5 Bean name: {}", jaxWsV5Endpoint.getBeanName());
@@ -413,14 +403,14 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public String toString() {
-    return "TylerModuleSetup[jurisdiction=" + tylerJurisdiction + ",env=" + tylerEnv + "]";
+    return "TylerModuleSetup[domain=" + tylerDomain + "]";
   }
 
   private JobDetail buildJob(final String jobName) {
     return JobBuilder.newJob(UpdateCodeVersions.class)
         .withIdentity(jobName, "codesdb-group")
-        .usingJobData("TYLER_JURISDICTION", this.tylerJurisdiction)
-        .usingJobData("TYLER_ENV", this.tylerEnv)
+        .usingJobData("TYLER_JURISDICTION", this.tylerDomain.jurisdiction().getName())
+        .usingJobData("TYLER_ENV", this.tylerDomain.env().getName())
         .usingJobData("X509_PASSWORD", this.x509Password)
         .usingJobData("POSTGRES_URL", this.pgUrl)
         .usingJobData("POSTGRES_DB", this.pgDb)

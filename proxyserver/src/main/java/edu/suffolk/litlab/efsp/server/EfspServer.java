@@ -28,6 +28,9 @@ import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import edu.suffolk.litlab.efsp.server.utils.SendMessage;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapExceptionMapper;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import jakarta.ws.rs.core.MediaType;
 import java.security.NoSuchAlgorithmException;
@@ -39,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import javax.sql.DataSource;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
@@ -70,8 +74,8 @@ public class EfspServer {
       mod.setupGlobals();
       JurisdictionServiceHandle handle = mod.getServiceHandle();
       Optional<EfmRestCallbackInterface> maybeCallback = mod.getCallback();
-      jurisdictionMap.put(mod.getJurisdiction(), handle);
-      callbackMap.put(mod.getJurisdiction(), maybeCallback);
+      jurisdictionMap.put(mod.getJurisdictionId(), handle);
+      callbackMap.put(mod.getJurisdictionId(), maybeCallback);
     }
 
     Supplier<LoginDatabase> ldSupplier = () -> LoginDatabase.fromDS(userDs);
@@ -131,7 +135,7 @@ public class EfspServer {
       LoginDatabase ld = new LoginDatabase(userConn);
       @SuppressWarnings("resource")
       // Jurisdiction and env args can be null, we're just making the tables
-      CodeDatabase cd = new CodeDatabase(null, null, codeConn);
+      CodeDatabase cd = new CodeDatabase(new TylerDomain(null, null), codeConn);
       boolean brandNew = !ld.tablesExist() || !cd.tablesExist();
 
       // Now we can tell if everything is being set up fresh. If so, we'll make everything now.
@@ -194,9 +198,12 @@ public class EfspServer {
 
     setupDatabases(codeDs, userDs);
 
+    // Slight hack: this gets used early in the Docassemble converter
+    Optional<TylerEnv> tylerEnv = GetEnv("TYLER_ENV").map(TylerEnv::parse);
+
     InterviewToFilingInformationConverter daJsonConverter =
         new DocassembleToFilingInformationConverter(
-            EfspServer.class.getResourceAsStream("/taxonomy.csv"));
+            EfspServer.class.getResourceAsStream("/taxonomy.csv"), tylerEnv);
     Map<String, InterviewToFilingInformationConverter> converterMap =
         Map.of(
             "application/json", daJsonConverter,
@@ -209,10 +216,11 @@ public class EfspServer {
     Supplier<MessageSettingsDatabase> mdSupplier = () -> MessageSettingsDatabase.fromDS(userDs);
     OrgMessageSender sender = new OrgMessageSender(mdSupplier, sendMsg.get());
 
-    Optional<String> tylerJurisdictions = GetEnv("TYLER_JURISDICTIONS");
     Optional<String> togaKeyStr = GetEnv("TOGA_CLIENT_KEYS");
-    Optional<String> tylerEnv = GetEnv("TYLER_ENV");
-    List<String> jurisdictions = List.of(tylerJurisdictions.orElse("").split(" "));
+    List<TylerJurisdiction> jurisdictions =
+        Stream.of(GetEnv("TYLER_JURISDICTIONS").orElse("").split(" "))
+            .map(TylerJurisdiction::parse)
+            .toList();
     List<String> togaKeys = List.of(togaKeyStr.orElse("").split(" "));
     if (jurisdictions.size() > 0 && jurisdictions.size() != togaKeys.size()) {
       log.error("TOGA_CLIENT_KEYS list should be same size as TYLER_JURISDICTIONS list.");
@@ -221,11 +229,9 @@ public class EfspServer {
 
     List<EfmModuleSetup> modules = new ArrayList<>();
     for (int idx = 0; idx < jurisdictions.size(); idx++) {
-      String jurisdiction = jurisdictions.get(idx);
-      if (jurisdiction.isBlank()) {
-        continue;
-      }
-      TylerModuleSetup.create(jurisdiction, togaKeys.get(idx), converterMap, codeDs, userDs, sender)
+      var jurisdiction = jurisdictions.get(idx);
+      TylerModuleSetup.create(
+              jurisdiction, tylerEnv, togaKeys.get(idx), converterMap, codeDs, userDs, sender)
           .ifPresent(mod -> modules.add(mod));
     }
     JeffNetModuleSetup.create(converterMap, userDs, sender).ifPresent(mod -> modules.add(mod));
@@ -248,7 +254,7 @@ public class EfspServer {
                 log.info("Stopping servers");
                 server.stopServers();
                 for (EfmModuleSetup mod : modules) {
-                  log.info("Stopping module {}", mod.getJurisdiction());
+                  log.info("Stopping module {}", mod.getJurisdictionId());
                   mod.shutdown();
                 }
               }

@@ -16,10 +16,11 @@ import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
-import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
@@ -119,28 +120,24 @@ public class AdminUserService {
   private final Function<String, Result<NullValue, String>> passwordChecker;
   private final Supplier<LoginDatabase> ldSupplier;
   private final Supplier<CodeDatabase> cdSupplier;
-  private final String jurisdiction;
+  private final TylerJurisdiction jurisdiction;
 
   public AdminUserService(
-      String jurisdiction,
-      String env,
+      TylerDomain domain,
       Supplier<LoginDatabase> ldSupplier,
       Supplier<CodeDatabase> cdSupplier,
       Function<String, Result<NullValue, String>> passwordChecker) {
-    this.jurisdiction = jurisdiction;
+    this.jurisdiction = domain.jurisdiction();
     this.passwordChecker = passwordChecker;
-    Optional<TylerUserFactory> maybeUserFactory =
-        TylerClients.getEfmUserFactory(jurisdiction, TylerEnv.parse(env));
+    Optional<TylerUserFactory> maybeUserFactory = TylerClients.getEfmUserFactory(domain);
     if (maybeUserFactory.isEmpty()) {
-      throw new RuntimeException(
-          "Can't find " + jurisdiction + " in the SoapClientChooser for EfmUser");
+      throw new RuntimeException("Can't find " + domain + " in the SoapClientChooser for EfmUser");
     }
     this.userFactory = maybeUserFactory.get();
-    Optional<TylerFirmFactory> maybeFirmFactory =
-        TylerClients.getEfmFirmFactory(jurisdiction, TylerEnv.parse(env));
+    Optional<TylerFirmFactory> maybeFirmFactory = TylerClients.getEfmFirmFactory(domain);
     if (maybeFirmFactory.isEmpty()) {
       throw new RuntimeException(
-          "Can't find " + jurisdiction + " in the SoapClientChooser for EfmFirm factory");
+          "Can't find " + domain + " in the SoapClientChooser for EfmFirm factory");
     }
     this.firmFactory = maybeFirmFactory.get();
     this.cdSupplier = cdSupplier;
@@ -151,7 +148,7 @@ public class AdminUserService {
   @Path("/")
   public Response getAll() {
     EndpointReflection ef =
-        new EndpointReflection("/jurisdictions/" + jurisdiction + "/adminusers");
+        new EndpointReflection("/jurisdictions/" + jurisdiction.getName() + "/adminusers");
     return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(AdminUserService.class))))
         .build();
   }

@@ -16,10 +16,11 @@ import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.stdlib.RandomString;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
-import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -78,8 +79,8 @@ import tyler.efm.latest.services.schema.updatepaymentaccountresponse.UpdatePayme
  */
 @Produces(MediaType.APPLICATION_JSON)
 public class PaymentsService {
-  private static Logger log = LoggerFactory.getLogger(PaymentsService.class);
-  private static tyler.efm.latest.services.schema.common.ObjectFactory tylerCommonObjFac =
+  private static final Logger log = LoggerFactory.getLogger(PaymentsService.class);
+  private static final tyler.efm.latest.services.schema.common.ObjectFactory tylerCommonObjFac =
       new tyler.efm.latest.services.schema.common.ObjectFactory();
   private final String callbackToUsUrl;
   private static final String paymentsErrorHtml =
@@ -100,29 +101,30 @@ public class PaymentsService {
   private final TylerFirmFactory firmFactory;
   private final Supplier<CodeDatabase> cdSupplier;
   private final Supplier<LoginDatabase> ldSupplier;
-  private final String jurisdiction;
+  private final TylerJurisdiction jurisdiction;
 
   public PaymentsService(
-      String jurisdiction,
-      String env,
+      TylerDomain domain,
       String togaKey,
       String togaUrl,
       Supplier<LoginDatabase> ldSupplier,
       Supplier<CodeDatabase> cdSupplier) {
+    this.jurisdiction = domain.jurisdiction();
     this.callbackToUsUrl =
-        ServiceHelpers.EXTERNAL_URL + "/jurisdictions/" + jurisdiction + "/payments/toga-account";
-    this.jurisdiction = jurisdiction;
+        ServiceHelpers.EXTERNAL_URL
+            + "/jurisdictions/"
+            + jurisdiction.getName()
+            + "/payments/toga-account";
     // Will generated 21 character long transaction ids, the max length.
     this.transactionIdGen = new RandomString(21);
     this.togaKey = togaKey;
     this.togaUrl = togaUrl;
     this.tempAccounts = new HashMap<String, TempAccount>();
-    var maybeFirmFactory = TylerClients.getEfmFirmFactory(jurisdiction, TylerEnv.parse(env));
+    var maybeFirmFactory = TylerClients.getEfmFirmFactory(domain);
     if (maybeFirmFactory.isPresent()) {
       this.firmFactory = maybeFirmFactory.get();
     } else {
-      throw new RuntimeException(
-          jurisdiction + "-" + env + " not in SoapClientChooser for EFMFirm");
+      throw new RuntimeException(domain + " not in SoapClientChooser for EFMFirm");
     }
     this.cdSupplier = cdSupplier;
     this.ldSupplier = ldSupplier;
@@ -131,7 +133,8 @@ public class PaymentsService {
   @GET
   @Path("/")
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/payments");
+    EndpointReflection ef =
+        new EndpointReflection("/jurisdictions/" + jurisdiction.getName() + "/payments");
     return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(PaymentsService.class))))
         .build();
   }

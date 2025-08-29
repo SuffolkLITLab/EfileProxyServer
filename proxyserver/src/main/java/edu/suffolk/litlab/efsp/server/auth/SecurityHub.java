@@ -3,6 +3,9 @@ package edu.suffolk.litlab.efsp.server.auth;
 import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.NewTokens;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -38,14 +41,15 @@ public class SecurityHub {
    * @param env the running environment, i.e. which Tyler instance to connect to, "stage" vs "prod"
    * @param jurisdictions a list of Tyler jurisdictions to connect to. See SoapClientChooser.
    */
-  public SecurityHub(DataSource userDs, Optional<String> env, List<String> jurisdictions) {
+  public SecurityHub(
+      DataSource userDs, Optional<TylerEnv> env, List<TylerJurisdiction> jurisdictions) {
     this.userDs = userDs;
     if (env.isEmpty() || jurisdictions.isEmpty()) {
       this.tylerLoginObjs = List.of();
     } else {
       this.tylerLoginObjs =
           jurisdictions.stream()
-              .map(j -> new TylerLogin(j, env.get()))
+              .map(j -> new TylerLogin(new TylerDomain(j, env.get())))
               .collect(Collectors.toList());
     }
     this.jeffNetLoginObj = new JeffNetLogin();

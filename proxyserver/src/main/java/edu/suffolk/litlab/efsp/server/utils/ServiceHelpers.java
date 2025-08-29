@@ -8,6 +8,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
@@ -122,7 +123,7 @@ public class ServiceHelpers {
       TylerFirmFactory firmFactory,
       HttpHeaders httpHeaders,
       Supplier<LoginDatabase> ldSupplier,
-      String jurisdiction) {
+      TylerJurisdiction jurisdiction) {
     return setupFirmPort(firmFactory, httpHeaders, ldSupplier, true, jurisdiction);
   }
 
@@ -132,7 +133,7 @@ public class ServiceHelpers {
       HttpHeaders httpHeaders,
       Supplier<LoginDatabase> ldSupplier,
       boolean needsSoapHeader,
-      String jurisdiction) {
+      TylerJurisdiction jurisdiction) {
     String activeToken = httpHeaders.getHeaderString("X-API-KEY");
     try (LoginDatabase ld = ldSupplier.get()) {
       Optional<AtRest> atRest = ld.getAtRestInfo(activeToken);

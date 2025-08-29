@@ -4,6 +4,9 @@ import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeUpdater;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.server.logging.Monitor;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -37,10 +40,11 @@ public class UpdateCodeVersions implements Job {
    */
   public void execute(JobExecutionContext context) throws JobExecutionException {
     JobDataMap dataMap = context.getJobDetail().getJobDataMap();
-    String jurisdiction = dataMap.getString("TYLER_JURISDICTION");
-    String env = dataMap.getString("TYLER_ENV");
+    var jurisdiction = TylerJurisdiction.parse(dataMap.getString("TYLER_JURISDICTION"));
+    var env = TylerEnv.parse(dataMap.getString("TYLER_ENV"));
+    TylerDomain domain = new TylerDomain(jurisdiction, env);
     MDC.put(MDCWrappers.OPERATION, "UpdateCodeVersions.execute");
-    MDC.put(MDCWrappers.USER_ID, jurisdiction);
+    MDC.put(MDCWrappers.USER_ID, jurisdiction.getName());
     String x509Password = dataMap.getString("X509_PASSWORD");
 
     String pgFullUrl = dataMap.getString("POSTGRES_URL");
@@ -51,8 +55,8 @@ public class UpdateCodeVersions implements Job {
     boolean success = true;
     try (Connection conn =
             DatabaseCreator.makeSingleConnection(pgDb, pgFullUrl, pgUser, pgPassword);
-        CodeDatabase cd = new CodeDatabase(jurisdiction, env, conn)) {
-      success = CodeUpdater.executeCommand(cd, jurisdiction, env, List.of("refresh"), x509Password);
+        CodeDatabase cd = new CodeDatabase(domain, conn)) {
+      success = CodeUpdater.executeCommand(cd, domain, List.of("refresh"), x509Password);
     } catch (SQLException e) {
       log.error("Couldn't connect to Codes db from Job Executor: ", e);
       success = false;
@@ -67,7 +71,7 @@ public class UpdateCodeVersions implements Job {
               "jurisdiction",
               jurisdiction,
               "env",
-              env,
+              env.getName(),
               "error_timestamp",
               LocalDate.now().toString()));
     }

@@ -22,7 +22,7 @@ public interface EfmModuleSetup {
 
   Optional<EfmRestCallbackInterface> getCallback();
 
-  String getJurisdiction();
+  String getJurisdictionId();
 
   void setupGlobals();
 

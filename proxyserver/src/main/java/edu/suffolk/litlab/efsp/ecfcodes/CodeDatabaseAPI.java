@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efsp.ecfcodes;
 
 import edu.suffolk.litlab.efsp.db.Database;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -31,7 +32,7 @@ public abstract class CodeDatabaseAPI extends Database {
    * The domain (the juristiction + environment, e.g. illinois-stage) that this database is working
    * over.
    */
-  public abstract String getDomain();
+  public abstract TylerDomain getDomain();
 
   /**
    * Gets all court location identifiers (CLI) stored in the database.

@@ -15,6 +15,7 @@ import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.Name;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
@@ -64,9 +65,9 @@ public class EcfCaseTypeFactory {
       ecfCommonObjFac;
   private final gov.niem.niem.niem_core._2.ObjectFactory of;
   private final gov.niem.niem.structures._2.ObjectFactory structObjFac;
-  private final String jurisdiction;
+  private final TylerJurisdiction jurisdiction;
 
-  public EcfCaseTypeFactory(CodeDatabase cd, String jurisdiction) {
+  public EcfCaseTypeFactory(CodeDatabase cd, TylerJurisdiction jurisdiction) {
     this.cd = cd;
     this.tylerObjFac = new tyler.ecf.extensions.common.ObjectFactory();
     this.ecfCommonObjFac =

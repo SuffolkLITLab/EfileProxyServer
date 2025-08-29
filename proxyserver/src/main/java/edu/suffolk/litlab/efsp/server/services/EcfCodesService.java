@@ -20,6 +20,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.ServiceCodeType;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection.Endpoint;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -77,9 +78,9 @@ public class EcfCodesService extends CodesService {
   private final Supplier<CodeDatabase> cdSupplier;
   private final EndpointReflection ef;
 
-  public EcfCodesService(String jurisdiction, Supplier<CodeDatabase> cdSupplier) {
+  public EcfCodesService(TylerJurisdiction jurisdiction, Supplier<CodeDatabase> cdSupplier) {
     this.cdSupplier = cdSupplier;
-    this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction + "/codes");
+    this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction.getName() + "/codes");
   }
 
   @Override

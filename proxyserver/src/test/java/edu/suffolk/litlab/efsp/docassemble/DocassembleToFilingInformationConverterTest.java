@@ -31,7 +31,7 @@ public class DocassembleToFilingInformationConverterTest {
   public void setUp() throws CsvValidationException, IOException {
     converter =
         new DocassembleToFilingInformationConverter(
-            this.getClass().getResourceAsStream("/taxonomy.csv"));
+            this.getClass().getResourceAsStream("/taxonomy.csv"), Optional.empty());
   }
 
   private String getFileContents(String inFileName) throws IOException {

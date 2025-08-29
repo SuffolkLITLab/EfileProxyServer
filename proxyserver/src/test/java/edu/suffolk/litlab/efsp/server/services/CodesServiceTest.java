@@ -12,6 +12,9 @@ import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.db.DatabaseVersionTest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerJurisdiction;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
@@ -56,7 +59,8 @@ public class CodesServiceTest {
             100);
     Supplier<CodeDatabase> cdSupplier =
         () -> {
-          return CodeDatabase.fromDS("illinois", "stage", ds);
+          return CodeDatabase.fromDS(
+              new TylerDomain(TylerJurisdiction.ILLINOIS, TylerEnv.STAGE), ds);
         };
     try (CodeDatabase cd = cdSupplier.get()) {
       cd.createTablesIfAbsent();
@@ -81,7 +85,7 @@ public class CodesServiceTest {
     sf.setResourceClasses(EcfCodesService.class);
     sf.setResourceProvider(
         EcfCodesService.class,
-        new SingletonResourceProvider(new EcfCodesService("illinois", cdSupplier)));
+        new SingletonResourceProvider(new EcfCodesService(TylerJurisdiction.ILLINOIS, cdSupplier)));
     sf.setAddress(ENDPOINT_ADDRESS);
     Map<Object, Object> extensionMappings =
         Map.of(
