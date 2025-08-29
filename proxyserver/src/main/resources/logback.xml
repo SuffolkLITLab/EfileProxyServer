@@ -2,7 +2,7 @@
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [server=%X{serverId}] [user=%X{userId}] [session=%X{sessionId}] [corr=%X{correlationId}] [req=%X{requestId}] [op=%X{operation}] %-5level %logger{40} - %msg %rEx%n</pattern>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [server=%X{serverId}] [user=%X{userId}] [session=%X{sessionId}] [corr=%X{correlationId}] [req=%X{requestId}] [op=%X{operation}]%n    %-5level %-35logger{35} - %msg %rEx%n</pattern>
     </encoder>
   </appender>
   <appender name="PerServer" class="edu.suffolk.litlab.efsp.server.logging.ServerSpecificAppender">
