@@ -23,7 +23,6 @@ FROM eclipse-temurin:21.0.7_6-jre-alpine AS release
 ARG CI_COMMIT_SHA
 LABEL git-commit=$CI_COMMIT_SHA
 COPY --from=build  /app/proxyserver/target/efspserver-with-deps.jar /app/
-COPY --from=build  /app/proxyserver/src/main/config /app/src/main/config/
 # The `[]` is an optional COPY: doesn't copy if those files aren't there (https://stackoverflow.com/a/46801962/11416267)
 # They are needed for Tyler API usage
 COPY LICENSE client_sign.propertie[s] quartz.properties Suffolk.pf[x] /app/
