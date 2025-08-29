@@ -123,21 +123,19 @@ public class AdminUserService {
 
   public AdminUserService(
       String jurisdiction,
-      String env,
+      TylerEnv env,
       Supplier<LoginDatabase> ldSupplier,
       Supplier<CodeDatabase> cdSupplier,
       Function<String, Result<NullValue, String>> passwordChecker) {
     this.jurisdiction = jurisdiction;
     this.passwordChecker = passwordChecker;
-    Optional<TylerUserFactory> maybeUserFactory =
-        TylerClients.getEfmUserFactory(jurisdiction, TylerEnv.parse(env));
+    Optional<TylerUserFactory> maybeUserFactory = TylerClients.getEfmUserFactory(jurisdiction, env);
     if (maybeUserFactory.isEmpty()) {
       throw new RuntimeException(
           "Can't find " + jurisdiction + " in the SoapClientChooser for EfmUser");
     }
     this.userFactory = maybeUserFactory.get();
-    Optional<TylerFirmFactory> maybeFirmFactory =
-        TylerClients.getEfmFirmFactory(jurisdiction, TylerEnv.parse(env));
+    Optional<TylerFirmFactory> maybeFirmFactory = TylerClients.getEfmFirmFactory(jurisdiction, env);
     if (maybeFirmFactory.isEmpty()) {
       throw new RuntimeException(
           "Can't find " + jurisdiction + " in the SoapClientChooser for EfmFirm factory");

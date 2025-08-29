@@ -23,7 +23,7 @@ public enum TylerEnv {
     } else if (value.equalsIgnoreCase(PROD.getPath())) {
       return PROD;
     } else {
-      throw new IllegalArgumentException("Can't make a `TylerEnv` from: " + value);
+      throw new IllegalArgumentException("Can't make a `TylerEnv` from: `" + value + "`");
     }
   }
 }

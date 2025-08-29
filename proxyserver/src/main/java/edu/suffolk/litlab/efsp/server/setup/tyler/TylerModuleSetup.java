@@ -25,6 +25,7 @@ import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efsp.server.utils.UpdateCodeVersions;
 import edu.suffolk.litlab.efsp.stdlib.StdLib;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -67,14 +68,14 @@ public class TylerModuleSetup implements EfmModuleSetup {
   private final String togaUrl;
   private OrgMessageSender sender;
   private Scheduler scheduler;
-  private String tylerEnv;
+  private TylerEnv tylerEnv;
 
   public static class CreationArgs {
     public String pgUrl;
     public String pgDb;
     public String pgUser;
     public String pgPassword;
-    public String tylerEnv;
+    public TylerEnv tylerEnv;
     public String x509Password;
     public String togaUrl;
   }
@@ -82,12 +83,13 @@ public class TylerModuleSetup implements EfmModuleSetup {
   /** Use this factory method instead of the class constructor. */
   public static Optional<TylerModuleSetup> create(
       String jurisdiction,
+      Optional<TylerEnv> env,
       String togaKey,
       Map<String, InterviewToFilingInformationConverter> converterMap,
       DataSource codeDs,
       DataSource userDs,
       OrgMessageSender sender) {
-    Optional<CreationArgs> args = createFromEnvVars();
+    Optional<CreationArgs> args = createFromEnvVars(env);
     if (args.isEmpty()) {
       return Optional.empty();
     }
@@ -120,7 +122,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     this.sender = sender;
   }
 
-  private static Optional<CreationArgs> createFromEnvVars() {
+  private static Optional<CreationArgs> createFromEnvVars(Optional<TylerEnv> maybeTylerEnv) {
     Optional<String> maybeX509Password = GetEnv("X509_PASSWORD");
     if (maybeX509Password.isEmpty() || maybeX509Password.orElse("").isBlank()) {
       log.warn("If using Tyler, X509_PASSWORD can't be null. Did you forget to source .env?");
@@ -129,12 +131,11 @@ public class TylerModuleSetup implements EfmModuleSetup {
     CreationArgs args = new CreationArgs();
     args.x509Password = maybeX509Password.get();
 
-    Optional<String> maybeTylerEnv = GetEnv("TYLER_ENV");
     if (maybeTylerEnv.isPresent()) {
       log.info("Using {} for TYLER_ENV", maybeTylerEnv.get());
       args.tylerEnv = maybeTylerEnv.get();
     } else {
-      log.info("Not using any TYLER_ENV, maybe prod?");
+      log.error("Not using any TYLER_ENV. Something definitely going to break later");
     }
 
     args.pgUser = GetEnv("POSTGRES_USER").orElse("postgres");
@@ -171,7 +172,12 @@ public class TylerModuleSetup implements EfmModuleSetup {
       cd.createTablesIfAbsent();
       List<String> locations = cd.getAllLocations();
       log.info(
-          "All locations for " + this.tylerJurisdiction + "-" + this.tylerEnv + ": " + locations);
+          "All locations for "
+              + this.tylerJurisdiction
+              + "-"
+              + this.tylerEnv.getPath()
+              + ": "
+              + locations);
       boolean downloadAll = (cd.getAllLocations().size() == 0);
       if (downloadAll) {
         String testOnlyLocation = StdLib.GetEnv("_TEST_ONLY_LOCATION").orElse("");
@@ -279,7 +285,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     var callbackMap = new HashMap<String, EfmRestCallbackInterface>();
 
     final String jurisdiction = getJurisdiction();
-    final String env = this.tylerEnv;
+    final TylerEnv env = this.tylerEnv;
 
     Supplier<CodeDatabase> cdSupplier =
         () -> {
@@ -420,7 +426,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     return JobBuilder.newJob(UpdateCodeVersions.class)
         .withIdentity(jobName, "codesdb-group")
         .usingJobData("TYLER_JURISDICTION", this.tylerJurisdiction)
-        .usingJobData("TYLER_ENV", this.tylerEnv)
+        .usingJobData("TYLER_ENV", this.tylerEnv.getPath())
         .usingJobData("X509_PASSWORD", this.x509Password)
         .usingJobData("POSTGRES_URL", this.pgUrl)
         .usingJobData("POSTGRES_DB", this.pgDb)

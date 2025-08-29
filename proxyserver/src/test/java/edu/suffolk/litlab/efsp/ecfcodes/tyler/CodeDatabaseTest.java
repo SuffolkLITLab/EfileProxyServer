@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.db.DatabaseVersionTest;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeUpdater;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -42,7 +43,7 @@ public class CodeDatabaseTest {
             postgres.getJdbcUrl(),
             postgres.getUsername(),
             postgres.getPassword());
-    cd = new CodeDatabase("illinois", "stage", conn);
+    cd = new CodeDatabase("illinois", TylerEnv.STAGE, conn);
     cd.createTablesIfAbsent();
   }
 

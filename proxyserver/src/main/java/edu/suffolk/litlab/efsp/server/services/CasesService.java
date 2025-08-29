@@ -16,6 +16,7 @@ import edu.suffolk.litlab.efsp.server.ecf4.SoapClientChooser;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import gov.niem.niem.niem_core._2.CaseType;
 import gov.niem.niem.niem_core._2.EntityType;
@@ -82,7 +83,7 @@ public class CasesService {
 
   public CasesService(
       String jurisdiction,
-      String env,
+      TylerEnv env,
       Supplier<LoginDatabase> ldSupplier,
       Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;

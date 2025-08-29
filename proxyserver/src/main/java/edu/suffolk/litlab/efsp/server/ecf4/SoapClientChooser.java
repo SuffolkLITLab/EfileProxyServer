@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE_Service;
 import java.net.URL;
 import java.util.Map;
@@ -63,8 +64,8 @@ public class SoapClientChooser {
   }
 
   public static Optional<FilingReviewMDEService> getFilingReviewFactory(
-      String jurisdiction, String env) {
-    return getFilingReviewFactory(jurisdiction + "-" + env);
+      String jurisdiction, TylerEnv env) {
+    return getFilingReviewFactory(jurisdiction + "-" + env.getPath());
   }
 
   public static Optional<ServiceMDEService> getServiceFactory(String wsdlDomain) {
@@ -72,7 +73,7 @@ public class SoapClientChooser {
     return url.map(u -> new ServiceMDEService(u));
   }
 
-  public static Optional<ServiceMDEService> getServiceFactory(String jurisdiction, String env) {
+  public static Optional<ServiceMDEService> getServiceFactory(String jurisdiction, TylerEnv env) {
     return getServiceFactory(jurisdiction + "-" + env);
   }
 
@@ -82,8 +83,8 @@ public class SoapClientChooser {
   }
 
   public static Optional<CourtRecordMDEService> getCourtRecordFactory(
-      String jurisdiction, String env) {
-    return getCourtRecordFactory(jurisdiction + "-" + env);
+      String jurisdiction, TylerEnv env) {
+    return getCourtRecordFactory(jurisdiction + "-" + env.getPath());
   }
 
   public static Optional<CourtSchedulingMDE_Service> getCourtSchedulingFactory(String wsdlDomain) {
@@ -92,8 +93,8 @@ public class SoapClientChooser {
   }
 
   public static Optional<CourtSchedulingMDE_Service> getCourtSchedulingFactory(
-      String jurisdiction, String env) {
-    return getCourtSchedulingFactory(jurisdiction + "-" + env);
+      String jurisdiction, TylerEnv env) {
+    return getCourtSchedulingFactory(jurisdiction + "-" + env.getPath());
   }
 
   private static Optional<URL> urlFromString(String wsdlDomain, Map<String, String> domainToWsdl) {

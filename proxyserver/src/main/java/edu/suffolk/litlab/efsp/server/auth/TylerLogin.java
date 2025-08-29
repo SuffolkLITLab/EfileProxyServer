@@ -20,15 +20,14 @@ public class TylerLogin implements LoginInterface {
   private static final String HEADER_KEY_PREFIX = "TYLER-TOKEN";
   private final String jurisdiction;
 
-  public TylerLogin(String jurisdiction, String env) {
+  public TylerLogin(String jurisdiction, TylerEnv env) {
     this.jurisdiction = jurisdiction;
-    Optional<TylerUserFactory> maybeUserFactory =
-        TylerClients.getEfmUserFactory(jurisdiction, TylerEnv.parse(env));
+    Optional<TylerUserFactory> maybeUserFactory = TylerClients.getEfmUserFactory(jurisdiction, env);
     if (maybeUserFactory.isPresent()) {
       userServiceFactory = maybeUserFactory.get();
     } else {
       throw new RuntimeException(
-          jurisdiction + "-" + env + " not in SoapClientChooser for EFMUser");
+          jurisdiction + "-" + env.getPath() + " not in SoapClientChooser for EFMUser");
     }
   }
 
