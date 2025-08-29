@@ -370,7 +370,6 @@ public class TylerModuleSetup implements EfmModuleSetup {
     log.info("Starting NFRC callback server at {}", address);
     EndpointImpl jaxWsEndpoint =
         (EndpointImpl) jakarta.xml.ws.Endpoint.publish(address, implementor);
-    log.info("Wsdl location: {}", jaxWsEndpoint.getWsdlLocation());
     log.info("Address : {}", jaxWsEndpoint.getAddress());
     log.info("Bean name: {}", jaxWsEndpoint.getBeanName());
 
@@ -378,7 +377,6 @@ public class TylerModuleSetup implements EfmModuleSetup {
     String v5Address =
         baseLocalUrl + "/jurisdictions/" + tylerJurisdiction + ServiceHelpers.ASSEMBLY_PORT_V5;
     EndpointImpl jaxWsV5Endpoint = (EndpointImpl) jakarta.xml.ws.Endpoint.publish(v5Address, impl2);
-    log.info("V5 Wsdl location: {}", jaxWsV5Endpoint.getWsdlLocation());
     log.info("V5 Address : {}", jaxWsV5Endpoint.getAddress());
     log.info("V5 Bean name: {}", jaxWsV5Endpoint.getBeanName());
 
