@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE_Service;
 import java.net.URL;
 import java.util.Map;
@@ -18,6 +19,7 @@ public class SoapClientChooser {
 
   private static final Logger log = LoggerFactory.getLogger(SoapClientChooser.class);
 
+  // TODO(#284): finish this refactor to use TylerEnvs instead of strings
   static final Map<String, String> serviceMDEWsdls =
       Map.of(
           "illinois-stage", "wsdl/stage/illinois-ECF-4.0-ServiceMDEService.wsdl",
@@ -63,8 +65,8 @@ public class SoapClientChooser {
   }
 
   public static Optional<FilingReviewMDEService> getFilingReviewFactory(
-      String jurisdiction, String env) {
-    return getFilingReviewFactory(jurisdiction + "-" + env);
+      String jurisdiction, TylerEnv env) {
+    return getFilingReviewFactory(jurisdiction + "-" + env.getName());
   }
 
   public static Optional<ServiceMDEService> getServiceFactory(String wsdlDomain) {
@@ -72,8 +74,8 @@ public class SoapClientChooser {
     return url.map(u -> new ServiceMDEService(u));
   }
 
-  public static Optional<ServiceMDEService> getServiceFactory(String jurisdiction, String env) {
-    return getServiceFactory(jurisdiction + "-" + env);
+  public static Optional<ServiceMDEService> getServiceFactory(String jurisdiction, TylerEnv env) {
+    return getServiceFactory(jurisdiction + "-" + env.getName());
   }
 
   public static Optional<CourtRecordMDEService> getCourtRecordFactory(String wsdlDomain) {
@@ -82,8 +84,8 @@ public class SoapClientChooser {
   }
 
   public static Optional<CourtRecordMDEService> getCourtRecordFactory(
-      String jurisdiction, String env) {
-    return getCourtRecordFactory(jurisdiction + "-" + env);
+      String jurisdiction, TylerEnv env) {
+    return getCourtRecordFactory(jurisdiction + "-" + env.getName());
   }
 
   public static Optional<CourtSchedulingMDE_Service> getCourtSchedulingFactory(String wsdlDomain) {
@@ -92,8 +94,8 @@ public class SoapClientChooser {
   }
 
   public static Optional<CourtSchedulingMDE_Service> getCourtSchedulingFactory(
-      String jurisdiction, String env) {
-    return getCourtSchedulingFactory(jurisdiction + "-" + env);
+      String jurisdiction, TylerEnv env) {
+    return getCourtSchedulingFactory(jurisdiction + "-" + env.getName());
   }
 
   private static Optional<URL> urlFromString(String wsdlDomain, Map<String, String> domainToWsdl) {

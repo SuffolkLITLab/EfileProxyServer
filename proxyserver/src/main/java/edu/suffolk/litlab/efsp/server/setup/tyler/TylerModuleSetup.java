@@ -25,6 +25,7 @@ import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efsp.server.utils.UpdateCodeVersions;
 import edu.suffolk.litlab.efsp.stdlib.StdLib;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -67,14 +68,14 @@ public class TylerModuleSetup implements EfmModuleSetup {
   private final String togaUrl;
   private OrgMessageSender sender;
   private Scheduler scheduler;
-  private String tylerEnv;
+  private TylerEnv tylerEnv;
 
   public static class CreationArgs {
     public String pgUrl;
     public String pgDb;
     public String pgUser;
     public String pgPassword;
-    public String tylerEnv;
+    public TylerEnv tylerEnv;
     public String x509Password;
     public String togaUrl;
   }
@@ -129,7 +130,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     CreationArgs args = new CreationArgs();
     args.x509Password = maybeX509Password.get();
 
-    Optional<String> maybeTylerEnv = GetEnv("TYLER_ENV");
+    Optional<TylerEnv> maybeTylerEnv = GetEnv("TYLER_ENV").map(TylerEnv::parse);
     if (maybeTylerEnv.isPresent()) {
       log.info("Using {} for TYLER_ENV", maybeTylerEnv.get());
       args.tylerEnv = maybeTylerEnv.get();
@@ -279,7 +280,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     var callbackMap = new HashMap<String, EfmRestCallbackInterface>();
 
     final String jurisdiction = getJurisdiction();
-    final String env = this.tylerEnv;
+    final TylerEnv env = this.tylerEnv;
 
     Supplier<CodeDatabase> cdSupplier =
         () -> {
@@ -420,7 +421,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     return JobBuilder.newJob(UpdateCodeVersions.class)
         .withIdentity(jobName, "codesdb-group")
         .usingJobData("TYLER_JURISDICTION", this.tylerJurisdiction)
-        .usingJobData("TYLER_ENV", this.tylerEnv)
+        .usingJobData("TYLER_ENV", this.tylerEnv.getName())
         .usingJobData("X509_PASSWORD", this.x509Password)
         .usingJobData("POSTGRES_URL", this.pgUrl)
         .usingJobData("POSTGRES_DB", this.pgDb)

@@ -7,23 +7,28 @@ public enum TylerEnv {
   /// to "deploy patches and new releases prior to introduction into" PROD
   STAGE("stage");
 
-  private String path;
+  private String name;
 
-  private TylerEnv(String path) {
-    this.path = path;
+  private TylerEnv(String name) {
+    this.name = name;
   }
 
+  // ** Used for when the env determines a URL / filepath. */
   public String getPath() {
-    return path;
+    return name;
+  }
+
+  public String getName() {
+    return name;
   }
 
   public static TylerEnv parse(String value) {
-    if (value.equalsIgnoreCase(STAGE.getPath())) {
+    if (value.equalsIgnoreCase(STAGE.getName())) {
       return STAGE;
-    } else if (value.equalsIgnoreCase(PROD.getPath())) {
+    } else if (value.equalsIgnoreCase(PROD.getName())) {
       return PROD;
     } else {
-      throw new IllegalArgumentException("Can't make a `TylerEnv` from: " + value);
+      throw new IllegalArgumentException("Can't make a `TylerEnv` from: `" + value + "`'");
     }
   }
 }

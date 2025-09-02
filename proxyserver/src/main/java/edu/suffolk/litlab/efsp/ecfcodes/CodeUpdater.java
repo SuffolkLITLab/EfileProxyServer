@@ -514,9 +514,8 @@ public class CodeUpdater {
 
   /** Sets up the WSDL connection to Tyler, used for `getPolicy` to get the URL. */
   private static FilingReviewMDEPort loginWithTyler(
-      String jurisdiction, String env, String userEmail, String userPassword) {
-    Optional<TylerUserFactory> userFactory =
-        TylerClients.getEfmUserFactory(jurisdiction, TylerEnv.parse(env));
+      String jurisdiction, TylerEnv env, String userEmail, String userPassword) {
+    Optional<TylerUserFactory> userFactory = TylerClients.getEfmUserFactory(jurisdiction, env);
     if (userFactory.isEmpty()) {
       throw new RuntimeException("Can't find " + jurisdiction + " in Soap chooser for EFMUser");
     }
@@ -541,7 +540,7 @@ public class CodeUpdater {
   }
 
   /** Downloads a single codes zip. For Debugging. */
-  public boolean downloadIndiv(List<String> args, String jurisdiction, String env) {
+  public boolean downloadIndiv(List<String> args, String jurisdiction, TylerEnv env) {
     if (args.size() < 3) {
       log.error(
           "Need to pass in args: downloadIndiv <jurisdiction> <table> <location or blank for"
@@ -557,7 +556,7 @@ public class CodeUpdater {
     String table = args.get(2);
     String location = (args.size() == 4) ? args.get(3) : "";
     HeaderSigner hs = new HeaderSigner(this.pathToKeystore, this.x509Password);
-    String endpoint = TylerClients.getTylerServerRootUrl(jurisdiction, TylerEnv.parse(env));
+    String endpoint = TylerClients.getTylerServerRootUrl(jurisdiction, env);
     return downloadAndProcessZip(
         makeCodeUrl(endpoint, table, location),
         hs.signedCurrentTime().get(),
@@ -574,12 +573,12 @@ public class CodeUpdater {
   }
 
   public static boolean executeCommand(
-      CodeDatabase cd, String jurisdiction, String env, List<String> args, String x509Password) {
+      CodeDatabase cd, String jurisdiction, TylerEnv env, List<String> args, String x509Password) {
     SoapX509CallbackHandler.setX509Password(x509Password);
     String command = args.get(0);
     try {
       cd.setAutoCommit(false);
-      String codesSite = TylerClients.getTylerServerRootUrl(jurisdiction, TylerEnv.parse(env));
+      String codesSite = TylerClients.getTylerServerRootUrl(jurisdiction, env);
       FilingReviewMDEPort filingPort =
           loginWithTyler(
               jurisdiction,
@@ -632,7 +631,7 @@ public class CodeUpdater {
             100);
 
     List<String> jurisdictions = List.of(System.getenv("TYLER_JURISDICTIONS").split(" "));
-    String env = System.getenv("TYLER_ENV");
+    var env = TylerEnv.parse(System.getenv("TYLER_ENV"));
     for (String jurisdiction : jurisdictions) {
       try (Connection conn = ds.getConnection()) {
         executeCommand(

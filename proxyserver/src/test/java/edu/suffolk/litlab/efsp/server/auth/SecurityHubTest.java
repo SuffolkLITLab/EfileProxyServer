@@ -12,6 +12,7 @@ import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.db.model.NewTokens;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
 import java.util.List;
@@ -56,7 +57,7 @@ public class SecurityHubTest {
   @BeforeEach
   public void setup() {
     ld = mock(LoginDatabase.class);
-    hub = new SecurityHub(() -> ld, Optional.of("stage"), List.of("illinois"));
+    hub = new SecurityHub(() -> ld, Optional.of(TylerEnv.STAGE), List.of("illinois"));
   }
 
   @Test

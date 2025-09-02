@@ -1,7 +1,5 @@
 package edu.suffolk.litlab.efsp.docassemble;
 
-import static edu.suffolk.litlab.efsp.stdlib.StdLib.GetEnv;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -16,6 +14,7 @@ import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.LowerCourtInfo;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
@@ -42,10 +41,14 @@ public class FilingInformationDocassembleJacksonDeserializer
   private static final long serialVersionUID = 1L;
   private final InfoCollector classCollector;
 
+  /** If Tyler is setup on this server, this is the env we're submitting to. */
+  private final Optional<TylerEnv> tylerEnv;
+
   public FilingInformationDocassembleJacksonDeserializer(
-      Class<FilingInformation> t, InfoCollector collector) {
+      Class<FilingInformation> t, InfoCollector collector, Optional<TylerEnv> env) {
     super(t);
     this.classCollector = collector;
+    this.tylerEnv = env;
   }
 
   /**
@@ -92,8 +95,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     return List.copyOf(people);
   }
 
-  public static FilingInformation fromNode(JsonNode node, InfoCollector collector)
-      throws FilingError {
+  public FilingInformation fromNode(JsonNode node, InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
       FilingError err = FilingError.malformedInterview("interview isn't a json object");
       collector.error(err);
@@ -492,7 +494,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     return maybeReturnDate;
   }
 
-  private static Optional<LowerCourtInfo> extractLowerCourt(JsonNode node, InfoCollector collector)
+  private Optional<LowerCourtInfo> extractLowerCourt(JsonNode node, InfoCollector collector)
       throws FilingError {
     if (node == null) {
       return Optional.empty();
@@ -523,8 +525,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       Optional<String> maybeCodeText = Optional.empty();
       // TODO(brycew): HACK HACK HACK! Should be a better way to handle lower court codes than
       // this, but it's broken on prod
-      var tylerEnv = GetEnv("TYLER_ENV");
-      if (tylerEnv.orElse("").equalsIgnoreCase("prod")) {
+      if (tylerEnv.isPresent() && tylerEnv.get() == TylerEnv.PROD) {
         maybeCodeText =
             JsonHelpers.getStringMember(node.get("trial_court"), "tyler_prod_lower_court_code");
       } else {
