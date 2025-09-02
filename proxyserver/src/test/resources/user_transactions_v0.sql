@@ -77,11 +77,11 @@ CREATE TABLE public.submitted_filings (
 --
 
 COPY public.at_rest_keys (server_id, server_name, api_key, tyler_enabled, jeffnet_enabled, created) FROM stdin;
-e5272977-2ceb-4d6b-a054-91e87bb6cb9f	servername	gSLloW8rxeaxmcPicUacY	t	t	2021-10-13 13:02:22.776
-91bb1e8b-b4cc-4a3f-a3a5-a8736631f450	apps-dev-server	BnyE2hAKwbAwz4px7foWX	t	t	2021-10-13 13:03:09.215
-331e6344-cef4-4d58-b8fa-3a50b20d423c	apps-test-server	12gzGj8JqiVCFDgGmUZ9D	t	t	2021-10-13 13:04:12.114
-1a93e989-17e0-4dae-9c54-4498a1bb018b	local-brycew	J8CDj9vjj4gBjauf4PDpC	t	t	2021-11-05 13:34:49.007
-c44cc53f-786a-4693-8456-25df9d2f1546	servername	RWip5QStnQD06PxxwNfIy	t	t	2022-02-25 10:58:47.768
+e5272977-2ceb-4d6b-a054-91e87bb6cb9f	servername	gSLloW8rxeaxmcPicUacY	t	f	2021-10-13 13:02:22.776
+91bb1e8b-b4cc-4a3f-a3a5-a8736631f450	apps-dev-server	BnyE2hAKwbAwz4px7foWX	t	f	2021-10-13 13:03:09.215
+331e6344-cef4-4d58-b8fa-3a50b20d423c	apps-test-server	12gzGj8JqiVCFDgGmUZ9D	t	f	2021-10-13 13:04:12.114
+1a93e989-17e0-4dae-9c54-4498a1bb018b	local-brycew	J8CDj9vjj4gBjauf4PDpC	t	f	2021-11-05 13:34:49.007
+c44cc53f-786a-4693-8456-25df9d2f1546	servername	RWip5QStnQD06PxxwNfIy	t	f	2022-02-25 10:58:47.768
 \.
 
 

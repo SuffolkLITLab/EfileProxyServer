@@ -54,7 +54,7 @@ public class LoginDatabaseTest {
 
   @Test
   public void canEditServerInfo() throws SQLException {
-    String apiKey = ld.addNewUser("this_name_is_no_good", false, false);
+    String apiKey = ld.addNewUser("this_name_is_no_good", false);
 
     Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
     assertThat(atRest).isPresent();

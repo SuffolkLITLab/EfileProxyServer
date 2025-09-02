@@ -1,4 +1,3 @@
 efile proxy:
   api key: abc123
   url: http://efspjava:9000/
-  jeffnet api token: abc123 # if using JeffNet

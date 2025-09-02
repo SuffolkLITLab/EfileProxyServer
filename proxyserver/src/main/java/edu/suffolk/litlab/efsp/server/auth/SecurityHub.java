@@ -15,7 +15,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +33,6 @@ public class SecurityHub {
   private static final Logger log = LoggerFactory.getLogger(SecurityHub.class);
 
   private final List<LoginInterface> tylerLoginObjs;
-  private final LoginInterface jeffNetLoginObj;
   private final Map<String, Function<JsonNode, Optional<Map<String, String>>>> loginFunctions;
   private final Supplier<LoginDatabase> ldSupplier;
 
@@ -54,11 +52,12 @@ public class SecurityHub {
               .map(j -> new TylerLogin(new TylerDomain(j, env)))
               .collect(Collectors.toList());
     }
-    this.jeffNetLoginObj = new JeffNetLogin();
 
-    this.loginFunctions =
-        Stream.concat(this.tylerLoginObjs.stream(), Stream.of(this.jeffNetLoginObj))
-            .collect(Collectors.toMap(lo -> lo.getLoginName(), lo -> (info) -> lo.login(info)));
+    this.loginFunctions = new HashMap<>();
+    this.loginFunctions.put("jeffnet", info -> Optional.of(Map.of("JEFFNET-TOKEN", "deprecated")));
+    this.loginFunctions.putAll(
+        this.tylerLoginObjs.stream()
+            .collect(Collectors.toMap(lo -> lo.getLoginName(), lo -> (info) -> lo.login(info))));
   }
 
   /**
