@@ -2,15 +2,17 @@ package edu.suffolk.litlab.efsp.server.auth;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
+import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.db.model.NewTokens;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,15 +33,16 @@ public class SecurityHub {
   private final List<LoginInterface> tylerLoginObjs;
   private final LoginInterface jeffNetLoginObj;
   private final Map<String, Function<JsonNode, Optional<Map<String, String>>>> loginFunctions;
-  private final DataSource userDs;
+  private final Supplier<LoginDatabase> ldSupplier;
 
   /**
-   * @param userDs Gives connections to the user SQL table
+   * @param ldSupplier Gives connections to the login-related SQL tables
    * @param env the running environment, i.e. which Tyler instance to connect to, "stage" vs "prod"
    * @param jurisdictions a list of Tyler jurisdictions to connect to. See SoapClientChooser.
    */
-  public SecurityHub(DataSource userDs, Optional<String> env, List<String> jurisdictions) {
-    this.userDs = userDs;
+  public SecurityHub(
+      Supplier<LoginDatabase> ldSupplier, Optional<String> env, List<String> jurisdictions) {
+    this.ldSupplier = ldSupplier;
     if (env.isEmpty() || jurisdictions.isEmpty()) {
       this.tylerLoginObjs = List.of();
     } else {
@@ -60,18 +63,69 @@ public class SecurityHub {
    * Interfaces separately.
    *
    * @param apiKey The api key that the server can use for logging in
-   * @param jsonLoginInfo The JSON string with login info for whatever modules it's wants to login
-   *     to
-   * @return A map of expected Headers that subsequent calls should have to their expected values.
-   *     For example, TYLER-TOKEN will have the provided Tyler email + ":" + password Hash, used to
-   *     authenticate the user.
+   * @param loginInfo The JSON object with login info for whatever modules it's wants to login to
+   * @return If the optional is empty, the apikey or one of the attempted logins failed. If not
+   *     empty, it contains the new API Tokens that the REST client should now send to the Server,
+   *     or an empty token list (which happens when querying Tyler code endpoints before the user is
+   *     logged in). For example, TYLER-TOKEN will have the provided Tyler email + ":" + password
+   *     Hash, used to authenticate the user.
    */
-  public Optional<NewTokens> login(String apiKey, String jsonLoginInfo) {
-    try (LoginDatabase ld = new LoginDatabase(userDs.getConnection())) {
-      return ld.login(apiKey, jsonLoginInfo, loginFunctions);
+  public Optional<NewTokens> login(String apiKey, JsonNode loginInfo) {
+    log.info("Testing login");
+    Optional<AtRest> maybeAtRest = Optional.empty();
+    try (LoginDatabase ld = ldSupplier.get()) {
+      maybeAtRest = ld.getAtRestInfo(apiKey);
     } catch (SQLException e) {
       log.error("SQL error when logging in: ", e);
       return Optional.empty();
     }
+    if (maybeAtRest.isEmpty()) {
+      log.error("No server associated with the given API key");
+      return Optional.empty();
+    }
+
+    AtRest atRest = maybeAtRest.get();
+
+    // TODO(brycew-later): the only hacky part, how can this be modulized?
+    if (!loginInfo.isObject()) {
+      log.error("Can't login with a json that's not an object: {}", loginInfo.toPrettyString());
+      return Optional.empty();
+    }
+    var newTokens = new HashMap<String, String>();
+    Iterable<String> orgs = loginInfo::fieldNames;
+    for (String orgName : orgs) {
+      orgName = orgName.toLowerCase();
+      if (orgName.equalsIgnoreCase("api_key")) {
+        continue;
+      }
+      // TODO(brycew): feels hacky, but we don't want an additional column to the db for each new
+      // jurisdiction
+      if (!loginFunctions.containsKey(orgName)) {
+        log.error(
+            "There is no {} to login to: loginFunctions: {}", orgName, loginFunctions.keySet());
+        return Optional.empty();
+      }
+
+      String permissionsName = orgName;
+      if (orgName.contains("-")) {
+        permissionsName = orgName.split("-")[0];
+      }
+      if (!atRest.enabled.containsKey(permissionsName) || !atRest.enabled.get(permissionsName)) {
+        log.error("There is no {} to login to: enabled map: {}", permissionsName, atRest.enabled);
+        return Optional.empty();
+      }
+      Optional<Map<String, String>> maybeNewTokens =
+          loginFunctions.get(orgName).apply(loginInfo.get(orgName));
+      if (maybeNewTokens.isEmpty()) {
+        log.warn("Couldn't login to {}", orgName);
+        return Optional.empty();
+      }
+      log.info("New tokens for {}", orgName);
+      newTokens.putAll(maybeNewTokens.get());
+    }
+    if (newTokens.isEmpty()) {
+      log.warn("No successful logins occurred: returning empty tokens object");
+    }
+    return Optional.of(new NewTokens(newTokens));
   }
 }
