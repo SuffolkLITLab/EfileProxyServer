@@ -22,6 +22,8 @@ import org.slf4j.MDC;
 public class LoginDatabase extends Database {
   private static Logger log = LoggerFactory.getLogger(LoginDatabase.class);
 
+  // TODO(brycew): jeffnet_enabled is deprecated and no longer used.
+  // At somepoint it can be removed from the database as well.
   private static final String atRestCreate =
       """
       CREATE TABLE at_rest_keys (
@@ -90,7 +92,7 @@ public class LoginDatabase extends Database {
     }
   }
 
-  public String addNewUser(String serverName, boolean tylerEnabled, boolean jeffNetEnabled)
+  public String addNewUser(String serverName, boolean tylerEnabled)
       throws SQLException {
     if (conn == null) {
       log.error("Connection in addNewUser wasn't open yet!");
@@ -105,7 +107,8 @@ public class LoginDatabase extends Database {
       insertSt.setString(2, serverName);
       insertSt.setString(3, hash);
       insertSt.setBoolean(4, tylerEnabled);
-      insertSt.setBoolean(5, jeffNetEnabled);
+      // JeffNet's enabled should always be false in the Database now.
+      insertSt.setBoolean(5, false);
       insertSt.setTimestamp(6, ts);
       insertSt.executeUpdate();
     }
@@ -134,7 +137,8 @@ public class LoginDatabase extends Database {
       }
       AtRest atRest = new AtRest();
       atRest.serverId = (UUID) rs.getObject(1);
-      atRest.enabled = Map.of("tyler", rs.getBoolean(4), "jeffnet", rs.getBoolean(5));
+      // JeffNet is always true, to prevent any clients from breaking.
+      atRest.enabled = Map.of("tyler", rs.getBoolean(4), "jeffnet", true);
       atRest.serverName = rs.getString(2);
       atRest.created = rs.getTimestamp(6);
       // Assuming that we will only have the API key hash when directly given it, i.e.
@@ -178,12 +182,11 @@ public class LoginDatabase extends Database {
    */
   public static void main(final String args[])
       throws SQLException, NumberFormatException, ClassNotFoundException {
-    if (args.length != 3) {
-      System.out.println("Only 3 params: server name, tyler enabled, jeffnet enabled");
+    if (args.length != 2) {
+      System.out.println("Only 2 params: server name, tyler enabled");
     }
     String serverName = args[0].strip();
     String tylerEnabled = args[1].strip();
-    String jeffnetEnabled = args[2].strip();
 
     DataSource ds =
         DatabaseCreator.makeDataSource(
@@ -197,11 +200,10 @@ public class LoginDatabase extends Database {
     try (LoginDatabase ld = new LoginDatabase(ds.getConnection())) {
       ld.setAutoCommit(true);
       boolean tylerBool = Boolean.parseBoolean(tylerEnabled);
-      boolean jeffnetBool = Boolean.parseBoolean(jeffnetEnabled);
       ld.createTablesIfAbsent();
-      String newApiKey = ld.addNewUser(serverName, tylerBool, jeffnetBool);
+      String newApiKey = ld.addNewUser(serverName, tylerBool);
       System.out.println("New Api Key for " + serverName + ": " + newApiKey);
-      System.out.println("Using tyler: " + tylerBool + " and using jeffnet: " + jeffnetBool);
+      System.out.println("Using tyler: " + tylerBool + " (not using jeffnet)");
     }
   }
 }

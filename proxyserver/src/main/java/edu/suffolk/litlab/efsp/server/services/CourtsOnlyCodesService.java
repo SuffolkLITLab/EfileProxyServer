@@ -73,7 +73,7 @@ public class CourtsOnlyCodesService extends CodesService {
     if (this.courts.containsKey(courtId)) {
       return cors(
           Response.ok(
-              Map.of("name", this.courts.get(courtId), "code", courtId, "efmType", "jeffnet")));
+              Map.of("name", this.courts.get(courtId), "code", courtId, "efmType", "custom")));
     } else {
       log.info("Wrong court queried?: {} in jurisdiction {}", courtId, jurisdiction);
       return cors(Response.status(404).entity("\"Court " + courtId + " does not exist\""));

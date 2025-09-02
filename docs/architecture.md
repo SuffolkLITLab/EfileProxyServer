@@ -37,9 +37,9 @@ Java organizes its code by folders, called packages. It's encouraged to put your
 * `ecfcodes` extends `db`, and contains code related to the `tyler_efm_codes` database (see [tyler_codes.md](tyler_codes.md) for more info).
 * `model` contains internal business representations of objects like Addresses.
 * `server` contains code related to running the HTTP / REST server.
-    * `server.ecf4` contains all of the code used to file into ECF 4 courts. The `jeffnet` subpackage does the same for the Jefferson Parish court in Louisiana.
+    * `server.ecf4` contains all of the code used to file into ECF 4 courts. 
     * `server.services` contains all of the Jakarta API for RESTful Web Services (JAX-RS) code that provides our external facing REST API, and utility files that are JAX-RS and REST specific.
-    * `server.setup` contains specific `jeffnet` vs `tyler` implemetations of common interfaces.
+    * `server.setup` contains specific `tyler` implemetations of common interfaces.
 * `stdlib` contains code that really should be in the standard lib (i.e. no business logic, and only depends on `java`/`javax`/logging classes).
 * `tyler` contains code specific to Tyler Technologies' implementations of ECF 4 and ECF 5.
 * `utils` contains various helper functions and classes.
@@ -72,7 +72,7 @@ There are two distinct databases that we use; both are in Postgres. They are `ty
 It is the more widely used of the databases. There is a Quartz job (setup in `ecf4.TylerModuleSetup.java`) that runs around 2 AM every night, pulling new codes from the courts and updating the databases and their indices. More details about the structures of the codes can be found in [tyler_codes.md](tyler_codes.md).
 
 `user_transactions` is everything else. As of writing, it has 4 tables: `at_rest_keys`, `message_settings`, `schema_version`, and `submitted_filings`.
-* `at_rest_keys` is the authorization database for server API keys. It contains the name and id of the server, whether it has access to tyler and Jeffnet functionalities, and when it was created.
+* `at_rest_keys` is the authorization database for server API keys. It contains the name and id of the server, whether it has access to tyler, and when it was created.
   It also contains a SHA-256 hash of the API key, keeping the real key secure from leaks, and letting us confirm servers' API keys
 * `message_settings` contains default email settings for a particular server. It lets you set the email subject line and template and for the confirmation and accept/reject email.
   NOTE: this db isn't heavily used, likely because there isn't an easy API to access it, and it isn't as flexible as being able to set unique emails for each interview.
