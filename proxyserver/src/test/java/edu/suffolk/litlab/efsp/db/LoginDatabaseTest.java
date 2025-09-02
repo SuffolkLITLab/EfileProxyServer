@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.db;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -51,14 +52,12 @@ public class LoginDatabaseTest {
   @Test
   public void testFromNothing() throws SQLException {
     ld.createTablesIfAbsent();
-    String cantDoAnything = ld.addNewUser("cantDoAnything", false, false);
-    String tylerOnly = ld.addNewUser("tylerOnly", true, false);
-    String everything = ld.addNewUser("everything", true, true);
+    String cantDoAnything = ld.addNewUser("cantDoAnything", false);
+    String tylerOnly = ld.addNewUser("tylerOnly", true); 
     Map<String, Function<JsonNode, Optional<Map<String, String>>>> okFunctions =
         Map.of(
             "tyler",
-                (info) -> Optional.of(Map.of("tyler_token", "tylerTOKEN", "tyler_id", "12345")),
-            "jeffnet", (info) -> Optional.of(Map.of("jeffnet_token", "jeffNetToken123")));
+                (info) -> Optional.of(Map.of("tyler_token", "tylerTOKEN", "tyler_id", "12345")));
 
     assertTrue(ld.login("fakeKey", "", okFunctions).isEmpty());
     // Do nothing should still succeed login (they can ping our codes API)
@@ -73,8 +72,8 @@ public class LoginDatabaseTest {
     assertTrue(repeatLogin.isPresent());
     assertEquals(activeTyler.get(), repeatLogin.get());
 
-    Optional<NewTokens> activeEverything =
-        ld.login(everything, "{\"tyler\": {}, \"jeffnet\": {}}", okFunctions);
-    assertTrue(activeEverything.isPresent());
+    Optional<NewTokens> withUnsupported = ld.login(tylerOnly, "{\"tyler\": {}, \"unsupported\": {}}", okFunctions);
+    assertTrue(withUnsupported.isPresent());
+    assertThat(withUnsupported.get().getTokens().get("tyler")).isEqualTo("tylerTOKEN");
   }
 }

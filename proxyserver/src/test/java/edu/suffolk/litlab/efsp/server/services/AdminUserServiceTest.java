@@ -70,7 +70,7 @@ public class AdminUserServiceTest {
   private void startServer() {
     AtRest atRest = new AtRest();
     atRest.serverId = UUID.randomUUID();
-    atRest.enabled = Map.of("tyler", true, "jeffnet", true);
+    atRest.enabled = Map.of("tyler", true);
     ld = mock(LoginDatabase.class);
     when(ld.getAtRestInfo(any())).thenReturn(Optional.of(new AtRest()));
 

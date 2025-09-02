@@ -29,7 +29,6 @@ public class SecurityHub {
   private static final Logger log = LoggerFactory.getLogger(SecurityHub.class);
 
   private final List<LoginInterface> tylerLoginObjs;
-  private final LoginInterface jeffNetLoginObj;
   private final Map<String, Function<JsonNode, Optional<Map<String, String>>>> loginFunctions;
   private final DataSource userDs;
 
@@ -48,10 +47,8 @@ public class SecurityHub {
               .map(j -> new TylerLogin(j, env.get()))
               .collect(Collectors.toList());
     }
-    this.jeffNetLoginObj = new JeffNetLogin();
 
-    this.loginFunctions =
-        Stream.concat(this.tylerLoginObjs.stream(), Stream.of(this.jeffNetLoginObj))
+    this.loginFunctions = this.tylerLoginObjs.stream()
             .collect(Collectors.toMap(lo -> lo.getLoginName(), lo -> (info) -> lo.login(info)));
   }
 
