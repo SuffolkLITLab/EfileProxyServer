@@ -92,8 +92,6 @@ efile proxy:
   api key: abc123 
   # This can stay the same
   url: http://host.docker.internal:9100
-  # If using JeffNet, you can copy the JeffNet API Key here
-  jeffnet api token: abc123
 ```
 
 ## Running locally without Docker

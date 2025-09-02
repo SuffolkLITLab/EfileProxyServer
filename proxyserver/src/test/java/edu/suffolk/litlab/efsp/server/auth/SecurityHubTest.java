@@ -177,7 +177,7 @@ public class SecurityHubTest {
       assertThat(tokens).containsKey("TYLER-TOKEN-ILLINOIS");
       assertThat(tokens.get("TYLER-TOKEN-ILLINOIS")).isEqualTo(EMAIL + ":" + PASSWORD_HASH);
       assertThat(tokens).containsKey("JEFFNET-TOKEN");
-      assertThat(tokens.get("JEFFNET-TOKEN")).isEqualTo("the_jeffnet_key");
+      assertThat(tokens.get("JEFFNET-TOKEN")).isEqualTo("deprecated");
     }
   }
 
@@ -195,6 +195,6 @@ public class SecurityHubTest {
     Optional<NewTokens> activeEverything = hub.login(API_KEY, loginNode);
     assertThat(activeEverything).isPresent();
     var tokens = activeEverything.get().getTokens();
-    assertThat(tokens.get("JEFFNET-TOKEN")).isEqualTo("the_jeffnet_key");
+    assertThat(tokens.get("JEFFNET-TOKEN")).isEqualTo("deprecated");
   }
 }
