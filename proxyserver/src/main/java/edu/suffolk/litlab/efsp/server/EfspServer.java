@@ -20,7 +20,6 @@ import edu.suffolk.litlab.efsp.server.services.MessageSettingsService;
 import edu.suffolk.litlab.efsp.server.services.RootService;
 import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
-import edu.suffolk.litlab.efsp.server.setup.jeffnet.JeffNetModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.tyler.TylerModuleSetup;
 import edu.suffolk.litlab.efsp.server.utils.EnumExceptionMapper;
 import edu.suffolk.litlab.efsp.server.utils.JsonExceptionMapper;
@@ -258,10 +257,9 @@ public class EfspServer {
               sender)
           .ifPresent(mod -> modules.add(mod));
     }
-    JeffNetModuleSetup.create(converterMap, userDs, sender).ifPresent(mod -> modules.add(mod));
     if (modules.isEmpty()) {
       log.error(
-          "Couldn't load enough parameters to start either the Tyler or JeffNet filer modules."
+          "Couldn't load enough parameters to start any of the Tyler filer modules."
               + "Please check your environment variables and try again.");
       throw new RuntimeException("No filer modules available");
     }

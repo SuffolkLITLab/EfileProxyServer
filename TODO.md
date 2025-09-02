@@ -20,7 +20,7 @@ Full auto integration test:
   * from an npm container
     * wait til DA is up
     * add the EFSP server API key (maybe hard coded from the user_transaction.sql) to DA config
-    * install & playground install IL, Jeffnet & EFSPIntegration
+    * install & playground install IL & EFSPIntegration
     * run feature files for all 3 packages
 
 5/16/22:
