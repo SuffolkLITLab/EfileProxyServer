@@ -5,10 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import java.io.InputStream;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +18,12 @@ public class DocassembleToFilingInformationConverter extends InterviewToFilingIn
 
   private static Logger log =
       LoggerFactory.getLogger(DocassembleToFilingInformationConverter.class);
+  private final Optional<TylerEnv> tylerEnv;
 
-  public DocassembleToFilingInformationConverter(InputStream taxonomyCsv) {}
+  public DocassembleToFilingInformationConverter(
+      InputStream taxonomyCsv, Optional<TylerEnv> tylerEnv) {
+    this.tylerEnv = tylerEnv;
+  }
 
   @Override
   public Result<FilingInformation, FilingError> traverseInterview(
@@ -25,7 +31,8 @@ public class DocassembleToFilingInformationConverter extends InterviewToFilingIn
     SimpleModule module = new SimpleModule();
     module.addDeserializer(
         FilingInformation.class,
-        new FilingInformationDocassembleJacksonDeserializer(FilingInformation.class, collector));
+        new FilingInformationDocassembleJacksonDeserializer(
+            FilingInformation.class, collector, tylerEnv));
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(module);
     try {

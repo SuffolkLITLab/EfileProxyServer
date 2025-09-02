@@ -4,6 +4,7 @@ import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeUpdater;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.server.logging.Monitor;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -38,7 +39,7 @@ public class UpdateCodeVersions implements Job {
   public void execute(JobExecutionContext context) throws JobExecutionException {
     JobDataMap dataMap = context.getJobDetail().getJobDataMap();
     String jurisdiction = dataMap.getString("TYLER_JURISDICTION");
-    String env = dataMap.getString("TYLER_ENV");
+    TylerEnv env = TylerEnv.parse(dataMap.getString("TYLER_ENV"));
     MDC.put(MDCWrappers.OPERATION, "UpdateCodeVersions.execute");
     MDC.put(MDCWrappers.USER_ID, jurisdiction);
     String x509Password = dataMap.getString("X509_PASSWORD");

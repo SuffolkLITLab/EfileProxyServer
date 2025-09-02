@@ -120,7 +120,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   private static final PolicyCacher policyCacher = new PolicyCacher();
   private final String jurisdiction;
 
-  public Ecf4Filer(String jurisdiction, String env, Supplier<CodeDatabase> cdSupplier) {
+  public Ecf4Filer(String jurisdiction, TylerEnv env, Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = jurisdiction;
     this.cdSupplier = cdSupplier;
     TylerLogin login = new TylerLogin(jurisdiction, env);
@@ -153,8 +153,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       throw new RuntimeException("Cannot find " + jurisdiction + " for service mde factory");
     }
     this.serviceFactory = maybeServiceFac.get();
-    Optional<TylerFirmFactory> maybeFirmFactory =
-        TylerClients.getEfmFirmFactory(jurisdiction, TylerEnv.parse(env));
+    var maybeFirmFactory = TylerClients.getEfmFirmFactory(jurisdiction, env);
     if (maybeFirmFactory.isEmpty()) {
       throw new RuntimeException("Cannot find " + jurisdiction + " for firm mde factory");
     }

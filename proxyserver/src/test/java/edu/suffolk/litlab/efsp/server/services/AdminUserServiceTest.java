@@ -13,6 +13,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.server.EfspServer;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
@@ -93,7 +94,7 @@ public class AdminUserServiceTest {
     sf.setResourceProvider(
         AdminUserService.class,
         new SingletonResourceProvider(
-            new AdminUserService("illinois", "stage", () -> ld, () -> cd, passwordChecker)));
+            new AdminUserService("illinois", TylerEnv.STAGE, () -> ld, () -> cd, passwordChecker)));
     sf.setAddress(ENDPOINT_ADDRESS);
     Map<Object, Object> extensionMappings = Map.of("json", MediaType.APPLICATION_JSON);
     sf.setExtensionMappings(extensionMappings);

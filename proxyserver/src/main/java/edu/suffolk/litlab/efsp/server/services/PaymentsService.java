@@ -104,7 +104,7 @@ public class PaymentsService {
 
   public PaymentsService(
       String jurisdiction,
-      String env,
+      TylerEnv env,
       String togaKey,
       String togaUrl,
       Supplier<LoginDatabase> ldSupplier,
@@ -117,7 +117,7 @@ public class PaymentsService {
     this.togaKey = togaKey;
     this.togaUrl = togaUrl;
     this.tempAccounts = new HashMap<String, TempAccount>();
-    var maybeFirmFactory = TylerClients.getEfmFirmFactory(jurisdiction, TylerEnv.parse(env));
+    var maybeFirmFactory = TylerClients.getEfmFirmFactory(jurisdiction, env);
     if (maybeFirmFactory.isPresent()) {
       this.firmFactory = maybeFirmFactory.get();
     } else {

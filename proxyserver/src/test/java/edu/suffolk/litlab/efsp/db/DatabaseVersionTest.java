@@ -6,6 +6,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -139,7 +140,7 @@ public class DatabaseVersionTest {
       assertEquals(rs.getString(1), "illinois-stage");
     }
 
-    try (var codesDatabase = new CodeDatabase("illinois", "stage", codeConn)) {
+    try (var codesDatabase = new CodeDatabase("illinois", TylerEnv.STAGE, codeConn)) {
       List<OptionalServiceCode> opts = codesDatabase.getOptionalServices("adams", "27959");
       assertEquals(23, opts.size());
       List<PartyType> partyTypes = codesDatabase.getPartyTypeFor("adams", "27898");

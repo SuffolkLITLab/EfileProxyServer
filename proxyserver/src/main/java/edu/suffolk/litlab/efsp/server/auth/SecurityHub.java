@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.db.model.NewTokens;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +42,7 @@ public class SecurityHub {
    * @param jurisdictions a list of Tyler jurisdictions to connect to. See SoapClientChooser.
    */
   public SecurityHub(
-      Supplier<LoginDatabase> ldSupplier, Optional<String> env, List<String> jurisdictions) {
+      Supplier<LoginDatabase> ldSupplier, Optional<TylerEnv> env, List<String> jurisdictions) {
     this.ldSupplier = ldSupplier;
     if (env.isEmpty() || jurisdictions.isEmpty()) {
       this.tylerLoginObjs = List.of();

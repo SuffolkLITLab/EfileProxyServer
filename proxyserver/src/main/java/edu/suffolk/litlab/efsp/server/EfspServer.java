@@ -28,6 +28,7 @@ import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import edu.suffolk.litlab.efsp.server.utils.SendMessage;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapExceptionMapper;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import jakarta.ws.rs.core.MediaType;
 import java.security.NoSuchAlgorithmException;
@@ -194,9 +195,10 @@ public class EfspServer {
 
     setupDatabases(codeDs, userDs);
 
+    Optional<TylerEnv> tylerEnv = GetEnv("TYLER_ENV").map(TylerEnv::parse);
     InterviewToFilingInformationConverter daJsonConverter =
         new DocassembleToFilingInformationConverter(
-            EfspServer.class.getResourceAsStream("/taxonomy.csv"));
+            EfspServer.class.getResourceAsStream("/taxonomy.csv"), tylerEnv);
     Map<String, InterviewToFilingInformationConverter> converterMap =
         Map.of(
             "application/json", daJsonConverter,
@@ -211,7 +213,6 @@ public class EfspServer {
 
     Optional<String> tylerJurisdictions = GetEnv("TYLER_JURISDICTIONS");
     Optional<String> togaKeyStr = GetEnv("TOGA_CLIENT_KEYS");
-    Optional<String> tylerEnv = GetEnv("TYLER_ENV");
     List<String> jurisdictions = List.of(tylerJurisdictions.orElse("").split(" "));
     List<String> togaKeys = List.of(togaKeyStr.orElse("").split(" "));
     if (jurisdictions.size() > 0 && jurisdictions.size() != togaKeys.size()) {
