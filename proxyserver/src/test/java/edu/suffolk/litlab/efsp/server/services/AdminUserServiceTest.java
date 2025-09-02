@@ -28,6 +28,7 @@ import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -111,9 +112,14 @@ public class AdminUserServiceTest {
   }
 
   @AfterEach
-  public void destroy() throws Exception {
+  public void tearDown() throws Exception {
     server.stop();
     server.destroy();
+  }
+
+  @AfterAll
+  static void destroy() {
+    mockClients.close();
   }
 
   @Nested

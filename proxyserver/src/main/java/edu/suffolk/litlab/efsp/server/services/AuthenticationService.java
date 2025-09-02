@@ -64,18 +64,18 @@ public class AuthenticationService {
         return Response.status(401).build();
       }
       apiKey = node.get("api_key").asText();
+      if (apiKey == null || apiKey.isBlank()) {
+        log.error("Call passed in a null / blank api_key");
+        return Response.status(401).build();
+      }
+      log.info("Invoking User Auth for an apiKey");
+      Optional<NewTokens> activeToken = security.login(apiKey, node);
+      return activeToken
+          .map((toks) -> Response.ok(toks).build())
+          .orElse(Response.status(403).build());
     } catch (JsonProcessingException e) {
       log.error("JSON Processing error: ", e);
       return Response.status(401).build();
     }
-    if (apiKey == null || apiKey.isBlank()) {
-      log.error("Call passed in a null / blank api_key");
-      return Response.status(401).build();
-    }
-    log.info("Invoking User Auth for an apiKey");
-    Optional<NewTokens> activeToken = security.login(apiKey, loginInfo);
-    return activeToken
-        .map((toks) -> Response.ok(toks).build())
-        .orElse(Response.status(403).build());
   }
 }

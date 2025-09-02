@@ -237,7 +237,8 @@ public class EfspServer {
     }
     log.info("Starting Server with the following Filers: {}", modules);
 
-    SecurityHub security = new SecurityHub(userDs, tylerEnv, jurisdictions);
+    Supplier<LoginDatabase> ldSupplier = () -> LoginDatabase.fromDS(userDs);
+    SecurityHub security = new SecurityHub(ldSupplier, tylerEnv, jurisdictions);
     EfspServer server = new EfspServer(codeDs, userDs, sender, modules, security, converterMap);
 
     Runtime.getRuntime()

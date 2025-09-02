@@ -1,10 +1,6 @@
 package edu.suffolk.litlab.efsp.db;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
-import edu.suffolk.litlab.efsp.db.model.NewTokens;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeTableConstants;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.stdlib.RandomString;
@@ -17,11 +13,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
 import javax.sql.DataSource;
 import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
@@ -189,85 +183,6 @@ public class LoginDatabase extends Database {
       return "";
     }
     return new String(Hex.encode(digest.digest(input.getBytes(StandardCharsets.UTF_8))));
-  }
-
-  /**
-   * Actually completes the REST client's login to the server. Completes each login to the EFMFiling
-   * Interfaces separately.
-   *
-   * @param apiKey The api key that the server can use for logging in
-   * @param jsonLoginInfo The JSON string with login info for whatever modules it's wants to login
-   *     to
-   * @return If the optional is empty, the apikey or one of the attempted logins failed. If not
-   *     empty, it contains the new API Token that the REST client should now send to the Server, or
-   *     an empty token list (which happens when querying Tyler code endpoints before the user is
-   *     logged in)
-   */
-  public Optional<NewTokens> login(
-      String apiKey,
-      String jsonLoginInfo,
-      Map<String, Function<JsonNode, Optional<Map<String, String>>>> loginFunctions)
-      throws SQLException {
-    if (conn == null) {
-      log.error("Connection in login wasn't open yet!");
-      throw new SQLException();
-    }
-    Optional<AtRest> maybeAtRest = getAtRestInfo(apiKey);
-    if (maybeAtRest.isEmpty()) {
-      return Optional.empty();
-    }
-
-    AtRest atRest = maybeAtRest.get();
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode loginInfo;
-    try {
-      loginInfo = mapper.readTree(jsonLoginInfo);
-    } catch (JsonProcessingException e) {
-      log.error("Error processing login json:", e);
-      return Optional.empty();
-    }
-
-    // TODO(brycew-later): the only hacky part, how can this be modulized?
-    if (!loginInfo.isObject()) {
-      log.error("Can't login with a json that's not an object: {}", loginInfo.toPrettyString());
-      return Optional.empty();
-    }
-    var newTokens = new HashMap<String, String>();
-    Iterable<String> orgs = loginInfo::fieldNames;
-    for (String orgName : orgs) {
-      orgName = orgName.toLowerCase();
-      if (orgName.equalsIgnoreCase("api_key")) {
-        continue;
-      }
-      // TODO(brycew): feels hacky, but we don't want an additional column to the db for each new
-      // jurisdiction
-      if (!loginFunctions.containsKey(orgName)) {
-        log.error(
-            "There is no {} to login to: loginFunctions: {}", orgName, loginFunctions.keySet());
-        return Optional.empty();
-      }
-
-      String permissionsName = orgName;
-      if (orgName.contains("-")) {
-        permissionsName = orgName.split("-")[0];
-      }
-      if (!atRest.enabled.containsKey(permissionsName) || !atRest.enabled.get(permissionsName)) {
-        log.error("There is no {} to login to: enabled map: {}", permissionsName, atRest.enabled);
-        return Optional.empty();
-      }
-      Optional<Map<String, String>> maybeNewTokens =
-          loginFunctions.get(orgName).apply(loginInfo.get(orgName));
-      if (maybeNewTokens.isEmpty()) {
-        log.warn("Couldn't login to {}", orgName);
-        return Optional.empty();
-      }
-      log.info("New tokens for {}", orgName);
-      newTokens.putAll(maybeNewTokens.get());
-    }
-    if (newTokens.isEmpty()) {
-      log.warn("No successful logins occurred: returning empty tokens object");
-    }
-    return Optional.of(new NewTokens(newTokens));
   }
 
   /**
