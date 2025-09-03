@@ -12,14 +12,15 @@ import edu.suffolk.litlab.efsp.utils.InterviewVariable;
 public class NameDocassembleDeserializer {
 
   public static Name fromNode(JsonNode node, InfoCollector collector) throws FilingError {
-    if (node == null) {
+    if (node == null || node.isNull()) {
       InterviewVariable var =
           collector.requestVar("name", "The full name of the person", "IndividualName");
       collector.addRequired(var);
       node = NullNode.getInstance();
+      return new Name("");
     }
-    if (!node.isObject()) {
-      FilingError err =
+    if (!node.isObject() && !node.isNull()) {
+      var err =
           FilingError.malformedInterview(
               "Can't parse person with name that's not a JSON object: "
                   + node.get("name").toPrettyString());

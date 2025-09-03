@@ -1,0 +1,139 @@
+{
+    "_class": "docassemble.AssemblyLine.al_general.ALIndividual",
+    "instanceName": "users[0]",
+    "name": {
+      "_class": "docassemble.base.util.IndividualName",
+      "instanceName": "users[0].name",
+      "uses_parts": true,
+      "first": "John",
+      "middle": "",
+      "last": "Brown"
+    },
+    "address": {
+      "_class": "docassemble.AssemblyLine.al_general.ALAddress",
+      "instanceName": "users[0].address",
+      "location": {
+        "_class": "docassemble.base.util.LatitudeLongitude",
+        "instanceName": "users[0].address.location",
+        "gathered": false,
+        "known": false
+      },
+      "_geocoded": false,
+      "geolocated": false,
+      "city_only": false,
+      "address": "123 Fake St",
+      "city": "Chicago",
+      "zip": "60007",
+      "state": "IL",
+      "unit": ""
+    },
+    "location": {
+      "_class": "docassemble.base.util.LatitudeLongitude",
+      "instanceName": "users[0].location",
+      "gathered": false,
+      "known": false
+    },
+    "previous_addresses": {
+      "_class": "docassemble.AssemblyLine.al_general.ALAddressList",
+      "instanceName": "users[0].previous_addresses",
+      "elements": [],
+      "auto_gather": true,
+      "ask_number": false,
+      "minimum_number": null,
+      "object_type": {
+        "_class": "type",
+        "name": "docassemble.AssemblyLine.al_general.ALAddress"
+      },
+      "object_type_parameters": {},
+      "complete_attribute": null,
+      "ask_object_type": false
+    },
+    "other_addresses": {
+      "_class": "docassemble.AssemblyLine.al_general.ALAddressList",
+      "instanceName": "users[0].other_addresses",
+      "elements": [],
+      "auto_gather": true,
+      "ask_number": false,
+      "minimum_number": null,
+      "object_type": {
+        "_class": "type",
+        "name": "docassemble.AssemblyLine.al_general.ALAddress"
+      },
+      "object_type_parameters": {},
+      "complete_attribute": null,
+      "ask_object_type": false
+    },
+    "mailing_address": {
+      "_class": "docassemble.AssemblyLine.al_general.ALAddress",
+      "instanceName": "users[0].mailing_address",
+      "location": {
+        "_class": "docassemble.base.util.LatitudeLongitude",
+        "instanceName": "users[0].mailing_address.location",
+        "gathered": false,
+        "known": false
+      },
+      "_geocoded": false,
+      "geolocated": false,
+      "city_only": false
+    },
+    "service_address": {
+      "_class": "docassemble.AssemblyLine.al_general.ALAddress",
+      "instanceName": "users[0].service_address",
+      "location": {
+        "_class": "docassemble.base.util.LatitudeLongitude",
+        "instanceName": "users[0].service_address.location",
+        "gathered": false,
+        "known": false
+      },
+      "_geocoded": false,
+      "geolocated": false,
+      "city_only": false
+    },
+    "previous_names": {
+      "_class": "docassemble.AssemblyLine.al_general.ALNameList",
+      "instanceName": "users[0].previous_names",
+      "elements": [],
+      "auto_gather": true,
+      "ask_number": false,
+      "minimum_number": null,
+      "object_type": {
+        "_class": "type",
+        "name": "docassemble.base.util.IndividualName"
+      },
+      "object_type_parameters": {},
+      "complete_attribute": null,
+      "ask_object_type": false
+    },
+    "aliases": {
+      "_class": "docassemble.AssemblyLine.al_general.ALNameList",
+      "instanceName": "users[0].aliases",
+      "elements": [],
+      "auto_gather": true,
+      "ask_number": false,
+      "minimum_number": null,
+      "object_type": {
+        "_class": "type",
+        "name": "docassemble.base.util.IndividualName"
+      },
+      "object_type_parameters": {},
+      "complete_attribute": null,
+      "ask_object_type": false
+    },
+    "preferred_name": {
+      "_class": "docassemble.base.util.IndividualName",
+      "instanceName": "users[0].preferred_name",
+      "uses_parts": true
+    },
+    "is_redacted": false,
+    "party_type": "29738",
+    "party_type_name": "Defendant",
+    "person_type": "ALIndividual",
+    "tyler_id": "abcd1234-1234-1234-1234-abcdabcd1234",
+    "is_new": false,
+    "is_form_filler": true,
+    "phone_number": "+16171230000",
+    "email_notice": true,
+    "has_email_address": true,
+    "review_delivery": true,
+    "email": "john.brown@example.com"
+}
