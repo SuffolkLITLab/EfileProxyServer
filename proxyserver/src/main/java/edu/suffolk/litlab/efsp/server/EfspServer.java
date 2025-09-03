@@ -121,7 +121,7 @@ public class EfspServer {
    *
    * @throws InterruptedException
    */
-  private static void setupDatabases(DataSource codeDs, DataSource userDs)
+  private static void setupDatabases(DataSource codeDs, DataSource userDs, Optional<TylerEnv> env)
       throws NoSuchAlgorithmException, InterruptedException {
 
     // Update / make the latest definition of the databases if necessary
@@ -132,7 +132,7 @@ public class EfspServer {
       LoginDatabase ld = new LoginDatabase(userConn);
       @SuppressWarnings("resource")
       // Jurisdiction and env args can be null, we're just making the tables
-      CodeDatabase cd = new CodeDatabase(null, null, codeConn);
+      CodeDatabase cd = new CodeDatabase(null, env.orElse(TylerEnv.STAGE), codeConn);
       boolean brandNew = !ld.tablesExist() || !cd.tablesExist();
 
       // Now we can tell if everything is being set up fresh. If so, we'll make everything now.
@@ -193,9 +193,9 @@ public class EfspServer {
         DatabaseCreator.makeDataSource(
             dbUrl, dbPortInt, userDatabaseName, dbUser, dbPassword, 7, 100);
 
-    setupDatabases(codeDs, userDs);
-
     Optional<TylerEnv> tylerEnv = GetEnv("TYLER_ENV").map(TylerEnv::parse);
+    setupDatabases(codeDs, userDs, tylerEnv);
+
     InterviewToFilingInformationConverter daJsonConverter =
         new DocassembleToFilingInformationConverter(
             EfspServer.class.getResourceAsStream("/taxonomy.csv"), tylerEnv);
