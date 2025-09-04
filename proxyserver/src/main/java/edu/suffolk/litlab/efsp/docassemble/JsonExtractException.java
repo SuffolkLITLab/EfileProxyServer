@@ -10,7 +10,7 @@ public class JsonExtractException extends JsonParseException {
   private static final long serialVersionUID = 1L;
 
   public JsonExtractException(JsonParser p, FilingError err) {
-    super(p, err.toString());
+    super(p, err.toString(), err);
     this.err = err;
   }
 
