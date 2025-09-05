@@ -13,8 +13,11 @@ RUN mvn -f /app/pom.xml -DskipTests clean dependency:resolve dependency:go-offli
 
 COPY proxyserver /app/proxyserver
 RUN mvn -f /app/pom.xml -DskipTests package -PnoDockerTests -Dbuild.revision=$CI_COMMIT_SHA && cp /app/proxyserver/target/efspserver-with-deps.jar /app/
-COPY LICENSE client_sign.propertie[s] quartz.properties Suffolk.pf[x] extract-tls-secrets-4.0.0.ja[r] jacocoagent.ja[r] /app/
-COPY docker_run_dev.sh /app/
+COPY config /app/
+# The `[]` is an optional COPY: doesn't copy if those files aren't there (https://stackoverflow.com/a/46801962/11416267)
+# They are needed for Tyler API usage
+COPY LICENSE extract-tls-secrets-4.0.0.ja[r] jacocoagent.ja[r] /app/
+COPY Docker/docker_run_dev.sh /app/
 
 EXPOSE 9000
 CMD [ "/bin/sh", "/app/docker_run_dev.sh" ]
@@ -23,10 +26,9 @@ FROM eclipse-temurin:21.0.7_6-jre-alpine AS release
 ARG CI_COMMIT_SHA
 LABEL git-commit=$CI_COMMIT_SHA
 COPY --from=build  /app/proxyserver/target/efspserver-with-deps.jar /app/
-# The `[]` is an optional COPY: doesn't copy if those files aren't there (https://stackoverflow.com/a/46801962/11416267)
-# They are needed for Tyler API usage
-COPY LICENSE client_sign.propertie[s] quartz.properties Suffolk.pf[x] /app/
-COPY docker_run_script.sh fly_startup_script.sh /app/
+COPY config /app/
+COPY LICENSE config/client_sign.propertie[s] config/quartz.properties config/Suffolk.pf[x] /app/
+COPY Docker/docker_run_script.sh Docker/fly_startup_script.sh /app/
 
 EXPOSE 9000
 CMD [ "/bin/sh", "/app/docker_run_script.sh" ]

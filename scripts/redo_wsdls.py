@@ -21,7 +21,7 @@ java = local['java']
 java['--version'] & FG
 mkdir = local['mkdir']
 # mkdir['-p', 'wsdl_eater'] & FG
-os.chdir('proxyserver/src/main/resources/wsdl')
+os.chdir('../proxyserver/src/main/resources/wsdl')
 
 
 # Download the services
