@@ -5,6 +5,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.SoapClientChooser;
 import edu.suffolk.litlab.efsp.server.utils.HeaderSigner;
+import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efsp.stdlib.StdLib;
@@ -49,6 +50,7 @@ import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import tyler.efm.latest.services.schema.authenticaterequest.AuthenticateRequestType;
 import tyler.efm.latest.services.schema.authenticateresponse.AuthenticateResponseType;
 import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
@@ -162,9 +164,9 @@ public class CodeUpdater {
     }
   }
 
-  private Duration downloads = Duration.ZERO;
-  private Duration updates = Duration.ZERO;
-  private Duration soaps = Duration.ZERO;
+  private Duration downloadDuration = Duration.ZERO;
+  private Duration updateDuration = Duration.ZERO;
+  private Duration soapDuration = Duration.ZERO;
 
   /**
    * @param toRead
@@ -177,14 +179,16 @@ public class CodeUpdater {
     Instant startTable = Instant.now(Clock.systemUTC());
     try (InputStream urlStream = getCodesZip(toRead, signedTime)) {
       // Write out the zip file
-      downloads = downloads.plus(Duration.between(startTable, Instant.now(Clock.systemUTC())));
+      downloadDuration =
+          downloadDuration.plus(Duration.between(startTable, Instant.now(Clock.systemUTC())));
 
       ZipInputStream zip = new ZipInputStream(urlStream);
       zip.getNextEntry();
 
       Instant updateTableLoc = Instant.now(Clock.systemUTC());
       boolean success = process.apply(zip);
-      updates = updates.plus(Duration.between(updateTableLoc, Instant.now(Clock.systemUTC())));
+      updateDuration =
+          updateDuration.plus(Duration.between(updateTableLoc, Instant.now(Clock.systemUTC())));
       zip.close();
       return success;
     } catch (IOException ex) {
@@ -197,6 +201,7 @@ public class CodeUpdater {
 
   private boolean downloadSystemTables(String baseUrl, CodeDatabase cd, HeaderSigner signer)
       throws SQLException, IOException, JAXBException {
+    MDC.put(MDCWrappers.SESSION_ID, "system");
     Map<String, String> codeUrls =
         Map.of(
             "version",
@@ -208,11 +213,14 @@ public class CodeUpdater {
             "/CodeService/codes/error");
 
     for (Map.Entry<String, String> urlSuffix : codeUrls.entrySet()) {
+      MDC.put(MDCWrappers.REQUEST_ID, urlSuffix.getKey());
       cd.createTableIfAbsent(urlSuffix.getKey());
     }
 
+    MDC.put(MDCWrappers.REQUEST_ID, "installedversion");
     // On first download, there won't be installed versions of things yet.
     cd.createTableIfAbsent("installedversion");
+    MDC.remove(MDCWrappers.REQUEST_ID);
 
     cd.commit();
 
@@ -229,6 +237,7 @@ public class CodeUpdater {
       cd.deleteFromTable(urlSuffix.getKey());
       final Function<InputStream, Boolean> process =
           (is) -> {
+            MDC.put(MDCWrappers.REQUEST_ID, urlSuffix.getKey());
             try {
               // "0" is used as the system court location.
               cd.updateTable(urlSuffix.getKey(), "0", is);
@@ -240,12 +249,14 @@ public class CodeUpdater {
           };
       boolean updateSuccess =
           downloadAndProcessZip(baseUrl + urlSuffix.getValue(), signedTime.get(), process);
+      MDC.remove(MDCWrappers.REQUEST_ID);
       if (!updateSuccess) {
         cd.rollback(sp);
         return false;
       }
     }
     cd.commit();
+    MDC.remove(MDCWrappers.SESSION_ID);
     return true;
   }
 
@@ -335,6 +346,7 @@ public class CodeUpdater {
       CourtPolicyResponseMessageType policyResp,
       String baseUrl)
       throws JAXBException, IOException, SQLException {
+    MDC.put(MDCWrappers.SESSION_ID, location);
     log.info("Doing updates for: {}, tables: {}", location, tables);
     Instant downloadStart = Instant.now(Clock.systemUTC());
     // TODO(brycew-later): check that the effective date is later than today
@@ -366,15 +378,19 @@ public class CodeUpdater {
     Optional<String> signedTime = signer.signedCurrentTime();
     if (signedTime.isEmpty()) {
       log.error("Couldn't get signed time to download codes, skipping all");
+      MDC.remove(MDCWrappers.SESSION_ID);
       return false;
     }
     Map<String, DownloadedCodes> downloaded =
         streamDownload(signedTime.get(), location, toDownload.parallel(), tables);
-    downloads = downloads.plus(Duration.between(downloadStart, Instant.now(Clock.systemUTC())));
-    log.info("Location: {}: Downloads took: {}", location, downloads);
+    var downloadInc = Duration.between(downloadStart, Instant.now(Clock.systemUTC()));
+    downloadDuration = downloadDuration.plus(downloadInc);
+    log.info(
+        "Location: {}: Downloads took: {} (total: {})", location, downloadInc, downloadDuration);
 
     Instant updateStart = Instant.now(Clock.systemUTC());
     for (DownloadedCodes down : downloaded.values()) {
+      MDC.put(MDCWrappers.REQUEST_ID, down.tableName());
       try {
         cd.updateTable(down.tableName(), down.location(), down.xsr());
       } catch (Exception ex) {
@@ -384,10 +400,13 @@ public class CodeUpdater {
         down.input().close();
       }
     }
-    updates = updates.plus(Duration.between(updateStart, Instant.now(Clock.systemUTC())));
+    var updateInc = Duration.between(updateStart, Instant.now(Clock.systemUTC()));
+    updateDuration = updateDuration.plus(updateInc);
 
     cd.commit();
-    log.info("Location: {}: updates took: {}", location, updates);
+    log.info("Location: {}: updates took: {} (total: {})", location, updateInc, updateDuration);
+    MDC.remove(MDCWrappers.REQUEST_ID);
+    MDC.remove(MDCWrappers.SESSION_ID);
     return true;
   }
 
@@ -436,7 +455,8 @@ public class CodeUpdater {
         // Will ignore tables that don't exist.
         cd.deleteFromTable(table, courtLocation);
 
-        updates = updates.plus(Duration.between(deleteFromTable, Instant.now(Clock.systemUTC())));
+        updateDuration =
+            updateDuration.plus(Duration.between(deleteFromTable, Instant.now(Clock.systemUTC())));
       }
     }
     log.info(
@@ -445,8 +465,9 @@ public class CodeUpdater {
     Instant startPolicy = Instant.now(Clock.systemUTC());
     Map<String, CourtPolicyResponseMessageType> policies =
         streamPolicies(versionsToUpdate.keySet().stream().parallel(), cd.getDomain(), filingPort);
-    soaps = soaps.plus(Duration.between(startPolicy, Instant.now(Clock.systemUTC())));
-    log.info("Soaps: {}", soaps);
+    var soapInc = Duration.between(startPolicy, Instant.now(Clock.systemUTC()));
+    soapDuration = soapDuration.plus(soapInc);
+    log.info("Soaps took: {} (total: {})", soapInc, soapDuration);
 
     for (var policy : policies.entrySet()) {
       final String courtLocation = policy.getKey();
@@ -486,9 +507,9 @@ public class CodeUpdater {
     }
     cd.commit();
 
-    downloads = Duration.ZERO;
-    soaps = Duration.ZERO;
-    updates = Duration.ZERO;
+    downloadDuration = Duration.ZERO;
+    soapDuration = Duration.ZERO;
+    updateDuration = Duration.ZERO;
     if (locs.isEmpty()) {
       locs = cd.getAllLocations();
     }
@@ -497,15 +518,19 @@ public class CodeUpdater {
     Instant startPolicy = Instant.now(Clock.systemUTC());
     Map<String, CourtPolicyResponseMessageType> policies =
         streamPolicies(locs.stream(), cd.getDomain(), filingPort);
-    soaps = soaps.plus(Duration.between(startPolicy, Instant.now(Clock.systemUTC())));
-    log.info("Soaps: {}", soaps);
+    soapDuration = soapDuration.plus(Duration.between(startPolicy, Instant.now(Clock.systemUTC())));
+    log.info("Soaps: {}", soapDuration);
     for (var policy : policies.entrySet()) {
       final String location = policy.getKey();
       log.info("Downloading tables for {}", location);
       success &=
           downloadCourtTables(location, Optional.empty(), cd, signer, policy.getValue(), baseUrl);
     }
-    log.info("Downloads took: {}, and updates took: {}, soaps took: {}", downloads, updates, soaps);
+    log.info(
+        "Downloads took: {}, updates took: {}, soaps took: {}",
+        downloadDuration,
+        updateDuration,
+        soapDuration);
     cd.commit();
     cd.setAutoCommit(true);
     cd.vacuumAll();
@@ -633,6 +658,9 @@ public class CodeUpdater {
     List<String> jurisdictions = List.of(System.getenv("TYLER_JURISDICTIONS").split(" "));
     var env = TylerEnv.parse(System.getenv("TYLER_ENV"));
     for (String jurisdiction : jurisdictions) {
+      // Reusing USER for Jurisdiction, SESSION for the court / location, and REQUEST for the table
+      // name.
+      MDC.put(MDCWrappers.USER_ID, jurisdiction);
       try (Connection conn = ds.getConnection()) {
         executeCommand(
             new CodeDatabase(jurisdiction, env, conn),
