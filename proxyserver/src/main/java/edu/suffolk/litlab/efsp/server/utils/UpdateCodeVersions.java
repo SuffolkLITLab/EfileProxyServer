@@ -58,6 +58,7 @@ public class UpdateCodeVersions implements Job {
       log.error("Couldn't connect to Codes db from Job Executor: ", e);
       success = false;
     }
+    log.info("Finished code updates with status: {}", success);
     if (!success) {
       Monitor.sendImmediateErrorNotification(
           "UpdateCodeVersions error on " + Monitor.EXTERNAL_DOMAIN,
@@ -72,5 +73,6 @@ public class UpdateCodeVersions implements Job {
               "error_timestamp",
               LocalDate.now().toString()));
     }
+    MDCWrappers.removeAllMDCs();
   }
 }
