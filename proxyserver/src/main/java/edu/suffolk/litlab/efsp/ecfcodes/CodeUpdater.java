@@ -199,7 +199,7 @@ public class CodeUpdater {
     }
   }
 
-  private boolean downloadSystemTables(String baseUrl, CodeDatabase cd, HeaderSigner signer)
+  private boolean downloadSystemTables(String baseUrl, CodeDatabaseAPI cd, HeaderSigner signer)
       throws SQLException, IOException, JAXBException {
     MDC.put(MDCWrappers.SESSION_ID, "system");
     Map<String, String> codeUrls =
@@ -341,7 +341,7 @@ public class CodeUpdater {
   private boolean downloadCourtTables(
       String location,
       Optional<List<String>> tables,
-      CodeDatabase cd,
+      CodeDatabaseAPI cd,
       HeaderSigner signer,
       CourtPolicyResponseMessageType policyResp,
       String baseUrl)
@@ -411,7 +411,7 @@ public class CodeUpdater {
   }
 
   /** Returns true if successful, false if not successful */
-  public boolean updateAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
+  public boolean updateAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabaseAPI cd)
       throws SQLException, IOException, JAXBException {
     cd.setAutoCommit(false);
     HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
@@ -489,13 +489,13 @@ public class CodeUpdater {
   /**
    * Downloads all of the codes from scratch, deleting all of the existing info already in tables.
    */
-  public boolean replaceAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
+  public boolean replaceAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabaseAPI cd)
       throws SQLException, IOException, JAXBException {
     return replaceSome(baseUrl, filingPort, cd, List.of());
   }
 
   public boolean replaceSome(
-      String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd, List<String> locs)
+      String baseUrl, FilingReviewMDEPort filingPort, CodeDatabaseAPI cd, List<String> locs)
       throws SQLException, IOException, JAXBException {
     cd.setAutoCommit(false);
     HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
@@ -600,7 +600,7 @@ public class CodeUpdater {
   }
 
   public static boolean executeCommand(
-      Supplier<CodeDatabase> cdSupplier,
+      Supplier<CodeDatabaseAPI> cdSupplier,
       String jurisdiction,
       TylerEnv env,
       List<String> args,
@@ -636,7 +636,7 @@ public class CodeUpdater {
   }
 
   /** Should just be called from main. */
-  private static CodeDatabase makeCodeDatabase(String jurisdiction, TylerEnv env) {
+  private static CodeDatabaseAPI makeCodeDatabase(String jurisdiction, TylerEnv env) {
     try {
       DataSource ds =
           DatabaseCreator.makeDataSource(

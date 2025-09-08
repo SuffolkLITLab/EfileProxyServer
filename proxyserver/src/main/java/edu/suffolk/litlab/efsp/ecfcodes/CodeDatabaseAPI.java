@@ -7,11 +7,14 @@ import jakarta.xml.bind.Unmarshaller;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import org.oasis_open.docs.codelist.ns.genericode._1.CodeListDocument;
+import org.oasis_open.docs.codelist.ns.genericode._1.Column;
 
 /**
  * ECF says that certain parts of the information model of the data that we exchange with the EFM is
@@ -43,23 +46,44 @@ public abstract class CodeDatabaseAPI extends Database {
   public abstract void updateTable(String tableName, String courtName, InputStream is)
       throws JAXBException, SQLException, XMLStreamException;
 
-  public abstract void updateTable(String tableName, String courtName, CodeListDocument doc)
+  /** The iterator (rows) will be consumed by this function. */
+  public abstract void updateTable(
+      String tableName, String courtName, String newVersion, Iterator<Map<String, String>> rows)
       throws SQLException;
 
   public void updateTable(String tableName, String courtName, XMLStreamReader xsr)
       throws JAXBException, SQLException {
     Unmarshaller u = JAXBContext.newInstance(CodeListDocument.class).createUnmarshaller();
     final CodeListDocument doc = u.unmarshal(xsr, CodeListDocument.class).getValue();
-    this.updateTable(tableName, courtName, doc);
+    // Get the only parts of the type we need: the new version number, and a mapping between column
+    // names and values.
+    Iterator<Map<String, String>> rows =
+        doc.getSimpleCodeList().getRow().stream()
+            .map(
+                r -> {
+                  Map<String, String> rowVals = new HashMap<>();
+                  for (var v : r.getValue()) {
+                    Column c = (Column) v.getColumnRef();
+                    rowVals.put(c.getId(), v.getSimpleValue().getValue());
+                  }
+                  return rowVals;
+                })
+            .iterator();
+    this.updateTable(tableName, courtName, doc.getIdentification().getVersion(), rows);
   }
 
   public abstract boolean deleteFromTable(String tableName) throws SQLException;
 
+  /**
+   * Deletes all entries in a domain from a table in the given table from <code>courtLocation</code>
+   * .
+   */
   public abstract boolean deleteFromTable(String tableName, String courtLocation)
       throws SQLException;
 
   public abstract void createTableIfAbsent(String tableName) throws SQLException;
 
+  /** Returns a map from court names to tables that needed to be updated for it. */
   public abstract Map<String, List<String>> getVersionsToUpdate() throws SQLException;
 
   // TODO(brycew): needed for compatibility, but should be renamed to something more general

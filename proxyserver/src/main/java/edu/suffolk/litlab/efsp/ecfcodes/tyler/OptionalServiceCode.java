@@ -6,12 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.oasis_open.docs.codelist.ns.genericode._1.CodeListDocument;
-import org.oasis_open.docs.codelist.ns.genericode._1.Column;
-import org.oasis_open.docs.codelist.ns.genericode._1.Value;
 
 public class OptionalServiceCode {
   public final String code;
@@ -240,7 +239,7 @@ public class OptionalServiceCode {
   }
 
   public static void updateOptionalServiceTable(
-      String courtName, String tylerDomain, CodeListDocument doc, Connection conn)
+      String courtName, String tylerDomain, Iterator<Map<String, String>> rows, Connection conn)
       throws SQLException {
     String insertMainQuery =
         """
@@ -260,34 +259,35 @@ public class OptionalServiceCode {
     Set<DistinctOptServ> alreadyAdded = new HashSet<>();
     try (PreparedStatement stmt = conn.prepareStatement(insertMainQuery);
         PreparedStatement stmtFilingList = conn.prepareStatement(insertFLQuery)) {
-      for (var r : doc.getSimpleCodeList().getRow()) {
+      while (rows.hasNext()) {
+        var r = rows.next();
         // HACK(brycew): jeez, this is horrible. Figure a better option
         DistinctOptServ dis = new DistinctOptServ();
-        for (Value v : r.getValue()) {
-          Column c = (Column) v.getColumnRef();
-          String colName = c.getId();
+        for (var entry : r.entrySet()) {
+          String colName = entry.getKey();
+          String valString = entry.getValue();
           if (colName.equals("code")) {
-            stmt.setString(1, v.getSimpleValue().getValue());
-            stmtFilingList.setString(1, v.getSimpleValue().getValue());
-            dis.code = v.getSimpleValue().getValue();
+            stmt.setString(1, valString);
+            stmtFilingList.setString(1, valString);
+            dis.code = valString;
           } else if (colName.equals("filingcodeid")) {
-            stmtFilingList.setString(2, v.getSimpleValue().getValue());
+            stmtFilingList.setString(2, valString);
           } else if (colName.equals("name")) {
-            stmt.setString(2, v.getSimpleValue().getValue());
+            stmt.setString(2, valString);
           } else if (colName.equals("displayorder")) {
-            stmt.setInt(3, Integer.parseInt(v.getSimpleValue().getValue()));
+            stmt.setInt(3, Integer.parseInt(valString));
           } else if (colName.equals("fee")) {
-            stmt.setString(4, v.getSimpleValue().getValue());
+            stmt.setString(4, valString);
           } else if (colName.equals("multiplier")) {
-            stmt.setBoolean(5, Boolean.parseBoolean(v.getSimpleValue().getValue()));
+            stmt.setBoolean(5, Boolean.parseBoolean(valString));
           } else if (colName.equals("altfeedesc")) {
-            stmt.setString(6, v.getSimpleValue().getValue());
+            stmt.setString(6, valString);
           } else if (colName.equals("hasfeeprompt")) {
-            stmt.setBoolean(7, Boolean.parseBoolean(v.getSimpleValue().getValue()));
+            stmt.setBoolean(7, Boolean.parseBoolean(valString));
           } else if (colName.equals("feeprompttext")) {
-            stmt.setString(8, v.getSimpleValue().getValue());
+            stmt.setString(8, valString);
           } else if (colName.equals("efspcode")) {
-            stmt.setString(9, v.getSimpleValue().getValue());
+            stmt.setString(9, valString);
           }
         }
         stmt.setString(10, tylerDomain);
