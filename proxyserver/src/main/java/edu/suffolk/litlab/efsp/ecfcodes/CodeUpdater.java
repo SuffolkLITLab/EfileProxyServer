@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.time.Clock;
@@ -37,6 +36,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipInputStream;
@@ -413,6 +413,7 @@ public class CodeUpdater {
   /** Returns true if successful, false if not successful */
   public boolean updateAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd)
       throws SQLException, IOException, JAXBException {
+    cd.setAutoCommit(false);
     HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
     if (!downloadSystemTables(baseUrl, cd, signer)) {
       log.warn(
@@ -496,6 +497,7 @@ public class CodeUpdater {
   public boolean replaceSome(
       String baseUrl, FilingReviewMDEPort filingPort, CodeDatabase cd, List<String> locs)
       throws SQLException, IOException, JAXBException {
+    cd.setAutoCommit(false);
     HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
     log.info("Downloading system tables for {}", cd.getDomain());
     boolean success = downloadSystemTables(baseUrl, cd, signer);
@@ -598,11 +600,14 @@ public class CodeUpdater {
   }
 
   public static boolean executeCommand(
-      CodeDatabase cd, String jurisdiction, TylerEnv env, List<String> args, String x509Password) {
+      Supplier<CodeDatabase> cdSupplier,
+      String jurisdiction,
+      TylerEnv env,
+      List<String> args,
+      String x509Password) {
     SoapX509CallbackHandler.setX509Password(x509Password);
     String command = args.get(0);
     try {
-      cd.setAutoCommit(false);
       String codesSite = TylerClients.getTylerServerRootUrl(jurisdiction, env);
       FilingReviewMDEPort filingPort =
           loginWithTyler(
@@ -612,11 +617,12 @@ public class CodeUpdater {
               System.getenv("TYLER_USER_PASSWORD"));
       CodeUpdater cu = new CodeUpdater(System.getenv("PATH_TO_KEYSTORE"), x509Password);
       if (command.equalsIgnoreCase("replaceall")) {
-        return cu.replaceAll(codesSite, filingPort, cd);
+        return cu.replaceAll(codesSite, filingPort, cdSupplier.get());
       } else if (command.equalsIgnoreCase("replacesome")) {
-        return cu.replaceSome(codesSite, filingPort, cd, args.subList(1, args.size()));
+        return cu.replaceSome(
+            codesSite, filingPort, cdSupplier.get(), args.subList(1, args.size()));
       } else if (command.equalsIgnoreCase("refresh")) {
-        return cu.updateAll(codesSite, filingPort, cd);
+        return cu.updateAll(codesSite, filingPort, cdSupplier.get());
       } else if (command.equalsIgnoreCase("downloadIndiv")) {
         return cu.downloadIndiv(args, jurisdiction, env);
       } else {
@@ -626,6 +632,25 @@ public class CodeUpdater {
     } catch (SQLException | IOException | JAXBException e) {
       log.error("Exception when doing code updating! ", e);
       return false;
+    }
+  }
+
+  /** Should just be called from main. */
+  private static CodeDatabase makeCodeDatabase(String jurisdiction, TylerEnv env) {
+    try {
+      DataSource ds =
+          DatabaseCreator.makeDataSource(
+              System.getenv("POSTGRES_URL"),
+              Integer.parseInt(System.getenv("POSTGRES_PORT")),
+              System.getenv("POSTGRES_CODES_DB"),
+              System.getenv("POSTGRES_USER"),
+              System.getenv("POSTGRES_PASSWORD"),
+              5,
+              100);
+
+      return CodeDatabase.fromDS(jurisdiction, env, ds);
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
     }
   }
 
@@ -645,15 +670,6 @@ public class CodeUpdater {
       log.error("Need to pass in a subprogram: downloadIndiv, or refresh");
       System.exit(1);
     }
-    DataSource ds =
-        DatabaseCreator.makeDataSource(
-            System.getenv("POSTGRES_URL"),
-            Integer.parseInt(System.getenv("POSTGRES_PORT")),
-            System.getenv("POSTGRES_CODES_DB"),
-            System.getenv("POSTGRES_USER"),
-            System.getenv("POSTGRES_PASSWORD"),
-            5,
-            100);
 
     List<String> jurisdictions = List.of(System.getenv("TYLER_JURISDICTIONS").split(" "));
     var env = TylerEnv.parse(System.getenv("TYLER_ENV"));
@@ -661,14 +677,12 @@ public class CodeUpdater {
       // Reusing USER for Jurisdiction, SESSION for the court / location, and REQUEST for the table
       // name.
       MDC.put(MDCWrappers.USER_ID, jurisdiction);
-      try (Connection conn = ds.getConnection()) {
-        executeCommand(
-            new CodeDatabase(jurisdiction, env, conn),
-            jurisdiction,
-            env,
-            List.of(args),
-            System.getenv("X509_PASSWORD"));
-      }
+      executeCommand(
+          () -> makeCodeDatabase(jurisdiction, env),
+          jurisdiction,
+          env,
+          List.of(args),
+          System.getenv("X509_PASSWORD"));
     }
   }
 }
