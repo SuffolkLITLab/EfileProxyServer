@@ -53,7 +53,8 @@ public class UpdateCodeVersions implements Job {
     try (Connection conn =
             DatabaseCreator.makeSingleConnection(pgDb, pgFullUrl, pgUser, pgPassword);
         CodeDatabase cd = new CodeDatabase(jurisdiction, env, conn)) {
-      success = CodeUpdater.executeCommand(cd, jurisdiction, env, List.of("refresh"), x509Password);
+      success =
+          CodeUpdater.executeCommand(() -> cd, jurisdiction, env, List.of("refresh"), x509Password);
     } catch (SQLException e) {
       log.error("Couldn't connect to Codes db from Job Executor: ", e);
       success = false;

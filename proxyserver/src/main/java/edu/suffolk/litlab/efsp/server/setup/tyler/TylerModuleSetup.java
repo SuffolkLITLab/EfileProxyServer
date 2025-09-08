@@ -184,7 +184,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
                   + tylerJurisdiction
                   + ": please wait a bit");
           CodeUpdater.executeCommand(
-              cd,
+              () -> cd,
               tylerJurisdiction,
               tylerEnv,
               List.of("replacesome", testOnlyLocation),
@@ -192,7 +192,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
         } else {
           log.info("Downloading all codes for {}: please wait a bit", tylerJurisdiction);
           CodeUpdater.executeCommand(
-              cd, tylerJurisdiction, tylerEnv, List.of("replaceall"), this.x509Password);
+              () -> cd, tylerJurisdiction, tylerEnv, List.of("replaceall"), this.x509Password);
         }
       }
     } catch (SQLException e) {
