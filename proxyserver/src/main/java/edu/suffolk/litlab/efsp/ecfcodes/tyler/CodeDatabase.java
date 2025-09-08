@@ -14,6 +14,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,10 +24,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.lang3.tuple.Pair;
-import org.oasis_open.docs.codelist.ns.genericode._1.CodeListDocument;
-import org.oasis_open.docs.codelist.ns.genericode._1.Column;
-import org.oasis_open.docs.codelist.ns.genericode._1.Row;
-import org.oasis_open.docs.codelist.ns.genericode._1.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -173,23 +170,25 @@ public class CodeDatabase extends CodeDatabaseAPI {
     xsr.close();
   }
 
-  public void updateTable(String tableName, String courtName, CodeListDocument doc)
+  public void updateTable(
+      String tableName, String courtName, String newVersion, Iterator<Map<String, String>> rows)
       throws SQLException {
     String versionUpdate = CodeTableConstants.updateVersion();
     try (PreparedStatement update = conn.prepareStatement(versionUpdate)) {
       if (tableName.equals("optionalservices")) {
-        OptionalServiceCode.updateOptionalServiceTable(courtName, this.tylerDomain, doc, this.conn);
+        OptionalServiceCode.updateOptionalServiceTable(
+            courtName, this.tylerDomain, rows, this.conn);
       } else {
-        updateTableInner(tableName, courtName, doc);
+        updateTableInner(tableName, courtName, rows);
       }
       // The version table that we directly download references things by "___codes.zip", not the
       // table name. We can translate those here.
       String zipName = CodeTableConstants.getZipNameFromTable(tableName);
       update.setString(1, courtName);
       update.setString(2, zipName);
-      update.setString(3, doc.getIdentification().getVersion());
+      update.setString(3, newVersion);
       update.setString(4, tylerDomain);
-      update.setString(5, doc.getIdentification().getVersion());
+      update.setString(5, newVersion);
       update.executeUpdate();
     } catch (SQLException ex) {
       log.error("Tried to execute an insert, but failed! Exception", ex);
@@ -198,20 +197,14 @@ public class CodeDatabase extends CodeDatabaseAPI {
     }
   }
 
-  public void updateTableInner(String tableName, String courtName, CodeListDocument doc)
-      throws SQLException {
+  private void updateTableInner(
+      String tableName, String courtName, Iterator<Map<String, String>> rows) throws SQLException {
     String insertQuery = CodeTableConstants.getInsertInto(tableName);
     try (PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
-      // TODO(brycew-later): dive deeper in the Column set, and see if any Data type isn't a
-      // normalizedString.
-      // ColumnSet cs = doc.getColumnSet();
-      for (Row r : doc.getSimpleCodeList().getRow()) {
-        // HACK(brycew): jeez, this is horrible. Figure a better option
-        Map<String, String> rowsVals = new HashMap<>();
-        for (Value v : r.getValue()) {
-          Column c = (Column) v.getColumnRef();
-          rowsVals.put(c.getId(), v.getSimpleValue().getValue());
-        }
+      // TODO(brycew-later): use Column set more, see if any Data type isn't a normalizedString.
+      // ColumnSet cs = rows.getColumnSet();
+      while (rows.hasNext()) {
+        Map<String, String> rowsVals = rows.next();
         singleInsert(stmt, tableName, courtName, rowsVals);
         stmt.addBatch();
       }
@@ -219,7 +212,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     }
   }
 
-  public PreparedStatement singleInsert(
+  private PreparedStatement singleInsert(
       PreparedStatement stmt, String tableName, String courtName, Map<String, String> rowsVals)
       throws SQLException {
     int idx = 1;
@@ -264,7 +257,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
    * @param searchTerm
    * @return
    */
-  public static String likeWildcard(String searchTerm) {
+  private static String likeWildcard(String searchTerm) {
     if (searchTerm == null) {
       return "%";
     }
