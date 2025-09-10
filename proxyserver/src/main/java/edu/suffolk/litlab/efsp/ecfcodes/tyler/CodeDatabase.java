@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efsp.ecfcodes.tyler;
 
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseAPI;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeTableConstants.UnsupportedTableException;
 import edu.suffolk.litlab.efsp.stdlib.SQLFunction;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import jakarta.xml.bind.JAXBException;
@@ -106,10 +107,6 @@ public class CodeDatabase extends CodeDatabaseAPI {
           OptionalServiceCode.createFromOptionalServiceTable(conn);
         } else {
           String createQuery = CodeTableConstants.getCreateTable(tableName);
-          if (createQuery.isEmpty()) {
-            log.warn("Will not create table with name: {}", tableName);
-            return;
-          }
           try (Statement createSt = conn.createStatement()) {
             log.info("Full statement: {}", createQuery);
             createSt.executeUpdate(createQuery);
@@ -190,6 +187,9 @@ public class CodeDatabase extends CodeDatabaseAPI {
       update.setString(4, tylerDomain);
       update.setString(5, newVersion);
       update.executeUpdate();
+    } catch (UnsupportedTableException ex) {
+      log.error("Silently ignoring a missing table exception.", ex);
+      return;
     } catch (SQLException ex) {
       log.error("Tried to execute an insert, but failed! Exception", ex);
       log.error("Going to rollback updates to this table");
