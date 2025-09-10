@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -109,9 +111,12 @@ public class DatabaseVersionTest {
   }
 
   @AfterEach
-  public void cleanUp() {
+  public void cleanUp() throws IOException {
     codeDb.close();
     userDb.close();
+
+    Files.delete(Path.of("tyler_efm_codes_v0_1_truncated.tar"));
+    Files.delete(Path.of("tyler_efm_codes_v0_1_truncated.sql"));
   }
 
   @Test
