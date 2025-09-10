@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efsp.ecfcodes;
 
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeTableConstants.UnsupportedTableException;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.SoapClientChooser;
 import edu.suffolk.litlab.efsp.server.utils.HeaderSigner;
@@ -25,15 +26,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Savepoint;
-import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -176,19 +176,17 @@ public class CodeUpdater {
    */
   private boolean downloadAndProcessZip(
       String toRead, String signedTime, Function<InputStream, Boolean> process) {
-    Instant startTable = Instant.now(Clock.systemUTC());
+    Instant startTable = Instant.now();
     try (InputStream urlStream = getCodesZip(toRead, signedTime)) {
       // Write out the zip file
-      downloadDuration =
-          downloadDuration.plus(Duration.between(startTable, Instant.now(Clock.systemUTC())));
+      downloadDuration = downloadDuration.plus(Duration.between(startTable, Instant.now()));
 
       ZipInputStream zip = new ZipInputStream(urlStream);
       zip.getNextEntry();
 
-      Instant updateTableLoc = Instant.now(Clock.systemUTC());
+      Instant updateTableLoc = Instant.now();
       boolean success = process.apply(zip);
-      updateDuration =
-          updateDuration.plus(Duration.between(updateTableLoc, Instant.now(Clock.systemUTC())));
+      updateDuration = updateDuration.plus(Duration.between(updateTableLoc, Instant.now()));
       zip.close();
       return success;
     } catch (IOException ex) {
@@ -234,6 +232,8 @@ public class CodeUpdater {
     }
 
     for (Map.Entry<String, String> urlSuffix : codeUrls.entrySet()) {
+      // Let SQL exceptions through here; table names are hard coded, so if they break
+      // we need to know.
       cd.deleteFromTable(urlSuffix.getKey());
       final Function<InputStream, Boolean> process =
           (is) -> {
@@ -348,7 +348,7 @@ public class CodeUpdater {
       throws JAXBException, IOException, SQLException {
     MDC.put(MDCWrappers.SESSION_ID, location);
     log.info("Doing updates for: {}, tables: {}", location, tables);
-    Instant downloadStart = Instant.now(Clock.systemUTC());
+    Instant downloadStart = Instant.now();
     // TODO(brycew-later): check that the effective date is later than today
     // JAXBElement<?> obj = ccl.getEffectiveDate().getDateRepresentation();
     Map<String, String> urlMap =
@@ -383,12 +383,12 @@ public class CodeUpdater {
     }
     Map<String, DownloadedCodes> downloaded =
         streamDownload(signedTime.get(), location, toDownload.parallel(), tables);
-    var downloadInc = Duration.between(downloadStart, Instant.now(Clock.systemUTC()));
+    var downloadInc = Duration.between(downloadStart, Instant.now());
     downloadDuration = downloadDuration.plus(downloadInc);
     log.info(
         "Location: {}: Downloads took: {} (total: {})", location, downloadInc, downloadDuration);
 
-    Instant updateStart = Instant.now(Clock.systemUTC());
+    Instant updateStart = Instant.now();
     for (DownloadedCodes down : downloaded.values()) {
       MDC.put(MDCWrappers.REQUEST_ID, down.tableName());
       try {
@@ -400,7 +400,7 @@ public class CodeUpdater {
         down.input().close();
       }
     }
-    var updateInc = Duration.between(updateStart, Instant.now(Clock.systemUTC()));
+    var updateInc = Duration.between(updateStart, Instant.now());
     updateDuration = updateDuration.plus(updateInc);
 
     cd.commit();
@@ -408,6 +408,45 @@ public class CodeUpdater {
     MDC.remove(MDCWrappers.REQUEST_ID);
     MDC.remove(MDCWrappers.SESSION_ID);
     return true;
+  }
+
+  /**
+   * Creates all of the tables to update. If it can't create them, it removes them from the list.
+   */
+  private Map<String, List<String>> makeOrRemoveUnsupportedTables(
+      Map<String, List<String>> versionsToUpdate, CodeDatabaseAPI cd) throws SQLException {
+    var allTables = new HashSet<String>();
+    log.info("Making tables (if any are absent)");
+    for (var tables : versionsToUpdate.values()) {
+      allTables.addAll(tables);
+    }
+
+    var brokenTables = new HashSet<String>();
+    for (String table : allTables) {
+      try {
+        cd.createTableIfAbsent(table);
+      } catch (UnsupportedTableException ex) {
+        log.warn("Ignoring table {} from Tyler's report (not in our allow list)", table);
+        brokenTables.add(table);
+      }
+    }
+
+    var toReturn = new HashMap<String, List<String>>();
+    for (var courtAndTables : versionsToUpdate.entrySet()) {
+      String courtLocation = courtAndTables.getKey();
+      if (courtLocation.isBlank()) {
+        log.warn("Ignoring tables with an empty court!");
+        continue;
+      }
+      List<String> tables = courtAndTables.getValue();
+      tables.removeAll(brokenTables);
+      if (tables.isEmpty()) {
+        continue;
+      }
+      toReturn.put(courtLocation, tables);
+    }
+
+    return toReturn;
   }
 
   /** Returns true if successful, false if not successful */
@@ -424,25 +463,16 @@ public class CodeUpdater {
 
     // Drop each of tables that need to be updated
     Savepoint sp = cd.setSavepoint("court update savepoint");
-    Map<String, List<String>> versionsToUpdate = cd.getVersionsToUpdate();
-    Instant startDel = Instant.now(Clock.systemUTC());
-    Set<String> allTables = new HashSet<>();
-    int n = 0;
-    log.info("Making tables if absent");
-    for (var tables : versionsToUpdate.values()) {
-      n += tables.size();
-      allTables.addAll(tables);
-    }
-    for (String table : allTables) {
-      cd.createTableIfAbsent(table);
-    }
-    log.info("Removing {} court entries, over {} queries", versionsToUpdate.size(), n);
+    Map<String, List<String>> rawVersionsToUpdate = cd.getVersionsToUpdate();
+    Map<String, List<String>> versionsToUpdate =
+        makeOrRemoveUnsupportedTables(rawVersionsToUpdate, cd);
+    Instant startDel = Instant.now();
+    log.info(
+        "Removing {} court entries, over {} queries",
+        versionsToUpdate.size(),
+        versionsToUpdate.values().stream().map(List::size).reduce(0, (a, b) -> a + b));
     for (Entry<String, List<String>> courtAndTables : versionsToUpdate.entrySet()) {
       final String courtLocation = courtAndTables.getKey();
-      if (courtLocation.isBlank()) {
-        log.warn("Ignoring tables with an empty court!");
-        continue;
-      }
       List<String> tables = courtAndTables.getValue();
       log.debug(
           "In {}, removing entries for court {} for tables: {}",
@@ -450,23 +480,19 @@ public class CodeUpdater {
           courtLocation,
           tables);
       for (String table : tables) {
-        Instant deleteFromTable = Instant.now(Clock.systemUTC());
+        Instant delTime = Instant.now();
 
-        // No longer checking for false here -- see PR.
         // Will ignore tables that don't exist.
         cd.deleteFromTable(table, courtLocation);
 
-        updateDuration =
-            updateDuration.plus(Duration.between(deleteFromTable, Instant.now(Clock.systemUTC())));
+        updateDuration = updateDuration.plus(Duration.between(delTime, Instant.now()));
       }
     }
-    log.info(
-        "Took {} to remove existing tables",
-        Duration.between(startDel, Instant.now(Clock.systemUTC())));
-    Instant startPolicy = Instant.now(Clock.systemUTC());
+    log.info("Took {} to remove existing tables", Duration.between(startDel, Instant.now()));
+    Instant startPolicy = Instant.now();
     Map<String, CourtPolicyResponseMessageType> policies =
         streamPolicies(versionsToUpdate.keySet().stream().parallel(), cd.getDomain(), filingPort);
-    var soapInc = Duration.between(startPolicy, Instant.now(Clock.systemUTC()));
+    var soapInc = Duration.between(startPolicy, Instant.now());
     soapDuration = soapDuration.plus(soapInc);
     log.info("Soaps took: {} (total: {})", soapInc, soapDuration);
 
@@ -517,10 +543,10 @@ public class CodeUpdater {
     }
     // Remove the "0" or top level court, which doesn't usually have individual court tables
     locs.remove("0");
-    Instant startPolicy = Instant.now(Clock.systemUTC());
+    Instant startPolicy = Instant.now();
     Map<String, CourtPolicyResponseMessageType> policies =
         streamPolicies(locs.stream(), cd.getDomain(), filingPort);
-    soapDuration = soapDuration.plus(Duration.between(startPolicy, Instant.now(Clock.systemUTC())));
+    soapDuration = soapDuration.plus(Duration.between(startPolicy, Instant.now()));
     log.info("Soaps: {}", soapDuration);
     for (var policy : policies.entrySet()) {
       final String location = policy.getKey();

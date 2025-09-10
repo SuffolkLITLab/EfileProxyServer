@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.ecfcodes.tyler;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -451,15 +452,22 @@ public class CodeTableConstants {
     return "VACUUM ANALYZE";
   }
 
+  /** This exception is returned when a given table name isn't in the pre-approved list of names. */
+  public static class UnsupportedTableException extends SQLException {
+    public UnsupportedTableException(String message) {
+      super(message);
+    }
+  }
+
   public static boolean tableHasLocation(String tableName) {
     return tableColumns.containsKey(tableName) && tableColumns.get(tableName).needsExtraLocCol;
   }
 
-  public static String getCreateTable(String tableName) {
+  public static String getCreateTable(String tableName) throws UnsupportedTableException {
     if (createQueries.containsKey(tableName)) {
       return createQueries.get(tableName);
     }
-    return "";
+    throw new UnsupportedTableException("No create query for table " + tableName);
   }
 
   public static List<String> getCreateIndex(String tableName) {
@@ -469,23 +477,23 @@ public class CodeTableConstants {
     return tableIndices.get(tableName);
   }
   
-  public static String getInsertInto(String tableName) {
+  public static String getInsertInto(String tableName) throws UnsupportedTableException {
     if (!insertQueries.containsKey(tableName)) {
-      return "";
+      throw new UnsupportedTableException("No insert query for table " + tableName);
     }
     return insertQueries.get(tableName);
   }
   
-  public static String getDeleteFrom(String tableName) {
+  public static String getDeleteFrom(String tableName) throws UnsupportedTableException {
     if (!deleteFromQueries.containsKey(tableName)) {
-      return "";
+      throw new UnsupportedTableException("No 'delete from' query for table " + tableName);
     }
     return deleteFromQueries.get(tableName);
   }
 
-  public static String getDeleteAllCourtsFrom(String tableName) {
+  public static String getDeleteAllCourtsFrom(String tableName) throws UnsupportedTableException {
     if (!deleteAllCourtsFromQueries.containsKey(tableName)) {
-      return "";
+      throw new UnsupportedTableException("No 'delete all courts from' query for table " + tableName);
     }
     return deleteAllCourtsFromQueries.get(tableName);
   }
