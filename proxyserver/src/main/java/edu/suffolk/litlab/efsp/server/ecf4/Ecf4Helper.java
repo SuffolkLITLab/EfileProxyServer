@@ -275,9 +275,12 @@ public class Ecf4Helper {
     return mapTylerCodesToHttp(checkErrors(resp.getError()), defaultRespFunc);
   }
 
-  /** Returns true on errors from the ECF side of the API. They work the same as the Tyler ones. */
   public record Error(String code, String text) {}
 
+  /**
+   * Returns the error type on errors from the ECF side of the API. They work the same as the Tyler
+   * ones.
+   */
   public static Optional<Error> checkError(
       oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType error) {
     var errCode = error.getErrorCode();

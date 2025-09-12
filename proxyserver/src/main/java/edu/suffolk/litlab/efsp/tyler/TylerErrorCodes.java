@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efsp.tyler;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,18 +65,21 @@ public class TylerErrorCodes {
           );
 
   public static boolean hasError(BaseResponseType resp) {
-    return checkErrors(resp.getError());
+    return checkErrors(resp.getError()).isPresent();
   }
 
   public static Response makeResponse(BaseResponseType resp, Supplier<Response> defaultRespFunc) {
-    return TylerErrorCodes.mapTylerCodesToHttp(resp.getError(), defaultRespFunc);
+    return TylerErrorCodes.mapTylerCodesToHttp(checkErrors(resp.getError()), defaultRespFunc);
   }
 
+  public record Error(String code, String text) {}
+
   /** Returns true on errors from the Tyler / Admin side of the API. */
-  public static boolean checkErrors(tyler.efm.latest.services.schema.common.ErrorType error) {
+  public static Optional<Error> checkErrors(
+      tyler.efm.latest.services.schema.common.ErrorType error) {
     var code = error.getErrorCode();
     if (code.equals("0")) {
-      return false;
+      return Optional.empty();
     }
 
     if (nonAlertingCodes.contains(code)) {
@@ -83,22 +87,25 @@ public class TylerErrorCodes {
     } else {
       log.error("Error from Tyler!: {}: {}", code, error.getErrorText());
     }
-    return true;
+    return Optional.of(new Error(error.getErrorCode(), error.getErrorText()));
+  }
+
+  public static boolean shouldLogError(Error error) {
+    return !nonAlertingCodes.contains(error.code);
   }
 
   public static Response mapTylerCodesToHttp(
-      tyler.efm.latest.services.schema.common.ErrorType error, Supplier<Response> defaultRespFunc) {
-    if (!checkErrors(error)) {
+      Optional<Error> maybeError, Supplier<Response> defaultRespFunc) {
+    if (!maybeError.isPresent()) {
       return defaultRespFunc.get();
     }
 
-    if (TylerErrorCodes.tylerToHttp.containsKey(error.getErrorCode())) {
-      return Response.status(TylerErrorCodes.tylerToHttp.get(error.getErrorCode()))
-          .entity(error.getErrorText())
-          .build();
+    var error = maybeError.get();
+    if (tylerToHttp.containsKey(error.code)) {
+      return Response.status(tylerToHttp.get(error.code)).entity(error.text).build();
     }
 
     // 422 as semantic issues covers most of the error codes
-    return Response.status(422).entity(error.getErrorText()).build();
+    return Response.status(422).entity(error.text).build();
   }
 }
