@@ -10,7 +10,6 @@ import edu.suffolk.litlab.efsp.server.utils.HeaderSigner;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapX509CallbackHandler;
-import edu.suffolk.litlab.efsp.stdlib.StdLib;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
@@ -43,9 +42,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipInputStream;
 import javax.sql.DataSource;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
 import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtPolicyResponseMessageType;
 import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingReviewMDEPort;
@@ -280,8 +276,7 @@ public class CodeUpdater {
    * Internal class, meant to pass around information between the "download zip" stage and the
    * "update postgres" stage.
    */
-  private record DownloadedCodes(
-      String tableName, String location, XMLStreamReader xsr, InputStream input) {}
+  private record DownloadedCodes(String tableName, String location, InputStream input) {}
 
   /**
    * @param authHeader The header needed to download the codes
@@ -303,12 +298,9 @@ public class CodeUpdater {
               InputStream urlStream = getCodesZip(toDownload.url, authHeader);
               ZipInputStream zip = new ZipInputStream(urlStream);
               zip.getNextEntry();
-              XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-              XMLStreamReader sr = xmlInputFactory.createXMLStreamReader(zip);
               codeLists.put(
-                  toDownload.tableName,
-                  new DownloadedCodes(toDownload.tableName, location, sr, urlStream));
-            } catch (IOException | XMLStreamException e) {
+                  toDownload.tableName, new DownloadedCodes(toDownload.tableName, location, zip));
+            } catch (IOException e) {
               log.error("Error when downloading XMLs", e);
             }
           }
@@ -393,11 +385,10 @@ public class CodeUpdater {
     for (DownloadedCodes down : downloaded.values()) {
       MDC.put(MDCWrappers.REQUEST_ID, down.tableName());
       try {
-        cd.updateTable(down.tableName(), down.location(), down.xsr());
+        cd.updateTable(down.tableName(), down.location(), down.input());
       } catch (Exception ex) {
         log.error("Couldn't update table?", ex);
       } finally {
-        StdLib.closeQuitely(down.xsr());
         down.input().close();
       }
     }

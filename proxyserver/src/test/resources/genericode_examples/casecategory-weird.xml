@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://docs.oasis-open.org/codelist/ns/genericode/1.0/">
+  <Identification xmlns="">
+    <Version>84D2F1B7B73B53E8AAF0EC6A77A642BBE5E791EF4F8CBD3671249998359C61167F87433A114ACE0257F5B177A82EF613524DB4526E12E32D779DD6344B6B46B4</Version>
+  </Identification>
+  <ColumnSet xmlns="">
+    <Column Id="code" Use="required">
+      <ShortName>Code</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="name" Use="optional">
+      <ShortName>Name</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="ecfcasetype">
+      <ShortName>ECF Case Type</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="procedureremedyinitial" Use="optional">
+      <ShortName>ProcedureRemedyInitial</ShortName>
+      <Data Type="normalizedString"/>
+    </Column>
+    <Column Id="procedureremedysubsequent">
+      <ShortName>ProcedureRemedySubsequent</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="damageamountinitial" Use="optional">
+      <ShortName>DamageAmountInitial</ShortName>
+    </Column>
+    <Column Id="damageamountsubsequent" Use="optional">
+      <ShortName>DamageAmountSubsequent</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Column Id="efspcode" Use="optional">
+      <ShortName>EFSPCode</ShortName>
+      <Data Type="normalizedString" Lang="en" />
+    </Column>
+    <Key Id="codeKey">
+      <ShortName>CodeKey</ShortName>
+      <ColumnRef Ref="code" />
+    </Key>
+  </ColumnSet>
+  <SimpleCodeList xmlns="">
+    <Annotation><Description>Woo, m</Description></Annotation>
+    <Row>
+      <Annotation><Description>idk, random stuff</Description></Annotation>
+      <Value ColumnRef="code">
+        <SimpleValue>7</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Civil</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CԢ񀶵𞩪ⓠܒ+º6%ȹ偀󩏚󦰓ﾄ</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>210</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Family</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>DomesticCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>6189</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Chancery</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CivilCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>6190</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Dissolution (Divorce)</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CivilCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue>DissolutionEFSP</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>6191</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>ȃג9󆭅=Yoc93wኺٽdƃ</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CivilCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>6194</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Mental Health</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CivilCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>6195</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Miscellaneous Remedy</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CivilCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue>NameChangeAdultCatEFSP</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>6196</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Municipal Corporation</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CivilCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>6197</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Probate</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CivilCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>6198</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Small Claims</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CivilCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>6199</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Tax</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CivilCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>7062</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Order of Protection</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CivilCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue>OFPCategoryEFSP</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>7306</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Adoption</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>DomesticCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76962</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Contempt of Court</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CivilCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76963</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Criminal Felony</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CivilCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76964</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Criminal Misdemeanor</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CriminalCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76965</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Driving Under the Influence</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CivilCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76966</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Juvenile</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>DomesticCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76967</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Juvenile Abuse</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>DomesticCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>76968</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Juvenile Delinquent</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>DomesticCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>183527</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Law Magistrate: Damages over $10,000 up to $50,000</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CivilCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>183528</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Law: Damages over $50,000</SimpleValue>
+      </Value>
+      <Value ColumnRef="ecfcasetype">
+        <SimpleValue>CivilCase</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedyinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="procedureremedysubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountinitial">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="damageamountsubsequent">
+        <SimpleValue>Not Available</SimpleValue>
+      </Value>
+      <Value ColumnRef="efspcode">
+        <SimpleValue />
+      </Value>
+    </Row>
+  </SimpleCodeList>
+</CodeList>
