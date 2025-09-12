@@ -21,6 +21,7 @@ import edu.suffolk.litlab.efsp.server.services.PaymentsService;
 import edu.suffolk.litlab.efsp.server.services.impl.EfmFilingInterface;
 import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
+import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapX509CallbackHandler;
@@ -53,6 +54,7 @@ import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 public class TylerModuleSetup implements EfmModuleSetup {
   private static Logger log = LoggerFactory.getLogger(TylerModuleSetup.class);
@@ -176,6 +178,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public void preSetup() {
+    MDC.put(MDCWrappers.USER_ID, tylerDomain.getName());
     // HACK(brycew): cheap DI. Should have something better, but
     // I don't quite understand Spring yet
     SoapX509CallbackHandler.setX509Password(x509Password);

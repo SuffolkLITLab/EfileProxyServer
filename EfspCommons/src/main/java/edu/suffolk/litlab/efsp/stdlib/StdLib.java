@@ -1,8 +1,6 @@
 package edu.suffolk.litlab.efsp.stdlib;
 
 import java.util.Optional;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,19 +20,5 @@ public class StdLib {
   /** A simple check to make sure something isn't null or blank. Used in a lot of places. */
   public static boolean exists(String val) {
     return val != null && !val.isBlank();
-  }
-
-  /**
-   * A way to close a stream without throwing another checked exception, which avoids having to read
-   * lots of nested try-catch blocks in business code.
-   */
-  public static void closeQuitely(XMLStreamReader xsr) {
-    try {
-      if (xsr != null) {
-        xsr.close();
-      }
-    } catch (XMLStreamException ex) {
-      log.warn("Exception during XMLStreamReader.close(): ", ex);
-    }
   }
 }

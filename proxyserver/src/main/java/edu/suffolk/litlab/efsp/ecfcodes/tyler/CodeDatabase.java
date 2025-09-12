@@ -1,11 +1,12 @@
 package edu.suffolk.litlab.efsp.ecfcodes.tyler;
 
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseAPI;
+import edu.suffolk.litlab.efsp.ecfcodes.CodeDocException;
+import edu.suffolk.litlab.efsp.ecfcodes.CodeDocIterator;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeTableConstants.UnsupportedTableException;
 import edu.suffolk.litlab.efsp.stdlib.SQLFunction;
 import edu.suffolk.litlab.efsp.stdlib.SQLGetter;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
-import jakarta.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,9 +23,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.sql.DataSource;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,7 +153,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
   }
 
   public void updateTable(String tableName, String courtName, InputStream inStream)
-      throws JAXBException, SQLException, XMLStreamException {
+      throws SQLException, CodeDocException {
     if (conn == null) {
       throw new SQLException("Null connection!");
     }
@@ -167,10 +165,8 @@ public class CodeDatabase extends CodeDatabaseAPI {
     createTableIfAbsent(tableName);
     createIndicesIfAbsent(tableName);
 
-    XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-    XMLStreamReader xsr = xmlInputFactory.createXMLStreamReader(inStream);
-    updateTable(tableName, courtName, xsr);
-    xsr.close();
+    CodeDocIterator iterator = CodeDocIterator.setup(inStream);
+    updateTable(tableName, courtName, iterator.getVersion(), iterator);
   }
 
   public void updateTable(
