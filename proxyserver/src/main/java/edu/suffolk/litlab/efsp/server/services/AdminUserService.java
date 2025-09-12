@@ -188,8 +188,7 @@ public class AdminUserService {
 
     NotificationPreferencesResponseType notifResp = port.get().getNotificationPreferences();
 
-    return TylerErrorCodes.mapTylerCodesToHttp(
-        notifResp.getError(), () -> Response.ok(notifResp.getNotification()).build());
+    return makeResponse(notifResp, () -> Response.ok(notifResp.getNotification()).build());
   }
 
   @PATCH
@@ -209,7 +208,7 @@ public class AdminUserService {
     }
 
     BaseResponseType notifResp = port.get().updateNotificationPreferences(updateNotif);
-    return TylerErrorCodes.mapTylerCodesToHttp(notifResp.getError(), () -> Response.ok().build());
+    return makeResponse(notifResp, () -> Response.ok().build());
   }
 
   @POST
@@ -289,11 +288,7 @@ public class AdminUserService {
     resetReq.setEmail(params.email);
     resetReq.setPassword(params.newPassword);
     ResetPasswordResponseType resp = port.get().resetUserPassword(resetReq);
-    return TylerErrorCodes.mapTylerCodesToHttp(
-        resp.getError(),
-        () -> {
-          return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
-        });
+    return makeResponse(resp, () -> Response.ok("\"" + resp.getPasswordHash() + "\"").build());
   }
 
   public static class SetPasswordParams {
@@ -319,11 +314,8 @@ public class AdminUserService {
     change.setPasswordQuestion("");
     change.setPasswordAnswer("");
     ChangePasswordResponseType resp = port.get().changePassword(change);
-    return TylerErrorCodes.mapTylerCodesToHttp(
-        resp.getError(),
-        () -> {
-          return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
-        });
+    return TylerErrorCodes.makeResponse(
+        resp, () -> Response.ok("\"" + resp.getPasswordHash() + "\"").build());
   }
 
   @POST
@@ -340,11 +332,7 @@ public class AdminUserService {
     ResetPasswordResponseType resp = port.get().resetPassword(reset);
     // TODO(brycew-later): why would we reply with the password hash? They still shouldn't be able
     // to log in?
-    return TylerErrorCodes.mapTylerCodesToHttp(
-        resp.getError(),
-        () -> {
-          return Response.ok("\"" + resp.getPasswordHash() + "\"").build();
-        });
+    return makeResponse(resp, () -> Response.ok("\"" + resp.getPasswordHash() + "\"").build());
   }
 
   /**
@@ -378,8 +366,7 @@ public class AdminUserService {
       userGetter = (req) -> port.get().getUser(getUserReq);
     }
     var userRes = userGetter.apply(getUserReq);
-    return TylerErrorCodes.mapTylerCodesToHttp(
-        userRes.getError(), () -> Response.ok(userRes.getUser()).build());
+    return makeResponse(userRes, () -> Response.ok(userRes.getUser()).build());
   }
 
   @GET
@@ -402,8 +389,7 @@ public class AdminUserService {
     var req = new GetUserListRequest();
     req.setPaging(paging);
     UserListResponseType resp = port.get().getUserList(req);
-    return TylerErrorCodes.mapTylerCodesToHttp(
-        resp.getError(), () -> Response.ok(resp.getUser()).build());
+    return makeResponse(resp, () -> Response.ok(resp.getUser()).build());
   }
 
   @PATCH
@@ -418,13 +404,13 @@ public class AdminUserService {
     GetUserRequestType getUserReq = new GetUserRequestType();
     getUserReq.setUserID(httpHeaders.getHeaderString(TylerLogin.getHeaderId(jurisdiction)));
     GetUserResponseType userRes = port.get().getUser(getUserReq);
-    if (TylerErrorCodes.checkErrors(userRes.getError())) {
+    if (TylerErrorCodes.checkErrors(userRes.getError()).isPresent()) {
       return Response.status(401, userRes.getError().getErrorText()).build();
     }
 
     UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser);
     UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
-    if (TylerErrorCodes.checkErrors(updateResp.getError())) {
+    if (TylerErrorCodes.checkErrors(updateResp.getError()).isPresent()) {
       return Response.status(401).entity(updateResp.getError().getErrorText()).build();
     }
 
@@ -452,13 +438,13 @@ public class AdminUserService {
     GetUserRequestType getUserReq = new GetUserRequestType();
     getUserReq.setUserID(id);
     GetUserResponseType userRes = port.get().getUser(getUserReq);
-    if (TylerErrorCodes.checkErrors(userRes.getError())) {
+    if (TylerErrorCodes.checkErrors(userRes.getError()).isPresent()) {
       return Response.status(401, userRes.getError().getErrorText()).build();
     }
 
     UpdateUserRequestType updateReq = updateUser(userRes.getUser(), updatedUser);
     UpdateUserResponseType updateResp = port.get().updateUser(updateReq);
-    if (TylerErrorCodes.checkErrors(updateResp.getError())) {
+    if (TylerErrorCodes.checkErrors(updateResp.getError()).isPresent()) {
       return Response.status(401).entity(updateResp.getError().getErrorText()).build();
     }
 
@@ -504,8 +490,7 @@ public class AdminUserService {
     GetUserRequestType getUserReq = new GetUserRequestType();
     getUserReq.setUserID(id);
     GetUserResponseType userRes = port.get().getUser(getUserReq);
-    return TylerErrorCodes.mapTylerCodesToHttp(
-        userRes.getError(), () -> Response.ok(userRes.getUser().getRole()).build());
+    return makeResponse(userRes, () -> Response.ok(userRes.getUser().getRole()).build());
   }
 
   /**
@@ -533,7 +518,7 @@ public class AdminUserService {
       addRole.setUserID(id);
       // TODO(brycew-later): this won't be consistent if it fails part way through?
       BaseResponseType resp = port.get().addUserRole(addRole);
-      if (TylerErrorCodes.checkErrors(resp.getError())) {
+      if (TylerErrorCodes.checkErrors(resp.getError()).isPresent()) {
         return Response.status(401).entity(resp.getError().getErrorText()).build();
       }
     }
@@ -569,7 +554,7 @@ public class AdminUserService {
       rmRole.setUserID(id);
       // TODO(brycew-later): this won't be consistent if it fails part way through?
       BaseResponseType resp = port.get().removeUserRole(rmRole);
-      if (TylerErrorCodes.checkErrors(resp.getError())) {
+      if (TylerErrorCodes.checkErrors(resp.getError()).isPresent()) {
         return Response.status(401).entity(resp.getError().getErrorText()).build();
       }
     }
@@ -681,10 +666,27 @@ public class AdminUserService {
             + regResp.getFirmID()
             + " and user id: "
             + regResp.getUserID());
-    if (!TylerErrorCodes.checkErrors(regResp.getError())) {
+    var error = TylerErrorCodes.checkErrors(regResp.getError());
+    if (error.isPresent()) {
+      logTylerErrorsWithContext(error.get(), req);
+      return makeResponse(regResp, () -> Response.ok(regResp).build());
+    } else {
       return Response.created(URI.create(regResp.getUserID())).entity(regResp).build();
     }
-    return makeResponse(regResp, () -> Response.ok(regResp).build());
+  }
+
+  private void logTylerErrorsWithContext(TylerErrorCodes.Error error, RegistrationRequestType req) {
+    String errContext =
+        switch (error.code()) {
+          case "230" -> "Zip code: %s".formatted(req.getZipCode());
+          default -> "No context for %s".formatted(error.code());
+        };
+    String message = "Error message from Tyler: {}. Context: {}";
+    if (TylerErrorCodes.shouldLogError(error)) {
+      log.error(message, error, errContext);
+    } else {
+      log.warn(message, error, errContext);
+    }
   }
 
   /**
@@ -706,7 +708,7 @@ public class AdminUserService {
     RemoveUserRequestType rmUser = new RemoveUserRequestType();
     rmUser.setUserID(id);
     BaseResponseType resp = port.get().removeUser(rmUser);
-    return TylerErrorCodes.mapTylerCodesToHttp(resp.getError(), () -> Response.ok().build());
+    return makeResponse(resp, () -> Response.ok().build());
   }
 
   @GET
@@ -720,8 +722,7 @@ public class AdminUserService {
     }
 
     NotificationPreferencesListResponseType resp = port.get().getNotificationPreferencesList();
-    return TylerErrorCodes.mapTylerCodesToHttp(
-        resp.getError(), () -> Response.ok(resp.getNotificationListItem()).build());
+    return makeResponse(resp, () -> Response.ok(resp.getNotificationListItem()).build());
   }
 
   /** Default needsSoapHeader to True: most ops need Tyler Authentication in the SOAP header. */
