@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efsp.ecfcodes.tyler;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseAPI;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeTableConstants.UnsupportedTableException;
 import edu.suffolk.litlab.efsp.stdlib.SQLFunction;
+import edu.suffolk.litlab.efsp.stdlib.SQLGetter;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import jakarta.xml.bind.JAXBException;
 import java.io.InputStream;
@@ -271,20 +272,26 @@ public class CodeDatabase extends CodeDatabaseAPI {
    * @return
    */
   public List<String> searchCaseCategory(String searchTerm) {
-    String finalSearchTerm = likeWildcard(searchTerm);
-    return safetyWrap(
-        () -> {
+    return genericSearch(
+        searchTerm,
+        (term) -> {
           String query = CaseCategory.searchCaseCategories();
-          List<String> cats = new ArrayList<>();
-          try (PreparedStatement st = conn.prepareStatement(query)) {
-            st.setString(1, tylerDomain);
-            st.setString(2, finalSearchTerm);
-            ResultSet rs = st.executeQuery();
-            while (rs.next()) {
-              cats.add(rs.getString(1));
-            }
-          }
-          return cats;
+          PreparedStatement st = conn.prepareStatement(query);
+          st.setString(1, tylerDomain);
+          st.setString(2, term);
+          return st;
+        });
+  }
+
+  public List<String> courtCoverageCaseCategory(String searchTerm) {
+    return genericSearch(
+        searchTerm,
+        (term) -> {
+          String query = CaseCategory.courtCoverageCaseCategories();
+          PreparedStatement st = conn.prepareStatement(query);
+          st.setString(1, tylerDomain);
+          st.setString(2, term);
+          return st;
         });
   }
 
@@ -378,19 +385,11 @@ public class CodeDatabase extends CodeDatabaseAPI {
    * @return
    */
   public List<String> searchCaseType(String searchTerm) {
-    String finalSearchTerm = likeWildcard(searchTerm);
-    return safetyWrap(
-        () -> {
-          try (PreparedStatement st =
-              CaseType.prepSearchQuery(conn, tylerDomain, finalSearchTerm)) {
-            List<String> types = new ArrayList<>();
-            ResultSet rs = st.executeQuery();
-            while (rs.next()) {
-              types.add(rs.getString(1));
-            }
-            return types;
-          }
-        });
+    return genericSearch(searchTerm, (term) -> CaseType.prepSearchQuery(conn, tylerDomain, term));
+  }
+
+  public List<String> courtCoverageCaseType(String searchTerm) {
+    return genericSearch(searchTerm, (term) -> CaseType.prepCourtCoverage(conn, tylerDomain, term));
   }
 
   /**
@@ -616,27 +615,27 @@ public class CodeDatabase extends CodeDatabaseAPI {
    * @return
    */
   public List<String> searchFilingType(String searchTerm) {
-    String finalSearchTerm = likeWildcard(searchTerm);
-    return safetyWrap(
-        () -> {
-          try (PreparedStatement st =
-              FilingCode.prepSearchQuery(conn, tylerDomain, finalSearchTerm)) {
-            List<String> types = new ArrayList<>();
-            ResultSet rs = st.executeQuery();
-            while (rs.next()) {
-              types.add(rs.getString(1));
-            }
-            return types;
-          }
-        });
+    return genericSearch(searchTerm, (term) -> FilingCode.prepSearchQuery(conn, tylerDomain, term));
   }
 
+  /**
+   * Gets the courts that have a filing type that is matched by this search term.
+   *
+   * @param searchTerm
+   * @return
+   */
   public List<String> courtCoverageFilingType(String searchTerm) {
+    return genericSearch(
+        searchTerm, (term) -> FilingCode.prepCourtCoverageQuery(conn, tylerDomain, term));
+  }
+
+  /** Runs all of the logic for search queries (both name searches and court coverage searches). */
+  private List<String> genericSearch(
+      String searchTerm, SQLFunction<String, PreparedStatement> queryMaker) {
     String finalSearchTerm = likeWildcard(searchTerm);
     return safetyWrap(
         () -> {
-          try (PreparedStatement st =
-              FilingCode.prepCourtCoverageQuery(conn, tylerDomain, finalSearchTerm)) {
+          try (PreparedStatement st = queryMaker.apply(finalSearchTerm)) {
             List<String> types = new ArrayList<>();
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
@@ -749,20 +748,26 @@ public class CodeDatabase extends CodeDatabaseAPI {
    * @return
    */
   public List<String> searchPartyType(String searchTerm) {
-    String finalSearchTerm = likeWildcard(searchTerm);
-    return safetyWrap(
-        () -> {
+    return genericSearch(
+        searchTerm,
+        (term) -> {
           String query = PartyType.searchPartyType();
-          List<String> types = new ArrayList<>();
-          try (PreparedStatement st = conn.prepareStatement(query)) {
-            st.setString(1, tylerDomain);
-            st.setString(2, finalSearchTerm);
-            ResultSet rs = st.executeQuery();
-            while (rs.next()) {
-              types.add(rs.getString(1));
-            }
-            return types;
-          }
+          PreparedStatement st = conn.prepareStatement(query);
+          st.setString(1, tylerDomain);
+          st.setString(2, term);
+          return st;
+        });
+  }
+
+  public List<String> courtCoveragePartyType(String searchTerm) {
+    return genericSearch(
+        searchTerm,
+        (term) -> {
+          String query = PartyType.courtCoveragePartyType();
+          PreparedStatement st = conn.prepareStatement(query);
+          st.setString(1, tylerDomain);
+          st.setString(2, term);
+          return st;
         });
   }
 
@@ -1069,19 +1074,13 @@ public class CodeDatabase extends CodeDatabaseAPI {
   }
 
   public List<String> searchOptionalServices(String searchTerm) {
-    final String finalSearchTerm = likeWildcard(searchTerm);
-    return safetyWrap(
-        () -> {
-          try (PreparedStatement st =
-              OptionalServiceCode.prepSearch(conn, tylerDomain, finalSearchTerm)) {
-            List<String> optServs = new ArrayList<>();
-            ResultSet rs = st.executeQuery();
-            while (rs.next()) {
-              optServs.add(rs.getString(1));
-            }
-            return optServs;
-          }
-        });
+    return genericSearch(
+        searchTerm, (term) -> OptionalServiceCode.prepSearch(conn, tylerDomain, term));
+  }
+
+  public List<String> courtCoverageOptionalServices(String searchTerm) {
+    return genericSearch(
+        searchTerm, (term) -> OptionalServiceCode.prepCourtCoverage(conn, tylerDomain, term));
   }
 
   public List<CodeAndLocation> retrieveOptionalServices(String optServName) {
@@ -1377,7 +1376,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         });
   }
 
-  private <T> List<T> safetyWrap(SQLFunction<List<T>> sup) {
+  private <T> List<T> safetyWrap(SQLGetter<List<T>> sup) {
     if (conn == null) {
       log.error("SQL connection not created yet!");
       return List.of();
@@ -1390,7 +1389,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     }
   }
 
-  private <T> Optional<T> safetyWrapOpt(SQLFunction<Optional<T>> sup) {
+  private <T> Optional<T> safetyWrapOpt(SQLGetter<Optional<T>> sup) {
     if (conn == null) {
       log.error("SQL connection not created yet!");
       return Optional.empty();

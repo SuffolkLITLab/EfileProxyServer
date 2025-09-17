@@ -194,23 +194,42 @@ public class EcfCodesService extends CodesService {
 
   /** Enum that's used across the search endpoints. */
   public enum DesiredResult {
+    /// If you want to return the original names of the codes being searched.
     NAMES,
+    /// If you want to return the courts that have at least one code that matches the term.
     COURT_COVERAGE;
 
     public static DesiredResult parse(String resultStr) {
       if (resultStr == null || resultStr.isBlank()) {
-        // Default to Names, as that was originally you could only search for names.
+        // Default to Names, as originally you could only search for names.
         return NAMES;
       }
       return DesiredResult.valueOf(resultStr.toUpperCase());
     }
   }
 
+  /**
+   * Finds categories in any court that match the given term.
+   *
+   * <p>If the "result" query parameter is set to "COURT_COVERAGE", instead returns all courts that
+   * contain at least one case category that is matched by the term. Can be used to confirm that all
+   * of the expected courts you want to file in contain a case category that you can use.
+   *
+   * <p>Used primarly for exploration and gaining a better understanding of jurisdiction naming
+   * conventions. Likely shouldn't be used while a user is filing.
+   */
   @GET
   @Path("/categories")
-  public Response searchCategories(@QueryParam("search") String searchTerm) throws SQLException {
+  public Response searchCategories(
+      @QueryParam("search") String searchTerm, @QueryParam("result") String resultStr)
+      throws SQLException {
+    DesiredResult desiredResult = DesiredResult.parse(resultStr);
     try (CodeDatabase cd = cdSupplier.get()) {
-      return cors(Response.ok(cd.searchCaseCategory(searchTerm)));
+      return switch (desiredResult) {
+        case DesiredResult.NAMES -> cors(Response.ok(cd.searchCaseCategory(searchTerm)));
+        case DesiredResult.COURT_COVERAGE ->
+            cors(Response.ok(cd.courtCoverageCaseCategory(searchTerm)));
+      };
     }
   }
 
@@ -223,11 +242,30 @@ public class EcfCodesService extends CodesService {
     }
   }
 
+  /**
+   * Finds case types in any court that match the given term.
+   *
+   * <p>If the "result" query parameter is set to "COURT_COVERAGE", instead returns all courts that
+   * contain at least one case type that is matched by the term. Can be used to confirm that all of
+   * the expected courts you want to file in contain a case type that you can use.
+   *
+   * <p>Used primarly for exploration and gaining a better understanding of jurisdiction naming
+   * conventions. Likely shouldn't be used while a user is filing.
+   */
   @GET
   @Path("/case_types")
-  public Response searchCaseTypes(@QueryParam("search") String searchTerm) throws SQLException {
+  public Response searchCaseTypes(
+      @QueryParam("search") String searchTerm, @QueryParam("result") DesiredResult desiredResult)
+      throws SQLException {
+    if (desiredResult == null) {
+      desiredResult = DesiredResult.NAMES;
+    }
     try (CodeDatabase cd = cdSupplier.get()) {
-      return cors(Response.ok(cd.searchCaseType(searchTerm)));
+      return switch (desiredResult) {
+        case DesiredResult.NAMES -> cors(Response.ok(cd.searchCaseType(searchTerm)));
+        case DesiredResult.COURT_COVERAGE ->
+            cors(Response.ok(cd.courtCoverageCaseType(searchTerm)));
+      };
     }
   }
 
@@ -240,6 +278,16 @@ public class EcfCodesService extends CodesService {
     }
   }
 
+  /**
+   * Finds filings types in any court that match the given term.
+   *
+   * <p>If the "result" query parameter is set to "COURT_COVERAGE", instead returns all courts that
+   * contain at least one filing type that is matched by the term. Can be used to confirm that all
+   * of the expected courts you want to file in contain a filing type that you can use.
+   *
+   * <p>Used primarly for exploration and gaining a better understanding of jurisdiction naming
+   * conventions. Likely shouldn't be used while a user is filing.
+   */
   @GET
   @Path("/filing_types")
   public Response searchFilingTypes(
@@ -264,11 +312,31 @@ public class EcfCodesService extends CodesService {
     }
   }
 
+  /**
+   * Finds party types in any court that match the given term.
+   *
+   * <p>If the "result" query parameter is set to "COURT_COVERAGE", instead returns all courts that
+   * contain at least one party type that is matched by the term. Can be used to confirm that all of
+   * the expected courts you want to file in contain a party type that you can use.
+   *
+   * <p>NOTE: party types are usually tightly coupled to the type of case they are in, so a general
+   * search like this might not be as useful.
+   *
+   * <p>Used primarly for exploration and gaining a better understanding of jurisdiction naming
+   * conventions. Likely shouldn't be used while a user is filing.
+   */
   @GET
   @Path("/party_types")
-  public Response searchPartyTypes(@QueryParam("search") String searchTerm) throws SQLException {
+  public Response searchPartyTypes(
+      @QueryParam("search") String searchTerm, @QueryParam("result") String resultStr)
+      throws SQLException {
+    DesiredResult desiredResult = DesiredResult.parse(resultStr);
     try (CodeDatabase cd = cdSupplier.get()) {
-      return cors(Response.ok(cd.searchPartyType(searchTerm)));
+      return switch (desiredResult) {
+        case DesiredResult.NAMES -> cors(Response.ok(cd.searchPartyType(searchTerm)));
+        case DesiredResult.COURT_COVERAGE ->
+            cors(Response.ok(cd.courtCoveragePartyType(searchTerm)));
+      };
     }
   }
 
@@ -281,12 +349,28 @@ public class EcfCodesService extends CodesService {
     }
   }
 
+  /**
+   * Finds optional services in any court that match the given term.
+   *
+   * <p>If the "result" query parameter is set to "COURT_COVERAGE", instead returns all courts that
+   * contain at least one optional service that is matched by the term. Can be used to confirm that
+   * all of the expected courts you want to file in contain an optional service that you can use.
+   *
+   * <p>Used primarly for exploration and gaining a better understanding of jurisdiction naming
+   * conventions. Likely shouldn't be used while a user is filing.
+   */
   @GET
   @Path("/optional_services")
-  public Response searchOptionalServices(@QueryParam("search") String searchTerm)
+  public Response searchOptionalServices(
+      @QueryParam("search") String searchTerm, @QueryParam("result") String resultStr)
       throws SQLException {
+    DesiredResult desiredResult = DesiredResult.parse(resultStr);
     try (CodeDatabase cd = cdSupplier.get()) {
-      return cors(Response.ok(cd.searchOptionalServices(searchTerm)));
+      return switch (desiredResult) {
+        case DesiredResult.NAMES -> cors(Response.ok(cd.searchOptionalServices(searchTerm)));
+        case DesiredResult.COURT_COVERAGE ->
+            cors(Response.ok(cd.courtCoverageOptionalServices(searchTerm)));
+      };
     }
   }
 
