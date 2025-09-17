@@ -631,6 +631,22 @@ public class CodeDatabase extends CodeDatabaseAPI {
         });
   }
 
+  public List<String> courtCoverageFilingType(String searchTerm) {
+    String finalSearchTerm = likeWildcard(searchTerm);
+    return safetyWrap(
+        () -> {
+          try (PreparedStatement st =
+              FilingCode.prepCourtCoverageQuery(conn, tylerDomain, finalSearchTerm)) {
+            List<String> types = new ArrayList<>();
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              types.add(rs.getString(1));
+            }
+            return types;
+          }
+        });
+  }
+
   /**
    * Get the code and court locations of the filing types that match the given name exactly.
    *
