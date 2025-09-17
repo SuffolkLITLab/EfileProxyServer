@@ -192,6 +192,20 @@ public class EcfCodesService extends CodesService {
 
   //////////////  Search endpoints (i.e. info gathering across courts) //////////////////
 
+  /** Enum that's used across the search endpoints. */
+  public enum DesiredResult {
+    NAMES,
+    COURT_COVERAGE;
+
+    public static DesiredResult parse(String resultStr) {
+      if (resultStr == null || resultStr.isBlank()) {
+        // Default to Names, as that was originally you could only search for names.
+        return NAMES;
+      }
+      return DesiredResult.valueOf(resultStr.toUpperCase());
+    }
+  }
+
   @GET
   @Path("/categories")
   public Response searchCategories(@QueryParam("search") String searchTerm) throws SQLException {
@@ -226,19 +240,12 @@ public class EcfCodesService extends CodesService {
     }
   }
 
-  public enum DesiredResult {
-    NAMES,
-    COURT_COVERAGE;
-  }
-
   @GET
   @Path("/filing_types")
   public Response searchFilingTypes(
-      @QueryParam("search") String searchTerm, @QueryParam("result") DesiredResult desiredResult)
+      @QueryParam("search") String searchTerm, @QueryParam("result") String resultStr)
       throws SQLException {
-    if (desiredResult == null) {
-      desiredResult = DesiredResult.NAMES;
-    }
+    DesiredResult desiredResult = DesiredResult.parse(resultStr);
     try (CodeDatabase cd = cdSupplier.get()) {
       return switch (desiredResult) {
         case DesiredResult.NAMES -> cors(Response.ok(cd.searchFilingType(searchTerm)));
