@@ -1,16 +1,16 @@
 package edu.suffolk.litlab.efsp.server.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.db.DatabaseVersionTest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
+import edu.suffolk.litlab.efsp.server.EfspServer;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import jakarta.ws.rs.core.MediaType;
@@ -24,7 +24,6 @@ import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
-import org.apache.cxf.jaxrs.provider.JAXBElementProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -89,7 +88,7 @@ public class CodesServiceTest {
             "xml", MediaType.APPLICATION_XML,
             "json", MediaType.APPLICATION_JSON);
     sf.setExtensionMappings(extensionMappings);
-    List<Object> providers = List.of(new JAXBElementProvider<Object>(), new JacksonJsonProvider());
+    List<?> providers = EfspServer.providers();
     sf.setProviders(providers);
     server = sf.create();
   }
@@ -108,19 +107,29 @@ public class CodesServiceTest {
   }
 
   @SuppressWarnings("static-method")
-  private String getServerResponseAt(String path) {
+  private Response getServerResponseAt(String path, Map<String, String> params) {
     WebClient client = WebClient.create(ENDPOINT_ADDRESS);
     client.accept("application/json");
     client.path(path);
+    for (var entry : params.entrySet()) {
+      client.replaceQueryParam(entry.getKey(), entry.getValue());
+    }
+    log.info("Current URI: {}", client.getCurrentURI());
     Response resp = client.get();
     log.info("resp: {}", resp);
-    return resp.readEntity(String.class);
+    return resp;
+  }
+
+  private JsonNode getServerJsonAt(String path, Map<String, String> params)
+      throws JsonProcessingException {
+    Response resp = getServerResponseAt(path, params);
+    ObjectMapper mapper = new ObjectMapper();
+    return mapper.readTree(resp.readEntity(String.class));
   }
 
   @Test
-  public void testGetAll() throws JsonMappingException, JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode node = mapper.readTree(getServerResponseAt("/"));
+  public void testGetAll() throws JsonProcessingException {
+    JsonNode node = getServerJsonAt("/", Map.of());
     assertTrue(
         node.has("getCodesUnderCourt"),
         "didn't have codes post court (`getCodesUnderCourt`): " + node);
@@ -131,9 +140,8 @@ public class CodesServiceTest {
   }
 
   @Test
-  public void testGetSubCourt() throws JsonMappingException, JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode node = mapper.readTree(getServerResponseAt("/courts/adams"));
+  public void testGetSubCourt() throws JsonProcessingException {
+    JsonNode node = getServerJsonAt("/courts/adams", Map.of());
     assertTrue(node.has("getCourtLocationCodes"), "didn't have court location codes: " + node);
     assertEquals(
         ServiceHelpers.EXTERNAL_URL + "/jurisdictions/illinois/codes/courts/adams/codes",
@@ -145,9 +153,8 @@ public class CodesServiceTest {
   }
 
   @Test
-  public void testGetCase() throws JsonMappingException, JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode node = mapper.readTree(getServerResponseAt("/courts/adams/case_types/25361"));
+  public void testGetCase() throws JsonProcessingException {
+    JsonNode node = getServerJsonAt("/courts/adams/case_types/25361", Map.of());
     assertTrue(node.has("getCaseSubtypes"), "didn't have `getCaseSubtypes`. Response was: " + node);
     assertEquals(
         ServiceHelpers.EXTERNAL_URL
@@ -160,17 +167,88 @@ public class CodesServiceTest {
         node.get("getPartyTypes").get("url").asText());
   }
 
-  /**
-   * Was hacky and now we don't let people go to sub resources of things that don't exist. @Test
-   * public void testGetUnderFilingCode() throws Exception { ObjectMapper mapper = new
-   * ObjectMapper(); JsonNode node =
-   * mapper.readTree(getServerResponseAt("/courts/adams/filing_types/1234"));
-   * assertTrue(node.has("getOptionalServices"), "didn't have optionalServices: " + node);
-   * assertEquals( ServiceHelpers.EXTERNAL_URL +
-   * "/jurisdictions/illinois/codes/courts/adams/filing_types/1234/optional_services",
-   * node.get("getOptionalServices").get("url").asText());
-   * assertTrue(node.has("getFilingComponents")); assertEquals( ServiceHelpers.EXTERNAL_URL +
-   * "/jurisdictions/illinois/codes/courts/adams/filing_types/1234/filing_components",
-   * node.get("getFilingComponents").get("url").asText()); }
-   */
+  @Test
+  public void testSearchOptionalServices() throws JsonProcessingException {
+    final String SEARCH_TERM = "fees";
+    var resp =
+        getServerResponseAt(
+            "/optional_services", Map.of("search", SEARCH_TERM, "result", "BAD_VALUE"));
+    assertThat(resp.getStatus()).isEqualTo(400);
+
+    JsonNode noEnumSearch = getServerJsonAt("/optional_services", Map.of("search", SEARCH_TERM));
+    assertThat(noEnumSearch.isArray()).isTrue();
+    assertThat(noEnumSearch.iterator())
+        .allMatch(
+            node -> {
+              var matches = node.isTextual() && node.asText().toLowerCase().contains(SEARCH_TERM);
+              if (matches) {
+                try {
+                  var retrieve =
+                      getServerJsonAt(
+                          "/optional_services/" + node.asText().replace("/", "%2F"), Map.of());
+                  assertThat(retrieve.size()).isGreaterThan(0);
+                  assertThat(retrieve.iterator())
+                      .allMatch(
+                          loc ->
+                              loc.has("location") && loc.get("location").asText().equals("adams"));
+                } catch (JsonProcessingException e) {
+                  log.error("Error when retrieving {}", node.asText(), e);
+                  return false;
+                }
+              }
+              return matches;
+            });
+
+    JsonNode nameEnumSearch =
+        getServerJsonAt("/optional_services", Map.of("search", SEARCH_TERM, "result", "NAMES"));
+    assertThat(noEnumSearch).isEqualTo(nameEnumSearch);
+
+    JsonNode courtCoverageSearch =
+        getServerJsonAt(
+            "/optional_services", Map.of("search", SEARCH_TERM, "result", "COURT_COVERAGE"));
+    assertThat(courtCoverageSearch.size()).isEqualTo(1);
+    assertThat(courtCoverageSearch.iterator())
+        .allMatch(court -> court.isTextual() && court.asText().equals("adams"));
+  }
+
+  @Test
+  public void testSearchCaseType() throws JsonProcessingException {
+    final String SEARCH_TERM = "order";
+    var resp =
+        getServerResponseAt("/case_types", Map.of("search", SEARCH_TERM, "result", "BAD_VALUE"));
+    assertThat(resp.getStatus()).isEqualTo(400);
+
+    JsonNode noEnumSearch = getServerJsonAt("/case_types", Map.of("search", SEARCH_TERM));
+    assertThat(noEnumSearch.isArray()).isTrue();
+    assertThat(noEnumSearch.iterator())
+        .allMatch(
+            node -> {
+              var matches = node.isTextual() && node.asText().toLowerCase().contains(SEARCH_TERM);
+              if (matches) {
+                try {
+                  var retrieve =
+                      getServerJsonAt("/case_types/" + node.asText().replace("/", "%2F"), Map.of());
+                  assertThat(retrieve.size()).isGreaterThan(0);
+                  assertThat(retrieve.iterator())
+                      .allMatch(
+                          loc ->
+                              loc.has("location") && loc.get("location").asText().equals("adams"));
+                } catch (JsonProcessingException e) {
+                  log.error("Error when retrieving {}", node.asText(), e);
+                  return false;
+                }
+              }
+              return matches;
+            });
+
+    JsonNode nameEnumSearch =
+        getServerJsonAt("/case_types", Map.of("search", SEARCH_TERM, "result", "NAMES"));
+    assertThat(noEnumSearch).isEqualTo(nameEnumSearch);
+
+    JsonNode courtCoverageSearch =
+        getServerJsonAt("/case_types", Map.of("search", SEARCH_TERM, "result", "COURT_COVERAGE"));
+    assertThat(courtCoverageSearch.size()).isEqualTo(1);
+    assertThat(courtCoverageSearch.iterator())
+        .allMatch(court -> court.isTextual() && court.asText().equals("adams"));
+  }
 }

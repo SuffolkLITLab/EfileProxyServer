@@ -162,6 +162,21 @@ public class CaseType {
     return st;
   }
 
+  public static PreparedStatement prepCourtCoverage(
+      Connection conn, String domain, String searchTerm) throws SQLException {
+    String search =
+        """
+        SELECT DISTINCT location
+        FROM casetype
+        WHERE domain=? AND name ILIKE ?
+        ORDER BY location
+        """;
+    PreparedStatement st = conn.prepareStatement(search);
+    st.setString(1, domain);
+    st.setString(2, searchTerm);
+    return st;
+  }
+
   public static PreparedStatement prepRetrieveQuery(
       Connection conn, String domain, String caseTypeName) throws SQLException {
     String retrieve =

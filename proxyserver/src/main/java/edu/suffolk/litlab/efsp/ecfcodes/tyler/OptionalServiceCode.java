@@ -109,6 +109,21 @@ public class OptionalServiceCode {
     return st;
   }
 
+  public static PreparedStatement prepCourtCoverage(
+      Connection conn, String domain, String searchTerm) throws SQLException {
+    final String search =
+        """
+        SELECT DISTINCT location
+        FROM optionalservices as os
+        WHERE os.domain=? AND os.name ILIKE ?
+        ORDER BY location
+        """;
+    PreparedStatement st = conn.prepareStatement(search);
+    st.setString(1, domain);
+    st.setString(2, searchTerm);
+    return st;
+  }
+
   public static PreparedStatement prepRetrieve(Connection conn, String domain, String optServName)
       throws SQLException {
     final String retrieve =

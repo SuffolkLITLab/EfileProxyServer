@@ -105,6 +105,15 @@ public class CaseCategory {
     """;
   }
 
+  public static String courtCoverageCaseCategories() {
+    return """
+    SELECT DISTINCT location
+    FROM casecategory
+    WHERE domain=? AND name ILIKE ?
+    ORDER BY location
+    """;
+  }
+
   public static String retrieveCaseCategoryForName() {
     return """
     SELECT DISTINCT code, location

@@ -80,6 +80,15 @@ public class PartyType {
     """;
   }
 
+  public static String courtCoveragePartyType() {
+    return """
+    SELECT DISTINCT location
+    FROM partytype
+    WHERE domain=? and name ILIKE ?
+    ORDER BY location
+    """;
+  }
+
   public static String retrievePartyTypeFromName() {
     return """
     SELECT DISTINCT code, location

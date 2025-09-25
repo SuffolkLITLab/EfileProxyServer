@@ -21,6 +21,7 @@ import edu.suffolk.litlab.efsp.server.setup.EfmModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.setup.jeffnet.JeffNetModuleSetup;
 import edu.suffolk.litlab.efsp.server.setup.tyler.TylerModuleSetup;
+import edu.suffolk.litlab.efsp.server.utils.EnumExceptionMapper;
 import edu.suffolk.litlab.efsp.server.utils.JsonExceptionMapper;
 import edu.suffolk.litlab.efsp.server.utils.ObservabilityHeadersInterceptor;
 import edu.suffolk.litlab.efsp.server.utils.ObservabilityResetInterceptor;
@@ -174,6 +175,7 @@ public class EfspServer {
         new JacksonJsonProvider(), // TODO(brycew): JAXBJSon?
         new SoapExceptionMapper(),
         new JsonExceptionMapper(),
+        new EnumExceptionMapper(),
         new ObservabilityHeadersInterceptor(),
         new ObservabilityResetInterceptor());
   }
