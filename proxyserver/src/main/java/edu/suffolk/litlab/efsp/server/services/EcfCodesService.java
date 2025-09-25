@@ -255,11 +255,9 @@ public class EcfCodesService extends CodesService {
   @GET
   @Path("/case_types")
   public Response searchCaseTypes(
-      @QueryParam("search") String searchTerm, @QueryParam("result") DesiredResult desiredResult)
+      @QueryParam("search") String searchTerm, @QueryParam("result") String resultStr)
       throws SQLException {
-    if (desiredResult == null) {
-      desiredResult = DesiredResult.NAMES;
-    }
+    DesiredResult desiredResult = DesiredResult.parse(resultStr);
     try (CodeDatabase cd = cdSupplier.get()) {
       return switch (desiredResult) {
         case DesiredResult.NAMES -> cors(Response.ok(cd.searchCaseType(searchTerm)));
