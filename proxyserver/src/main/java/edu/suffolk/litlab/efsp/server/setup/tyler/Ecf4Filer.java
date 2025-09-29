@@ -30,6 +30,7 @@ import edu.suffolk.litlab.efsp.server.services.impl.EfmCheckableFilingInterface;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
@@ -372,7 +373,24 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
 
       Optional<TylerFirmClient> firmClient = setupFirmPort(firmFactory, apiToken);
       boolean isIndividual =
-          firmClient.map(port -> port.getFirm().getFirm().isIsIndividual()).orElse(true);
+          firmClient
+              .map(
+                  port -> {
+                    try {
+                      var resp = port.getFirm();
+                      if (TylerErrorCodes.hasError(resp)) {
+                        log.warn(
+                            "GetFirm returned an error: {}, {}",
+                            resp.getError().getErrorCode(),
+                            resp.getError().getErrorText());
+                      }
+                      return resp.getFirm().isIsIndividual();
+                    } catch (Exception ex) {
+                      log.warn("Exception when getting firm info for individual?:", ex);
+                      return true;
+                    }
+                  })
+              .orElse(true);
       Map<String, Object> filingIdToObj = new HashMap<>();
       int seqNum = 0;
       for (FilingDoc filingDoc : info.getFilings()) {
