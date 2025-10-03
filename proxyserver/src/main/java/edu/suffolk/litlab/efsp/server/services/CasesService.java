@@ -18,6 +18,7 @@ import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
+import edu.suffolk.litlab.efsp.utils.Hasher;
 import gov.niem.niem.niem_core._2.CaseType;
 import gov.niem.niem.niem_core._2.EntityType;
 import gov.niem.niem.niem_core._2.TextType;
@@ -432,7 +433,7 @@ public class CasesService {
         log.warn("Couldn't checkLogin");
         return Optional.empty();
       }
-      MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
+      MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(tylerToken));
     } catch (SQLException ex) {
       log.error("SQL error with record port", ex);
       return Optional.empty();

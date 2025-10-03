@@ -19,6 +19,7 @@ import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
+import edu.suffolk.litlab.efsp.utils.Hasher;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import edu.suffolk.litlab.efsp.utils.NeverSubmitCollector;
@@ -540,7 +541,7 @@ public class FilingReviewService {
       if (orgToken == null || orgToken.isBlank()) {
         return Optional.empty();
       }
-      MDC.put(MDCWrappers.USER_ID, ld.makeHash(orgToken));
+      MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(orgToken));
       return Optional.of(orgToken);
     } catch (SQLException ex) {
       log.error("SQL Error", ex);

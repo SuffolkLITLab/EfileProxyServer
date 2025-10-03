@@ -23,6 +23,7 @@ import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
+import edu.suffolk.litlab.efsp.utils.Hasher;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
@@ -747,7 +748,7 @@ public class AdminUserService {
       if (needsSoapHeader) {
         String tylerToken =
             httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-        MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
+        MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(tylerToken));
         Optional<TylerUserNamePassword> creds =
             TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
         if (creds.isEmpty()) {

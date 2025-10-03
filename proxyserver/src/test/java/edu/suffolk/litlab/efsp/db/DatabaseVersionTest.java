@@ -7,6 +7,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.utils.Hasher;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -131,7 +132,7 @@ public class DatabaseVersionTest {
     ResultSet rs = st.executeQuery(selectApiKey);
 
     try (LoginDatabase ld = new LoginDatabase(userConn)) {
-      String manualHash = ld.makeHash(apiKey);
+      String manualHash = Hasher.makeHash(apiKey);
 
       while (rs.next()) {
         assertEquals(rs.getString(1), manualHash);

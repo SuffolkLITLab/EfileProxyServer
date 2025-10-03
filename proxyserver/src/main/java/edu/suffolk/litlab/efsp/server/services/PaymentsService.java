@@ -20,6 +20,7 @@ import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
+import edu.suffolk.litlab.efsp.utils.Hasher;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -399,6 +400,8 @@ public class PaymentsService {
       @FormParam("original_url") String originalUrl,
       @FormParam("error_url") String errorUrl) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.redirectToToga");
+    MDC.put(MDCWrappers.SERVER_ID, "jurisdiction-" + this.jurisdiction);
+    MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(tylerInfo));
     String errorHtml =
         """
         <!DOCTYPE html>
@@ -435,7 +438,7 @@ public class PaymentsService {
     if (!types.getPaymentAccountType().stream()
         .anyMatch(type -> type.getCode().equalsIgnoreCase(typeCode))) {
       String err = "Cannot create that type of payment account.";
-      log.error(err);
+      log.error(err + " {}", typeCode);
       return Response.status(422).entity(errorHtml.formatted(err)).build();
     }
     account.typeCodeId = typeCodeId;
@@ -538,6 +541,7 @@ public class PaymentsService {
   public Response makeNewPaymentAccount(
       @Context HttpHeaders httpHeaders, @FormParam("ResponseXML") String body) {
     MDC.put(MDCWrappers.OPERATION, "PaymentsService.makeNewPaymentAccount");
+    MDC.put(MDCWrappers.SERVER_ID, "jurisdiction-" + this.jurisdiction);
     log.info("Making new payment account with Tyler's response: {}", body);
     try {
       JAXBContext jaxContext = JAXBContext.newInstance(TogaResponseXml.class);
