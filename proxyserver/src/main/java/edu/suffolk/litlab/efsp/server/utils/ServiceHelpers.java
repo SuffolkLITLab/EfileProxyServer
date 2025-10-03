@@ -9,6 +9,7 @@ import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
+import edu.suffolk.litlab.efsp.utils.Hasher;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.ws.BindingProvider;
@@ -143,7 +144,6 @@ public class ServiceHelpers {
       if (needsSoapHeader) {
         String tylerToken =
             httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-        MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
         return setupFirmPort(firmFactory, tylerToken);
       } else {
         return Optional.of(firmFactory.makeFirmClient(ServiceHelpers::setupServicePort));
@@ -156,6 +156,7 @@ public class ServiceHelpers {
 
   public static Optional<TylerFirmClient> setupFirmPort(
       TylerFirmFactory firmFactory, String tylerToken) {
+    MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(tylerToken));
     Optional<TylerUserNamePassword> creds =
         TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {

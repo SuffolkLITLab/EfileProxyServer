@@ -29,6 +29,7 @@ import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
+import edu.suffolk.litlab.efsp.utils.Hasher;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
@@ -539,7 +540,7 @@ public class CourtSchedulingService {
       }
       String tylerToken =
           httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-      MDC.put(MDCWrappers.USER_ID, ld.makeHash(tylerToken));
+      MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(tylerToken));
       creds = TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
     } catch (SQLException ex) {
       log.error("SQL error with Scheduling port", ex);

@@ -4,9 +4,7 @@ import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeTableConstants;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.stdlib.RandomString;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import edu.suffolk.litlab.efsp.utils.Hasher;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,7 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import javax.sql.DataSource;
-import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -44,15 +41,9 @@ public class LoginDatabase extends Database {
       """;
 
   private static final RandomString tokenGenerator = new RandomString();
-  private final MessageDigest digest;
 
   public LoginDatabase(Connection conn) {
     super(conn);
-    try {
-      this.digest = MessageDigest.getInstance("SHA-256");
-    } catch (NoSuchAlgorithmException ex) {
-      throw new AssertionError(ex);
-    }
   }
 
   public static LoginDatabase fromDS(DataSource ds) {
@@ -107,7 +98,7 @@ public class LoginDatabase extends Database {
     }
     UUID serverId = UUID.randomUUID();
     String apiKey = tokenGenerator.nextString();
-    String hash = makeHash(apiKey);
+    String hash = Hasher.makeHash(apiKey);
     Timestamp ts = new Timestamp(System.currentTimeMillis());
     try (PreparedStatement insertSt = conn.prepareStatement(atRestInsert)) {
       insertSt.setObject(1, serverId);
@@ -125,7 +116,7 @@ public class LoginDatabase extends Database {
     if (apiKey == null || apiKey.isBlank()) {
       return Optional.empty();
     }
-    String hash = makeHash(apiKey);
+    String hash = Hasher.makeHash(apiKey);
     String query =
         """
         SELECT server_id, server_name, api_key, tyler_enabled,
@@ -160,7 +151,7 @@ public class LoginDatabase extends Database {
     if (apiKey == null || apiKey.isBlank() || newName == null || newName.isBlank()) {
       return false;
     }
-    String hash = makeHash(apiKey);
+    String hash = Hasher.makeHash(apiKey);
     final String atRestUpdate =
         """
                UPDATE at_rest_keys SET server_name = ? WHERE server_id = ? AND api_key = ?
@@ -178,23 +169,15 @@ public class LoginDatabase extends Database {
     }
   }
 
-  public String makeHash(String input) {
-    if (input == null) {
-      return "";
-    }
-    return new String(Hex.encode(digest.digest(input.getBytes(StandardCharsets.UTF_8))));
-  }
-
   /**
    * Example on how to trigger: java -cp efspserver-with-deps.jar
    * edu.suffolk.litlab.efsp.db.LoginDatabase localhostServer true true
    *
    * @throws ClassNotFoundException
    * @throws NumberFormatException
-   * @throws NoSuchAlgorithmException
    */
   public static void main(final String args[])
-      throws SQLException, NumberFormatException, ClassNotFoundException, NoSuchAlgorithmException {
+      throws SQLException, NumberFormatException, ClassNotFoundException {
     if (args.length != 3) {
       System.out.println("Only 3 params: server name, tyler enabled, jeffnet enabled");
     }
