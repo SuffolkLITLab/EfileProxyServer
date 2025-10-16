@@ -4,7 +4,7 @@
 #
 
 app = 'efsp-staging'
-primary_region = 'bos'
+primary_region = 'ewr'
 kill_timeout = 60
 
 [build]
