@@ -163,9 +163,8 @@ public class AdminUserService {
     if (port.isEmpty()) {
       return Response.status(401).build();
     }
-    String tylerId =
-        httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-    if (tylerId == null || tylerId.isBlank()) {
+    String userId = httpHeaders.getHeaderString(TylerLogin.getHeaderId(jurisdiction));
+    if (userId == null || userId.isBlank()) {
       return Response.status(500)
           .entity(
               "Server does not have a Tyler UUID for the current account. Can you give it to me?")
@@ -173,7 +172,7 @@ public class AdminUserService {
     }
 
     GetUserRequestType req = new GetUserRequestType();
-    req.setUserID(tylerId);
+    req.setUserID(userId);
     GetUserResponseType resp = port.get().getUser(req);
     return makeResponse(resp, () -> Response.ok(resp.getUser()).build());
   }
