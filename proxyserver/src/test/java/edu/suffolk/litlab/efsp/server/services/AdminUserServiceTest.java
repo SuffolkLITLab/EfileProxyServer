@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efsp.server.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,11 +39,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import tyler.efm.latest.services.schema.common.ErrorType;
+import tyler.efm.latest.services.schema.common.UserType;
+import tyler.efm.latest.services.schema.getuserresponse.GetUserResponseType;
 import tyler.efm.latest.services.schema.registrationresponse.RegistrationResponseType;
 
 public class AdminUserServiceTest {
 
   private static final String ENDPOINT_ADDRESS = "http://localhost:9090";
+  private static final String API_KEY = "abc123";
   private Server server;
   private WebClient client;
 
@@ -74,7 +78,7 @@ public class AdminUserServiceTest {
     atRest.serverId = UUID.randomUUID();
     atRest.enabled = Map.of("tyler", true, "jeffnet", true);
     ld = mock(LoginDatabase.class);
-    when(ld.getAtRestInfo(any())).thenReturn(Optional.of(new AtRest()));
+    when(ld.getAtRestInfo(eq(API_KEY))).thenReturn(Optional.of(atRest));
 
     CourtLocationInfo info = new CourtLocationInfo();
     info.allowindividualregistration = true;
@@ -123,6 +127,14 @@ public class AdminUserServiceTest {
     mockClients.close();
   }
 
+  @Test
+  public void testNoApiKey() {
+    client.path("/users");
+
+    Response resp = client.post("{\"registrationType\": \"INDIVIDUAL\"}");
+    assertThat(resp.getStatus()).isEqualTo(401);
+  }
+
   @Nested
   class RegisterUserTest {
 
@@ -139,6 +151,7 @@ public class AdminUserServiceTest {
     @BeforeEach
     public void setup() {
       client.path("/users");
+      client.header("X-API-KEY", API_KEY);
     }
 
     @Test
@@ -199,6 +212,61 @@ public class AdminUserServiceTest {
       Response resp = client.post(badReq);
       assertThat(resp.getStatus()).isEqualTo(400);
       assertThat(resp.readEntity(String.class)).isEqualTo("Password can't be password");
+    }
+  }
+
+  @Nested
+  class GetUserTest {
+    @BeforeEach
+    public void setup() {
+      client.path("/user");
+      client.header("X-API-KEY", API_KEY);
+
+      GetUserResponseType soapResp = new GetUserResponseType();
+      var user = new UserType();
+      user.setEmail("bob@example.com");
+      soapResp.setUser(user);
+      var err = new ErrorType();
+      err.setErrorCode("0");
+      soapResp.setError(err);
+      when(tylerUserClient.getUser(any())).thenReturn(soapResp);
+    }
+
+    @Test
+    public void testNoTylerJurisdictionHeader() {
+      Response resp = client.get();
+      assertThat(resp.getStatus()).isEqualTo(401);
+    }
+
+    @Test
+    public void testNoTylerUserIdHeader() {
+      Response resp = client.header("TYLER-TOKEN-ILLINOIS", "bob@example.com:abc123").get();
+      assertThat(resp.getStatus()).isEqualTo(500);
+      assertThat(resp.readEntity(String.class)).contains("Server does not have a Tyler UUID");
+    }
+
+    @Test
+    public void testWithAllHeadersCaseInsensitive() {
+      client.removeAllHeaders();
+      client.header("X-API-KEY", API_KEY);
+      client.header("TYLER-TOKEN-ILLINOIS", "bob@example.com:abc123");
+      client.header("TYLER-ID-ILLINOIS", "12345678-abcd-1234-abcd-12345678abcd");
+      var resp = client.get();
+      assertThat(resp.getStatus()).isEqualTo(200);
+
+      client.removeAllHeaders();
+      client.header("X-API-KEY", API_KEY);
+      client.header("TYLER-TOKEN-ILLINOIS", "bob@example.com:abc123");
+      client.header("TYLER-ID-illinois", "12345678-abcd-1234-abcd-12345678abcd");
+      resp = client.get();
+      assertThat(resp.getStatus()).isEqualTo(200);
+
+      client.removeAllHeaders();
+      client.header("X-API-KEY", API_KEY);
+      client.header("TYLER-TOKEN-ILLINOIS", "bob@example.com:abc123");
+      client.header("TYLER-ID-Illinois", "12345678-abcd-1234-abcd-12345678abcd");
+      resp = client.get();
+      assertThat(resp.getStatus()).isEqualTo(200);
     }
   }
 }
