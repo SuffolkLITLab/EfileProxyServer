@@ -29,7 +29,8 @@ public class SoapClientChooser {
           "massachusetts-prod", "wsdl/prod/massachusetts-ECF-4.0-ServiceMDEService.wsdl",
           "california-stage", "wsdl/stage/california-ECF-4.0-ServiceMDEService.wsdl",
           "texas-stage", "wsdl/stage/texas-ECF-4.0-ServiceMDEService.wsdl",
-          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-ServiceMDEService.wsdl");
+          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-ServiceMDEService.wsdl",
+          "vermont-stage", "wsdl/stage/vermont-ECF-4.0-ServiceMDEService.wsdl");
 
   static final Map<String, String> filingReviewMDEWsdls =
       Map.of(
@@ -40,7 +41,8 @@ public class SoapClientChooser {
           "massachusetts-prod", "wsdl/prod/massachusetts-ECF-4.0-FilingReviewMDEService.wsdl",
           "california-stage", "wsdl/stage/california-ECF-4.0-FilingReviewMDEService.wsdl",
           "texas-stage", "wsdl/stage/texas-ECF-4.0-FilingReviewMDEService.wsdl",
-          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-FilingReviewMDEService.wsdl");
+          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-FilingReviewMDEService.wsdl",
+          "vermont-stage", "wsdl/stage/vermont-ECF-4.0-FilingReviewMDEService.wsdl");
 
   static final Map<String, String> courtRecordMDEWsdls =
       Map.of(
@@ -51,7 +53,8 @@ public class SoapClientChooser {
           "massachusetts-prod", "wsdl/prod/massachusetts-ECF-4.0-CourtRecordMDEService.wsdl",
           "california-stage", "wsdl/stage/california-ECF-4.0-CourtRecordMDEService.wsdl",
           "texas-stage", "wsdl/stage/texas-ECF-4.0-CourtRecordMDEService.wsdl",
-          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-CourtRecordMDEService.wsdl");
+          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-CourtRecordMDEService.wsdl",
+          "vermont-stage", "wsdl/stage/vermont-ECF-4.0-CourtRecordMDEService.wsdl");
 
   static final Map<String, String> courtSchedulingMDEWsdls =
       Map.of(
