@@ -671,7 +671,7 @@ public class CodeUpdater {
               System.getenv("POSTGRES_CODES_DB"),
               System.getenv("POSTGRES_USER"),
               System.getenv("POSTGRES_PASSWORD"),
-              5,
+              10,
               100);
 
       return CodeDatabase.fromDS(jurisdiction, env, ds);

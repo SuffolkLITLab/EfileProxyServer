@@ -195,10 +195,10 @@ public class EfspServer {
 
     DataSource codeDs =
         DatabaseCreator.makeDataSource(
-            dbUrl, dbPortInt, codeDatabaseName, dbUser, dbPassword, 7, 100);
+            dbUrl, dbPortInt, codeDatabaseName, dbUser, dbPassword, 6, 100);
     DataSource userDs =
         DatabaseCreator.makeDataSource(
-            dbUrl, dbPortInt, userDatabaseName, dbUser, dbPassword, 7, 100);
+            dbUrl, dbPortInt, userDatabaseName, dbUser, dbPassword, 6, 100);
 
     Optional<TylerEnv> tylerEnv = GetEnv("TYLER_ENV").map(TylerEnv::parse);
     setupDatabases(codeDs, userDs, tylerEnv);
