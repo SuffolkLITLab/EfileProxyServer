@@ -192,7 +192,7 @@ public class LoginDatabase extends Database {
             System.getenv("POSTGRES_USER_DB"),
             System.getenv("POSTGRES_USER"),
             System.getenv("POSTGRES_PASSWORD"),
-            2,
+            10,
             100);
     try (LoginDatabase ld = new LoginDatabase(ds.getConnection())) {
       ld.setAutoCommit(true);

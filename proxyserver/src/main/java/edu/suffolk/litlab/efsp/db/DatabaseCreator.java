@@ -55,6 +55,8 @@ public class DatabaseCreator {
     SharedPoolDataSource tds = new SharedPoolDataSource();
     tds.setConnectionPoolDataSource(cpds);
     tds.setDefaultAutoCommit(true);
+    tds.setDefaultTestOnBorrow(true);
+    tds.setValidationQuery("SELECT 1");
     tds.setMaxTotal(maxConnections);
     tds.setDefaultMaxWait(Duration.ofMillis(waitForConnMillis));
     try (Connection conn = tds.getConnection()) {
