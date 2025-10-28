@@ -339,7 +339,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     var cases = new CasesService(jurisdiction, env, ldSupplier, cdSupplier);
     var codes = new EcfCodesService(jurisdiction, cdSupplier);
     Optional<CourtSchedulingService> courtScheduler = Optional.empty();
-    if (jurisdiction == "illinois") {
+    if (jurisdiction.equals("illinois")) {
       courtScheduler =
           Optional.of(
               new CourtSchedulingService(converterMap, jurisdiction, env, ldSupplier, cdSupplier));

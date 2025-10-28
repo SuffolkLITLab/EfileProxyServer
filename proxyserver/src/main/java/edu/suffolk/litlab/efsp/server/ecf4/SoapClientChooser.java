@@ -20,47 +20,61 @@ public class SoapClientChooser {
   private static final Logger log = LoggerFactory.getLogger(SoapClientChooser.class);
 
   // TODO(#284): finish this refactor to use TylerEnvs instead of strings
-  static final Map<String, String> serviceMDEWsdls =
+  private static final Map<String, URL> serviceMDEWsdls =
       Map.of(
-          "illinois-stage", "wsdl/stage/illinois-ECF-4.0-ServiceMDEService.wsdl",
-          "illinois-test", "wsdl/test/illinois-ECF-4.0-ServiceMDEService.wsdl",
-          "illinois-prod", "wsdl/prod/illinois-ECF-4.0-ServiceMDEService.wsdl",
-          "massachusetts-stage", "wsdl/stage/massachusetts-ECF-4.0-ServiceMDEService.wsdl",
-          "massachusetts-prod", "wsdl/prod/massachusetts-ECF-4.0-ServiceMDEService.wsdl",
-          "california-stage", "wsdl/stage/california-ECF-4.0-ServiceMDEService.wsdl",
-          "texas-stage", "wsdl/stage/texas-ECF-4.0-ServiceMDEService.wsdl",
-          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-ServiceMDEService.wsdl",
-          "vermont-stage", "wsdl/stage/vermont-ECF-4.0-ServiceMDEService.wsdl");
+          "illinois-stage", getRes("wsdl/stage/illinois-ECF-4.0-ServiceMDEService.wsdl"),
+          "illinois-test", getRes("wsdl/test/illinois-ECF-4.0-ServiceMDEService.wsdl"),
+          "illinois-prod", getRes("wsdl/prod/illinois-ECF-4.0-ServiceMDEService.wsdl"),
+          "massachusetts-stage", getRes("wsdl/stage/massachusetts-ECF-4.0-ServiceMDEService.wsdl"),
+          "massachusetts-prod", getRes("wsdl/prod/massachusetts-ECF-4.0-ServiceMDEService.wsdl"),
+          "california-stage", getRes("wsdl/stage/california-ECF-4.0-ServiceMDEService.wsdl"),
+          "texas-stage", getRes("wsdl/stage/texas-ECF-4.0-ServiceMDEService.wsdl"),
+          "indiana-stage", getRes("wsdl/stage/indiana-ECF-4.0-ServiceMDEService.wsdl"),
+          "vermont-stage", getRes("wsdl/stage/vermont-ECF-4.0-ServiceMDEService.wsdl"));
 
-  static final Map<String, String> filingReviewMDEWsdls =
+  private static final Map<String, URL> filingReviewMDEWsdls =
       Map.of(
-          "illinois-stage", "wsdl/stage/illinois-ECF-4.0-FilingReviewMDEService.wsdl",
-          "illinois-test", "wsdl/test/illinois-ECF-4.0-FilingReviewMDEService.wsdl",
-          "illinois-prod", "wsdl/prod/illinois-ECF-4.0-FilingReviewMDEService.wsdl",
-          "massachusetts-stage", "wsdl/stage/massachusetts-ECF-4.0-FilingReviewMDEService.wsdl",
-          "massachusetts-prod", "wsdl/prod/massachusetts-ECF-4.0-FilingReviewMDEService.wsdl",
-          "california-stage", "wsdl/stage/california-ECF-4.0-FilingReviewMDEService.wsdl",
-          "texas-stage", "wsdl/stage/texas-ECF-4.0-FilingReviewMDEService.wsdl",
-          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-FilingReviewMDEService.wsdl",
-          "vermont-stage", "wsdl/stage/vermont-ECF-4.0-FilingReviewMDEService.wsdl");
+          "illinois-stage", getRes("wsdl/stage/illinois-ECF-4.0-FilingReviewMDEService.wsdl"),
+          "illinois-test", getRes("wsdl/test/illinois-ECF-4.0-FilingReviewMDEService.wsdl"),
+          "illinois-prod", getRes("wsdl/prod/illinois-ECF-4.0-FilingReviewMDEService.wsdl"),
+          "massachusetts-stage",
+              getRes("wsdl/stage/massachusetts-ECF-4.0-FilingReviewMDEService.wsdl"),
+          "massachusetts-prod",
+              getRes("wsdl/prod/massachusetts-ECF-4.0-FilingReviewMDEService.wsdl"),
+          "california-stage", getRes("wsdl/stage/california-ECF-4.0-FilingReviewMDEService.wsdl"),
+          "texas-stage", getRes("wsdl/stage/texas-ECF-4.0-FilingReviewMDEService.wsdl"),
+          "indiana-stage", getRes("wsdl/stage/indiana-ECF-4.0-FilingReviewMDEService.wsdl"),
+          "vermont-stage", getRes("wsdl/stage/vermont-ECF-4.0-FilingReviewMDEService.wsdl"));
 
-  static final Map<String, String> courtRecordMDEWsdls =
+  private static final Map<String, URL> courtRecordMDEWsdls =
       Map.of(
-          "illinois-stage", "wsdl/stage/illinois-ECF-4.0-CourtRecordMDEService.wsdl",
-          "illinois-test", "wsdl/test/illinois-ECF-4.0-CourtRecordMDEService.wsdl",
-          "illinois-prod", "wsdl/prod/illinois-ECF-4.0-CourtRecordMDEService.wsdl",
-          "massachusetts-stage", "wsdl/stage/massachusetts-ECF-4.0-CourtRecordMDEService.wsdl",
-          "massachusetts-prod", "wsdl/prod/massachusetts-ECF-4.0-CourtRecordMDEService.wsdl",
-          "california-stage", "wsdl/stage/california-ECF-4.0-CourtRecordMDEService.wsdl",
-          "texas-stage", "wsdl/stage/texas-ECF-4.0-CourtRecordMDEService.wsdl",
-          "indiana-stage", "wsdl/stage/indiana-ECF-4.0-CourtRecordMDEService.wsdl",
-          "vermont-stage", "wsdl/stage/vermont-ECF-4.0-CourtRecordMDEService.wsdl");
+          "illinois-stage", getRes("wsdl/stage/illinois-ECF-4.0-CourtRecordMDEService.wsdl"),
+          "illinois-test", getRes("wsdl/test/illinois-ECF-4.0-CourtRecordMDEService.wsdl"),
+          "illinois-prod", getRes("wsdl/prod/illinois-ECF-4.0-CourtRecordMDEService.wsdl"),
+          "massachusetts-stage",
+              getRes("wsdl/stage/massachusetts-ECF-4.0-CourtRecordMDEService.wsdl"),
+          "massachusetts-prod",
+              getRes("wsdl/prod/massachusetts-ECF-4.0-CourtRecordMDEService.wsdl"),
+          "california-stage", getRes("wsdl/stage/california-ECF-4.0-CourtRecordMDEService.wsdl"),
+          "texas-stage", getRes("wsdl/stage/texas-ECF-4.0-CourtRecordMDEService.wsdl"),
+          "indiana-stage", getRes("wsdl/stage/indiana-ECF-4.0-CourtRecordMDEService.wsdl"),
+          "vermont-stage", getRes("wsdl/stage/vermont-ECF-4.0-CourtRecordMDEService.wsdl"));
 
-  static final Map<String, String> courtSchedulingMDEWsdls =
+  private static final Map<String, URL> courtSchedulingMDEWsdls =
       Map.of(
-          "illinois-stage", "wsdl/stage/illinois-v5-CourtSchedulingMDE.wsdl",
-          "illinois-test", "wsdl/test/illinois-v5-CourtSchedulingMDE.wsdl",
-          "illinois-prod", "wsdl/prod/illinois-v5-CourtSchedulingMDE.wsdl");
+          "illinois-stage",
+          getRes("wsdl/stage/illinois-v5-CourtSchedulingMDE.wsdl"),
+          "illinois-prod",
+          getRes("wsdl/prod/illinois-v5-CourtSchedulingMDE.wsdl"));
+
+  private static URL getRes(String wsdlPath) {
+    URL url = SoapClientChooser.class.getClassLoader().getResource(wsdlPath);
+    if (url == null) {
+      log.error("Can not initialize the default wsdl from classpath: {}", wsdlPath);
+      throw new RuntimeException("Can't load Bad WSDL Path: " + wsdlPath);
+    }
+    return url;
+  }
 
   public static Optional<FilingReviewMDEService> getFilingReviewFactory(String wsdlDomain) {
     Optional<URL> url = urlFromString(wsdlDomain, filingReviewMDEWsdls);
@@ -101,18 +115,12 @@ public class SoapClientChooser {
     return getCourtSchedulingFactory(jurisdiction + "-" + env.getName());
   }
 
-  private static Optional<URL> urlFromString(String wsdlDomain, Map<String, String> domainToWsdl) {
+  private static Optional<URL> urlFromString(String wsdlDomain, Map<String, URL> domainToWsdl) {
     if (!domainToWsdl.containsKey(wsdlDomain)) {
       return Optional.empty();
     }
 
-    String wsdlPath = domainToWsdl.get(wsdlDomain);
-    URL url = SoapClientChooser.class.getClassLoader().getResource(wsdlPath);
-    if (url == null) {
-      log.info("Can not initialize the default wsdl from {}", "classpath:" + wsdlPath);
-      return Optional.empty();
-    }
-
+    URL url = domainToWsdl.get(wsdlDomain);
     return Optional.of(url);
   }
 }
