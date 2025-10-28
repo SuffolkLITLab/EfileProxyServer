@@ -138,8 +138,10 @@ public class CourtSchedulingService {
   @GET
   @Path("/")
   public Response getAll() {
-    EndpointReflection ef = new EndpointReflection("/jurisdictions/" + jurisdiction);
-    return Response.ok(ef.endPointsToMap(ef.findRESTEndpoints(List.of(PaymentsService.class))))
+    EndpointReflection ef =
+        new EndpointReflection("/jurisdictions/" + jurisdiction + "/scheduling");
+    return Response.ok(
+            ef.endPointsToMap(ef.findRESTEndpoints(List.of(CourtSchedulingService.class))))
         .build();
   }
 
@@ -430,7 +432,7 @@ public class CourtSchedulingService {
     }
     if (!locationInfo.get().allowhearing) {
       return Response.status(400)
-          .entity("Court " + courtId + " doesn't allow handling return dates")
+          .entity("Court " + courtId + " doesn't allow reserving dates")
           .build();
     }
 
