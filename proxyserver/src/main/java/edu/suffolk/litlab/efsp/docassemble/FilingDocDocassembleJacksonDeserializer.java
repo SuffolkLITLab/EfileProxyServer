@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 public class FilingDocDocassembleJacksonDeserializer {
   private static Logger log =
-      LoggerFactory.getLogger(FilingInformationDocassembleJacksonDeserializer.class);
+      LoggerFactory.getLogger(FilingDocDocassembleJacksonDeserializer.class);
 
   /** Parses a filing from the DA Json Object. Used by Deserializers that include filings. */
   public static Optional<FilingDoc> fromNode(

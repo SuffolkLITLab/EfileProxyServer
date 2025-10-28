@@ -10,6 +10,7 @@
     <url>https://suffolklitlab.org</url>
 
     <modules>
+        <module>EfspCommons</module>
         <module>TylerEfmClient</module>
         <module>TylerEcf4</module>
         <module>TylerEcf5</module>
@@ -52,6 +53,11 @@
             </dependency>
 
             <!-- This project! Dumb that maven makes us specify these here, but whatever-->
+            <dependency>
+                <groupId>edu.suffolk.litlab</groupId>
+                <artifactId>efsp-commons</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>edu.suffolk.litlab</groupId>
                 <artifactId>tyler-efm-client</artifactId>
