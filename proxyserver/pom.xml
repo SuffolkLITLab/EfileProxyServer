@@ -52,10 +52,10 @@
             <groupId>edu.suffolk.litlab</groupId>
             <artifactId>tyler-ecf4</artifactId>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>edu.suffolk.litlab</groupId>
             <artifactId>tyler-ecf5</artifactId>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>

@@ -1,8 +1,8 @@
 package edu.suffolk.litlab.efsp.model;
 
-import gov.niem.niem.niem_core._2.ObjectFactory;
-import gov.niem.niem.niem_core._2.PersonNameTextType;
-import gov.niem.niem.niem_core._2.PersonNameType;
+import ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory;
+import ecf4.latest.gov.niem.niem.niem_core._2.PersonNameTextType;
+import ecf4.latest.gov.niem.niem.niem_core._2.PersonNameType;
 import java.util.stream.Stream;
 
 public class Name {
@@ -86,7 +86,7 @@ public class Name {
     return maidenName;
   }
 
-  private static gov.niem.niem.niem_core._2.PersonNameTextType wrapName(String name) {
+  private static ecf4.latest.gov.niem.niem.niem_core._2.PersonNameTextType wrapName(String name) {
     ObjectFactory of = new ObjectFactory();
     PersonNameTextType t = of.createPersonNameTextType();
     t.setValue(name);
@@ -94,7 +94,7 @@ public class Name {
   }
 
   /** Returns the PersonNameType XML object from this Name. */
-  public gov.niem.niem.niem_core._2.PersonNameType getNameType() {
+  public ecf4.latest.gov.niem.niem.niem_core._2.PersonNameType getNameType() {
     ObjectFactory of = new ObjectFactory();
     PersonNameType personName = of.createPersonNameType();
     personName.setPersonGivenName(wrapName(firstName));

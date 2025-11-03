@@ -1,6 +1,26 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import ecf4.latest.gov.niem.niem.iso_4217._2.CurrencyCodeSimpleType;
+import ecf4.latest.gov.niem.niem.niem_core._2.AmountType;
+import ecf4.latest.gov.niem.niem.niem_core._2.CaseType;
+import ecf4.latest.gov.niem.niem.niem_core._2.IdentificationType;
+import ecf4.latest.gov.niem.niem.niem_core._2.PersonNameType;
+import ecf4.latest.gov.niem.niem.niem_core._2.TextType;
+import ecf4.latest.gov.niem.niem.structures._2.ReferenceType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.appellatecase_4.AppellateCaseType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryCriteriaType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.CivilCaseType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseOfficialType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.CriminalCaseType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.DomesticCaseType;
+import ecf4.latest.tyler.ecf.extensions.common.FilingAssociationType;
+import ecf4.latest.tyler.ecf.extensions.common.OrganizationIdentificationType;
+import ecf4.latest.tyler.ecf.extensions.common.ProcedureRemedyType;
+import ecf4.latest.tyler.ecf.extensions.common.ServicePartyDataType;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
@@ -19,13 +39,6 @@ import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
-import gov.niem.niem.iso_4217._2.CurrencyCodeSimpleType;
-import gov.niem.niem.niem_core._2.AmountType;
-import gov.niem.niem.niem_core._2.CaseType;
-import gov.niem.niem.niem_core._2.IdentificationType;
-import gov.niem.niem.niem_core._2.PersonNameType;
-import gov.niem.niem.niem_core._2.TextType;
-import gov.niem.niem.structures._2.ReferenceType;
 import jakarta.xml.bind.JAXBElement;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -39,46 +52,35 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.appellatecase_4.AppellateCaseType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryCriteriaType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.CivilCaseType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseOfficialType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.CriminalCaseType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.DomesticCaseType;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tyler.ecf.extensions.common.FilingAssociationType;
-import tyler.ecf.extensions.common.OrganizationIdentificationType;
-import tyler.ecf.extensions.common.ProcedureRemedyType;
-import tyler.ecf.extensions.common.ServicePartyDataType;
 
 public class EcfCaseTypeFactory {
   private static Logger log = LoggerFactory.getLogger(EcfCaseTypeFactory.class);
 
   private final CodeDatabase cd;
-  private final tyler.ecf.extensions.common.ObjectFactory tylerObjFac;
-  private final oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory
+  private final ecf4.latest.tyler.ecf.extensions.common.ObjectFactory tylerObjFac;
+  private final ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4
+          .ObjectFactory
       ecfCommonObjFac;
-  private final gov.niem.niem.niem_core._2.ObjectFactory of;
-  private final gov.niem.niem.structures._2.ObjectFactory structObjFac;
+  private final ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory of;
+  private final ecf4.latest.gov.niem.niem.structures._2.ObjectFactory structObjFac;
   private final Jurisdiction jurisdiction;
 
   public EcfCaseTypeFactory(CodeDatabase cd, Jurisdiction jurisdiction) {
     this.cd = cd;
-    this.tylerObjFac = new tyler.ecf.extensions.common.ObjectFactory();
+    this.tylerObjFac = new ecf4.latest.tyler.ecf.extensions.common.ObjectFactory();
     this.ecfCommonObjFac =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
-    this.of = new gov.niem.niem.niem_core._2.ObjectFactory();
-    this.structObjFac = new gov.niem.niem.structures._2.ObjectFactory();
+        new ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4
+            .ObjectFactory();
+    this.of = new ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory();
+    this.structObjFac = new ecf4.latest.gov.niem.niem.structures._2.ObjectFactory();
     this.jurisdiction = jurisdiction;
   }
 
-  public static Optional<tyler.ecf.extensions.common.CaseAugmentationType> getCaseAugmentation(
-      gov.niem.niem.niem_core._2.CaseType filedCase) {
+  public static Optional<ecf4.latest.tyler.ecf.extensions.common.CaseAugmentationType>
+      getCaseAugmentation(ecf4.latest.gov.niem.niem.niem_core._2.CaseType filedCase) {
     List<JAXBElement<?>> restList = List.of();
     if (filedCase instanceof CivilCaseType civilCase) {
       restList = civilCase.getRest();
@@ -90,15 +92,16 @@ public class EcfCaseTypeFactory {
       restList = appellate.getRest();
     }
     for (JAXBElement<?> elem : restList) {
-      if (elem.getValue() instanceof tyler.ecf.extensions.common.CaseAugmentationType aug) {
+      if (elem.getValue()
+          instanceof ecf4.latest.tyler.ecf.extensions.common.CaseAugmentationType aug) {
         return Optional.of(aug);
       }
     }
     return Optional.empty();
   }
 
-  public static Optional<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> getJCaseAugmentation(
-      gov.niem.niem.niem_core._2.CaseType filedCase) {
+  public static Optional<ecf4.latest.gov.niem.niem.domains.jxdm._4.CaseAugmentationType>
+      getJCaseAugmentation(ecf4.latest.gov.niem.niem.niem_core._2.CaseType filedCase) {
     List<JAXBElement<?>> restList = List.of();
     if (filedCase instanceof CivilCaseType civilCase) {
       restList = civilCase.getRest();
@@ -110,7 +113,8 @@ public class EcfCaseTypeFactory {
       restList = appellate.getRest();
     }
     for (JAXBElement<?> elem : restList) {
-      if (elem.getValue() instanceof gov.niem.niem.domains.jxdm._4.CaseAugmentationType aug) {
+      if (elem.getValue()
+          instanceof ecf4.latest.gov.niem.niem.domains.jxdm._4.CaseAugmentationType aug) {
         return Optional.of(aug);
       }
     }
@@ -119,7 +123,7 @@ public class EcfCaseTypeFactory {
 
   /** TODO(brycew): finish this function, lots of possible rabbit holes here. */
   public static Optional<Map<PartyId, Person>> getCaseParticipants(
-      gov.niem.niem.niem_core._2.CaseType filedCase) {
+      ecf4.latest.gov.niem.niem.niem_core._2.CaseType filedCase) {
     var existingParticipants = new HashMap<PartyId, Person>();
     var maybeAug = getCaseAugmentation(filedCase);
     if (maybeAug.isEmpty()) {
@@ -220,10 +224,11 @@ public class EcfCaseTypeFactory {
 
     DataFieldRow filingcaseparties = serializer.allDataFields.getFieldRow("FilingEventCaseParties");
     var toReturn = new ArrayList<FilingAssociationType>();
-    var structOf = new gov.niem.niem.structures._2.ObjectFactory();
+    var structOf = new ecf4.latest.gov.niem.niem.structures._2.ObjectFactory();
     if (filingcaseparties.isrequired) {
       for (Map.Entry<String, Object> filingObj : filingIdToObj.entrySet()) {
-        gov.niem.niem.structures._2.ReferenceType filingRt = structOf.createReferenceType();
+        ecf4.latest.gov.niem.niem.structures._2.ReferenceType filingRt =
+            structOf.createReferenceType();
         filingRt.setRef(filingObj.getValue());
         var filingAssociation = filingAssociations.get(filingObj.getKey());
         for (PartyId partyId : filingAssociation) {
@@ -263,7 +268,9 @@ public class EcfCaseTypeFactory {
    * @throws FilingError
    * @throws SQLException
    */
-  public Pair<JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType>, Map<String, Object>>
+  public Pair<
+          JAXBElement<? extends ecf4.latest.gov.niem.niem.niem_core._2.CaseType>,
+          Map<String, Object>>
       makeCaseTypeFromTylerCategory(
           CourtLocationInfo courtLocation,
           ComboCaseCodes comboCodes,
@@ -278,7 +285,7 @@ public class EcfCaseTypeFactory {
           InfoCollector collector,
           Map<String, Object> serviceContactToXmlObjs)
           throws SQLException, FilingError {
-    JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug =
+    JAXBElement<ecf4.latest.gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug =
         makeNiemCaseAug(courtLocation.code, info.getPreviousCaseId());
     var pair =
         makeTylerCaseAug(
@@ -292,8 +299,9 @@ public class EcfCaseTypeFactory {
             serializer,
             collector,
             serviceContactToXmlObjs);
-    JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug = pair.getLeft();
-    JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> myCase;
+    JAXBElement<ecf4.latest.tyler.ecf.extensions.common.CaseAugmentationType> tylerAug =
+        pair.getLeft();
+    JAXBElement<? extends ecf4.latest.gov.niem.niem.niem_core._2.CaseType> myCase;
     if (comboCodes.cat.ecfcasetype.equals("CivilCase")) {
       Optional<BigDecimal> amountInControversy = Optional.empty();
       boolean anyAmountInControversy =
@@ -361,14 +369,14 @@ public class EcfCaseTypeFactory {
     return Pair.of(myCase, pair.getRight());
   }
 
-  private static JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> makeNiemCaseAug(
-      String courtLocationId, Optional<String> trackingId) {
-    var jof = new gov.niem.niem.domains.jxdm._4.ObjectFactory();
+  private static JAXBElement<ecf4.latest.gov.niem.niem.domains.jxdm._4.CaseAugmentationType>
+      makeNiemCaseAug(String courtLocationId, Optional<String> trackingId) {
+    var jof = new ecf4.latest.gov.niem.niem.domains.jxdm._4.ObjectFactory();
     var caseAug = jof.createCaseAugmentationType();
     caseAug.setCaseCourt(Ecf4Helper.convertCourtType(courtLocationId));
     trackingId.ifPresent(
         tracking -> {
-          var coreObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
+          var coreObjFac = new ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory();
           var ct = coreObjFac.createCaseType();
           ct.setCaseTrackingID(Ecf4Helper.convertString(tracking));
           caseAug.getCaseLineageCase().add(ct);
@@ -376,7 +384,9 @@ public class EcfCaseTypeFactory {
     return jof.createCaseAugmentation(caseAug);
   }
 
-  private Pair<JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType>, Map<String, Object>>
+  private Pair<
+          JAXBElement<ecf4.latest.tyler.ecf.extensions.common.CaseAugmentationType>,
+          Map<String, Object>>
       makeTylerCaseAug(
           CourtLocationInfo courtLocation,
           ComboCaseCodes comboCodes,
@@ -847,15 +857,16 @@ public class EcfCaseTypeFactory {
    * @return A complete Civil Case type
    */
   private static JAXBElement<CivilCaseType> makeCivilCaseType(
-      JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
-      JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
+      JAXBElement<ecf4.latest.gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
+      JAXBElement<ecf4.latest.tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
       Optional<String> caseDocketId,
       Optional<String> caseTrackingId,
       Optional<BigDecimal> amountInControversy) {
     var ecfCivilObjFac =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory();
+        new ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4.ObjectFactory();
     var ecfCommonObjFac =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+        new ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4
+            .ObjectFactory();
     CivilCaseType c = ecfCivilObjFac.createCivilCaseType();
     caseDocketId.ifPresent(
         docket -> {
@@ -889,15 +900,16 @@ public class EcfCaseTypeFactory {
    * - lower_court_case.judge - trial_court.name (specifically lower_court_case.court.name)
    */
   private static JAXBElement<AppellateCaseType> makeAppellateCaseType(
-      JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
-      JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
+      JAXBElement<ecf4.latest.gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
+      JAXBElement<ecf4.latest.tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
       FilingInformation info,
       JsonNode node,
       InfoCollector collector)
       throws FilingError {
     var ecfAppellateObjFac =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.appellatecase_4.ObjectFactory();
-    var niemObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
+        new ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.appellatecase_4
+            .ObjectFactory();
+    var niemObjFac = new ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory();
     AppellateCaseType appl = ecfAppellateObjFac.createAppellateCaseType();
     info.getCaseDocketNumber()
         .ifPresent(
@@ -965,15 +977,17 @@ public class EcfCaseTypeFactory {
   }
 
   private static JAXBElement<DomesticCaseType> makeDomesticCaseType(
-      JAXBElement<gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
-      JAXBElement<tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
+      JAXBElement<ecf4.latest.gov.niem.niem.domains.jxdm._4.CaseAugmentationType> caseAug,
+      JAXBElement<ecf4.latest.tyler.ecf.extensions.common.CaseAugmentationType> tylerAug,
       Optional<String> caseDocketId,
       Optional<String> caseTrackingId,
       JsonNode node) {
     var ecfDomesticObjFac =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4.ObjectFactory();
+        new ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4
+            .ObjectFactory();
     var ecfCommonObjFac =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+        new ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4
+            .ObjectFactory();
     DomesticCaseType d = ecfDomesticObjFac.createDomesticCaseType();
     caseDocketId.ifPresent(
         docket -> {

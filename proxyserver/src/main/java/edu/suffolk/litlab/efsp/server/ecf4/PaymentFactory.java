@@ -1,22 +1,23 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentMeansType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.TaxCategoryType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.TaxTotalType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ChargeIndicatorType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaymentIDType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PercentType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxAmountType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.PaymentMessageType;
+import ecf4.latest.tyler.ecf.extensions.common.ProviderChargeType;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import java.math.BigDecimal;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentMeansType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.TaxCategoryType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.TaxTotalType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ChargeIndicatorType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaymentIDType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxAmountType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.PaymentMessageType;
-import tyler.ecf.extensions.common.ProviderChargeType;
 
 public class PaymentFactory {
   public static PaymentMessageType makePaymentMessage(String paymentId, Jurisdiction jurisdiction) {
     var ecfObjFac =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.ObjectFactory();
+        new ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4
+            .ObjectFactory();
     PaymentMessageType pmt = ecfObjFac.createPaymentMessageType();
     pmt.setFeeExceptionReasonCode("");
     pmt.setFeeExceptionSupportingText("");
@@ -24,7 +25,8 @@ public class PaymentFactory {
     pmt.getAllowanceCharge().add(makeAllowanceChargeType(paymentId, jurisdiction));
     // TODO(brycew-later): Do these need to be filled? With what?
     var cacObjFac =
-        new oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory();
+        new ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2
+            .ObjectFactory();
     pmt.setAddress(cacObjFac.createAddressType());
     pmt.setPayment(cacObjFac.createPaymentType());
     return pmt;
@@ -32,8 +34,8 @@ public class PaymentFactory {
 
   public static ProviderChargeType makeProviderChargeType(
       String paymentId, Jurisdiction jurisdiction) {
-    tyler.ecf.extensions.common.ObjectFactory tylerObjFac =
-        new tyler.ecf.extensions.common.ObjectFactory();
+    ecf4.latest.tyler.ecf.extensions.common.ObjectFactory tylerObjFac =
+        new ecf4.latest.tyler.ecf.extensions.common.ObjectFactory();
     ProviderChargeType pct = tylerObjFac.createProviderChargeType();
     pct.getAllowanceCharge().add(makeAllowanceChargeType(paymentId, jurisdiction));
     return pct;
@@ -42,9 +44,11 @@ public class PaymentFactory {
   private static AllowanceChargeType makeAllowanceChargeType(
       String paymentId, Jurisdiction jurisdiction) {
     var cacObjFac =
-        new oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ObjectFactory();
+        new ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2
+            .ObjectFactory();
     var cbcObjFac =
-        new oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ObjectFactory();
+        new ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2
+            .ObjectFactory();
     AllowanceChargeType act = cacObjFac.createAllowanceChargeType();
     var at = cbcObjFac.createAmountType();
     at.setCurrencyID("USD");

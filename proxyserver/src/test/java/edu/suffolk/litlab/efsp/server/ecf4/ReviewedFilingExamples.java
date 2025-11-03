@@ -1,6 +1,12 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
-import gov.niem.niem.niem_core._2.BinaryType;
+import ecf4.latest.gov.niem.niem.niem_core._2.BinaryType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.CardAccountType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentMeansType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AllowanceChargeReasonType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
+import ecf4.latest.tyler.ecf.extensions.common.ReviewedDocumentType;
 import java.time.LocalDate;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -13,19 +19,14 @@ import net.jqwik.api.Builders;
 import net.jqwik.api.Combinators;
 import net.jqwik.api.Provide;
 import net.jqwik.api.domains.DomainContextBase;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.CardAccountType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentMeansType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AllowanceChargeReasonType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
-import tyler.ecf.extensions.common.ReviewedDocumentType;
 
 public class ReviewedFilingExamples extends DomainContextBase {
 
-  private static final oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2
+  private static final ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2
           .ObjectFactory
       commonOf =
-          new oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ObjectFactory();
+          new ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2
+              .ObjectFactory();
 
   private static final DatatypeFactory dateFactory = DatatypeFactory.newDefaultInstance();
 

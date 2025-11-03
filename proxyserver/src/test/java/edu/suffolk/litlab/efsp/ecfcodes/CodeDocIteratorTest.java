@@ -2,6 +2,8 @@ package edu.suffolk.litlab.efsp.ecfcodes;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import ecf4.latest.org.oasis_open.docs.codelist.ns.genericode._1.CodeListDocument;
+import ecf4.latest.org.oasis_open.docs.codelist.ns.genericode._1.Column;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
 import java.io.InputStream;
@@ -13,8 +15,6 @@ import java.util.Map;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import org.junit.jupiter.api.Test;
-import org.oasis_open.docs.codelist.ns.genericode._1.CodeListDocument;
-import org.oasis_open.docs.codelist.ns.genericode._1.Column;
 
 public class CodeDocIteratorTest {
 

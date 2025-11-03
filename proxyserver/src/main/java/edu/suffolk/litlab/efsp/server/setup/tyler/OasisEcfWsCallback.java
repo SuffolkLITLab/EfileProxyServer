@@ -1,5 +1,22 @@
 package edu.suffolk.litlab.efsp.server.setup.tyler;
 
+import ecf4.latest.gov.niem.niem.domains.jxdm._4.CaseAugmentationType;
+import ecf4.latest.gov.niem.niem.niem_core._2.IdentificationType;
+import ecf4.latest.gov.niem.niem.niem_core._2.TextType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.CardAccountType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentRenditionType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.FilingStatusType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ReviewedDocumentType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.messagereceiptmessage_4.MessageReceiptMessageType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.messagereceiptmessage_4.ObjectFactory;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.PaymentMessageType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.reviewfilingcallbackmessage_4.ReviewFilingCallbackMessageType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.NotifyFilingReviewCompleteRequestMessageType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingAssemblyMDEPort;
+import ecf4.latest.tyler.ecf.extensions.eventcallbackmessage.EventCallbackMessageType;
+import ecf4.latest.tyler.ecf.extensions.servicecallbackmessage.ServiceCallbackMessageType;
 import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.db.model.Transaction;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
@@ -10,31 +27,14 @@ import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.services.api.UpdateMessageStatus;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
-import gov.niem.niem.domains.jxdm._4.CaseAugmentationType;
-import gov.niem.niem.niem_core._2.IdentificationType;
-import gov.niem.niem.niem_core._2.TextType;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.CardAccountType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentRenditionType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.FilingStatusType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ReviewedDocumentType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.messagereceiptmessage_4.MessageReceiptMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.messagereceiptmessage_4.ObjectFactory;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.paymentmessage_4.PaymentMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.reviewfilingcallbackmessage_4.ReviewFilingCallbackMessageType;
-import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4.NotifyFilingReviewCompleteRequestMessageType;
-import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingAssemblyMDEPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import tyler.ecf.extensions.eventcallbackmessage.EventCallbackMessageType;
-import tyler.ecf.extensions.servicecallbackmessage.ServiceCallbackMessageType;
 
 // TODO(brycew): does this need to become multiple different files, one for each jurisdiction? Can't
 // have multiple wsdlLocations
@@ -101,7 +101,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       return "";
     }
     StringBuilder docText = new StringBuilder();
-    if (doc instanceof tyler.ecf.extensions.common.ReviewedDocumentType tylerDoc) {
+    if (doc instanceof ecf4.latest.tyler.ecf.extensions.common.ReviewedDocumentType tylerDoc) {
       var description = Ecf4Helper.getNonEmptyText(tylerDoc.getDocumentDescriptionText());
       description.ifPresent(
           desc -> {

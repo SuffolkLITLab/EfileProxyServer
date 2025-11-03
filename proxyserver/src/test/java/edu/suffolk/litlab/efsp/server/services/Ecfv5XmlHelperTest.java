@@ -2,8 +2,8 @@ package edu.suffolk.litlab.efsp.server.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import ecf4.latest.gov.niem.release.niem.niem_core._4.DateType;
 import edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper;
-import gov.niem.release.niem.niem_core._4.DateType;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
