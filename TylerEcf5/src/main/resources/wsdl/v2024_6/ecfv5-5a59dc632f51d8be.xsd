@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- edited with XMLSpy v2018 sp1 (http://www.altova.com) by Tyler Technologies (Tyler Technologies) --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ecf="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" xmlns:niem-xs="http://release.niem.gov/niem/proxy/xsd/4.0/" xmlns:recordreceipt="urn:tyler:ecf:v5.0:extensions:recordreceipt" xmlns:structures="http://release.niem.gov/niem/structures/4.0/" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:tyler:ecf:v5.0:extensions:recordreceipt">
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" schemaLocation="ecfv5-ea1e0f75b69752b5.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/niem-core/4.0/" schemaLocation="ecfv5-7af13829a6695741.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/proxy/xsd/4.0/" schemaLocation="ecfv5-4d179e3e0bd140a9.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/structures/4.0/" schemaLocation="ecfv5-43381e9aa490c46d.xsd"/>
+	<xs:complexType name="RecordReceiptMessageType">
+		<xs:annotation>
+			<xs:documentation>Message to record receipt for filing.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ecf:CaseFilingType">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="nc:Case"/>
+					<xs:element ref="ecf:FilingStatus"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="ecf:ConnectedDocumentReview"/>
+					<xs:element maxOccurs="unbounded" minOccurs="1" ref="ecf:LeadDocumentReview"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="recordreceipt:RecordReceiptMessageAugmentationPoint"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="RecordReceiptMessage" type="recordreceipt:RecordReceiptMessageType">
+		<xs:annotation>
+			<xs:documentation>Message to record receipt for filing.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element abstract="true" name="RecordReceiptMessageAugmentationPoint">
+		<xs:annotation>
+			<xs:documentation>An extension point for the enclosing message.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>
