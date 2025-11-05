@@ -18,7 +18,7 @@ public enum Jurisdiction {
   TEXAS("texas", Api.ECF_4, Vendor.TYLER),
   VERMONT("vermont", Api.ECF_4, Vendor.TYLER);
 
-  private enum Api {
+  public enum Api {
     JEFFNET,
     ECF_4,
     // Illinois uses a custom Tyler ECF4 version, which includes a pre-release ECF 5
@@ -26,7 +26,7 @@ public enum Jurisdiction {
     ECF_4_Schedule;
   }
 
-  private enum Vendor {
+  public enum Vendor {
     JEFFERSON_PARISH,
     TYLER;
   }
@@ -47,6 +47,10 @@ public enum Jurisdiction {
 
   public Vendor getVendor() {
     return vendor;
+  }
+
+  public Api getApi() {
+    return api;
   }
 
   public static Jurisdiction parse(String value) {

@@ -47,7 +47,7 @@ import org.slf4j.MDC;
     // https://docs.oracle.com/cd/E13222_01/wls/docs92/webserv/annotations.html
     // wsdlLocation="file:src/main/resources/wsdl/stage/illinois-ECF-4.0-FilingAssemblyMDEService-mod.wsdl",
     endpointInterface =
-        "oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingAssemblyMDEPort")
+        "ecf4.latest.oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingAssemblyMDEPort")
 public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
   private static Logger log = LoggerFactory.getLogger(OasisEcfWsCallback.class);
 

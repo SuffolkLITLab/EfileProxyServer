@@ -56,7 +56,7 @@ public class DocumentStampInformationMessageType
      * 
      * @return
      *     possible object is
-     *     {@link ecf4.gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf4.latest.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
     public ecf4.latest.gov.niem.release.niem.proxy.xsd._4.String getCaseTrackingID() {
@@ -68,7 +68,7 @@ public class DocumentStampInformationMessageType
      * 
      * @param value
      *     allowed object is
-     *     {@link ecf4.gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf4.latest.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
     public void setCaseTrackingID(ecf4.latest.gov.niem.release.niem.proxy.xsd._4.String value) {

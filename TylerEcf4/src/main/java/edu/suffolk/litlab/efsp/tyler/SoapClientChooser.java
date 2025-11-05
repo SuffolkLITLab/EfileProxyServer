@@ -4,6 +4,7 @@ import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.c
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import java.net.URL;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -20,7 +21,6 @@ public class SoapClientChooser {
   private static final String SERVICE_SUFFIX = "-ECF-4.0-ServiceMDEService.wsdl";
   private static final String REVIEW_SUFFIX = "-ECF-4.0-FilingReviewMDEService.wsdl";
   private static final String RECORD_SUFFIX = "-ECF-4.0-CourtRecordMDEService.wsdl";
-
   private static final String SCHEDULE_SUFFIX = "-v5-CourtSchedulingMDE.wsdl";
 
   private static URL getRes(TylerDomain domain, TylerVersion version, String suffix) {
@@ -56,6 +56,9 @@ public class SoapClientChooser {
   }
 
   public static Optional<CourtSchedulingMDE_Service> getCourtSchedulingFactory(TylerDomain domain) {
+    if (domain.jurisdiction().getApi() != Jurisdiction.Api.ECF_4_Schedule) {
+      return Optional.empty();
+    }
     var version = TylerClients.getVersion(domain);
     return version.map(v -> new CourtSchedulingMDE_Service(getRes(domain, v, SCHEDULE_SUFFIX)));
   }
