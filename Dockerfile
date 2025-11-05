@@ -6,6 +6,7 @@ LABEL git-commit=$CI_COMMIT_SHA
 COPY pom.xml /app/
 COPY EfspCommons /app/EfspCommons/
 COPY TylerEcf4 /app/TylerEcf4/
+COPY TylerEcf5 /app/TylerEcf5/
 COPY TylerEfmClient /app/TylerEfmClient/
 COPY proxyserver/pom.xml proxyserver/enunciate.xml /app/proxyserver/
 # Install all of the maven packages, so we don't have to every time we change code
