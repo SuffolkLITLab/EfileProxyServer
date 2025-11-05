@@ -14,10 +14,10 @@
 	</wsp:Policy>
 	<wsdl:types>
 		<xsd:schema>
-			<xsd:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/wrappers" schemaLocation="../base/ecfv5-bc4df19763eade9e.xsd"/>
-			<xsd:import namespace="urn:tyler:ecf:v5.0:extensions:common" schemaLocation="../base/ecfv5-dd545670aa04333d.xsd"/>
-			<xsd:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/appellate" schemaLocation="../base/ecfv5-1d89e43330d68bb4.xsd"/>
-			<xsd:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/civil" schemaLocation="../base/ecfv5-43e22a9b317738fe.xsd" schemaLocattion="..\..\schema\civil.xsd"/>
+			<xsd:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/wrappers" schemaLocation="ecfv5-bc4df19763eade9e.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:v5.0:extensions:common" schemaLocation="ecfv5-dd545670aa04333d.xsd"/>
+			<xsd:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/appellate" schemaLocation="ecfv5-1d89e43330d68bb4.xsd"/>
+			<xsd:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/civil" schemaLocation="ecfv5-43e22a9b317738fe.xsd"/>
 		</xsd:schema>
 	</wsdl:types>
 	<!-- messages -->
