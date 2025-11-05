@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions targetNamespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/FilingReviewMDE" xmlns:wsmp="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/FilingReviewMDE" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+	<import location="../base/FilingReviewMDE.xsd" namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/FilingReviewMDE"/>
+	<import location="../base/ecfv5-dd545670aa04333d.xsd" namespace="urn:tyler:ecf:v5.0:extensions:common"/>
+	<import location="../base/ecf5-criminal-extension.xsd" namespace="urn:tyler:ecf:v5.0:extensions:criminal"/>
+	<import location="../base/ecf5-massachusetts-extension.xsd" namespace="urn:tyler:ecf:v5.0:extensions:massachusetts"/>
+	<import location="../base/ecf5-taxdelinquency-extension.xsd" namespace="urn:tyler:ecf:v5.0:extensions:taxdelinquency"/>
+	<service name="FilingReviewMDEService">
+		<port name="FilingReviewMDE" binding="wsmp:FilingReviewMDESoap">
+			<soap:address location="https://illinois-stage.tylertech.cloud/efm/v5/filingreviewservice.svc"/>
+		</port>
+	</service>
+</definitions>

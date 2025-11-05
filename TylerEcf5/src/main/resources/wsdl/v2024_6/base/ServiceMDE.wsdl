@@ -14,7 +14,7 @@
 	</wsp:Policy>
 	<wsdl:types>
 		<xsd:schema>
-			<xsd:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/wrappers" schemaLocation="ecfv5-bc4df19763eade9e.xsd"/>
+			<xsd:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/wrappers" schemaLocation="../base/ecfv5-bc4df19763eade9e.xsd"/>
 		</xsd:schema>
 	</wsdl:types>
 	<!-- messages -->

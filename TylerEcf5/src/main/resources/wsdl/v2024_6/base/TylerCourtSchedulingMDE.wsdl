@@ -5,7 +5,7 @@
 	</wsp:Policy>
 	<wsdl:types>
 		<xsd:schema>
-			<xsd:import namespace="urn:tyler:ecf:v5.0:extensions:wrappers" schemaLocation="ecfv5-602d09642dfaa9bc.xsd"/>
+			<xsd:import namespace="urn:tyler:ecf:v5.0:extensions:wrappers" schemaLocation="../base/ecfv5-602d09642dfaa9bc.xsd"/>
 		</xsd:schema>
 	</wsdl:types>
 	
