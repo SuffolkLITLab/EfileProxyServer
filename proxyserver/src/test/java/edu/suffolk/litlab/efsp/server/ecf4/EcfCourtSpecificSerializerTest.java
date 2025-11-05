@@ -12,6 +12,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
+import ecf4.latest.tyler.ecf.extensions.common.CapabilityType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CrossReference;
@@ -29,12 +33,8 @@ import jakarta.xml.bind.JAXBException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tyler.ecf.extensions.common.CapabilityType;
 
 public class EcfCourtSpecificSerializerTest {
 
@@ -107,8 +107,11 @@ public class EcfCourtSpecificSerializerTest {
     CaseParticipantType cpt = courtSer.serializeEcfCaseParticipant(user, collector, okPartyTypes);
     assertEquals("1234", cpt.getCaseParticipantRoleCode().getValue());
     assertTrue(
-        cpt.getEntityRepresentation().getValue() instanceof gov.niem.niem.niem_core._2.PersonType);
-    var pt = (gov.niem.niem.niem_core._2.PersonType) cpt.getEntityRepresentation().getValue();
+        cpt.getEntityRepresentation().getValue()
+            instanceof ecf4.latest.gov.niem.niem.niem_core._2.PersonType);
+    var pt =
+        (ecf4.latest.gov.niem.niem.niem_core._2.PersonType)
+            cpt.getEntityRepresentation().getValue();
     assertTrue(pt.getPersonCapability().getValue() instanceof CapabilityType);
     CapabilityType ct = (CapabilityType) pt.getPersonCapability().getValue();
     assertTrue(ct.getIAmThisUserIndicator().isValue());

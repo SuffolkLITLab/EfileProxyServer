@@ -1,16 +1,21 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
 import com.hubspot.algebra.Result;
+import ecf4.latest.gov.niem.niem.domains.jxdm._4.CourtType;
+import ecf4.latest.gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
+import ecf4.latest.gov.niem.niem.fips_10_4._2.CountryCodeType;
+import ecf4.latest.gov.niem.niem.niem_core._2.DateType;
+import ecf4.latest.gov.niem.niem.niem_core._2.EntityType;
+import ecf4.latest.gov.niem.niem.niem_core._2.MeasureType;
+import ecf4.latest.gov.niem.niem.niem_core._2.TextType;
+import ecf4.latest.gov.niem.niem.proxy.xsd._2.Decimal;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryMessageType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
-import gov.niem.niem.domains.jxdm._4.CourtType;
-import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
-import gov.niem.niem.fips_10_4._2.CountryCodeType;
-import gov.niem.niem.niem_core._2.DateType;
-import gov.niem.niem.niem_core._2.EntityType;
-import gov.niem.niem.niem_core._2.MeasureType;
-import gov.niem.niem.niem_core._2.TextType;
-import gov.niem.niem.proxy.xsd._2.Decimal;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
@@ -29,11 +34,6 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseFilingType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.QueryResponseMessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,15 +53,15 @@ import org.slf4j.LoggerFactory;
 public class Ecf4Helper {
   private static final Logger log = LoggerFactory.getLogger(Ecf4Helper.class);
 
-  static final gov.niem.niem.proxy.xsd._2.ObjectFactory niemProxyObjFac;
-  static final gov.niem.niem.niem_core._2.ObjectFactory niemCoreObjFac;
-  static final gov.niem.niem.domains.jxdm._4.ObjectFactory jxObjFac;
+  static final ecf4.latest.gov.niem.niem.proxy.xsd._2.ObjectFactory niemProxyObjFac;
+  static final ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory niemCoreObjFac;
+  static final ecf4.latest.gov.niem.niem.domains.jxdm._4.ObjectFactory jxObjFac;
   static final DatatypeFactory datatypeFac;
 
   static {
-    niemProxyObjFac = new gov.niem.niem.proxy.xsd._2.ObjectFactory();
-    niemCoreObjFac = new gov.niem.niem.niem_core._2.ObjectFactory();
-    jxObjFac = new gov.niem.niem.domains.jxdm._4.ObjectFactory();
+    niemProxyObjFac = new ecf4.latest.gov.niem.niem.proxy.xsd._2.ObjectFactory();
+    niemCoreObjFac = new ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory();
+    jxObjFac = new ecf4.latest.gov.niem.niem.domains.jxdm._4.ObjectFactory();
     try {
       datatypeFac = DatatypeFactory.newInstance();
     } catch (DatatypeConfigurationException e) {
@@ -76,7 +76,7 @@ public class Ecf4Helper {
     // GregorianCalendar operate?
     cal.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), 0, 0, 0);
 
-    gov.niem.niem.proxy.xsd._2.Date d = niemProxyObjFac.createDate();
+    ecf4.latest.gov.niem.niem.proxy.xsd._2.Date d = niemProxyObjFac.createDate();
     XMLGregorianCalendar x = datatypeFac.newXMLGregorianCalendar(cal);
     x.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
     d.setValue(x);
@@ -87,8 +87,9 @@ public class Ecf4Helper {
   }
 
   /** Niem's Boolean type: either true or false. */
-  public static gov.niem.niem.proxy.xsd._2.Boolean convertBool(boolean bool) {
-    gov.niem.niem.proxy.xsd._2.Boolean val = new gov.niem.niem.proxy.xsd._2.Boolean();
+  public static ecf4.latest.gov.niem.niem.proxy.xsd._2.Boolean convertBool(boolean bool) {
+    ecf4.latest.gov.niem.niem.proxy.xsd._2.Boolean val =
+        new ecf4.latest.gov.niem.niem.proxy.xsd._2.Boolean();
     val.setValue(bool);
     return val;
   }
@@ -115,8 +116,8 @@ public class Ecf4Helper {
    * Converts a Java string to NIEM's XML String. "A datatype for character strings in XML."
    * Practically, just a xsd:string with the extra SimpleObjectAttributeGroup attributes.
    */
-  public static gov.niem.niem.proxy.xsd._2.String convertString(String str) {
-    gov.niem.niem.proxy.xsd._2.String outStr = niemProxyObjFac.createString();
+  public static ecf4.latest.gov.niem.niem.proxy.xsd._2.String convertString(String str) {
+    ecf4.latest.gov.niem.niem.proxy.xsd._2.String outStr = niemProxyObjFac.createString();
     outStr.setValue(str);
     return outStr;
   }
@@ -141,13 +142,13 @@ public class Ecf4Helper {
     }
   }
 
-  public static gov.niem.niem.niem_core._2.IdentificationType convertId(String idStr) {
+  public static ecf4.latest.gov.niem.niem.niem_core._2.IdentificationType convertId(String idStr) {
     var id = niemCoreObjFac.createIdentificationType();
     id.setIdentificationID(convertString(idStr));
     return id;
   }
 
-  public static gov.niem.niem.niem_core._2.IdentificationType convertId(
+  public static ecf4.latest.gov.niem.niem.niem_core._2.IdentificationType convertId(
       String idStr, String category) {
     var id = niemCoreObjFac.createIdentificationType();
     id.setIdentificationID(convertString(idStr));
@@ -176,13 +177,14 @@ public class Ecf4Helper {
   }
 
   /** Converts a Java string to a URI. */
-  public static gov.niem.niem.proxy.xsd._2.AnyURI convertUri(String uri) {
-    gov.niem.niem.proxy.xsd._2.AnyURI anyUri = niemProxyObjFac.createAnyURI();
+  public static ecf4.latest.gov.niem.niem.proxy.xsd._2.AnyURI convertUri(String uri) {
+    ecf4.latest.gov.niem.niem.proxy.xsd._2.AnyURI anyUri = niemProxyObjFac.createAnyURI();
     anyUri.setValue(uri);
     return anyUri;
   }
 
-  public static gov.niem.niem.proxy.xsd._2.Base64Binary convertBase64(final byte[] rawContent) {
+  public static ecf4.latest.gov.niem.niem.proxy.xsd._2.Base64Binary convertBase64(
+      final byte[] rawContent) {
     var binaryString = niemProxyObjFac.createBase64Binary();
     // We don't need to encode Base64? For some strange reason, JAXB does it for us.
     // See https://stackoverflow.com/a/7224025
@@ -243,10 +245,12 @@ public class Ecf4Helper {
     JAXBContext jaxContext =
         JAXBContext.newInstance(
             toXmlClazz,
-            gov.niem.niem.niem_core._2.ObjectFactory.class,
-            gov.niem.niem.structures._2.ObjectFactory.class,
-            oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
-            oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class
+            ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory.class,
+            ecf4.latest.gov.niem.niem.structures._2.ObjectFactory.class,
+            ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4
+                .ObjectFactory.class,
+            ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory
+                .class
             /* ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ObjectFactory.class,
             ecfv5.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.ObjectFactory.class,
             ecfv5.gov.niem.release.niem.niem_core._4.ObjectFactory.class,
@@ -271,10 +275,12 @@ public class Ecf4Helper {
       throws JAXBException {
     JAXBContext jc =
         JAXBContext.newInstance(
-            gov.niem.niem.niem_core._2.ObjectFactory.class,
-            gov.niem.niem.structures._2.ObjectFactory.class,
-            oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.ObjectFactory.class,
-            oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory.class);
+            ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory.class,
+            ecf4.latest.gov.niem.niem.structures._2.ObjectFactory.class,
+            ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4
+                .ObjectFactory.class,
+            ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory
+                .class);
     Marshaller mar = jc.createMarshaller();
     mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
     QName qname = new QName("suffolk.test.objectToXml", "objectToXml");
@@ -298,7 +304,8 @@ public class Ecf4Helper {
   public static <T extends QueryMessageType> T prep(T newMsg, String courtId) {
     EntityType typ = new EntityType();
     var commonObjFac =
-        new oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ObjectFactory();
+        new ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4
+            .ObjectFactory();
     JAXBElement<PersonType> elem2 = commonObjFac.createEntityPerson(new PersonType());
     typ.setEntityRepresentation(elem2);
     newMsg.setQuerySubmitter(typ);
@@ -323,7 +330,7 @@ public class Ecf4Helper {
    * ones.
    */
   public static Optional<Error> checkError(
-      oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType error) {
+      ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType error) {
     var errCode = error.getErrorCode();
     if (errCode != null && !errCode.getValue().equals("0")) {
       log.error("Error!: {}: {}", errCode.getValue(), error.getErrorText().getValue());
@@ -333,7 +340,8 @@ public class Ecf4Helper {
   }
 
   public static List<Error> checkErrors(
-      List<oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType> errors) {
+      List<ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.ErrorType>
+          errors) {
     return errors.stream().flatMap(err -> checkError(err).stream()).toList();
   }
 

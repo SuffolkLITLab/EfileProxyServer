@@ -1,5 +1,8 @@
 package edu.suffolk.litlab.efsp.ecfcodes;
 
+import ecf4.latest.org.oasis_open.docs.codelist.ns.genericode._1.CodeListDocument;
+import ecf4.latest.org.oasis_open.docs.codelist.ns.genericode._1.ColumnSet;
+import ecf4.latest.org.oasis_open.docs.codelist.ns.genericode._1.Identification;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -15,9 +18,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-import org.oasis_open.docs.codelist.ns.genericode._1.CodeListDocument;
-import org.oasis_open.docs.codelist.ns.genericode._1.ColumnSet;
-import org.oasis_open.docs.codelist.ns.genericode._1.Identification;
 
 /**
  * A class that iterates over Genericode XML files using constant memory.

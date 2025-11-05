@@ -70,7 +70,7 @@ public class TylerClients {
     return "https://" + domain.getName() + ".tylertech.cloud/";
   }
 
-  private static Optional<TylerVersion> getVersion(TylerDomain domain) {
+  public static Optional<TylerVersion> getVersion(TylerDomain domain) {
     Map<Jurisdiction, TylerVersion> versionMap =
         switch (domain.env()) {
           case TylerEnv.STAGE -> STAGE_VERSION_MAP;

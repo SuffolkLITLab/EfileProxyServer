@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:tyler:ecf:extensions:ServiceInformationHistoryResponseMessage" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:i="http://niem.gov/niem/appinfo/2.0" xmlns:j="http://niem.gov/niem/domains/jxdm/4.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" xmlns:s="http://niem.gov/niem/structures/2.0" targetNamespace="urn:tyler:ecf:extensions:ServiceInformationHistoryResponseMessage">
+	<xsd:annotation>
+		<xsd:documentation>ServiceInformationHistoryResponseMessage</xsd:documentation>
+		<xsd:appinfo>
+			<i:ConformantIndicator>true</i:ConformantIndicator>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="ecf-2.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-3.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="ecf-4.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-13.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/domains/jxdm/4.0" schemaLocation="ecf-17.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="ecf-18.xsd"/>
+	<xsd:complexType name="ServiceInformationHistoryResponseMessageType">
+		<xsd:annotation>
+			<xsd:documentation>The response to a ServiceInformationHistoryQueryMessage, setting forth the requested extended information.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="ecf:QueryResponseMessageType">
+				<xsd:sequence>
+					<xsd:element ref="nc:CaseTrackingID"/>
+					<xsd:element maxOccurs="unbounded" minOccurs="0" ref="ServiceRecipient"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="ServiceInformationHistoryResponseMessage" type="ServiceInformationHistoryResponseMessageType">
+		<xsd:annotation>
+			<xsd:documentation>The response to a serviceInformationHistoryQueryMessage, setting forth the requested extended information.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="ServiceRecipientType">
+		<xsd:complexContent>
+			<xsd:extension base="nc:EntityType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="unbounded" ref="Action"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ActionType">
+		<xsd:sequence>
+			<xsd:element ref="ContactAction"/>
+			<xsd:element minOccurs="0" ref="ActionTimestamp"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="ServiceRecipient" type="ServiceRecipientType">
+		<xsd:annotation>
+			<xsd:documentation>The person or organization to be served in this case</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContactAction" type="nc:TextType"/>
+	<xsd:element name="ActionTimestamp" type="nc:DateType"/>
+	<xsd:element name="Action" type="ActionType"/>
+</xsd:schema>

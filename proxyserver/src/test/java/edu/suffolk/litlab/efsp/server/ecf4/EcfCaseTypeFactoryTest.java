@@ -8,6 +8,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.hubspot.algebra.Result;
+import ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
 import edu.suffolk.litlab.efsp.docassemble.DocassembleToFilingInformationConverter;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CrossReference;
@@ -19,7 +21,6 @@ import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
-import gov.niem.niem.niem_core._2.ObjectFactory;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -31,7 +32,6 @@ import java.util.Optional;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -77,7 +77,7 @@ public class EcfCaseTypeFactoryTest {
     XMLStreamReader sr = xmlInputFactory.createXMLStreamReader(inStream);
     Unmarshaller u =
         JAXBContext.newInstance(
-                ObjectFactory.class, gov.niem.niem.structures._2.ObjectFactory.class)
+                ObjectFactory.class, ecf4.latest.gov.niem.niem.structures._2.ObjectFactory.class)
             .createUnmarshaller();
     return u.unmarshal(sr, CaseResponseMessageType.class).getValue();
   }
@@ -88,7 +88,8 @@ public class EcfCaseTypeFactoryTest {
     var myCase =
         readFromFile(this.getClass().getResourceAsStream("/case_resp.xml")).getCase().getValue();
     System.out.println(
-        Ecf4Helper.objectToXmlStrOrError(myCase, gov.niem.niem.niem_core._2.CaseType.class));
+        Ecf4Helper.objectToXmlStrOrError(
+            myCase, ecf4.latest.gov.niem.niem.niem_core._2.CaseType.class));
     Optional<Map<PartyId, Person>> participants = EcfCaseTypeFactory.getCaseParticipants(myCase);
     assertTrue(participants.isPresent());
     assertEquals(participants.get().size(), 2);
@@ -109,7 +110,7 @@ public class EcfCaseTypeFactoryTest {
 
   @Test
   public void shouldMatchExistingPartyPersonOrOrgXmlWrappers() throws Exception {
-    // gov.niem.niem.niem_core._2.CaseType myCase =
+    // ecf4.latest.gov.niem.niem.niem_core._2.CaseType myCase =
     // readFromFile(this.getClass().getResourceAsStream("/case_resp.xml")).getCase().getValue();
     // EcfCaseTypeFactory caseFactory = new EcfCaseTypeFactory(cd, "illinois");
     EcfCaseTypeFactory.getCriteria();
@@ -131,7 +132,7 @@ public class EcfCaseTypeFactoryTest {
         Map.of("id", Pair.of(new PartyType("", "", "", "", "", "", "", "", "", "", "", ""), true)));
     loc.code = "coles";
     EcfCourtSpecificSerializer courtSer = new EcfCourtSpecificSerializer(cd, loc);
-    JAXBElement<? extends gov.niem.niem.niem_core._2.CaseType> retVal =
+    JAXBElement<? extends ecf4.latest.gov.niem.niem.niem_core._2.CaseType> retVal =
         caseFactory.makeCaseTypeFromTylerCategory(loc, combos, info, false, false,
             List.of("177239"), "filing", info.getMiscInfo(), courtSer, collector, Map.of());
     assertTrue(retVal.getValue() != null);

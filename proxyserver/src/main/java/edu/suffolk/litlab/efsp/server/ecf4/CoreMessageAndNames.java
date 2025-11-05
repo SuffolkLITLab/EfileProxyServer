@@ -1,7 +1,7 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.CoreFilingMessageType;
 import jakarta.annotation.Nullable;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.corefilingmessage_4.CoreFilingMessageType;
 
 public class CoreMessageAndNames {
   public final CoreFilingMessageType cfm;

@@ -7,6 +7,30 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.hubspot.algebra.Result;
+import ecf4.latest.gov.niem.release.niem.domains.cbrn._4.MessageContentErrorType;
+import ecf4.latest.gov.niem.release.niem.domains.cbrn._4.MessageErrorType;
+import ecf4.latest.gov.niem.release.niem.domains.cbrn._4.MessageStatusType;
+import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.CourtEventType;
+import ecf4.latest.gov.niem.release.niem.niem_core._4.CaseType;
+import ecf4.latest.gov.niem.release.niem.niem_core._4.DateRangeType;
+import ecf4.latest.gov.niem.release.niem.niem_core._4.DateType;
+import ecf4.latest.gov.niem.release.niem.niem_core._4.IdentificationType;
+import ecf4.latest.gov.niem.release.niem.proxy.xsd._4.Duration;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ReserveCourtDateRequestType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ReturnDateRequestType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ReserveCourtDateMessageType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE_Service;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.CourtRecordMDEPort;
+import ecf4.latest.tyler.ecf.v5_0.extensions.common.CourtScheduleType;
+import ecf4.latest.tyler.ecf.v5_0.extensions.reservedateresponse.ReserveDateResponseMessageType;
+import ecf4.latest.tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
+import ecf4.latest.tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateResponseMessageType;
+import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
@@ -21,11 +45,11 @@ import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCourtSpecificSerializer;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecfv5CaseTypeFactory;
-import edu.suffolk.litlab.efsp.server.ecf4.SoapClientChooser;
 import edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
+import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
@@ -34,22 +58,6 @@ import edu.suffolk.litlab.efsp.utils.Hasher;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
-import gov.niem.release.niem.domains.cbrn._4.MessageContentErrorType;
-import gov.niem.release.niem.domains.cbrn._4.MessageErrorType;
-import gov.niem.release.niem.domains.cbrn._4.MessageStatusType;
-import gov.niem.release.niem.domains.jxdm._6.CourtEventType;
-import gov.niem.release.niem.niem_core._4.CaseType;
-import gov.niem.release.niem.niem_core._4.DateRangeType;
-import gov.niem.release.niem.niem_core._4.DateType;
-import gov.niem.release.niem.niem_core._4.IdentificationType;
-import gov.niem.release.niem.proxy.xsd._4.Duration;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ReserveCourtDateRequestType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ReturnDateRequestType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ReserveCourtDateMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.courtschedulingmde.CourtSchedulingMDE_Service;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -74,18 +82,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
-import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.CourtRecordMDEPort;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import tyler.ecf.v5_0.extensions.common.CourtScheduleType;
-import tyler.ecf.v5_0.extensions.reservedateresponse.ReserveDateResponseMessageType;
-import tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
-import tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateResponseMessageType;
-import tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 
 @Produces({MediaType.APPLICATION_JSON})
 public class CourtSchedulingService {
@@ -93,12 +93,14 @@ public class CourtSchedulingService {
   private static final Logger log = LoggerFactory.getLogger(CourtSchedulingService.class);
 
   private final CourtSchedulingMDE_Service schedFactory;
-  private final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ObjectFactory
+  private final ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers
+          .ObjectFactory
       oasisWrapObjFac;
-  private final https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ObjectFactory
+  private final ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate
+          .ObjectFactory
       reserveDateObjFac;
-  private final gov.niem.release.niem.niem_core._4.ObjectFactory niemObjFac;
-  private final gov.niem.release.niem.proxy.xsd._4.ObjectFactory proxyObjFac;
+  private final ecf4.latest.gov.niem.release.niem.niem_core._4.ObjectFactory niemObjFac;
+  private final ecf4.latest.gov.niem.release.niem.proxy.xsd._4.ObjectFactory proxyObjFac;
   private final Map<String, InterviewToFilingInformationConverter> converterMap;
   private final CourtRecordMDEService recordFactory;
   private final Jurisdiction jurisdiction;
@@ -122,11 +124,13 @@ public class CourtSchedulingService {
     this.schedFactory = maybeSchedFactory.get();
     this.converterMap = converterMap;
     this.oasisWrapObjFac =
-        new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers.ObjectFactory();
+        new ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.messagewrappers
+            .ObjectFactory();
     this.reserveDateObjFac =
-        new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ObjectFactory();
-    this.niemObjFac = new gov.niem.release.niem.niem_core._4.ObjectFactory();
-    this.proxyObjFac = new gov.niem.release.niem.proxy.xsd._4.ObjectFactory();
+        new ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate
+            .ObjectFactory();
+    this.niemObjFac = new ecf4.latest.gov.niem.release.niem.niem_core._4.ObjectFactory();
+    this.proxyObjFac = new ecf4.latest.gov.niem.release.niem.proxy.xsd._4.ObjectFactory();
     Optional<CourtRecordMDEService> maybeCourt = SoapClientChooser.getCourtRecordFactory(domain);
     if (maybeCourt.isEmpty()) {
       throw new RuntimeException("Cannot find " + domain + " for court record factory");
@@ -356,7 +360,8 @@ public class CourtSchedulingService {
           if (err.getErrorDescription().getErrorCodeText().getValue().equals("344")) {
             for (var aug : ct.getCaseAugmentationPoint()) {
               if (aug.getValue()
-                  instanceof tyler.ecf.v5_0.extensions.common.CaseAugmentationType tylerAug) {
+                  instanceof
+                  ecf4.latest.tyler.ecf.v5_0.extensions.common.CaseAugmentationType tylerAug) {
                 tylerAug.getCrossReferenceNumber().clear();
               }
             }
@@ -379,7 +384,8 @@ public class CourtSchedulingService {
         if (err.getErrorCodeText().getValue().equals("344")) {
           for (var aug : ct.getCaseAugmentationPoint()) {
             if (aug.getValue()
-                instanceof tyler.ecf.v5_0.extensions.common.CaseAugmentationType tylerAug) {
+                instanceof
+                ecf4.latest.tyler.ecf.v5_0.extensions.common.CaseAugmentationType tylerAug) {
               tylerAug.getCrossReferenceNumber().clear();
             }
           }
@@ -499,11 +505,13 @@ public class CourtSchedulingService {
             .filter(
                 aug -> {
                   return aug.getValue()
-                      instanceof gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType;
+                      instanceof
+                      ecf4.latest.gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType;
                 })
             .map(
                 aug ->
-                    ((gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType) aug.getValue())
+                    ((ecf4.latest.gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType)
+                            aug.getValue())
                         .getCaseCourtEvent());
     List<CourtScheduleType> ret = new ArrayList<CourtScheduleType>();
     augEvent.forEach(
@@ -516,12 +524,14 @@ public class CourtSchedulingService {
                           // get the tylerCourtEventAugmentation
                           return p.getValue()
                               instanceof
-                              tyler.ecf.v5_0.extensions.common.CourtEventAugmentationType;
+                              ecf4.latest.tyler.ecf.v5_0.extensions.common
+                                  .CourtEventAugmentationType;
                           // make a list of each CourtSchedule
                         })
                     .map(
                         p ->
-                            ((tyler.ecf.v5_0.extensions.common.CourtEventAugmentationType)
+                            ((ecf4.latest.tyler.ecf.v5_0.extensions.common
+                                        .CourtEventAugmentationType)
                                     p.getValue())
                                 .getCourtSchedule());
             bb.forEach(schedList -> ret.addAll(schedList));

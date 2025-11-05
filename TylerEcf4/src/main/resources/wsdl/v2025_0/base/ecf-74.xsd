@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:tyler:ecf:extensions:NotifyReceiptMessage" xmlns:ecf="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" xmlns:i="http://niem.gov/niem/appinfo/2.0" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" xmlns:s="http://niem.gov/niem/structures/2.0" xmlns:tyler="urn:tyler:ecf:extensions:Common" targetNamespace="urn:tyler:ecf:extensions:NotifyReceiptMessage" version="1.0">
+	<xsd:annotation>
+		<xsd:documentation>NotifyReceiptMessage</xsd:documentation>
+		<xsd:appinfo>
+			<i:ConformantIndicator>true</i:ConformantIndicator>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<xsd:import namespace="http://niem.gov/niem/niem-core/2.0" schemaLocation="ecf-2.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/structures/2.0" schemaLocation="ecf-3.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/appinfo/2.0" schemaLocation="ecf-4.xsd"/>
+	<xsd:import namespace="http://niem.gov/niem/proxy/xsd/2.0" schemaLocation="ecf-13.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0" schemaLocation="ecf-18.xsd"/>
+	<xsd:import namespace="urn:tyler:ecf:extensions:Common" schemaLocation="ecf-60.xsd"/>
+	<xsd:complexType name="NotifyReceiptMessageType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="nc:DocumentFiledDate"/>
+			<xsd:element ref="nc:DocumentIdentification"/>
+			<xsd:element ref="nc:DocumentPostDate"/>
+			<xsd:element ref="ecf:SendingMDELocationID"/>
+			<xsd:element ref="ecf:SendingMDEProfileCode"/>
+			<xsd:element ref="nc:Case"/>
+			<xsd:element ref="ecf:FilingStatus"/>
+			<xsd:element ref="tyler:ReviewedLeadDocument"/>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" ref="tyler:ReviewedConnectedDocument"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="NotifyReceiptMessage" type="NotifyReceiptMessageType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+	</xsd:element>
+</xsd:schema>

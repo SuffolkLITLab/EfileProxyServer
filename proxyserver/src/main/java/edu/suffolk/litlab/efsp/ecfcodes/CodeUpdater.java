@@ -1,15 +1,19 @@
 package edu.suffolk.litlab.efsp.ecfcodes;
 
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtPolicyResponseMessageType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingReviewMDEPort;
+import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeTableConstants.UnsupportedTableException;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
-import edu.suffolk.litlab.efsp.server.ecf4.SoapClientChooser;
 import edu.suffolk.litlab.efsp.server.utils.HeaderSigner;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapX509CallbackHandler;
+import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
@@ -42,16 +46,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipInputStream;
 import javax.sql.DataSource;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
-import oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtPolicyResponseMessageType;
-import oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingReviewMDEPort;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import tyler.efm.latest.services.schema.authenticaterequest.AuthenticateRequestType;
 import tyler.efm.latest.services.schema.authenticateresponse.AuthenticateResponseType;
-import tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 
 /**
  * Updates the Tyler "Codes" for each court in a jurisdiction.

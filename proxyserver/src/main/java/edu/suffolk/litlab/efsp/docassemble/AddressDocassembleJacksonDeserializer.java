@@ -1,11 +1,11 @@
 package edu.suffolk.litlab.efsp.docassemble;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import ecf4.latest.gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 import edu.suffolk.litlab.efsp.model.Address;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
-import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

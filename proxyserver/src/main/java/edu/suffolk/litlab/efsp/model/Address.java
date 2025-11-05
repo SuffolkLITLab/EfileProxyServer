@@ -1,7 +1,7 @@
 package edu.suffolk.litlab.efsp.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
+import ecf4.latest.gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 
 public class Address {
   // NOTE: annotations are for Gson
