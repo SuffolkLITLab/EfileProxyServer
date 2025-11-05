@@ -1,9 +1,9 @@
 
-package gov.niem.release.niem.domains.biometrics._4;
+package ecf5.v2024_6.gov.niem.release.niem.domains.biometrics._4;
 
 import javax.xml.namespace.QName;
-import gov.niem.release.niem.niem_core._4.EntityType;
-import gov.niem.release.niem.niem_core._4.TextType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.EntityType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.TextType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
@@ -12,7 +12,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the gov.niem.release.niem.domains.biometrics._4 package. 
+ * generated in the ecf5.v2024_6.gov.niem.release.niem.domains.biometrics._4 package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -41,7 +41,7 @@ public class ObjectFactory {
     private final static QName _PhysicalFeatureImage_QNAME = new QName("http://release.niem.gov/niem/domains/biometrics/4.1/", "PhysicalFeatureImage");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: gov.niem.release.niem.domains.biometrics._4
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf5.v2024_6.gov.niem.release.niem.domains.biometrics._4
      * 
      */
     public ObjectFactory() {

@@ -1,14 +1,14 @@
 
-package gov.niem.release.niem.domains.jxdm._6;
+package ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.codes.aamva_d20._4.AccidentSeverityCodeType;
-import gov.niem.release.niem.codes.aamva_d20._4.HazMatCodeType;
-import gov.niem.release.niem.niem_core._4.IncidentType;
-import gov.niem.release.niem.niem_core._4.SpeedMeasureType;
-import gov.niem.release.niem.niem_core._4.TextType;
-import gov.niem.release.niem.proxy.xsd._4.Boolean;
+import ecf5.v2024_6.gov.niem.release.niem.codes.aamva_d20._4.AccidentSeverityCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.aamva_d20._4.HazMatCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.IncidentType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.SpeedMeasureType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.TextType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Boolean;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;

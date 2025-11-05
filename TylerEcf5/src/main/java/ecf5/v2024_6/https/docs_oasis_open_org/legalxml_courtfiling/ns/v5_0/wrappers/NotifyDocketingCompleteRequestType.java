@@ -1,10 +1,10 @@
 
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers;
+package ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wrappers;
 
 import java.util.ArrayList;
 import java.util.List;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.docketcallback.NotifyDocketingCompleteMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.payment.PaymentMessageType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.docketcallback.NotifyDocketingCompleteMessageType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.payment.PaymentMessageType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

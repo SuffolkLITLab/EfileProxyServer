@@ -1,7 +1,7 @@
 
-package tyler.ecf.v5_0.extensions.wrappers;
+package ecf5.v2024_6.tyler.ecf.v5_0.extensions.wrappers;
 
-import gov.niem.release.niem.domains.cbrn._4.MessageStatusType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.cbrn._4.MessageStatusType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

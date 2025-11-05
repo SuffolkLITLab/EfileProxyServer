@@ -1,5 +1,5 @@
 
-package oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2;
+package ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,11 +7,11 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReferenceDateType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReferenceTimeType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReliabilityPercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RemarksType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SequenceNumericType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReferenceDateType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReferenceTimeType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReliabilityPercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RemarksType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SequenceNumericType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 

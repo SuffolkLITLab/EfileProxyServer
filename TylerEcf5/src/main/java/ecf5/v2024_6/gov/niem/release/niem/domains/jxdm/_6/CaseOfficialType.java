@@ -1,9 +1,9 @@
 
-package gov.niem.release.niem.domains.jxdm._6;
+package ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.niem_core._4.IdentificationType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.IdentificationType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -12,7 +12,7 @@ import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import tyler.ecf.v5_0.extensions.common.CaseJudgeAugmentationType;
+import ecf5.v2024_6.tyler.ecf.v5_0.extensions.common.CaseJudgeAugmentationType;
 
 
 /**
@@ -94,10 +94,10 @@ public class CaseOfficialType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseOfficialAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseOfficialAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
      * {@link JAXBElement }{@code <}{@link CaseJudgeAugmentationType }{@code >}
-     * {@link JAXBElement }{@code <}{@link tyler.ecf.v5_0.extensions.common.CaseOfficialAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ecf5.v2024_6.tyler.ecf.v5_0.extensions.common.CaseOfficialAugmentationType }{@code >}
      * 
      * 
      */

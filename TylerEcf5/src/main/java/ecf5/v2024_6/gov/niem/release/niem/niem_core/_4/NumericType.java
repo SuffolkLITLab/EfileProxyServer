@@ -1,7 +1,7 @@
 
-package gov.niem.release.niem.niem_core._4;
+package ecf5.v2024_6.gov.niem.release.niem.niem_core._4;
 
-import gov.niem.release.niem.proxy.xsd._4.Decimal;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Decimal;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlType;

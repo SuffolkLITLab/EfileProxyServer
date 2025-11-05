@@ -1,19 +1,19 @@
 
-package oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2;
+package ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BaseUnitMeasureType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CalculationSequenceNumericType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PerUnitAmountType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxAmountType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxableAmountType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TierRangeType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TierRatePercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransactionCurrencyTaxAmountType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BaseUnitMeasureType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CalculationSequenceNumericType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PerUnitAmountType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxAmountType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxableAmountType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TierRangeType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TierRatePercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransactionCurrencyTaxAmountType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 

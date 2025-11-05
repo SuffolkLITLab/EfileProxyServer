@@ -1,5 +1,5 @@
 
-package tyler.ecf.v5_0.extensions.common;
+package ecf5.v2024_6.tyler.ecf.v5_0.extensions.common;
 
 import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;

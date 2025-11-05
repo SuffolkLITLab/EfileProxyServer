@@ -1,9 +1,9 @@
 
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse;
+package ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse;
 
-import gov.niem.release.niem.niem_core._4.IdentificationType;
-import gov.niem.release.niem.proxy.xsd._4.NormalizedString;
-import gov.niem.release.niem.structures._4.ObjectType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.IdentificationType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.NormalizedString;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

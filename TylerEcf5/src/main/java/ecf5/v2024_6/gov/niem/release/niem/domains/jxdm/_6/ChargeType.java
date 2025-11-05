@@ -1,11 +1,11 @@
 
-package gov.niem.release.niem.domains.jxdm._6;
+package ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.domains.humanservices._4.JuvenileAbuseNeglectAllegationType;
-import gov.niem.release.niem.niem_core._4.TextType;
-import gov.niem.release.niem.structures._4.ObjectType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.humanservices._4.JuvenileAbuseNeglectAllegationType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.TextType;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -15,8 +15,8 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import tyler.ecf.v5_0.extensions.criminal.ChargeAugmentationType;
-import tyler.ecf.v5_0.extensions.criminal.ChargeHistoryType;
+import ecf5.v2024_6.tyler.ecf.v5_0.extensions.criminal.ChargeAugmentationType;
+import ecf5.v2024_6.tyler.ecf.v5_0.extensions.criminal.ChargeHistoryType;
 
 
 /**
@@ -86,7 +86,7 @@ public class ChargeType
     @XmlElement(name = "ChargeQualifierText")
     protected TextType chargeQualifierText;
     @XmlElement(name = "ChargeSequenceID")
-    protected gov.niem.release.niem.proxy.xsd._4.String chargeSequenceID;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String chargeSequenceID;
     @XmlElement(name = "ChargeSeverityLevel")
     protected SeverityLevelType chargeSeverityLevel;
     @XmlElement(name = "ChargeSpecialAllegationText")
@@ -245,10 +245,10 @@ public class ChargeType
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getChargeSequenceID() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getChargeSequenceID() {
         return chargeSequenceID;
     }
 
@@ -257,10 +257,10 @@ public class ChargeType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setChargeSequenceID(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setChargeSequenceID(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.chargeSequenceID = value;
     }
 

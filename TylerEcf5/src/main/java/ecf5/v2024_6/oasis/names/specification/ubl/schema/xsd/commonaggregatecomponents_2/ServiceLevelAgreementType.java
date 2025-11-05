@@ -1,5 +1,5 @@
 
-package oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2;
+package ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,22 +7,22 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AvailabilityTimePercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FridayAvailabilityIndicatorType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IDType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumDataLossDurationMeasureType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumIncidentNotificationDurationMeasureType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MeanTimeToRecoverDurationMeasureType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MinimumDownTimeScheduleDurationMeasureType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MinimumResponseTimeDurationMeasureType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MondayAvailabilityIndicatorType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SaturdayAvailabilityIndicatorType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ServiceTypeCodeType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ServiceTypeType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SundayAvailabilityIndicatorType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ThursdayAvailabilityIndicatorType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TuesdayAvailabilityIndicatorType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.WednesdayAvailabilityIndicatorType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AvailabilityTimePercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FridayAvailabilityIndicatorType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IDType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumDataLossDurationMeasureType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumIncidentNotificationDurationMeasureType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MeanTimeToRecoverDurationMeasureType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MinimumDownTimeScheduleDurationMeasureType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MinimumResponseTimeDurationMeasureType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MondayAvailabilityIndicatorType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SaturdayAvailabilityIndicatorType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ServiceTypeCodeType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ServiceTypeType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SundayAvailabilityIndicatorType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ThursdayAvailabilityIndicatorType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TuesdayAvailabilityIndicatorType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.WednesdayAvailabilityIndicatorType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 

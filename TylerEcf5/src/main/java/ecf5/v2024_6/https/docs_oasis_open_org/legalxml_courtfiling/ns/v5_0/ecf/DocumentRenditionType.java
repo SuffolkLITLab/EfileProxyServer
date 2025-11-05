@@ -1,10 +1,10 @@
 
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
+package ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
 
-import gov.niem.release.niem.niem_core._4.BinaryType;
-import gov.niem.release.niem.niem_core._4.DocumentType;
-import gov.niem.release.niem.niem_core._4.TextType;
-import gov.niem.release.niem.proxy.xsd._4.Boolean;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.BinaryType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DocumentType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.TextType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Boolean;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -54,7 +54,7 @@ public class DocumentRenditionType
 {
 
     @XmlElement(name = "MultimediaDataMIMEKindText", namespace = "http://release.niem.gov/niem/domains/cbrn/4.1/")
-    protected gov.niem.release.niem.proxy.xsd._4.String multimediaDataMIMEKindText;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String multimediaDataMIMEKindText;
     @XmlElement(name = "ColorRelevantIndicator")
     protected Boolean colorRelevantIndicator;
     @XmlElement(name = "DocumentRenditionHash")
@@ -71,10 +71,10 @@ public class DocumentRenditionType
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getMultimediaDataMIMEKindText() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getMultimediaDataMIMEKindText() {
         return multimediaDataMIMEKindText;
     }
 
@@ -83,10 +83,10 @@ public class DocumentRenditionType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setMultimediaDataMIMEKindText(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setMultimediaDataMIMEKindText(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.multimediaDataMIMEKindText = value;
     }
 

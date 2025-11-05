@@ -1,15 +1,15 @@
 
-package gov.niem.release.niem.niem_core._4;
+package ecf5.v2024_6.gov.niem.release.niem.niem_core._4;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.codes.iso_639_3._4.LanguageCodeType;
-import gov.niem.release.niem.domains.humanservices._4.DependencyPetitionType;
-import gov.niem.release.niem.domains.jxdm._6.AppellateCaseNoticeType;
-import gov.niem.release.niem.structures._4.ObjectType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentRenditionType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ReviewedDocumentType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.iso_639_3._4.LanguageCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.humanservices._4.DependencyPetitionType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.AppellateCaseNoticeType;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.ObjectType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentRenditionType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ReviewedDocumentType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -19,9 +19,9 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import tyler.ecf.v5_0.extensions.common.DocumentSecurityAugmentationType;
-import tyler.ecf.v5_0.extensions.common.FilingType;
-import tyler.ecf.v5_0.extensions.common.StatusDocumentAugmentationType;
+import ecf5.v2024_6.tyler.ecf.v5_0.extensions.common.DocumentSecurityAugmentationType;
+import ecf5.v2024_6.tyler.ecf.v5_0.extensions.common.FilingType;
+import ecf5.v2024_6.tyler.ecf.v5_0.extensions.common.StatusDocumentAugmentationType;
 
 
 /**
@@ -95,7 +95,7 @@ public class DocumentType
     @XmlElement(name = "DocumentEffectiveDate")
     protected DateType documentEffectiveDate;
     @XmlElement(name = "DocumentFileControlID")
-    protected gov.niem.release.niem.proxy.xsd._4.String documentFileControlID;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String documentFileControlID;
     @XmlElement(name = "DocumentFiledDate")
     protected DateType documentFiledDate;
     @XmlElement(name = "DocumentIdentification", required = true)
@@ -103,7 +103,7 @@ public class DocumentType
     @XmlElement(name = "DocumentReceivedDate")
     protected DateType documentReceivedDate;
     @XmlElement(name = "DocumentSequenceID")
-    protected gov.niem.release.niem.proxy.xsd._4.String documentSequenceID;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String documentSequenceID;
     @XmlElement(name = "DocumentTitleText")
     protected TextType documentTitleText;
     @XmlElementRef(name = "DocumentLanguageAbstract", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
@@ -220,10 +220,10 @@ public class DocumentType
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getDocumentFileControlID() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getDocumentFileControlID() {
         return documentFileControlID;
     }
 
@@ -232,10 +232,10 @@ public class DocumentType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setDocumentFileControlID(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setDocumentFileControlID(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.documentFileControlID = value;
     }
 
@@ -321,10 +321,10 @@ public class DocumentType
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getDocumentSequenceID() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getDocumentSequenceID() {
         return documentSequenceID;
     }
 
@@ -333,10 +333,10 @@ public class DocumentType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setDocumentSequenceID(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setDocumentSequenceID(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.documentSequenceID = value;
     }
 
@@ -432,9 +432,9 @@ public class DocumentType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * {@link JAXBElement }{@code <}{@link tyler.ecf.v5_0.extensions.common.DocumentAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ecf5.v2024_6.tyler.ecf.v5_0.extensions.common.DocumentAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link DocumentSecurityAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link StatusDocumentAugmentationType }{@code >}
      * 

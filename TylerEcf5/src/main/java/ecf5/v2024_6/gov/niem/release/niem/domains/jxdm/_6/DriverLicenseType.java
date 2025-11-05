@@ -1,7 +1,7 @@
 
-package gov.niem.release.niem.domains.jxdm._6;
+package ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6;
 
-import gov.niem.release.niem.codes.aamva_d20._4.DriverLicenseClassCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.aamva_d20._4.DriverLicenseClassCodeType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;

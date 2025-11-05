@@ -1,14 +1,14 @@
 
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.docket;
+package ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.docket;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.niem_core._4.CaseType;
-import gov.niem.release.niem.niem_core._4.TextType;
-import gov.niem.release.niem.proxy.xsd._4.Boolean;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentReviewType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing.FilingMessageType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.CaseType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.TextType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Boolean;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentReviewType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing.FilingMessageType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

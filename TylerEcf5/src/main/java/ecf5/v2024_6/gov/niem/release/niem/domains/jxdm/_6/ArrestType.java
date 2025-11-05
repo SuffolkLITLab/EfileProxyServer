@@ -1,12 +1,12 @@
 
-package gov.niem.release.niem.domains.jxdm._6;
+package ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.niem_core._4.ActivityType;
-import gov.niem.release.niem.niem_core._4.IdentificationType;
-import gov.niem.release.niem.niem_core._4.LocationType;
-import gov.niem.release.niem.niem_core._4.OrganizationType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.ActivityType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.IdentificationType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.LocationType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.OrganizationType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

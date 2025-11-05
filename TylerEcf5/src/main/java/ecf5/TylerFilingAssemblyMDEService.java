@@ -1,5 +1,6 @@
-package tyler.ecf.v5_0.extensions.tylerfilingassemblymde;
+package ecf5;
 
+import ecf5.v2024_6.tyler.ecf.v5_0.extensions.tylerfilingassemblymde.TylerFilingAssemblyMDE;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;

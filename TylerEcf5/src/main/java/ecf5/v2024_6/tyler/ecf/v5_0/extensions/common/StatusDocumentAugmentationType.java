@@ -1,10 +1,10 @@
 
-package tyler.ecf.v5_0.extensions.common;
+package ecf5.v2024_6.tyler.ecf.v5_0.extensions.common;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.niem_core._4.DocumentType;
-import gov.niem.release.niem.structures._4.AugmentationType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DocumentType;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.AugmentationType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

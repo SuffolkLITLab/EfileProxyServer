@@ -1,5 +1,5 @@
 
-package un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2;
+package ecf5.v2024_6.un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -72,7 +72,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "value"
 })
 @XmlSeeAlso({
-    oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.IdentifierType.class
+    ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.IdentifierType.class
 })
 public class IdentifierType {
 

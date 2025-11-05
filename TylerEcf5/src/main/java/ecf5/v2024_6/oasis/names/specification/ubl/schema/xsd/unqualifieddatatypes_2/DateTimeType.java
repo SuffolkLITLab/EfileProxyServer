@@ -1,5 +1,5 @@
 
-package oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2;
+package ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import jakarta.xml.bind.annotation.XmlAccessType;

@@ -1,15 +1,15 @@
 
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
+package ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
 
 import javax.xml.namespace.QName;
-import gov.niem.release.niem.domains.jxdm._6.CourtEventType;
-import gov.niem.release.niem.niem_core._4.DateType;
-import gov.niem.release.niem.niem_core._4.EntityType;
-import gov.niem.release.niem.niem_core._4.IdentificationType;
-import gov.niem.release.niem.niem_core._4.StatusType;
-import gov.niem.release.niem.niem_core._4.TextType;
-import gov.niem.release.niem.proxy.xsd._4.Boolean;
-import gov.niem.release.niem.proxy.xsd._4.NormalizedString;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.CourtEventType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DateType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.EntityType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.IdentificationType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.StatusType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.TextType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Boolean;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.NormalizedString;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
@@ -18,7 +18,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf package. 
+ * generated in the ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -116,7 +116,7 @@ public class ObjectFactory {
     private final static QName _VehicleOperatorInsuranceCoverage_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", "VehicleOperatorInsuranceCoverage");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf
      * 
      */
     public ObjectFactory() {
@@ -179,11 +179,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType }
+     * Create an instance of {@link ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType }
      * 
      */
-    public https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType createDocumentType() {
-        return new https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType();
+    public ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType createDocumentType() {
+        return new ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType();
     }
 
     /**
@@ -608,16 +608,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link gov.niem.release.niem.niem_core._4.DocumentType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DocumentType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link gov.niem.release.niem.niem_core._4.DocumentType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DocumentType }{@code >}
      */
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "ConnectedDocument")
-    public JAXBElement<gov.niem.release.niem.niem_core._4.DocumentType> createConnectedDocument(gov.niem.release.niem.niem_core._4.DocumentType value) {
-        return new JAXBElement<gov.niem.release.niem.niem_core._4.DocumentType>(_ConnectedDocument_QNAME, gov.niem.release.niem.niem_core._4.DocumentType.class, null, value);
+    public JAXBElement<ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DocumentType> createConnectedDocument(ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DocumentType value) {
+        return new JAXBElement<ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DocumentType>(_ConnectedDocument_QNAME, ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DocumentType.class, null, value);
     }
 
     /**
@@ -725,16 +725,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType }{@code >}
      */
     @XmlElementDecl(namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf", name = "Document")
-    public JAXBElement<https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType> createDocument(https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType value) {
-        return new JAXBElement<https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType>(_Document_QNAME, https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType.class, null, value);
+    public JAXBElement<ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType> createDocument(ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType value) {
+        return new JAXBElement<ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType>(_Document_QNAME, ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentType.class, null, value);
     }
 
     /**

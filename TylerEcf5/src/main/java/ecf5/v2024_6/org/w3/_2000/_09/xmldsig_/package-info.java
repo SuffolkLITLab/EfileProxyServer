@@ -1,2 +1,2 @@
 @jakarta.xml.bind.annotation.XmlSchema(namespace = "http://www.w3.org/2000/09/xmldsig#", elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
-package org.w3._2000._09.xmldsig_;
+package ecf5.v2024_6.org.w3._2000._09.xmldsig_;

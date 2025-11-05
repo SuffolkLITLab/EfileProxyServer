@@ -1,7 +1,7 @@
 
-package gov.niem.release.niem.niem_core._4;
+package ecf5.v2024_6.gov.niem.release.niem.niem_core._4;
 
-import gov.niem.release.niem.codes.iso_639_3._4.LanguageCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.iso_639_3._4.LanguageCodeType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -47,7 +47,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "languageAbstract"
 })
 public class MetadataType
-    extends gov.niem.release.niem.structures._4.MetadataType
+    extends ecf5.v2024_6.gov.niem.release.niem.structures._4.MetadataType
 {
 
     @XmlElement(name = "EffectiveDate")

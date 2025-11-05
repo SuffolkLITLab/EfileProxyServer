@@ -1,10 +1,10 @@
 
-package gov.niem.release.niem.niem_core._4;
+package ecf5.v2024_6.gov.niem.release.niem.niem_core._4;
 
-import gov.niem.release.niem.domains.biometrics._4.ImageType;
-import gov.niem.release.niem.proxy.xsd._4.AnyURI;
-import gov.niem.release.niem.proxy.xsd._4.Base64Binary;
-import gov.niem.release.niem.structures._4.ObjectType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.biometrics._4.ImageType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.AnyURI;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Base64Binary;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -62,7 +62,7 @@ public class BinaryType
 {
 
     @XmlElement(name = "BinaryID")
-    protected gov.niem.release.niem.proxy.xsd._4.String binaryID;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String binaryID;
     @XmlElementRef(name = "BinaryObjectAbstract", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
     protected JAXBElement<?> binaryObjectAbstract;
     @XmlElement(name = "BinaryCapturer")
@@ -81,10 +81,10 @@ public class BinaryType
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getBinaryID() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getBinaryID() {
         return binaryID;
     }
 
@@ -93,10 +93,10 @@ public class BinaryType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setBinaryID(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setBinaryID(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.binaryID = value;
     }
 

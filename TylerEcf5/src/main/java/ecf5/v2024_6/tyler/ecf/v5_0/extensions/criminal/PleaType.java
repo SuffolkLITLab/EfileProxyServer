@@ -1,11 +1,11 @@
 
-package tyler.ecf.v5_0.extensions.criminal;
+package ecf5.v2024_6.tyler.ecf.v5_0.extensions.criminal;
 
-import gov.niem.release.niem.domains.jxdm._6.JudicialOfficialType;
-import gov.niem.release.niem.niem_core._4.DateType;
-import gov.niem.release.niem.niem_core._4.IdentificationType;
-import gov.niem.release.niem.niem_core._4.TextType;
-import gov.niem.release.niem.proxy.xsd._4.Boolean;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.JudicialOfficialType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DateType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.IdentificationType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.TextType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Boolean;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

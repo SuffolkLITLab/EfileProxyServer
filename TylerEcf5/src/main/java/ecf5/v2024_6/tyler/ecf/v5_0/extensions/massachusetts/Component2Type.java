@@ -1,7 +1,7 @@
 
-package tyler.ecf.v5_0.extensions.massachusetts;
+package ecf5.v2024_6.tyler.ecf.v5_0.extensions.massachusetts;
 
-import gov.niem.release.niem.niem_core._4.TextType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.TextType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

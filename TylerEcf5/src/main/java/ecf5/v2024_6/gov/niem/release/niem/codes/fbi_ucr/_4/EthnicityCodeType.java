@@ -1,5 +1,5 @@
 
-package gov.niem.release.niem.codes.fbi_ucr._4;
+package ecf5.v2024_6.gov.niem.release.niem.codes.fbi_ucr._4;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,8 +1,8 @@
 
-package tyler.ecf.v5_0.extensions.taxdelinquency;
+package ecf5.v2024_6.tyler.ecf.v5_0.extensions.taxdelinquency;
 
-import gov.niem.release.niem.niem_core._4.AmountType;
-import gov.niem.release.niem.niem_core._4.EntityType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.AmountType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.EntityType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

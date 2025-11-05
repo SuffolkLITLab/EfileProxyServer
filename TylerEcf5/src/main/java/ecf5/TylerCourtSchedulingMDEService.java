@@ -1,5 +1,6 @@
-package tyler.ecf.v5_0.extensions.tylercourtschedulingmde;
+package ecf5;
 
+import ecf5.v2024_6.tyler.ecf.v5_0.extensions.tylercourtschedulingmde.TylerCourtSchedulingMDE;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;

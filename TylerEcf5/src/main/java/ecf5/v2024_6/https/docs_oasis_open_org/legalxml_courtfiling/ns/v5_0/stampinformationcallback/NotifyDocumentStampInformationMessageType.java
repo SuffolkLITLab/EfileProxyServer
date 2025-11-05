@@ -1,9 +1,9 @@
 
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.stampinformationcallback;
+package ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.stampinformationcallback;
 
 import java.util.ArrayList;
 import java.util.List;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CallbackMessageType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CallbackMessageType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

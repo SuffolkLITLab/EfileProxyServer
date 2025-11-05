@@ -1,20 +1,20 @@
 
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.payment;
+package ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.payment;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.niem_core._4.EntityType;
-import gov.niem.release.niem.niem_core._4.TextType;
-import gov.niem.release.niem.proxy.xsd._4.Boolean;
-import gov.niem.release.niem.structures._4.ObjectType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.EntityType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.TextType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Boolean;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AddressType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentMandateType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AddressType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentMandateType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 

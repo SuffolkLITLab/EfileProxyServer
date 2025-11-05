@@ -1,8 +1,8 @@
 
-package tyler.ecf.v5_0.extensions.criminal;
+package ecf5.v2024_6.tyler.ecf.v5_0.extensions.criminal;
 
-import gov.niem.release.niem.domains.jxdm._6.ChargeType;
-import gov.niem.release.niem.niem_core._4.IdentificationType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.ChargeType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.IdentificationType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

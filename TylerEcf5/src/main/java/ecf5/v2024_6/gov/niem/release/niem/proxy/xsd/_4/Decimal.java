@@ -1,5 +1,5 @@
 
-package gov.niem.release.niem.proxy.xsd._4;
+package ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
-import gov.niem.release.niem.niem_core._4.NumericType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.NumericType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAnyAttribute;

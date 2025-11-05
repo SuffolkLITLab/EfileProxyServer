@@ -1,9 +1,9 @@
 
-package gov.niem.release.niem.niem_core._4;
+package ecf5.v2024_6.gov.niem.release.niem.niem_core._4;
 
 import java.util.ArrayList;
 import java.util.List;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAssociationAugmentationType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAssociationAugmentationType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;

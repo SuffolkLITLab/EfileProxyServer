@@ -1,8 +1,8 @@
 
-package gov.niem.release.niem.domains.cbrn._4;
+package ecf5.v2024_6.gov.niem.release.niem.domains.cbrn._4;
 
-import gov.niem.release.niem.codes.cbrncl._4.SystemOperatingModeCodeType;
-import gov.niem.release.niem.proxy.xsd._4.DateTime;
+import ecf5.v2024_6.gov.niem.release.niem.codes.cbrncl._4.SystemOperatingModeCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.DateTime;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;

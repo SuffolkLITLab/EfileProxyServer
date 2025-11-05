@@ -1,7 +1,7 @@
 
-package gov.niem.release.niem.niem_core._4;
+package ecf5.v2024_6.gov.niem.release.niem.niem_core._4;
 
-import gov.niem.release.niem.structures._4.ObjectType;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -47,23 +47,23 @@ public class NANPTelephoneNumberType
 {
 
     @XmlElement(name = "TelephoneAreaCodeID", required = true)
-    protected gov.niem.release.niem.proxy.xsd._4.String telephoneAreaCodeID;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String telephoneAreaCodeID;
     @XmlElement(name = "TelephoneExchangeID", required = true)
-    protected gov.niem.release.niem.proxy.xsd._4.String telephoneExchangeID;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String telephoneExchangeID;
     @XmlElement(name = "TelephoneLineID", required = true)
-    protected gov.niem.release.niem.proxy.xsd._4.String telephoneLineID;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String telephoneLineID;
     @XmlElement(name = "TelephoneSuffixID", required = true)
-    protected gov.niem.release.niem.proxy.xsd._4.String telephoneSuffixID;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String telephoneSuffixID;
 
     /**
      * Gets the value of the telephoneAreaCodeID property.
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getTelephoneAreaCodeID() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getTelephoneAreaCodeID() {
         return telephoneAreaCodeID;
     }
 
@@ -72,10 +72,10 @@ public class NANPTelephoneNumberType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setTelephoneAreaCodeID(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setTelephoneAreaCodeID(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.telephoneAreaCodeID = value;
     }
 
@@ -84,10 +84,10 @@ public class NANPTelephoneNumberType
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getTelephoneExchangeID() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getTelephoneExchangeID() {
         return telephoneExchangeID;
     }
 
@@ -96,10 +96,10 @@ public class NANPTelephoneNumberType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setTelephoneExchangeID(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setTelephoneExchangeID(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.telephoneExchangeID = value;
     }
 
@@ -108,10 +108,10 @@ public class NANPTelephoneNumberType
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getTelephoneLineID() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getTelephoneLineID() {
         return telephoneLineID;
     }
 
@@ -120,10 +120,10 @@ public class NANPTelephoneNumberType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setTelephoneLineID(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setTelephoneLineID(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.telephoneLineID = value;
     }
 
@@ -132,10 +132,10 @@ public class NANPTelephoneNumberType
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getTelephoneSuffixID() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getTelephoneSuffixID() {
         return telephoneSuffixID;
     }
 
@@ -144,10 +144,10 @@ public class NANPTelephoneNumberType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setTelephoneSuffixID(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setTelephoneSuffixID(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.telephoneSuffixID = value;
     }
 

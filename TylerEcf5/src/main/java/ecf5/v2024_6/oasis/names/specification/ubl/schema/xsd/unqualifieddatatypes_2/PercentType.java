@@ -1,27 +1,27 @@
 
-package oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2;
+package ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AirFlowPercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AvailabilityTimePercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.HumidityPercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumPercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MinimumPercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PartecipationPercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ParticipationPercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaymentPercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PenaltySurchargePercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ProgressPercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReliabilityPercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SettlementDiscountPercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TargetServicePercentType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TierRatePercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AirFlowPercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AvailabilityTimePercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.HumidityPercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumPercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MinimumPercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PartecipationPercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ParticipationPercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaymentPercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PenaltySurchargePercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ProgressPercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReliabilityPercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SettlementDiscountPercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TargetServicePercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TierRatePercentType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.NumericType;
+import ecf5.v2024_6.un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.NumericType;
 
 
 /**
@@ -82,7 +82,7 @@ import un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.Num
     ParticipationPercentType.class,
     PaymentPercentType.class,
     PenaltySurchargePercentType.class,
-    oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PercentType.class,
+    ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PercentType.class,
     ProgressPercentType.class,
     ReliabilityPercentType.class,
     SettlementDiscountPercentType.class,

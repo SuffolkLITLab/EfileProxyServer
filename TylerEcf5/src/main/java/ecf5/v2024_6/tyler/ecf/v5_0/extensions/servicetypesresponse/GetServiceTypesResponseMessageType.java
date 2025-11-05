@@ -1,9 +1,9 @@
 
-package tyler.ecf.v5_0.extensions.servicetypesresponse;
+package ecf5.v2024_6.tyler.ecf.v5_0.extensions.servicetypesresponse;
 
 import java.util.ArrayList;
 import java.util.List;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

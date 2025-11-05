@@ -1,8 +1,8 @@
 
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.serviceinformationresponse;
+package ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.serviceinformationresponse;
 
 import javax.xml.namespace.QName;
-import gov.niem.release.niem.niem_core._4.EntityType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.EntityType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
@@ -11,7 +11,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.serviceinformationresponse package. 
+ * generated in the ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.serviceinformationresponse package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -30,7 +30,7 @@ public class ObjectFactory {
     private final static QName _ServiceRecipient_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/serviceinformationresponse", "ServiceRecipient");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.serviceinformationresponse
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.serviceinformationresponse
      * 
      */
     public ObjectFactory() {

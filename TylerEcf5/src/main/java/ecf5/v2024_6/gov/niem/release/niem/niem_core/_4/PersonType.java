@@ -1,16 +1,16 @@
 
-package gov.niem.release.niem.niem_core._4;
+package ecf5.v2024_6.gov.niem.release.niem.niem_core._4;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.codes.fbi_ncic._4.EYECodeType;
-import gov.niem.release.niem.codes.fbi_ncic._4.HAIRCodeType;
-import gov.niem.release.niem.codes.fbi_ncic._4.RACECodeType;
-import gov.niem.release.niem.codes.fbi_ncic._4.SEXCodeType;
-import gov.niem.release.niem.codes.fbi_ucr._4.EthnicityCodeType;
-import gov.niem.release.niem.codes.iso_3166_1._4.CountryAlpha2CodeType;
-import gov.niem.release.niem.proxy.xsd._4.Boolean;
-import gov.niem.release.niem.structures._4.ObjectType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.fbi_ncic._4.EYECodeType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.fbi_ncic._4.HAIRCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.fbi_ncic._4.RACECodeType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.fbi_ncic._4.SEXCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.fbi_ucr._4.EthnicityCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.iso_3166_1._4.CountryAlpha2CodeType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Boolean;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -19,7 +19,7 @@ import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import tyler.ecf.v5_0.extensions.common.FilerAugmentationType;
+import ecf5.v2024_6.tyler.ecf.v5_0.extensions.common.FilerAugmentationType;
 
 
 /**
@@ -590,11 +590,11 @@ public class PersonType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link gov.niem.release.niem.domains.jxdm._6.PersonAugmentationType }{@code >}
-     * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.PersonAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
      * {@link JAXBElement }{@code <}{@link FilerAugmentationType }{@code >}
-     * {@link JAXBElement }{@code <}{@link tyler.ecf.v5_0.extensions.common.PersonAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ecf5.v2024_6.tyler.ecf.v5_0.extensions.common.PersonAugmentationType }{@code >}
      * 
      * 
      */

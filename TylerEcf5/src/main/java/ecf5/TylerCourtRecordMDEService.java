@@ -1,5 +1,6 @@
-package tyler.ecf.v5_0.extensions.tylercourtrecordmde;
+package ecf5;
 
+import ecf5.v2024_6.tyler.ecf.v5_0.extensions.tylercourtrecordmde.TylerCourtRecordMDE;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -69,7 +70,7 @@ public class TylerCourtRecordMDEService extends Service {
      *     returns TylerCourtRecordMDE
      */
     @WebEndpoint(name = "TylerCourtRecordMDE")
-    public TylerCourtRecordMDE getTylerCourtRecordMDE() {
+    public ecf5.v2024_6.tyler.ecf.v5_0.extensions.tylercourtrecordmde.TylerCourtRecordMDE getTylerCourtRecordMDE() {
         return super.getPort(TylerCourtRecordMDE, TylerCourtRecordMDE.class);
     }
 

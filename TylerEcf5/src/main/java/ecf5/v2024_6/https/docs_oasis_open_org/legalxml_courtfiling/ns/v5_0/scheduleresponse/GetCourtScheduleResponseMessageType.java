@@ -1,10 +1,10 @@
 
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.scheduleresponse;
+package ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.scheduleresponse;
 
 import java.util.ArrayList;
 import java.util.List;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
-import ietf.params.xml.ns.icalendar_2.IcalendarType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
+import ecf5.v2024_6.ietf.params.xml.ns.icalendar_2.IcalendarType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

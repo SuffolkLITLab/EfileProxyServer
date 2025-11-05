@@ -1,16 +1,16 @@
 
-package gov.niem.release.niem.niem_core._4;
+package ecf5.v2024_6.gov.niem.release.niem.niem_core._4;
 
-import gov.niem.release.niem.domains.humanservices._4.JuvenileGangAssociationType;
-import gov.niem.release.niem.domains.humanservices._4.JuvenilePlacementFacilityAssociationType;
-import gov.niem.release.niem.domains.humanservices._4.JuvenilePlacementPersonAssociationType;
-import gov.niem.release.niem.domains.humanservices._4.ParentChildAssociationType;
-import gov.niem.release.niem.domains.humanservices._4.PersonCaseAssociationType;
-import gov.niem.release.niem.domains.jxdm._6.OffenseChargeAssociationType;
-import gov.niem.release.niem.domains.jxdm._6.OffenseLocationAssociationType;
-import gov.niem.release.niem.domains.jxdm._6.PersonBloodAlcoholContentAssociationType;
-import gov.niem.release.niem.domains.jxdm._6.PersonChargeAssociationType;
-import gov.niem.release.niem.domains.jxdm._6.ViolatedStatuteAssociationType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.humanservices._4.JuvenileGangAssociationType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.humanservices._4.JuvenilePlacementFacilityAssociationType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.humanservices._4.JuvenilePlacementPersonAssociationType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.humanservices._4.ParentChildAssociationType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.humanservices._4.PersonCaseAssociationType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.OffenseChargeAssociationType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.OffenseLocationAssociationType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.PersonBloodAlcoholContentAssociationType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.PersonChargeAssociationType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.ViolatedStatuteAssociationType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -18,7 +18,7 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import tyler.ecf.v5_0.extensions.common.FilingAssociationType;
+import ecf5.v2024_6.tyler.ecf.v5_0.extensions.common.FilingAssociationType;
 
 
 /**
@@ -67,7 +67,7 @@ import tyler.ecf.v5_0.extensions.common.FilingAssociationType;
     PersonCaseAssociationType.class
 })
 public class AssociationType
-    extends gov.niem.release.niem.structures._4.AssociationType
+    extends ecf5.v2024_6.gov.niem.release.niem.structures._4.AssociationType
 {
 
     @XmlElement(name = "AssociationDescriptionText")

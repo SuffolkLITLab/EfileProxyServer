@@ -1,5 +1,5 @@
 
-package un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2;
+package ecf5.v2024_6.un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -10,10 +10,10 @@ import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.XmlValue;
 import jakarta.xml.bind.annotation.adapters.NormalizedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.GraphicType;
-import oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.PictureType;
-import oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.SoundType;
-import oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.VideoType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.GraphicType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.PictureType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.SoundType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.VideoType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -75,7 +75,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "value"
 })
 @XmlSeeAlso({
-    oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.BinaryObjectType.class,
+    ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.BinaryObjectType.class,
     GraphicType.class,
     PictureType.class,
     SoundType.class,

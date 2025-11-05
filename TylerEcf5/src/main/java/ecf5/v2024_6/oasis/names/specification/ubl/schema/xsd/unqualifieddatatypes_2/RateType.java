@@ -1,18 +1,18 @@
 
-package oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2;
+package ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountRateType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CalculationRateType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OrderableUnitFactorRateType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SourceCurrencyBaseRateType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TargetCurrencyBaseRateType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountRateType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CalculationRateType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OrderableUnitFactorRateType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SourceCurrencyBaseRateType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TargetCurrencyBaseRateType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.NumericType;
+import ecf5.v2024_6.un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.NumericType;
 
 
 /**
@@ -67,7 +67,7 @@ import un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.Num
     AmountRateType.class,
     CalculationRateType.class,
     OrderableUnitFactorRateType.class,
-    oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RateType.class,
+    ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RateType.class,
     SourceCurrencyBaseRateType.class,
     TargetCurrencyBaseRateType.class
 })

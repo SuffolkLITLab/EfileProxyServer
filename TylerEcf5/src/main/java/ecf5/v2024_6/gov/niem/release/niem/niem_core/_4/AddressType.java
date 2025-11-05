@@ -1,7 +1,7 @@
 
-package gov.niem.release.niem.niem_core._4;
+package ecf5.v2024_6.gov.niem.release.niem.niem_core._4;
 
-import gov.niem.release.niem.structures._4.ObjectType;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -73,9 +73,9 @@ public class AddressType
     @XmlElement(name = "LocationCountry")
     protected CountryType locationCountry;
     @XmlElement(name = "LocationPostalCode")
-    protected gov.niem.release.niem.proxy.xsd._4.String locationPostalCode;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String locationPostalCode;
     @XmlElement(name = "LocationPostalExtensionCode")
-    protected gov.niem.release.niem.proxy.xsd._4.String locationPostalExtensionCode;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String locationPostalExtensionCode;
 
     /**
      * Gets the value of the addressFullText property.
@@ -107,7 +107,7 @@ public class AddressType
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link StreetType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link gov.niem.release.niem.proxy.xsd._4.String }{@code >}
+     *     {@link JAXBElement }{@code <}{@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
@@ -121,7 +121,7 @@ public class AddressType
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link StreetType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link gov.niem.release.niem.proxy.xsd._4.String }{@code >}
+     *     {@link JAXBElement }{@code <}{@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }{@code >}
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     
      */
@@ -256,10 +256,10 @@ public class AddressType
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getLocationPostalCode() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getLocationPostalCode() {
         return locationPostalCode;
     }
 
@@ -268,10 +268,10 @@ public class AddressType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setLocationPostalCode(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setLocationPostalCode(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.locationPostalCode = value;
     }
 
@@ -280,10 +280,10 @@ public class AddressType
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getLocationPostalExtensionCode() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getLocationPostalExtensionCode() {
         return locationPostalExtensionCode;
     }
 
@@ -292,10 +292,10 @@ public class AddressType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setLocationPostalExtensionCode(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setLocationPostalExtensionCode(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.locationPostalExtensionCode = value;
     }
 

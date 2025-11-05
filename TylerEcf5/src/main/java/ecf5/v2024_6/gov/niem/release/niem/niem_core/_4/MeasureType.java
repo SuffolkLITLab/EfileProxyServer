@@ -1,10 +1,10 @@
 
-package gov.niem.release.niem.niem_core._4;
+package ecf5.v2024_6.gov.niem.release.niem.niem_core._4;
 
-import gov.niem.release.niem.codes.unece_rec20._4.LengthCodeType;
-import gov.niem.release.niem.codes.unece_rec20._4.MassCodeType;
-import gov.niem.release.niem.proxy.xsd._4.Decimal;
-import gov.niem.release.niem.structures._4.ObjectType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.unece_rec20._4.LengthCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.unece_rec20._4.MassCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Decimal;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;

@@ -1,14 +1,14 @@
 
-package tyler.ecf.v5_0.extensions.massachusetts;
+package ecf5.v2024_6.tyler.ecf.v5_0.extensions.massachusetts;
 
-import gov.niem.release.niem.proxy.xsd._4.Boolean;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Boolean;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import tyler.ecf.v5_0.extensions.common.ReferenceType;
+import ecf5.v2024_6.tyler.ecf.v5_0.extensions.common.ReferenceType;
 
 
 /**

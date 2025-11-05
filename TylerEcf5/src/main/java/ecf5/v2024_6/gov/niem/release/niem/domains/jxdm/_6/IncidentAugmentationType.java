@@ -1,10 +1,10 @@
 
-package gov.niem.release.niem.domains.jxdm._6;
+package ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6;
 
-import gov.niem.release.niem.niem_core._4.ItemType;
-import gov.niem.release.niem.niem_core._4.OffenseLevelCodeType;
-import gov.niem.release.niem.proxy.xsd._4.Boolean;
-import gov.niem.release.niem.structures._4.AugmentationType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.ItemType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.OffenseLevelCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Boolean;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.AugmentationType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;

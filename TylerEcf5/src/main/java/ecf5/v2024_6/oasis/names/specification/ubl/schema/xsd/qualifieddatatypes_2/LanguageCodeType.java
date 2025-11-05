@@ -1,15 +1,15 @@
 
-package oasis.names.specification.ubl.schema.xsd.qualifieddatatypes_2;
+package ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.qualifieddatatypes_2;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LocaleCodeType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.NoticeLanguageCodeType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PreferredLanguageLocaleCodeType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TenderLanguageLocaleCodeType;
-import oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.CodeType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LocaleCodeType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.NoticeLanguageCodeType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PreferredLanguageLocaleCodeType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TenderLanguageLocaleCodeType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.CodeType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 

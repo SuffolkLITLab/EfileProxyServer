@@ -1,5 +1,5 @@
 
-package un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2;
+package ecf5.v2024_6.un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2;
 
 import java.math.BigDecimal;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -8,9 +8,9 @@ import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.XmlValue;
-import oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.PercentType;
-import oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.RateType;
-import oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.ValueType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.PercentType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.RateType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.ValueType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -67,7 +67,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "value"
 })
 @XmlSeeAlso({
-    oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.NumericType.class,
+    ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.NumericType.class,
     ValueType.class,
     PercentType.class,
     RateType.class

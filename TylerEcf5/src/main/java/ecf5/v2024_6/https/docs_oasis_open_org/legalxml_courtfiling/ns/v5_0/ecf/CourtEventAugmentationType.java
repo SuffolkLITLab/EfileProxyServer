@@ -1,13 +1,13 @@
 
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
+package ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.domains.jxdm._6.CourtEventType;
-import gov.niem.release.niem.niem_core._4.DateType;
-import gov.niem.release.niem.niem_core._4.DocumentType;
-import gov.niem.release.niem.niem_core._4.TextType;
-import gov.niem.release.niem.structures._4.AugmentationType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.CourtEventType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DateType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DocumentType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.TextType;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.AugmentationType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -77,7 +77,7 @@ public class CourtEventAugmentationType
     @XmlElement(name = "CourtLocationCode")
     protected TextType courtLocationCode;
     @XmlElement(name = "CaseDocketID", namespace = "http://release.niem.gov/niem/niem-core/4.0/")
-    protected List<gov.niem.release.niem.proxy.xsd._4.String> caseDocketID;
+    protected List<ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String> caseDocketID;
 
     /**
      * Gets the value of the childDocket property.
@@ -304,13 +304,13 @@ public class CourtEventAugmentationType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link gov.niem.release.niem.proxy.xsd._4.String }
+     * {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      * 
      * 
      */
-    public List<gov.niem.release.niem.proxy.xsd._4.String> getCaseDocketID() {
+    public List<ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String> getCaseDocketID() {
         if (caseDocketID == null) {
-            caseDocketID = new ArrayList<gov.niem.release.niem.proxy.xsd._4.String>();
+            caseDocketID = new ArrayList<ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String>();
         }
         return this.caseDocketID;
     }

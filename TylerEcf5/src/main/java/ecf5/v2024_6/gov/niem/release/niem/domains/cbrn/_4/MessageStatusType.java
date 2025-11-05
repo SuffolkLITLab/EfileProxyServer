@@ -1,11 +1,11 @@
 
-package gov.niem.release.niem.domains.cbrn._4;
+package ecf5.v2024_6.gov.niem.release.niem.domains.cbrn._4;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.codes.cbrncl._4.CredentialsAuthenticatedCodeType;
-import gov.niem.release.niem.codes.cbrncl._4.MessageStatusCodeType;
-import gov.niem.release.niem.proxy.xsd._4.Boolean;
+import ecf5.v2024_6.gov.niem.release.niem.codes.cbrncl._4.CredentialsAuthenticatedCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.cbrncl._4.MessageStatusCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Boolean;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -212,9 +212,9 @@ public class MessageStatusType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.MessageStatusAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.MessageStatusAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * {@link JAXBElement }{@code <}{@link tyler.ecf.v5_0.extensions.common.MessageStatusAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ecf5.v2024_6.tyler.ecf.v5_0.extensions.common.MessageStatusAugmentationType }{@code >}
      * 
      * 
      */

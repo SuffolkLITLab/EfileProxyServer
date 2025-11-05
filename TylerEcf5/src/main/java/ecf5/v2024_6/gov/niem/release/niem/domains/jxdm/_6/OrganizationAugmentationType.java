@@ -1,7 +1,7 @@
 
-package gov.niem.release.niem.domains.jxdm._6;
+package ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6;
 
-import gov.niem.release.niem.structures._4.AugmentationType;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.AugmentationType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

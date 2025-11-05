@@ -1,5 +1,5 @@
 
-package oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2;
+package ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -27,7 +27,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PaymentMeansCodeType")
 public class PaymentMeansCodeType
-    extends oasis.names.specification.ubl.schema.xsd.qualifieddatatypes_2.PaymentMeansCodeType
+    extends ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.qualifieddatatypes_2.PaymentMeansCodeType
 {
 
 

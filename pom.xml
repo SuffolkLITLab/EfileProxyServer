@@ -13,7 +13,7 @@
         <module>EfspCommons</module>
         <module>TylerEfmClient</module>
         <module>TylerEcf4</module>
-        <!--module>TylerEcf5</module-->
+        <module>TylerEcf5</module>
         <module>proxyserver</module>
     </modules>
 

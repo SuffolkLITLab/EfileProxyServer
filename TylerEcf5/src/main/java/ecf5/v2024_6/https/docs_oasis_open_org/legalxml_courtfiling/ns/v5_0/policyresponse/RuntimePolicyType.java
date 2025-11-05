@@ -1,16 +1,16 @@
 
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse;
+package ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.structures._4.ObjectType;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import org.w3._2000._09.xmldsig_.KeyInfoType;
+import ecf5.v2024_6.org.w3._2000._09.xmldsig_.KeyInfoType;
 
 
 /**

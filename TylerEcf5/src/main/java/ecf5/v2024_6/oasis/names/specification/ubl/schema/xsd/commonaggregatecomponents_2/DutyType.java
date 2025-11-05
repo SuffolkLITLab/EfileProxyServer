@@ -1,12 +1,12 @@
 
-package oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2;
+package ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DutyCodeType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DutyCodeType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -51,7 +51,7 @@ public class DutyType {
     @XmlElement(name = "Amount", namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", required = true)
     protected AmountType amount;
     @XmlElement(name = "Duty", namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")
-    protected oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DutyType duty;
+    protected ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DutyType duty;
     @XmlElement(name = "DutyCode", namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")
     protected DutyCodeType dutyCode;
     @XmlElement(name = "TaxCategory")
@@ -94,10 +94,10 @@ public class DutyType {
      * 
      * @return
      *     possible object is
-     *     {@link oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DutyType }
+     *     {@link ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DutyType }
      *     
      */
-    public oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DutyType getDuty() {
+    public ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DutyType getDuty() {
         return duty;
     }
 
@@ -106,10 +106,10 @@ public class DutyType {
      * 
      * @param value
      *     allowed object is
-     *     {@link oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DutyType }
+     *     {@link ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DutyType }
      *     
      */
-    public void setDuty(oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DutyType value) {
+    public void setDuty(ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DutyType value) {
         this.duty = value;
     }
 

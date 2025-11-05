@@ -1,7 +1,7 @@
 
-package gov.niem.release.niem.niem_core._4;
+package ecf5.v2024_6.gov.niem.release.niem.niem_core._4;
 
-import gov.niem.release.niem.structures._4.ObjectType;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -45,21 +45,21 @@ public class InternationalTelephoneNumberType
 {
 
     @XmlElement(name = "TelephoneCountryCodeID", required = true)
-    protected gov.niem.release.niem.proxy.xsd._4.String telephoneCountryCodeID;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String telephoneCountryCodeID;
     @XmlElement(name = "TelephoneNumberID", required = true)
-    protected gov.niem.release.niem.proxy.xsd._4.String telephoneNumberID;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String telephoneNumberID;
     @XmlElement(name = "TelephoneSuffixID")
-    protected gov.niem.release.niem.proxy.xsd._4.String telephoneSuffixID;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String telephoneSuffixID;
 
     /**
      * Gets the value of the telephoneCountryCodeID property.
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getTelephoneCountryCodeID() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getTelephoneCountryCodeID() {
         return telephoneCountryCodeID;
     }
 
@@ -68,10 +68,10 @@ public class InternationalTelephoneNumberType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setTelephoneCountryCodeID(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setTelephoneCountryCodeID(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.telephoneCountryCodeID = value;
     }
 
@@ -80,10 +80,10 @@ public class InternationalTelephoneNumberType
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getTelephoneNumberID() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getTelephoneNumberID() {
         return telephoneNumberID;
     }
 
@@ -92,10 +92,10 @@ public class InternationalTelephoneNumberType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setTelephoneNumberID(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setTelephoneNumberID(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.telephoneNumberID = value;
     }
 
@@ -104,10 +104,10 @@ public class InternationalTelephoneNumberType
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getTelephoneSuffixID() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getTelephoneSuffixID() {
         return telephoneSuffixID;
     }
 
@@ -116,10 +116,10 @@ public class InternationalTelephoneNumberType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setTelephoneSuffixID(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setTelephoneSuffixID(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.telephoneSuffixID = value;
     }
 

@@ -1,5 +1,5 @@
 
-package tyler.ecf.v5_0.extensions.wrappers;
+package ecf5.v2024_6.tyler.ecf.v5_0.extensions.wrappers;
 
 import javax.xml.namespace.QName;
 import jakarta.xml.bind.JAXBElement;
@@ -10,7 +10,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the tyler.ecf.v5_0.extensions.wrappers package. 
+ * generated in the ecf5.v2024_6.tyler.ecf.v5_0.extensions.wrappers package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -66,7 +66,7 @@ public class ObjectFactory {
     private final static QName _NotifyEventResponse_QNAME = new QName("urn:tyler:ecf:v5.0:extensions:wrappers", "NotifyEventResponse");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: tyler.ecf.v5_0.extensions.wrappers
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf5.v2024_6.tyler.ecf.v5_0.extensions.wrappers
      * 
      */
     public ObjectFactory() {

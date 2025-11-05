@@ -1,8 +1,8 @@
 
-package gov.niem.release.niem.niem_core._4;
+package ecf5.v2024_6.gov.niem.release.niem.niem_core._4;
 
-import gov.niem.release.niem.proxy.xsd._4.Boolean;
-import gov.niem.release.niem.structures._4.ObjectType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Boolean;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -45,7 +45,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "insuranceCoverageCategoryAbstract"
 })
 @XmlSeeAlso({
-    https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.InsuranceType.class
+    ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.InsuranceType.class
 })
 public class InsuranceType
     extends ObjectType

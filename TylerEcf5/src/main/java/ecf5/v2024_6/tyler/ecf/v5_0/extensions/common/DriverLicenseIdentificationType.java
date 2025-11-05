@@ -1,9 +1,9 @@
 
-package tyler.ecf.v5_0.extensions.common;
+package ecf5.v2024_6.tyler.ecf.v5_0.extensions.common;
 
-import gov.niem.release.niem.niem_core._4.DateType;
-import gov.niem.release.niem.niem_core._4.IdentificationType;
-import gov.niem.release.niem.niem_core._4.ProperNameTextType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DateType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.IdentificationType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.ProperNameTextType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

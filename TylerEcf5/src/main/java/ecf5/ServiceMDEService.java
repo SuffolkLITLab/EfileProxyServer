@@ -1,5 +1,7 @@
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.servicemde;
+package ecf5;
 
+
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.servicemde.ServiceMDE;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;

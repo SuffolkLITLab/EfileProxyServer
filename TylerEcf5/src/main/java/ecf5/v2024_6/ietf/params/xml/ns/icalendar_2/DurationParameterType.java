@@ -1,5 +1,5 @@
 
-package ietf.params.xml.ns.icalendar_2;
+package ecf5.v2024_6.ietf.params.xml.ns.icalendar_2;
 
 import javax.xml.datatype.Duration;
 import jakarta.xml.bind.annotation.XmlAccessType;

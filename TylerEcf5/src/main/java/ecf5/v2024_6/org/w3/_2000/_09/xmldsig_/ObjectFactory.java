@@ -1,5 +1,5 @@
 
-package org.w3._2000._09.xmldsig_;
+package ecf5.v2024_6.org.w3._2000._09.xmldsig_;
 
 import java.math.BigInteger;
 import javax.xml.namespace.QName;
@@ -11,7 +11,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the org.w3._2000._09.xmldsig_ package. 
+ * generated in the ecf5.v2024_6.org.w3._2000._09.xmldsig_ package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -61,7 +61,7 @@ public class ObjectFactory {
     private final static QName _SignatureMethodTypeHMACOutputLength_QNAME = new QName("http://www.w3.org/2000/09/xmldsig#", "HMACOutputLength");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.w3._2000._09.xmldsig_
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf5.v2024_6.org.w3._2000._09.xmldsig_
      * 
      */
     public ObjectFactory() {

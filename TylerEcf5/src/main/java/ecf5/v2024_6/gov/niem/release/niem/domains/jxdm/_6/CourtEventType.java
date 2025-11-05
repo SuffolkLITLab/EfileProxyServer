@@ -1,10 +1,10 @@
 
-package gov.niem.release.niem.domains.jxdm._6;
+package ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.niem_core._4.ActivityType;
-import gov.niem.release.niem.niem_core._4.ScheduleDayType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.ActivityType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.ScheduleDayType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -56,7 +56,7 @@ public class CourtEventType
     @XmlElement(name = "CourtEventSchedule")
     protected List<ScheduleDayType> courtEventSchedule;
     @XmlElement(name = "CourtEventSequenceID")
-    protected gov.niem.release.niem.proxy.xsd._4.String courtEventSequenceID;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String courtEventSequenceID;
     @XmlElementRef(name = "CourtEventAugmentationPoint", namespace = "http://release.niem.gov/niem/domains/jxdm/6.1/", type = JAXBElement.class, required = false)
     protected List<JAXBElement<?>> courtEventAugmentationPoint;
 
@@ -123,10 +123,10 @@ public class CourtEventType
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getCourtEventSequenceID() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getCourtEventSequenceID() {
         return courtEventSequenceID;
     }
 
@@ -135,10 +135,10 @@ public class CourtEventType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setCourtEventSequenceID(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setCourtEventSequenceID(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.courtEventSequenceID = value;
     }
 
@@ -160,9 +160,9 @@ public class CourtEventType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * {@link JAXBElement }{@code <}{@link tyler.ecf.v5_0.extensions.common.CourtEventAugmentationType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ecf5.v2024_6.tyler.ecf.v5_0.extensions.common.CourtEventAugmentationType }{@code >}
      * 
      * 
      */

@@ -1,9 +1,9 @@
 
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
+package ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
 
-import gov.niem.release.niem.niem_core._4.DocumentAssociationType;
-import gov.niem.release.niem.proxy.xsd._4.Boolean;
-import gov.niem.release.niem.structures._4.AugmentationType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DocumentAssociationType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Boolean;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.AugmentationType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -47,7 +47,7 @@ public class ReviewedDocumentAugmentationType
     @XmlElement(name = "SealDocumentIndicator")
     protected Boolean sealDocumentIndicator;
     @XmlElement(name = "CaseDocketID", namespace = "http://release.niem.gov/niem/niem-core/4.0/")
-    protected gov.niem.release.niem.proxy.xsd._4.String caseDocketID;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String caseDocketID;
     @XmlElement(name = "DocumentAssociation", namespace = "http://release.niem.gov/niem/niem-core/4.0/", nillable = true)
     protected DocumentAssociationType documentAssociation;
 
@@ -80,10 +80,10 @@ public class ReviewedDocumentAugmentationType
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getCaseDocketID() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getCaseDocketID() {
         return caseDocketID;
     }
 
@@ -92,10 +92,10 @@ public class ReviewedDocumentAugmentationType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setCaseDocketID(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setCaseDocketID(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.caseDocketID = value;
     }
 

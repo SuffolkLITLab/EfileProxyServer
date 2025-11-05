@@ -1,13 +1,13 @@
 
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing;
+package ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
-import gov.niem.release.niem.niem_core._4.CaseType;
-import gov.niem.release.niem.niem_core._4.DocumentType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ElectronicServiceInformationType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.CaseType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DocumentType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ElectronicServiceInformationType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -16,8 +16,8 @@ import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import tyler.ecf.v5_0.extensions.common.FilingMessageAugmentationType;
-import tyler.ecf.v5_0.extensions.common.RecordDocketingMessageAugmentationType;
+import ecf5.v2024_6.tyler.ecf.v5_0.extensions.common.FilingMessageAugmentationType;
+import ecf5.v2024_6.tyler.ecf.v5_0.extensions.common.RecordDocketingMessageAugmentationType;
 
 
 /**

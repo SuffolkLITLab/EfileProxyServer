@@ -1,5 +1,5 @@
 
-package gov.niem.release.niem.structures._4;
+package ecf5.v2024_6.gov.niem.release.niem.structures._4;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +42,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "MetadataType")
 @XmlSeeAlso({
-    gov.niem.release.niem.niem_core._4.MetadataType.class
+    ecf5.v2024_6.gov.niem.release.niem.niem_core._4.MetadataType.class
 })
 public abstract class MetadataType {
 

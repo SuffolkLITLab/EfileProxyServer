@@ -1,5 +1,5 @@
 
-package un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2;
+package ecf5.v2024_6.un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -11,7 +11,7 @@ import jakarta.xml.bind.annotation.XmlValue;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.NormalizedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.NameType;
+import ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.NameType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -69,7 +69,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "value"
 })
 @XmlSeeAlso({
-    oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.TextType.class,
+    ecf5.v2024_6.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.TextType.class,
     NameType.class
 })
 public class TextType {

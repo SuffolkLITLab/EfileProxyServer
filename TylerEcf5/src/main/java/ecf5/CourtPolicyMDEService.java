@@ -1,4 +1,4 @@
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde;
+package ecf5;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -69,8 +69,8 @@ public class CourtPolicyMDEService extends Service {
      *     returns CourtPolicyMDE
      */
     @WebEndpoint(name = "CourtPolicyMDE")
-    public CourtPolicyMDE getCourtPolicyMDE() {
-        return super.getPort(CourtPolicyMDE, CourtPolicyMDE.class);
+    public ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDE getCourtPolicyMDE() {
+        return super.getPort(CourtPolicyMDE, ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDE.class);
     }
 
     /**
@@ -81,8 +81,8 @@ public class CourtPolicyMDEService extends Service {
      *     returns CourtPolicyMDE
      */
     @WebEndpoint(name = "CourtPolicyMDE")
-    public CourtPolicyMDE getCourtPolicyMDE(WebServiceFeature... features) {
-        return super.getPort(CourtPolicyMDE, CourtPolicyMDE.class, features);
+    public ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDE getCourtPolicyMDE(WebServiceFeature... features) {
+        return super.getPort(CourtPolicyMDE, ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0wsdl.courtpolicymde.CourtPolicyMDE.class, features);
     }
 
 }

@@ -1,17 +1,17 @@
 
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
+package ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf;
 
-import gov.niem.release.niem.domains.jxdm._6.CourtType;
-import gov.niem.release.niem.niem_core._4.DateType;
-import gov.niem.release.niem.niem_core._4.DocumentType;
-import gov.niem.release.niem.niem_core._4.IdentificationType;
-import gov.niem.release.niem.proxy.xsd._4.NormalizedString;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.allocatedate.AllocateCourtDateMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.datecallback.NotifyCourtDateMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.docket.RecordDocketingMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing.FilingMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ReserveCourtDateMessageType;
-import https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.stampinformation.DocumentStampInformationMessageType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.CourtType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DateType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.DocumentType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.IdentificationType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.NormalizedString;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.allocatedate.AllocateCourtDateMessageType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.datecallback.NotifyCourtDateMessageType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.docket.RecordDocketingMessageType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing.FilingMessageType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ReserveCourtDateMessageType;
+import ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.stampinformation.DocumentStampInformationMessageType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -19,8 +19,8 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-import tyler.ecf.v5_0.extensions.recordreceipt.RecordReceiptMessageType;
-import tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
+import ecf5.v2024_6.tyler.ecf.v5_0.extensions.recordreceipt.RecordReceiptMessageType;
+import ecf5.v2024_6.tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
 
 
 /**

@@ -1,9 +1,9 @@
 
-package gov.niem.release.niem.niem_core._4;
+package ecf5.v2024_6.gov.niem.release.niem.niem_core._4;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.structures._4.ObjectType;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -87,9 +87,9 @@ public class ContactInformationType
      * Objects of the following type(s) are allowed in the list
      * {@link JAXBElement }{@code <}{@link AddressType }{@code >}
      * {@link JAXBElement }{@code <}{@link TelephoneNumberType }{@code >}
-     * {@link JAXBElement }{@code <}{@link gov.niem.release.niem.proxy.xsd._4.String }{@code >}
-     * {@link JAXBElement }{@code <}{@link gov.niem.release.niem.proxy.xsd._4.String }{@code >}
-     * {@link JAXBElement }{@code <}{@link gov.niem.release.niem.proxy.xsd._4.String }{@code >}
+     * {@link JAXBElement }{@code <}{@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }{@code >}
+     * {@link JAXBElement }{@code <}{@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }{@code >}
+     * {@link JAXBElement }{@code <}{@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
      * 
      * 

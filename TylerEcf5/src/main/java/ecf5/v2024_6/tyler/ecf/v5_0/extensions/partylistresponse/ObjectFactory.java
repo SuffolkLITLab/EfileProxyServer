@@ -1,8 +1,8 @@
 
-package tyler.ecf.v5_0.extensions.partylistresponse;
+package ecf5.v2024_6.tyler.ecf.v5_0.extensions.partylistresponse;
 
 import javax.xml.namespace.QName;
-import gov.niem.release.niem.niem_core._4.EntityType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.EntityType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
@@ -11,7 +11,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the tyler.ecf.v5_0.extensions.partylistresponse package. 
+ * generated in the ecf5.v2024_6.tyler.ecf.v5_0.extensions.partylistresponse package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -29,7 +29,7 @@ public class ObjectFactory {
     private final static QName _Party_QNAME = new QName("urn:tyler:ecf:v5.0:extensions:partylistresponse", "Party");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: tyler.ecf.v5_0.extensions.partylistresponse
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf5.v2024_6.tyler.ecf.v5_0.extensions.partylistresponse
      * 
      */
     public ObjectFactory() {

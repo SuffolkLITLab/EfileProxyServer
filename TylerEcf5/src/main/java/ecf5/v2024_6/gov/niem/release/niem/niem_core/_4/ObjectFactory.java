@@ -1,23 +1,23 @@
 
-package gov.niem.release.niem.niem_core._4;
+package ecf5.v2024_6.gov.niem.release.niem.niem_core._4;
 
 import javax.xml.namespace.QName;
-import gov.niem.release.niem.codes.iso_3166_1._4.CountryAlpha2CodeType;
-import gov.niem.release.niem.codes.iso_4217._4.CurrencyCodeType;
-import gov.niem.release.niem.codes.iso_639_3._4.LanguageCodeType;
-import gov.niem.release.niem.codes.unece_rec20._4.LengthCodeType;
-import gov.niem.release.niem.codes.unece_rec20._4.MassCodeType;
-import gov.niem.release.niem.codes.unece_rec20._4.VelocityCodeType;
-import gov.niem.release.niem.codes.usps_states._4.USStateCodeType;
-import gov.niem.release.niem.proxy.xsd._4.AnyURI;
-import gov.niem.release.niem.proxy.xsd._4.Base64Binary;
-import gov.niem.release.niem.proxy.xsd._4.Boolean;
-import gov.niem.release.niem.proxy.xsd._4.Date;
-import gov.niem.release.niem.proxy.xsd._4.DateTime;
-import gov.niem.release.niem.proxy.xsd._4.Decimal;
-import gov.niem.release.niem.proxy.xsd._4.GYear;
-import gov.niem.release.niem.proxy.xsd._4.String;
-import gov.niem.release.niem.proxy.xsd._4.Time;
+import ecf5.v2024_6.gov.niem.release.niem.codes.iso_3166_1._4.CountryAlpha2CodeType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.iso_4217._4.CurrencyCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.iso_639_3._4.LanguageCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.unece_rec20._4.LengthCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.unece_rec20._4.MassCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.unece_rec20._4.VelocityCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.codes.usps_states._4.USStateCodeType;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.AnyURI;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Base64Binary;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Boolean;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Date;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.DateTime;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Decimal;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.GYear;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String;
+import ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.Time;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
@@ -26,7 +26,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the gov.niem.release.niem.niem_core._4 package. 
+ * generated in the ecf5.v2024_6.gov.niem.release.niem.niem_core._4 package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -291,7 +291,7 @@ public class ObjectFactory {
     private final static QName _WeightUnitCode_QNAME = new QName("http://release.niem.gov/niem/niem-core/4.0/", "WeightUnitCode");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: gov.niem.release.niem.niem_core._4
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf5.v2024_6.gov.niem.release.niem.niem_core._4
      * 
      */
     public ObjectFactory() {

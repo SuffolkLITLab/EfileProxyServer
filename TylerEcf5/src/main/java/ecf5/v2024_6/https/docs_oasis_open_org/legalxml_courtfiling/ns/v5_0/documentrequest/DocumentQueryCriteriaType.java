@@ -1,11 +1,11 @@
 
-package https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.documentrequest;
+package ecf5.v2024_6.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.documentrequest;
 
 import java.util.ArrayList;
 import java.util.List;
-import gov.niem.release.niem.niem_core._4.IdentificationType;
-import gov.niem.release.niem.niem_core._4.TextType;
-import gov.niem.release.niem.structures._4.ObjectType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.IdentificationType;
+import ecf5.v2024_6.gov.niem.release.niem.niem_core._4.TextType;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -53,7 +53,7 @@ public class DocumentQueryCriteriaType
     @XmlElement(name = "CaseNumberText", namespace = "http://release.niem.gov/niem/domains/jxdm/6.1/")
     protected TextType caseNumberText;
     @XmlElement(name = "DocumentFileControlID", namespace = "http://release.niem.gov/niem/niem-core/4.0/", required = true)
-    protected gov.niem.release.niem.proxy.xsd._4.String documentFileControlID;
+    protected ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String documentFileControlID;
 
     /**
      * Gets the value of the caseTrackingID property.
@@ -113,10 +113,10 @@ public class DocumentQueryCriteriaType
      * 
      * @return
      *     possible object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public gov.niem.release.niem.proxy.xsd._4.String getDocumentFileControlID() {
+    public ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String getDocumentFileControlID() {
         return documentFileControlID;
     }
 
@@ -125,10 +125,10 @@ public class DocumentQueryCriteriaType
      * 
      * @param value
      *     allowed object is
-     *     {@link gov.niem.release.niem.proxy.xsd._4.String }
+     *     {@link ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String }
      *     
      */
-    public void setDocumentFileControlID(gov.niem.release.niem.proxy.xsd._4.String value) {
+    public void setDocumentFileControlID(ecf5.v2024_6.gov.niem.release.niem.proxy.xsd._4.String value) {
         this.documentFileControlID = value;
     }
 

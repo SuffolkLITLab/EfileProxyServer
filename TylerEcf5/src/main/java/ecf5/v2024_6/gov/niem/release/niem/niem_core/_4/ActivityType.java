@@ -1,17 +1,17 @@
 
-package gov.niem.release.niem.niem_core._4;
+package ecf5.v2024_6.gov.niem.release.niem.niem_core._4;
 
-import gov.niem.release.niem.domains.humanservices._4.PlacementType;
-import gov.niem.release.niem.domains.jxdm._6.ArrestType;
-import gov.niem.release.niem.domains.jxdm._6.BookingType;
-import gov.niem.release.niem.domains.jxdm._6.CitationType;
-import gov.niem.release.niem.domains.jxdm._6.CourtEventType;
-import gov.niem.release.niem.domains.jxdm._6.CourtOrderType;
-import gov.niem.release.niem.domains.jxdm._6.DriverLicenseWithdrawalType;
-import gov.niem.release.niem.domains.jxdm._6.OffenseType;
-import gov.niem.release.niem.domains.jxdm._6.SentenceType;
-import gov.niem.release.niem.domains.jxdm._6.TermType;
-import gov.niem.release.niem.structures._4.ObjectType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.humanservices._4.PlacementType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.ArrestType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.BookingType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.CitationType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.CourtEventType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.CourtOrderType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.DriverLicenseWithdrawalType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.OffenseType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.SentenceType;
+import ecf5.v2024_6.gov.niem.release.niem.domains.jxdm._6.TermType;
+import ecf5.v2024_6.gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;

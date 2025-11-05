@@ -1,5 +1,5 @@
 
-package gov.niem.release.niem.structures._4;
+package ecf5.v2024_6.gov.niem.release.niem.structures._4;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +52,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "associationAugmentationPoint"
 })
 @XmlSeeAlso({
-    gov.niem.release.niem.niem_core._4.AssociationType.class
+    ecf5.v2024_6.gov.niem.release.niem.niem_core._4.AssociationType.class
 })
 public abstract class AssociationType {
 
