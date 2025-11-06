@@ -21,9 +21,9 @@ from plumbum import local, FG, BG
 
 # Check that wsdl2java and other comands are installed correctly
 wsdl2java = local.cmd.wsdl2java
-wsdl2java['-v'] & FG
+(wsdl2java['-v'] > "/dev/null")
 java = local['java']
-java['--version'] & FG
+(java['--version'] > "/dev/null")
 
 bindings_xjb_contents_ecf4 = f"""<?xml version="1.0" ?>
 <jaxb:bindings version="3.0" xmlns:jaxb="http://jakarta.ee/xml/ns/jaxb"
@@ -44,8 +44,7 @@ bindings_xjb_contents_ecf5 = f"""<?xml version="1.0" ?>
 """
 
 wsdl_templates = {
-  "efm_user": """
-<?xml version="1.0" encoding="utf-8"?>
+  "efm_user": """<?xml version="1.0" encoding="utf-8"?>
 <wsdl:definitions name="EfmUserService" targetNamespace="urn:tyler:efm:services"
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
     xmlns:tns="urn:tyler:efm:services"
@@ -65,8 +64,7 @@ wsdl_templates = {
     </wsdl:service>
 </wsdl:definitions>
 """,
-  "efm_firm": """
-<?xml version="1.0" encoding="utf-8"?>
+  "efm_firm": """<?xml version="1.0" encoding="utf-8"?>
 <wsdl:definitions name="EfmFirmService" targetNamespace="urn:tyler:efm:services"
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
@@ -86,8 +84,7 @@ wsdl_templates = {
     </wsdl:service>
 </wsdl:definitions>
 """,
-  "court_record_4": """
-<definitions
+  "court_record_4": """<definitions
 	xmlns:wsmp="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/"
@@ -103,8 +100,22 @@ wsdl_templates = {
 	</service>
 </definitions>
 """,
-  "filing_assembly_4": """
-<definitions
+  "filing_assembly_4": """<definitions
+	xmlns:wsmp="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/"
+	targetNamespace="urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0">
+	<import
+		namespace="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0"
+		location="../base/ecf-1.xsd" />
+	<service name="FilingAssemblyMDEService">
+		<port name="FilingAssemblyMDEPort" binding="wsmp:FilingAssemblyMDEPortSOAPBinding">
+      <soap:address location="https://efile.suffolklitlab.org/jurisdictions/{jurisdiction}/filingassembly/callbacks/FilingAssemblyMDEPort"/>
+		</port>
+	</service>
+</definitions>
+""",
+  "filing_review_4": """<definitions
 	xmlns:wsmp="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/"
@@ -120,25 +131,7 @@ wsdl_templates = {
 	</service>
 </definitions>
 """,
-  "filing_review_4": """
-<definitions
-	xmlns:wsmp="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0"
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/"
-	targetNamespace="urn:tyler:efm:wsdl:WebServicesProfile-Implementation-4.0">
-	<import
-		namespace="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0"
-		location="../base/ecf-1.xsd" />
-	<service name="FilingAssemblyMDEService">
-		<port name="FilingAssemblyMDEPort" binding="wsmp:FilingAssemblyMDEPortSOAPBinding">
-			<soap:address
-				location="https://{domain}.tylertech.cloud/efm/FilingAssemblyMDEPort.svc" />
-		</port>
-	</service>
-</definitions>
-""",
-  "service_4": """
-<definitions
+  "service_4": """<definitions
 	xmlns:wsmp="urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/"
@@ -153,8 +146,7 @@ wsdl_templates = {
 	</service>
 </definitions>
 """,
-  "court_policy_5": """
-<?xml version="1.0" encoding="UTF-8"?>
+  "court_policy_5": """<?xml version="1.0" encoding="UTF-8"?>
 <definitions targetNamespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtPolicyMDE" xmlns:wsmp="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtPolicyMDE" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/">
 	<import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtPolicyMDE" location="../base/CourtPolicyMDE.wsdl"/>
 	<import namespace="urn:tyler:ecf:v5.0:extensions:common" location="../base/ecfv5-dd545670aa04333d.xsd"/>
@@ -165,8 +157,7 @@ wsdl_templates = {
 	</service>
 </definitions>
 """,
-  "court_record_5": """
-<?xml version="1.0" encoding="UTF-8"?>
+  "court_record_5": """<?xml version="1.0" encoding="UTF-8"?>
 
 <definitions targetNamespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtRecordMDE" xmlns:wsmp="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtRecordMDE" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/">
 	<import location="../base/CourtRecordMDE.wsdl" namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtRecordMDE"/>
@@ -180,8 +171,7 @@ wsdl_templates = {
 	</service>
 </definitions>
 """,
-  "court_schedule_5": """
-<?xml version="1.0" encoding="UTF-8"?>
+  "court_schedule_5": """<?xml version="1.0" encoding="UTF-8"?>
 
 <definitions targetNamespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtSchedulingMDE" xmlns:wsmp="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/CourtSchedulingMDE" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/">
 	
@@ -197,8 +187,7 @@ wsdl_templates = {
 	</service>
 </definitions>
 """,
-  "filing_review_5": """
-<?xml version="1.0" encoding="UTF-8"?>
+  "filing_review_5": """<?xml version="1.0" encoding="UTF-8"?>
 
 <definitions targetNamespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/FilingReviewMDE" xmlns:wsmp="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/FilingReviewMDE" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/">
 	<import location="../base/FilingReviewMDE.wsdl" namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/FilingReviewMDE"/>
@@ -215,8 +204,7 @@ wsdl_templates = {
 """,
   "filing_assembly_5": """
 """,
-  "service_5": """
-<?xml version="1.0" encoding="UTF-8"?>
+  "service_5": """<?xml version="1.0" encoding="UTF-8"?>
 
 <definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsmp="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/ServiceMDE" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/ServiceMDE">
 	<import location="../base/ServiceMDE.wsdl" namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0WSDL/ServiceMDE"/>
@@ -231,8 +219,7 @@ wsdl_templates = {
 	</service>
 </definitions>
 """,
-  "tyler_record_5": """
-<?xml version="1.0" encoding="UTF-8"?>
+  "tyler_record_5": """<?xml version="1.0" encoding="UTF-8"?>
 
 <definitions targetNamespace="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE" xmlns:wsmp="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/">
 	<import location="../base/TylerCourtRecordMDE.wsdl" namespace="urn:tyler:ecf:v5.0:extensions:TylerCourtRecordMDE"/>
@@ -248,8 +235,7 @@ wsdl_templates = {
 	</service>
 </definitions>
 """,
-  "tyler_schedule_5": """
-<?xml version="1.0" encoding="UTF-8"?>
+  "tyler_schedule_5": """<?xml version="1.0" encoding="UTF-8"?>
 
 <definitions targetNamespace="urn:tyler:ecf:v5.0:extensions:TylerCourtSchedulingMDE" xmlns:wsmp="urn:tyler:ecf:v5.0:extensions:TylerCourtSchedulingMDE" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/">
 	
@@ -262,8 +248,7 @@ wsdl_templates = {
 	</service>
 </definitions>
 """,
-  "tyler_assembly_5": """
-<?xml version="1.0" encoding="UTF-8"?>
+  "tyler_assembly_5": """<?xml version="1.0" encoding="UTF-8"?>
 
 <definitions targetNamespace="urn:tyler:ecf:v5.0:extensions:TylerFilingAssemblyMDE" xmlns:wsmp="urn:tyler:ecf:v5.0:extensions:TylerFilingAssemblyMDE" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/">
 	<import location="../base/TylerFilingAssemblyMDE.wsdl" namespace="urn:tyler:ecf:v5.0:extensions:TylerFilingAssemblyMDE"/>
@@ -276,8 +261,7 @@ wsdl_templates = {
 	</service>
 </definitions>
 """,
-  "tyler_review_5": """
-<?xml version="1.0" encoding="UTF-8"?>
+  "tyler_review_5": """<?xml version="1.0" encoding="UTF-8"?>
 
 <definitions targetNamespace="urn:tyler:ecf:v5.0:extensions:TylerFilingReviewMDE" xmlns:wsmp="urn:tyler:ecf:v5.0:extensions:TylerFilingReviewMDE" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/">
 	<import location="../base/TylerFilingReviewMDE.wsdl" namespace="urn:tyler:ecf:v5.0:extensions:TylerFilingReviewMDE"/>
@@ -296,9 +280,9 @@ wsdl_templates = {
 versions = ["v2022_1", "v2024_6", "v2025_0"]
 existing_jurisdictions = ["illinois", "vermont", "indiana", "california", "texas", "massachusetts"]
 
-def write_file(path, service_name, domain):
-  with open(path, 'r') as f:
-    f.write(wsdl_templates[service_name].format(domain=domain))
+def write_file(path, service_name, domain="", jurisdiction=""):
+  with open(path, 'w') as f:
+    f.write(wsdl_templates[service_name].format(jurisdiction=jurisdiction, domain=domain))
 
 def add_domain_efm(version, env, name):
   domain = make_domain(name, env)
@@ -310,7 +294,7 @@ def add_domain_ecf4(version, env, name):
   domain = make_domain(name, env)
   ecf4_prefix = f"../TylerEcf4/src/main/resources/wsdl/{version}/{env}/{name}-ECF-4.0-"
   write_file(ecf4_prefix + "CourtRecordMDEService.wsdl", 'court_record_4', domain)
-  write_file(ecf4_prefix + "FilingAssemblyMDEService.wsdl", 'filing_assembly_4', domain)
+  write_file(ecf4_prefix + "FilingAssemblyMDEService.wsdl", 'filing_assembly_4', domain, name)
   write_file(ecf4_prefix + "FilingReviewMDEService.wsdl", 'filing_review_4', domain)
   write_file(ecf4_prefix + "ServiceMDEService.wsdl", 'service_4', domain)
 
@@ -321,11 +305,11 @@ def add_domain_ecf5(version, env, name):
   write_file(ecf5_prefix + "CourtRecordMDEService.wsdl", 'court_record_5', domain)
   write_file(ecf5_prefix + "CourtSchedulingMDEService.wsdl", 'court_schedule_5', domain)
   write_file(ecf5_prefix + "FilingReviewMDEService.wsdl", 'filing_review_5', domain)
-  write_file(ecf5_prefix + "FilingAssemblyMDEService.wsdl", 'filing_assembly_5', domain)
+  write_file(ecf5_prefix + "FilingAssemblyMDEService.wsdl", 'filing_assembly_5', domain, name)
   write_file(ecf5_prefix + "ServiceMDEService.wsdl", 'service_5', domain)
   write_file(ecf5_prefix + "TylerCourtRecordMDEService.wsdl", 'tyler_record_5', domain)
   write_file(ecf5_prefix + "TylerCourtSchedulingMDEService.wsdl", 'tyler_schedule_5', domain)
-  write_file(ecf5_prefix + "TylerFilingAssemblyMDEService.wsdl", 'tyler_assembly_5', domain)
+  write_file(ecf5_prefix + "TylerFilingAssemblyMDEService.wsdl", 'tyler_assembly_5', domain, name)
   write_file(ecf5_prefix + "TylerFilingReviewMDEService.wsdl", 'tyler_review_5', domain)
 
 def make_domain(jurisdiction, env):
@@ -344,9 +328,9 @@ def add_new_jurisdiction(name, env):
   domain = make_domain(name, env)
 
   for version in versions:
-    add_domain_efm(version, env, name, domain)
-    add_domain_ecf4(version, env, name, domain)
-    add_domain_ecf5(version, env, name, domain)
+    add_domain_efm(version, env, name)
+    add_domain_ecf4(version, env, name)
+    add_domain_ecf5(version, env, name)
 
 def add_new_efm_version(version, url):
   mkdir = local['mkdir']
@@ -404,14 +388,52 @@ def add_new_ecf4_version(version, url):
 
   os.chdir(start_dir)
 
+def add_new_ecf5_version(version, url):
+  start_dir = os.getcwd()
+  path_prefix = f"../TylerEcf5/src/main/resources/wsdl/{version}"
+  mkdir = local['mkdir']
+  java = local['java']
+  mkdir['-p', "{path_prefix}/base"] & FG
+
+  os.chdir(f"{path_prefix}/base")
+  for ecf_wsdl in ['CourtPolicyMDE.wsdl', 'CourtRecordMDE.wsdl', 'CourtSchedulingMDE.wsdl', 'FilingReviewMDE.wsdl', 'ServiceMDE.wsdl', 'TylerCourtRecordMDE.wsdl', 'TylerCourtScheduling.wsdl', 'TylerFilingAssemblyMDE.wsdl', 'TylerFilingReviewMDE.wsdl']:
+    args = f'{url}/EFM/Schema/ecf5.0/wsi/schema/{ecf_wsdl} ecf'
+    java['-jar', f'{start_dir}/../proxyserver/target/efspserver-with-deps.jar', 'edu.suffolk.litlab.efsp.utils.XsdDownloader', args] & FG
+    local.get('rm')['ecf.xsd', ecf_wsdl] & FG
+
+  for env in ['prod', 'stage']:
+    mkdir['-p', f'{path_prefix}/{env}'] & FG
+    for jurisdiction in existing_jurisdictions:
+      add_domain_ecf5(version, env, jurisdiction)
+
+  with open('bindings.xjb', 'w') as f:
+    f.write(bindings_xjb_contents_ecf4)
+
+
+  os.chdir()
+
+  os.chdir(start_dir)
+
   # TODO: generate the Java objects
   #wsdl2java['-b', 'bindings.xjb', '-xjc-Xts', '-d', '../../../../java', '-verbose', 'ECF-4.0-FilingReviewMDEService.wsdl'] & FG
 
 def main(args):
+  if len(sys.argv) <= 1:
+    print("Pass in `version` or `jurisdiction`")
+    return
+
   if sys.argv[1] == 'version':
+    if len(sys.argv) <= 3:
+      print("Need to pass `version <version_number> <url to download from>`")
+      return
+
     add_new_efm_version(sys.argv[2], sys.argv[3])
     add_new_ecf4_version(sys.argv[2], sys.argv[3])
+    add_new_ecf5_version(sys.argv[2], sys.argv[3])
   elif sys.argv[1] == 'jurisdiction':
+    if len(sys.argv) <= 3:
+      print("Need to pass `jurisdiction <name> <env>`")
+      return
     add_new_jurisdiction(sys.argv[2], sys.argv[3])
 
 if __name__ == '__main__':
