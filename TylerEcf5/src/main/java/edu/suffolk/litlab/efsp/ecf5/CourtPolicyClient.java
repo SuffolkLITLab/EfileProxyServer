@@ -15,15 +15,19 @@ public class CourtPolicyClient {
         switch (version) {
             case v2022_1:
               this.v2024Port = factory.getCourtPolicyMDE();
+              setup.accept((BindingProvider) v2024Port);
               break;
             case v2024_6:
               this.v2024Port = factory.getCourtPolicyMDE();
+              setup.accept((BindingProvider) v2024Port);
               break;
             case v2025_0:
               this.v2024Port = factory.getCourtPolicyMDE();
+              setup.accept((BindingProvider) v2024Port);
               break;
             default:
               this.v2024Port = factory.getCourtPolicyMDE();
+              setup.accept((BindingProvider) v2024Port);
               break;
         }
     }
