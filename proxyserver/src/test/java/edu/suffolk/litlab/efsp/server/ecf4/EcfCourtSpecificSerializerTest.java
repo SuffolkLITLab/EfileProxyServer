@@ -1,9 +1,10 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -25,6 +26,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
 import edu.suffolk.litlab.efsp.model.Name;
 import edu.suffolk.litlab.efsp.model.Person;
+import edu.suffolk.litlab.efsp.utils.AllWrongCollector;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
@@ -79,6 +81,20 @@ public class EcfCourtSpecificSerializerTest {
                             "",
                             "",
                             "",
+                            "",
+                            false,
+                            ""),
+                        "PartyPhone",
+                        new DataFieldRow(
+                            "PartyPhone",
+                            "Party Phone",
+                            true,
+                            false,
+                            "",
+                            "",
+                            "",
+                            "Do not use hyphens or other characters--just numbers",
+                            "^(\\+0?1\\s)?\\(?\\d{3}\\)?\\d{3}\\d{4}$",
                             "",
                             false,
                             "")))));
@@ -161,6 +177,22 @@ public class EcfCourtSpecificSerializerTest {
     assertTrue(langs.size() > 0);
     // assertEquals("Spanish", ((LanguageCodeType) langs.get(0).getValue()).getValue());
     Ecf4Helper.objectToXmlStr(cptPer, CaseParticipantType.class);
+  }
+
+  @Test
+  public void shouldAllowAtLeastOnePhone() throws FilingError {
+    collector = new AllWrongCollector();
+    ContactInformation info =
+        new ContactInformation(
+            List.of("1234567890", "123-456-7890 ", "123-abc"),
+            Optional.empty(),
+            Optional.of("bob@example.com"));
+    CourtLocationInfo loc = new CourtLocationInfo();
+    loc.code = "not_real";
+    EcfCourtSpecificSerializer courtSer = new EcfCourtSpecificSerializer(cd, loc);
+    var contactInfoType = courtSer.serializeEcfContactInformation(info, collector);
+    assertThat(contactInfoType.getContactMeans()).hasSize(2);
+    assertThat(collector.getWrong()).hasSize(0);
   }
 
   @Test

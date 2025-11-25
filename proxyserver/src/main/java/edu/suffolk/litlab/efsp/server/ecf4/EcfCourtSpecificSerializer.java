@@ -514,18 +514,23 @@ public class EcfCourtSpecificSerializer {
       List<String> numbers = contactInfo.getPhoneNumbers();
       InterviewVariable var =
           collector.requestVar(
-              "phone_number", "Phone number", "text", List.of(), Optional.of(numbers.toString()));
+              "phone_number",
+              "Phone number with regex: " + phoneRow.regularexpression,
+              "text",
+              List.of(),
+              Optional.of(numbers.toString()));
       if (phoneRow.isrequired && numbers.isEmpty()) {
         collector.addRequired(var);
       }
-      for (String phoneNumber : contactInfo.getPhoneNumbers()) {
+      boolean atLeastOnePhoneAdded = false;
+      for (String phoneNumber : numbers) {
         if (!phoneRow.matchRegex(phoneNumber)) {
           if (phoneNumber.contains("-")) {
             // HACK(brycew): Massachusetts doesn't like dashes in the number, just numbers
-            phoneNumber = phoneNumber.replace("-", "").replace("(", "").replace(")", "");
+            phoneNumber = phoneNumber.replace("-", "").replace("(", "").replace(")", "").strip();
           }
           if (!phoneRow.matchRegex(phoneNumber)) {
-            collector.addWrong(var);
+            continue;
           }
         }
 
@@ -534,6 +539,10 @@ public class EcfCourtSpecificSerializer {
         ftnt.setTelephoneNumberFullID(Ecf4Helper.convertString(phoneNumber));
         tnt.setTelephoneNumberRepresentation(niemObjFac.createFullTelephoneNumber(ftnt));
         cit.getContactMeans().add(niemObjFac.createContactTelephoneNumber(tnt));
+        atLeastOnePhoneAdded = true;
+      }
+      if (!numbers.isEmpty() && !atLeastOnePhoneAdded) {
+        collector.addWrong(var);
       }
     }
 
