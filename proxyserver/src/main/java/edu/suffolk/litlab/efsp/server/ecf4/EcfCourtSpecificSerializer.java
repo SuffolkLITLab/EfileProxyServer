@@ -523,7 +523,7 @@ public class EcfCourtSpecificSerializer {
         collector.addRequired(var);
       }
       boolean atLeastOnePhoneAdded = false;
-      for (String phoneNumber : contactInfo.getPhoneNumbers()) {
+      for (String phoneNumber : numbers) {
         if (!phoneRow.matchRegex(phoneNumber)) {
           if (phoneNumber.contains("-")) {
             // HACK(brycew): Massachusetts doesn't like dashes in the number, just numbers
@@ -541,7 +541,7 @@ public class EcfCourtSpecificSerializer {
         cit.getContactMeans().add(niemObjFac.createContactTelephoneNumber(tnt));
         atLeastOnePhoneAdded = true;
       }
-      if (!atLeastOnePhoneAdded) {
+      if (!numbers.isEmpty() && !atLeastOnePhoneAdded) {
         collector.addWrong(var);
       }
     }
