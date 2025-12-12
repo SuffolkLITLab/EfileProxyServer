@@ -68,11 +68,11 @@
                 <artifactId>tyler-ecf4</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <!--dependency>
+            <dependency>
                 <groupId>edu.suffolk.litlab</groupId>
                 <artifactId>tyler-ecf5</artifactId>
                 <version>${project.version}</version>
-            </dependency-->
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
