@@ -13,7 +13,7 @@
         <module>EfspCommons</module>
         <module>TylerEfmClient</module>
         <module>TylerEcf4</module>
-        <!--module>TylerEcf5</module-->
+        <module>TylerEcf5</module>
         <module>proxyserver</module>
     </modules>
 
@@ -68,11 +68,11 @@
                 <artifactId>tyler-ecf4</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <!--dependency>
+            <dependency>
                 <groupId>edu.suffolk.litlab</groupId>
                 <artifactId>tyler-ecf5</artifactId>
                 <version>${project.version}</version>
-            </dependency-->
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

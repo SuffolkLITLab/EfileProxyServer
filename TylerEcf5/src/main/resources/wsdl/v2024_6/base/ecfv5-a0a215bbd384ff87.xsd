@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- edited with XMLSpy v2018 sp1 (http://www.altova.com) by Tyler Technologies (Tyler Technologies) --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:document="urn:tyler:ecf:v5.0:extensions:updatedocument" xmlns:ecf="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" xmlns:filing="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" xmlns:niem-xs="http://release.niem.gov/niem/proxy/xsd/4.0/" xmlns:structures="http://release.niem.gov/niem/structures/4.0/" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:tyler:ecf:v5.0:extensions:updatedocument">
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf" schemaLocation="ecfv5-ea1e0f75b69752b5.xsd"/>
+	<xs:import namespace="https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filing" schemaLocation="ecfv5-849389af5da1be59.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/niem-core/4.0/" schemaLocation="ecfv5-7af13829a6695741.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/proxy/xsd/4.0/" schemaLocation="ecfv5-4d179e3e0bd140a9.xsd"/>
+	<xs:import namespace="http://release.niem.gov/niem/structures/4.0/" schemaLocation="ecfv5-43381e9aa490c46d.xsd"/>
+	<xs:complexType name="UpdateDocumentMessageType">
+		<xs:annotation>
+			<xs:documentation>Message to update an event document.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ecf:CaseFilingType">
+				<xs:sequence>
+					<xs:element maxOccurs="1" minOccurs="1" ref="document:ReviewedLeadDocument"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="document:ReviewedConnectedDocument"/>
+					<xs:element maxOccurs="1" minOccurs="1" ref="nc:Case"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" ref="document:UpdateDocumentMessageAugmentationPoint"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ReviewedLeadDocument" type="nc:DocumentType">
+		<xs:annotation>
+			<xs:documentation>The updated lead document</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ReviewedConnectedDocument" type="nc:DocumentType">
+		<xs:annotation>
+			<xs:documentation>The updated connected document</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="UpdateDocumentMessage" type="document:UpdateDocumentMessageType">
+		<xs:annotation>
+			<xs:documentation>Message resulting from updating a new document to an event.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element abstract="true" name="UpdateDocumentMessageAugmentationPoint">
+		<xs:annotation>
+			<xs:documentation>An extension point for the enclosing message.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>
