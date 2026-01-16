@@ -63,4 +63,23 @@ public class ConversionTest {
         Conversion.convert(tyler.efm.latest.services.schema.common.RegistrationType.class, oldReg);
     assertThat(newReg.value()).isEqualTo(oldReg.value());
   }
+
+  @Test
+  public void testPaymentAccountTypeList() {
+    var oldResp =
+        new tyler.efm.v2022_1.services.schema.paymentaccounttypelistresponse
+            .PaymentAccountTypeListResponseType();
+    var oldType = new tyler.efm.v2022_1.services.schema.common.PaymentAccountTypeType();
+    oldType.setCode("Wow");
+    oldType.setDescription("A test code");
+    oldResp.getPaymentAccountType().add(oldType);
+
+    var newResp =
+        Conversion.convert(
+            tyler.efm.latest.services.schema.paymentaccounttypelistresponse
+                .PaymentAccountTypeListResponseType.class,
+            oldResp);
+    assertThat(newResp.getPaymentAccountType()).hasSize(1);
+    assertThat(newResp.getPaymentAccountType().get(0).getDescription()).isEqualTo("A test code");
+  }
 }
