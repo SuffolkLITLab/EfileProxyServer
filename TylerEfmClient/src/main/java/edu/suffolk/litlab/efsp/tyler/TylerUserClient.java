@@ -31,6 +31,8 @@ public class TylerUserClient {
   private final tyler.efm.v2022_1.services.IEfmUserService v2022Port;
   private final TylerVersion version;
 
+  private static final WsdlMapper mapper = new WsdlMapperImpl();
+
   public TylerUserClient(
       EfmUserService factory, TylerVersion version, Consumer<BindingProvider> setup) {
     this.version = version;
@@ -60,13 +62,8 @@ public class TylerUserClient {
 
   public AuthenticateResponseType authenticateUser(AuthenticateRequestType authenticateRequest) {
     if (version == v2022_1) {
-      var resp =
-          v2022Port.authenticateUser(
-              Conversion.convert(
-                  tyler.efm.v2022_1.services.schema.authenticaterequest.AuthenticateRequestType
-                      .class,
-                  authenticateRequest));
-      return Conversion.convert(AuthenticateResponseType.class, resp);
+      var resp = v2022Port.authenticateUser(mapper.toV2022(authenticateRequest));
+      return mapper.toLatest(resp);
     } else {
       return latestPort.authenticateUser(authenticateRequest);
     }
@@ -74,12 +71,8 @@ public class TylerUserClient {
 
   public UpdateUserResponseType updateUser(UpdateUserRequestType updateUserRequest) {
     if (version == v2022_1) {
-      var resp =
-          v2022Port.updateUser(
-              Conversion.convert(
-                  tyler.efm.v2022_1.services.schema.updateuserrequest.UpdateUserRequestType.class,
-                  updateUserRequest));
-      return Conversion.convert(UpdateUserResponseType.class, resp);
+      var resp = v2022Port.updateUser(mapper.toV2022(updateUserRequest));
+      return mapper.toLatest(resp);
     } else {
       return latestPort.updateUser(updateUserRequest);
     }
@@ -87,8 +80,7 @@ public class TylerUserClient {
 
   public NotificationPreferencesResponseType getNotificationPreferences() {
     if (version == v2022_1) {
-      return Conversion.convert(
-          NotificationPreferencesResponseType.class, v2022Port.getNotificationPreferences());
+      return mapper.toLatest(v2022Port.getNotificationPreferences());
     } else {
       return latestPort.getNotificationPreferences();
     }
@@ -96,12 +88,8 @@ public class TylerUserClient {
 
   public GetUserResponseType getUser(GetUserRequestType getUserRequest) {
     if (version == v2022_1) {
-      var resp =
-          v2022Port.getUser(
-              Conversion.convert(
-                  tyler.efm.v2022_1.services.schema.getuserrequest.GetUserRequestType.class,
-                  getUserRequest));
-      return Conversion.convert(GetUserResponseType.class, resp);
+      var resp = v2022Port.getUser(mapper.toV2022(getUserRequest));
+      return mapper.toLatest(resp);
     } else {
       return latestPort.getUser(getUserRequest);
     }
@@ -111,12 +99,8 @@ public class TylerUserClient {
       SelfResendActivationEmailRequestType selfResendActivationEmailRequest) {
     if (version == v2022_1) {
       var resp =
-          v2022Port.selfResendActivationEmail(
-              Conversion.convert(
-                  tyler.efm.v2022_1.services.schema.selfresendactivationemailrequest
-                      .SelfResendActivationEmailRequestType.class,
-                  selfResendActivationEmailRequest));
-      return Conversion.convert(BaseResponseType.class, resp);
+          v2022Port.selfResendActivationEmail(mapper.toV2022(selfResendActivationEmailRequest));
+      return mapper.toLatest(resp);
     } else {
       return latestPort.selfResendActivationEmail(selfResendActivationEmailRequest);
     }
@@ -124,13 +108,8 @@ public class TylerUserClient {
 
   public ResetPasswordResponseType resetPassword(ResetPasswordRequestType resetPasswordRequest) {
     if (version == v2022_1) {
-      var resp =
-          v2022Port.resetPassword(
-              Conversion.convert(
-                  tyler.efm.v2022_1.services.schema.resetpasswordrequest.ResetPasswordRequestType
-                      .class,
-                  resetPasswordRequest));
-      return Conversion.convert(ResetPasswordResponseType.class, resp);
+      var resp = v2022Port.resetPassword(mapper.toV2022(resetPasswordRequest));
+      return mapper.toLatest(resp);
     } else {
       return latestPort.resetPassword(resetPasswordRequest);
     }
@@ -139,13 +118,8 @@ public class TylerUserClient {
   public PasswordQuestionResponseType getPasswordQuestion(
       GetPasswordQuestionRequestType getPasswordQuestionRequest) {
     if (version == v2022_1) {
-      var resp =
-          v2022Port.getPasswordQuestion(
-              Conversion.convert(
-                  tyler.efm.v2022_1.services.schema.getpasswordquestionrequest
-                      .GetPasswordQuestionRequestType.class,
-                  getPasswordQuestionRequest));
-      return Conversion.convert(PasswordQuestionResponseType.class, resp);
+      var resp = v2022Port.getPasswordQuestion(mapper.toV2022(getPasswordQuestionRequest));
+      return mapper.toLatest(resp);
     } else {
       return latestPort.getPasswordQuestion(getPasswordQuestionRequest);
     }
@@ -154,13 +128,8 @@ public class TylerUserClient {
   public ChangePasswordResponseType changePassword(
       ChangePasswordRequestType changePasswordRequest) {
     if (version == v2022_1) {
-      var resp =
-          v2022Port.changePassword(
-              Conversion.convert(
-                  tyler.efm.v2022_1.services.schema.changepasswordrequest.ChangePasswordRequestType
-                      .class,
-                  changePasswordRequest));
-      return Conversion.convert(ChangePasswordResponseType.class, resp);
+      var resp = v2022Port.changePassword(mapper.toV2022(changePasswordRequest));
+      return mapper.toLatest(resp);
     } else {
       return latestPort.changePassword(changePasswordRequest);
     }
@@ -171,11 +140,8 @@ public class TylerUserClient {
     if (version == v2022_1) {
       var resp =
           v2022Port.updateNotificationPreferences(
-              Conversion.convert(
-                  tyler.efm.v2022_1.services.schema.updatenotificationpreferencesrequest
-                      .UpdateNotificationPreferencesRequestType.class,
-                  updateNotificationPreferencesRequest));
-      return Conversion.convert(BaseResponseType.class, resp);
+              mapper.toV2022(updateNotificationPreferencesRequest));
+      return mapper.toLatest(resp);
     } else {
       return latestPort.updateNotificationPreferences(updateNotificationPreferencesRequest);
     }
