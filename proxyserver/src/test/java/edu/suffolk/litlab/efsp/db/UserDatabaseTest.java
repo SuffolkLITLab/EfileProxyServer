@@ -1,7 +1,7 @@
 package edu.suffolk.litlab.efsp.db;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import edu.suffolk.litlab.efsp.db.model.Transaction;
 import java.sql.Connection;
@@ -13,8 +13,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @Tag("Docker")
@@ -23,8 +23,8 @@ public class UserDatabaseTest {
   private UserDatabase ud;
 
   @Container
-  public PostgreSQLContainer<?> postgres =
-      new PostgreSQLContainer<>(DockerImageName.parse(DatabaseVersionTest.POSTGRES_DOCKER_NAME));
+  public PostgreSQLContainer postgres =
+      new PostgreSQLContainer(DockerImageName.parse(DatabaseVersionTest.POSTGRES_DOCKER_NAME));
 
   /**
    * Start's the Container and creates the UserDatabase. More info on the TestContainer Library at:
