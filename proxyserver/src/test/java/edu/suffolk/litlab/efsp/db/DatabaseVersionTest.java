@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efsp.db;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
@@ -42,10 +42,10 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.MountableFile;
 
 @Tag("Docker")
 public class DatabaseVersionTest {
@@ -55,10 +55,10 @@ public class DatabaseVersionTest {
   private static final Logger log = LoggerFactory.getLogger(DatabaseVersionTest.class);
 
   @Container
-  public PostgreSQLContainer<?> userDb =
-      new PostgreSQLContainer<>(DockerImageName.parse(POSTGRES_DOCKER_NAME));
+  public PostgreSQLContainer userDb =
+      new PostgreSQLContainer(DockerImageName.parse(POSTGRES_DOCKER_NAME));
 
-  @Container public PostgreSQLContainer<?> codeDb = new PostgreSQLContainer<>(POSTGRES_DOCKER_NAME);
+  @Container public PostgreSQLContainer codeDb = new PostgreSQLContainer(POSTGRES_DOCKER_NAME);
 
   private static final String v0AtRestInsert =
       """
@@ -83,14 +83,12 @@ public class DatabaseVersionTest {
           URISyntaxException,
           ArchiveException {
     unTarGz("/tyler_efm_codes_v0_1_truncated.tar.gz");
-    userDb.addFileSystemBind(
-        this.getClass().getResource("/user_transactions_v0.sql").getPath(),
-        "/docker-entrypoint-initdb.d/user_transactions.sql",
-        BindMode.READ_WRITE);
-    codeDb.addFileSystemBind(
-        "tyler_efm_codes_v0_1_truncated.sql",
-        "/docker-entrypoint-initdb.d/tyler_efm_codes.sql",
-        BindMode.READ_WRITE);
+    userDb.withCopyFileToContainer(
+        MountableFile.forClasspathResource("/user_transactions_v0.sql"),
+        "/docker-entrypoint-initdb.d/user_transactions.sql");
+    codeDb.withCopyFileToContainer(
+        MountableFile.forHostPath("tyler_efm_codes_v0_1_truncated.sql"),
+        "/docker-entrypoint-initdb.d/tyler_efm_codes.sql");
     userDb.start();
     codeDb.start();
     userConn =
