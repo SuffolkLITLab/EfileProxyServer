@@ -15,7 +15,6 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
-import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.wss4j.common.ext.WSPasswordCallback;
 import org.w3c.dom.Element;
@@ -32,7 +31,7 @@ public class PrintVersions extends AbstractSoapInterceptor implements CallbackHa
     var h =
         message.getHeader(
             new javax.xml.namespace.QName("urn:tyler:efm:services", "EFMConfigurationHeader"));
-    System.out.print("Version: " + ((Element) h.getObject()).getFirstChild().getTextContent());
+    System.out.println("Version: " + ((Element) h.getObject()).getFirstChild().getTextContent());
   }
 
   /** Handles setting the password for Webservices accessing the x509 certificates. */
@@ -49,6 +48,7 @@ public class PrintVersions extends AbstractSoapInterceptor implements CallbackHa
 
   public static void setupServicePort(BindingProvider bp) {
     Map<String, Object> ctx = bp.getRequestContext();
+    ctx.put("set-jaxb-validation-event-handler", "false");
     ctx.put("security.username", "bwilley@suffolk.edu");
     ctx.put("security.password", "can-be-anything?");
     ctx.put("security.signature.properties", "client_sign.properties");
@@ -57,47 +57,50 @@ public class PrintVersions extends AbstractSoapInterceptor implements CallbackHa
   }
 
   public static void main(String args[]) {
+    // TODO(brycew): add easy checks to look for client-sign.properties, Suffolk.pfx, and
+    // X509_PASSWORD in env.
     for (Jurisdiction j : Jurisdiction.values()) {
-      System.out.println(j);
+      for (TylerEnv env : TylerEnv.values()) {
+        var domain = new TylerDomain(j, env);
+        System.out.println(domain.toString());
+        try {
+          var review =
+              SoapClientChooser.getFilingReviewFactory(domain).get().getFilingReviewMDEPort();
+          setupServicePort((BindingProvider) review);
+          var test = new PrintVersions();
+          ClientProxy.getClient(review).getInInterceptors().add(test);
 
-      try {
-        var review =
-            SoapClientChooser.getFilingReviewFactory(new TylerDomain(j, TylerEnv.STAGE))
-                .get()
-                .getFilingReviewMDEPort();
-        setupServicePort((BindingProvider) review);
-        Client client = ClientProxy.getClient(review);
-        var test = new PrintVersions();
-        client.getInInterceptors().add(test);
-        var query = new CourtPolicyQueryMessageType();
-        var court = new CourtType();
-        var niemCoreObjFac = new ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory();
-        var jxObjFac = new ecf4.latest.gov.niem.niem.domains.jxdm._4.ObjectFactory();
-        var adamsId = niemCoreObjFac.createIdentificationType();
-        var adamsStr = new ecf4.latest.gov.niem.niem.proxy.xsd._2.String();
-        adamsStr.setValue("adams");
-        adamsId.setIdentificationID(adamsStr);
-        var idType = niemCoreObjFac.createOrganizationIdentification(adamsId);
-        court.setOrganizationIdentification(idType);
-        var text = new TextType();
-        text.setValue("adams");
-        court.setCourtName(text);
-        query.setCaseCourt(court);
-        var id = new IdentificationType();
-        EntityType typ = new EntityType();
-        var commonObjFac = new ObjectFactory();
-        JAXBElement<PersonType> elem2 = commonObjFac.createEntityPerson(new PersonType());
-        typ.setEntityRepresentation(elem2);
-        query.setQuerySubmitter(typ);
-        var string = new ecf4.latest.gov.niem.niem.proxy.xsd._2.String();
-        string.setValue("http://localhost");
-        id.setIdentificationID(string);
-        query.setSendingMDELocationID(id);
-        query.setSendingMDEProfileCode(
-            "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0");
-        review.getPolicy(query);
-      } catch (Exception ex) {
-        // continue;
+          var query = new CourtPolicyQueryMessageType();
+          var court = new CourtType();
+          var niemCoreObjFac = new ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory();
+          var adamsId = niemCoreObjFac.createIdentificationType();
+          var adamsStr = new ecf4.latest.gov.niem.niem.proxy.xsd._2.String();
+          adamsStr.setValue("adams");
+          adamsId.setIdentificationID(adamsStr);
+          var idType = niemCoreObjFac.createOrganizationIdentification(adamsId);
+          court.setOrganizationIdentification(idType);
+          var text = new TextType();
+          text.setValue("adams");
+          court.setCourtName(text);
+          query.setCaseCourt(court);
+          var id = new IdentificationType();
+          EntityType typ = new EntityType();
+          var commonObjFac = new ObjectFactory();
+          JAXBElement<PersonType> elem2 = commonObjFac.createEntityPerson(new PersonType());
+          typ.setEntityRepresentation(elem2);
+          query.setQuerySubmitter(typ);
+          var string = new ecf4.latest.gov.niem.niem.proxy.xsd._2.String();
+          string.setValue("http://localhost");
+          id.setIdentificationID(string);
+          query.setSendingMDELocationID(id);
+          query.setSendingMDEProfileCode(
+              "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:WebServicesMessaging-2.0");
+          review.getPolicy(query);
+        } catch (Exception ex) {
+          System.err.println(
+              "Error making call: " + ex.getLocalizedMessage() + ", " + ex.toString());
+          // continue
+        }
       }
     }
   }
