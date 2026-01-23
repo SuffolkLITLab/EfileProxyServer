@@ -58,7 +58,7 @@ public class SecurityHubTest {
   @BeforeEach
   public void setup() {
     ld = mock(LoginDatabase.class);
-    hub = new SecurityHub(() -> ld, Optional.of(TylerEnv.STAGE), List.of(Jurisdiction.ILLINOIS));
+    hub = new SecurityHub(() -> ld, TylerEnv.STAGE, List.of(Jurisdiction.ILLINOIS));
   }
 
   @Test

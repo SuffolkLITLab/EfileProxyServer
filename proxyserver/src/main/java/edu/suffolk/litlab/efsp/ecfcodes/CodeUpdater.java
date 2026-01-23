@@ -537,7 +537,7 @@ public class CodeUpdater {
     locs.remove("0");
     Instant startPolicy = Instant.now();
     Map<String, CourtPolicyResponseMessageType> policies =
-        streamPolicies(locs.stream(), cd.getDomain(), filingPort);
+        streamPolicies(locs.parallelStream(), cd.getDomain(), filingPort);
     soapDuration = soapDuration.plus(Duration.between(startPolicy, Instant.now()));
     log.info("Soaps: {}", soapDuration);
     for (var policy : policies.entrySet()) {

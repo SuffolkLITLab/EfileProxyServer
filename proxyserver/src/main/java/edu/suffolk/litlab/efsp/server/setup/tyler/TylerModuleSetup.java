@@ -88,7 +88,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
   /** Use this factory method instead of the class constructor. */
   public static Optional<TylerModuleSetup> create(
       Jurisdiction jurisdiction,
-      Optional<TylerEnv> env,
+      TylerEnv env,
       String togaKey,
       LocalTime codesDbUpdateTime,
       Map<String, InterviewToFilingInformationConverter> converterMap,
@@ -136,7 +136,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     this.codesDbUpdateTime = codesDbUpdateTime;
   }
 
-  private static Optional<CreationArgs> createFromEnvVars(Optional<TylerEnv> maybeTylerEnv) {
+  private static Optional<CreationArgs> createFromEnvVars(TylerEnv maybeTylerEnv) {
     Optional<String> maybeX509Password = GetEnv("X509_PASSWORD");
     if (maybeX509Password.isEmpty() || maybeX509Password.orElse("").isBlank()) {
       log.warn("If using Tyler, X509_PASSWORD can't be null. Did you forget to source .env?");
@@ -145,13 +145,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     CreationArgs args = new CreationArgs();
     args.x509Password = maybeX509Password.get();
 
-    if (maybeTylerEnv.isPresent()) {
-      log.info("Using {} for TYLER_ENV", maybeTylerEnv.get());
-      args.tylerEnv = maybeTylerEnv.get();
-    } else {
-      log.error("Not using any TYLER_ENV, so not creating the TylerModule.");
-      return Optional.empty();
-    }
+    args.tylerEnv = maybeTylerEnv;
 
     args.pgUser = GetEnv("POSTGRES_USER").orElse("postgres");
     Optional<String> maybeDbPassword = GetEnv("POSTGRES_PASSWORD");

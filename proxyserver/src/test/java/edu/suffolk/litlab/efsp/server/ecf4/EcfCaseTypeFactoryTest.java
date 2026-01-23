@@ -17,6 +17,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
@@ -115,7 +116,7 @@ public class EcfCaseTypeFactoryTest {
     // EcfCaseTypeFactory caseFactory = new EcfCaseTypeFactory(cd, "illinois");
     EcfCaseTypeFactory.getCriteria();
     InterviewToFilingInformationConverter converter =
-        new DocassembleToFilingInformationConverter(null, Optional.empty());
+        new DocassembleToFilingInformationConverter(null, TylerEnv.STAGE);
     Result<FilingInformation, FilingError> infoRes = converter.extractInformation("");
     assertTrue(infoRes.isErr());
     return;

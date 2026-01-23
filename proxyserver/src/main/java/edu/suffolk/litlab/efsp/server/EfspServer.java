@@ -130,7 +130,7 @@ public class EfspServer {
    *
    * @throws InterruptedException
    */
-  private static void setupDatabases(DataSource codeDs, DataSource userDs, Optional<TylerEnv> env)
+  private static void setupDatabases(DataSource codeDs, DataSource userDs)
       throws NoSuchAlgorithmException, InterruptedException {
 
     // Update / make the latest definition of the databases if necessary
@@ -203,8 +203,14 @@ public class EfspServer {
         DatabaseCreator.makeDataSource(
             dbUrl, dbPortInt, userDatabaseName, dbUser, dbPassword, 6, 100);
 
-    Optional<TylerEnv> tylerEnv = GetEnv("TYLER_ENV").map(TylerEnv::parse);
-    setupDatabases(codeDs, userDs, tylerEnv);
+    var tylerEnv =
+        GetEnv("TYLER_ENV")
+            .map(TylerEnv::parse)
+            .orElseThrow(
+                () ->
+                    new RuntimeException(
+                        "The Env var 'TYLER_ENV' needs to be defined, either 'stage' or 'prod'"));
+    setupDatabases(codeDs, userDs);
 
     InterviewToFilingInformationConverter daJsonConverter =
         new DocassembleToFilingInformationConverter(
@@ -233,15 +239,13 @@ public class EfspServer {
     }
 
     LocalTime codesUpdateTime = LocalTime.of(2, 13);
-    if (tylerEnv.isPresent()) {
-      var propertiesFile = "application." + tylerEnv.get().getName() + ".properties";
-      log.info("Loading {}", propertiesFile);
-      try (var is = new FileInputStream(propertiesFile)) {
-        Properties properties = new Properties();
-        properties.load(is);
-        String time = properties.getProperty(CODES_UPDATE_TIME_PROP);
-        codesUpdateTime = LocalTime.parse(time);
-      }
+    var propertiesFile = "application." + tylerEnv.getName() + ".properties";
+    log.info("Loading {}", propertiesFile);
+    try (var is = new FileInputStream(propertiesFile)) {
+      Properties properties = new Properties();
+      properties.load(is);
+      String time = properties.getProperty(CODES_UPDATE_TIME_PROP);
+      codesUpdateTime = LocalTime.parse(time);
     }
 
     List<EfmModuleSetup> modules = new ArrayList<>();
