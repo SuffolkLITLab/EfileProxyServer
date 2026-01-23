@@ -73,6 +73,9 @@ public class ServiceHelpers {
     ctx.put("security.signature.properties", "client_sign.properties");
     ctx.put("security.callback-handler", SoapX509CallbackHandler.class.getName());
     ctx.put("security.signature.username", "1");
+
+    // This will stop errors from occuring on other versions
+    ctx.put("set-jaxb-validation-event-handler", "false");
   }
 
   public static void setupServicePort(BindingProvider bp, TylerUserNamePassword creds) {
