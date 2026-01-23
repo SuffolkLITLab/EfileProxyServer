@@ -44,16 +44,14 @@ public class SecurityHub {
    * @param jurisdictions a list of Tyler jurisdictions to connect to. See SoapClientChooser.
    */
   public SecurityHub(
-      Supplier<LoginDatabase> ldSupplier,
-      Optional<TylerEnv> env,
-      List<Jurisdiction> jurisdictions) {
+      Supplier<LoginDatabase> ldSupplier, TylerEnv env, List<Jurisdiction> jurisdictions) {
     this.ldSupplier = ldSupplier;
-    if (env.isEmpty() || jurisdictions.isEmpty()) {
+    if (jurisdictions.isEmpty()) {
       this.tylerLoginObjs = List.of();
     } else {
       this.tylerLoginObjs =
           jurisdictions.stream()
-              .map(j -> new TylerLogin(new TylerDomain(j, env.get())))
+              .map(j -> new TylerLogin(new TylerDomain(j, env)))
               .collect(Collectors.toList());
     }
     this.jeffNetLoginObj = new JeffNetLogin();

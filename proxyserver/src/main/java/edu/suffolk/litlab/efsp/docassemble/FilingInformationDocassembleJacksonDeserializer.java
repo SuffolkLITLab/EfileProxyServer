@@ -42,10 +42,10 @@ public class FilingInformationDocassembleJacksonDeserializer
   private final InfoCollector classCollector;
 
   /** If Tyler is setup on this server, this is the env we're submitting to. */
-  private final Optional<TylerEnv> tylerEnv;
+  private final TylerEnv tylerEnv;
 
   public FilingInformationDocassembleJacksonDeserializer(
-      Class<FilingInformation> t, InfoCollector collector, Optional<TylerEnv> env) {
+      Class<FilingInformation> t, InfoCollector collector, TylerEnv env) {
     super(t);
     this.classCollector = collector;
     this.tylerEnv = env;
@@ -515,7 +515,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       Optional<String> maybeCodeText = Optional.empty();
       // TODO(brycew): HACK HACK HACK! Should be a better way to handle lower court codes than
       // this, but it's broken on prod
-      if (tylerEnv.isPresent() && tylerEnv.get() == TylerEnv.PROD) {
+      if (tylerEnv == TylerEnv.PROD) {
         maybeCodeText =
             JsonHelpers.getStringMember(node.get("trial_court"), "tyler_prod_lower_court_code");
       } else {
