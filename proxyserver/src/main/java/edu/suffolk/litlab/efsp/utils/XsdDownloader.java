@@ -55,11 +55,17 @@ public class XsdDownloader {
 
   public XsdDownloader(String downloadPrefix) {
     this.downloadPrefix = downloadPrefix;
+    this.verbose = false;
+  }
+
+  public XsdDownloader(String downloadPrefix, boolean verbose) {
+    this.downloadPrefix = downloadPrefix;
+    this.verbose = verbose;
   }
 
   private Map<String, String> fileNamesByprocessedUrls = new HashMap<String, String>();
-
   private final String downloadPrefix;
+  private final boolean verbose;
 
   /**
    * Given a string input (in our case, the contents of the file), generate a hash.
@@ -95,7 +101,7 @@ public class XsdDownloader {
     return result.getWriter().toString();
   }
 
-  private String downloadXsdRecurse(final String xsdUrl, final String pastUrl)
+  private String downloadXsdRecurse(String xsdUrl, final String pastUrl)
       throws IOException,
           ParserConfigurationException,
           SAXException,
@@ -109,11 +115,16 @@ public class XsdDownloader {
     String workedUrl = "";
 
     try {
+      if (xsdUrl.startsWith("http://docs.oasis-open.org/ubl")) {
+        xsdUrl = xsdUrl.replace("http://docs.", "https://docs.");
+      }
       if (fileNamesByprocessedUrls.containsKey(xsdUrl)) {
         // Don't actually need to check this!
         return xsdUrl;
       }
-      System.out.println("Download " + xsdUrl + " (past url is " + pastUrl + ")");
+      if (verbose) {
+        System.out.println("Download " + xsdUrl + " (past url is " + pastUrl + ")");
+      }
       doc = db.parse(xsdUrl);
       workedUrl = xsdUrl;
     } catch (FileNotFoundException | MalformedURLException ex) {
@@ -128,10 +139,17 @@ public class XsdDownloader {
         return workedUrl;
       }
       doc = db.parse(workedUrl);
-      System.out.println(doc.toString());
+      if (verbose) {
+        System.out.println(doc.toString());
+      }
+    } catch (Exception ex) {
+      System.err.println("Skipping " + xsdUrl + " because of error: " + ex.toString());
+      return xsdUrl;
     }
 
-    System.out.println("workedURL: " + workedUrl);
+    if (verbose) {
+      System.out.println("workedURL: " + workedUrl);
+    }
 
     String outputFileName = downloadPrefix;
     if (fileNamesByprocessedUrls.size() > 0) {
@@ -179,7 +197,9 @@ public class XsdDownloader {
           } else if ("http://schemas.xmlsoap.org/wsdl/".equals(childElement.getNamespaceURI())) {
             locAttribute = "location";
           } else {
-            System.out.println("ERROR: unknown namespace?: " + childElement.getNamespaceURI());
+            if (verbose) {
+              System.out.println("ERROR: unknown namespace?: " + childElement.getNamespaceURI());
+            }
           }
         } else {
           processElementRecurse(childElement, pastUrl);
@@ -191,7 +211,9 @@ public class XsdDownloader {
           // try with some common Tyler :tm: spellings
           schLoc = childElement.getAttribute("schemaLocattion");
         }
-        System.out.println("New " + locAttribute + " Element Found: " + schLoc);
+        if (verbose) {
+          System.out.println("New " + locAttribute + " Element Found: " + schLoc);
+        }
         String workedUrl = downloadXsdRecurse(schLoc, pastUrl);
         String newLoc = fileNamesByprocessedUrls.get(workedUrl);
         if (newLoc != null) {
@@ -213,16 +235,22 @@ public class XsdDownloader {
     } else {
       args = in_args;
     }
-    if (args.length != 2) {
+    if (args.length < 2 && args.length > 3) {
       System.out.println("Only two parameters: 1--wsdl-url 2--xsds-prefix");
       System.out.println("You passed " + List.of(args).stream().collect(Collectors.joining(", ")));
       return;
     }
+    boolean verbose = false;
+    if (args.length == 3 && args[2].equals("--verbose")) {
+      verbose = true;
+    }
     String xsdUrl = args[0];
     String filePrefix = args[1];
-    System.out.println("XsdUrl: " + xsdUrl);
-    System.out.println("filePrefix: " + filePrefix);
-    XsdDownloader xsdDownloader = new XsdDownloader(filePrefix);
+    if (verbose) {
+      System.out.println("XsdUrl: " + xsdUrl);
+      System.out.println("filePrefix: " + filePrefix);
+    }
+    XsdDownloader xsdDownloader = new XsdDownloader(filePrefix, verbose);
     try {
       xsdDownloader.downloadXsdRecurse(xsdUrl, "");
     } catch (IOException
