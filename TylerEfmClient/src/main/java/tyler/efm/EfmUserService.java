@@ -6,7 +6,6 @@ import javax.xml.namespace.QName;
 
 import jakarta.xml.ws.WebEndpoint;
 import jakarta.xml.ws.WebServiceClient;
-import jakarta.xml.ws.WebServiceFeature;
 import tyler.efm.latest.services.IEfmUserService;
 import jakarta.xml.ws.Service;
 
@@ -50,13 +49,11 @@ public class EfmUserService extends Service {
 
     /**
      *
-     * @param features
-     *     A list of {@link jakarta.xml.ws.WebServiceFeature} to configure on the proxy.  Supported features not in the <code>features</code> parameter will have their default values.
      * @return
      *     returns IEfmUserService
      */
     @WebEndpoint(name = "BasicHttpBinding_IEfmUserService")
-    public IEfmUserService getBasicHttpBindingIEfmUserService(WebServiceFeature... features) {
-        return super.getPort(BasicHttpBindingIEfmUserService, IEfmUserService.class, features);
+    public tyler.efm.v2025_0.services.IEfmUserService getBasicHttpBindingV2025IEfmUserService() {
+        return super.getPort(BasicHttpBindingIEfmUserService, tyler.efm.v2025_0.services.IEfmUserService.class);
     }
 }
