@@ -6,7 +6,6 @@ import javax.xml.namespace.QName;
 
 import jakarta.xml.ws.WebEndpoint;
 import jakarta.xml.ws.WebServiceClient;
-import jakarta.xml.ws.WebServiceFeature;
 import tyler.efm.latest.services.IEfmFirmService;
 import jakarta.xml.ws.Service;
 
@@ -42,16 +41,9 @@ public class EfmFirmService extends Service {
         return super.getPort(BasicHttpBindingIEfmFirmService, tyler.efm.v2022_1.services.IEfmFirmService.class);
     }
 
-    /**
-     *
-     * @param features
-     *     A list of {@link jakarta.xml.ws.WebServiceFeature} to configure on the proxy.  Supported features not in the <code>features</code> parameter will have their default values.
-     * @return
-     *     returns IEfmFirmService
-     */
     @WebEndpoint(name = "BasicHttpBinding_IEfmFirmService")
-    public IEfmFirmService getBasicHttpBindingIEfmFirmService(WebServiceFeature... features) {
-        return super.getPort(BasicHttpBindingIEfmFirmService, IEfmFirmService.class, features);
+    public tyler.efm.v2025_0.services.IEfmFirmService getBasicHttpBindingV2025IEfmFirmService() {
+        return super.getPort(BasicHttpBindingIEfmFirmService, tyler.efm.v2025_0.services.IEfmFirmService.class);
     }
 
 }
