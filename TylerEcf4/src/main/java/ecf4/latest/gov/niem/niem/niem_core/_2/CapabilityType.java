@@ -35,7 +35,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "capabilityDescriptionText"
 })
 @XmlSeeAlso({
-   ecf4.latest.tyler.ecf.extensions.common.CapabilityType.class
+    ecf4.latest.tyler.ecf.extensions.common.CapabilityType.class
 })
 public class CapabilityType
     extends ComplexObjectType

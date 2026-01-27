@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+     WS-Calendar Version 1.0
+     Committee Specification 01
+     30 July 2011
+     Source: http://docs.oasis-open.org/ws-calendar/ws-calendar-spec/v1.0/cs01/xsd/
+     Copyright (c) The Calendaring and Scheduling Consortium 2010-2011. All Rights Reserved.
+     Copyright (c) OASIS Open 2010-2011. All Rights Reserved. --><!-- iCalendar Bedeworks server integration schema is
+     intended to work in conjunction with conformant
+     implementations of IETF RFC 5545
+     ( http://www.rfc-editor.org/rfc/rfc5545.txt ),
+     the normative specification of iCalendar. --><!--Bedework extensions to icalendar --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xcal="urn:ietf:params:xml:ns:icalendar-2.0" elementFormDefault="qualified" targetNamespace="urn:ietf:params:xml:ns:icalendar-2.0">
+	<xs:include schemaLocation="ecf-v5-78f90906f32c9f0a.xsd"/>
+	<!-- ===================== Properties =================================  -->
+	<xs:include schemaLocation="ecf-v5-9acb70c0b1f40a4f.xsd"/>
+	<!-- =====================================================================
+       3.2 Property parameter definitions
+       ===================================================================== -->
+	<!-- Bedework x-parameters -->
+	<xs:element name="x-bedework-uid" substitutionGroup="xcal:baseParameter" type="xcal:XBedeworkUidParamType"/>
+	<xs:complexType mixed="false" name="XBedeworkUidParamType">
+		<xs:complexContent>
+			<xs:extension base="xcal:TextParameterType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- =====================================================================
+       3.7 Calendar Properties
+       ===================================================================== -->
+	<xs:element name="x-bedework-cost" substitutionGroup="xcal:baseProperty" type="xcal:XBedeworkCostPropType"/>
+	<xs:element name="x-bedework-exsynch-endtzid" substitutionGroup="xcal:baseProperty" type="xcal:XBedeworkExsynchEndtzidPropType"/>
+	<xs:element name="x-bedework-exsynch-lastmod" substitutionGroup="xcal:baseProperty" type="xcal:XBedeworkExsynchLastmodPropType"/>
+	<xs:element name="x-bedework-exsynch-organizer" substitutionGroup="xcal:baseProperty" type="xcal:OrganizerPropType"/>
+	<xs:element name="x-bedework-exsynch-starttzid" substitutionGroup="xcal:baseProperty" type="xcal:XBedeworkExsynchStarttzidPropType"/>
+	<xs:complexType mixed="false" name="XBedeworkCostPropType">
+		<xs:complexContent>
+			<xs:extension base="xcal:TextPropertyType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType mixed="false" name="XBedeworkExsynchEndtzidPropType">
+		<xs:complexContent>
+			<xs:extension base="xcal:TextPropertyType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType mixed="false" name="XBedeworkExsynchLastmodPropType">
+		<xs:complexContent>
+			<xs:extension base="xcal:TextPropertyType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType mixed="false" name="XBedeworkExsynchStarttzidPropType">
+		<xs:complexContent>
+			<xs:extension base="xcal:TextPropertyType"/>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

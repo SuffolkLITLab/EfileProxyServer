@@ -53,7 +53,7 @@ public class ObjectFactory {
     private final static QName _StayawayDistanceText_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DomesticCase-4.0", "StayawayDistanceText");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4
      * 
      */
     public ObjectFactory() {

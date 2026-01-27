@@ -43,7 +43,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "courtEventSequenceID"
 })
 @XmlSeeAlso({
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CourtEventType.class
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CourtEventType.class
 })
 public class CourtEventType
     extends ActivityType

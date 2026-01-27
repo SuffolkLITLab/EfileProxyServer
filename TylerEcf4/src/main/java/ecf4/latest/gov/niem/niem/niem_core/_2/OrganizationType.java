@@ -13,7 +13,6 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
 import ecf4.latest.tyler.ecf.extensions.common.OrganizationIdentificationType;
 
 
@@ -55,7 +54,7 @@ import ecf4.latest.tyler.ecf.extensions.common.OrganizationIdentificationType;
 @XmlSeeAlso({
     CourtType.class,
     EnforcementUnitType.class,
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType.class
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType.class
 })
 public class OrganizationType
     extends ComplexObjectType

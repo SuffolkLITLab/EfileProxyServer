@@ -9,6 +9,12 @@ import ecf4.latest.gov.niem.release.niem.niem_core._4.DocumentType;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.EntityType;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.IdentificationType;
 import ecf4.latest.gov.niem.release.niem.proxy.xsd._4.NormalizedString;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.allocatedate.AllocateCourtDateMessageType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.datecallback.NotifyCourtDateMessageType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.docket.RecordDocketingMessageType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing.FilingMessageType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ReserveCourtDateMessageType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.stampinformation.DocumentStampInformationMessageType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -16,13 +22,6 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.allocatedate.AllocateCourtDateMessageType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.datecallback.NotifyCourtDateMessageType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.docket.RecordDocketingMessageType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filing.FilingMessageType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.reservedate.ReserveCourtDateMessageType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.stampinformation.DocumentStampInformationMessageType;
 import ecf4.latest.tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
 
 
@@ -63,15 +62,15 @@ import ecf4.latest.tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
     "documentPostDate"
 })
 @XmlSeeAlso({
-    ReturnDateMessageType.class,
-    DocumentStampInformationMessageType.class,
-    FilingMessageType.class,
     AllocateCourtDateMessageType.class,
-    RecordDocketingMessageType.class,
-    RequestMessageType.class,
-    ReserveCourtDateMessageType.class,
-    CallbackMessageType.class,
     NotifyCourtDateMessageType.class,
+    RecordDocketingMessageType.class,
+    FilingMessageType.class,
+    ReserveCourtDateMessageType.class,
+    RequestMessageType.class,
+    DocumentStampInformationMessageType.class,
+    CallbackMessageType.class,
+    ReturnDateMessageType.class,
     ResponseMessageType.class
 })
 public class CaseFilingType

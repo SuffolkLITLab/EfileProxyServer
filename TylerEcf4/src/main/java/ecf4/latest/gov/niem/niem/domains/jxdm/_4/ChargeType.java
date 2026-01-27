@@ -58,7 +58,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "chargeStatute"
 })
 @XmlSeeAlso({
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.ChargeType.class
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.ChargeType.class
 })
 public class ChargeType
     extends ComplexObjectType

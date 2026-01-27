@@ -60,6 +60,9 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _CaseOfficialAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "CaseOfficialAugmentationPoint");
+    private final static QName _CourtEventAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "CourtEventAugmentationPoint");
+    private final static QName _SubjectAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "SubjectAugmentationPoint");
     private final static QName _AppellateCase_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "AppellateCase");
     private final static QName _AppellateCaseNotice_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "AppellateCaseNotice");
     private final static QName _AppellateCaseNoticeReasonText_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "AppellateCaseNoticeReasonText");
@@ -83,7 +86,6 @@ public class ObjectFactory {
     private final static QName _CaseLineageCase_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "CaseLineageCase");
     private final static QName _CaseNumberText_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "CaseNumberText");
     private final static QName _CaseOfficial_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "CaseOfficial");
-    private final static QName _CaseOfficialAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "CaseOfficialAugmentationPoint");
     private final static QName _CaseOfficialCaseIdentification_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "CaseOfficialCaseIdentification");
     private final static QName _CaseOtherEntity_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "CaseOtherEntity");
     private final static QName _ChargeAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "ChargeAugmentationPoint");
@@ -113,7 +115,6 @@ public class ObjectFactory {
     private final static QName _CourtAppearance_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "CourtAppearance");
     private final static QName _CourtAppearanceDate_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "CourtAppearanceDate");
     private final static QName _CourtAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "CourtAugmentationPoint");
-    private final static QName _CourtEventAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "CourtEventAugmentationPoint");
     private final static QName _CourtEventJudge_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "CourtEventJudge");
     private final static QName _CourtEventSchedule_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "CourtEventSchedule");
     private final static QName _CourtEventSequenceID_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "CourtEventSequenceID");
@@ -203,7 +204,6 @@ public class ObjectFactory {
     private final static QName _StatuteJurisdiction_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "StatuteJurisdiction");
     private final static QName _StatuteLevelText_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "StatuteLevelText");
     private final static QName _StatuteOffenseIdentification_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "StatuteOffenseIdentification");
-    private final static QName _SubjectAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "SubjectAugmentationPoint");
     private final static QName _SubjectIdentification_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "SubjectIdentification");
     private final static QName _SubjectSupervision_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "SubjectSupervision");
     private final static QName _SupervisionFineAmount_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "SupervisionFineAmount");
@@ -214,10 +214,18 @@ public class ObjectFactory {
     private final static QName _WarrantExtraditionLimitationCode_QNAME = new QName("http://release.niem.gov/niem/domains/jxdm/6.0/", "WarrantExtraditionLimitationCode");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.gov.niem.release.niem.domains.jxdm._6
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.gov.niem.release.niem.domains.jxdm._6
      * 
      */
     public ObjectFactory() {
+    }
+
+    /**
+     * Create an instance of {@link CourtEventType }
+     * 
+     */
+    public CourtEventType createCourtEventType() {
+        return new CourtEventType();
     }
 
     /**
@@ -298,14 +306,6 @@ public class ObjectFactory {
      */
     public CourtType createCourtType() {
         return new CourtType();
-    }
-
-    /**
-     * Create an instance of {@link CourtEventType }
-     * 
-     */
-    public CourtEventType createCourtEventType() {
-        return new CourtEventType();
     }
 
     /**
@@ -578,6 +578,45 @@ public class ObjectFactory {
      */
     public PersonBloodAlcoholContentAssociationType createPersonBloodAlcoholContentAssociationType() {
         return new PersonBloodAlcoholContentAssociationType();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", name = "CaseOfficialAugmentationPoint")
+    public JAXBElement<Object> createCaseOfficialAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_CaseOfficialAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", name = "CourtEventAugmentationPoint")
+    public JAXBElement<Object> createCourtEventAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_CourtEventAugmentationPoint_QNAME, Object.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", name = "SubjectAugmentationPoint")
+    public JAXBElement<Object> createSubjectAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_SubjectAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**
@@ -877,19 +916,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", name = "CaseOfficial")
     public JAXBElement<CaseOfficialType> createCaseOfficial(CaseOfficialType value) {
         return new JAXBElement<CaseOfficialType>(_CaseOfficial_QNAME, CaseOfficialType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", name = "CaseOfficialAugmentationPoint")
-    public JAXBElement<Object> createCaseOfficialAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_CaseOfficialAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**
@@ -1267,19 +1293,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", name = "CourtAugmentationPoint")
     public JAXBElement<Object> createCourtAugmentationPoint(Object value) {
         return new JAXBElement<Object>(_CourtAugmentationPoint_QNAME, Object.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", name = "CourtEventAugmentationPoint")
-    public JAXBElement<Object> createCourtEventAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_CourtEventAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**
@@ -2111,7 +2124,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", name = "PersonNameCategoryCode", substitutionHeadNamespace = "http://release.niem.gov/niem/niem-core/4.0/", substitutionHeadName = "PersonNameCategoryAbstract")
     public JAXBElement<ecf4.latest.gov.niem.release.niem.domains.jxdm._6.PersonNameCategoryCodeType> createPersonNameCategoryCode(ecf4.latest.gov.niem.release.niem.domains.jxdm._6.PersonNameCategoryCodeType value) {
-        return new JAXBElement<ecf4.latest.gov.niem.release.niem.domains.jxdm._6.PersonNameCategoryCodeType>(_PersonNameCategoryCode_QNAME,ecf4.latest.gov.niem.release.niem.domains.jxdm._6.PersonNameCategoryCodeType.class, null, value);
+        return new JAXBElement<ecf4.latest.gov.niem.release.niem.domains.jxdm._6.PersonNameCategoryCodeType>(_PersonNameCategoryCode_QNAME, ecf4.latest.gov.niem.release.niem.domains.jxdm._6.PersonNameCategoryCodeType.class, null, value);
     }
 
     /**
@@ -2437,19 +2450,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", name = "StatuteOffenseIdentification")
     public JAXBElement<IdentificationType> createStatuteOffenseIdentification(IdentificationType value) {
         return new JAXBElement<IdentificationType>(_StatuteOffenseIdentification_QNAME, IdentificationType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/jxdm/6.0/", name = "SubjectAugmentationPoint")
-    public JAXBElement<Object> createSubjectAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_SubjectAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**

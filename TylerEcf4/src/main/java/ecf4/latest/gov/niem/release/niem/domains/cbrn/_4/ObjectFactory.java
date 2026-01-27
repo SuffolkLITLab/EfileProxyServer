@@ -31,6 +31,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _MessageStatusAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "MessageStatusAugmentationPoint");
     private final static QName _CredentialsAuthenticatedCode_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "CredentialsAuthenticatedCode");
     private final static QName _ErrorCodeDescriptionText_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "ErrorCodeDescriptionText");
     private final static QName _ErrorCodeText_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "ErrorCodeText");
@@ -39,7 +40,6 @@ public class ObjectFactory {
     private final static QName _MessageContentError_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "MessageContentError");
     private final static QName _MessageHandlingError_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "MessageHandlingError");
     private final static QName _MessageStatus_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "MessageStatus");
-    private final static QName _MessageStatusAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "MessageStatusAugmentationPoint");
     private final static QName _MessageStatusCode_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "MessageStatusCode");
     private final static QName _MultimediaDataMIMEKindText_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "MultimediaDataMIMEKindText");
     private final static QName _ResendRequestIndicator_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "ResendRequestIndicator");
@@ -47,7 +47,7 @@ public class ObjectFactory {
     private final static QName _SystemOperatingModeCode_QNAME = new QName("http://release.niem.gov/niem/domains/cbrn/4.0/", "SystemOperatingModeCode");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.gov.niem.release.niem.domains.cbrn._4
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.gov.niem.release.niem.domains.cbrn._4
      * 
      */
     public ObjectFactory() {
@@ -91,6 +91,19 @@ public class ObjectFactory {
      */
     public SystemEventType createSystemEventType() {
         return new SystemEventType();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "MessageStatusAugmentationPoint")
+    public JAXBElement<Object> createMessageStatusAugmentationPoint(Object value) {
+        return new JAXBElement<Object>(_MessageStatusAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**
@@ -195,19 +208,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "MessageStatus")
     public JAXBElement<MessageStatusType> createMessageStatus(MessageStatusType value) {
         return new JAXBElement<MessageStatusType>(_MessageStatus_QNAME, MessageStatusType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Object }{@code >}
-     */
-    @XmlElementDecl(namespace = "http://release.niem.gov/niem/domains/cbrn/4.0/", name = "MessageStatusAugmentationPoint")
-    public JAXBElement<Object> createMessageStatusAugmentationPoint(Object value) {
-        return new JAXBElement<Object>(_MessageStatusAugmentationPoint_QNAME, Object.class, null, value);
     }
 
     /**

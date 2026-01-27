@@ -25,7 +25,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the tyler.ecf.extensions.common package. 
+ * generated in the ecf4.latest.tyler.ecf.extensions.common package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -68,10 +68,18 @@ public class ObjectFactory {
     private final static QName _ComposableSecurityURI_QNAME = new QName("urn:tyler:ecf:extensions:Common", "ComposableSecurityURI");
     private final static QName _ComposableSecurityTenant_QNAME = new QName("urn:tyler:ecf:extensions:Common", "ComposableSecurityTenant");
     private final static QName _ComposableSecurityDefaultRole_QNAME = new QName("urn:tyler:ecf:extensions:Common", "ComposableSecurityDefaultRole");
+    private final static QName _UseNotificationCenter_QNAME = new QName("urn:tyler:ecf:extensions:Common", "UseNotificationCenter");
+    private final static QName _NotificationCenterURI_QNAME = new QName("urn:tyler:ecf:extensions:Common", "NotificationCenterURI");
+    private final static QName _NotificationCenterVersion_QNAME = new QName("urn:tyler:ecf:extensions:Common", "NotificationCenterVersion");
+    private final static QName _Tenant_QNAME = new QName("urn:tyler:ecf:extensions:Common", "Tenant");
     private final static QName _UseOktaAuthentication_QNAME = new QName("urn:tyler:ecf:extensions:Common", "UseOktaAuthentication");
     private final static QName _OktaAuthenticationURI_QNAME = new QName("urn:tyler:ecf:extensions:Common", "OktaAuthenticationURI");
     private final static QName _CaseAddress_QNAME = new QName("urn:tyler:ecf:extensions:Common", "CaseAddress");
     private final static QName _ServiceConsentEmail_QNAME = new QName("urn:tyler:ecf:extensions:Common", "ServiceConsentEmail");
+    private final static QName _ParentCase_QNAME = new QName("urn:tyler:ecf:extensions:Common", "ParentCase");
+    private final static QName _ChildCase_QNAME = new QName("urn:tyler:ecf:extensions:Common", "ChildCase");
+    private final static QName _UpcomingHearingDate_QNAME = new QName("urn:tyler:ecf:extensions:Common", "UpcomingHearingDate");
+    private final static QName _CaseRelationType_QNAME = new QName("urn:tyler:ecf:extensions:Common", "CaseRelationType");
     private final static QName _AgencyOperation_QNAME = new QName("urn:tyler:ecf:extensions:Common", "AgencyOperation");
     private final static QName _Agency_QNAME = new QName("urn:tyler:ecf:extensions:Common", "Agency");
     private final static QName _AgencyIdentification_QNAME = new QName("urn:tyler:ecf:extensions:Common", "AgencyIdentification");
@@ -111,6 +119,7 @@ public class ObjectFactory {
     private final static QName _AttachServiceContactIndicator_QNAME = new QName("urn:tyler:ecf:extensions:Common", "AttachServiceContactIndicator");
     private final static QName _LowerCourtText_QNAME = new QName("urn:tyler:ecf:extensions:Common", "LowerCourtText");
     private final static QName _LowerCourtJudgeText_QNAME = new QName("urn:tyler:ecf:extensions:Common", "LowerCourtJudgeText");
+    private final static QName _LowerCourtCaseCategoryText_QNAME = new QName("urn:tyler:ecf:extensions:Common", "LowerCourtCaseCategoryText");
     private final static QName _LowerCourtCaseTypeText_QNAME = new QName("urn:tyler:ecf:extensions:Common", "LowerCourtCaseTypeText");
     private final static QName _RedactionID_QNAME = new QName("urn:tyler:ecf:extensions:Common", "RedactionID");
     private final static QName _AttachmentReference_QNAME = new QName("urn:tyler:ecf:extensions:Common", "AttachmentReference");
@@ -190,7 +199,7 @@ public class ObjectFactory {
     private final static QName _FilingAssociationParty_QNAME = new QName("urn:tyler:ecf:extensions:Common", "FilingAssociationParty");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: tyler.ecf.extensions.common
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.tyler.ecf.extensions.common
      * 
      */
     public ObjectFactory() {
@@ -266,6 +275,14 @@ public class ObjectFactory {
      */
     public SubmitterInformationType createSubmitterInformationType() {
         return new SubmitterInformationType();
+    }
+
+    /**
+     * Create an instance of {@link RelatedCaseType }
+     * 
+     */
+    public RelatedCaseType createRelatedCaseType() {
+        return new RelatedCaseType();
     }
 
     /**
@@ -869,6 +886,58 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
      */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "UseNotificationCenter")
+    public JAXBElement<Boolean> createUseNotificationCenter(Boolean value) {
+        return new JAXBElement<Boolean>(_UseNotificationCenter_QNAME, Boolean.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AnyURI }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link AnyURI }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "NotificationCenterURI")
+    public JAXBElement<AnyURI> createNotificationCenterURI(AnyURI value) {
+        return new JAXBElement<AnyURI>(_NotificationCenterURI_QNAME, AnyURI.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "NotificationCenterVersion")
+    public JAXBElement<TextType> createNotificationCenterVersion(TextType value) {
+        return new JAXBElement<TextType>(_NotificationCenterVersion_QNAME, TextType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link IdentificationType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link IdentificationType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "Tenant")
+    public JAXBElement<IdentificationType> createTenant(IdentificationType value) {
+        return new JAXBElement<IdentificationType>(_Tenant_QNAME, IdentificationType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     */
     @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "UseOktaAuthentication")
     public JAXBElement<Boolean> createUseOktaAuthentication(Boolean value) {
         return new JAXBElement<Boolean>(_UseOktaAuthentication_QNAME, Boolean.class, null, value);
@@ -910,7 +979,59 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "ServiceConsentEmail", substitutionHeadNamespace = "http://niem.gov/niem/niem-core/2.0", substitutionHeadName = "ContactMeans")
     public JAXBElement<ecf4.latest.gov.niem.niem.proxy.xsd._2.String> createServiceConsentEmail(ecf4.latest.gov.niem.niem.proxy.xsd._2.String value) {
-        return new JAXBElement<ecf4.latest.gov.niem.niem.proxy.xsd._2.String>(_ServiceConsentEmail_QNAME,ecf4.latest.gov.niem.niem.proxy.xsd._2.String.class, null, value);
+        return new JAXBElement<ecf4.latest.gov.niem.niem.proxy.xsd._2.String>(_ServiceConsentEmail_QNAME, ecf4.latest.gov.niem.niem.proxy.xsd._2.String.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RelatedCaseType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link RelatedCaseType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "ParentCase")
+    public JAXBElement<RelatedCaseType> createParentCase(RelatedCaseType value) {
+        return new JAXBElement<RelatedCaseType>(_ParentCase_QNAME, RelatedCaseType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RelatedCaseType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link RelatedCaseType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "ChildCase")
+    public JAXBElement<RelatedCaseType> createChildCase(RelatedCaseType value) {
+        return new JAXBElement<RelatedCaseType>(_ChildCase_QNAME, RelatedCaseType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DateType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DateType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "UpcomingHearingDate")
+    public JAXBElement<DateType> createUpcomingHearingDate(DateType value) {
+        return new JAXBElement<DateType>(_UpcomingHearingDate_QNAME, DateType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CaseRelationSimpleType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CaseRelationSimpleType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "CaseRelationType")
+    public JAXBElement<CaseRelationSimpleType> createCaseRelationType(CaseRelationSimpleType value) {
+        return new JAXBElement<CaseRelationSimpleType>(_CaseRelationType_QNAME, CaseRelationSimpleType.class, null, value);
     }
 
     /**
@@ -1196,7 +1317,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "FilingEvent")
     public JAXBElement<ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType> createFilingEvent(ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType value) {
-        return new JAXBElement<ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType>(_FilingEvent_QNAME,ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType.class, null, value);
+        return new JAXBElement<ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType>(_FilingEvent_QNAME, ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType.class, null, value);
     }
 
     /**
@@ -1428,6 +1549,19 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
      */
+    @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "LowerCourtCaseCategoryText")
+    public JAXBElement<TextType> createLowerCourtCaseCategoryText(TextType value) {
+        return new JAXBElement<TextType>(_LowerCourtCaseCategoryText_QNAME, TextType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TextType }{@code >}
+     */
     @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "LowerCourtCaseTypeText")
     public JAXBElement<TextType> createLowerCourtCaseTypeText(TextType value) {
         return new JAXBElement<TextType>(_LowerCourtCaseTypeText_QNAME, TextType.class, null, value);
@@ -1521,7 +1655,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "FilingLeadDocument", substitutionHeadNamespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0", substitutionHeadName = "FilingLeadDocument")
     public JAXBElement<ecf4.latest.tyler.ecf.extensions.common.DocumentType> createFilingLeadDocument(ecf4.latest.tyler.ecf.extensions.common.DocumentType value) {
-        return new JAXBElement<ecf4.latest.tyler.ecf.extensions.common.DocumentType>(_FilingLeadDocument_QNAME,ecf4.latest.tyler.ecf.extensions.common.DocumentType.class, null, value);
+        return new JAXBElement<ecf4.latest.tyler.ecf.extensions.common.DocumentType>(_FilingLeadDocument_QNAME, ecf4.latest.tyler.ecf.extensions.common.DocumentType.class, null, value);
     }
 
     /**
@@ -1534,7 +1668,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "FilingConnectedDocument", substitutionHeadNamespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CoreFilingMessage-4.0", substitutionHeadName = "FilingConnectedDocument")
     public JAXBElement<ecf4.latest.tyler.ecf.extensions.common.DocumentType> createFilingConnectedDocument(ecf4.latest.tyler.ecf.extensions.common.DocumentType value) {
-        return new JAXBElement<ecf4.latest.tyler.ecf.extensions.common.DocumentType>(_FilingConnectedDocument_QNAME,ecf4.latest.tyler.ecf.extensions.common.DocumentType.class, null, value);
+        return new JAXBElement<ecf4.latest.tyler.ecf.extensions.common.DocumentType>(_FilingConnectedDocument_QNAME, ecf4.latest.tyler.ecf.extensions.common.DocumentType.class, null, value);
     }
 
     /**
@@ -1573,7 +1707,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "Document", substitutionHeadNamespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", substitutionHeadName = "Document")
     public JAXBElement<ecf4.latest.tyler.ecf.extensions.common.DocumentType> createDocument(ecf4.latest.tyler.ecf.extensions.common.DocumentType value) {
-        return new JAXBElement<ecf4.latest.tyler.ecf.extensions.common.DocumentType>(_Document_QNAME,ecf4.latest.tyler.ecf.extensions.common.DocumentType.class, null, value);
+        return new JAXBElement<ecf4.latest.tyler.ecf.extensions.common.DocumentType>(_Document_QNAME, ecf4.latest.tyler.ecf.extensions.common.DocumentType.class, null, value);
     }
 
     /**
@@ -2197,7 +2331,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "DocumentID")
     public JAXBElement<ecf4.latest.gov.niem.niem.proxy.xsd._2.String> createDocumentID(ecf4.latest.gov.niem.niem.proxy.xsd._2.String value) {
-        return new JAXBElement<ecf4.latest.gov.niem.niem.proxy.xsd._2.String>(_DocumentID_QNAME,ecf4.latest.gov.niem.niem.proxy.xsd._2.String.class, null, value);
+        return new JAXBElement<ecf4.latest.gov.niem.niem.proxy.xsd._2.String>(_DocumentID_QNAME, ecf4.latest.gov.niem.niem.proxy.xsd._2.String.class, null, value);
     }
 
     /**
@@ -2210,7 +2344,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "CMSID")
     public JAXBElement<ecf4.latest.gov.niem.niem.proxy.xsd._2.String> createCMSID(ecf4.latest.gov.niem.niem.proxy.xsd._2.String value) {
-        return new JAXBElement<ecf4.latest.gov.niem.niem.proxy.xsd._2.String>(_CMSID_QNAME,ecf4.latest.gov.niem.niem.proxy.xsd._2.String.class, null, value);
+        return new JAXBElement<ecf4.latest.gov.niem.niem.proxy.xsd._2.String>(_CMSID_QNAME, ecf4.latest.gov.niem.niem.proxy.xsd._2.String.class, null, value);
     }
 
     /**
@@ -2223,7 +2357,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "urn:tyler:ecf:extensions:Common", name = "FilingID")
     public JAXBElement<ecf4.latest.gov.niem.niem.proxy.xsd._2.String> createFilingID(ecf4.latest.gov.niem.niem.proxy.xsd._2.String value) {
-        return new JAXBElement<ecf4.latest.gov.niem.niem.proxy.xsd._2.String>(_FilingID_QNAME,ecf4.latest.gov.niem.niem.proxy.xsd._2.String.class, null, value);
+        return new JAXBElement<ecf4.latest.gov.niem.niem.proxy.xsd._2.String>(_FilingID_QNAME, ecf4.latest.gov.niem.niem.proxy.xsd._2.String.class, null, value);
     }
 
     /**

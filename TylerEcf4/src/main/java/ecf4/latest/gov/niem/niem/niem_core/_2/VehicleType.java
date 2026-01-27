@@ -40,7 +40,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "vehicleModelCode"
 })
 @XmlSeeAlso({
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.citationcase_4.VehicleType.class
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.citationcase_4.VehicleType.class
 })
 public class VehicleType
     extends ConveyanceType

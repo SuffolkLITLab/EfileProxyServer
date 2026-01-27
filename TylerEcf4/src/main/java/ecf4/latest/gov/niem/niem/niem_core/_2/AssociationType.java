@@ -13,7 +13,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.juvenilecase_4.PlacementAssociationType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
 import ecf4.latest.tyler.ecf.extensions.common.FilingAssociationType;
 
 

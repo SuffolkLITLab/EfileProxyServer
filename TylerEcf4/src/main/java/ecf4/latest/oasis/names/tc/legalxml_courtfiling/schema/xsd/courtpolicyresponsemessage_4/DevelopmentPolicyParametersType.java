@@ -72,7 +72,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "expirationDate"
 })
 @XmlSeeAlso({
-   ecf4.latest.tyler.ecf.extensions.common.DevelopmentPolicyParametersType.class
+    ecf4.latest.tyler.ecf.extensions.common.DevelopmentPolicyParametersType.class
 })
 public class DevelopmentPolicyParametersType
     extends ComplexObjectType

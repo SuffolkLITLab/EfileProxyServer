@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
 import ecf4.latest.tyler.ecf.v5_0.extensions.reservedateresponse.ReserveDateResponseMessageType;
 
 

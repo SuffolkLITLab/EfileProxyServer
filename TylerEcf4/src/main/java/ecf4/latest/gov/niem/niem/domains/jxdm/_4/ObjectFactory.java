@@ -176,7 +176,7 @@ public class ObjectFactory {
     private final static QName _WarrantExtraditionLimitationCode_QNAME = new QName("http://niem.gov/niem/domains/jxdm/4.0", "WarrantExtraditionLimitationCode");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.gov.niem.niem.domains.jxdm._4
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.gov.niem.niem.domains.jxdm._4
      * 
      */
     public ObjectFactory() {

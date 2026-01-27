@@ -34,6 +34,7 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatestMeterReadingDateType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatestPickupDateType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatestProposalAcceptanceDateType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatestSecurityClearanceDateType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ManufactureDateType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.NominationDateType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OccurrenceDateType;
@@ -125,7 +126,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     BirthDateType.class,
     CallDateType.class,
     ComparisonForecastIssueDateType.class,
-   ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DateType.class,
+    ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DateType.class,
     DueDateType.class,
     EarliestPickupDateType.class,
     EffectiveDateType.class,
@@ -142,6 +143,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     LatestMeterReadingDateType.class,
     LatestPickupDateType.class,
     LatestProposalAcceptanceDateType.class,
+    LatestSecurityClearanceDateType.class,
     ManufactureDateType.class,
     NominationDateType.class,
     OccurrenceDateType.class,

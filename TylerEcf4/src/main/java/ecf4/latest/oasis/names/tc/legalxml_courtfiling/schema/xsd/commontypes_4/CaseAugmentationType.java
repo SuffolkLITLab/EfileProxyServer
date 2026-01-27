@@ -15,7 +15,6 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
 import ecf4.latest.tyler.ecf.extensions.common.CaseAbstractorType;
 
 
@@ -63,7 +62,7 @@ import ecf4.latest.tyler.ecf.extensions.common.CaseAbstractorType;
     "relatedCaseAssociation"
 })
 @XmlSeeAlso({
-   ecf4.latest.tyler.ecf.extensions.common.CaseAugmentationType.class
+    ecf4.latest.tyler.ecf.extensions.common.CaseAugmentationType.class
 })
 public class CaseAugmentationType
     extends ComplexObjectType

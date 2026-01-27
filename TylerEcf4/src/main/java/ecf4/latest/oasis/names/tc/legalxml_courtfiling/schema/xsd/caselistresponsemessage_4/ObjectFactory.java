@@ -27,7 +27,7 @@ public class ObjectFactory {
     private final static QName _CaseListResponseMessage_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CaseListResponseMessage-4.0", "CaseListResponseMessage");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistresponsemessage_4
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistresponsemessage_4
      * 
      */
     public ObjectFactory() {

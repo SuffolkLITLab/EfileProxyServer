@@ -74,8 +74,8 @@ public class DocumentAugmentationType
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "Metadata" is used by two different parts of a schema. See: 
-     * line 140 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-v5-3.xsd
-     * line 65 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-v5-7.xsd
+     * line 140 of file:/Users/bwilley/Developer/EfileProxyServer/TylerEcf4/src/main/resources/wsdl/v2025_4/base/ecf-v5-005ddcb9c0fe05de.xsd
+     * line 65 of file:/Users/bwilley/Developer/EfileProxyServer/TylerEcf4/src/main/resources/wsdl/v2025_4/base/ecf-v5-43381e9aa490c46d.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 

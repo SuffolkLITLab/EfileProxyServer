@@ -12,7 +12,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the tyler.ecf.extensions.serviceinformationhistoryresponsemessage package. 
+ * generated in the ecf4.latest.tyler.ecf.extensions.serviceinformationhistoryresponsemessage package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -33,7 +33,7 @@ public class ObjectFactory {
     private final static QName _Action_QNAME = new QName("urn:tyler:ecf:extensions:ServiceInformationHistoryResponseMessage", "Action");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: tyler.ecf.extensions.serviceinformationhistoryresponsemessage
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.tyler.ecf.extensions.serviceinformationhistoryresponsemessage
      * 
      */
     public ObjectFactory() {

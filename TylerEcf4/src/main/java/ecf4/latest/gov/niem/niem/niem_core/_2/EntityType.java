@@ -12,6 +12,7 @@ import jakarta.xml.bind.annotation.XmlType;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+import ecf4.latest.tyler.ecf.extensions.common.PersonFilerType;
 
 
 /**
@@ -38,9 +39,9 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "entityRepresentation"
 })
 @XmlSeeAlso({
-   ecf4.latest.tyler.ecf.extensions.serviceinformationhistoryresponsemessage.ServiceRecipientType.class,
+    ecf4.latest.tyler.ecf.extensions.serviceinformationhistoryresponsemessage.ServiceRecipientType.class,
     CaseParticipantType.class,
-   ecf4.latest.tyler.ecf.extensions.notifyservicemessage.ServiceRecipientType.class
+    ecf4.latest.tyler.ecf.extensions.notifyservicemessage.ServiceRecipientType.class
 })
 public class EntityType
     extends ComplexObjectType
@@ -63,7 +64,7 @@ public class EntityType
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     {@link JAXBElement }{@code <}{@link ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType }{@code >}
      *     {@link JAXBElement }{@code <}{@link ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link ecf4.latest.tyler.ecf.extensions.common.PersonFilerType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link PersonFilerType }{@code >}
      *     
      */
     public JAXBElement<?> getEntityRepresentation() {
@@ -84,7 +85,7 @@ public class EntityType
      *     {@link JAXBElement }{@code <}{@link Object }{@code >}
      *     {@link JAXBElement }{@code <}{@link ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType }{@code >}
      *     {@link JAXBElement }{@code <}{@link ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link ecf4.latest.tyler.ecf.extensions.common.PersonFilerType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link PersonFilerType }{@code >}
      *     
      */
     public void setEntityRepresentation(JAXBElement<?> value) {

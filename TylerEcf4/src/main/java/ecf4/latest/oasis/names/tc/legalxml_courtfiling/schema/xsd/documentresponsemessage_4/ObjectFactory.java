@@ -27,7 +27,7 @@ public class ObjectFactory {
     private final static QName _DocumentResponseMessage_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:DocumentResponseMessage-4.0", "DocumentResponseMessage");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.documentresponsemessage_4
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.documentresponsemessage_4
      * 
      */
     public ObjectFactory() {

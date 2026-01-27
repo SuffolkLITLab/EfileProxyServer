@@ -27,7 +27,7 @@ public class ObjectFactory {
     private final static QName _FingerPositionCode_QNAME = new QName("http://niem.gov/niem/ansi-nist/2.0", "FingerPositionCode");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.gov.niem.niem.ansi_nist._2
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.gov.niem.niem.ansi_nist._2
      * 
      */
     public ObjectFactory() {

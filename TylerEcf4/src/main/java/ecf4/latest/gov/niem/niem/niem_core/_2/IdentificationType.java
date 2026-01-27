@@ -13,7 +13,6 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
 import ecf4.latest.tyler.ecf.extensions.common.DocumentOptionalServiceType;
 import ecf4.latest.tyler.ecf.extensions.common.OrganizationIdentificationType;
 
@@ -50,9 +49,9 @@ import ecf4.latest.tyler.ecf.extensions.common.OrganizationIdentificationType;
 @XmlSeeAlso({
     OrganizationIdentificationType.class,
     DocumentOptionalServiceType.class,
-   ecf4.latest.tyler.ecf.extensions.common.ServiceContactIdentificationType.class,
-   ecf4.latest.tyler.ecf.extensions.filingserviceresponsemessage.ServiceContactIdentificationType.class,
-   ecf4.latest.tyler.ecf.extensions.filingservicequerymessage.ServiceContactIdentificationType.class
+    ecf4.latest.tyler.ecf.extensions.common.ServiceContactIdentificationType.class,
+    ecf4.latest.tyler.ecf.extensions.filingserviceresponsemessage.ServiceContactIdentificationType.class,
+    ecf4.latest.tyler.ecf.extensions.filingservicequerymessage.ServiceContactIdentificationType.class
 })
 public class IdentificationType
     extends ComplexObjectType

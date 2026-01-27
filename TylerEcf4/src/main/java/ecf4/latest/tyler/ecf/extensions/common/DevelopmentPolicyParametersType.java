@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.datatype.XMLGregorianCalendar;
 import ecf4.latest.gov.niem.niem.niem_core._2.IdentificationType;
+import ecf4.latest.gov.niem.niem.niem_core._2.TextType;
 import ecf4.latest.gov.niem.niem.proxy.xsd._2.AnyURI;
 import ecf4.latest.gov.niem.niem.proxy.xsd._2.Boolean;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -34,6 +35,10 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  *         &lt;element ref="{urn:tyler:ecf:extensions:Common}ComposableSecurityDefaultRole" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:extensions:Common}UseOktaAuthentication" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:extensions:Common}OktaAuthenticationURI" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}UseNotificationCenter" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}NotificationCenterURI" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}NotificationCenterVersion" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}Tenant" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -51,7 +56,11 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "composableSecurityTenant",
     "composableSecurityDefaultRole",
     "useOktaAuthentication",
-    "oktaAuthenticationURI"
+    "oktaAuthenticationURI",
+    "useNotificationCenter",
+    "notificationCenterURI",
+    "notificationCenterVersion",
+    "tenant"
 })
 public class DevelopmentPolicyParametersType
     extends ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.DevelopmentPolicyParametersType
@@ -74,6 +83,14 @@ public class DevelopmentPolicyParametersType
     protected Boolean useOktaAuthentication;
     @XmlElement(name = "OktaAuthenticationURI")
     protected AnyURI oktaAuthenticationURI;
+    @XmlElement(name = "UseNotificationCenter")
+    protected Boolean useNotificationCenter;
+    @XmlElement(name = "NotificationCenterURI")
+    protected AnyURI notificationCenterURI;
+    @XmlElement(name = "NotificationCenterVersion")
+    protected TextType notificationCenterVersion;
+    @XmlElement(name = "Tenant")
+    protected IdentificationType tenant;
 
     /**
      * Gets the value of the timeoutMinutes property.
@@ -262,6 +279,102 @@ public class DevelopmentPolicyParametersType
      */
     public void setOktaAuthenticationURI(AnyURI value) {
         this.oktaAuthenticationURI = value;
+    }
+
+    /**
+     * Gets the value of the useNotificationCenter property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean getUseNotificationCenter() {
+        return useNotificationCenter;
+    }
+
+    /**
+     * Sets the value of the useNotificationCenter property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setUseNotificationCenter(Boolean value) {
+        this.useNotificationCenter = value;
+    }
+
+    /**
+     * Gets the value of the notificationCenterURI property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link AnyURI }
+     *     
+     */
+    public AnyURI getNotificationCenterURI() {
+        return notificationCenterURI;
+    }
+
+    /**
+     * Sets the value of the notificationCenterURI property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link AnyURI }
+     *     
+     */
+    public void setNotificationCenterURI(AnyURI value) {
+        this.notificationCenterURI = value;
+    }
+
+    /**
+     * Gets the value of the notificationCenterVersion property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TextType }
+     *     
+     */
+    public TextType getNotificationCenterVersion() {
+        return notificationCenterVersion;
+    }
+
+    /**
+     * Sets the value of the notificationCenterVersion property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TextType }
+     *     
+     */
+    public void setNotificationCenterVersion(TextType value) {
+        this.notificationCenterVersion = value;
+    }
+
+    /**
+     * Gets the value of the tenant property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link IdentificationType }
+     *     
+     */
+    public IdentificationType getTenant() {
+        return tenant;
+    }
+
+    /**
+     * Sets the value of the tenant property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link IdentificationType }
+     *     
+     */
+    public void setTenant(IdentificationType value) {
+        this.tenant = value;
     }
 
     /**

@@ -37,7 +37,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "organizationReference"
 })
 @XmlSeeAlso({
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationAssociationType.class
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationAssociationType.class
 })
 public class OrganizationAssociationType
     extends AssociationType

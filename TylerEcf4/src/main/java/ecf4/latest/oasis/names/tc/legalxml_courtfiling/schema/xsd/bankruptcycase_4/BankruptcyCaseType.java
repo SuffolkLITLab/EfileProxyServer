@@ -83,8 +83,8 @@ public class BankruptcyCaseType
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "CaseAugmentation" is used by two different parts of a schema. See: 
-     * line 38 of file:/home/bryce/Developer/LITLab/code/EfileProxyServer/src/main/resources/wsdl/stage/ecf-21.xsd
-     * line 37 of file:/home/bryce/Developer/LITLab/code/EfileProxyServer/src/main/resources/wsdl/stage/ecf-21.xsd
+     * line 38 of file:/Users/bwilley/Developer/EfileProxyServer/TylerEcf4/src/main/resources/wsdl/v2025_4/base/ecf-4824ea052a1e1513.xsd
+     * line 37 of file:/Users/bwilley/Developer/EfileProxyServer/TylerEcf4/src/main/resources/wsdl/v2025_4/base/ecf-4824ea052a1e1513.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 

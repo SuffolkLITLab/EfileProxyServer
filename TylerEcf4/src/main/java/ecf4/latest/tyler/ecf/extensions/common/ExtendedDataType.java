@@ -8,8 +8,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
-import ecf4.latest.tyler.ecf.extensions.massachusetts.RepresentativeCapacityType;
-
 
 /**
  * <p>Java class for ExtendedDataType complex type.
@@ -31,8 +29,7 @@ import ecf4.latest.tyler.ecf.extensions.massachusetts.RepresentativeCapacityType
 @XmlType(name = "ExtendedDataType")
 @XmlSeeAlso({
     CaseEventType.class,
-    ServicePartyDataType.class,
-    RepresentativeCapacityType.class
+    ServicePartyDataType.class
 })
 public class ExtendedDataType {
 

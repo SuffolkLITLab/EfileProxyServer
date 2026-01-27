@@ -23,7 +23,6 @@ import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusqu
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.serviceinformationquerymessage_4.ServiceInformationQueryMessageType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
 import ecf4.latest.tyler.ecf.extensions.cancelfilingmessage.CancelFilingMessageType;
 import ecf4.latest.tyler.ecf.extensions.filingdetailquerymessage.FilingDetailQueryMessageType;
 import ecf4.latest.tyler.ecf.extensions.filingservicequerymessage.FilingServiceQueryMessageType;

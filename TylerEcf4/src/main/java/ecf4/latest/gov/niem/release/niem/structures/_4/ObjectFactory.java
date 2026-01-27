@@ -28,7 +28,7 @@ public class ObjectFactory {
     private final static QName _AssociationAugmentationPoint_QNAME = new QName("http://release.niem.gov/niem/structures/4.0/", "AssociationAugmentationPoint");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.gov.niem.release.niem.structures._4
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.gov.niem.release.niem.structures._4
      * 
      */
     public ObjectFactory() {

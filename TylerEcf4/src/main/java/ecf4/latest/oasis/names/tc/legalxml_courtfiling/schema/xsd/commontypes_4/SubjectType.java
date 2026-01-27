@@ -40,7 +40,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "subjectICEIdentification"
 })
 @XmlSeeAlso({
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.citationcase_4.SubjectType.class,
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.citationcase_4.SubjectType.class,
     JuvenileType.class
 })
 public class SubjectType

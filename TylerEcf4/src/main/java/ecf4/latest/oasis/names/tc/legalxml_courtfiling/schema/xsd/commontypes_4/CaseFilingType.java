@@ -15,7 +15,6 @@ import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyres
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.messagereceiptmessage_4.MessageReceiptMessageType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
 import ecf4.latest.tyler.ecf.extensions.notifyservicemessage.NotifyServiceMessageType;
 import ecf4.latest.tyler.ecf.extensions.servicecallbackmessage.ServiceCallbackMessageType;
 

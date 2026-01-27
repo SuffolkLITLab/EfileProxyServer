@@ -45,7 +45,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "redLightCameraIndicator"
 })
 @XmlSeeAlso({
-   ecf4.latest.tyler.ecf.extensions.common.DrivingIncidentType.class
+    ecf4.latest.tyler.ecf.extensions.common.DrivingIncidentType.class
 })
 public class DrivingIncidentType
     extends ecf4.latest.gov.niem.niem.domains.jxdm._4.DrivingIncidentType

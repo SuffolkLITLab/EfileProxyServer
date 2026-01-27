@@ -19,8 +19,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
-import ecf4.latest.tyler.ecf.extensions.massachusetts.RepresentativeCapacityType;
-
 
 /**
  * <p>Java class for CaseAugmentationType complex type.
@@ -62,6 +60,10 @@ import ecf4.latest.tyler.ecf.extensions.massachusetts.RepresentativeCapacityType
  *         &lt;element ref="{urn:tyler:ecf:extensions:Common}FeeSplit" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:extensions:Common}AddMeAsServiceContactPartyReference" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{urn:tyler:ecf:extensions:Common}HasUserFiledIntoCaseIndicator" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}ParentCase" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}ChildCase" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}LowerCourtCaseCategoryText" minOccurs="0"/&gt;
+ *         &lt;element ref="{urn:tyler:ecf:extensions:Common}UpcomingHearingDate" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -101,7 +103,11 @@ import ecf4.latest.tyler.ecf.extensions.massachusetts.RepresentativeCapacityType
     "caseAddress",
     "feeSplit",
     "addMeAsServiceContactPartyReference",
-    "hasUserFiledIntoCaseIndicator"
+    "hasUserFiledIntoCaseIndicator",
+    "parentCase",
+    "childCase",
+    "lowerCourtCaseCategoryText",
+    "upcomingHearingDate"
 })
 public class CaseAugmentationType
     extends ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseAugmentationType
@@ -168,6 +174,14 @@ public class CaseAugmentationType
     protected List<ReferenceType> addMeAsServiceContactPartyReference;
     @XmlElement(name = "HasUserFiledIntoCaseIndicator")
     protected Boolean hasUserFiledIntoCaseIndicator;
+    @XmlElement(name = "ParentCase")
+    protected List<RelatedCaseType> parentCase;
+    @XmlElement(name = "ChildCase")
+    protected List<RelatedCaseType> childCase;
+    @XmlElement(name = "LowerCourtCaseCategoryText")
+    protected TextType lowerCourtCaseCategoryText;
+    @XmlElement(name = "UpcomingHearingDate")
+    protected DateType upcomingHearingDate;
 
     /**
      * Gets the value of the caseTypeText property.
@@ -493,7 +507,6 @@ public class CaseAugmentationType
      * {@link JAXBElement }{@code <}{@link CaseEventType }{@code >}
      * {@link JAXBElement }{@code <}{@link ExtendedDataType }{@code >}
      * {@link JAXBElement }{@code <}{@link ServicePartyDataType }{@code >}
-     * {@link JAXBElement }{@code <}{@link RepresentativeCapacityType }{@code >}
      * 
      * 
      */
@@ -945,6 +958,112 @@ public class CaseAugmentationType
      */
     public void setHasUserFiledIntoCaseIndicator(Boolean value) {
         this.hasUserFiledIntoCaseIndicator = value;
+    }
+
+    /**
+     * Gets the value of the parentCase property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the parentCase property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getParentCase().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link RelatedCaseType }
+     * 
+     * 
+     */
+    public List<RelatedCaseType> getParentCase() {
+        if (parentCase == null) {
+            parentCase = new ArrayList<RelatedCaseType>();
+        }
+        return this.parentCase;
+    }
+
+    /**
+     * Gets the value of the childCase property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the childCase property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getChildCase().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link RelatedCaseType }
+     * 
+     * 
+     */
+    public List<RelatedCaseType> getChildCase() {
+        if (childCase == null) {
+            childCase = new ArrayList<RelatedCaseType>();
+        }
+        return this.childCase;
+    }
+
+    /**
+     * Gets the value of the lowerCourtCaseCategoryText property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TextType }
+     *     
+     */
+    public TextType getLowerCourtCaseCategoryText() {
+        return lowerCourtCaseCategoryText;
+    }
+
+    /**
+     * Sets the value of the lowerCourtCaseCategoryText property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TextType }
+     *     
+     */
+    public void setLowerCourtCaseCategoryText(TextType value) {
+        this.lowerCourtCaseCategoryText = value;
+    }
+
+    /**
+     * Gets the value of the upcomingHearingDate property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link DateType }
+     *     
+     */
+    public DateType getUpcomingHearingDate() {
+        return upcomingHearingDate;
+    }
+
+    /**
+     * Sets the value of the upcomingHearingDate property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DateType }
+     *     
+     */
+    public void setUpcomingHearingDate(DateType value) {
+        this.upcomingHearingDate = value;
     }
 
     /**

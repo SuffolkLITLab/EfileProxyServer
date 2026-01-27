@@ -42,7 +42,7 @@ public class ObjectFactory {
     private final static QName _WillFilingDate_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CivilCase-4.0", "WillFilingDate");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.civilcase_4
      * 
      */
     public ObjectFactory() {

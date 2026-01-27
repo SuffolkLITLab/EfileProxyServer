@@ -39,7 +39,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "vehicleOperatorInsuranceCoverage"
 })
 @XmlSeeAlso({
-   ecf4.latest.tyler.ecf.extensions.common.VehicleType.class
+    ecf4.latest.tyler.ecf.extensions.common.VehicleType.class
 })
 public class VehicleType
     extends ecf4.latest.gov.niem.niem.niem_core._2.VehicleType

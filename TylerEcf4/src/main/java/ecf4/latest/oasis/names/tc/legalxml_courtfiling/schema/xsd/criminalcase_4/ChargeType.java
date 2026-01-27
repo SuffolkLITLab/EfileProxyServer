@@ -45,7 +45,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "chargeAmendedIndicator"
 })
 @XmlSeeAlso({
-   ecf4.latest.tyler.ecf.extensions.criminal.ChargeType.class
+    ecf4.latest.tyler.ecf.extensions.criminal.ChargeType.class
 })
 public class ChargeType
     extends ecf4.latest.gov.niem.niem.domains.jxdm._4.ChargeType

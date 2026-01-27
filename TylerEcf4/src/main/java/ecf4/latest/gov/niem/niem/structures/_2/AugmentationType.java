@@ -52,11 +52,11 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlSeeAlso({
     CaseAugmentationType.class,
     IncidentAugmentationType.class,
-   ecf4.latest.gov.niem.niem.domains.jxdm._4.OrganizationAugmentationType.class,
-   ecf4.latest.gov.niem.niem.domains.jxdm._4.PersonAugmentationType.class,
+    ecf4.latest.gov.niem.niem.domains.jxdm._4.OrganizationAugmentationType.class,
+    ecf4.latest.gov.niem.niem.domains.jxdm._4.PersonAugmentationType.class,
     PropertyAugmentationType.class,
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationAugmentationType.class,
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonAugmentationType.class,
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationAugmentationType.class,
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonAugmentationType.class,
     MarriageAssociationAugmentationType.class
 })
 public abstract class AugmentationType {

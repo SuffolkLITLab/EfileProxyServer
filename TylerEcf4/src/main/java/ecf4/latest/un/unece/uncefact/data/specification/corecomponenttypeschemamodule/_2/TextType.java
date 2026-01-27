@@ -69,7 +69,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "value"
 })
 @XmlSeeAlso({
-   ecf4.latest.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.TextType.class,
+    ecf4.latest.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.TextType.class,
     NameType.class
 })
 public class TextType {

@@ -358,7 +358,7 @@ public class ObjectFactory {
     private final static QName _Year_QNAME = new QName("http://niem.gov/niem/niem-core/2.0", "Year");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.gov.niem.niem.niem_core._2
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.gov.niem.niem.niem_core._2
      * 
      */
     public ObjectFactory() {

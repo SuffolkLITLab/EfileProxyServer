@@ -7,30 +7,36 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AcceptedVariantsDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AccountingCostType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ActivityTypeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AdditionalConditionsType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AdditionalInformationType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AgencyNameType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AllowanceChargeReasonType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ApprovalStatusType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AwardingCriteriaDescriptionType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AwardingCriterionDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BackorderReasonType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BirthplaceNameType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BuildingNumberType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BuyerReferenceType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CalculationExpressionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CancellationNoteType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CandidateStatementType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CanonicalizationMethodType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CarrierServiceInstructionsType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CertificateTypeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ChangeConditionsType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ChannelType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CharacteristicsType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ClauseType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CodeValueType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CommentType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CompanyLegalFormType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ConditionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ConditionsDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ConditionsType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ConsumersEnergyLevelType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ConsumptionLevelType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ConsumptionTypeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ContentType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ContractNameType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ContractSubdivisionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ContractTypeType;
@@ -48,12 +54,14 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DistrictType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DocumentDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DocumentHashType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DocumentStatusReasonDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DocumentTypeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DutyType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ElectronicDeviceDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ElectronicMailType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ExclusionReasonType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ExemptionReasonType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ExpressionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ExtensionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FeeDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FloorType;
@@ -73,7 +81,7 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.JustificationDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.JustificationType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.KeywordType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LegalFormType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatestMeterReadingMethodType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LegalReferenceType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LimitationDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LineType;
@@ -89,7 +97,6 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MeterNameType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MeterNumberType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MeterReadingCommentsType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MeterReadingMethodType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MeterReadingTypeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MinimumImprovementBidType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MinimumValueType;
@@ -105,12 +112,13 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OtherInstructionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OutstandingReasonType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PackingMaterialType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PartyTypeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PasswordType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PayPerViewType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PayerReferenceType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaymentDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaymentNoteType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaymentOrderReferenceType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PenaltyClausesType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PersonalSituationType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PhoneNumberType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PlacardEndorsementType;
@@ -118,37 +126,41 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PlotIdentificationType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PostalZoneType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PostboxType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PreviousMeterReadingMethodType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PriceChangeReasonType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PriceRevisionFormulaDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PriceTypeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PrintQualifierType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PriorityType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PrizeDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ProcessDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ProcessReasonType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PurposeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RankType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReferenceType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RegionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RegistrationNationalityType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RegulatoryDomainType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RejectReasonType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RejectionNoteType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RemarksType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReplenishmentOwnerDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ResidenceTypeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ResolutionType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RoamingPartnerNameType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RoleDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RoomType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SealingPartyTypeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ServiceNumberCalledType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ServiceTypeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ShippingMarksType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ShipsRequirementsType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SignatureMethodType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SpecialInstructionsType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SpecialServiceInstructionsType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SpecialTermsType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SpecialTransportRequirmentsType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SpecialTransportRequirementsType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.StatusReasonType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SubscriberIDTypeType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SubscriberTypeIdentifierType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SubscriberTypeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SummaryDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TariffDescriptionType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxExemptionReasonType;
@@ -177,6 +189,7 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ValueType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.WarrantyInformationType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.WeightType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.WorkPhaseType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.XPathType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
@@ -201,7 +214,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * </pre>
  * 
  * <pre>
- * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;A character string (i.e. a finite set of characters) generally in the form of words of a language.&lt;/ccts:Definition&gt;
+ * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;A character string (i.e. a finite set of characters), generally in the form of words of a language.&lt;/ccts:Definition&gt;
  * </pre>
  * 
  * <pre>
@@ -233,30 +246,36 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlSeeAlso({
     AcceptedVariantsDescriptionType.class,
     AccountingCostType.class,
+    ActivityTypeType.class,
+    AdditionalConditionsType.class,
     AdditionalInformationType.class,
     AgencyNameType.class,
     AllowanceChargeReasonType.class,
     ApprovalStatusType.class,
-    AwardingCriteriaDescriptionType.class,
+    AwardingCriterionDescriptionType.class,
     BackorderReasonType.class,
+    BirthplaceNameType.class,
     BuildingNumberType.class,
+    BuyerReferenceType.class,
     CalculationExpressionType.class,
     CancellationNoteType.class,
+    CandidateStatementType.class,
     CanonicalizationMethodType.class,
     CarrierServiceInstructionsType.class,
     CertificateTypeType.class,
     ChangeConditionsType.class,
     ChannelType.class,
     CharacteristicsType.class,
-    ClauseType.class,
     CodeValueType.class,
     CommentType.class,
+    CompanyLegalFormType.class,
     ConditionType.class,
     ConditionsType.class,
     ConditionsDescriptionType.class,
     ConsumersEnergyLevelType.class,
     ConsumptionLevelType.class,
     ConsumptionTypeType.class,
+    ContentType.class,
     ContractNameType.class,
     ContractSubdivisionType.class,
     ContractTypeType.class,
@@ -274,12 +293,14 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     DistrictType.class,
     DocumentDescriptionType.class,
     DocumentHashType.class,
+    DocumentStatusReasonDescriptionType.class,
     DocumentTypeType.class,
     DutyType.class,
     ElectronicDeviceDescriptionType.class,
     ElectronicMailType.class,
     ExclusionReasonType.class,
     ExemptionReasonType.class,
+    ExpressionType.class,
     ExtensionType.class,
     FeeDescriptionType.class,
     FloorType.class,
@@ -299,7 +320,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     JustificationType.class,
     JustificationDescriptionType.class,
     KeywordType.class,
-    LegalFormType.class,
+    LatestMeterReadingMethodType.class,
     LegalReferenceType.class,
     LimitationDescriptionType.class,
     LineType.class,
@@ -315,7 +336,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     MeterNameType.class,
     MeterNumberType.class,
     MeterReadingCommentsType.class,
-    MeterReadingMethodType.class,
     MeterReadingTypeType.class,
     MinimumImprovementBidType.class,
     MinimumValueType.class,
@@ -331,12 +351,13 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     OtherInstructionType.class,
     OutstandingReasonType.class,
     PackingMaterialType.class,
+    PartyTypeType.class,
     PasswordType.class,
     PayPerViewType.class,
     PayerReferenceType.class,
+    PaymentDescriptionType.class,
     PaymentNoteType.class,
     PaymentOrderReferenceType.class,
-    PenaltyClausesType.class,
     PersonalSituationType.class,
     PhoneNumberType.class,
     PlacardEndorsementType.class,
@@ -344,37 +365,41 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     PlotIdentificationType.class,
     PostalZoneType.class,
     PostboxType.class,
+    PreviousMeterReadingMethodType.class,
     PriceChangeReasonType.class,
     PriceRevisionFormulaDescriptionType.class,
     PriceTypeType.class,
     PrintQualifierType.class,
     PriorityType.class,
+    PrizeDescriptionType.class,
     ProcessDescriptionType.class,
     ProcessReasonType.class,
     PurposeType.class,
+    RankType.class,
     ReferenceType.class,
     RegionType.class,
     RegistrationNationalityType.class,
+    RegulatoryDomainType.class,
     RejectReasonType.class,
     RejectionNoteType.class,
     RemarksType.class,
     ReplenishmentOwnerDescriptionType.class,
     ResidenceTypeType.class,
     ResolutionType.class,
-    RoamingPartnerNameType.class,
+    RoleDescriptionType.class,
     RoomType.class,
     SealingPartyTypeType.class,
     ServiceNumberCalledType.class,
     ServiceTypeType.class,
     ShippingMarksType.class,
+    ShipsRequirementsType.class,
     SignatureMethodType.class,
     SpecialInstructionsType.class,
     SpecialServiceInstructionsType.class,
     SpecialTermsType.class,
-    SpecialTransportRequirmentsType.class,
+    SpecialTransportRequirementsType.class,
     StatusReasonType.class,
-    SubscriberIDTypeType.class,
-    SubscriberTypeIdentifierType.class,
+    SubscriberTypeType.class,
     SummaryDescriptionType.class,
     TariffDescriptionType.class,
     TaxExemptionReasonType.class,
@@ -385,7 +410,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     TelefaxType.class,
     TelephoneType.class,
     TestMethodType.class,
-   ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TextType.class,
+    ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TextType.class,
     TierRangeType.class,
     TimeAmountType.class,
     TimezoneOffsetType.class,
@@ -404,6 +429,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     ValueQualifierType.class,
     WarrantyInformationType.class,
     WeightType.class,
+    WorkPhaseType.class,
     XPathType.class
 })
 public class TextType

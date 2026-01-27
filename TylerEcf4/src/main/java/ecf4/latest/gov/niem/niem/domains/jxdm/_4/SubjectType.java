@@ -42,8 +42,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "subjectSupervision"
 })
 @XmlSeeAlso({
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.SubjectType.class,
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.SubjectType.class
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.SubjectType.class,
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.SubjectType.class
 })
 public class SubjectType
     extends ComplexObjectType

@@ -40,7 +40,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "MetadataType")
 @XmlSeeAlso({
-   ecf4.latest.gov.niem.niem.niem_core._2.MetadataType.class,
+    ecf4.latest.gov.niem.niem.niem_core._2.MetadataType.class,
     DocumentMetadataType.class
 })
 public abstract class MetadataType {

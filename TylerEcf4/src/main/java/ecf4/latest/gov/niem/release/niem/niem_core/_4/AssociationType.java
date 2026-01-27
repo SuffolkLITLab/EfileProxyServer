@@ -1,11 +1,6 @@
 
 package ecf4.latest.gov.niem.release.niem.niem_core._4;
 
-import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.JuvenileGangAssociationType;
-import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.JuvenilePlacementFacilityAssociationType;
-import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.JuvenilePlacementPersonAssociationType;
-import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.ParentChildAssociationType;
-import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.PersonCaseAssociationType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.OffenseChargeAssociationType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.OffenseLocationAssociationType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.PersonBloodAlcoholContentAssociationType;
@@ -47,10 +42,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "associationDescriptionText"
 })
 @XmlSeeAlso({
-    JuvenilePlacementFacilityAssociationType.class,
-    JuvenilePlacementPersonAssociationType.class,
-    ParentChildAssociationType.class,
-    JuvenileGangAssociationType.class,
     DocumentAssociationType.class,
     OrganizationAssociationType.class,
     PersonEmploymentAssociationType.class,
@@ -61,8 +52,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     OffenseChargeAssociationType.class,
     OffenseLocationAssociationType.class,
     PersonChargeAssociationType.class,
-    PersonBloodAlcoholContentAssociationType.class,
-    PersonCaseAssociationType.class
+    PersonBloodAlcoholContentAssociationType.class
 })
 public class AssociationType
     extends ecf4.latest.gov.niem.release.niem.structures._4.AssociationType

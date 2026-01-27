@@ -28,7 +28,7 @@ public class ObjectFactory {
     private final static QName _MatchingFiling_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:FilingListResponseMessage-4.0", "MatchingFiling");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistresponsemessage_4
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistresponsemessage_4
      * 
      */
     public ObjectFactory() {

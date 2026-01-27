@@ -3,13 +3,11 @@ package ecf4.latest.gov.niem.release.niem.domains.jxdm._6;
 
 import java.util.ArrayList;
 import java.util.List;
-import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.JuvenileAbuseNeglectAllegationType;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.TextType;
 import ecf4.latest.gov.niem.release.niem.structures._4.ObjectType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
@@ -60,9 +58,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "chargeSpecialAllegationText",
     "chargeStatute",
     "chargeAugmentationPoint"
-})
-@XmlSeeAlso({
-    JuvenileAbuseNeglectAllegationType.class
 })
 public class ChargeType
     extends ObjectType

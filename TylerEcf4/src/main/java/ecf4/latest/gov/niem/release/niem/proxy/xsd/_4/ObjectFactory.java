@@ -23,10 +23,18 @@ public class ObjectFactory {
 
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.gov.niem.release.niem.proxy.xsd._4
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.gov.niem.release.niem.proxy.xsd._4
      * 
      */
     public ObjectFactory() {
+    }
+
+    /**
+     * Create an instance of {@link NormalizedString }
+     * 
+     */
+    public NormalizedString createNormalizedString() {
+        return new NormalizedString();
     }
 
     /**
@@ -99,14 +107,6 @@ public class ObjectFactory {
      */
     public Time createTime() {
         return new Time();
-    }
-
-    /**
-     * Create an instance of {@link NormalizedString }
-     * 
-     */
-    public NormalizedString createNormalizedString() {
-        return new NormalizedString();
     }
 
     /**

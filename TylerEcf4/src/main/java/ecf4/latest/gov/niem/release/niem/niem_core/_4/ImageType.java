@@ -31,7 +31,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ImageType")
 @XmlSeeAlso({
-   ecf4.latest.gov.niem.release.niem.domains.biometrics._4.ImageType.class
+    ecf4.latest.gov.niem.release.niem.domains.biometrics._4.ImageType.class
 })
 public class ImageType
     extends BinaryType

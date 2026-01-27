@@ -42,7 +42,7 @@ public class ObjectFactory {
     private final static QName _PhysicalFeatureImage_QNAME = new QName("http://release.niem.gov/niem/domains/biometrics/4.0/", "PhysicalFeatureImage");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.gov.niem.release.niem.domains.biometrics._4
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.gov.niem.release.niem.domains.biometrics._4
      * 
      */
     public ObjectFactory() {

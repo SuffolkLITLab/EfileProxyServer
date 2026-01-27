@@ -35,7 +35,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "fingerPositionCode"
 })
 @XmlSeeAlso({
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.FingerprintType.class
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.FingerprintType.class
 })
 public class FingerprintType
     extends ComplexObjectType
