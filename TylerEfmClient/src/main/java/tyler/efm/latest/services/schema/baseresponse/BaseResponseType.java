@@ -6,6 +6,8 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 import tyler.efm.latest.services.schema.attorneylistresponse.AttorneyListResponseType;
 import tyler.efm.latest.services.schema.authenticateresponse.AuthenticateResponseType;
 import tyler.efm.latest.services.schema.changepasswordresponse.ChangePasswordResponseType;
@@ -31,9 +33,6 @@ import tyler.efm.latest.services.schema.updatepaymentaccountresponse.UpdatePayme
 import tyler.efm.latest.services.schema.updateservicecontactresponse.UpdateServiceContactResponseType;
 import tyler.efm.latest.services.schema.updateuserresponse.UpdateUserResponseType;
 import tyler.efm.latest.services.schema.userlistresponse.UserListResponseType;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**

@@ -10,7 +10,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the tyler.efm.v2025_0.services.schema.common package. 
+ * generated in the tyler.efm.latest.services.schema.common package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -48,7 +48,7 @@ public class ObjectFactory {
     private final static QName _ServiceContactTypeIsMailServiceContact_QNAME = new QName("urn:tyler:efm:services:schema:Common", "IsMailServiceContact");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: tyler.efm.v2025_0.services.schema.common
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: tyler.efm.latest.services.schema.common
      * 
      */
     public ObjectFactory() {
