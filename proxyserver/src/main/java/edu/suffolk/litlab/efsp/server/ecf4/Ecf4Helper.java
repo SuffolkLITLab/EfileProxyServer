@@ -1,8 +1,6 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
-import com.hubspot.algebra.Result;
 import ecf4.latest.gov.niem.niem.domains.jxdm._4.CourtType;
-import ecf4.latest.gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 import ecf4.latest.gov.niem.niem.fips_10_4._2.CountryCodeType;
 import ecf4.latest.gov.niem.niem.niem_core._2.DateType;
 import ecf4.latest.gov.niem.niem.niem_core._2.EntityType;
@@ -289,16 +287,10 @@ public class Ecf4Helper {
   }
 
   /** Turn a given string into a country type. */
-  public static Result<CountryCodeType, IllegalArgumentException> strToCountryCode(String country) {
+  public static CountryCodeType strToCountryCode(String country) {
     CountryCodeType cct = new CountryCodeType();
-    try {
-      // Trigger an illegal argument exception if not valid
-      CountryCodeSimpleType.fromValue(country);
-      cct.setValue(country);
-      return Result.ok(cct);
-    } catch (IllegalArgumentException ex) {
-      return Result.err(ex);
-    }
+    cct.setValue(country);
+    return cct;
   }
 
   public static <T extends QueryMessageType> T prep(T newMsg, String courtId) {
