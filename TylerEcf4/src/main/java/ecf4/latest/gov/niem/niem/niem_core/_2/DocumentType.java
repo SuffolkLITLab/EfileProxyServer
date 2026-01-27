@@ -79,7 +79,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     DocumentRenditionMetadataType.class,
     DocumentRenditionType.class,
     MatchingFilingType.class,
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType.class,
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType.class,
     CaseFilingType.class
 })
 public class DocumentType

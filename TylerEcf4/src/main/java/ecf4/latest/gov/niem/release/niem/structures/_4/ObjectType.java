@@ -13,8 +13,6 @@ import ecf4.latest.gov.niem.release.niem.domains.biometrics._4.DNASampleType;
 import ecf4.latest.gov.niem.release.niem.domains.cbrn._4.MessageContentErrorType;
 import ecf4.latest.gov.niem.release.niem.domains.cbrn._4.MessageErrorType;
 import ecf4.latest.gov.niem.release.niem.domains.cbrn._4.RemarksComplexObjectType;
-import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.ChildType;
-import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.JuvenileType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.ChargeEnhancingFactorType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.ChargeType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.CourtAppearanceType;
@@ -66,6 +64,20 @@ import ecf4.latest.gov.niem.release.niem.niem_core._4.StateType;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.StatusType;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.StreetType;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.TelephoneNumberType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caserequest.CaseQueryCriteriaType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventActorType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventOnBehalfOfActorType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentSignatureType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ElectronicServiceInformationType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.payment.PaymentMessageType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.DevelopmentPolicyType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.ExtensionType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.MajorDesignElementType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.RuntimePolicyType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.SupportedCaseCategoriesType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.SupportedOperationsType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.SupportedServiceInteractionProfilesType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.SupportedSignatureProfilesType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAnyAttribute;
@@ -80,22 +92,6 @@ import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caserequest.CaseQueryCriteriaType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.DecedentEstateCaseType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventActorType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventOnBehalfOfActorType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentSignatureType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ElectronicServiceInformationType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.payment.PaymentMessageType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.DevelopmentPolicyType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.ExtensionType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.MajorDesignElementType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.RuntimePolicyType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.SupportedCaseCategoriesType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.SupportedOperationsType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.SupportedServiceInteractionProfilesType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.policyresponse.SupportedSignatureProfilesType;
 import ecf4.latest.tyler.ecf.v5_0.extensions.common.FilingReferenceType;
 
 
@@ -129,21 +125,28 @@ import ecf4.latest.tyler.ecf.v5_0.extensions.common.FilingReferenceType;
     "objectAugmentationPoint"
 })
 @XmlSeeAlso({
-    DateType.class,
-    ChildType.class,
-    JuvenileType.class,
-    PersonType.class,
-    FacilityType.class,
-    IdentificationType.class,
-    AddressType.class,
     EntityType.class,
+    CourtEventOnBehalfOfActorType.class,
+    DateType.class,
+    CourtEventActorType.class,
+    DocumentSignatureType.class,
+    ElectronicServiceInformationType.class,
+    StatusType.class,
+    IdentificationType.class,
+    BiometricDataType.class,
+    BiometricClassificationType.class,
+    DNASTRProfileType.class,
+    DNASampleType.class,
+    AddressType.class,
     ContactInformationType.class,
+    PersonType.class,
     TelephoneNumberType.class,
     DateRangeType.class,
     AmountType.class,
     FullTelephoneNumberType.class,
     JurisdictionType.class,
     LocationType.class,
+    InsuranceType.class,
     InternationalTelephoneNumberType.class,
     ItemValueType.class,
     CountryType.class,
@@ -156,12 +159,16 @@ import ecf4.latest.tyler.ecf.v5_0.extensions.common.FilingReferenceType;
     PersonNameType.class,
     PhysicalFeatureType.class,
     PersonLanguageType.class,
+    FacilityType.class,
     ItemType.class,
+    BinaryType.class,
     ObligationType.class,
     ScheduleDayType.class,
     ScheduleType.class,
     MeasureType.class,
-    CaseQueryCriteriaType.class,
+    MessageErrorType.class,
+    MessageContentErrorType.class,
+    RemarksComplexObjectType.class,
     ChargeType.class,
     EnforcementOfficialType.class,
     SubjectType.class,
@@ -179,15 +186,8 @@ import ecf4.latest.tyler.ecf.v5_0.extensions.common.FilingReferenceType;
     DriverLicenseBaseType.class,
     DrivingRestrictionType.class,
     ItemRegistrationType.class,
-    FilingReferenceType.class,
-    MessageErrorType.class,
-    MessageContentErrorType.class,
-    RemarksComplexObjectType.class,
-    BiometricDataType.class,
-    BiometricClassificationType.class,
-    DNASTRProfileType.class,
-    DNASampleType.class,
-    BinaryType.class,
+    CaseQueryCriteriaType.class,
+    PaymentMessageType.class,
     DevelopmentPolicyType.class,
     MajorDesignElementType.class,
     RuntimePolicyType.class,
@@ -196,14 +196,7 @@ import ecf4.latest.tyler.ecf.v5_0.extensions.common.FilingReferenceType;
     SupportedServiceInteractionProfilesType.class,
     SupportedSignatureProfilesType.class,
     ExtensionType.class,
-    CourtEventOnBehalfOfActorType.class,
-    CourtEventActorType.class,
-    DocumentSignatureType.class,
-    ElectronicServiceInformationType.class,
-    StatusType.class,
-    InsuranceType.class,
-    DecedentEstateCaseType.class,
-    PaymentMessageType.class,
+    FilingReferenceType.class,
     DocumentType.class
 })
 public abstract class ObjectType {

@@ -10,7 +10,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filinglistrequest package. 
+ * generated in the ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filinglistrequest package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -28,7 +28,7 @@ public class ObjectFactory {
     private final static QName _GetFilingListRequestMessageAugmentationPoint_QNAME = new QName("https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/filinglistrequest", "GetFilingListRequestMessageAugmentationPoint");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filinglistrequest
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.filinglistrequest
      * 
      */
     public ObjectFactory() {

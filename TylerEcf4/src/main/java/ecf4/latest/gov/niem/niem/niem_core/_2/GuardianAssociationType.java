@@ -37,7 +37,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "personDependentReference"
 })
 @XmlSeeAlso({
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.juvenilecase_4.GuardianAssociationType.class
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.juvenilecase_4.GuardianAssociationType.class
 })
 public class GuardianAssociationType
     extends AssociationType

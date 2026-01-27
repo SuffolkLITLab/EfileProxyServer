@@ -29,7 +29,7 @@ public class ObjectFactory {
     private final static QName _ReviewFilingRequestMessage_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:wsdl:WebServicesProfile-Definitions-4.0", "ReviewFilingRequestMessage");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4
      * 
      */
     public ObjectFactory() {

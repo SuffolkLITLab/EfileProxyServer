@@ -12,7 +12,6 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TargetCurrencyBaseRateType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
 import ecf4.latest.un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.NumericType;
 
 
@@ -35,7 +34,7 @@ import ecf4.latest.un.unece.uncefact.data.specification.corecomponenttypeschemam
  * </pre>
  * 
  * <pre>
- * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;Numeric information that is assigned or is determined by calculation, counting, or sequencing. It does not require a unit of quantity or unit of measuret.&lt;/ccts:Definition&gt;
+ * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;A numeric expression of a rate that is assigned or is determined by calculation, counting, or sequencing. It does not require a unit of quantity or unit of measure.&lt;/ccts:Definition&gt;
  * </pre>
  * 
  * <pre>
@@ -68,7 +67,7 @@ import ecf4.latest.un.unece.uncefact.data.specification.corecomponenttypeschemam
     AmountRateType.class,
     CalculationRateType.class,
     OrderableUnitFactorRateType.class,
-   ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RateType.class,
+    ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RateType.class,
     SourceCurrencyBaseRateType.class,
     TargetCurrencyBaseRateType.class
 })

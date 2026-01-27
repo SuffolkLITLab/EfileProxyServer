@@ -48,8 +48,9 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="BinaryObjectType"&gt;
  *   &lt;simpleContent&gt;
- *     &lt;extension base="&lt;urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2&gt;BinaryObjectType"&gt;
- *     &lt;/extension&gt;
+ *     &lt;restriction base="&lt;urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2&gt;BinaryObjectType"&gt;
+ *       &lt;attribute name="mimeCode" use="required" type="{http://www.w3.org/2001/XMLSchema}normalizedString" /&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/simpleContent&gt;
  * &lt;/complexType&gt;
  * </pre>

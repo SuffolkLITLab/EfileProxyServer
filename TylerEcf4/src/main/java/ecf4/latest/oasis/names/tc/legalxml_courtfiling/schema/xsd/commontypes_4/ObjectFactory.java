@@ -111,7 +111,7 @@ public class ObjectFactory {
     private final static QName _SubjectICEIdentification_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", "SubjectICEIdentification");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4
      * 
      */
     public ObjectFactory() {
@@ -414,7 +414,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", name = "AttachmentSequenceID")
     public JAXBElement<ecf4.latest.gov.niem.niem.proxy.xsd._2.String> createAttachmentSequenceID(ecf4.latest.gov.niem.niem.proxy.xsd._2.String value) {
-        return new JAXBElement<ecf4.latest.gov.niem.niem.proxy.xsd._2.String>(_AttachmentSequenceID_QNAME,ecf4.latest.gov.niem.niem.proxy.xsd._2.String.class, null, value);
+        return new JAXBElement<ecf4.latest.gov.niem.niem.proxy.xsd._2.String>(_AttachmentSequenceID_QNAME, ecf4.latest.gov.niem.niem.proxy.xsd._2.String.class, null, value);
     }
 
     /**
@@ -596,7 +596,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", name = "ConnectedDocument")
     public JAXBElement<ecf4.latest.gov.niem.niem.niem_core._2.DocumentType> createConnectedDocument(ecf4.latest.gov.niem.niem.niem_core._2.DocumentType value) {
-        return new JAXBElement<ecf4.latest.gov.niem.niem.niem_core._2.DocumentType>(_ConnectedDocument_QNAME,ecf4.latest.gov.niem.niem.niem_core._2.DocumentType.class, null, value);
+        return new JAXBElement<ecf4.latest.gov.niem.niem.niem_core._2.DocumentType>(_ConnectedDocument_QNAME, ecf4.latest.gov.niem.niem.niem_core._2.DocumentType.class, null, value);
     }
 
     /**
@@ -713,7 +713,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0", name = "Document")
     public JAXBElement<ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType> createDocument(ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType value) {
-        return new JAXBElement<ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType>(_Document_QNAME,ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType.class, null, value);
+        return new JAXBElement<ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType>(_Document_QNAME, ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.DocumentType.class, null, value);
     }
 
     /**

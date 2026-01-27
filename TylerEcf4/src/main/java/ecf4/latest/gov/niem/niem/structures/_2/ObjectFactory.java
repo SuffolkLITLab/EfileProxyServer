@@ -28,7 +28,7 @@ public class ObjectFactory {
     private final static QName _Metadata_QNAME = new QName("http://niem.gov/niem/structures/2.0", "Metadata");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.gov.niem.niem.structures._2
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.gov.niem.niem.structures._2
      * 
      */
     public ObjectFactory() {

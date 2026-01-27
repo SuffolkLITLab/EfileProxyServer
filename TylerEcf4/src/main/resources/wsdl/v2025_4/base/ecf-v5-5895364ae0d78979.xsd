@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+     WS-Calendar Version 1.0
+     Committee Specification 01
+     30 July 2011
+     Source: http://docs.oasis-open.org/ws-calendar/ws-calendar-spec/v1.0/cs01/xsd/
+     Copyright (c) The Calendaring and Scheduling Consortium 2010-2011. All Rights Reserved.
+     Copyright (c) OASIS Open 2010-2011. All Rights Reserved. --><!-- iCalendar base schema is intended to work in conjunction
+     with conformant implementations of IETF RFC 5545
+     ( http://www.rfc-editor.org/rfc/rfc5545.txt ),
+     the normative specification of iCalendar. --><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xcal="urn:ietf:params:xml:ns:icalendar-2.0" elementFormDefault="qualified" targetNamespace="urn:ietf:params:xml:ns:icalendar-2.0">
+	<!-- ===================== Standard Extensions =======================  -->
+	<xs:include schemaLocation="ecf-v5-01abcc95058b2aaf.xsd"/>
+	<!-- ===================== Proprietary Extensions =======================  -->
+	<xs:include schemaLocation="ecf-v5-ec1cb0cea3e4c15f.xsd"/>
+	<xs:include schemaLocation="ecf-v5-60fc011beb5812ae.xsd"/>
+	<xs:include schemaLocation="ecf-v5-65b28033abe909b2.xsd"/>
+	<xs:include schemaLocation="ecf-v5-acee2ee2245fa483.xsd"/>
+	<!-- =====================================================================
+       3.4 Calendar Components
+       ===================================================================== -->
+	<xs:include schemaLocation="ecf-v5-9acb70c0b1f40a4f.xsd"/>
+	<xs:complexType abstract="true" name="BaseComponentType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+        This type is the basis for all components and provides a base class for
+        applications.
+        
+        Essentially it states that a component is a set of properties.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element minOccurs="0" name="properties" type="xcal:ArrayOfProperties"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element abstract="true" name="baseComponent" type="xcal:BaseComponentType"/>
+	<xs:element name="vevent" substitutionGroup="xcal:vcalendarContainedComponent" type="xcal:VeventType"/>
+	<xs:element name="vtodo" substitutionGroup="xcal:vcalendarContainedComponent" type="xcal:VtodoType"/>
+	<xs:element name="vjournal" substitutionGroup="xcal:vcalendarContainedComponent" type="xcal:VjournalType"/>
+	<xs:element name="vfreebusy" substitutionGroup="xcal:vcalendarContainedComponent" type="xcal:VfreebusyType"/>
+	<xs:element name="vtimezone" substitutionGroup="xcal:vcalendarContainedComponent" type="xcal:VtimezoneType"/>
+	<xs:element name="standard" substitutionGroup="xcal:baseComponent" type="xcal:StandardType"/>
+	<xs:element name="daylight" substitutionGroup="xcal:baseComponent" type="xcal:DaylightType"/>
+	<xs:element name="valarm" type="xcal:ValarmType"/>
+	<!-- 3.4 iCalendar Stream -->
+	<xs:complexType name="IcalendarType">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" name="vcalendar" type="xcal:VcalendarType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="icalendar" type="xcal:IcalendarType"/>
+	<!-- 3.6 Calendar Components -->
+	<xs:complexType mixed="false" name="VcalendarType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+        This type is the basis for all components and provides a base class for
+        applications.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="xcal:BaseComponentType">
+				<xs:sequence>
+					<xs:element name="components" type="xcal:ArrayOfVcalendarContainedComponents"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="vcalendar" type="xcal:VcalendarType"/>
+	<xs:element abstract="true" name="vcalendarContainedComponent" type="xcal:VcalendarContainedComponentType"/>
+	<xs:complexType name="ArrayOfVcalendarContainedComponents">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" ref="xcal:vcalendarContainedComponent"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType mixed="false" name="VcalendarContainedComponentType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+        This type is the basis for all components that can be contained within
+        a vcalendar component
+      </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="xcal:BaseComponentType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- 3.6.1 Event Component -->
+	<xs:complexType mixed="false" name="VeventType">
+		<xs:complexContent>
+			<xs:extension base="xcal:EventTodoComponentType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType mixed="false" name="EventTodoComponentType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+        Events and todos only contain alarms
+      </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="xcal:VcalendarContainedComponentType">
+				<xs:sequence>
+					<xs:element name="components" type="xcal:ArrayOfEventTodoContainedComponents"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ArrayOfEventTodoContainedComponents">
+		<xs:sequence>
+			<xs:choice maxOccurs="unbounded" minOccurs="0">
+				<xs:element ref="xcal:valarm"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- 3.6.2 To-do Component -->
+	<xs:complexType mixed="false" name="VtodoType">
+		<xs:complexContent>
+			<xs:extension base="xcal:EventTodoComponentType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- 3.6.3 Journal Component -->
+	<xs:complexType mixed="false" name="VjournalType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+        Journal components contain no other components
+      </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="xcal:VcalendarContainedComponentType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- 3.6.4 Free/Busy Component -->
+	<xs:complexType mixed="false" name="VfreebusyType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+        Freebusy components contain no other components
+      </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="xcal:VcalendarContainedComponentType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- 3.6.5 timezone -->
+	<xs:complexType mixed="false" name="VtimezoneType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+        Timezones only contain daylight and standard
+      </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="xcal:VcalendarContainedComponentType">
+				<xs:sequence>
+					<xs:element name="components" type="xcal:ArrayOfTimezoneContainedComponents"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ArrayOfTimezoneContainedComponents">
+		<xs:sequence>
+			<xs:choice maxOccurs="unbounded" minOccurs="0">
+				<xs:element ref="xcal:standard"/>
+				<xs:element ref="xcal:daylight"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType mixed="false" name="StandardType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+        Standard components contain no other components
+      </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="xcal:BaseComponentType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType mixed="false" name="DaylightType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+        Daylight components contain no other components
+      </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="xcal:BaseComponentType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- 3.6.6 Alarm Component -->
+	<xs:complexType mixed="false" name="ValarmType">
+		<xs:complexContent>
+			<xs:extension base="xcal:AlarmComponentType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType mixed="false" name="AlarmComponentType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+        Alarms contain no components
+      </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="xcal:BaseComponentType"/>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

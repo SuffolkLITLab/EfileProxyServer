@@ -23,7 +23,7 @@ public class ObjectFactory {
 
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.gov.niem.niem.nonauthoritative_code._2
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.gov.niem.niem.nonauthoritative_code._2
      * 
      */
     public ObjectFactory() {

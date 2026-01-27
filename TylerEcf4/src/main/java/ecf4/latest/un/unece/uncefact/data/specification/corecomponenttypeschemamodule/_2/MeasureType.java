@@ -68,7 +68,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "value"
 })
 @XmlSeeAlso({
-   ecf4.latest.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.MeasureType.class
+    ecf4.latest.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.MeasureType.class
 })
 public class MeasureType {
 

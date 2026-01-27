@@ -3,8 +3,6 @@ package ecf4.latest.gov.niem.release.niem.niem_core._4;
 
 import java.util.ArrayList;
 import java.util.List;
-import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
-import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.JuvenileCaseType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.AppellateCaseType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -48,8 +46,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "caseAugmentationPoint"
 })
 @XmlSeeAlso({
-    ChildSupportEnforcementCaseType.class,
-    JuvenileCaseType.class,
     AppellateCaseType.class
 })
 public class CaseType
@@ -130,7 +126,6 @@ public class CaseType
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link JAXBElement }{@code <}{@link ecf4.latest.gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType }{@code >}
-     * {@link JAXBElement }{@code <}{@link ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.CaseAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseAugmentationType }{@code >}
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
      * {@link JAXBElement }{@code <}{@link ecf4.latest.tyler.ecf.v5_0.extensions.common.CaseAugmentationType }{@code >}

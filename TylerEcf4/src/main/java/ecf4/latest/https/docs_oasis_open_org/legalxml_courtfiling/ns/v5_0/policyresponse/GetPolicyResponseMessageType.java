@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.IdentificationType;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.MetadataType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -13,8 +14,6 @@ import jakarta.xml.bind.annotation.XmlElementRefs;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
 
 
 /**
@@ -66,8 +65,8 @@ public class GetPolicyResponseMessageType
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "Metadata" is used by two different parts of a schema. See: 
-     * line 61 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-v5-52.xsd
-     * line 25 of file:/home/brycew/eclipse-workspace/EfileProxyServer/src/main/resources/wsdl/stage/ecf-v5-7.xsd
+     * line 61 of file:/Users/bwilley/Developer/EfileProxyServer/TylerEcf4/src/main/resources/wsdl/v2025_4/base/ecf-v5-854db9d8521b7e78.xsd
+     * line 25 of file:/Users/bwilley/Developer/EfileProxyServer/TylerEcf4/src/main/resources/wsdl/v2025_4/base/ecf-v5-43381e9aa490c46d.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 

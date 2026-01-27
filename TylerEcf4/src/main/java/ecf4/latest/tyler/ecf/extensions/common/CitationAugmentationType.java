@@ -49,8 +49,8 @@ public class CitationAugmentationType
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "DrivingIncident" is used by two different parts of a schema. See: 
-     * line 210 of file:/home/bryce/Developer/LITLab/code/EfileProxyServer/src/main/resources/wsdl/stage/ecf-60.xsd
-     * line 55 of file:/home/bryce/Developer/LITLab/code/EfileProxyServer/src/main/resources/wsdl/stage/ecf-22.xsd
+     * line 238 of file:/Users/bwilley/Developer/EfileProxyServer/TylerEcf4/src/main/resources/wsdl/v2025_4/base/ecf-22c5291b9ec9e993.xsd
+     * line 55 of file:/Users/bwilley/Developer/EfileProxyServer/TylerEcf4/src/main/resources/wsdl/v2025_4/base/ecf-8b83d1c8e68769f4.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 

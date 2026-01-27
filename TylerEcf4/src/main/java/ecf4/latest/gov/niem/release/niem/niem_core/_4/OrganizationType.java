@@ -6,6 +6,7 @@ import java.util.List;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.CourtType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.EnforcementUnitType;
 import ecf4.latest.gov.niem.release.niem.structures._4.ObjectType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.OrganizationAugmentationType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -15,8 +16,6 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.OrganizationAugmentationType;
 
 
 /**

@@ -12,7 +12,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the ietf.params.xml.ns.icalendar_2 package. 
+ * generated in the ecf4.latest.ietf.params.xml.ns.icalendar_2 package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -149,7 +149,7 @@ public class ObjectFactory {
     private final static QName _Vcalendar_QNAME = new QName("urn:ietf:params:xml:ns:icalendar-2.0", "vcalendar");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ietf.params.xml.ns.icalendar_2
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.ietf.params.xml.ns.icalendar_2
      * 
      */
     public ObjectFactory() {

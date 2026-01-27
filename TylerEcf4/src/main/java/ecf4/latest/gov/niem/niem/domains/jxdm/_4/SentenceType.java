@@ -42,7 +42,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "sentenceTerm"
 })
 @XmlSeeAlso({
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.SentenceType.class
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.criminalcase_4.SentenceType.class
 })
 public class SentenceType
     extends ActivityType

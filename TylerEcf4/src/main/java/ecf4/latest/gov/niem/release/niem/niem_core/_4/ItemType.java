@@ -7,6 +7,7 @@ import ecf4.latest.gov.niem.release.niem.codes.fbi_ncic._4.VCOCodeType;
 import ecf4.latest.gov.niem.release.niem.codes.fbi_ncic._4.VSTCodeType;
 import ecf4.latest.gov.niem.release.niem.proxy.xsd._4.GYear;
 import ecf4.latest.gov.niem.release.niem.structures._4.ObjectType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ItemAugmentationType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -16,8 +17,6 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ItemAugmentationType;
 
 
 /**

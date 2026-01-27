@@ -23,7 +23,7 @@ public class ObjectFactory {
 
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2
      * 
      */
     public ObjectFactory() {

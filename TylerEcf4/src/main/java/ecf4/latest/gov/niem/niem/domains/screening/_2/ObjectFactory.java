@@ -33,7 +33,7 @@ public class ObjectFactory {
     private final static QName _MarriageCityName_QNAME = new QName("http://niem.gov/niem/domains/screening/2.0", "MarriageCityName");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.gov.niem.niem.domains.screening._2
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.gov.niem.niem.domains.screening._2
      * 
      */
     public ObjectFactory() {

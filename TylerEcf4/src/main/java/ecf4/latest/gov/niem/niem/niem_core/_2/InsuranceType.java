@@ -42,7 +42,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "insuranceCoverageCategory"
 })
 @XmlSeeAlso({
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.InsuranceType.class
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.InsuranceType.class
 })
 public class InsuranceType
     extends ComplexObjectType

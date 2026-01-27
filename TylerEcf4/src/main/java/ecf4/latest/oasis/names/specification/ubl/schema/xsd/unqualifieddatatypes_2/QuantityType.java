@@ -11,12 +11,14 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BasicConsumedQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BatchQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ChargeableQuantityType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ChildConsignmentQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ConsignmentQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ConsumerUnitQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ConsumptionEnergyQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ConsumptionWaterQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ContentUnitQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CreditedQuantityType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CrewQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CustomsTariffQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DebitedQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DeliveredQuantityType;
@@ -44,8 +46,11 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OutstandingQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OversupplyQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PackQuantityType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PassengerQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PerformanceValueQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PreviousMeterQuantityType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReceivedElectronicTenderQuantityType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReceivedForeignTenderQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReceivedQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReceivedTenderQuantityType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RejectedQuantityType;
@@ -87,7 +92,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * </pre>
  * 
  * <pre>
- * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;A counted number of non-monetary units possibly including fractions.&lt;/ccts:Definition&gt;
+ * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;A counted number of non-monetary units, possibly including a fractional part.&lt;/ccts:Definition&gt;
  * </pre>
  * 
  * <pre>
@@ -123,12 +128,14 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     BasicConsumedQuantityType.class,
     BatchQuantityType.class,
     ChargeableQuantityType.class,
+    ChildConsignmentQuantityType.class,
     ConsignmentQuantityType.class,
     ConsumerUnitQuantityType.class,
     ConsumptionEnergyQuantityType.class,
     ConsumptionWaterQuantityType.class,
     ContentUnitQuantityType.class,
     CreditedQuantityType.class,
+    CrewQuantityType.class,
     CustomsTariffQuantityType.class,
     DebitedQuantityType.class,
     DeliveredQuantityType.class,
@@ -156,9 +163,12 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     OutstandingQuantityType.class,
     OversupplyQuantityType.class,
     PackQuantityType.class,
+    PassengerQuantityType.class,
     PerformanceValueQuantityType.class,
     PreviousMeterQuantityType.class,
-   ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.QuantityType.class,
+    ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.QuantityType.class,
+    ReceivedElectronicTenderQuantityType.class,
+    ReceivedForeignTenderQuantityType.class,
     ReceivedQuantityType.class,
     ReceivedTenderQuantityType.class,
     RejectedQuantityType.class,

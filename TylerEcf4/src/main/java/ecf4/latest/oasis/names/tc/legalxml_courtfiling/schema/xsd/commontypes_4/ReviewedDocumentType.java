@@ -43,7 +43,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "sealDocumentIndicator"
 })
 @XmlSeeAlso({
-   ecf4.latest.tyler.ecf.extensions.common.ReviewedDocumentType.class
+    ecf4.latest.tyler.ecf.extensions.common.ReviewedDocumentType.class
 })
 public class ReviewedDocumentType
     extends DocumentType

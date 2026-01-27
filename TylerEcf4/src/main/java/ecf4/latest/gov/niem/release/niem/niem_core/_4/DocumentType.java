@@ -4,9 +4,13 @@ package ecf4.latest.gov.niem.release.niem.niem_core._4;
 import java.util.ArrayList;
 import java.util.List;
 import ecf4.latest.gov.niem.release.niem.codes.iso_639_3._4.LanguageCodeType;
-import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.DependencyPetitionType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.AppellateCaseNoticeType;
 import ecf4.latest.gov.niem.release.niem.structures._4.ObjectType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentAugmentationType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentRenditionType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.MatchingFilingType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ReviewedDocumentType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -16,12 +20,6 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentAugmentationType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentRenditionType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.MatchingFilingType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ReviewedDocumentType;
 
 
 /**
@@ -77,11 +75,10 @@ import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.Re
     "documentAugmentationPoint"
 })
 @XmlSeeAlso({
-    DependencyPetitionType.class,
-    AppellateCaseNoticeType.class,
     DocumentRenditionType.class,
     MatchingFilingType.class,
     ReviewedDocumentType.class,
+    AppellateCaseNoticeType.class,
     CaseFilingType.class
 })
 public class DocumentType

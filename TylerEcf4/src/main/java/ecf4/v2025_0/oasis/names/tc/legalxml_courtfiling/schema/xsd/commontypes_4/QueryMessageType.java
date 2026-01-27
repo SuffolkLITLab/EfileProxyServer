@@ -1,0 +1,205 @@
+
+package ecf4.v2025_0.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4;
+
+import ecf4.v2025_0.gov.niem.niem.domains.jxdm._4.CourtType;
+import ecf4.v2025_0.gov.niem.niem.niem_core._2.EntityType;
+import ecf4.v2025_0.gov.niem.niem.niem_core._2.IdentificationType;
+import ecf4.v2025_0.gov.niem.niem.structures._2.ComplexObjectType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.adapters.NormalizedStringAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import ecf4.v2025_0.oasis.names.tc.legalxml_courtfiling.schema.xsd.caselistquerymessage_4.CaseListQueryMessageType;
+import ecf4.v2025_0.oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
+import ecf4.v2025_0.oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
+import ecf4.v2025_0.oasis.names.tc.legalxml_courtfiling.schema.xsd.documentquerymessage_4.DocumentQueryMessageType;
+import ecf4.v2025_0.oasis.names.tc.legalxml_courtfiling.schema.xsd.feescalculationquerymessage_4.FeesCalculationQueryMessageType;
+import ecf4.v2025_0.oasis.names.tc.legalxml_courtfiling.schema.xsd.filinglistquerymessage_4.FilingListQueryMessageType;
+import ecf4.v2025_0.oasis.names.tc.legalxml_courtfiling.schema.xsd.filingstatusquerymessage_4.FilingStatusQueryMessageType;
+import ecf4.v2025_0.oasis.names.tc.legalxml_courtfiling.schema.xsd.serviceinformationquerymessage_4.ServiceInformationQueryMessageType;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
+
+import ecf4.v2025_0.tyler.ecf.extensions.cancelfilingmessage.CancelFilingMessageType;
+import ecf4.v2025_0.tyler.ecf.extensions.filingdetailquerymessage.FilingDetailQueryMessageType;
+import ecf4.v2025_0.tyler.ecf.extensions.filingservicequerymessage.FilingServiceQueryMessageType;
+import ecf4.v2025_0.tyler.ecf.extensions.securecasemessage.SecureCaseMessageType;
+import ecf4.v2025_0.tyler.ecf.extensions.serviceattachcaselistquerymessage.ServiceAttachCaseListQueryMessageType;
+import ecf4.v2025_0.tyler.ecf.extensions.serviceinformationhistoryquerymessage.ServiceInformationHistoryQueryMessageType;
+import ecf4.v2025_0.tyler.ecf.extensions.servicetypesrequestmessage.ServiceTypesRequestMessageType;
+
+
+/**
+ * A message returned synchronously as a response to a query.
+ * 
+ * <p>Java class for QueryMessageType complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+ * <pre>
+ * &lt;complexType name="QueryMessageType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://niem.gov/niem/structures/2.0}ComplexObjectType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDELocationID"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}SendingMDEProfileCode"/&gt;
+ *         &lt;element ref="{urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:CommonTypes-4.0}QuerySubmitter"/&gt;
+ *         &lt;element ref="{http://niem.gov/niem/domains/jxdm/4.0}CaseCourt"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "QueryMessageType", propOrder = {
+    "sendingMDELocationID",
+    "sendingMDEProfileCode",
+    "querySubmitter",
+    "caseCourt"
+})
+@XmlSeeAlso({
+    CaseListQueryMessageType.class,
+    CaseQueryMessageType.class,
+    CourtPolicyQueryMessageType.class,
+    DocumentQueryMessageType.class,
+    FeesCalculationQueryMessageType.class,
+    FilingListQueryMessageType.class,
+    FilingStatusQueryMessageType.class,
+    ServiceInformationQueryMessageType.class,
+    ServiceInformationHistoryQueryMessageType.class,
+    ServiceAttachCaseListQueryMessageType.class,
+    FilingServiceQueryMessageType.class,
+    FilingDetailQueryMessageType.class,
+    CancelFilingMessageType.class,
+    SecureCaseMessageType.class,
+    ServiceTypesRequestMessageType.class
+})
+public class QueryMessageType
+    extends ComplexObjectType
+{
+
+    @XmlElement(name = "SendingMDELocationID", required = true)
+    protected IdentificationType sendingMDELocationID;
+    @XmlElement(name = "SendingMDEProfileCode", required = true)
+    @XmlJavaTypeAdapter(NormalizedStringAdapter.class)
+    @XmlSchemaType(name = "normalizedString")
+    protected String sendingMDEProfileCode;
+    @XmlElement(name = "QuerySubmitter", required = true)
+    protected EntityType querySubmitter;
+    @XmlElement(name = "CaseCourt", namespace = "http://niem.gov/niem/domains/jxdm/4.0", required = true, nillable = true)
+    protected CourtType caseCourt;
+
+    /**
+     * Gets the value of the sendingMDELocationID property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link IdentificationType }
+     *     
+     */
+    public IdentificationType getSendingMDELocationID() {
+        return sendingMDELocationID;
+    }
+
+    /**
+     * Sets the value of the sendingMDELocationID property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link IdentificationType }
+     *     
+     */
+    public void setSendingMDELocationID(IdentificationType value) {
+        this.sendingMDELocationID = value;
+    }
+
+    /**
+     * Gets the value of the sendingMDEProfileCode property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getSendingMDEProfileCode() {
+        return sendingMDEProfileCode;
+    }
+
+    /**
+     * Sets the value of the sendingMDEProfileCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setSendingMDEProfileCode(String value) {
+        this.sendingMDEProfileCode = value;
+    }
+
+    /**
+     * Gets the value of the querySubmitter property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link EntityType }
+     *     
+     */
+    public EntityType getQuerySubmitter() {
+        return querySubmitter;
+    }
+
+    /**
+     * Sets the value of the querySubmitter property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link EntityType }
+     *     
+     */
+    public void setQuerySubmitter(EntityType value) {
+        this.querySubmitter = value;
+    }
+
+    /**
+     * Gets the value of the caseCourt property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CourtType }
+     *     
+     */
+    public CourtType getCaseCourt() {
+        return caseCourt;
+    }
+
+    /**
+     * Sets the value of the caseCourt property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CourtType }
+     *     
+     */
+    public void setCaseCourt(CourtType value) {
+        this.caseCourt = value;
+    }
+
+    /**
+     * Generates a String representation of the contents of this type.
+     * This is an extension method, produced by the 'ts' xjc plugin
+     * 
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, JAXBToStringStyle.DEFAULT_STYLE);
+    }
+
+}

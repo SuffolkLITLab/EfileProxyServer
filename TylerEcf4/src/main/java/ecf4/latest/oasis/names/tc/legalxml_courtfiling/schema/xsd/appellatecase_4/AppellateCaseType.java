@@ -73,8 +73,8 @@ public class AppellateCaseType
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "CaseAugmentation" is used by two different parts of a schema. See: 
-     * line 64 of file:/home/bryce/Developer/LITLab/code/EfileProxyServer/src/main/resources/wsdl/stage/ecf-20.xsd
-     * line 63 of file:/home/bryce/Developer/LITLab/code/EfileProxyServer/src/main/resources/wsdl/stage/ecf-20.xsd
+     * line 64 of file:/Users/bwilley/Developer/EfileProxyServer/TylerEcf4/src/main/resources/wsdl/v2025_4/base/ecf-dd727b38c7376464.xsd
+     * line 63 of file:/Users/bwilley/Developer/EfileProxyServer/TylerEcf4/src/main/resources/wsdl/v2025_4/base/ecf-dd727b38c7376464.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 

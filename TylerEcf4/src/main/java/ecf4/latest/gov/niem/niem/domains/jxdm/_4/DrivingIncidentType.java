@@ -56,7 +56,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "drivingIncidentRadarDetectionIndicator"
 })
 @XmlSeeAlso({
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.citationcase_4.DrivingIncidentType.class
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.citationcase_4.DrivingIncidentType.class
 })
 public class DrivingIncidentType
     extends IncidentType

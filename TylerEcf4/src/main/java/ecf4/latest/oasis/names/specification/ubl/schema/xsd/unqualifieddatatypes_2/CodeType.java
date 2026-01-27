@@ -9,7 +9,7 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AccountTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AccountingCostCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ActionCodeType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ActivityCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ActivityTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AddressFormatCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AddressTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AdjustmentReasonCodeType;
@@ -17,9 +17,10 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AllowanceChargeReasonCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ApplicationStatusCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AvailabilityStatusCodeType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AwardingCriteriaTypeCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AwardingCriterionTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AwardingMethodTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CalculationExpressionCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CalculationMethodCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CapabilityTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CardChipCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CardTypeCodeType;
@@ -27,7 +28,6 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CertificateTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ChannelCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CharacterSetCodeType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ClauseCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CollaborationPriorityCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CommodityCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CompanyLegalFormCodeType;
@@ -41,12 +41,12 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ConsumptionLevelCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ConsumptionTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ContractTypeCodeType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ContractingPartyTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ContractingSystemCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CoordinateSystemCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CorporateRegistrationTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CorrectionTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CountrySubentityCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CreditNoteTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CurrencyCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CurrentChargeTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CustomsStatusCodeType;
@@ -59,12 +59,13 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DispositionCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DocumentCurrencyCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DocumentStatusCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DocumentStatusReasonCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DocumentTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DutyCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.EmergencyProceduresCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.EncodingCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.EnvironmentalEmissionTypeCodeType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.EvaluationCriteriaTypeCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.EvaluationCriterionTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.EvidenceTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ExceptionResolutionCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ExceptionStatusCodeType;
@@ -93,6 +94,7 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.InspectionMethodCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.InvoiceTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ItemClassificationCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatestMeterReadingMethodCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatitudeDirectionCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LifeCycleStatusCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LineStatusCodeType;
@@ -104,7 +106,6 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MathematicOperatorCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MedicalFirstAidGuideCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MeterConstantCodeType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MeterReadingMethodCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MeterReadingTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MimeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MiscellaneousEventTypeCodeType;
@@ -112,7 +113,6 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.NatureCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.NotificationTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OneTimeChargeTypeCodeType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OperationStatusCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OrderResponseCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OrderTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OwnerTypeCodeType;
@@ -122,6 +122,7 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PackingCriteriaCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ParentDocumentTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PartPresentationCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PartyTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaymentAlternativeCurrencyCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaymentChannelCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaymentCurrencyCodeType;
@@ -132,6 +133,7 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PositionCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PreferenceCriterionCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PreviousCancellationReasonCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PreviousMeterReadingMethodCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PriceEvaluationCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PriceTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PricingCurrencyCodeType;
@@ -146,6 +148,7 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PurposeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.QualityControlCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.QuantityDiscrepancyCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReceiptAdviceTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReferenceEventCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RejectActionCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RejectReasonCodeType;
@@ -160,6 +163,7 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SealIssuerTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SealStatusCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SecurityClassificationCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ServiceInformationPreferenceCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ServiceTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ShippingPriorityLevelCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ShortageActionCodeType;
@@ -169,8 +173,8 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.StatementTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.StatusCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.StatusReasonCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SubcontractingConditionsCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SubmissionMethodCodeType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SubscriberIDTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SubscriberTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SubstitutionStatusCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SupplyChainActivityTypeCodeType;
@@ -188,6 +192,7 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TenderResultCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TenderTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TendererRequirementTypeCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TendererRoleCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ThresholdValueComparisonCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TimeFrequencyCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TimingComplaintCodeType;
@@ -199,16 +204,20 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransportEmergencyCardCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransportEquipmentTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransportEventTypeCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransportExecutionStatusCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransportHandlingUnitTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransportMeansTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransportModeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransportServiceCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransportationStatusTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.UNDGCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.UrgencyCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.UtilityStatementTypeCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ValidationResultCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.WeekDayCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.WeightingAlgorithmCodeType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.WorkPhaseCodeType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
@@ -232,7 +241,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * </pre>
  * 
  * <pre>
- * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;A character string (letters, figures, or symbols) that for brevity and/or languange independence may be used to represent or replace a definitive value or text of an attribute together with relevant supplementary information.&lt;/ccts:Definition&gt;
+ * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;A character string (letters, figures, or symbols) that for brevity and/or language independence may be used to represent or replace a definitive value or text of an attribute, together with relevant supplementary information.&lt;/ccts:Definition&gt;
  * </pre>
  * 
  * <pre>
@@ -270,7 +279,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     AccountTypeCodeType.class,
     AccountingCostCodeType.class,
     ActionCodeType.class,
-    ActivityCodeType.class,
+    ActivityTypeCodeType.class,
     AddressFormatCodeType.class,
     AddressTypeCodeType.class,
     AdjustmentReasonCodeType.class,
@@ -278,9 +287,10 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     AllowanceChargeReasonCodeType.class,
     ApplicationStatusCodeType.class,
     AvailabilityStatusCodeType.class,
-    AwardingCriteriaTypeCodeType.class,
+    AwardingCriterionTypeCodeType.class,
     AwardingMethodTypeCodeType.class,
     CalculationExpressionCodeType.class,
+    CalculationMethodCodeType.class,
     CapabilityTypeCodeType.class,
     CardChipCodeType.class,
     CardTypeCodeType.class,
@@ -288,7 +298,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     CertificateTypeCodeType.class,
     ChannelCodeType.class,
     CharacterSetCodeType.class,
-    ClauseCodeType.class,
     CollaborationPriorityCodeType.class,
     CommodityCodeType.class,
     CompanyLegalFormCodeType.class,
@@ -302,12 +311,12 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     ConsumptionLevelCodeType.class,
     ConsumptionTypeCodeType.class,
     ContractTypeCodeType.class,
-    ContractingPartyTypeCodeType.class,
     ContractingSystemCodeType.class,
     CoordinateSystemCodeType.class,
     CorporateRegistrationTypeCodeType.class,
     CorrectionTypeCodeType.class,
     CountrySubentityCodeType.class,
+    CreditNoteTypeCodeType.class,
     CurrencyCodeType.class,
     CurrentChargeTypeCodeType.class,
     CustomsStatusCodeType.class,
@@ -320,12 +329,13 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     DispositionCodeType.class,
     DocumentCurrencyCodeType.class,
     DocumentStatusCodeType.class,
+    DocumentStatusReasonCodeType.class,
     DocumentTypeCodeType.class,
     DutyCodeType.class,
     EmergencyProceduresCodeType.class,
     EncodingCodeType.class,
     EnvironmentalEmissionTypeCodeType.class,
-    EvaluationCriteriaTypeCodeType.class,
+    EvaluationCriterionTypeCodeType.class,
     EvidenceTypeCodeType.class,
     ExceptionResolutionCodeType.class,
     ExceptionStatusCodeType.class,
@@ -354,6 +364,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     InspectionMethodCodeType.class,
     InvoiceTypeCodeType.class,
     ItemClassificationCodeType.class,
+    LatestMeterReadingMethodCodeType.class,
     LatitudeDirectionCodeType.class,
     LifeCycleStatusCodeType.class,
     LineStatusCodeType.class,
@@ -365,7 +376,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     MathematicOperatorCodeType.class,
     MedicalFirstAidGuideCodeType.class,
     MeterConstantCodeType.class,
-    MeterReadingMethodCodeType.class,
     MeterReadingTypeCodeType.class,
     MimeCodeType.class,
     MiscellaneousEventTypeCodeType.class,
@@ -373,7 +383,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     NatureCodeType.class,
     NotificationTypeCodeType.class,
     OneTimeChargeTypeCodeType.class,
-    OperationStatusCodeType.class,
     OrderResponseCodeType.class,
     OrderTypeCodeType.class,
     OwnerTypeCodeType.class,
@@ -383,6 +392,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     PackingCriteriaCodeType.class,
     ParentDocumentTypeCodeType.class,
     PartPresentationCodeType.class,
+    PartyTypeCodeType.class,
     PaymentAlternativeCurrencyCodeType.class,
     PaymentChannelCodeType.class,
     PaymentCurrencyCodeType.class,
@@ -393,6 +403,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     PositionCodeType.class,
     PreferenceCriterionCodeType.class,
     PreviousCancellationReasonCodeType.class,
+    PreviousMeterReadingMethodCodeType.class,
     PriceEvaluationCodeType.class,
     PriceTypeCodeType.class,
     PricingCurrencyCodeType.class,
@@ -407,6 +418,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     PurposeCodeType.class,
     QualityControlCodeType.class,
     QuantityDiscrepancyCodeType.class,
+    ReceiptAdviceTypeCodeType.class,
     ReferenceEventCodeType.class,
     RejectActionCodeType.class,
     RejectReasonCodeType.class,
@@ -421,6 +433,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     SealIssuerTypeCodeType.class,
     SealStatusCodeType.class,
     SecurityClassificationCodeType.class,
+    ServiceInformationPreferenceCodeType.class,
     ServiceTypeCodeType.class,
     ShippingPriorityLevelCodeType.class,
     ShortageActionCodeType.class,
@@ -430,8 +443,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     StatementTypeCodeType.class,
     StatusCodeType.class,
     StatusReasonCodeType.class,
+    SubcontractingConditionsCodeType.class,
     SubmissionMethodCodeType.class,
-    SubscriberIDTypeCodeType.class,
     SubscriberTypeCodeType.class,
     SubstitutionStatusCodeType.class,
     SupplyChainActivityTypeCodeType.class,
@@ -449,6 +462,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     TenderResultCodeType.class,
     TenderTypeCodeType.class,
     TendererRequirementTypeCodeType.class,
+    TendererRoleCodeType.class,
     ThresholdValueComparisonCodeType.class,
     TimeFrequencyCodeType.class,
     TimingComplaintCodeType.class,
@@ -460,16 +474,20 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     TransportEmergencyCardCodeType.class,
     TransportEquipmentTypeCodeType.class,
     TransportEventTypeCodeType.class,
+    TransportExecutionStatusCodeType.class,
     TransportHandlingUnitTypeCodeType.class,
     TransportMeansTypeCodeType.class,
     TransportModeCodeType.class,
     TransportServiceCodeType.class,
+    TransportationStatusTypeCodeType.class,
     TypeCodeType.class,
     UNDGCodeType.class,
     UrgencyCodeType.class,
     UtilityStatementTypeCodeType.class,
     ValidationResultCodeType.class,
-    WeightingAlgorithmCodeType.class
+    WeekDayCodeType.class,
+    WeightingAlgorithmCodeType.class,
+    WorkPhaseCodeType.class
 })
 public class CodeType
     extends ecf4.latest.un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.CodeType

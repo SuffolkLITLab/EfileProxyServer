@@ -22,7 +22,6 @@ import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.domesticcase_4
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.juvenilecase_4.JuvenileCaseType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
 import ecf4.latest.tyler.ecf.extensions.common.FilerInformationType;
 import ecf4.latest.tyler.ecf.extensions.common.RecipientInformationType;
 import ecf4.latest.tyler.ecf.extensions.common.ReviewedDocumentType;

@@ -38,6 +38,8 @@ public class ObjectFactory {
     private final static QName _ActualDepartureTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ActualDepartureTransportEvent");
     private final static QName _ActualPackage_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ActualPackage");
     private final static QName _ActualPickupTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ActualPickupTransportEvent");
+    private final static QName _ActualWaypointTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ActualWaypointTransportEvent");
+    private final static QName _AdditionalCommodityClassification_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "AdditionalCommodityClassification");
     private final static QName _AdditionalDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "AdditionalDocumentReference");
     private final static QName _AdditionalDocumentResponse_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "AdditionalDocumentResponse");
     private final static QName _AdditionalInformationParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "AdditionalInformationParty");
@@ -65,39 +67,35 @@ public class ObjectFactory {
     private final static QName _ApplicableTaxCategory_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ApplicableTaxCategory");
     private final static QName _ApplicableTerritoryAddress_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ApplicableTerritoryAddress");
     private final static QName _ApplicableTransportMeans_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ApplicableTransportMeans");
-    private final static QName _ArrivalTransportLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ArrivalTransportLocation");
     private final static QName _AtLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "AtLocation");
     private final static QName _AttachedTransportEquipment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "AttachedTransportEquipment");
     private final static QName _Attachment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Attachment");
     private final static QName _AuctionTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "AuctionTerms");
     private final static QName _AvailabilityTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "AvailabilityTransportEvent");
     private final static QName _AwardedTenderedProject_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "AwardedTenderedProject");
-    private final static QName _AwardingCriteria_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "AwardingCriteria");
-    private final static QName _AwardingCriteriaResponse_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "AwardingCriteriaResponse");
+    private final static QName _AwardingCriterion_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "AwardingCriterion");
+    private final static QName _AwardingCriterionResponse_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "AwardingCriterionResponse");
     private final static QName _AwardingTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "AwardingTerms");
     private final static QName _BeneficiaryParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "BeneficiaryParty");
     private final static QName _BillOfLadingHolderParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "BillOfLadingHolderParty");
+    private final static QName _BillToParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "BillToParty");
     private final static QName _BillingReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "BillingReference");
     private final static QName _BillingReferenceLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "BillingReferenceLine");
-    private final static QName _BonusMonetaryTotal_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "BonusMonetaryTotal");
     private final static QName _BonusPaymentTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "BonusPaymentTerms");
     private final static QName _Branch_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Branch");
     private final static QName _BudgetAccount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "BudgetAccount");
     private final static QName _BudgetAccountLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "BudgetAccountLine");
-    private final static QName _BudgetAmount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "BudgetAmount");
     private final static QName _BusinessClassificationScheme_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "BusinessClassificationScheme");
     private final static QName _BuyerContact_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "BuyerContact");
     private final static QName _BuyerCustomerParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "BuyerCustomerParty");
     private final static QName _BuyerProposedSubstituteLineItem_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "BuyerProposedSubstituteLineItem");
     private final static QName _BuyersItemIdentification_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "BuyersItemIdentification");
     private final static QName _CallDuty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CallDuty");
-    private final static QName _CallForTenderDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CallForTenderDocumentReference");
+    private final static QName _CallForTendersDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CallForTendersDocumentReference");
+    private final static QName _CallForTendersLineReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CallForTendersLineReference");
     private final static QName _Capability_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Capability");
     private final static QName _CardAccount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CardAccount");
     private final static QName _CarrierParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CarrierParty");
-    private final static QName _CarryingPackage_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CarryingPackage");
-    private final static QName _CarryingTransportEquipment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CarryingTransportEquipment");
-    private final static QName _CarryingTransportMeans_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CarryingTransportMeans");
     private final static QName _CatalogueDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CatalogueDocumentReference");
     private final static QName _CatalogueItemIdentification_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CatalogueItemIdentification");
     private final static QName _CatalogueItemSpecificationUpdateLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CatalogueItemSpecificationUpdateLine");
@@ -109,17 +107,20 @@ public class ObjectFactory {
     private final static QName _CategorizesClassificationCategory_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CategorizesClassificationCategory");
     private final static QName _Certificate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Certificate");
     private final static QName _CertificateOfOriginApplication_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CertificateOfOriginApplication");
+    private final static QName _ChildConsignment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ChildConsignment");
     private final static QName _ClassificationCategory_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ClassificationCategory");
     private final static QName _ClassificationScheme_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ClassificationScheme");
     private final static QName _ClassifiedTaxCategory_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ClassifiedTaxCategory");
+    private final static QName _Clause_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Clause");
     private final static QName _CollectPaymentTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CollectPaymentTerms");
-    private final static QName _CommissionMonetaryTotal_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CommissionMonetaryTotal");
+    private final static QName _CollectedPayment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CollectedPayment");
     private final static QName _CommissionPaymentTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CommissionPaymentTerms");
     private final static QName _CommodityClassification_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CommodityClassification");
     private final static QName _Communication_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Communication");
     private final static QName _ComplementaryRelatedItem_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ComplementaryRelatedItem");
     private final static QName _CompletedTask_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CompletedTask");
     private final static QName _ComponentRelatedItem_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ComponentRelatedItem");
+    private final static QName _Condition_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Condition");
     private final static QName _ConsigneeParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ConsigneeParty");
     private final static QName _Consignment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Consignment");
     private final static QName _ConsignorParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ConsignorParty");
@@ -127,6 +128,7 @@ public class ObjectFactory {
     private final static QName _ConstitutionPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ConstitutionPeriod");
     private final static QName _Consumption_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Consumption");
     private final static QName _ConsumptionAverage_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ConsumptionAverage");
+    private final static QName _ConsumptionCorrection_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ConsumptionCorrection");
     private final static QName _ConsumptionHistory_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ConsumptionHistory");
     private final static QName _ConsumptionLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ConsumptionLine");
     private final static QName _ConsumptionPoint_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ConsumptionPoint");
@@ -146,19 +148,22 @@ public class ObjectFactory {
     private final static QName _ContractExtension_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ContractExtension");
     private final static QName _ContractFormalizationPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ContractFormalizationPeriod");
     private final static QName _ContractResponsibleParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ContractResponsibleParty");
+    private final static QName _ContractingActivity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ContractingActivity");
     private final static QName _ContractingParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ContractingParty");
+    private final static QName _ContractingPartyType_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ContractingPartyType");
     private final static QName _ContractorCustomerParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ContractorCustomerParty");
     private final static QName _ContractualDelivery_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ContractualDelivery");
     private final static QName _ContractualDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ContractualDocumentReference");
     private final static QName _CorporateRegistrationScheme_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CorporateRegistrationScheme");
-    private final static QName _Correction_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Correction");
     private final static QName _Country_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Country");
     private final static QName _CreditAccount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CreditAccount");
     private final static QName _CreditNoteDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CreditNoteDocumentReference");
     private final static QName _CreditNoteLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CreditNoteLine");
+    private final static QName _CrewMemberPerson_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CrewMemberPerson");
     private final static QName _CurrentStatus_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CurrentStatus");
     private final static QName _CustomerParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CustomerParty");
     private final static QName _CustomsAgentParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CustomsAgentParty");
+    private final static QName _CustomsDeclaration_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "CustomsDeclaration");
     private final static QName _DebitNoteDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DebitNoteDocumentReference");
     private final static QName _DebitNoteLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DebitNoteLine");
     private final static QName _Declaration_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Declaration");
@@ -174,7 +179,6 @@ public class ObjectFactory {
     private final static QName _DeliveryTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DeliveryTerms");
     private final static QName _DeliveryTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DeliveryTransportEvent");
     private final static QName _DeliveryUnit_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DeliveryUnit");
-    private final static QName _DepartureTransportLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DepartureTransportLocation");
     private final static QName _DependentLineReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DependentLineReference");
     private final static QName _DependentPriceReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DependentPriceReference");
     private final static QName _Despatch_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Despatch");
@@ -185,9 +189,9 @@ public class ObjectFactory {
     private final static QName _DespatchLineReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DespatchLineReference");
     private final static QName _DespatchLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DespatchLocation");
     private final static QName _DespatchParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DespatchParty");
-    private final static QName _DespatchPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DespatchPeriod");
     private final static QName _DespatchSupplierParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DespatchSupplierParty");
     private final static QName _DestinationCountry_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DestinationCountry");
+    private final static QName _DetentionTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DetentionTransportEvent");
     private final static QName _DigitalSignatureAttachment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DigitalSignatureAttachment");
     private final static QName _Dimension_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Dimension");
     private final static QName _DisbursementPaymentTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DisbursementPaymentTerms");
@@ -199,33 +203,40 @@ public class ObjectFactory {
     private final static QName _DocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DocumentReference");
     private final static QName _DocumentResponse_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DocumentResponse");
     private final static QName _DocumentTenderRequirement_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DocumentTenderRequirement");
+    private final static QName _DriverPerson_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DriverPerson");
     private final static QName _DropoffTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DropoffTransportEvent");
     private final static QName _DurationPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "DurationPeriod");
     private final static QName _Duty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Duty");
+    private final static QName _EconomicOperatorRole_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EconomicOperatorRole");
     private final static QName _EconomicOperatorShortList_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EconomicOperatorShortList");
     private final static QName _EffectivePeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EffectivePeriod");
     private final static QName _EmbassyEndorsement_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EmbassyEndorsement");
     private final static QName _EmergencyTemperature_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EmergencyTemperature");
+    private final static QName _EmissionCalculationMethod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EmissionCalculationMethod");
     private final static QName _EmploymentLegislationDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EmploymentLegislationDocumentReference");
     private final static QName _Endorsement_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Endorsement");
     private final static QName _EndorserParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EndorserParty");
     private final static QName _EnergyTaxReport_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EnergyTaxReport");
-    private final static QName _EnergyWaterCorrection_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EnergyWaterCorrection");
+    private final static QName _EnergyWaterConsumptionCorrection_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EnergyWaterConsumptionCorrection");
     private final static QName _EnergyWaterSupply_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EnergyWaterSupply");
     private final static QName _EnvironmentalEmission_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EnvironmentalEmission");
     private final static QName _EnvironmentalLegislationDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EnvironmentalLegislationDocumentReference");
-    private final static QName _EstimatedArrivalPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EstimatedArrivalPeriod");
+    private final static QName _EstimatedArrivalTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EstimatedArrivalTransportEvent");
     private final static QName _EstimatedDeliveryPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EstimatedDeliveryPeriod");
-    private final static QName _EstimatedDeparturePeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EstimatedDeparturePeriod");
+    private final static QName _EstimatedDepartureTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EstimatedDepartureTransportEvent");
     private final static QName _EstimatedDespatchPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EstimatedDespatchPeriod");
-    private final static QName _EvaluationCriteria_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EvaluationCriteria");
+    private final static QName _EstimatedDurationPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EstimatedDurationPeriod");
+    private final static QName _EstimatedTransitPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EstimatedTransitPeriod");
+    private final static QName _EvaluationCriterion_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EvaluationCriterion");
     private final static QName _Event_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Event");
     private final static QName _EventComment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EventComment");
     private final static QName _EventLineItem_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EventLineItem");
     private final static QName _EventTactic_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EventTactic");
     private final static QName _EventTacticEnumeration_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EventTacticEnumeration");
     private final static QName _Evidence_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Evidence");
+    private final static QName _EvidenceDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EvidenceDocumentReference");
     private final static QName _EvidenceIssuingParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EvidenceIssuingParty");
+    private final static QName _EvidenceSupplied_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "EvidenceSupplied");
     private final static QName _ExaminationTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ExaminationTransportEvent");
     private final static QName _ExceptionCriteriaLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ExceptionCriteriaLine");
     private final static QName _ExceptionNotificationLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ExceptionNotificationLine");
@@ -242,7 +253,7 @@ public class ObjectFactory {
     private final static QName _FinalFinancialGuarantee_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "FinalFinancialGuarantee");
     private final static QName _FinancialAccount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "FinancialAccount");
     private final static QName _FinancialCapability_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "FinancialCapability");
-    private final static QName _FinancialEvaluationCriteria_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "FinancialEvaluationCriteria");
+    private final static QName _FinancialEvaluationCriterion_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "FinancialEvaluationCriterion");
     private final static QName _FinancialGuarantee_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "FinancialGuarantee");
     private final static QName _FinancialInstitution_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "FinancialInstitution");
     private final static QName _FinancialInstitutionBranch_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "FinancialInstitutionBranch");
@@ -253,13 +264,14 @@ public class ObjectFactory {
     private final static QName _FlashpointTemperature_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "FlashpointTemperature");
     private final static QName _FloorSpaceMeasurementDimension_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "FloorSpaceMeasurementDimension");
     private final static QName _ForecastException_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ForecastException");
-    private final static QName _ForecastExceptionCriteriaLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ForecastExceptionCriteriaLine");
+    private final static QName _ForecastExceptionCriterionLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ForecastExceptionCriterionLine");
     private final static QName _ForecastLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ForecastLine");
     private final static QName _ForecastPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ForecastPeriod");
     private final static QName _ForecastRevisionLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ForecastRevisionLine");
     private final static QName _ForeignExchangeContract_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ForeignExchangeContract");
     private final static QName _FrameworkAgreement_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "FrameworkAgreement");
     private final static QName _FreightAllowanceCharge_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "FreightAllowanceCharge");
+    private final static QName _FreightChargeLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "FreightChargeLocation");
     private final static QName _FreightForwarderParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "FreightForwarderParty");
     private final static QName _FrequencyPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "FrequencyPeriod");
     private final static QName _FromLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "FromLocation");
@@ -274,7 +286,7 @@ public class ObjectFactory {
     private final static QName _HazardousGoodsTransit_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "HazardousGoodsTransit");
     private final static QName _HazardousItem_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "HazardousItem");
     private final static QName _HazardousItemNotificationParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "HazardousItemNotificationParty");
-    private final static QName _HeadParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "HeadParty");
+    private final static QName _HeadOfficeParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "HeadOfficeParty");
     private final static QName _IdentityDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "IdentityDocumentReference");
     private final static QName _ImmobilizedSecurity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ImmobilizedSecurity");
     private final static QName _ImporterParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ImporterParty");
@@ -283,7 +295,8 @@ public class ObjectFactory {
     private final static QName _InsuranceEndorsement_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "InsuranceEndorsement");
     private final static QName _InsuranceParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "InsuranceParty");
     private final static QName _InterestedParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "InterestedParty");
-    private final static QName _IntermediateTransportLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "IntermediateTransportLocation");
+    private final static QName _InterestedProcurementProjectLot_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "InterestedProcurementProjectLot");
+    private final static QName _InventoryLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "InventoryLocation");
     private final static QName _InventoryPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "InventoryPeriod");
     private final static QName _InventoryReportLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "InventoryReportLine");
     private final static QName _InventoryReportingParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "InventoryReportingParty");
@@ -301,6 +314,7 @@ public class ObjectFactory {
     private final static QName _ItemInstance_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ItemInstance");
     private final static QName _ItemLocationQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ItemLocationQuantity");
     private final static QName _ItemManagementProfile_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ItemManagementProfile");
+    private final static QName _ItemPriceExtension_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ItemPriceExtension");
     private final static QName _ItemProperty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ItemProperty");
     private final static QName _ItemPropertyGroup_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ItemPropertyGroup");
     private final static QName _ItemPropertyRange_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ItemPropertyRange");
@@ -325,6 +339,7 @@ public class ObjectFactory {
     private final static QName _LogisticsOperatorParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "LogisticsOperatorParty");
     private final static QName _LotIdentification_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "LotIdentification");
     private final static QName _MainCarriageShipmentStage_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "MainCarriageShipmentStage");
+    private final static QName _MainCommodityClassification_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "MainCommodityClassification");
     private final static QName _MainOnAccountPayment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "MainOnAccountPayment");
     private final static QName _MainPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "MainPeriod");
     private final static QName _MainQualifyingParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "MainQualifyingParty");
@@ -333,9 +348,12 @@ public class ObjectFactory {
     private final static QName _ManufacturerParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ManufacturerParty");
     private final static QName _ManufacturersItemIdentification_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ManufacturersItemIdentification");
     private final static QName _MaritimeTransport_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "MaritimeTransport");
+    private final static QName _MasterPerson_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "MasterPerson");
     private final static QName _MaximumDeliveryUnit_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "MaximumDeliveryUnit");
     private final static QName _MaximumTemperature_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "MaximumTemperature");
     private final static QName _MeasurementDimension_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "MeasurementDimension");
+    private final static QName _MeasurementFromLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "MeasurementFromLocation");
+    private final static QName _MeasurementToLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "MeasurementToLocation");
     private final static QName _MediationParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "MediationParty");
     private final static QName _Meter_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Meter");
     private final static QName _MeterProperty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "MeterProperty");
@@ -349,6 +367,8 @@ public class ObjectFactory {
     private final static QName _NominationPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "NominationPeriod");
     private final static QName _NotaryParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "NotaryParty");
     private final static QName _NoticeDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "NoticeDocumentReference");
+    private final static QName _NotificationLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "NotificationLocation");
+    private final static QName _NotificationPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "NotificationPeriod");
     private final static QName _NotificationRequirement_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "NotificationRequirement");
     private final static QName _NotifyParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "NotifyParty");
     private final static QName _OccurenceLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "OccurenceLocation");
@@ -357,7 +377,6 @@ public class ObjectFactory {
     private final static QName _OnCarriageShipmentStage_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "OnCarriageShipmentStage");
     private final static QName _OpenTenderEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "OpenTenderEvent");
     private final static QName _OperatingParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "OperatingParty");
-    private final static QName _OperatorParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "OperatorParty");
     private final static QName _OptionValidityPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "OptionValidityPeriod");
     private final static QName _OptionalTakeoverTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "OptionalTakeoverTransportEvent");
     private final static QName _OrderDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "OrderDocumentReference");
@@ -389,6 +408,7 @@ public class ObjectFactory {
     private final static QName _PartyLegalEntity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PartyLegalEntity");
     private final static QName _PartyName_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PartyName");
     private final static QName _PartyTaxScheme_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PartyTaxScheme");
+    private final static QName _PassengerPerson_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PassengerPerson");
     private final static QName _PayeeFinancialAccount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PayeeFinancialAccount");
     private final static QName _PayeeParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PayeeParty");
     private final static QName _PayerFinancialAccount_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PayerFinancialAccount");
@@ -400,7 +420,7 @@ public class ObjectFactory {
     private final static QName _PaymentMeans_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PaymentMeans");
     private final static QName _PaymentReversalPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PaymentReversalPeriod");
     private final static QName _PaymentTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PaymentTerms");
-    private final static QName _PenaltyMonetaryTotal_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PenaltyMonetaryTotal");
+    private final static QName _PenaltyClause_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PenaltyClause");
     private final static QName _PenaltyPaymentTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PenaltyPaymentTerms");
     private final static QName _PenaltyPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PenaltyPeriod");
     private final static QName _PerformanceDataLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PerformanceDataLine");
@@ -413,15 +433,16 @@ public class ObjectFactory {
     private final static QName _PickupLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PickupLocation");
     private final static QName _PickupParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PickupParty");
     private final static QName _PickupTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PickupTransportEvent");
-    private final static QName _PlannedArrivalPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PlannedArrivalPeriod");
-    private final static QName _PlannedDeparturePeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PlannedDeparturePeriod");
+    private final static QName _PlannedArrivalTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PlannedArrivalTransportEvent");
+    private final static QName _PlannedDeliveryTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PlannedDeliveryTransportEvent");
+    private final static QName _PlannedDepartureTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PlannedDepartureTransportEvent");
     private final static QName _PlannedPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PlannedPeriod");
+    private final static QName _PlannedPickupTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PlannedPickupTransportEvent");
+    private final static QName _PlannedWaypointTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PlannedWaypointTransportEvent");
     private final static QName _PositioningTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PositioningTransportEvent");
-    private final static QName _PostEventPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PostEventPeriod");
     private final static QName _PostalAddress_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PostalAddress");
     private final static QName _PowerOfAttorney_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PowerOfAttorney");
     private final static QName _PreCarriageShipmentStage_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PreCarriageShipmentStage");
-    private final static QName _PreEventPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PreEventPeriod");
     private final static QName _PreSelectedParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PreSelectedParty");
     private final static QName _PrepaidPayment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PrepaidPayment");
     private final static QName _PrepaidPaymentTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PrepaidPaymentTerms");
@@ -430,14 +451,15 @@ public class ObjectFactory {
     private final static QName _PreviousDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PreviousDocumentReference");
     private final static QName _PreviousPriceList_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PreviousPriceList");
     private final static QName _Price_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Price");
+    private final static QName _PriceExtension_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PriceExtension");
     private final static QName _PriceList_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PriceList");
-    private final static QName _PriceMonetaryTotal_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PriceMonetaryTotal");
     private final static QName _PricingExchangeRate_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PricingExchangeRate");
     private final static QName _PricingReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PricingReference");
     private final static QName _ProcessJustification_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ProcessJustification");
     private final static QName _ProcurementLegislationDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ProcurementLegislationDocumentReference");
     private final static QName _ProcurementProject_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ProcurementProject");
     private final static QName _ProcurementProjectLot_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ProcurementProjectLot");
+    private final static QName _ProjectReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ProjectReference");
     private final static QName _PromisedDeliveryPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PromisedDeliveryPeriod");
     private final static QName _PromotionalEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PromotionalEvent");
     private final static QName _PromotionalEventLineItem_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "PromotionalEventLineItem");
@@ -461,12 +483,15 @@ public class ObjectFactory {
     private final static QName _ReceiverParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ReceiverParty");
     private final static QName _RecipientCustomerParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RecipientCustomerParty");
     private final static QName _RecipientParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RecipientParty");
+    private final static QName _ReferencedConsignment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ReferencedConsignment");
     private final static QName _ReferencedContract_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ReferencedContract");
     private final static QName _ReferencedGoodsItem_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ReferencedGoodsItem");
     private final static QName _ReferencedPackage_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ReferencedPackage");
+    private final static QName _ReferencedShipment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ReferencedShipment");
     private final static QName _ReferencedTransportEquipment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ReferencedTransportEquipment");
-    private final static QName _ReferencedTransportHandlingUnit_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ReferencedTransportHandlingUnit");
     private final static QName _RegistrationAddress_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RegistrationAddress");
+    private final static QName _RegistryCertificateDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RegistryCertificateDocumentReference");
+    private final static QName _RegistryPortLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RegistryPortLocation");
     private final static QName _Regulation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Regulation");
     private final static QName _RelatedCatalogueReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RelatedCatalogueReference");
     private final static QName _RelatedItem_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RelatedItem");
@@ -475,35 +500,49 @@ public class ObjectFactory {
     private final static QName _ReminderPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ReminderPeriod");
     private final static QName _RemittanceAdviceLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RemittanceAdviceLine");
     private final static QName _Renewal_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Renewal");
+    private final static QName _ReplacedNoticeDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ReplacedNoticeDocumentReference");
+    private final static QName _ReplacedRelatedItem_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ReplacedRelatedItem");
     private final static QName _ReplacementRelatedItem_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ReplacementRelatedItem");
     private final static QName _ReportedShipment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ReportedShipment");
+    private final static QName _ReportingPerson_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ReportingPerson");
     private final static QName _RequestForQuotationDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestForQuotationDocumentReference");
     private final static QName _RequestForQuotationLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestForQuotationLine");
     private final static QName _RequestForTenderLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestForTenderLine");
     private final static QName _RequestLineReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestLineReference");
+    private final static QName _RequestedArrivalTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestedArrivalTransportEvent");
     private final static QName _RequestedCatalogueReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestedCatalogueReference");
     private final static QName _RequestedClassificationScheme_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestedClassificationScheme");
     private final static QName _RequestedDeliveryPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestedDeliveryPeriod");
+    private final static QName _RequestedDeliveryTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestedDeliveryTransportEvent");
+    private final static QName _RequestedDepartureTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestedDepartureTransportEvent");
     private final static QName _RequestedDespatchPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestedDespatchPeriod");
     private final static QName _RequestedDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestedDocumentReference");
     private final static QName _RequestedLanguage_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestedLanguage");
     private final static QName _RequestedMonetaryTotal_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestedMonetaryTotal");
+    private final static QName _RequestedPickupTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestedPickupTransportEvent");
+    private final static QName _RequestedStatusLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestedStatusLocation");
+    private final static QName _RequestedStatusPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestedStatusPeriod");
+    private final static QName _RequestedTenderTotal_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestedTenderTotal");
     private final static QName _RequestedValidityPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestedValidityPeriod");
+    private final static QName _RequestedWaypointTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequestedWaypointTransportEvent");
     private final static QName _RequiredBusinessClassificationScheme_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequiredBusinessClassificationScheme");
     private final static QName _RequiredClassificationScheme_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequiredClassificationScheme");
-    private final static QName _RequiredCommodityClassification_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequiredCommodityClassification");
     private final static QName _RequiredFinancialGuarantee_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequiredFinancialGuarantee");
     private final static QName _RequiredItemLocationQuantity_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequiredItemLocationQuantity");
     private final static QName _RequiredRelatedItem_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RequiredRelatedItem");
+    private final static QName _ResidenceAddress_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ResidenceAddress");
     private final static QName _ResolutionDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ResolutionDocumentReference");
     private final static QName _Response_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Response");
+    private final static QName _ResponsibleTransportServiceProviderParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ResponsibleTransportServiceProviderParty");
     private final static QName _ResultOfVerification_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ResultOfVerification");
     private final static QName _RetailPlannedImpact_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RetailPlannedImpact");
     private final static QName _RetailerCustomerParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RetailerCustomerParty");
     private final static QName _ReturnAddress_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ReturnAddress");
     private final static QName _RoadTransport_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "RoadTransport");
     private final static QName _SalesItem_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SalesItem");
+    private final static QName _ScheduledServiceFrequency_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ScheduledServiceFrequency");
     private final static QName _SecondaryHazard_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SecondaryHazard");
+    private final static QName _SecurityOfficerPerson_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SecurityOfficerPerson");
     private final static QName _SelfBilledCreditNoteDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SelfBilledCreditNoteDocumentReference");
     private final static QName _SelfBilledInvoiceDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SelfBilledInvoiceDocumentReference");
     private final static QName _SellerContact_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SellerContact");
@@ -513,9 +552,9 @@ public class ObjectFactory {
     private final static QName _SellersItemIdentification_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SellersItemIdentification");
     private final static QName _SenderParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SenderParty");
     private final static QName _ServiceAllowanceCharge_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ServiceAllowanceCharge");
+    private final static QName _ServiceChargePaymentTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ServiceChargePaymentTerms");
     private final static QName _ServiceEndTimePeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ServiceEndTimePeriod");
-    private final static QName _ServicePoint_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ServicePoint");
-    private final static QName _ServicePointLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ServicePointLocation");
+    private final static QName _ServiceFrequency_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ServiceFrequency");
     private final static QName _ServiceProviderParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ServiceProviderParty");
     private final static QName _ServiceStartTimePeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ServiceStartTimePeriod");
     private final static QName _SettlementPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SettlementPeriod");
@@ -523,6 +562,7 @@ public class ObjectFactory {
     private final static QName _Shipment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Shipment");
     private final static QName _ShipmentDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ShipmentDocumentReference");
     private final static QName _ShipmentStage_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ShipmentStage");
+    private final static QName _ShipsSurgeonPerson_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ShipsSurgeonPerson");
     private final static QName _SignatoryContact_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SignatoryContact");
     private final static QName _SignatoryParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SignatoryParty");
     private final static QName _Signature_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Signature");
@@ -535,6 +575,7 @@ public class ObjectFactory {
     private final static QName _StatementPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "StatementPeriod");
     private final static QName _Status_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "Status");
     private final static QName _StatusLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "StatusLocation");
+    private final static QName _StatusPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "StatusPeriod");
     private final static QName _StockAvailabilityReportLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "StockAvailabilityReportLine");
     private final static QName _StorageLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "StorageLocation");
     private final static QName _StorageTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "StorageTransportEvent");
@@ -547,8 +588,8 @@ public class ObjectFactory {
     private final static QName _SubTenderLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SubTenderLine");
     private final static QName _SubcontractTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SubcontractTerms");
     private final static QName _SubcontractorParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SubcontractorParty");
-    private final static QName _SubordinateAwardingCriteria_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SubordinateAwardingCriteria");
-    private final static QName _SubordinateAwardingCriteriaResponse_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SubordinateAwardingCriteriaResponse");
+    private final static QName _SubordinateAwardingCriterion_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SubordinateAwardingCriterion");
+    private final static QName _SubordinateAwardingCriterionResponse_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SubordinateAwardingCriterionResponse");
     private final static QName _SubscriberConsumption_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SubscriberConsumption");
     private final static QName _SubscriberParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SubscriberParty");
     private final static QName _SubsequentProcessTenderRequirement_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SubsequentProcessTenderRequirement");
@@ -559,6 +600,8 @@ public class ObjectFactory {
     private final static QName _SupplierParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SupplierParty");
     private final static QName _SupplyChainActivityDataLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SupplyChainActivityDataLine");
     private final static QName _SupplyItem_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SupplyItem");
+    private final static QName _SupportedCommodityClassification_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SupportedCommodityClassification");
+    private final static QName _SupportedTransportEquipment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SupportedTransportEquipment");
     private final static QName _SupportingDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "SupportingDocumentReference");
     private final static QName _TakeoverTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TakeoverTransportEvent");
     private final static QName _TaxCategory_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TaxCategory");
@@ -572,7 +615,7 @@ public class ObjectFactory {
     private final static QName _TechnicalCapability_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TechnicalCapability");
     private final static QName _TechnicalCommitteePerson_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TechnicalCommitteePerson");
     private final static QName _TechnicalDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TechnicalDocumentReference");
-    private final static QName _TechnicalEvaluationCriteria_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TechnicalEvaluationCriteria");
+    private final static QName _TechnicalEvaluationCriterion_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TechnicalEvaluationCriterion");
     private final static QName _TelecommunicationsService_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TelecommunicationsService");
     private final static QName _TelecommunicationsSupply_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TelecommunicationsSupply");
     private final static QName _TelecommunicationsSupplyLine_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TelecommunicationsSupplyLine");
@@ -590,6 +633,7 @@ public class ObjectFactory {
     private final static QName _TenderedProject_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TenderedProject");
     private final static QName _TendererParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TendererParty");
     private final static QName _TendererPartyQualification_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TendererPartyQualification");
+    private final static QName _TendererQualificationDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TendererQualificationDocumentReference");
     private final static QName _TendererQualificationRequest_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TendererQualificationRequest");
     private final static QName _TendererRequirement_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TendererRequirement");
     private final static QName _TenderingProcess_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TenderingProcess");
@@ -597,6 +641,7 @@ public class ObjectFactory {
     private final static QName _TerminalOperatorParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TerminalOperatorParty");
     private final static QName _TimeDuty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TimeDuty");
     private final static QName _ToLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "ToLocation");
+    private final static QName _TotalCapacityDimension_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TotalCapacityDimension");
     private final static QName _TradeFinancing_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TradeFinancing");
     private final static QName _TradingTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TradingTerms");
     private final static QName _TransactionConditions_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransactionConditions");
@@ -607,26 +652,31 @@ public class ObjectFactory {
     private final static QName _TransportEquipment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportEquipment");
     private final static QName _TransportEquipmentSeal_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportEquipmentSeal");
     private final static QName _TransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportEvent");
+    private final static QName _TransportExecutionPlanDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportExecutionPlanDocumentReference");
+    private final static QName _TransportExecutionPlanRequestDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportExecutionPlanRequestDocumentReference");
     private final static QName _TransportExecutionTerms_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportExecutionTerms");
     private final static QName _TransportHandlingUnit_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportHandlingUnit");
-    private final static QName _TransportLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportLocation");
     private final static QName _TransportMeans_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportMeans");
+    private final static QName _TransportProgressStatusRequestDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportProgressStatusRequestDocumentReference");
     private final static QName _TransportSchedule_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportSchedule");
     private final static QName _TransportServiceDescriptionDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportServiceDescriptionDocumentReference");
+    private final static QName _TransportServiceDescriptionRequestDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportServiceDescriptionRequestDocumentReference");
     private final static QName _TransportServiceProviderParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportServiceProviderParty");
     private final static QName _TransportServiceProviderResponseDeadlinePeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportServiceProviderResponseDeadlinePeriod");
-    private final static QName _TransportStatus_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportStatus");
+    private final static QName _TransportServiceProviderResponseRequiredPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportServiceProviderResponseRequiredPeriod");
     private final static QName _TransportUserParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportUserParty");
-    private final static QName _TransportUserReferenceParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportUserReferenceParty");
-    private final static QName _TransportUserResponseDeadlinePeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportUserResponseDeadlinePeriod");
+    private final static QName _TransportUserResponseRequiredPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportUserResponseRequiredPeriod");
     private final static QName _TransportationSegment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportationSegment");
     private final static QName _TransportationService_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportationService");
+    private final static QName _TransportationStatusRequestDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransportationStatusRequestDocumentReference");
     private final static QName _TransshipPortLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "TransshipPortLocation");
     private final static QName _UnloadingLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "UnloadingLocation");
     private final static QName _UnloadingPortLocation_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "UnloadingPortLocation");
     private final static QName _UnstructuredPrice_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "UnstructuredPrice");
-    private final static QName _UpdatedDelivery_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "UpdatedDelivery");
-    private final static QName _UpdatedDespatch_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "UpdatedDespatch");
+    private final static QName _UnsupportedCommodityClassification_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "UnsupportedCommodityClassification");
+    private final static QName _UnsupportedTransportEquipment_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "UnsupportedTransportEquipment");
+    private final static QName _UpdatedDeliveryTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "UpdatedDeliveryTransportEvent");
+    private final static QName _UpdatedPickupTransportEvent_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "UpdatedPickupTransportEvent");
     private final static QName _UsabilityPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "UsabilityPeriod");
     private final static QName _UtilityConsumptionPoint_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "UtilityConsumptionPoint");
     private final static QName _UtilityCustomerParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "UtilityCustomerParty");
@@ -639,9 +689,13 @@ public class ObjectFactory {
     private final static QName _WarrantyValidityPeriod_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "WarrantyValidityPeriod");
     private final static QName _WebSiteAccess_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "WebSiteAccess");
     private final static QName _WinningParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "WinningParty");
+    private final static QName _WithholdingTaxTotal_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "WithholdingTaxTotal");
+    private final static QName _WitnessParty_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "WitnessParty");
+    private final static QName _WorkOrderDocumentReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "WorkOrderDocumentReference");
+    private final static QName _WorkPhaseReference_QNAME = new QName("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", "WorkPhaseReference");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2
      * 
      */
     public ObjectFactory() {
@@ -725,6 +779,14 @@ public class ObjectFactory {
      */
     public PackageType createPackageType() {
         return new PackageType();
+    }
+
+    /**
+     * Create an instance of {@link CommodityClassificationType }
+     * 
+     */
+    public CommodityClassificationType createCommodityClassificationType() {
+        return new CommodityClassificationType();
     }
 
     /**
@@ -888,14 +950,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link TransportLocationType }
-     * 
-     */
-    public TransportLocationType createTransportLocationType() {
-        return new TransportLocationType();
-    }
-
-    /**
      * Create an instance of {@link TransportEquipmentType }
      * 
      */
@@ -928,19 +982,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AwardingCriteriaType }
+     * Create an instance of {@link AwardingCriterionType }
      * 
      */
-    public AwardingCriteriaType createAwardingCriteriaType() {
-        return new AwardingCriteriaType();
+    public AwardingCriterionType createAwardingCriterionType() {
+        return new AwardingCriterionType();
     }
 
     /**
-     * Create an instance of {@link AwardingCriteriaResponseType }
+     * Create an instance of {@link AwardingCriterionResponseType }
      * 
      */
-    public AwardingCriteriaResponseType createAwardingCriteriaResponseType() {
-        return new AwardingCriteriaResponseType();
+    public AwardingCriterionResponseType createAwardingCriterionResponseType() {
+        return new AwardingCriterionResponseType();
     }
 
     /**
@@ -1000,14 +1054,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link BudgetAmountType }
-     * 
-     */
-    public BudgetAmountType createBudgetAmountType() {
-        return new BudgetAmountType();
-    }
-
-    /**
      * Create an instance of {@link ClassificationSchemeType }
      * 
      */
@@ -1021,6 +1067,14 @@ public class ObjectFactory {
      */
     public DutyType createDutyType() {
         return new DutyType();
+    }
+
+    /**
+     * Create an instance of {@link LineReferenceType }
+     * 
+     */
+    public LineReferenceType createLineReferenceType() {
+        return new LineReferenceType();
     }
 
     /**
@@ -1053,14 +1107,6 @@ public class ObjectFactory {
      */
     public CatalogueLineType createCatalogueLineType() {
         return new CatalogueLineType();
-    }
-
-    /**
-     * Create an instance of {@link LineReferenceType }
-     * 
-     */
-    public LineReferenceType createLineReferenceType() {
-        return new LineReferenceType();
     }
 
     /**
@@ -1112,11 +1158,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CommodityClassificationType }
+     * Create an instance of {@link ConsignmentType }
      * 
      */
-    public CommodityClassificationType createCommodityClassificationType() {
-        return new CommodityClassificationType();
+    public ConsignmentType createConsignmentType() {
+        return new ConsignmentType();
+    }
+
+    /**
+     * Create an instance of {@link ClauseType }
+     * 
+     */
+    public ClauseType createClauseType() {
+        return new ClauseType();
+    }
+
+    /**
+     * Create an instance of {@link PaymentType }
+     * 
+     */
+    public PaymentType createPaymentType() {
+        return new PaymentType();
     }
 
     /**
@@ -1136,11 +1198,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ConsignmentType }
+     * Create an instance of {@link ConditionType }
      * 
      */
-    public ConsignmentType createConsignmentType() {
-        return new ConsignmentType();
+    public ConditionType createConditionType() {
+        return new ConditionType();
     }
 
     /**
@@ -1165,6 +1227,14 @@ public class ObjectFactory {
      */
     public ConsumptionAverageType createConsumptionAverageType() {
         return new ConsumptionAverageType();
+    }
+
+    /**
+     * Create an instance of {@link ConsumptionCorrectionType }
+     * 
+     */
+    public ConsumptionCorrectionType createConsumptionCorrectionType() {
+        return new ConsumptionCorrectionType();
     }
 
     /**
@@ -1240,11 +1310,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ContractingActivityType }
+     * 
+     */
+    public ContractingActivityType createContractingActivityType() {
+        return new ContractingActivityType();
+    }
+
+    /**
      * Create an instance of {@link ContractingPartyType }
      * 
      */
     public ContractingPartyType createContractingPartyType() {
         return new ContractingPartyType();
+    }
+
+    /**
+     * Create an instance of {@link ContractingPartyTypeType }
+     * 
+     */
+    public ContractingPartyTypeType createContractingPartyTypeType() {
+        return new ContractingPartyTypeType();
     }
 
     /**
@@ -1261,14 +1347,6 @@ public class ObjectFactory {
      */
     public CorporateRegistrationSchemeType createCorporateRegistrationSchemeType() {
         return new CorporateRegistrationSchemeType();
-    }
-
-    /**
-     * Create an instance of {@link CorrectionType }
-     * 
-     */
-    public CorrectionType createCorrectionType() {
-        return new CorrectionType();
     }
 
     /**
@@ -1296,11 +1374,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link PersonType }
+     * 
+     */
+    public PersonType createPersonType() {
+        return new PersonType();
+    }
+
+    /**
      * Create an instance of {@link StatusType }
      * 
      */
     public StatusType createStatusType() {
         return new StatusType();
+    }
+
+    /**
+     * Create an instance of {@link CustomsDeclarationType }
+     * 
+     */
+    public CustomsDeclarationType createCustomsDeclarationType() {
+        return new CustomsDeclarationType();
     }
 
     /**
@@ -1400,6 +1494,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link EconomicOperatorRoleType }
+     * 
+     */
+    public EconomicOperatorRoleType createEconomicOperatorRoleType() {
+        return new EconomicOperatorRoleType();
+    }
+
+    /**
      * Create an instance of {@link EconomicOperatorShortListType }
      * 
      */
@@ -1413,6 +1515,14 @@ public class ObjectFactory {
      */
     public EndorsementType createEndorsementType() {
         return new EndorsementType();
+    }
+
+    /**
+     * Create an instance of {@link EmissionCalculationMethodType }
+     * 
+     */
+    public EmissionCalculationMethodType createEmissionCalculationMethodType() {
+        return new EmissionCalculationMethodType();
     }
 
     /**
@@ -1448,11 +1558,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link EvaluationCriteriaType }
+     * Create an instance of {@link EvaluationCriterionType }
      * 
      */
-    public EvaluationCriteriaType createEvaluationCriteriaType() {
-        return new EvaluationCriteriaType();
+    public EvaluationCriterionType createEvaluationCriterionType() {
+        return new EvaluationCriterionType();
     }
 
     /**
@@ -1501,6 +1611,14 @@ public class ObjectFactory {
      */
     public EvidenceType createEvidenceType() {
         return new EvidenceType();
+    }
+
+    /**
+     * Create an instance of {@link EvidenceSuppliedType }
+     * 
+     */
+    public EvidenceSuppliedType createEvidenceSuppliedType() {
+        return new EvidenceSuppliedType();
     }
 
     /**
@@ -1568,11 +1686,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ForecastExceptionCriteriaLineType }
+     * Create an instance of {@link ForecastExceptionCriterionLineType }
      * 
      */
-    public ForecastExceptionCriteriaLineType createForecastExceptionCriteriaLineType() {
-        return new ForecastExceptionCriteriaLineType();
+    public ForecastExceptionCriterionLineType createForecastExceptionCriterionLineType() {
+        return new ForecastExceptionCriterionLineType();
     }
 
     /**
@@ -1648,6 +1766,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ProcurementProjectLotType }
+     * 
+     */
+    public ProcurementProjectLotType createProcurementProjectLotType() {
+        return new ProcurementProjectLotType();
+    }
+
+    /**
      * Create an instance of {@link InventoryReportLineType }
      * 
      */
@@ -1709,6 +1835,14 @@ public class ObjectFactory {
      */
     public ItemManagementProfileType createItemManagementProfileType() {
         return new ItemManagementProfileType();
+    }
+
+    /**
+     * Create an instance of {@link PriceExtensionType }
+     * 
+     */
+    public PriceExtensionType createPriceExtensionType() {
+        return new PriceExtensionType();
     }
 
     /**
@@ -1888,14 +2022,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link PaymentType }
-     * 
-     */
-    public PaymentType createPaymentType() {
-        return new PaymentType();
-    }
-
-    /**
      * Create an instance of {@link PaymentMandateType }
      * 
      */
@@ -1917,14 +2043,6 @@ public class ObjectFactory {
      */
     public PerformanceDataLineType createPerformanceDataLineType() {
         return new PerformanceDataLineType();
-    }
-
-    /**
-     * Create an instance of {@link PersonType }
-     * 
-     */
-    public PersonType createPersonType() {
-        return new PersonType();
     }
 
     /**
@@ -1984,11 +2102,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ProcurementProjectLotType }
+     * Create an instance of {@link ProjectReferenceType }
      * 
      */
-    public ProcurementProjectLotType createProcurementProjectLotType() {
-        return new ProcurementProjectLotType();
+    public ProjectReferenceType createProjectReferenceType() {
+        return new ProjectReferenceType();
     }
 
     /**
@@ -2088,6 +2206,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link RequestedTenderTotalType }
+     * 
+     */
+    public RequestedTenderTotalType createRequestedTenderTotalType() {
+        return new RequestedTenderTotalType();
+    }
+
+    /**
      * Create an instance of {@link ResultOfVerificationType }
      * 
      */
@@ -2120,19 +2246,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ServiceFrequencyType }
+     * 
+     */
+    public ServiceFrequencyType createServiceFrequencyType() {
+        return new ServiceFrequencyType();
+    }
+
+    /**
      * Create an instance of {@link SecondaryHazardType }
      * 
      */
     public SecondaryHazardType createSecondaryHazardType() {
         return new SecondaryHazardType();
-    }
-
-    /**
-     * Create an instance of {@link ServicePointType }
-     * 
-     */
-    public ServicePointType createServicePointType() {
-        return new ServicePointType();
     }
 
     /**
@@ -2352,14 +2478,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link TransportStatusType }
-     * 
-     */
-    public TransportStatusType createTransportStatusType() {
-        return new TransportStatusType();
-    }
-
-    /**
      * Create an instance of {@link TransportationSegmentType }
      * 
      */
@@ -2389,6 +2507,22 @@ public class ObjectFactory {
      */
     public WebSiteAccessType createWebSiteAccessType() {
         return new WebSiteAccessType();
+    }
+
+    /**
+     * Create an instance of {@link WinningPartyType }
+     * 
+     */
+    public WinningPartyType createWinningPartyType() {
+        return new WinningPartyType();
+    }
+
+    /**
+     * Create an instance of {@link WorkPhaseReferenceType }
+     * 
+     */
+    public WorkPhaseReferenceType createWorkPhaseReferenceType() {
+        return new WorkPhaseReferenceType();
     }
 
     /**
@@ -2571,6 +2705,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ActualPickupTransportEvent")
     public JAXBElement<TransportEventType> createActualPickupTransportEvent(TransportEventType value) {
         return new JAXBElement<TransportEventType>(_ActualPickupTransportEvent_QNAME, TransportEventType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ActualWaypointTransportEvent")
+    public JAXBElement<TransportEventType> createActualWaypointTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_ActualWaypointTransportEvent_QNAME, TransportEventType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CommodityClassificationType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CommodityClassificationType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "AdditionalCommodityClassification")
+    public JAXBElement<CommodityClassificationType> createAdditionalCommodityClassification(CommodityClassificationType value) {
+        return new JAXBElement<CommodityClassificationType>(_AdditionalCommodityClassification_QNAME, CommodityClassificationType.class, null, value);
     }
 
     /**
@@ -2925,19 +3085,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TransportLocationType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TransportLocationType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ArrivalTransportLocation")
-    public JAXBElement<TransportLocationType> createArrivalTransportLocation(TransportLocationType value) {
-        return new JAXBElement<TransportLocationType>(_ArrivalTransportLocation_QNAME, TransportLocationType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
      * 
      * @param value
@@ -3016,29 +3163,29 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link AwardingCriteriaType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link AwardingCriterionType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link AwardingCriteriaType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link AwardingCriterionType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "AwardingCriteria")
-    public JAXBElement<AwardingCriteriaType> createAwardingCriteria(AwardingCriteriaType value) {
-        return new JAXBElement<AwardingCriteriaType>(_AwardingCriteria_QNAME, AwardingCriteriaType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "AwardingCriterion")
+    public JAXBElement<AwardingCriterionType> createAwardingCriterion(AwardingCriterionType value) {
+        return new JAXBElement<AwardingCriterionType>(_AwardingCriterion_QNAME, AwardingCriterionType.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link AwardingCriteriaResponseType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link AwardingCriterionResponseType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link AwardingCriteriaResponseType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link AwardingCriterionResponseType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "AwardingCriteriaResponse")
-    public JAXBElement<AwardingCriteriaResponseType> createAwardingCriteriaResponse(AwardingCriteriaResponseType value) {
-        return new JAXBElement<AwardingCriteriaResponseType>(_AwardingCriteriaResponse_QNAME, AwardingCriteriaResponseType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "AwardingCriterionResponse")
+    public JAXBElement<AwardingCriterionResponseType> createAwardingCriterionResponse(AwardingCriterionResponseType value) {
+        return new JAXBElement<AwardingCriterionResponseType>(_AwardingCriterionResponse_QNAME, AwardingCriterionResponseType.class, null, value);
     }
 
     /**
@@ -3081,6 +3228,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PartyType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PartyType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "BillToParty")
+    public JAXBElement<PartyType> createBillToParty(PartyType value) {
+        return new JAXBElement<PartyType>(_BillToParty_QNAME, PartyType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link BillingReferenceType }{@code >}
      * 
      * @param value
@@ -3104,19 +3264,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "BillingReferenceLine")
     public JAXBElement<BillingReferenceLineType> createBillingReferenceLine(BillingReferenceLineType value) {
         return new JAXBElement<BillingReferenceLineType>(_BillingReferenceLine_QNAME, BillingReferenceLineType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link MonetaryTotalType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link MonetaryTotalType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "BonusMonetaryTotal")
-    public JAXBElement<MonetaryTotalType> createBonusMonetaryTotal(MonetaryTotalType value) {
-        return new JAXBElement<MonetaryTotalType>(_BonusMonetaryTotal_QNAME, MonetaryTotalType.class, null, value);
     }
 
     /**
@@ -3169,19 +3316,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "BudgetAccountLine")
     public JAXBElement<BudgetAccountLineType> createBudgetAccountLine(BudgetAccountLineType value) {
         return new JAXBElement<BudgetAccountLineType>(_BudgetAccountLine_QNAME, BudgetAccountLineType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link BudgetAmountType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link BudgetAmountType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "BudgetAmount")
-    public JAXBElement<BudgetAmountType> createBudgetAmount(BudgetAmountType value) {
-        return new JAXBElement<BudgetAmountType>(_BudgetAmount_QNAME, BudgetAmountType.class, null, value);
     }
 
     /**
@@ -3270,9 +3404,22 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "CallForTenderDocumentReference")
-    public JAXBElement<DocumentReferenceType> createCallForTenderDocumentReference(DocumentReferenceType value) {
-        return new JAXBElement<DocumentReferenceType>(_CallForTenderDocumentReference_QNAME, DocumentReferenceType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "CallForTendersDocumentReference")
+    public JAXBElement<DocumentReferenceType> createCallForTendersDocumentReference(DocumentReferenceType value) {
+        return new JAXBElement<DocumentReferenceType>(_CallForTendersDocumentReference_QNAME, DocumentReferenceType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LineReferenceType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link LineReferenceType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "CallForTendersLineReference")
+    public JAXBElement<LineReferenceType> createCallForTendersLineReference(LineReferenceType value) {
+        return new JAXBElement<LineReferenceType>(_CallForTendersLineReference_QNAME, LineReferenceType.class, null, value);
     }
 
     /**
@@ -3312,45 +3459,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "CarrierParty")
     public JAXBElement<PartyType> createCarrierParty(PartyType value) {
         return new JAXBElement<PartyType>(_CarrierParty_QNAME, PartyType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link PackageType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link PackageType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "CarryingPackage")
-    public JAXBElement<PackageType> createCarryingPackage(PackageType value) {
-        return new JAXBElement<PackageType>(_CarryingPackage_QNAME, PackageType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEquipmentType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEquipmentType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "CarryingTransportEquipment")
-    public JAXBElement<TransportEquipmentType> createCarryingTransportEquipment(TransportEquipmentType value) {
-        return new JAXBElement<TransportEquipmentType>(_CarryingTransportEquipment_QNAME, TransportEquipmentType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TransportMeansType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TransportMeansType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "CarryingTransportMeans")
-    public JAXBElement<TransportMeansType> createCarryingTransportMeans(TransportMeansType value) {
-        return new JAXBElement<TransportMeansType>(_CarryingTransportMeans_QNAME, TransportMeansType.class, null, value);
     }
 
     /**
@@ -3497,6 +3605,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ConsignmentType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ConsignmentType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ChildConsignment")
+    public JAXBElement<ConsignmentType> createChildConsignment(ConsignmentType value) {
+        return new JAXBElement<ConsignmentType>(_ChildConsignment_QNAME, ConsignmentType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ClassificationCategoryType }{@code >}
      * 
      * @param value
@@ -3536,6 +3657,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ClauseType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ClauseType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "Clause")
+    public JAXBElement<ClauseType> createClause(ClauseType value) {
+        return new JAXBElement<ClauseType>(_Clause_QNAME, ClauseType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link PaymentTermsType }{@code >}
      * 
      * @param value
@@ -3549,16 +3683,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link MonetaryTotalType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link PaymentType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link MonetaryTotalType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link PaymentType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "CommissionMonetaryTotal")
-    public JAXBElement<MonetaryTotalType> createCommissionMonetaryTotal(MonetaryTotalType value) {
-        return new JAXBElement<MonetaryTotalType>(_CommissionMonetaryTotal_QNAME, MonetaryTotalType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "CollectedPayment")
+    public JAXBElement<PaymentType> createCollectedPayment(PaymentType value) {
+        return new JAXBElement<PaymentType>(_CollectedPayment_QNAME, PaymentType.class, null, value);
     }
 
     /**
@@ -3637,6 +3771,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ComponentRelatedItem")
     public JAXBElement<RelatedItemType> createComponentRelatedItem(RelatedItemType value) {
         return new JAXBElement<RelatedItemType>(_ComponentRelatedItem_QNAME, RelatedItemType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ConditionType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ConditionType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "Condition")
+    public JAXBElement<ConditionType> createCondition(ConditionType value) {
+        return new JAXBElement<ConditionType>(_Condition_QNAME, ConditionType.class, null, value);
     }
 
     /**
@@ -3728,6 +3875,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ConsumptionAverage")
     public JAXBElement<ConsumptionAverageType> createConsumptionAverage(ConsumptionAverageType value) {
         return new JAXBElement<ConsumptionAverageType>(_ConsumptionAverage_QNAME, ConsumptionAverageType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ConsumptionCorrectionType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ConsumptionCorrectionType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ConsumptionCorrection")
+    public JAXBElement<ConsumptionCorrectionType> createConsumptionCorrection(ConsumptionCorrectionType value) {
+        return new JAXBElement<ConsumptionCorrectionType>(_ConsumptionCorrection_QNAME, ConsumptionCorrectionType.class, null, value);
     }
 
     /**
@@ -3978,6 +4138,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ContractingActivityType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ContractingActivityType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ContractingActivity")
+    public JAXBElement<ContractingActivityType> createContractingActivity(ContractingActivityType value) {
+        return new JAXBElement<ContractingActivityType>(_ContractingActivity_QNAME, ContractingActivityType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ContractingPartyType }{@code >}
      * 
      * @param value
@@ -3988,6 +4161,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ContractingParty")
     public JAXBElement<ContractingPartyType> createContractingParty(ContractingPartyType value) {
         return new JAXBElement<ContractingPartyType>(_ContractingParty_QNAME, ContractingPartyType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ContractingPartyTypeType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ContractingPartyTypeType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ContractingPartyType")
+    public JAXBElement<ContractingPartyTypeType> createContractingPartyType(ContractingPartyTypeType value) {
+        return new JAXBElement<ContractingPartyTypeType>(_ContractingPartyType_QNAME, ContractingPartyTypeType.class, null, value);
     }
 
     /**
@@ -4043,19 +4229,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link CorrectionType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link CorrectionType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "Correction")
-    public JAXBElement<CorrectionType> createCorrection(CorrectionType value) {
-        return new JAXBElement<CorrectionType>(_Correction_QNAME, CorrectionType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link CountryType }{@code >}
      * 
      * @param value
@@ -4108,6 +4281,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "CrewMemberPerson")
+    public JAXBElement<PersonType> createCrewMemberPerson(PersonType value) {
+        return new JAXBElement<PersonType>(_CrewMemberPerson_QNAME, PersonType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link StatusType }{@code >}
      * 
      * @param value
@@ -4144,6 +4330,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "CustomsAgentParty")
     public JAXBElement<PartyType> createCustomsAgentParty(PartyType value) {
         return new JAXBElement<PartyType>(_CustomsAgentParty_QNAME, PartyType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CustomsDeclarationType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CustomsDeclarationType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "CustomsDeclaration")
+    public JAXBElement<CustomsDeclarationType> createCustomsDeclaration(CustomsDeclarationType value) {
+        return new JAXBElement<CustomsDeclarationType>(_CustomsDeclaration_QNAME, CustomsDeclarationType.class, null, value);
     }
 
     /**
@@ -4342,19 +4541,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TransportLocationType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TransportLocationType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "DepartureTransportLocation")
-    public JAXBElement<TransportLocationType> createDepartureTransportLocation(TransportLocationType value) {
-        return new JAXBElement<TransportLocationType>(_DepartureTransportLocation_QNAME, TransportLocationType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link LineReferenceType }{@code >}
      * 
      * @param value
@@ -4485,19 +4671,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "DespatchPeriod")
-    public JAXBElement<PeriodType> createDespatchPeriod(PeriodType value) {
-        return new JAXBElement<PeriodType>(_DespatchPeriod_QNAME, PeriodType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link SupplierPartyType }{@code >}
      * 
      * @param value
@@ -4521,6 +4694,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "DestinationCountry")
     public JAXBElement<CountryType> createDestinationCountry(CountryType value) {
         return new JAXBElement<CountryType>(_DestinationCountry_QNAME, CountryType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "DetentionTransportEvent")
+    public JAXBElement<TransportEventType> createDetentionTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_DetentionTransportEvent_QNAME, TransportEventType.class, null, value);
     }
 
     /**
@@ -4667,6 +4853,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "DriverPerson")
+    public JAXBElement<PersonType> createDriverPerson(PersonType value) {
+        return new JAXBElement<PersonType>(_DriverPerson_QNAME, PersonType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
      * 
      * @param value
@@ -4703,6 +4902,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "Duty")
     public JAXBElement<DutyType> createDuty(DutyType value) {
         return new JAXBElement<DutyType>(_Duty_QNAME, DutyType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EconomicOperatorRoleType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link EconomicOperatorRoleType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "EconomicOperatorRole")
+    public JAXBElement<EconomicOperatorRoleType> createEconomicOperatorRole(EconomicOperatorRoleType value) {
+        return new JAXBElement<EconomicOperatorRoleType>(_EconomicOperatorRole_QNAME, EconomicOperatorRoleType.class, null, value);
     }
 
     /**
@@ -4758,6 +4970,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EmissionCalculationMethodType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link EmissionCalculationMethodType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "EmissionCalculationMethod")
+    public JAXBElement<EmissionCalculationMethodType> createEmissionCalculationMethod(EmissionCalculationMethodType value) {
+        return new JAXBElement<EmissionCalculationMethodType>(_EmissionCalculationMethod_QNAME, EmissionCalculationMethodType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
      * 
      * @param value
@@ -4810,16 +5035,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link CorrectionType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link ConsumptionCorrectionType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link CorrectionType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link ConsumptionCorrectionType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "EnergyWaterCorrection")
-    public JAXBElement<CorrectionType> createEnergyWaterCorrection(CorrectionType value) {
-        return new JAXBElement<CorrectionType>(_EnergyWaterCorrection_QNAME, CorrectionType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "EnergyWaterConsumptionCorrection")
+    public JAXBElement<ConsumptionCorrectionType> createEnergyWaterConsumptionCorrection(ConsumptionCorrectionType value) {
+        return new JAXBElement<ConsumptionCorrectionType>(_EnergyWaterConsumptionCorrection_QNAME, ConsumptionCorrectionType.class, null, value);
     }
 
     /**
@@ -4862,16 +5087,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "EstimatedArrivalPeriod")
-    public JAXBElement<PeriodType> createEstimatedArrivalPeriod(PeriodType value) {
-        return new JAXBElement<PeriodType>(_EstimatedArrivalPeriod_QNAME, PeriodType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "EstimatedArrivalTransportEvent")
+    public JAXBElement<TransportEventType> createEstimatedArrivalTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_EstimatedArrivalTransportEvent_QNAME, TransportEventType.class, null, value);
     }
 
     /**
@@ -4888,16 +5113,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "EstimatedDeparturePeriod")
-    public JAXBElement<PeriodType> createEstimatedDeparturePeriod(PeriodType value) {
-        return new JAXBElement<PeriodType>(_EstimatedDeparturePeriod_QNAME, PeriodType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "EstimatedDepartureTransportEvent")
+    public JAXBElement<TransportEventType> createEstimatedDepartureTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_EstimatedDepartureTransportEvent_QNAME, TransportEventType.class, null, value);
     }
 
     /**
@@ -4914,16 +5139,42 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link EvaluationCriteriaType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link EvaluationCriteriaType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "EvaluationCriteria")
-    public JAXBElement<EvaluationCriteriaType> createEvaluationCriteria(EvaluationCriteriaType value) {
-        return new JAXBElement<EvaluationCriteriaType>(_EvaluationCriteria_QNAME, EvaluationCriteriaType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "EstimatedDurationPeriod")
+    public JAXBElement<PeriodType> createEstimatedDurationPeriod(PeriodType value) {
+        return new JAXBElement<PeriodType>(_EstimatedDurationPeriod_QNAME, PeriodType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "EstimatedTransitPeriod")
+    public JAXBElement<PeriodType> createEstimatedTransitPeriod(PeriodType value) {
+        return new JAXBElement<PeriodType>(_EstimatedTransitPeriod_QNAME, PeriodType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EvaluationCriterionType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link EvaluationCriterionType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "EvaluationCriterion")
+    public JAXBElement<EvaluationCriterionType> createEvaluationCriterion(EvaluationCriterionType value) {
+        return new JAXBElement<EvaluationCriterionType>(_EvaluationCriterion_QNAME, EvaluationCriterionType.class, null, value);
     }
 
     /**
@@ -5005,6 +5256,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "EvidenceDocumentReference")
+    public JAXBElement<DocumentReferenceType> createEvidenceDocumentReference(DocumentReferenceType value) {
+        return new JAXBElement<DocumentReferenceType>(_EvidenceDocumentReference_QNAME, DocumentReferenceType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link PartyType }{@code >}
      * 
      * @param value
@@ -5015,6 +5279,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "EvidenceIssuingParty")
     public JAXBElement<PartyType> createEvidenceIssuingParty(PartyType value) {
         return new JAXBElement<PartyType>(_EvidenceIssuingParty_QNAME, PartyType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EvidenceSuppliedType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link EvidenceSuppliedType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "EvidenceSupplied")
+    public JAXBElement<EvidenceSuppliedType> createEvidenceSupplied(EvidenceSuppliedType value) {
+        return new JAXBElement<EvidenceSuppliedType>(_EvidenceSupplied_QNAME, EvidenceSuppliedType.class, null, value);
     }
 
     /**
@@ -5226,16 +5503,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link EvaluationCriteriaType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link EvaluationCriterionType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link EvaluationCriteriaType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link EvaluationCriterionType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "FinancialEvaluationCriteria")
-    public JAXBElement<EvaluationCriteriaType> createFinancialEvaluationCriteria(EvaluationCriteriaType value) {
-        return new JAXBElement<EvaluationCriteriaType>(_FinancialEvaluationCriteria_QNAME, EvaluationCriteriaType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "FinancialEvaluationCriterion")
+    public JAXBElement<EvaluationCriterionType> createFinancialEvaluationCriterion(EvaluationCriterionType value) {
+        return new JAXBElement<EvaluationCriterionType>(_FinancialEvaluationCriterion_QNAME, EvaluationCriterionType.class, null, value);
     }
 
     /**
@@ -5369,16 +5646,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ForecastExceptionCriteriaLineType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link ForecastExceptionCriterionLineType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link ForecastExceptionCriteriaLineType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link ForecastExceptionCriterionLineType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ForecastExceptionCriteriaLine")
-    public JAXBElement<ForecastExceptionCriteriaLineType> createForecastExceptionCriteriaLine(ForecastExceptionCriteriaLineType value) {
-        return new JAXBElement<ForecastExceptionCriteriaLineType>(_ForecastExceptionCriteriaLine_QNAME, ForecastExceptionCriteriaLineType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ForecastExceptionCriterionLine")
+    public JAXBElement<ForecastExceptionCriterionLineType> createForecastExceptionCriterionLine(ForecastExceptionCriterionLineType value) {
+        return new JAXBElement<ForecastExceptionCriterionLineType>(_ForecastExceptionCriterionLine_QNAME, ForecastExceptionCriterionLineType.class, null, value);
     }
 
     /**
@@ -5457,6 +5734,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "FreightAllowanceCharge")
     public JAXBElement<AllowanceChargeType> createFreightAllowanceCharge(AllowanceChargeType value) {
         return new JAXBElement<AllowanceChargeType>(_FreightAllowanceCharge_QNAME, AllowanceChargeType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "FreightChargeLocation")
+    public JAXBElement<LocationType> createFreightChargeLocation(LocationType value) {
+        return new JAXBElement<LocationType>(_FreightChargeLocation_QNAME, LocationType.class, null, value);
     }
 
     /**
@@ -5649,9 +5939,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link PartyType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "HeadParty")
-    public JAXBElement<PartyType> createHeadParty(PartyType value) {
-        return new JAXBElement<PartyType>(_HeadParty_QNAME, PartyType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "HeadOfficeParty")
+    public JAXBElement<PartyType> createHeadOfficeParty(PartyType value) {
+        return new JAXBElement<PartyType>(_HeadOfficeParty_QNAME, PartyType.class, null, value);
     }
 
     /**
@@ -5759,16 +6049,29 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TransportLocationType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link ProcurementProjectLotType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TransportLocationType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link ProcurementProjectLotType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "IntermediateTransportLocation")
-    public JAXBElement<TransportLocationType> createIntermediateTransportLocation(TransportLocationType value) {
-        return new JAXBElement<TransportLocationType>(_IntermediateTransportLocation_QNAME, TransportLocationType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "InterestedProcurementProjectLot")
+    public JAXBElement<ProcurementProjectLotType> createInterestedProcurementProjectLot(ProcurementProjectLotType value) {
+        return new JAXBElement<ProcurementProjectLotType>(_InterestedProcurementProjectLot_QNAME, ProcurementProjectLotType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "InventoryLocation")
+    public JAXBElement<LocationType> createInventoryLocation(LocationType value) {
+        return new JAXBElement<LocationType>(_InventoryLocation_QNAME, LocationType.class, null, value);
     }
 
     /**
@@ -5990,6 +6293,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ItemManagementProfile")
     public JAXBElement<ItemManagementProfileType> createItemManagementProfile(ItemManagementProfileType value) {
         return new JAXBElement<ItemManagementProfileType>(_ItemManagementProfile_QNAME, ItemManagementProfileType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PriceExtensionType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PriceExtensionType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ItemPriceExtension")
+    public JAXBElement<PriceExtensionType> createItemPriceExtension(PriceExtensionType value) {
+        return new JAXBElement<PriceExtensionType>(_ItemPriceExtension_QNAME, PriceExtensionType.class, null, value);
     }
 
     /**
@@ -6305,6 +6621,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CommodityClassificationType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CommodityClassificationType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "MainCommodityClassification")
+    public JAXBElement<CommodityClassificationType> createMainCommodityClassification(CommodityClassificationType value) {
+        return new JAXBElement<CommodityClassificationType>(_MainCommodityClassification_QNAME, CommodityClassificationType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link OnAccountPaymentType }{@code >}
      * 
      * @param value
@@ -6409,6 +6738,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "MasterPerson")
+    public JAXBElement<PersonType> createMasterPerson(PersonType value) {
+        return new JAXBElement<PersonType>(_MasterPerson_QNAME, PersonType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link DeliveryUnitType }{@code >}
      * 
      * @param value
@@ -6445,6 +6787,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "MeasurementDimension")
     public JAXBElement<DimensionType> createMeasurementDimension(DimensionType value) {
         return new JAXBElement<DimensionType>(_MeasurementDimension_QNAME, DimensionType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "MeasurementFromLocation")
+    public JAXBElement<LocationType> createMeasurementFromLocation(LocationType value) {
+        return new JAXBElement<LocationType>(_MeasurementFromLocation_QNAME, LocationType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "MeasurementToLocation")
+    public JAXBElement<LocationType> createMeasurementToLocation(LocationType value) {
+        return new JAXBElement<LocationType>(_MeasurementToLocation_QNAME, LocationType.class, null, value);
     }
 
     /**
@@ -6617,6 +6985,32 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "NotificationLocation")
+    public JAXBElement<LocationType> createNotificationLocation(LocationType value) {
+        return new JAXBElement<LocationType>(_NotificationLocation_QNAME, LocationType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "NotificationPeriod")
+    public JAXBElement<PeriodType> createNotificationPeriod(PeriodType value) {
+        return new JAXBElement<PeriodType>(_NotificationPeriod_QNAME, PeriodType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link NotificationRequirementType }{@code >}
      * 
      * @param value
@@ -6718,19 +7112,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "OperatingParty")
     public JAXBElement<PartyType> createOperatingParty(PartyType value) {
         return new JAXBElement<PartyType>(_OperatingParty_QNAME, PartyType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link PartyType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link PartyType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "OperatorParty")
-    public JAXBElement<PartyType> createOperatorParty(PartyType value) {
-        return new JAXBElement<PartyType>(_OperatorParty_QNAME, PartyType.class, null, value);
     }
 
     /**
@@ -7137,6 +7518,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PassengerPerson")
+    public JAXBElement<PersonType> createPassengerPerson(PersonType value) {
+        return new JAXBElement<PersonType>(_PassengerPerson_QNAME, PersonType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link FinancialAccountType }{@code >}
      * 
      * @param value
@@ -7280,16 +7674,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link MonetaryTotalType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link ClauseType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link MonetaryTotalType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link ClauseType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PenaltyMonetaryTotal")
-    public JAXBElement<MonetaryTotalType> createPenaltyMonetaryTotal(MonetaryTotalType value) {
-        return new JAXBElement<MonetaryTotalType>(_PenaltyMonetaryTotal_QNAME, MonetaryTotalType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PenaltyClause")
+    public JAXBElement<ClauseType> createPenaltyClause(ClauseType value) {
+        return new JAXBElement<ClauseType>(_PenaltyClause_QNAME, ClauseType.class, null, value);
     }
 
     /**
@@ -7449,29 +7843,42 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PlannedArrivalPeriod")
-    public JAXBElement<PeriodType> createPlannedArrivalPeriod(PeriodType value) {
-        return new JAXBElement<PeriodType>(_PlannedArrivalPeriod_QNAME, PeriodType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PlannedArrivalTransportEvent")
+    public JAXBElement<TransportEventType> createPlannedArrivalTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_PlannedArrivalTransportEvent_QNAME, TransportEventType.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PlannedDeparturePeriod")
-    public JAXBElement<PeriodType> createPlannedDeparturePeriod(PeriodType value) {
-        return new JAXBElement<PeriodType>(_PlannedDeparturePeriod_QNAME, PeriodType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PlannedDeliveryTransportEvent")
+    public JAXBElement<TransportEventType> createPlannedDeliveryTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_PlannedDeliveryTransportEvent_QNAME, TransportEventType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PlannedDepartureTransportEvent")
+    public JAXBElement<TransportEventType> createPlannedDepartureTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_PlannedDepartureTransportEvent_QNAME, TransportEventType.class, null, value);
     }
 
     /**
@@ -7495,22 +7902,35 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PositioningTransportEvent")
-    public JAXBElement<TransportEventType> createPositioningTransportEvent(TransportEventType value) {
-        return new JAXBElement<TransportEventType>(_PositioningTransportEvent_QNAME, TransportEventType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PlannedPickupTransportEvent")
+    public JAXBElement<TransportEventType> createPlannedPickupTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_PlannedPickupTransportEvent_QNAME, TransportEventType.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PostEventPeriod")
-    public JAXBElement<PeriodType> createPostEventPeriod(PeriodType value) {
-        return new JAXBElement<PeriodType>(_PostEventPeriod_QNAME, PeriodType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PlannedWaypointTransportEvent")
+    public JAXBElement<TransportEventType> createPlannedWaypointTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_PlannedWaypointTransportEvent_QNAME, TransportEventType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PositioningTransportEvent")
+    public JAXBElement<TransportEventType> createPositioningTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_PositioningTransportEvent_QNAME, TransportEventType.class, null, value);
     }
 
     /**
@@ -7550,19 +7970,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PreCarriageShipmentStage")
     public JAXBElement<ShipmentStageType> createPreCarriageShipmentStage(ShipmentStageType value) {
         return new JAXBElement<ShipmentStageType>(_PreCarriageShipmentStage_QNAME, ShipmentStageType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PreEventPeriod")
-    public JAXBElement<PeriodType> createPreEventPeriod(PeriodType value) {
-        return new JAXBElement<PeriodType>(_PreEventPeriod_QNAME, PeriodType.class, null, value);
     }
 
     /**
@@ -7670,6 +8077,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PriceExtensionType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PriceExtensionType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PriceExtension")
+    public JAXBElement<PriceExtensionType> createPriceExtension(PriceExtensionType value) {
+        return new JAXBElement<PriceExtensionType>(_PriceExtension_QNAME, PriceExtensionType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link PriceListType }{@code >}
      * 
      * @param value
@@ -7680,19 +8100,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PriceList")
     public JAXBElement<PriceListType> createPriceList(PriceListType value) {
         return new JAXBElement<PriceListType>(_PriceList_QNAME, PriceListType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link MonetaryTotalType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link MonetaryTotalType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "PriceMonetaryTotal")
-    public JAXBElement<MonetaryTotalType> createPriceMonetaryTotal(MonetaryTotalType value) {
-        return new JAXBElement<MonetaryTotalType>(_PriceMonetaryTotal_QNAME, MonetaryTotalType.class, null, value);
     }
 
     /**
@@ -7771,6 +8178,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ProcurementProjectLot")
     public JAXBElement<ProcurementProjectLotType> createProcurementProjectLot(ProcurementProjectLotType value) {
         return new JAXBElement<ProcurementProjectLotType>(_ProcurementProjectLot_QNAME, ProcurementProjectLotType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ProjectReferenceType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ProjectReferenceType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ProjectReference")
+    public JAXBElement<ProjectReferenceType> createProjectReference(ProjectReferenceType value) {
+        return new JAXBElement<ProjectReferenceType>(_ProjectReference_QNAME, ProjectReferenceType.class, null, value);
     }
 
     /**
@@ -8073,6 +8493,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ConsignmentType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ConsignmentType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ReferencedConsignment")
+    public JAXBElement<ConsignmentType> createReferencedConsignment(ConsignmentType value) {
+        return new JAXBElement<ConsignmentType>(_ReferencedConsignment_QNAME, ConsignmentType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ContractType }{@code >}
      * 
      * @param value
@@ -8112,6 +8545,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ShipmentType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ShipmentType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ReferencedShipment")
+    public JAXBElement<ShipmentType> createReferencedShipment(ShipmentType value) {
+        return new JAXBElement<ShipmentType>(_ReferencedShipment_QNAME, ShipmentType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TransportEquipmentType }{@code >}
      * 
      * @param value
@@ -8125,19 +8571,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TransportHandlingUnitType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TransportHandlingUnitType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ReferencedTransportHandlingUnit")
-    public JAXBElement<TransportHandlingUnitType> createReferencedTransportHandlingUnit(TransportHandlingUnitType value) {
-        return new JAXBElement<TransportHandlingUnitType>(_ReferencedTransportHandlingUnit_QNAME, TransportHandlingUnitType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link AddressType }{@code >}
      * 
      * @param value
@@ -8148,6 +8581,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "RegistrationAddress")
     public JAXBElement<AddressType> createRegistrationAddress(AddressType value) {
         return new JAXBElement<AddressType>(_RegistrationAddress_QNAME, AddressType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "RegistryCertificateDocumentReference")
+    public JAXBElement<DocumentReferenceType> createRegistryCertificateDocumentReference(DocumentReferenceType value) {
+        return new JAXBElement<DocumentReferenceType>(_RegistryCertificateDocumentReference_QNAME, DocumentReferenceType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "RegistryPortLocation")
+    public JAXBElement<LocationType> createRegistryPortLocation(LocationType value) {
+        return new JAXBElement<LocationType>(_RegistryPortLocation_QNAME, LocationType.class, null, value);
     }
 
     /**
@@ -8255,6 +8714,32 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ReplacedNoticeDocumentReference")
+    public JAXBElement<DocumentReferenceType> createReplacedNoticeDocumentReference(DocumentReferenceType value) {
+        return new JAXBElement<DocumentReferenceType>(_ReplacedNoticeDocumentReference_QNAME, DocumentReferenceType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RelatedItemType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link RelatedItemType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ReplacedRelatedItem")
+    public JAXBElement<RelatedItemType> createReplacedRelatedItem(RelatedItemType value) {
+        return new JAXBElement<RelatedItemType>(_ReplacedRelatedItem_QNAME, RelatedItemType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link RelatedItemType }{@code >}
      * 
      * @param value
@@ -8278,6 +8763,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ReportedShipment")
     public JAXBElement<ShipmentType> createReportedShipment(ShipmentType value) {
         return new JAXBElement<ShipmentType>(_ReportedShipment_QNAME, ShipmentType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ReportingPerson")
+    public JAXBElement<PersonType> createReportingPerson(PersonType value) {
+        return new JAXBElement<PersonType>(_ReportingPerson_QNAME, PersonType.class, null, value);
     }
 
     /**
@@ -8333,6 +8831,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "RequestedArrivalTransportEvent")
+    public JAXBElement<TransportEventType> createRequestedArrivalTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_RequestedArrivalTransportEvent_QNAME, TransportEventType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link CatalogueReferenceType }{@code >}
      * 
      * @param value
@@ -8369,6 +8880,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "RequestedDeliveryPeriod")
     public JAXBElement<PeriodType> createRequestedDeliveryPeriod(PeriodType value) {
         return new JAXBElement<PeriodType>(_RequestedDeliveryPeriod_QNAME, PeriodType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "RequestedDeliveryTransportEvent")
+    public JAXBElement<TransportEventType> createRequestedDeliveryTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_RequestedDeliveryTransportEvent_QNAME, TransportEventType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "RequestedDepartureTransportEvent")
+    public JAXBElement<TransportEventType> createRequestedDepartureTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_RequestedDepartureTransportEvent_QNAME, TransportEventType.class, null, value);
     }
 
     /**
@@ -8424,6 +8961,58 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "RequestedPickupTransportEvent")
+    public JAXBElement<TransportEventType> createRequestedPickupTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_RequestedPickupTransportEvent_QNAME, TransportEventType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "RequestedStatusLocation")
+    public JAXBElement<LocationType> createRequestedStatusLocation(LocationType value) {
+        return new JAXBElement<LocationType>(_RequestedStatusLocation_QNAME, LocationType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "RequestedStatusPeriod")
+    public JAXBElement<PeriodType> createRequestedStatusPeriod(PeriodType value) {
+        return new JAXBElement<PeriodType>(_RequestedStatusPeriod_QNAME, PeriodType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RequestedTenderTotalType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link RequestedTenderTotalType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "RequestedTenderTotal")
+    public JAXBElement<RequestedTenderTotalType> createRequestedTenderTotal(RequestedTenderTotalType value) {
+        return new JAXBElement<RequestedTenderTotalType>(_RequestedTenderTotal_QNAME, RequestedTenderTotalType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
      * 
      * @param value
@@ -8434,6 +9023,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "RequestedValidityPeriod")
     public JAXBElement<PeriodType> createRequestedValidityPeriod(PeriodType value) {
         return new JAXBElement<PeriodType>(_RequestedValidityPeriod_QNAME, PeriodType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "RequestedWaypointTransportEvent")
+    public JAXBElement<TransportEventType> createRequestedWaypointTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_RequestedWaypointTransportEvent_QNAME, TransportEventType.class, null, value);
     }
 
     /**
@@ -8460,19 +9062,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "RequiredClassificationScheme")
     public JAXBElement<ClassificationSchemeType> createRequiredClassificationScheme(ClassificationSchemeType value) {
         return new JAXBElement<ClassificationSchemeType>(_RequiredClassificationScheme_QNAME, ClassificationSchemeType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link CommodityClassificationType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link CommodityClassificationType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "RequiredCommodityClassification")
-    public JAXBElement<CommodityClassificationType> createRequiredCommodityClassification(CommodityClassificationType value) {
-        return new JAXBElement<CommodityClassificationType>(_RequiredCommodityClassification_QNAME, CommodityClassificationType.class, null, value);
     }
 
     /**
@@ -8515,6 +9104,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AddressType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link AddressType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ResidenceAddress")
+    public JAXBElement<AddressType> createResidenceAddress(AddressType value) {
+        return new JAXBElement<AddressType>(_ResidenceAddress_QNAME, AddressType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
      * 
      * @param value
@@ -8538,6 +9140,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "Response")
     public JAXBElement<ResponseType> createResponse(ResponseType value) {
         return new JAXBElement<ResponseType>(_Response_QNAME, ResponseType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PartyType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PartyType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ResponsibleTransportServiceProviderParty")
+    public JAXBElement<PartyType> createResponsibleTransportServiceProviderParty(PartyType value) {
+        return new JAXBElement<PartyType>(_ResponsibleTransportServiceProviderParty_QNAME, PartyType.class, null, value);
     }
 
     /**
@@ -8619,6 +9234,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ServiceFrequencyType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ServiceFrequencyType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ScheduledServiceFrequency")
+    public JAXBElement<ServiceFrequencyType> createScheduledServiceFrequency(ServiceFrequencyType value) {
+        return new JAXBElement<ServiceFrequencyType>(_ScheduledServiceFrequency_QNAME, ServiceFrequencyType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link SecondaryHazardType }{@code >}
      * 
      * @param value
@@ -8629,6 +9257,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "SecondaryHazard")
     public JAXBElement<SecondaryHazardType> createSecondaryHazard(SecondaryHazardType value) {
         return new JAXBElement<SecondaryHazardType>(_SecondaryHazard_QNAME, SecondaryHazardType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "SecurityOfficerPerson")
+    public JAXBElement<PersonType> createSecurityOfficerPerson(PersonType value) {
+        return new JAXBElement<PersonType>(_SecurityOfficerPerson_QNAME, PersonType.class, null, value);
     }
 
     /**
@@ -8749,6 +9390,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PaymentTermsType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PaymentTermsType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ServiceChargePaymentTerms")
+    public JAXBElement<PaymentTermsType> createServiceChargePaymentTerms(PaymentTermsType value) {
+        return new JAXBElement<PaymentTermsType>(_ServiceChargePaymentTerms_QNAME, PaymentTermsType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
      * 
      * @param value
@@ -8762,29 +9416,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ServicePointType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link ServiceFrequencyType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link ServicePointType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link ServiceFrequencyType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ServicePoint")
-    public JAXBElement<ServicePointType> createServicePoint(ServicePointType value) {
-        return new JAXBElement<ServicePointType>(_ServicePoint_QNAME, ServicePointType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link LocationType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ServicePointLocation")
-    public JAXBElement<LocationType> createServicePointLocation(LocationType value) {
-        return new JAXBElement<LocationType>(_ServicePointLocation_QNAME, LocationType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ServiceFrequency")
+    public JAXBElement<ServiceFrequencyType> createServiceFrequency(ServiceFrequencyType value) {
+        return new JAXBElement<ServiceFrequencyType>(_ServiceFrequency_QNAME, ServiceFrequencyType.class, null, value);
     }
 
     /**
@@ -8876,6 +9517,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ShipmentStage")
     public JAXBElement<ShipmentStageType> createShipmentStage(ShipmentStageType value) {
         return new JAXBElement<ShipmentStageType>(_ShipmentStage_QNAME, ShipmentStageType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PersonType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ShipsSurgeonPerson")
+    public JAXBElement<PersonType> createShipsSurgeonPerson(PersonType value) {
+        return new JAXBElement<PersonType>(_ShipsSurgeonPerson_QNAME, PersonType.class, null, value);
     }
 
     /**
@@ -9035,6 +9689,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "StatusPeriod")
+    public JAXBElement<PeriodType> createStatusPeriod(PeriodType value) {
+        return new JAXBElement<PeriodType>(_StatusPeriod_QNAME, PeriodType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link StockAvailabilityReportLineType }{@code >}
      * 
      * @param value
@@ -9191,29 +9858,29 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link AwardingCriteriaType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link AwardingCriterionType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link AwardingCriteriaType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link AwardingCriterionType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "SubordinateAwardingCriteria")
-    public JAXBElement<AwardingCriteriaType> createSubordinateAwardingCriteria(AwardingCriteriaType value) {
-        return new JAXBElement<AwardingCriteriaType>(_SubordinateAwardingCriteria_QNAME, AwardingCriteriaType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "SubordinateAwardingCriterion")
+    public JAXBElement<AwardingCriterionType> createSubordinateAwardingCriterion(AwardingCriterionType value) {
+        return new JAXBElement<AwardingCriterionType>(_SubordinateAwardingCriterion_QNAME, AwardingCriterionType.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link AwardingCriteriaResponseType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link AwardingCriterionResponseType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link AwardingCriteriaResponseType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link AwardingCriterionResponseType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "SubordinateAwardingCriteriaResponse")
-    public JAXBElement<AwardingCriteriaResponseType> createSubordinateAwardingCriteriaResponse(AwardingCriteriaResponseType value) {
-        return new JAXBElement<AwardingCriteriaResponseType>(_SubordinateAwardingCriteriaResponse_QNAME, AwardingCriteriaResponseType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "SubordinateAwardingCriterionResponse")
+    public JAXBElement<AwardingCriterionResponseType> createSubordinateAwardingCriterionResponse(AwardingCriterionResponseType value) {
+        return new JAXBElement<AwardingCriterionResponseType>(_SubordinateAwardingCriterionResponse_QNAME, AwardingCriterionResponseType.class, null, value);
     }
 
     /**
@@ -9344,6 +10011,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "SupplyItem")
     public JAXBElement<ItemType> createSupplyItem(ItemType value) {
         return new JAXBElement<ItemType>(_SupplyItem_QNAME, ItemType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CommodityClassificationType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CommodityClassificationType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "SupportedCommodityClassification")
+    public JAXBElement<CommodityClassificationType> createSupportedCommodityClassification(CommodityClassificationType value) {
+        return new JAXBElement<CommodityClassificationType>(_SupportedCommodityClassification_QNAME, CommodityClassificationType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEquipmentType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEquipmentType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "SupportedTransportEquipment")
+    public JAXBElement<TransportEquipmentType> createSupportedTransportEquipment(TransportEquipmentType value) {
+        return new JAXBElement<TransportEquipmentType>(_SupportedTransportEquipment_QNAME, TransportEquipmentType.class, null, value);
     }
 
     /**
@@ -9516,16 +10209,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link EvaluationCriteriaType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link EvaluationCriterionType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link EvaluationCriteriaType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link EvaluationCriterionType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TechnicalEvaluationCriteria")
-    public JAXBElement<EvaluationCriteriaType> createTechnicalEvaluationCriteria(EvaluationCriteriaType value) {
-        return new JAXBElement<EvaluationCriteriaType>(_TechnicalEvaluationCriteria_QNAME, EvaluationCriteriaType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TechnicalEvaluationCriterion")
+    public JAXBElement<EvaluationCriterionType> createTechnicalEvaluationCriterion(EvaluationCriterionType value) {
+        return new JAXBElement<EvaluationCriterionType>(_TechnicalEvaluationCriterion_QNAME, EvaluationCriterionType.class, null, value);
     }
 
     /**
@@ -9750,6 +10443,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TendererQualificationDocumentReference")
+    public JAXBElement<DocumentReferenceType> createTendererQualificationDocumentReference(DocumentReferenceType value) {
+        return new JAXBElement<DocumentReferenceType>(_TendererQualificationDocumentReference_QNAME, DocumentReferenceType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TendererQualificationRequestType }{@code >}
      * 
      * @param value
@@ -9838,6 +10544,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "ToLocation")
     public JAXBElement<LocationType> createToLocation(LocationType value) {
         return new JAXBElement<LocationType>(_ToLocation_QNAME, LocationType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DimensionType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DimensionType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TotalCapacityDimension")
+    public JAXBElement<DimensionType> createTotalCapacityDimension(DimensionType value) {
+        return new JAXBElement<DimensionType>(_TotalCapacityDimension_QNAME, DimensionType.class, null, value);
     }
 
     /**
@@ -9971,6 +10690,32 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TransportExecutionPlanDocumentReference")
+    public JAXBElement<DocumentReferenceType> createTransportExecutionPlanDocumentReference(DocumentReferenceType value) {
+        return new JAXBElement<DocumentReferenceType>(_TransportExecutionPlanDocumentReference_QNAME, DocumentReferenceType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TransportExecutionPlanRequestDocumentReference")
+    public JAXBElement<DocumentReferenceType> createTransportExecutionPlanRequestDocumentReference(DocumentReferenceType value) {
+        return new JAXBElement<DocumentReferenceType>(_TransportExecutionPlanRequestDocumentReference_QNAME, DocumentReferenceType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TransportExecutionTermsType }{@code >}
      * 
      * @param value
@@ -9997,19 +10742,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TransportLocationType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TransportLocationType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TransportLocation")
-    public JAXBElement<TransportLocationType> createTransportLocation(TransportLocationType value) {
-        return new JAXBElement<TransportLocationType>(_TransportLocation_QNAME, TransportLocationType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TransportMeansType }{@code >}
      * 
      * @param value
@@ -10020,6 +10752,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TransportMeans")
     public JAXBElement<TransportMeansType> createTransportMeans(TransportMeansType value) {
         return new JAXBElement<TransportMeansType>(_TransportMeans_QNAME, TransportMeansType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TransportProgressStatusRequestDocumentReference")
+    public JAXBElement<DocumentReferenceType> createTransportProgressStatusRequestDocumentReference(DocumentReferenceType value) {
+        return new JAXBElement<DocumentReferenceType>(_TransportProgressStatusRequestDocumentReference_QNAME, DocumentReferenceType.class, null, value);
     }
 
     /**
@@ -10049,6 +10794,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TransportServiceDescriptionRequestDocumentReference")
+    public JAXBElement<DocumentReferenceType> createTransportServiceDescriptionRequestDocumentReference(DocumentReferenceType value) {
+        return new JAXBElement<DocumentReferenceType>(_TransportServiceDescriptionRequestDocumentReference_QNAME, DocumentReferenceType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link PartyType }{@code >}
      * 
      * @param value
@@ -10075,16 +10833,16 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TransportStatusType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link TransportStatusType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TransportStatus")
-    public JAXBElement<TransportStatusType> createTransportStatus(TransportStatusType value) {
-        return new JAXBElement<TransportStatusType>(_TransportStatus_QNAME, TransportStatusType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TransportServiceProviderResponseRequiredPeriod")
+    public JAXBElement<PeriodType> createTransportServiceProviderResponseRequiredPeriod(PeriodType value) {
+        return new JAXBElement<PeriodType>(_TransportServiceProviderResponseRequiredPeriod_QNAME, PeriodType.class, null, value);
     }
 
     /**
@@ -10101,19 +10859,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link PartyType }{@code >}
-     * 
-     * @param value
-     *     Java instance representing xml element's value.
-     * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link PartyType }{@code >}
-     */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TransportUserReferenceParty")
-    public JAXBElement<PartyType> createTransportUserReferenceParty(PartyType value) {
-        return new JAXBElement<PartyType>(_TransportUserReferenceParty_QNAME, PartyType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
      * 
      * @param value
@@ -10121,9 +10866,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link PeriodType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TransportUserResponseDeadlinePeriod")
-    public JAXBElement<PeriodType> createTransportUserResponseDeadlinePeriod(PeriodType value) {
-        return new JAXBElement<PeriodType>(_TransportUserResponseDeadlinePeriod_QNAME, PeriodType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TransportUserResponseRequiredPeriod")
+    public JAXBElement<PeriodType> createTransportUserResponseRequiredPeriod(PeriodType value) {
+        return new JAXBElement<PeriodType>(_TransportUserResponseRequiredPeriod_QNAME, PeriodType.class, null, value);
     }
 
     /**
@@ -10150,6 +10895,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TransportationService")
     public JAXBElement<TransportationServiceType> createTransportationService(TransportationServiceType value) {
         return new JAXBElement<TransportationServiceType>(_TransportationService_QNAME, TransportationServiceType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "TransportationStatusRequestDocumentReference")
+    public JAXBElement<DocumentReferenceType> createTransportationStatusRequestDocumentReference(DocumentReferenceType value) {
+        return new JAXBElement<DocumentReferenceType>(_TransportationStatusRequestDocumentReference_QNAME, DocumentReferenceType.class, null, value);
     }
 
     /**
@@ -10205,29 +10963,55 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeliveryType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link CommodityClassificationType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link DeliveryType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link CommodityClassificationType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "UpdatedDelivery")
-    public JAXBElement<DeliveryType> createUpdatedDelivery(DeliveryType value) {
-        return new JAXBElement<DeliveryType>(_UpdatedDelivery_QNAME, DeliveryType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "UnsupportedCommodityClassification")
+    public JAXBElement<CommodityClassificationType> createUnsupportedCommodityClassification(CommodityClassificationType value) {
+        return new JAXBElement<CommodityClassificationType>(_UnsupportedCommodityClassification_QNAME, CommodityClassificationType.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DespatchType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEquipmentType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link DespatchType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEquipmentType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "UpdatedDespatch")
-    public JAXBElement<DespatchType> createUpdatedDespatch(DespatchType value) {
-        return new JAXBElement<DespatchType>(_UpdatedDespatch_QNAME, DespatchType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "UnsupportedTransportEquipment")
+    public JAXBElement<TransportEquipmentType> createUnsupportedTransportEquipment(TransportEquipmentType value) {
+        return new JAXBElement<TransportEquipmentType>(_UnsupportedTransportEquipment_QNAME, TransportEquipmentType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "UpdatedDeliveryTransportEvent")
+    public JAXBElement<TransportEventType> createUpdatedDeliveryTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_UpdatedDeliveryTransportEvent_QNAME, TransportEventType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TransportEventType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "UpdatedPickupTransportEvent")
+    public JAXBElement<TransportEventType> createUpdatedPickupTransportEvent(TransportEventType value) {
+        return new JAXBElement<TransportEventType>(_UpdatedPickupTransportEvent_QNAME, TransportEventType.class, null, value);
     }
 
     /**
@@ -10374,6 +11158,32 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WinningPartyType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WinningPartyType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "WinningParty")
+    public JAXBElement<WinningPartyType> createWinningParty(WinningPartyType value) {
+        return new JAXBElement<WinningPartyType>(_WinningParty_QNAME, WinningPartyType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TaxTotalType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link TaxTotalType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "WithholdingTaxTotal")
+    public JAXBElement<TaxTotalType> createWithholdingTaxTotal(TaxTotalType value) {
+        return new JAXBElement<TaxTotalType>(_WithholdingTaxTotal_QNAME, TaxTotalType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link PartyType }{@code >}
      * 
      * @param value
@@ -10381,9 +11191,35 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link PartyType }{@code >}
      */
-    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "WinningParty")
-    public JAXBElement<PartyType> createWinningParty(PartyType value) {
-        return new JAXBElement<PartyType>(_WinningParty_QNAME, PartyType.class, null, value);
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "WitnessParty")
+    public JAXBElement<PartyType> createWitnessParty(PartyType value) {
+        return new JAXBElement<PartyType>(_WitnessParty_QNAME, PartyType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link DocumentReferenceType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "WorkOrderDocumentReference")
+    public JAXBElement<DocumentReferenceType> createWorkOrderDocumentReference(DocumentReferenceType value) {
+        return new JAXBElement<DocumentReferenceType>(_WorkOrderDocumentReference_QNAME, DocumentReferenceType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WorkPhaseReferenceType }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link WorkPhaseReferenceType }{@code >}
+     */
+    @XmlElementDecl(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", name = "WorkPhaseReference")
+    public JAXBElement<WorkPhaseReferenceType> createWorkPhaseReference(WorkPhaseReferenceType value) {
+        return new JAXBElement<WorkPhaseReferenceType>(_WorkPhaseReference_QNAME, WorkPhaseReferenceType.class, null, value);
     }
 
 }

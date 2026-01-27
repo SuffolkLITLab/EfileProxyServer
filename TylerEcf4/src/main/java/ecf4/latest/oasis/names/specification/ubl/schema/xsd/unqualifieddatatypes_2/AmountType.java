@@ -24,6 +24,8 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DeclaredCustomsValueAmountType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DeclaredForCarriageValueAmountType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DeclaredStatisticsValueAmountType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DocumentationFeeAmountType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.EstimatedAmountType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.EstimatedOverallContractAmountType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FaceValueAmountType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FeeAmountType;
@@ -39,8 +41,6 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumAdvertisementAmountType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumAmountType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumPaidAmountType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumTaxExclusiveAmountType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumTaxInclusiveAmountType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MinimumAmountType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaidAmountType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PartyCapacityAmountType;
@@ -95,7 +95,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * </pre>
  * 
  * <pre>
- * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;A number of monetary units specified in a currency where the unit of the currency is explicit or implied.&lt;/ccts:Definition&gt;
+ * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;A number of monetary units specified using a given unit of currency.&lt;/ccts:Definition&gt;
  * </pre>
  * 
  * <pre>
@@ -110,8 +110,9 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * <pre>
  * &lt;complexType name="AmountType"&gt;
  *   &lt;simpleContent&gt;
- *     &lt;extension base="&lt;urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2&gt;AmountType"&gt;
- *     &lt;/extension&gt;
+ *     &lt;restriction base="&lt;urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2&gt;AmountType"&gt;
+ *       &lt;attribute name="currencyID" use="required" type="{http://www.w3.org/2001/XMLSchema}normalizedString" /&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/simpleContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -123,7 +124,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 @XmlSeeAlso({
     AdvertisementAmountType.class,
     AllowanceTotalAmountType.class,
-   ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType.class,
+    ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType.class,
     AnnualAverageAmountType.class,
     AverageAmountType.class,
     AverageSubsequentContractAmountType.class,
@@ -141,6 +142,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     DeclaredCustomsValueAmountType.class,
     DeclaredForCarriageValueAmountType.class,
     DeclaredStatisticsValueAmountType.class,
+    DocumentationFeeAmountType.class,
+    EstimatedAmountType.class,
     EstimatedOverallContractAmountType.class,
     FaceValueAmountType.class,
     FeeAmountType.class,
@@ -156,8 +159,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     MaximumAdvertisementAmountType.class,
     MaximumAmountType.class,
     MaximumPaidAmountType.class,
-    MaximumTaxExclusiveAmountType.class,
-    MaximumTaxInclusiveAmountType.class,
     MinimumAmountType.class,
     PaidAmountType.class,
     PartyCapacityAmountType.class,

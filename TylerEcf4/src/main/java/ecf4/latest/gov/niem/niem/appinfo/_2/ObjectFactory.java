@@ -28,7 +28,7 @@ public class ObjectFactory {
     private final static QName _ExternalAdapterTypeIndicator_QNAME = new QName("http://niem.gov/niem/appinfo/2.0", "ExternalAdapterTypeIndicator");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.gov.niem.niem.appinfo._2
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.gov.niem.niem.appinfo._2
      * 
      */
     public ObjectFactory() {

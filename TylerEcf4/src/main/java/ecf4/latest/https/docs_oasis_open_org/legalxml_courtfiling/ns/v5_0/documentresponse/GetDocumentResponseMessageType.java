@@ -4,14 +4,13 @@ package ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.docum
 import java.util.ArrayList;
 import java.util.List;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.DocumentType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
 
 
 /**

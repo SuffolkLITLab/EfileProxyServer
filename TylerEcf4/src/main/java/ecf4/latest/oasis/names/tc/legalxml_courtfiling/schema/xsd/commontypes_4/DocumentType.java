@@ -41,7 +41,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 })
 @XmlSeeAlso({
     CourtEventDocumentType.class,
-   ecf4.latest.tyler.ecf.extensions.common.DocumentType.class,
+    ecf4.latest.tyler.ecf.extensions.common.DocumentType.class,
     ReviewedDocumentType.class
 })
 public class DocumentType

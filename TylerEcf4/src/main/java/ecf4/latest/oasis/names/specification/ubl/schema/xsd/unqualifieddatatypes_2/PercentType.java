@@ -7,17 +7,19 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AirFlowPercentType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.HumidityPercentType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumPercentType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MinimumPercentType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PartecipationPercentType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ParticipationPercentType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaymentPercentType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PenaltySurchargePercentType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ProgressPercentType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReliabilityPercentType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.SettlementDiscountPercentType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TargetServicePercentType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TierRatePercentType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
 import ecf4.latest.un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.NumericType;
 
 
@@ -40,7 +42,7 @@ import ecf4.latest.un.unece.uncefact.data.specification.corecomponenttypeschemam
  * </pre>
  * 
  * <pre>
- * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;Numeric information that is assigned or is determined by calculation, counting, or sequencing. It does not require a unit of quantity or unit of measure.&lt;/ccts:Definition&gt;
+ * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;Numeric information that is assigned or is determined by calculation, counting, or sequencing and is expressed as a percentage. It does not require a unit of quantity or unit of measure.&lt;/ccts:Definition&gt;
  * </pre>
  * 
  * <pre>
@@ -72,11 +74,14 @@ import ecf4.latest.un.unece.uncefact.data.specification.corecomponenttypeschemam
 @XmlSeeAlso({
     AirFlowPercentType.class,
     HumidityPercentType.class,
+    MaximumPercentType.class,
+    MinimumPercentType.class,
     PartecipationPercentType.class,
     ParticipationPercentType.class,
     PaymentPercentType.class,
     PenaltySurchargePercentType.class,
-   ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PercentType.class,
+    ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PercentType.class,
+    ProgressPercentType.class,
     ReliabilityPercentType.class,
     SettlementDiscountPercentType.class,
     TargetServicePercentType.class,

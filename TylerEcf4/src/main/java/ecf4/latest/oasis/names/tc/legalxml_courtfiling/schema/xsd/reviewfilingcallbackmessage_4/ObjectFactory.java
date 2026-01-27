@@ -27,7 +27,7 @@ public class ObjectFactory {
     private final static QName _ReviewFilingCallbackMessage_QNAME = new QName("urn:oasis:names:tc:legalxml-courtfiling:schema:xsd:ReviewFilingCallbackMessage-4.0", "ReviewFilingCallbackMessage");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.reviewfilingcallbackmessage_4
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.reviewfilingcallbackmessage_4
      * 
      */
     public ObjectFactory() {

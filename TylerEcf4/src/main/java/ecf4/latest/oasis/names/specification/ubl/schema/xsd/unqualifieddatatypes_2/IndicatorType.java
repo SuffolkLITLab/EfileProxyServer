@@ -14,17 +14,18 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BackOrderAllowedIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BalanceBroughtForwardIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BasedOnConsensusIndicatorType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BindingOnBuyerIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BulkCargoIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CandidateReductionConstraintIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CatalogueIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ChargeIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CompletionIndicatorType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ConditionDeviationIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ConsolidatableIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ContainerizedIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CopyIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CustomsImportClassifiedIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DangerousGoodsApprovedIndicatorType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FollowupContractIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FreeOfChargeIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FrozenDocumentIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FullyPaidSharesIndicatorType;
@@ -42,11 +43,14 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OnCarriageIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OptionalLineItemIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OrderableIndicatorType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OtherConditionsIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PartialDeliveryIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PowerIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PreCarriageIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PrepaidIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PricingUpdateRequestIndicatorType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PrizeIndicatorType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PublishAwardIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RefrigeratedIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RefrigerationOnIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RequiredCurriculaIndicatorType;
@@ -59,14 +63,7 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxEvidenceIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxIncludedIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ThirdPartyPayerIndicatorType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TimeDeviationIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ToOrderIndicatorType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransportServiceProviderCancellationIndicatorType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransportServiceProviderCompletionIndicatorType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransportServiceProviderReadyForExecutionIndicatorType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransportUserCancellationIndicatorType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransportUserCompletionIndicatorType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransportUserReadyForExecutionIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.UnknownPriceIndicatorType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.VariantConstraintIndicatorType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -132,17 +129,18 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     BackOrderAllowedIndicatorType.class,
     BalanceBroughtForwardIndicatorType.class,
     BasedOnConsensusIndicatorType.class,
+    BindingOnBuyerIndicatorType.class,
     BulkCargoIndicatorType.class,
     CandidateReductionConstraintIndicatorType.class,
     CatalogueIndicatorType.class,
     ChargeIndicatorType.class,
     CompletionIndicatorType.class,
-    ConditionDeviationIndicatorType.class,
     ConsolidatableIndicatorType.class,
     ContainerizedIndicatorType.class,
     CopyIndicatorType.class,
     CustomsImportClassifiedIndicatorType.class,
     DangerousGoodsApprovedIndicatorType.class,
+    FollowupContractIndicatorType.class,
     FreeOfChargeIndicatorType.class,
     FrozenDocumentIndicatorType.class,
     FullyPaidSharesIndicatorType.class,
@@ -160,11 +158,14 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     OnCarriageIndicatorType.class,
     OptionalLineItemIndicatorType.class,
     OrderableIndicatorType.class,
+    OtherConditionsIndicatorType.class,
     PartialDeliveryIndicatorType.class,
     PowerIndicatorType.class,
     PreCarriageIndicatorType.class,
     PrepaidIndicatorType.class,
     PricingUpdateRequestIndicatorType.class,
+    PrizeIndicatorType.class,
+    PublishAwardIndicatorType.class,
     RefrigeratedIndicatorType.class,
     RefrigerationOnIndicatorType.class,
     RequiredCurriculaIndicatorType.class,
@@ -177,14 +178,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     TaxEvidenceIndicatorType.class,
     TaxIncludedIndicatorType.class,
     ThirdPartyPayerIndicatorType.class,
-    TimeDeviationIndicatorType.class,
     ToOrderIndicatorType.class,
-    TransportServiceProviderCancellationIndicatorType.class,
-    TransportServiceProviderCompletionIndicatorType.class,
-    TransportServiceProviderReadyForExecutionIndicatorType.class,
-    TransportUserCancellationIndicatorType.class,
-    TransportUserCompletionIndicatorType.class,
-    TransportUserReadyForExecutionIndicatorType.class,
     UnknownPriceIndicatorType.class,
     VariantConstraintIndicatorType.class
 })

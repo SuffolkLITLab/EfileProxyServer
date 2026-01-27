@@ -56,8 +56,8 @@ public class OrganizationType
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "OrganizationAugmentation" is used by two different parts of a schema. See: 
-     * line 360 of file:/home/bryce/Developer/LITLab/code/EfileProxyServer/src/main/resources/wsdl/stage/ecf-18.xsd
-     * line 359 of file:/home/bryce/Developer/LITLab/code/EfileProxyServer/src/main/resources/wsdl/stage/ecf-18.xsd
+     * line 360 of file:/Users/bwilley/Developer/EfileProxyServer/TylerEcf4/src/main/resources/wsdl/v2025_4/base/ecf-44eb1cb9561b45b8.xsd
+     * line 359 of file:/Users/bwilley/Developer/EfileProxyServer/TylerEcf4/src/main/resources/wsdl/v2025_4/base/ecf-44eb1cb9561b45b8.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 

@@ -52,7 +52,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "associationAugmentationPoint"
 })
 @XmlSeeAlso({
-   ecf4.latest.gov.niem.release.niem.niem_core._4.AssociationType.class
+    ecf4.latest.gov.niem.release.niem.niem_core._4.AssociationType.class
 })
 public abstract class AssociationType {
 

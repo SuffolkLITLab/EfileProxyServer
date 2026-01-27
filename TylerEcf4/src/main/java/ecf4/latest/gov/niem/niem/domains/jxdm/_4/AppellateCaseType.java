@@ -39,7 +39,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "appellateCaseOriginalCase"
 })
 @XmlSeeAlso({
-   ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.appellatecase_4.AppellateCaseType.class
+    ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.appellatecase_4.AppellateCaseType.class
 })
 public class AppellateCaseType
     extends CaseType

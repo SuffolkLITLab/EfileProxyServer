@@ -1,7 +1,6 @@
 
 package ecf4.latest.gov.niem.release.niem.niem_core._4;
 
-import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.PlacementType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.ArrestType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.BookingType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.CitationType;
@@ -58,14 +57,13 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "activityDate"
 })
 @XmlSeeAlso({
-    PlacementType.class,
+    CourtEventType.class,
     PersonDisunionType.class,
     PersonUnionSeparationType.class,
     SupervisionType.class,
     CaseType.class,
     ArrestType.class,
     BookingType.class,
-    CourtEventType.class,
     CitationType.class,
     DriverLicenseWithdrawalType.class,
     IncidentType.class,

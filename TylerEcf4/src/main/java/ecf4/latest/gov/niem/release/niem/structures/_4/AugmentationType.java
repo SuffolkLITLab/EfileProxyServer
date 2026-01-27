@@ -7,6 +7,18 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.IncidentAugmentationType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseOfficialAugmentationType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentAssociationAugmentationType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentAugmentationType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ItemAugmentationType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.MessageStatusAugmentationType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.OrganizationAssociationAugmentationType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAssociationAugmentationType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonOrganizationAssociationAugmentationType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.RelatedActivityAssociationAugmentationType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ReviewedDocumentAugmentationType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.SignatureAugmentationType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.SubjectAugmentationType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAnyAttribute;
@@ -20,19 +32,6 @@ import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
-
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseOfficialAugmentationType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentAssociationAugmentationType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentAugmentationType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ItemAugmentationType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.MessageStatusAugmentationType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.OrganizationAssociationAugmentationType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAssociationAugmentationType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonOrganizationAssociationAugmentationType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.RelatedActivityAssociationAugmentationType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ReviewedDocumentAugmentationType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.SignatureAugmentationType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.SubjectAugmentationType;
 import ecf4.latest.tyler.ecf.v5_0.extensions.common.AllocateCourtDateAugmentationType;
 import ecf4.latest.tyler.ecf.v5_0.extensions.common.ReserveDateAugmentationType;
 
@@ -61,31 +60,30 @@ import ecf4.latest.tyler.ecf.v5_0.extensions.common.ReserveDateAugmentationType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AugmentationType")
 @XmlSeeAlso({
-   ecf4.latest.gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType.class,
-    IncidentAugmentationType.class,
-   ecf4.latest.gov.niem.release.niem.domains.jxdm._6.PersonAugmentationType.class,
-   ecf4.latest.gov.niem.release.niem.domains.jxdm._6.OrganizationAugmentationType.class,
-   ecf4.latest.tyler.ecf.v5_0.extensions.common.CourtEventAugmentationType.class,
-   ecf4.latest.tyler.ecf.v5_0.extensions.common.CaseAugmentationType.class,
-    ReserveDateAugmentationType.class,
-    AllocateCourtDateAugmentationType.class,
-   ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseAugmentationType.class,
+    ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseAugmentationType.class,
     CaseOfficialAugmentationType.class,
-   ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventAugmentationType.class,
+    ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventAugmentationType.class,
     DocumentAssociationAugmentationType.class,
     DocumentAugmentationType.class,
     ItemAugmentationType.class,
     MessageStatusAugmentationType.class,
     OrganizationAssociationAugmentationType.class,
-   ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.OrganizationAugmentationType.class,
+    ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.OrganizationAugmentationType.class,
     PersonAssociationAugmentationType.class,
-   ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAugmentationType.class,
+    ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.PersonAugmentationType.class,
     PersonOrganizationAssociationAugmentationType.class,
     RelatedActivityAssociationAugmentationType.class,
     ReviewedDocumentAugmentationType.class,
     SignatureAugmentationType.class,
     SubjectAugmentationType.class,
-   ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.CaseAugmentationType.class
+    ecf4.latest.gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType.class,
+    IncidentAugmentationType.class,
+    ecf4.latest.gov.niem.release.niem.domains.jxdm._6.PersonAugmentationType.class,
+    ecf4.latest.gov.niem.release.niem.domains.jxdm._6.OrganizationAugmentationType.class,
+    ecf4.latest.tyler.ecf.v5_0.extensions.common.CourtEventAugmentationType.class,
+    ecf4.latest.tyler.ecf.v5_0.extensions.common.CaseAugmentationType.class,
+    ReserveDateAugmentationType.class,
+    AllocateCourtDateAugmentationType.class
 })
 public abstract class AugmentationType {
 

@@ -48,7 +48,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     "statuteOffenseIdentification"
 })
 @XmlSeeAlso({
-   ecf4.latest.tyler.ecf.extensions.criminal.StatuteType.class
+    ecf4.latest.tyler.ecf.extensions.criminal.StatuteType.class
 })
 public class StatuteType
     extends ComplexObjectType

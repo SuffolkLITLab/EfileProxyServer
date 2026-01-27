@@ -11,7 +11,8 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AircraftIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AttributeIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AuctionURIType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AwardingCriteriaIDType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AwardingCriterionIDType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BarcodeSymbologyIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BrokerAssignedIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BusinessClassificationEvidenceIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BusinessIdentityEvidenceIDType;
@@ -32,7 +33,6 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DocumentIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.EconomicOperatorRegistryURIType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.EndpointIDType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.EvidenceSuppliedIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ExchangeMarketIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ExtendedIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FreightForwarderAssignedIDType;
@@ -42,7 +42,6 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ImmobilizationCertificateIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.InformationURIType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.InstructionIDType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.InterestedProcurementLotsIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IssueNumberIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IssuerIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.JourneyIDType;
@@ -72,10 +71,10 @@ import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponent
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PreviousJobIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PreviousVersionIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PrimaryAccountNumberIDType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ProcurementProjectLotIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ProductTraceIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ProfileExecutionIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ProfileIDType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RadioCallSignIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RailCarIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReferenceIDType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ReferencedConsignmentIDType;
@@ -137,7 +136,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * </pre>
  * 
  * <pre>
- * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;A character string to identify and distinguish uniquely, one instance of an object in an identification scheme from all other objects in the same scheme together with relevant supplementary information.&lt;/ccts:Definition&gt;
+ * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:Definition xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;A character string to identify and uniquely distinguish one instance of an object in an identification scheme from all other objects in the same scheme, together with relevant supplementary information.&lt;/ccts:Definition&gt;
  * </pre>
  * 
  * <pre>
@@ -149,7 +148,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * </pre>
  * 
  * <pre>
- * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:UsageRule xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;Other supplementary components in the CCT are captured as part of the token and name for the schema module containing the identifer list and thus, are not declared as attributes. &lt;/ccts:UsageRule&gt;
+ * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;ccts:UsageRule xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;Other supplementary components in the CCT are captured as part of the token and name for the schema module containing the identifier list and thus, are not declared as attributes. &lt;/ccts:UsageRule&gt;
  * </pre>
  * 
  * 
@@ -177,7 +176,8 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     AircraftIDType.class,
     AttributeIDType.class,
     AuctionURIType.class,
-    AwardingCriteriaIDType.class,
+    AwardingCriterionIDType.class,
+    BarcodeSymbologyIDType.class,
     BrokerAssignedIDType.class,
     BusinessClassificationEvidenceIDType.class,
     BusinessIdentityEvidenceIDType.class,
@@ -198,7 +198,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     DocumentIDType.class,
     EconomicOperatorRegistryURIType.class,
     EndpointIDType.class,
-    EvidenceSuppliedIDType.class,
     ExchangeMarketIDType.class,
     ExtendedIDType.class,
     FreightForwarderAssignedIDType.class,
@@ -208,7 +207,6 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     ImmobilizationCertificateIDType.class,
     InformationURIType.class,
     InstructionIDType.class,
-    InterestedProcurementLotsIDType.class,
     IssueNumberIDType.class,
     IssuerIDType.class,
     JourneyIDType.class,
@@ -238,10 +236,10 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     PreviousJobIDType.class,
     PreviousVersionIDType.class,
     PrimaryAccountNumberIDType.class,
-    ProcurementProjectLotIDType.class,
     ProductTraceIDType.class,
     ProfileExecutionIDType.class,
     ProfileIDType.class,
+    RadioCallSignIDType.class,
     RailCarIDType.class,
     ReferenceIDType.class,
     ReferencedConsignmentIDType.class,

@@ -58,8 +58,8 @@ public class CitationCaseType
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "CaseAugmentation" is used by two different parts of a schema. See: 
-     * line 70 of file:/home/bryce/Developer/LITLab/code/EfileProxyServer/src/main/resources/wsdl/stage/ecf-22.xsd
-     * line 69 of file:/home/bryce/Developer/LITLab/code/EfileProxyServer/src/main/resources/wsdl/stage/ecf-22.xsd
+     * line 70 of file:/Users/bwilley/Developer/EfileProxyServer/TylerEcf4/src/main/resources/wsdl/v2025_4/base/ecf-8b83d1c8e68769f4.xsd
+     * line 69 of file:/Users/bwilley/Developer/EfileProxyServer/TylerEcf4/src/main/resources/wsdl/v2025_4/base/ecf-8b83d1c8e68769f4.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 
