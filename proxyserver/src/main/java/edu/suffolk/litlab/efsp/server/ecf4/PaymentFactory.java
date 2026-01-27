@@ -69,7 +69,7 @@ public class PaymentFactory {
       tct.setBaseUnitMeasure(cbcObjFac.createBaseUnitMeasureType());
       tct.setPerUnitAmount(cbcObjFac.createPerUnitAmountType());
       tct.setTaxExemptionReasonCode(cbcObjFac.createTaxExemptionReasonCodeType());
-      tct.setTaxExemptionReason(cbcObjFac.createTaxExemptionReasonType());
+      // tct.setTaxExemptionReasonCode(cbcObjFac.createTaxExemptionReasonType());
       tct.setTierRange(cbcObjFac.createTierRangeType());
       tct.setTierRatePercent(cbcObjFac.createTierRatePercentType());
       act.getTaxCategory().add(tct);

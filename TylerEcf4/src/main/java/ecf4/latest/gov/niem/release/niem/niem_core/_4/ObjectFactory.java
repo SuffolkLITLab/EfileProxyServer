@@ -299,11 +299,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link EntityType }
+     * Create an instance of {@link AmountType }
      * 
      */
-    public EntityType createEntityType() {
-        return new EntityType();
+    public AmountType createAmountType() {
+        return new AmountType();
+    }
+
+    /**
+     * Create an instance of {@link PersonType }
+     * 
+     */
+    public PersonType createPersonType() {
+        return new PersonType();
     }
 
     /**
@@ -315,19 +323,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DocumentType }
-     * 
-     */
-    public DocumentType createDocumentType() {
-        return new DocumentType();
-    }
-
-    /**
      * Create an instance of {@link DateType }
      * 
      */
     public DateType createDateType() {
         return new DateType();
+    }
+
+    /**
+     * Create an instance of {@link EntityType }
+     * 
+     */
+    public EntityType createEntityType() {
+        return new EntityType();
+    }
+
+    /**
+     * Create an instance of {@link DocumentType }
+     * 
+     */
+    public DocumentType createDocumentType() {
+        return new DocumentType();
     }
 
     /**
@@ -419,14 +435,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link PersonType }
-     * 
-     */
-    public PersonType createPersonType() {
-        return new PersonType();
-    }
-
-    /**
      * Create an instance of {@link TelephoneNumberType }
      * 
      */
@@ -480,14 +488,6 @@ public class ObjectFactory {
      */
     public ProperNameTextType createProperNameTextType() {
         return new ProperNameTextType();
-    }
-
-    /**
-     * Create an instance of {@link AmountType }
-     * 
-     */
-    public AmountType createAmountType() {
-        return new AmountType();
     }
 
     /**

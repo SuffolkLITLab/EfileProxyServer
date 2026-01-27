@@ -4,6 +4,7 @@ package ecf4.latest.gov.niem.release.niem.niem_core._4;
 import java.util.ArrayList;
 import java.util.List;
 import ecf4.latest.gov.niem.release.niem.codes.iso_639_3._4.LanguageCodeType;
+import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.DependencyPetitionType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.AppellateCaseNoticeType;
 import ecf4.latest.gov.niem.release.niem.structures._4.ObjectType;
 import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
@@ -79,6 +80,7 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
     MatchingFilingType.class,
     ReviewedDocumentType.class,
     AppellateCaseNoticeType.class,
+    DependencyPetitionType.class,
     CaseFilingType.class
 })
 public class DocumentType

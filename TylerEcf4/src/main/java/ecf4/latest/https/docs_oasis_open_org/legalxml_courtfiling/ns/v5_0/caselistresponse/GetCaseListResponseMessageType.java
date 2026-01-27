@@ -3,11 +3,14 @@ package ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.casel
 
 import java.util.ArrayList;
 import java.util.List;
+import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.CaseType;
 import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
+import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
@@ -45,8 +48,8 @@ public class GetCaseListResponseMessageType
     extends ResponseMessageType
 {
 
-    @XmlElement(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", nillable = true)
-    protected List<CaseType> _case;
+    @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
+    protected List<JAXBElement<? extends CaseType>> _case;
     @XmlElement(name = "GetCaseListResponseMessageAugmentationPoint")
     protected List<Object> getCaseListResponseMessageAugmentationPoint;
 
@@ -68,13 +71,14 @@ public class GetCaseListResponseMessageType
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link CaseType }
+     * {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
+     * {@link JAXBElement }{@code <}{@link CaseType }{@code >}
      * 
      * 
      */
-    public List<CaseType> getCase() {
+    public List<JAXBElement<? extends CaseType>> getCase() {
         if (_case == null) {
-            _case = new ArrayList<CaseType>();
+            _case = new ArrayList<JAXBElement<? extends CaseType>>();
         }
         return this._case;
     }

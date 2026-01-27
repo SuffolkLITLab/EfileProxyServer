@@ -3,14 +3,17 @@ package ecf4.latest.tyler.ecf.v5_0.extensions.returndate;
 
 import java.util.ArrayList;
 import java.util.List;
+import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.CaseType;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.DateType;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.TextType;
 import ecf4.latest.gov.niem.release.niem.proxy.xsd._4.Boolean;
 import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseFilingType;
+import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
@@ -54,8 +57,8 @@ public class ReturnDateMessageType
 
     @XmlElement(name = "CaseParticipantRoleCode", namespace = "https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf")
     protected TextType caseParticipantRoleCode;
-    @XmlElement(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", nillable = true)
-    protected CaseType _case;
+    @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
+    protected JAXBElement<? extends CaseType> _case;
     @XmlElement(name = "ReturnDate")
     protected DateType returnDate;
     @XmlElement(name = "OutOfStateIndicator", namespace = "urn:tyler:ecf:v5.0:extensions:common", required = true)
@@ -92,10 +95,11 @@ public class ReturnDateMessageType
      * 
      * @return
      *     possible object is
-     *     {@link CaseType }
+     *     {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
      *     
      */
-    public CaseType getCase() {
+    public JAXBElement<? extends CaseType> getCase() {
         return _case;
     }
 
@@ -104,10 +108,11 @@ public class ReturnDateMessageType
      * 
      * @param value
      *     allowed object is
-     *     {@link CaseType }
+     *     {@link JAXBElement }{@code <}{@link ChildSupportEnforcementCaseType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CaseType }{@code >}
      *     
      */
-    public void setCase(CaseType value) {
+    public void setCase(JAXBElement<? extends CaseType> value) {
         this._case = value;
     }
 

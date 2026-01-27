@@ -1,35 +1,38 @@
 
-package ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caseresponse;
+package ecf4.latest.gov.niem.release.niem.domains.humanservices._4;
 
 import java.util.ArrayList;
 import java.util.List;
-import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.ChildSupportEnforcementCaseType;
+import ecf4.latest.gov.niem.release.niem.niem_core._4.AssociationType;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.CaseType;
-import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.ResponseMessageType;
+import ecf4.latest.gov.niem.release.niem.niem_core._4.PersonType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.FiduciaryCaseAssociationType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
- * The response to a GetCaseInformationQuery.
+ * A data type for a relationship between a person and a case.
  * 
- * <p>Java class for GetCaseResponseMessageType complex type.
+ * <p>Java class for PersonCaseAssociationType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="GetCaseResponseMessageType"&gt;
+ * &lt;complexType name="PersonCaseAssociationType"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/ecf}ResponseMessageType"&gt;
+ *     &lt;extension base="{http://release.niem.gov/niem/niem-core/4.0/}AssociationType"&gt;
  *       &lt;sequence&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Person" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{http://release.niem.gov/niem/niem-core/4.0/}Case" minOccurs="0"/&gt;
- *         &lt;element ref="{https://docs.oasis-open.org/legalxml-courtfiling/ns/v5.0/caseresponse}GetCaseResponseMessageAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://release.niem.gov/niem/domains/humanServices/4.0/}PersonCaseAssociationAugmentationPoint" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;anyAttribute processContents='lax' namespace='urn:us:gov:ic:ntk urn:us:gov:ic:ism'/&gt;
  *     &lt;/extension&gt;
@@ -40,18 +43,53 @@ import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "GetCaseResponseMessageType", propOrder = {
+@XmlType(name = "PersonCaseAssociationType", propOrder = {
+    "person",
     "_case",
-    "getCaseResponseMessageAugmentationPoint"
+    "personCaseAssociationAugmentationPoint"
 })
-public class GetCaseResponseMessageType
-    extends ResponseMessageType
+@XmlSeeAlso({
+    FiduciaryCaseAssociationType.class
+})
+public class PersonCaseAssociationType
+    extends AssociationType
 {
 
+    @XmlElement(name = "Person", namespace = "http://release.niem.gov/niem/niem-core/4.0/", nillable = true)
+    protected List<PersonType> person;
     @XmlElementRef(name = "Case", namespace = "http://release.niem.gov/niem/niem-core/4.0/", type = JAXBElement.class, required = false)
     protected JAXBElement<? extends CaseType> _case;
-    @XmlElement(name = "GetCaseResponseMessageAugmentationPoint")
-    protected List<Object> getCaseResponseMessageAugmentationPoint;
+    @XmlElement(name = "PersonCaseAssociationAugmentationPoint")
+    protected List<Object> personCaseAssociationAugmentationPoint;
+
+    /**
+     * Gets the value of the person property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a <CODE>set</CODE> method for the person property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getPerson().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link PersonType }
+     * 
+     * 
+     */
+    public List<PersonType> getPerson() {
+        if (person == null) {
+            person = new ArrayList<PersonType>();
+        }
+        return this.person;
+    }
 
     /**
      * Gets the value of the case property.
@@ -80,18 +118,18 @@ public class GetCaseResponseMessageType
     }
 
     /**
-     * Gets the value of the getCaseResponseMessageAugmentationPoint property.
+     * Gets the value of the personCaseAssociationAugmentationPoint property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the Jakarta XML Binding object.
-     * This is why there is not a <CODE>set</CODE> method for the getCaseResponseMessageAugmentationPoint property.
+     * This is why there is not a <CODE>set</CODE> method for the personCaseAssociationAugmentationPoint property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getGetCaseResponseMessageAugmentationPoint().add(newItem);
+     *    getPersonCaseAssociationAugmentationPoint().add(newItem);
      * </pre>
      * 
      * 
@@ -101,11 +139,11 @@ public class GetCaseResponseMessageType
      * 
      * 
      */
-    public List<Object> getGetCaseResponseMessageAugmentationPoint() {
-        if (getCaseResponseMessageAugmentationPoint == null) {
-            getCaseResponseMessageAugmentationPoint = new ArrayList<Object>();
+    public List<Object> getPersonCaseAssociationAugmentationPoint() {
+        if (personCaseAssociationAugmentationPoint == null) {
+            personCaseAssociationAugmentationPoint = new ArrayList<Object>();
         }
-        return this.getCaseResponseMessageAugmentationPoint;
+        return this.personCaseAssociationAugmentationPoint;
     }
 
     /**
