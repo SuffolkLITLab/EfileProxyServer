@@ -3,7 +3,6 @@ package edu.suffolk.litlab.efsp.server.ecf4;
 import com.fasterxml.jackson.databind.JsonNode;
 import ecf4.latest.gov.niem.niem.fbi._2.SEXCodeSimpleType;
 import ecf4.latest.gov.niem.niem.fbi._2.SEXCodeType;
-import ecf4.latest.gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 import ecf4.latest.gov.niem.niem.fips_10_4._2.CountryCodeType;
 import ecf4.latest.gov.niem.niem.iso_639_3._2.LanguageCodeType;
 import ecf4.latest.gov.niem.niem.niem_core._2.AddressType;
@@ -572,10 +571,6 @@ public class EcfCourtSpecificSerializer {
     addr.setAddressLine1(myAddr.getStreet());
     addr.setAddressLine2(myAddr.getApartment());
     addr.setCity(myAddr.getCity());
-    var cct = Ecf4Helper.strToCountryCode(myAddr.getCountry());
-    if (cct.isErr()) {
-      throw FilingError.serverError("Country Code is wrong: " + myAddr.getCountry());
-    }
     addr.setState(myAddr.getState());
     addr.setZipCode(myAddr.getZip());
     addr.setCountry(myAddr.getCountry());
@@ -596,22 +591,7 @@ public class EcfCourtSpecificSerializer {
     ProperNameTextType pntt = niemObjFac.createProperNameTextType();
     pntt.setValue(address.getCity());
     sat.setLocationCityName(pntt);
-    var cctResult = Ecf4Helper.strToCountryCode(address.getCountry());
-    if (cctResult.isErr()) {
-      List<String> countries =
-          Arrays.stream(CountryCodeSimpleType.values())
-              .map((t) -> t.toString())
-              .collect(Collectors.toList());
-      InterviewVariable var =
-          collector.requestVar(
-              "country",
-              "County of the World, in an address",
-              "choices",
-              countries,
-              Optional.of(address.getCountry()));
-      collector.addWrong(var);
-    }
-    CountryCodeType cct = cctResult.unwrapOrElseThrow();
+    CountryCodeType cct = Ecf4Helper.strToCountryCode(address.getCountry());
     sat.setLocationCountry(niemObjFac.createLocationCountryFIPS104Code(cct));
     if (!fillStateCode(address.getState(), cct, sat)) {
       String countryString = cct.getValue();

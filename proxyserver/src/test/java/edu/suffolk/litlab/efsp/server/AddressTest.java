@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ecf4.latest.gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 import ecf4.latest.gov.niem.niem.niem_core._2.AddressType;
 import ecf4.latest.gov.niem.niem.niem_core._2.ProperNameTextType;
 import ecf4.latest.gov.niem.niem.niem_core._2.StructuredAddressType;
@@ -34,7 +33,7 @@ public class AddressTest {
   @BeforeEach
   public void setUp() {
     addr =
-        new Address("100 Circle Road", "Apt 2", "Plano", "TX", "75093", CountryCodeSimpleType.US);
+        new Address("100 Circle Road", "Apt 2", "Plano", "TX", "75093", "US");
     CodeDatabase cd = mock(CodeDatabase.class);
     when(cd.getStateCodes("adams", "US")).thenReturn(List.of("TX", "MA"));
     CourtLocationInfo loc = new CourtLocationInfo();

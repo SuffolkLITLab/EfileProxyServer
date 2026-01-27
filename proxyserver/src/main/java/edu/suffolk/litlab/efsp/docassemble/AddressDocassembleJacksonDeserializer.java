@@ -1,7 +1,6 @@
 package edu.suffolk.litlab.efsp.docassemble;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import ecf4.latest.gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 import edu.suffolk.litlab.efsp.model.Address;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
@@ -66,24 +65,17 @@ public class AddressDocassembleJacksonDeserializer {
     String city = (node.has("city")) ? node.get("city").asText("") : "";
     String state = (node.has("state")) ? node.get("state").asText("") : "";
     String zip = (node.has("zip")) ? node.get("zip").asText("") : "";
-    String country = (node.has("country")) ? node.get("country").asText("US") : "US";
-    CountryCodeSimpleType countryCode;
-    try {
-      countryCode = CountryCodeSimpleType.fromValue(country);
-    } catch (IllegalArgumentException ex) {
-      log.error("Country {} isn't a valid country", country, ex);
-      List<String> countries =
-          Arrays.stream(CountryCodeSimpleType.values())
-              .map((t) -> t.toString())
-              .collect(Collectors.toList());
+    String country = (node.has("country")) ? node.get("country").asText("US").toUpperCase() : "US";
+    if (country.length() > 2) {
+      log.error("Country {} isn't a valid country (should be 2 letters", country);
       InterviewVariable countryOptions =
           collector.requestVar(
-              "country", "The 2 letter country code", "choices", countries, Optional.of(country));
+              "country", "The 2 letter country code", "choices", List.of(), Optional.of(country));
       FilingError err = FilingError.wrongValue(countryOptions);
       collector.error(err);
       throw err;
     }
-    Address addr = new Address(address, unit, city, state, zip, countryCode);
+    Address addr = new Address(address, unit, city, state, zip, country);
     return Optional.of(addr);
   }
 }

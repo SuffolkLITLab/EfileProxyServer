@@ -35,7 +35,6 @@ public class PersonDocassembleJacksonDeserializerTest {
     assertThat(per.getContactInfo().getPhoneNumbers()).hasSize(1);
     assertThat(per.getContactInfo().getAddress())
         .isPresent(); // contains(new Address("123 Fake St", "", "Chicago", "IL", "60007",
-    // CountryCodeSimpleType.US));
     assertThat(per.getContactInfo().getAddress().get().getCity()).isEqualTo("Chicago");
     assertThat(per.getPartyId()).isEqualTo(PartyId.Already("abcd1234-1234-1234-1234-abcdabcd1234"));
     assertThat(per.getRole()).isEqualTo("29738");
@@ -60,7 +59,6 @@ public class PersonDocassembleJacksonDeserializerTest {
     assertThat(per.getContactInfo().getPhoneNumbers()).hasSize(1);
     assertThat(per.getContactInfo().getAddress())
         .isPresent(); // contains(new Address("123 Fake St", "", "Chicago", "IL", "60007",
-    // CountryCodeSimpleType.US));
     assertThat(per.getContactInfo().getAddress().get().getCity()).isEqualTo("Chicago");
     assertThat(per.getPartyId()).isEqualTo(PartyId.Already("abcd1234-1234-1234-1234-abcdabcd1234"));
     assertThat(per.getRole()).isEqualTo("29738");
