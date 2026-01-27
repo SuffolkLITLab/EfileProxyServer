@@ -30,19 +30,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link NormalizedString }
-     * 
-     */
-    public NormalizedString createNormalizedString() {
-        return new NormalizedString();
-    }
-
-    /**
      * Create an instance of {@link Boolean }
      * 
      */
     public Boolean createBoolean() {
         return new Boolean();
+    }
+
+    /**
+     * Create an instance of {@link NormalizedString }
+     * 
+     */
+    public NormalizedString createNormalizedString() {
+        return new NormalizedString();
     }
 
     /**

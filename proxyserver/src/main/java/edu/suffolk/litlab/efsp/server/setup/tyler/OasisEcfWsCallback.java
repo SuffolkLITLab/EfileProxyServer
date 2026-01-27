@@ -70,7 +70,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
     String amountText = Ecf4Helper.amountToString(charge.getAmount());
     chargeReason.append(amountText);
     if (charge.getAllowanceChargeReason() != null) {
-      chargeReason.append(" for ").append(charge.getAllowanceChargeReason().getValue());
+      chargeReason.append(" for ").append(charge.getAllowanceChargeReasonCode().getValue());
     }
     charge.getPaymentMeans().stream()
         .filter(m -> m != null)

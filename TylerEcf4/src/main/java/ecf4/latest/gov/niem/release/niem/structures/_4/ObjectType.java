@@ -13,6 +13,8 @@ import ecf4.latest.gov.niem.release.niem.domains.biometrics._4.DNASampleType;
 import ecf4.latest.gov.niem.release.niem.domains.cbrn._4.MessageContentErrorType;
 import ecf4.latest.gov.niem.release.niem.domains.cbrn._4.MessageErrorType;
 import ecf4.latest.gov.niem.release.niem.domains.cbrn._4.RemarksComplexObjectType;
+import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.ChildType;
+import ecf4.latest.gov.niem.release.niem.domains.humanservices._4.JuvenileType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.ChargeEnhancingFactorType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.ChargeType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.CourtAppearanceType;
@@ -65,6 +67,7 @@ import ecf4.latest.gov.niem.release.niem.niem_core._4.StatusType;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.StreetType;
 import ecf4.latest.gov.niem.release.niem.niem_core._4.TelephoneNumberType;
 import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.caserequest.CaseQueryCriteriaType;
+import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.DecedentEstateCaseType;
 import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventActorType;
 import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventOnBehalfOfActorType;
 import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.DocumentSignatureType;
@@ -125,9 +128,12 @@ import ecf4.latest.tyler.ecf.v5_0.extensions.common.FilingReferenceType;
     "objectAugmentationPoint"
 })
 @XmlSeeAlso({
+    AmountType.class,
+    PersonType.class,
+    DecedentEstateCaseType.class,
+    DateType.class,
     EntityType.class,
     CourtEventOnBehalfOfActorType.class,
-    DateType.class,
     CourtEventActorType.class,
     DocumentSignatureType.class,
     ElectronicServiceInformationType.class,
@@ -139,10 +145,8 @@ import ecf4.latest.tyler.ecf.v5_0.extensions.common.FilingReferenceType;
     DNASampleType.class,
     AddressType.class,
     ContactInformationType.class,
-    PersonType.class,
     TelephoneNumberType.class,
     DateRangeType.class,
-    AmountType.class,
     FullTelephoneNumberType.class,
     JurisdictionType.class,
     LocationType.class,
@@ -169,7 +173,6 @@ import ecf4.latest.tyler.ecf.v5_0.extensions.common.FilingReferenceType;
     MessageErrorType.class,
     MessageContentErrorType.class,
     RemarksComplexObjectType.class,
-    ChargeType.class,
     EnforcementOfficialType.class,
     SubjectType.class,
     DispositionType.class,
@@ -182,10 +185,13 @@ import ecf4.latest.tyler.ecf.v5_0.extensions.common.FilingReferenceType;
     JudicialOfficialBarMembershipType.class,
     OrganizationAlternateNameType.class,
     RegisteredOffenderType.class,
-    ActivityType.class,
     DriverLicenseBaseType.class,
     DrivingRestrictionType.class,
     ItemRegistrationType.class,
+    ChildType.class,
+    JuvenileType.class,
+    ChargeType.class,
+    ActivityType.class,
     CaseQueryCriteriaType.class,
     PaymentMessageType.class,
     DevelopmentPolicyType.class,

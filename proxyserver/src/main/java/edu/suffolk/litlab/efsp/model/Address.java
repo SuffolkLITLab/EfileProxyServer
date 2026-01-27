@@ -35,7 +35,7 @@ public class Address {
     this.cityName = cityName;
     this.stateName = stateName;
     this.zipCode = zipCode;
-    this.countryName = countryName; 
+    this.countryName = countryName;
   }
 
   public String getStreet() {

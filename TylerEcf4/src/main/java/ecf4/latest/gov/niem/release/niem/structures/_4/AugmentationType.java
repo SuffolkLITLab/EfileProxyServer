@@ -60,6 +60,7 @@ import ecf4.latest.tyler.ecf.v5_0.extensions.common.ReserveDateAugmentationType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AugmentationType")
 @XmlSeeAlso({
+    ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.civil.CaseAugmentationType.class,
     ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CaseAugmentationType.class,
     CaseOfficialAugmentationType.class,
     ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.CourtEventAugmentationType.class,

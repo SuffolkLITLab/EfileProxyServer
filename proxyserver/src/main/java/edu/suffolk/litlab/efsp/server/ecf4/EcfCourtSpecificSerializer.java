@@ -66,7 +66,6 @@ import edu.suffolk.litlab.efsp.utils.InterviewVariable;
 import jakarta.xml.bind.JAXBElement;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;

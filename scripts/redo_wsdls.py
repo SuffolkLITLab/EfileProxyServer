@@ -579,6 +579,8 @@ def add_new_ecf4_version(version, url):
   with open('bindings.xjb', 'w') as f:
     f.write(bindings_xjb_contents_ecf4)
 
+  unused = input("PAUSE HERE: go edit and add `civil.xsd` and `hs.xsd` to the new version")
+
   java_prefix = f"{start_dir}/../TylerEcf4/src/main/java/"
   wsdl2java['-xjc-Xts', '-d', java_prefix, f'{start_dir}/{path_prefix}/stage/illinois-ECF-4.0-CourtRecordMDEService.wsdl'] & FG
   wsdl2java['-xjc-Xts', '-d', java_prefix, f'{start_dir}/{path_prefix}/stage/illinois-ECF-4.0-FilingReviewMDEService.wsdl'] & FG

@@ -4,7 +4,7 @@ import ecf4.latest.gov.niem.niem.niem_core._2.BinaryType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.CardAccountType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentMeansType;
-import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AllowanceChargeReasonType;
+import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AllowanceChargeReasonCodeType;
 import ecf4.latest.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
 import ecf4.latest.tyler.ecf.extensions.common.ReviewedDocumentType;
 import java.time.LocalDate;
@@ -70,10 +70,10 @@ public class ReviewedFilingExamples extends DomainContextBase {
         .use(reasons)
         .in(
             (charge, r) -> {
-              var reasonType = new AllowanceChargeReasonType();
+              var reasonType = new AllowanceChargeReasonCodeType();
               reasonType.setLanguageID("en");
               reasonType.setValue(r);
-              charge.setAllowanceChargeReason(reasonType);
+              charge.setAllowanceChargeReasonCode(reasonType);
               return charge;
             })
         .use(means)

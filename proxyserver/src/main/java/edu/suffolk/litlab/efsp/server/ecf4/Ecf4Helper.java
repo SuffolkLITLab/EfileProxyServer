@@ -1,6 +1,5 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
-import com.hubspot.algebra.Result;
 import ecf4.latest.gov.niem.niem.domains.jxdm._4.CourtType;
 import ecf4.latest.gov.niem.niem.fips_10_4._2.CountryCodeType;
 import ecf4.latest.gov.niem.niem.niem_core._2.DateType;

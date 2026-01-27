@@ -32,8 +32,7 @@ public class AddressTest {
 
   @BeforeEach
   public void setUp() {
-    addr =
-        new Address("100 Circle Road", "Apt 2", "Plano", "TX", "75093", "US");
+    addr = new Address("100 Circle Road", "Apt 2", "Plano", "TX", "75093", "US");
     CodeDatabase cd = mock(CodeDatabase.class);
     when(cd.getStateCodes("adams", "US")).thenReturn(List.of("TX", "MA"));
     CourtLocationInfo loc = new CourtLocationInfo();

@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xs:schema targetNamespace="http://release.niem.gov/niem/domains/humanServices/4.0/" version="1" xsi:schemaLocation="http://release.niem.gov/niem/appinfo/4.0/ ../../../utility/appinfo/4.0/appinfo.xsd http://release.niem.gov/niem/conformanceTargets/3.0/ ../../../utility/conformanceTargets/3.0/conformanceTargets.xsd" ct:conformanceTargets="http://reference.niem.gov/niem/specification/naming-and-design-rules/4.0/#ReferenceSchemaDocument" xmlns:structures="http://release.niem.gov/niem/structures/4.0/" xmlns:hs="http://release.niem.gov/niem/domains/humanServices/4.0/" xmlns:appinfo="http://release.niem.gov/niem/appinfo/4.0/" xmlns:ct="http://release.niem.gov/niem/conformanceTargets/3.0/" xmlns:nc="http://release.niem.gov/niem/niem-core/4.0/" xmlns:j="http://release.niem.gov/niem/domains/jxdm/6.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:niem-xs="http://release.niem.gov/niem/proxy/xsd/4.0/">
+  <xs:annotation>
+    <xs:documentation>Human Services</xs:documentation>
+  </xs:annotation>
+  <!-- NOTE(brycew): manually edited the locations, since this is refd by civil, but nothing else. -->
+  <xs:import schemaLocation="ecf-v5-f170c31c1d220487.xsd" namespace="http://release.niem.gov/niem/domains/jxdm/6.0/"/>
+  <xs:import schemaLocation="ecf-v5-966bb27464653f84.xsd" namespace="http://release.niem.gov/niem/niem-core/4.0/"/>
+  <xs:import schemaLocation="ecf-v5-4d179e3e0bd140a9.xsd" namespace="http://release.niem.gov/niem/proxy/xsd/4.0/"/>
+  <xs:import schemaLocation="ecf-v5-43381e9aa490c46d.xsd" namespace="http://release.niem.gov/niem/structures/4.0/"/>
+  <xs:complexType name="ChildSupportEnforcementCaseType">
+    <xs:annotation>
+      <xs:documentation>A data type for a child support enforcement case.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="nc:CaseType">
+        <xs:sequence>
+          <xs:element ref="hs:SupportingGroundsDescriptionText" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ChildType">
+    <xs:annotation>
+      <xs:documentation>A data type for information about a person who has not yet reached the age of legal majority (i.e., adulthood).</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="structures:ObjectType">
+        <xs:sequence>
+          <xs:element ref="nc:RoleOfPerson" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="DependencyPetitionType">
+    <xs:annotation>
+      <xs:documentation>A data type for a document that is filed with the Court, typically by an attorney representing the Child Welfare Agency, that formally files allegations of abuse and/or neglect against one or more alleged perpetrators.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="nc:DocumentType"/>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="JuvenileAbuseNeglectAllegationType">
+    <xs:annotation>
+      <xs:documentation>A data type for allegations of juvenile abuse or neglect.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="j:ChargeType">
+        <xs:sequence>
+          <xs:element ref="hs:AbuseNeglectAllegationCategoryText" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="JuvenileCaseType">
+    <xs:annotation>
+      <xs:documentation>A data type for a juvenile case.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="nc:CaseType">
+        <xs:sequence>
+          <xs:element ref="hs:Juvenile" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="JuvenileGangAssociationType">
+    <xs:annotation>
+      <xs:documentation>A data type for an association between a juvenile and a criminal gang organization.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="nc:AssociationType">
+        <xs:sequence>
+          <xs:element ref="hs:GangOrganization" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="JuvenilePlacementFacilityAssociationType">
+    <xs:annotation>
+      <xs:documentation>A data type for an association between a juvenile and a facility where the juvenile is directed to reside (e.g., orphanage, detention center, etc.).</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="nc:AssociationType">
+        <xs:sequence>
+          <xs:element ref="hs:PlacementFacility" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="JuvenilePlacementPersonAssociationType">
+    <xs:annotation>
+      <xs:documentation>A data type for an association between a juvenile and a person with whom the juvenile is directed to reside (e.g., foster parent, grandparent, etc.).</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="nc:AssociationType">
+        <xs:sequence>
+          <xs:element ref="hs:PlacementPerson" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="JuvenilePlacementType">
+    <xs:annotation>
+      <xs:documentation>A data type for information about where a juvenile is directed to reside during the pendency of a delinquency proceeding.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="hs:PlacementType"/>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="JuvenileType">
+    <xs:annotation>
+      <xs:documentation>A data type for a juvenile.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="structures:ObjectType">
+        <xs:sequence>
+          <xs:element ref="nc:RoleOfPerson" minOccurs="1" maxOccurs="1"/>
+          <xs:element ref="hs:JuvenileAugmentationPoint" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ParentChildAssociationType">
+    <xs:annotation>
+      <xs:documentation>A data type for an association between a child and a person who is in a parent role toward that child.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="nc:AssociationType">
+        <xs:sequence>
+          <xs:element ref="hs:Child" minOccurs="1" maxOccurs="1"/>
+          <xs:element ref="hs:Parent" minOccurs="1" maxOccurs="unbounded"/>
+          <xs:element ref="hs:ParentChildKinshipCategoryAbstract" minOccurs="0" maxOccurs="1"/>
+          <xs:element ref="hs:BiologicalParentDeterminationDescriptionText" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="ParentChildKinshipCategoryCodeSimpleType">
+    <xs:annotation>
+      <xs:documentation>A data type for describing the nature of the relationship from a parent to a child</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="Adoption">
+        <xs:annotation>
+          <xs:documentation>Adoption</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Biological">
+        <xs:annotation>
+          <xs:documentation>Biological</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Foster">
+        <xs:annotation>
+          <xs:documentation>Foster</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Guardianship">
+        <xs:annotation>
+          <xs:documentation>Guardianship</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Marriage">
+        <xs:annotation>
+          <xs:documentation>Marriage</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Putative">
+        <xs:annotation>
+          <xs:documentation>Putative</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Surrogate">
+        <xs:annotation>
+          <xs:documentation>Surrogate</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="ParentChildKinshipCategoryCodeType">
+    <xs:annotation>
+      <xs:documentation>A data type for describing the nature of the relationship from a parent to a child</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="hs:ParentChildKinshipCategoryCodeSimpleType">
+        <xs:attributeGroup ref="structures:SimpleObjectAttributeGroup"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="PersonCaseAssociationType">
+    <xs:annotation>
+      <xs:documentation>A data type for a relationship between a person and a case.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="nc:AssociationType">
+        <xs:sequence>
+          <xs:element ref="nc:Person" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="nc:Case" minOccurs="0" maxOccurs="1"/>
+          <xs:element ref="hs:PersonCaseAssociationAugmentationPoint" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="PlacementLocationCodeSimpleType">
+    <xs:annotation>
+      <xs:documentation>A data type for a list that describes the location of a child or youth's placement.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="Family">
+        <xs:annotation>
+          <xs:documentation>Family</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Father">
+        <xs:annotation>
+          <xs:documentation>Father</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Fictive Kin">
+        <xs:annotation>
+          <xs:documentation>Symbolic Relative (also known as Fictive Kin)</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Foster Group Home">
+        <xs:annotation>
+          <xs:documentation>Foster Group Home</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Foster Home">
+        <xs:annotation>
+          <xs:documentation>Foster Home</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Foster Home Adoptive">
+        <xs:annotation>
+          <xs:documentation>Foster Home Adoptive</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Habitative Foster Home">
+        <xs:annotation>
+          <xs:documentation>Habitative Foster Home</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Mother">
+        <xs:annotation>
+          <xs:documentation>Mother</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Psychiatric Hospital">
+        <xs:annotation>
+          <xs:documentation>Psychiatric Hospital</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="RSA">
+        <xs:annotation>
+          <xs:documentation>Residential Substance Abuse Treatment Center</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="RTC">
+        <xs:annotation>
+          <xs:documentation>Residential Treatment Center</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="TFH">
+        <xs:annotation>
+          <xs:documentation>Therapeutic Foster Home</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="PlacementLocationCodeType">
+    <xs:annotation>
+      <xs:documentation>A data type for a list that describes the location of a child or youth's placement.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="hs:PlacementLocationCodeSimpleType">
+        <xs:attributeGroup ref="structures:SimpleObjectAttributeGroup"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="PlacementType">
+    <xs:annotation>
+      <xs:documentation>A data type for the placement history of a child or youth.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="nc:ActivityType">
+        <xs:sequence>
+          <xs:element ref="hs:PlacementCategoryAbstract" minOccurs="0" maxOccurs="1"/>
+          <xs:element ref="hs:PlacementAugmentationPoint" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="AbuseNeglectAllegationCategoryText" type="nc:TextType">
+    <xs:annotation>
+      <xs:documentation>A kind of allegation of abuse, sexual abuse, or neglect, provided by the referral or by the reporter at the time of investigation.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="BiologicalParentDeterminationDescriptionText" type="nc:TextType">
+    <xs:annotation>
+      <xs:documentation>An additional description of the details about the determination of a biological relationship between a putative parent and a child (for example, findings regarding the location and date of conception, or the results of DNA tests).</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="Child" type="hs:ChildType">
+    <xs:annotation>
+      <xs:documentation>A person who was an unmarried minor at the time of his or her involvement in a judicial proceeding or non-judicial program.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="ChildSupportEnforcementCase" type="hs:ChildSupportEnforcementCaseType" substitutionGroup="nc:Case">
+    <xs:annotation>
+      <xs:documentation>A child support enforcement case.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="DelinquentAct" type="nc:IncidentType">
+    <xs:annotation>
+      <xs:documentation>A delinquent act.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="DependencyPetition" type="hs:DependencyPetitionType">
+    <xs:annotation>
+      <xs:documentation>A document that is filed with the Court, typically by an attorney representing the Child Welfare Agency, that formally files allegations of abuse and/or neglect against one or more alleged perpetrators.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="GangOrganization" type="nc:OrganizationType" nillable="true">
+    <xs:annotation>
+      <xs:documentation>A criminal gang organization that is alleged to have a juvenile as a member.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="Juvenile" type="hs:JuvenileType">
+    <xs:annotation>
+      <xs:documentation>A role of a juvenile, played by a person defined as a juvenile rather than an adult under the law.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="JuvenileAbuseNeglectAllegation" type="hs:JuvenileAbuseNeglectAllegationType">
+    <xs:annotation>
+      <xs:documentation>A set of specifics of the referred incident of abuse or neglect as it relates to the victim. Information recorded includes the Abuse/Neglect Category and Type as well as narrative descriptions of the abuse and/or injuries</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="JuvenileAugmentationPoint" abstract="true">
+    <xs:annotation>
+      <xs:documentation>An augmentation point for JuvenileType.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="JuvenileCase" type="hs:JuvenileCaseType">
+    <xs:annotation>
+      <xs:documentation>An aggregation of information about a set of related activities and events pertaining to a juvenile. This can be, but is not necessarily, a court case.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="JuvenilePlacement" type="hs:JuvenilePlacementType">
+    <xs:annotation>
+      <xs:documentation>A description of the placement where a juvenile is directed to reside during the pendency of the delinquency proceeding.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="JuvenilePlacementFacilityAssociation" type="hs:JuvenilePlacementFacilityAssociationType">
+    <xs:annotation>
+      <xs:documentation>An association between a juvenile and a facility where the juvenile is directed to reside (e.g., orphanage, teen shelter, detention center, etc.).</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="JuvenilePlacementPersonAssociation" type="hs:JuvenilePlacementPersonAssociationType">
+    <xs:annotation>
+      <xs:documentation>An association between a juvenile and a person with whom the juvenile is directed to reside (e.g., foster parent, grandparent, etc.).</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="Parent" type="nc:PersonType" nillable="true">
+    <xs:annotation>
+      <xs:documentation>A father or mother of a person.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="ParentChildAssociation" type="hs:ParentChildAssociationType">
+    <xs:annotation>
+      <xs:documentation>An association between a child and a person who is in a parent role toward that child.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="ParentChildKinshipCategoryAbstract" abstract="true">
+    <xs:annotation>
+      <xs:documentation>A data concept for describing the nature of the relationship from a parent to a child.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="ParentChildKinshipCategoryCode" type="hs:ParentChildKinshipCategoryCodeType" substitutionGroup="hs:ParentChildKinshipCategoryAbstract">
+    <xs:annotation>
+      <xs:documentation>A code list that describes the nature of the relationship from a parent to a child.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="PersonCaseAssociation" type="hs:PersonCaseAssociationType">
+    <xs:annotation>
+      <xs:documentation>A relationship between a person and a case.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="PersonCaseAssociationAugmentationPoint" abstract="true">
+    <xs:annotation>
+      <xs:documentation>An augmentation point for PersonCaseAssociationType.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="PlacementAugmentationPoint" abstract="true">
+    <xs:annotation>
+      <xs:documentation>An augmentation point for PlacementType.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="PlacementCategoryAbstract" abstract="true">
+    <xs:annotation>
+      <xs:documentation>A data concept for describing a child or youth's placement.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="PlacementCategoryCode" type="hs:PlacementLocationCodeType" substitutionGroup="hs:PlacementCategoryAbstract">
+    <xs:annotation>
+      <xs:documentation>A list that describes the type of placement (e.g., adoption, relative, etc.)</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="PlacementFacility" type="nc:FacilityType">
+    <xs:annotation>
+      <xs:documentation>A facility where a juvenile is directed to reside.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="PlacementPerson" type="nc:PersonType" nillable="true">
+    <xs:annotation>
+      <xs:documentation>A person with whom a juvenile is directed to reside.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="StateDisbursementIndicator" type="niem-xs:boolean">
+    <xs:annotation>
+      <xs:documentation>True if the child-support order directs the obligor to make payments to a state agency for disbursement to the custodial parent; false otherwise.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="SupportingGroundsDescriptionText" type="nc:TextType">
+    <xs:annotation>
+      <xs:documentation>A description of the legal basis for the child-support remedies sought in the petition (e.g., respondent is non-custodial parent and is failing to provide support, a change in the parties' circumstances justifies a modification, etc.).</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+</xs:schema>
