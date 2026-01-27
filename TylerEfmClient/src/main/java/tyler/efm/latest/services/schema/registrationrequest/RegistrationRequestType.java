@@ -8,12 +8,11 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlSchemaType;
 import jakarta.xml.bind.annotation.XmlType;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 import tyler.efm.latest.services.schema.baserequest.BaseRequestType;
 import tyler.efm.latest.services.schema.common.NotificationContactType;
 import tyler.efm.latest.services.schema.common.RegistrationType;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.cxf.xjc.runtime.JAXBToStringStyle;
 
 
 /**
