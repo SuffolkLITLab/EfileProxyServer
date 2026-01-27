@@ -1,7 +1,6 @@
 package edu.suffolk.litlab.efsp.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import ecf4.latest.gov.niem.niem.fips_10_4._2.CountryCodeSimpleType;
 
 public class Address {
   // NOTE: annotations are for Gson
@@ -30,13 +29,13 @@ public class Address {
       String cityName,
       String stateName,
       String zipCode,
-      CountryCodeSimpleType countryName) {
+      String countryName) {
     this.streetLine = streetLine;
     this.apartmentLine = apartmentLine;
     this.cityName = cityName;
     this.stateName = stateName;
     this.zipCode = zipCode;
-    this.countryName = countryName.name();
+    this.countryName = countryName;
   }
 
   public String getStreet() {
