@@ -523,9 +523,18 @@ public class EcfCourtSpecificSerializer {
       boolean atLeastOnePhoneAdded = false;
       for (String phoneNumber : numbers) {
         if (!phoneRow.matchRegex(phoneNumber)) {
-          if (phoneNumber.contains("-")) {
+          if (phoneNumber.contains("-")
+              || phoneNumber.contains("(")
+              || phoneNumber.contains(")")
+              || phoneNumber.contains(" ")) {
             // HACK(brycew): Massachusetts doesn't like dashes in the number, just numbers
-            phoneNumber = phoneNumber.replace("-", "").replace("(", "").replace(")", "").strip();
+            phoneNumber =
+                phoneNumber
+                    .replace("-", "")
+                    .replace("(", "")
+                    .replace(")", "")
+                    .strip()
+                    .replace(" ", "");
           }
           if (!phoneRow.matchRegex(phoneNumber)) {
             continue;
