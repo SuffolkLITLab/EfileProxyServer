@@ -184,14 +184,14 @@ public class EcfCourtSpecificSerializerTest {
     collector = new AllWrongCollector();
     ContactInformation info =
         new ContactInformation(
-            List.of("1234567890", "123-456-7890 ", "123-abc"),
+            List.of("1234567890", "123-456-7890 ", "123-abc", "(123) 456-7890"),
             Optional.empty(),
             Optional.of("bob@example.com"));
     CourtLocationInfo loc = new CourtLocationInfo();
     loc.code = "not_real";
     EcfCourtSpecificSerializer courtSer = new EcfCourtSpecificSerializer(cd, loc);
     var contactInfoType = courtSer.serializeEcfContactInformation(info, collector);
-    assertThat(contactInfoType.getContactMeans()).hasSize(2);
+    assertThat(contactInfoType.getContactMeans()).hasSize(3);
     assertThat(collector.getWrong()).hasSize(0);
   }
 
