@@ -261,7 +261,12 @@ public class EcfCourtSpecificSerializer {
           caseCategory,
           type);
       InterviewVariable var =
-          collector.requestVar("filing_type", "What type of filing is this?", "text");
+          collector.requestVar(
+              "filing_type",
+              "What type of filing is this?",
+              "text",
+              filingOptions.stream().map(f -> f.code).toList(),
+              Optional.of(maybeCodeStrs.toString()));
       collector.addWrong(var);
       collector.popAttributeStack();
       // Is foundational, so returning now
