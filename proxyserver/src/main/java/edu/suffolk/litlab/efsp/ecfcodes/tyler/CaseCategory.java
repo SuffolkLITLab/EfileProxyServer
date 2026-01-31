@@ -177,4 +177,15 @@ public class CaseCategory {
     FROM casecategory WHERE domain=? AND location=? AND code=?
     """;
   }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(code);
+    sb.append(", ");
+    sb.append(name);
+    sb.append(", ");
+    sb.append(ecfcasetype);
+    return sb.toString();
+  }
 }
