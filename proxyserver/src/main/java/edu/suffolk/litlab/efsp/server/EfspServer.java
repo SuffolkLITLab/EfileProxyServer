@@ -198,10 +198,10 @@ public class EfspServer {
 
     DataSource codeDs =
         DatabaseCreator.makeDataSource(
-            dbUrl, dbPortInt, codeDatabaseName, dbUser, dbPassword, 6, 100);
+            dbUrl, dbPortInt, codeDatabaseName, dbUser, dbPassword, 12, 400);
     DataSource userDs =
         DatabaseCreator.makeDataSource(
-            dbUrl, dbPortInt, userDatabaseName, dbUser, dbPassword, 6, 100);
+            dbUrl, dbPortInt, userDatabaseName, dbUser, dbPassword, 12, 400);
 
     var tylerEnv =
         GetEnv("TYLER_ENV")
