@@ -5,6 +5,7 @@ import static edu.suffolk.litlab.efsp.tyler.TylerErrorCodes.makeResponse;
 
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import com.webcohesion.enunciate.metadata.rs.ResponseCode;
 import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import edu.suffolk.litlab.efsp.Jurisdiction;
@@ -112,6 +113,7 @@ import tyler.efm.latest.services.schema.userlistresponse.UserListResponseType;
  *
  * @author brycew
  */
+@ResourceGroup(value = "Admin User Services")
 @Produces(MediaType.APPLICATION_JSON)
 public class AdminUserService {
   private static final Logger log = LoggerFactory.getLogger(AdminUserService.class);

@@ -6,6 +6,7 @@ import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringDefault;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.UserDatabase;
@@ -51,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+@ResourceGroup(value = "Filing Review Services")
 @Produces({MediaType.APPLICATION_JSON})
 public class FilingReviewService {
 

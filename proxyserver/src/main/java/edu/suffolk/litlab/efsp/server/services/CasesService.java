@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efsp.server.services;
 import static edu.suffolk.litlab.efsp.server.utils.EndpointReflection.replacePathParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import ecf4.latest.gov.niem.niem.niem_core._2.CaseType;
 import ecf4.latest.gov.niem.niem.niem_core._2.EntityType;
 import ecf4.latest.gov.niem.niem.niem_core._2.TextType;
@@ -67,6 +68,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+@ResourceGroup(value = "Case Services")
 @Produces(MediaType.APPLICATION_JSON)
 public class CasesService {
 

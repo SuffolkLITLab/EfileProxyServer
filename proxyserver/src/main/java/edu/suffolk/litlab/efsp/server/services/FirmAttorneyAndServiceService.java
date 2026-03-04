@@ -7,6 +7,7 @@ import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
@@ -72,6 +73,7 @@ import tyler.efm.latest.services.schema.updateservicecontactresponse.UpdateServi
  *
  * @author litlab
  */
+@ResourceGroup(value = "Firm Attorney and Serving")
 @Produces(MediaType.APPLICATION_JSON)
 public class FirmAttorneyAndServiceService {
   private static Logger log = LoggerFactory.getLogger(FirmAttorneyAndServiceService.class);

@@ -10,7 +10,7 @@
           <!-- The Production server is commented out so we don't unintentionally make calls to it from the docs site. -->
           <!-- server url="https://efile.suffolklitlab.org/" description="The production server" /-->
         </swagger>
-        <jaxrs path-sort-strategy="depth_first">
+        <jaxrs path-sort-strategy="depth_first" groupBy="annotation">
         </jaxrs>
 
         <!-- Complicated: it's not enabled on our client interfaces, but is being used for our SOAP calls to Tyler. -->

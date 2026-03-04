@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.server.services;
 
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+@ResourceGroup(value = "API User Settings")
 @Path("/api_user_settings")
 @Produces({MediaType.APPLICATION_JSON})
 public class ApiUserSettingsService {

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import com.webcohesion.enunciate.metadata.rs.ResponseCode;
 import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import edu.suffolk.litlab.efsp.Jurisdiction;
@@ -78,6 +79,7 @@ import tyler.efm.latest.services.schema.updatepaymentaccountresponse.UpdatePayme
  *
  * @author brycew
  */
+@ResourceGroup(value = "Payments")
 @Produces(MediaType.APPLICATION_JSON)
 public class PaymentsService {
   private static final Logger log = LoggerFactory.getLogger(PaymentsService.class);

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.hubspot.algebra.Result;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import ecf4.latest.gov.niem.release.niem.domains.cbrn._4.MessageContentErrorType;
 import ecf4.latest.gov.niem.release.niem.domains.cbrn._4.MessageErrorType;
 import ecf4.latest.gov.niem.release.niem.domains.cbrn._4.MessageStatusType;
@@ -87,6 +88,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+@ResourceGroup(value = "Court Scheduling Services")
 @Produces({MediaType.APPLICATION_JSON})
 public class CourtSchedulingService {
 
