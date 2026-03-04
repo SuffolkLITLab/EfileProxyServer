@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efsp.stdlib;
 
 import java.util.Optional;
 
+/** A class that is guaranteed to contain a non-empty/non-blank/non-null string. */
 public class NonEmptyString {
   private final String data;
 

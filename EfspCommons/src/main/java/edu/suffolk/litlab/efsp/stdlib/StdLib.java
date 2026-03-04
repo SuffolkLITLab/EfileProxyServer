@@ -1,14 +1,10 @@
 package edu.suffolk.litlab.efsp.stdlib;
 
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** Things that really should just be in the standard lib. */
 public class StdLib {
-  private static final Logger log = LoggerFactory.getLogger(StdLib.class);
-
-  /** Quick wrapper to get an env var as an optional. */
+  /** Wrapper to get an env var as an optional: there if present, empty if not. */
   public static Optional<String> GetEnv(String envVarName) {
     String val = System.getenv(envVarName);
     if (val == null || val.isBlank()) {

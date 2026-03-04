@@ -2,9 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <!-- to find dependencies that have been changed to a different group / artifact id, run `mvn biz.lermitage.oga:oga-maven-plugin:check` -->
-    <!-- TODO(#108): CXF is still using javax / jaxb and not jakarta namespaces, and won't until version 4.0.
-         Our code now also seems to be tied up with newer versions of the libraries. Until then
-         the above command will fail, but we can just not update the jakarta issues -->
     <!-- to quickly find dependencies that can be updated, run `mvn versions:display-dependency-updates` -->
 
     <parent>

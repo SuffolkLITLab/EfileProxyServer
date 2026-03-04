@@ -1,8 +1,6 @@
 FROM maven:3.8-eclipse-temurin-21 AS build
 ARG CI_COMMIT_SHA
 LABEL git-commit=$CI_COMMIT_SHA
-# The `[]` is an optional COPY: doesn't copy if those files aren't there (https://stackoverflow.com/a/46801962/11416267)
-# They are needed for Tyler API usage
 COPY pom.xml /app/
 COPY EfspCommons /app/EfspCommons/
 COPY TylerEcf4 /app/TylerEcf4/
