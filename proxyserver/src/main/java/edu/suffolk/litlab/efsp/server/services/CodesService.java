@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.server.services;
 
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.OPTIONS;
@@ -18,6 +19,7 @@ import java.sql.SQLException;
  * "Codes" is short for genericodes, a XML standard that ECF uses to communicate these
  * configurations to EFSPs, and we use it to refer to any such court configurations.
  */
+@ResourceGroup(value = "Codes")
 @Produces({MediaType.APPLICATION_JSON})
 public abstract class CodesService {
 

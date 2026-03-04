@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efsp.server.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import com.webcohesion.enunciate.metadata.rs.ResponseCode;
 import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import edu.suffolk.litlab.efsp.db.model.NewTokens;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+@ResourceGroup(value = "Authentication")
 @Path("/authenticate")
 @Produces(MediaType.APPLICATION_JSON)
 public class AuthenticationService {
