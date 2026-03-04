@@ -27,10 +27,12 @@ The following were our discovered choices.
 ## Decision Outcome
 
 We chose to use Java and CXF.
+
 * Java over other languages: python's Zeep library doesn't have MTOM (Message Transmission Optimization Mechanism, an extension of SOAP), which is required, and C#'s .NET Core (or .NET 5.0) doesn't seem to support MTOM and some other aspects of SOAP as well.
 * CXF over other Java libraries: Axis doesn't seem to have good reviews, and JAX-RS isn't fully featured
 
 Consequences:
+
 * Need to standup a separate proxy server, with a very different tech stack than DA normally has
 * Will need to also setup docker-compose and some additional items as well
 

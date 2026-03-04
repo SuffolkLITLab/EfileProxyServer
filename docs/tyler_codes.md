@@ -75,6 +75,7 @@ block-beta
 
 
 For example, if you want to know what party type codes are allowed to be used in a case, you need to know the following information (all of the parents above the `party type` node):
+
 * the location (i.e. the court)
 * the case category
 * whether the filing is an initial filing into a new case, or a subsequent filing into an existing case
@@ -91,6 +92,7 @@ SELECT * FROM partytype WHERE location='adams' AND casetype='5678';
 ```
 
 The codes system has 45 different codes:
+
 * answer
 * arrestlocation
 * bond
@@ -138,6 +140,7 @@ The codes system has 45 different codes:
 * version
 
 Many of these codes are applicable for criminal cases only, and aren't used in our system (see #todo). These are:
+
 * answer: QuestionAnswer in ReviewFiling
 * arrestlocation
 * bond: relates to CaseChargeBondAmount, CaseChargeBondType, and BondTypeText in ReviewFiling
@@ -243,6 +246,7 @@ The case category is a broad selection across different groups of cases, ranging
 ### Case Type and Subtype
 
 The actual type, and more specific type of the case being filed, respectively. For example, in Adams county, the case types for the case category "Eminent Domain" are:
+
 * Eminent Domain (started within the court, not allowed to be initiated by an e-filer)
 * Eminent Domain (allowed be the initiated by an e-filer)
 * Condemnation (N)

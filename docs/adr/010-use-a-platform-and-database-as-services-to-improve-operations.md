@@ -6,6 +6,7 @@ The existing system is deployed to Lightsail. Both the Java application and Post
 
 **User Story:**
 As a Suffolk LIT Lab operator, I want to improve the ease of operations in these key areas:
+
 * Data: recover from a possible data loss by restoring a previous version of the database or rolling back the database
 * App Stability: restart the app in case it crashes or becomes unavailable
 * Monitoring / Alerting: monitor the app and be alerted when there are issues with the API being available
