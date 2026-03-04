@@ -141,6 +141,7 @@ Rough outline: goes to the FilingReviewService, which delegates to the specific 
 
 1. get any existing information, either from the API call itself, or from previous cases (with the CourtRecordMDE)
 2. piece together the ECF4 Filing message using the `EcfCaseTypeFactory`. For smaller pieces of ECF specific datatypes, we call the `EcfCourtSPecificSerializer`, and for each piece of information, there is a call to `tyler.TylerCodesSerializer` (used by both code in ECF4 and ECF5) that ensure that the semantics of what we pass in are correct according to the many checks and validations that Tyler makes use do, per court.
+
     * if anything is missing, wrong, or doesn't validate according to Tyler, we return detailed information about what pieces of information were missing, wrong, or optionally could be included. Ideally the docassemble side could dynamically gather additional information, but that hasn't been implemented yet.
     * if everything necessary is present, we make the Filing with the FilingReviewMDE. We get the following:
         * the case ID
@@ -151,14 +152,19 @@ Rough outline: goes to the FilingReviewService, which delegates to the specific 
         * the case category
         * the name of the court
 3. After we make the filing, we save enough of the filing information (user email, envelope ID from Tyler, etc.) such that when our FilingAssembleMDE gets the callback from Tyler's system, we can properly notify the user. These notifications can be a default, set per server making the filing, or can be a part of the filing API call data itself; the positive, negative, and neutral email templates. The templates can include these variables:
+
     * `name`: the name of the user
     * `court_name`: the name of the Court
     * `case_type`: the name of the case type, like Divorce, or Small Claims (< $10,000)
     * `transaction_id`: our Id of the users transaction. Not normally necessary
     * `case_title`: the title of the case, like "Smith v Brown"
+
   Only on the confirmation email
+
     * `envelope_id`
+
   Only on the rejected / accepted email:
+
     * `status`: the status of the filing: an enum that we get from Tyler
     * `message_text`: the message that the clerk sends with the status, if any
     * `message_url`: a URL that the clerk can also send

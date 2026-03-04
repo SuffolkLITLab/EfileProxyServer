@@ -3,6 +3,7 @@
 Often, if you ask Tyler for assistance, they will want you to give them the exact SOAP request that you are sending.
 
 There are a few ways of doing this:
+
 * add a call to the `Ecf4Helper.objectToXmlFile` method before you call the MDE to print out the entire XML object that you are sending. This is mostly useful for business logic bugs.
 * Add an interceptor to you CXF sender. This is useful for checking SOAP / WebService- Security settings. I haven't done this and don't have a recipe for doing so.
 * If many SOAP API calls aren't working (i.e. you aren't sure if Tyler's accepting any of the calls), you will
