@@ -38,6 +38,7 @@ The overall goal is to make it easier to run and operate EFSP as a service, with
 The current setup keeps a single machine running at all times within the Boston region. Because Fly.io, Supabase, Papertrail, and Cloudflare are all cloud services, scaling up and out is pretty easy. The trade-off is one of increased cost as more scale is requested. Fly.io also supports auto-scaling. Given the current volume, scaling was not explored and we opted for the simplest conceptual model of a single, continuously instance of the application.
 
 The EFSP application itself is mostly clusterable, the exceptions being:
+
 * the way the Tyler EFM Code Updates are scheduled right now
 * CourtPolicy data, which is currently cached in memory (see l. 21 in /src/main/java/edu/suffolk/litlab/efsp/server/ecf4/PolicyCacher.java [https://github.com/SuffolkLITLab/EfileProxyServer/blob/a67c75a6690e9bd54fd4050d0c274feccf13b382/src/main/java/edu/suffolk/litlab/efspserver/ecf4/PolicyCacher.java#L12]). To honor Tyler's restriction to only hit the endpoint once per day, this cache will need to be updated so that it can be shared across all instances. Caching it in the database would be one option to achieve that.  
 
@@ -67,6 +68,7 @@ This section covers the steps for spinning up a brand-new Fly.io app.
 ### Pre-requisites
 
 You should already have the following:
+
 * An .env file with the secrets and environment configuration appropriate for the new app. The docs will refer to this as .env.fly but you can name it whatever makes sense and substitute the name when you see it in the example commands.
 * A Fly.io account
 * [flyctl](https://fly.io/docs/flyctl/), the Fly.io CLI tools, installed
@@ -76,16 +78,19 @@ You should already have the following:
 You will need to create the app before deploying. Since the fly.toml already exists, you will want to create the app without generating a new one. To create the app, you will need an app name and Fly.io organization. The example commands will reference efsp-staging and the suffolk-lit-lab organization, but you should substitute your own values there. You can use the same app name, but the Fly.io organization will likely be different.
 
 Create the app by running:
+
 ```bash
 fly app create efsp-staging --org suffolk-lit-lab
 ```
 
 You should see a message saying:
+
 ```
 New app created: efsp-staging
 ```
 
 Next, configure the app with your .env values. You should have already copied the env.example file as .env.fly and edited the values in it to match your environment.
+
 ```bash
 cat .env.fly | fly secrets import --app efsp-staging --stage
 ```
@@ -93,10 +98,12 @@ cat .env.fly | fly secrets import --app efsp-staging --stage
 The stage option is used so that the values are set but the application won't redeploy until the next step.
 
 Now deploy the application by running:
+
 ```bash
 fly deploy --config fly.toml --app efsp-staging
 ```
 You can omit the --app parameter if you're using the app name defined within the fly.toml. You can also omit the --config parameter if you're using the default fly.toml file (as opposed to fly.production.toml, for example). The shortened version in that case would be:
+
 ```bash
 fly deploy
 ```
@@ -106,10 +113,10 @@ This step will take some time as Fly.io verifies the configuration and builds th
 If all goes well, your app will be running. Your app should be reached by https on a Fly.io domain name. This value will look something like https://{your-app-name}.fly.dev/ and should be in the output.
 
 Finally, you can set the scale to limit the number of machines created to 1. This step is optional. By default, Fly.io will create 2 machines for high availability. Setting it to 1 makes for a simpler and slightly cheaper setup, but with tradeoffs in performance and availability. To see more in-depth discussion on the tradeoffs, go to the "Scaling Up Fly.io" section. 
+
 ```bash
 fly scale --app efsp-staging count app=1
 ```
-
 
 ## Deploying Code Updates
 
@@ -118,18 +125,21 @@ fly scale --app efsp-staging count app=1
 The process for manual deployment is very similar to the non-Fly.io steps.
 
 First, update the code on your local to the latest:
+
 ```bash
 git fetch --all
 git pull origin main
 ```
 
 Then run:
+
 ```bash
 fly deploy --config fly.toml
 ```
 If you are deploying to a different environment, change fly.toml to match the config for the target environment. If you don't pass a `--config` option, the default fly.toml file will be used. For EFSP, this is the staging environment. The production config file is fly.production.toml.
 
 To deploy to production:
+
 ```bash
 fly deploy -c fly.production.toml
 ```
@@ -216,6 +226,7 @@ You can scale up the # of machines if you reach a point where there is a lot of 
 The default Fly config for EFSP will keep just a single machine running at all times. This is important as the code update will only happen if an instance is active when the schedule hits (2:15 am on the machine's clock).
 
 You can set the # of instances to scale to with the following command:
+
 ```bash
 fly scale count app={NUMBER_OF_INSTANCES}
 ```
@@ -227,6 +238,7 @@ https://fly.io/docs/apps/deploy/
 Generally speaking, you will want to have pre-created machines that are stopped. This optimizes the cold start time, although it will still be relatively slow since EFSP is a Java application. Expect a pre-created machine's cold start to take about 5 seconds. Creating a new machine will be an order or two of magnitude longer. Pre-created machines that are stopped cost very little as you are only billed for the storage space. The cost is negligible compared to the cost of a running machine.
 
 Properly scaling EFSP using Fly.io is an advanced topic beyond the scope of this guide. You should have a good understanding of Fly.io's architecture before attempting this. Here are some good reference links to start from:
+
 * https://fly.io/docs/apps/scale-machine/#scale-vm-memory-and-cpu-with-flyctl
 * https://fly.io/docs/flyctl/scale/
 * https://fly.io/docs/reference/autoscaling/#main-content-start
@@ -247,6 +259,7 @@ To learn more about Fly.io metrics, check out:
 https://fly.io/docs/metrics-and-logs/metrics/#dashboards
 
 To learn more about Grafana, check out:
+
 * https://grafana.com/docs/grafana/latest/dashboards/
 * https://grafana.com/docs/grafana/latest/panels-visualizations/visualizations/
 
@@ -255,11 +268,13 @@ To learn more about Grafana, check out:
 Run the fly_create_api_key.sh script to generate a new API key. The generated key will grant API access to your EFSP instance. The API key is printed to the console output and can be copied from there. Best practice is to give each user of your EFSP instance their own API key.
 
 To create an API key for the app specified in your fly.toml, run:
+
 ```bash
 ./fly_create_api_key.sh
 ```
 
 If you want to create a production key, run:
+
 ```bash
 ./fly_create_prod_api_key.sh
 ```
@@ -271,6 +286,7 @@ The script uses Fly.io commands to spin up an ephemeral machine that will run th
 ### SSH Console access
 
 Fly.io offers a Fly command that is akin to connecting to a Lightsail instance using SSH. This is handy if you need to troubleshoot the machine. Unlike SSH, you won't need to set up any keypairs. Instead, your Fly.io login will be all that is needed to authenticate you. To SSH to a Fly.io machine, use the following command:
+
 ```bash
 fly ssh console
 ```
@@ -278,6 +294,7 @@ fly ssh console
 ### Setting Secrets/Configuration in Fly.io
 
 You can view the names of the variables that are set with the following command:
+
 ```bash
 fly secrets list
 ```
@@ -287,6 +304,7 @@ Note that this will not show the values, but it does display both the digest and
 The recommended way to set secrets in Fly.io is to edit them in a .env file. The name .env.fly is assumed for the remainder of these instructions. Note that .env files are excluded from Git. This is important as you should never commit secrets into the repository.
 
 After you edit your .env.fly file and set the appropriate values, you can use the following command to update the Fly.io secrets:
+
 ```bash
 cat .env.fly | fly secrets import
 ```
@@ -294,11 +312,13 @@ cat .env.fly | fly secrets import
 This will sync the value of every variable in the .env.fly to Fly.io. Note that this will not unset/touch any secrets whose names are not in the .env.fly file.
 
 You can manually set a single secret with the following command:
+
 ```bash
 fly secrets set [name] [value]
 ```
 
 To unset a value, use the following command:
+
 ```bash
 fly secrets unset [name]
 ```

@@ -25,7 +25,7 @@ Docker env files can't be directly used in `bash`, so if you are running things 
 
 ### Making API Tokens
 
-When running locally, run `./local_create_api_key.sh`.
+When running locally, run `./scripts/local_create_api_key.sh`.
 
 The API token to add to the docassemble config will be printed out.
 

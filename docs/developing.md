@@ -2,18 +2,10 @@
 
 See [setup.md](setup.md) to first install the required dependencies and be able to run the server.
 
-## Working with Docassemble
-
-If you are developing integrations to the E-file Proxy on a docassemble server, you need to install
-the following packages:
-1. [docassemble.AssemblyLine](https://pypi.org/project/docassemble.AssemblyLine/)
-1. [docassemble.EFSPIntegration](https://pypi.org/project/docassemble.EFSPIntegration)
-
-See the docs for the [docassemble-EFSPIntegration](https://github.com/SuffolkLITLab/docassemble-EFSPIntegration/) package at the main [Assembly Line documentation](https://assemblyline.suffolklitlab.org/docs/components/EFSPIntegration/overview).
-
 ## Writing Code
 
 There are two server files that provide important features that can help you understand the server:
+
 * [AdminUserService.java](../src/main/java/edu/suffolk/litlab/efsp/server/services/AdminUserService.java).
 * [FilingReviewService.java](../src/main/java/edu/suffolk/litlab/efsp/server/services/FilingReviewService.java).
 
@@ -24,7 +16,7 @@ See [architecture.md](architecture.md) for a description of the general architec
 You can search for dependencies using [Maven's search site](https://search.maven.org/), and see more
 details about a package on [MVNRepository](https://mvnrepository.com/).
 
-To add new libraries, edit [`pom.xml`](../pom.xml) and add an entry to `<dependencies>`.
+To add new libraries, edit [`proxyserver/pom.xml`](../proxyserver/pom.xml) and add an entry to `<dependencies>`.
 Here is an example of when we added the sendgrid library:
 
 ```xml
@@ -65,3 +57,22 @@ mvn spotbugs:gui
 
 The later command will open a GUI to see all of the bugs that it's found.
 
+## Working with Docassemble
+
+If you are developing integrations to the E-file Proxy on a docassemble server, you need to install
+the following packages:
+
+1. [docassemble.AssemblyLine](https://pypi.org/project/docassemble.AssemblyLine/)
+1. [docassemble.EFSPIntegration](https://pypi.org/project/docassemble.EFSPIntegration)
+
+See the docs for the [docassemble-EFSPIntegration](https://github.com/SuffolkLITLab/docassemble-EFSPIntegration/) package at the main [Assembly Line documentation](https://assemblyline.suffolklitlab.org/docs/components/EFSPIntegration/overview).
+
+## Next Steps
+
+You might want to read any of our more specific guides:
+
+* [Tyler's genericodes](tyler_codes.md)
+* [the project architecture](architecture.md)
+* [A caller-focused guide to our REST APIs](rest_guide.md)
+* [How to analyze SOAP traffic](soap_traffic.md)
+* [WSDL2Java and updating our clients](wsdl2java.md)

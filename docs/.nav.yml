@@ -2,7 +2,11 @@ nav:
   - README.md
   - developing.md
   - operations_guide/index.md
+  - tyler_codes.md
   - architecture.md
+  - rest_guide.md
+  - soap_traffic.md
+  - wsdl2java.md
   - "REST API Docs 🔗": endpoints/
   - "Javadocs 🔗": apidocs/
   - "*"
