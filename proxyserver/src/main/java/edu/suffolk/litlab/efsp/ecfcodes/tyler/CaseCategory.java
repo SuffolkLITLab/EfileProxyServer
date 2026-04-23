@@ -144,7 +144,7 @@ public class CaseCategory {
               ROW_NUMBER() OVER(PARTITION BY cate.code ORDER BY type.code) AS RN
             FROM casecategory as cate
               INNER JOIN casetype AS type
-              ON cate.code = type.casecategory AND cate.location = type.location
+              ON cate.code = type.casecategory AND cate.location = type.location AND cate.domain = type.domain
             WHERE cate.domain=? AND cate.location=? AND cate.ecfcasetype != 'CriminalCase'
         ) cat
     WHERE cat.RN = 1
@@ -163,7 +163,7 @@ public class CaseCategory {
               ROW_NUMBER() OVER(PARTITION BY cate.code ORDER BY type.code) AS RN
             FROM casecategory as cate
               INNER JOIN casetype AS type
-              ON cate.code = type.casecategory AND cate.location = type.location
+              ON cate.code = type.casecategory AND cate.location = type.location AND cate.domain = type.domain
             WHERE cate.domain=? AND cate.location=? AND cate.ecfcasetype != 'CriminalCase' AND type.initial ILIKE ?
         ) cat
     WHERE cat.RN = 1
