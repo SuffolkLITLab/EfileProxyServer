@@ -180,6 +180,7 @@ public class CodesServiceTest {
     JsonNode noEnumSearch = getServerJsonAt("/optional_services", Map.of("search", SEARCH_TERM));
     assertThat(noEnumSearch.isArray()).isTrue();
     assertThat(noEnumSearch.iterator())
+        .toIterable()
         .allMatch(
             node -> {
               var matches = node.isTextual() && node.asText().toLowerCase().contains(SEARCH_TERM);
@@ -190,6 +191,7 @@ public class CodesServiceTest {
                           "/optional_services/" + node.asText().replace("/", "%2F"), Map.of());
                   assertThat(retrieve.size()).isGreaterThan(0);
                   assertThat(retrieve.iterator())
+                      .toIterable()
                       .allMatch(
                           loc ->
                               loc.has("location") && loc.get("location").asText().equals("adams"));
@@ -210,6 +212,7 @@ public class CodesServiceTest {
             "/optional_services", Map.of("search", SEARCH_TERM, "result", "COURT_COVERAGE"));
     assertThat(courtCoverageSearch.size()).isEqualTo(1);
     assertThat(courtCoverageSearch.iterator())
+        .toIterable()
         .allMatch(court -> court.isTextual() && court.asText().equals("adams"));
   }
 
@@ -223,6 +226,7 @@ public class CodesServiceTest {
     JsonNode noEnumSearch = getServerJsonAt("/case_types", Map.of("search", SEARCH_TERM));
     assertThat(noEnumSearch.isArray()).isTrue();
     assertThat(noEnumSearch.iterator())
+        .toIterable()
         .allMatch(
             node -> {
               var matches = node.isTextual() && node.asText().toLowerCase().contains(SEARCH_TERM);
@@ -232,6 +236,7 @@ public class CodesServiceTest {
                       getServerJsonAt("/case_types/" + node.asText().replace("/", "%2F"), Map.of());
                   assertThat(retrieve.size()).isGreaterThan(0);
                   assertThat(retrieve.iterator())
+                      .toIterable()
                       .allMatch(
                           loc ->
                               loc.has("location") && loc.get("location").asText().equals("adams"));
@@ -251,6 +256,7 @@ public class CodesServiceTest {
         getServerJsonAt("/case_types", Map.of("search", SEARCH_TERM, "result", "COURT_COVERAGE"));
     assertThat(courtCoverageSearch.size()).isEqualTo(1);
     assertThat(courtCoverageSearch.iterator())
+        .toIterable()
         .allMatch(court -> court.isTextual() && court.asText().equals("adams"));
   }
 }

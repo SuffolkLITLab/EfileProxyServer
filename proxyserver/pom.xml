@@ -226,6 +226,13 @@
             <artifactId>algebra-testing</artifactId>
             <version>1.7.2</version>
         </dependency>
+        <!-- to force hubspot algebra to use latest assertj-->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.27.7</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.hubspot.jinjava</groupId>
             <artifactId>jinjava</artifactId>
