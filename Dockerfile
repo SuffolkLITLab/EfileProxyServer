@@ -28,6 +28,7 @@ COPY --from=build  /app/proxyserver/target/efspserver-with-deps.jar /app/
 COPY config /app/
 COPY LICENSE /app/
 COPY Docker/docker_run_script.sh Docker/fly_startup_script.sh /app/
+RUN apk update && apk upgrade && apk add --no-cache aws-cli
 
 EXPOSE 9000
 CMD [ "/bin/sh", "/app/docker_run_script.sh" ]
