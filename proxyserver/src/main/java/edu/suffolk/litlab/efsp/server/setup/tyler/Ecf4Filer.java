@@ -343,16 +343,14 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         cfm.getDocumentIdentification().add(id);
       }
 
-      Optional<Boolean> serviceOnInitial = locationInfo.allowserviceoninitial;
-      if (serviceOnInitial.isEmpty()) {
-        serviceOnInitial =
-            Optional.of(
-                cd.getDataField(locationInfo.code, "FilingServiceCheckBoxInitial").isvisible);
-      }
-      if (isInitialFiling
-          && !serviceOnInitial.orElse(
-              cd.getDataField(locationInfo.code, "FilingServiceCheckBoxInitial").isvisible)
-          && info.getServiceContacts().size() > 0) {
+      boolean serviceOnInitial =
+          switch (locationInfo.allowserviceoninitial) {
+            case TRUE -> true;
+            case FALSE -> false;
+            case DEFAULT ->
+                cd.getDataField(locationInfo.code, "FilingServiceCheckBoxInitial").isvisible;
+          };
+      if (isInitialFiling && !serviceOnInitial && info.getServiceContacts().size() > 0) {
         FilingError err =
             FilingError.malformedInterview(
                 "Court " + locationInfo.name + " doesn't allow service on initial filings");
