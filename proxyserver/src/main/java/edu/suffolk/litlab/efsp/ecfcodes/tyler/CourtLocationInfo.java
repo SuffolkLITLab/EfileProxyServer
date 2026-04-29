@@ -3,7 +3,6 @@ package edu.suffolk.litlab.efsp.ecfcodes.tyler;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 public class CourtLocationInfo {
   public String code;
@@ -95,7 +94,15 @@ public class CourtLocationInfo {
   public String protectedcasereplacementstring;
 
   public boolean allowzerofeeswithoutfilingparty;
-  public Optional<Boolean> allowserviceoninitial;
+
+  public static enum BoolOrDefault {
+    TRUE,
+    FALSE,
+    DEFAULT
+  }
+
+  public BoolOrDefault
+      allowserviceoninitial; // if default, check DataField FilingServiceCheckBoxInitial
   public boolean allowaddservicecontactsoninitial;
 
   /** True if the court allows redaction of documents. See TODO(#39) */
@@ -201,9 +208,13 @@ public class CourtLocationInfo {
     this.allowzerofeeswithoutfilingparty = Boolean.parseBoolean(rs.getString(24));
     String serviceoninitial = rs.getString(25);
     if (serviceoninitial == null || serviceoninitial.isBlank()) {
-      this.allowserviceoninitial = Optional.empty();
+      this.allowserviceoninitial = BoolOrDefault.DEFAULT;
     } else {
-      this.allowserviceoninitial = Optional.of(Boolean.parseBoolean(serviceoninitial));
+      if (Boolean.parseBoolean(serviceoninitial)) {
+        this.allowserviceoninitial = BoolOrDefault.TRUE;
+      } else {
+        this.allowserviceoninitial = BoolOrDefault.FALSE;
+      }
     }
     this.allowaddservicecontactsoninitial = Boolean.parseBoolean(rs.getString(26));
     this.allowredaction = Boolean.parseBoolean(rs.getString(27));

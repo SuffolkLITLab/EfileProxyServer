@@ -869,10 +869,12 @@ public class EcfCourtSpecificSerializer {
         collector.addRequired(var);
       }
     }
-    Optional<Boolean> maybeServiceOnInitial = this.court.allowserviceoninitial;
     boolean serviceOnInitial =
-        maybeServiceOnInitial.orElse(
-            allDataFields.getFieldRow("FilingServiceCheckBoxInitial").isvisible);
+        switch (this.court.allowserviceoninitial) {
+          case TRUE -> true;
+          case FALSE -> false;
+          case DEFAULT -> allDataFields.getFieldRow("FilingServiceCheckBoxInitial").isvisible;
+        };
     // From Reference Guide: if no FilingAction is provided, the original default behavior applies:
     // * ReviewFiling API w/o service contacts: EFile
     // * ReviewFiling API w/ service contacts: EfileAndServe
