@@ -93,9 +93,7 @@ public class OasisEcfWsCallbackTest {
       trans.serverId = UUID.randomUUID();
       when(mockUd.findTransaction(eq(filingId))).thenReturn(Optional.of(trans));
 
-      var courtInfo = new CourtLocationInfo();
-      courtInfo.code = courtId;
-      courtInfo.name = "Adams County";
+      var courtInfo = new CourtLocationInfo(courtId);
       courtInfo.showreturnonreject = false;
       when(mockCd.getFullLocationInfo(eq(courtId))).thenReturn(Optional.of(courtInfo));
       when(mockSender.sendMessage(

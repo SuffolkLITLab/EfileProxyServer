@@ -189,7 +189,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                 "Court setup wrong: can't find full location info for " + info.getCourtLocation()));
       }
 
-      CourtLocationInfo locationInfo = maybeLocationInfo.orElse(new CourtLocationInfo());
+      CourtLocationInfo locationInfo =
+          maybeLocationInfo.orElse(new CourtLocationInfo(info.getCourtLocation()));
       String courtName = locationInfo.name;
 
       CourtPolicyResponseMessageType policy =

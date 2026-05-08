@@ -125,13 +125,12 @@ public class EcfCaseTypeFactoryTest {
     /*
     assertTrue(infoRes.isOk());
     FilingInformation info = infoRes.unwrapOrElseThrow();
-    CourtLocationInfo loc = new CourtLocationInfo();
+    CourtLocationInfo loc = new CourtLocationInfo("coles");
     ComboCaseCodes combos = new ComboCaseCodes(
         new CaseCategory("code", "name", "", "", "", "", ""),
         new CaseType(null, null, null, null, null, null, null, null),
         List.of(new FilingCode(null, null, null, null, null, null, null, null, null, null, null, null, null, null)),
         Map.of("id", Pair.of(new PartyType("", "", "", "", "", "", "", "", "", "", "", ""), true)));
-    loc.code = "coles";
     EcfCourtSpecificSerializer courtSer = new EcfCourtSpecificSerializer(cd, loc);
     JAXBElement<? extends ecf4.latest.gov.niem.niem.niem_core._2.CaseType> retVal =
         caseFactory.makeCaseTypeFromTylerCategory(loc, combos, info, false, false,

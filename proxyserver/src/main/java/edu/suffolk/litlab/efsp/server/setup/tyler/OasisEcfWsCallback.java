@@ -353,8 +353,7 @@ public class OasisEcfWsCallback implements FilingAssemblyMDEPort {
       }
     } catch (SQLException ex) {
       log.error("In ECF v4 callback, couldn't get codes db", ex);
-      courtInfo = Optional.of(new CourtLocationInfo());
-      courtInfo.get().name = courtId;
+      courtInfo = Optional.of(new CourtLocationInfo(courtId));
     }
 
     reply.setCaseCourt(Ecf4Helper.convertCourtType(courtId));
