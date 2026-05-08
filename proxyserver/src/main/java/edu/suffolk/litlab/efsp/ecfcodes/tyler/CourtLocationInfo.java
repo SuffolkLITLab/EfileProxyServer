@@ -5,13 +5,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class CourtLocationInfo {
-  public String code;
+  public final String code;
 
   /**
    * The full (more) human readable name for the court. Some examples: adams -> Adams County, and
    * cook:chd -> Cook County - Chancery
    */
-  public String name;
+  public final String name;
 
   /** True if the court allows filing to new cases. */
   public boolean initial;
@@ -21,7 +21,7 @@ public class CourtLocationInfo {
 
   public boolean disallowcopyingenvelopemultipletimes;
   public boolean allowfilingintononindexedcase;
-  public List<String> allowablecardtypes;
+  public final List<String> allowablecardtypes;
 
   /**
    * From Reference Guide: "The Odyssey NodeID for a court location that is integrated with Tyler's
@@ -160,9 +160,11 @@ public class CourtLocationInfo {
 
   public final boolean allowhearing;
 
-  public String efmType;
+  public final String efmType;
 
-  public CourtLocationInfo() {
+  public CourtLocationInfo(String code) {
+    this.code = code;
+    this.name = "Court with code " + code;
     this.efmType = "ecf";
     this.allowhearing = false;
     this.allowreturndate = false;
@@ -170,6 +172,7 @@ public class CourtLocationInfo {
     this.allowchargeupdate = false;
     this.allowpartyid = false;
     this.allowserviceoninitial = BoolOrDefault.DEFAULT;
+    this.allowablecardtypes = List.of();
   }
 
   public CourtLocationInfo(ResultSet rs) throws SQLException {

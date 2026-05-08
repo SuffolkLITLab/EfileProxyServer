@@ -35,8 +35,7 @@ public class AddressTest {
     addr = new Address("100 Circle Road", "Apt 2", "Plano", "TX", "75093", "US");
     CodeDatabase cd = mock(CodeDatabase.class);
     when(cd.getStateCodes("adams", "US")).thenReturn(List.of("TX", "MA"));
-    CourtLocationInfo loc = new CourtLocationInfo();
-    loc.code = "adams";
+    CourtLocationInfo loc = new CourtLocationInfo("adams");
     serializer = new EcfCourtSpecificSerializer(cd, loc);
   }
 

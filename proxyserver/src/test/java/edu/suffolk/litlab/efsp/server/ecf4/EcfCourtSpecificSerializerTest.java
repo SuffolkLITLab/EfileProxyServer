@@ -104,8 +104,7 @@ public class EcfCourtSpecificSerializerTest {
   @Test
   public void shouldBeEmptyPersonIfIsUser() throws FilingError, JAXBException {
     ContactInformation info = new ContactInformation("bob@example.com");
-    CourtLocationInfo loc = new CourtLocationInfo();
-    loc.code = "not_real";
+    CourtLocationInfo loc = new CourtLocationInfo("not_real");
     EcfCourtSpecificSerializer courtSer = new EcfCourtSpecificSerializer(cd, loc);
     List<PartyType> okPartyTypes = List.of(PartyType.TestObj("1234", "Special", "not_real"));
 
@@ -187,8 +186,7 @@ public class EcfCourtSpecificSerializerTest {
             List.of("1234567890", "123-456-7890 ", "123-abc", "(123) 456-7890"),
             Optional.empty(),
             Optional.of("bob@example.com"));
-    CourtLocationInfo loc = new CourtLocationInfo();
-    loc.code = "not_real";
+    CourtLocationInfo loc = new CourtLocationInfo("not_real");
     EcfCourtSpecificSerializer courtSer = new EcfCourtSpecificSerializer(cd, loc);
     var contactInfoType = courtSer.serializeEcfContactInformation(info, collector);
     assertThat(contactInfoType.getContactMeans()).hasSize(3);
@@ -197,8 +195,7 @@ public class EcfCourtSpecificSerializerTest {
 
   @Test
   public void shouldThrowIfRequiredButNotPresent() {
-    CourtLocationInfo loc = new CourtLocationInfo();
-    loc.code = "cook:cd1";
+    CourtLocationInfo loc = new CourtLocationInfo("cook:cd1");
     EcfCourtSpecificSerializer cookSer = new EcfCourtSpecificSerializer(cd, loc);
     try {
       cookSer.getCrossRefIds(NullNode.getInstance(), collector, caseType);
@@ -211,8 +208,7 @@ public class EcfCourtSpecificSerializerTest {
 
   @Test
   public void shouldBeOkayIfNoneRequired() throws FilingError {
-    CourtLocationInfo loc = new CourtLocationInfo();
-    loc.code = "adams";
+    CourtLocationInfo loc = new CourtLocationInfo("adams");
     EcfCourtSpecificSerializer adamsSer = new EcfCourtSpecificSerializer(cd, loc);
     Map<String, String> crossRefIds =
         adamsSer.getCrossRefIds(NullNode.getInstance(), collector, "78334");
@@ -222,8 +218,7 @@ public class EcfCourtSpecificSerializerTest {
   @Test
   public void shouldAllowRequiredWithoutOptionalRefs()
       throws FilingError, JsonMappingException, JsonProcessingException {
-    CourtLocationInfo loc = new CourtLocationInfo();
-    loc.code = "cook:cd1";
+    CourtLocationInfo loc = new CourtLocationInfo("cook:cd1");
     EcfCourtSpecificSerializer cookSer = new EcfCourtSpecificSerializer(cd, loc);
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node =
@@ -260,8 +255,7 @@ public class EcfCourtSpecificSerializerTest {
 
   @Test
   public void shouldThrowOnBadCrossRefKey() throws JsonMappingException, JsonProcessingException {
-    CourtLocationInfo loc = new CourtLocationInfo();
-    loc.code = "cook:cd1";
+    CourtLocationInfo loc = new CourtLocationInfo("cook:cd1");
     EcfCourtSpecificSerializer cookSer = new EcfCourtSpecificSerializer(cd, loc);
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node =
@@ -306,8 +300,7 @@ public class EcfCourtSpecificSerializerTest {
   @Test
   public void shouldParseDoc() throws IOException, FilingError {
     collector = new AllWrongCollector();
-    CourtLocationInfo loc = new CourtLocationInfo();
-    loc.code = "not_real";
+    CourtLocationInfo loc = new CourtLocationInfo("not_real");
     loc.allowserviceoninitial = CourtLocationInfo.BoolOrDefault.TRUE;
 
     CaseCategory caseCategory = new CaseCategory("7", "Civil", null, null, null, null, null);

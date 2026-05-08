@@ -82,7 +82,7 @@ public class AdminUserServiceTest {
     ld = mock(LoginDatabase.class);
     when(ld.getAtRestInfo(eq(API_KEY))).thenReturn(Optional.of(atRest));
 
-    CourtLocationInfo info = new CourtLocationInfo();
+    CourtLocationInfo info = new CourtLocationInfo("doesn't matter");
     info.allowindividualregistration = true;
     cd = mock(CodeDatabase.class);
     when(cd.getFullLocationInfo("0")).thenReturn(Optional.of(info));
