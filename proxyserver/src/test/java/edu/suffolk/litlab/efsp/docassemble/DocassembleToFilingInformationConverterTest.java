@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.hubspot.algebra.Result;
-import com.opencsv.exceptions.CsvValidationException;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.Person;
@@ -29,10 +28,8 @@ public class DocassembleToFilingInformationConverterTest {
   InterviewToFilingInformationConverter converter;
 
   @BeforeEach
-  public void setUp() throws CsvValidationException, IOException {
-    converter =
-        new DocassembleToFilingInformationConverter(
-            this.getClass().getResourceAsStream("/taxonomy.csv"), TylerEnv.STAGE);
+  public void setUp() throws IOException {
+    converter = new DocassembleToFilingInformationConverter(TylerEnv.STAGE);
   }
 
   private String getFileContents(String inFileName) throws IOException {
