@@ -408,26 +408,10 @@ public class EcfCaseTypeFactory {
       ecfAug.setCaseTypeText(Ecf4Helper.convertText(comboCodes.type.code));
     }
 
-    DataFieldRow subTypeConfig = serializer.allDataFields.getFieldRow("CaseInformationCaseSubType");
-    if (subTypeConfig.isvisible) {
-      List<NameAndCode> subTypes = cd.getCaseSubtypesFor(courtLocation.code, comboCodes.type.code);
-      Optional<NameAndCode> maybeSubtype =
-          subTypes.stream()
-              .filter(type -> type.getCode().equals(info.getCaseSubtypeCode()))
-              .findFirst();
+    var maybeSubtype = info.getCaseSubtypeCode();
 
-      if (maybeSubtype.isPresent()) {
-        ecfAug.setCaseSubTypeText(Ecf4Helper.convertText(maybeSubtype.get().getCode()));
-      } else if (subTypeConfig.isrequired) {
-        InterviewVariable subTypeVar =
-            collector.requestVar(
-                "efile_case_subtype",
-                "Sub type of the case",
-                "choices",
-                subTypes.stream().map(nac -> nac.getName()).collect(Collectors.toList()),
-                Optional.of(info.getCaseSubtypeCode()));
-        collector.addWrong(subTypeVar);
-      }
+    if (maybeSubtype.isPresent()) {
+      ecfAug.setCaseSubTypeText(Ecf4Helper.convertText(maybeSubtype.get().getCode()));
     }
 
     List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocation.code, comboCodes.type.code);

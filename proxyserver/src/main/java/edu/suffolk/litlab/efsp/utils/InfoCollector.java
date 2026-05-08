@@ -1,5 +1,10 @@
 package edu.suffolk.litlab.efsp.utils;
 
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.BadCode;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.CodeError;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.NoMatchingCode;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.RequiredCodeNotPresent;
+import edu.suffolk.litlab.efsp.utils.InterviewVariable.VarBuilder;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
@@ -81,6 +86,24 @@ public abstract class InfoCollector {
     }
   }
 
+  public InterviewVariable addCodeError(CodeError err, VarBuilder varBuilder) throws FilingError {
+    switch (err) {
+      case NoMatchingCode noMatch -> {
+        var interviewVar =
+            varBuilder.currentVal(noMatch.given()).choices(noMatch.options()).build();
+        addWrong(interviewVar);
+        return interviewVar;
+      }
+      case RequiredCodeNotPresent notPresent -> {
+        var interviewVar = varBuilder.choices(notPresent.options()).build();
+        addWrong(interviewVar);
+        return interviewVar;
+      }
+      case BadCode badCode -> error(badCode.err());
+    }
+    return null;
+  }
+
   public void pushAttributeStack(String variableName) {
     variableAttributes.push(variableName);
   }
@@ -133,6 +156,21 @@ public abstract class InfoCollector {
       Optional<String> currentVal) {
     return new InterviewVariable(
         currentAttributeStack() + localName, desc, datatype, choices, currentVal);
+  }
+
+  public InterviewVariable.VarBuilder varBuilder() {
+    return new InterviewVariable.VarBuilder(currentAttributeStack());
+  }
+
+  public InterviewVariable requestVar(
+      String localName, String desc, List<String> choices, String currentVal) {
+    return new InterviewVariable(
+        currentAttributeStack() + localName, desc, "choice", choices, Optional.of(currentVal));
+  }
+
+  public InterviewVariable requestVar(String localName, String desc, List<String> choices) {
+    return new InterviewVariable(
+        currentAttributeStack() + localName, desc, "choice", choices, Optional.empty());
   }
 
   public InterviewVariable requestVar(String localName, String description, String datatype) {

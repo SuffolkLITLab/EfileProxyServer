@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
@@ -24,12 +25,12 @@ public class DocassembleToFilingInformationConverter extends InterviewToFilingIn
 
   @Override
   public Result<FilingInformation, FilingError> traverseInterview(
-      String interviewContents, InfoCollector collector) {
+      String interviewContents, CodesParser parser, InfoCollector collector) {
     SimpleModule module = new SimpleModule();
     module.addDeserializer(
         FilingInformation.class,
         new FilingInformationDocassembleJacksonDeserializer(
-            FilingInformation.class, collector, tylerEnv));
+            FilingInformation.class, collector, parser, tylerEnv));
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(module);
     try {

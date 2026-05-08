@@ -11,9 +11,13 @@ import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.FilingResult;
 import edu.suffolk.litlab.efsp.model.Person;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
+import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
 import edu.suffolk.litlab.efsp.server.services.impl.EfmFilingInterface;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
@@ -66,12 +70,14 @@ public class FilingReviewService {
 
   private final Map<String, EfmRestCallbackInterface> callbackInterfaces;
   private final OrgMessageSender msgSender;
+  private final Supplier<CodeDatabase> cdSupplier;
   private final Supplier<LoginDatabase> ldSupplier;
   private final Supplier<UserDatabase> udSupplier;
   private final EndpointReflection ef;
 
   public FilingReviewService(
       Jurisdiction jurisdiction,
+      Supplier<CodeDatabase> cdSupplier,
       Supplier<LoginDatabase> ldSupplier,
       Supplier<UserDatabase> udSupplier,
       Map<String, InterviewToFilingInformationConverter> converterMap,
@@ -81,6 +87,7 @@ public class FilingReviewService {
     this.converterMap = converterMap;
     this.filingInterfaces = filingInterfaces;
     this.callbackInterfaces = callbackInterfaces;
+    this.cdSupplier = cdSupplier;
     this.ldSupplier = ldSupplier;
     this.udSupplier = udSupplier;
     this.msgSender = msgSender;
@@ -187,6 +194,11 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
+    Result<CodesParser, Response> maybeParser = makeParser(courtId);
+    if (maybeParser.isErr()) {
+      return maybeParser.unwrapErrOrElseThrow();
+    }
+    var parser = maybeParser.unwrapOrElseThrow();
     Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
@@ -196,7 +208,7 @@ public class FilingReviewService {
     }
     InfoCollector collector = new NeverSubmitCollector();
     Result<FilingInformation, FilingError> res =
-        converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
+        converterMap.get(mediaType.toString()).traverseInterview(allVars, parser, collector);
     if (res.isErr()) {
       log.error("Error on traverseInterview: {}", res.toString());
       return Response.status(400).entity(collector.jsonSummary()).build();
@@ -225,6 +237,11 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
+    Result<CodesParser, Response> maybeParser = makeParser(courtId);
+    if (maybeParser.isErr()) {
+      return maybeParser.unwrapErrOrElseThrow();
+    }
+    var parser = maybeParser.unwrapOrElseThrow();
     Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
@@ -235,7 +252,7 @@ public class FilingReviewService {
     log.trace("Court id: {}", courtId);
     InfoCollector collector = new FailFastCollector();
     Result<FilingInformation, FilingError> res =
-        converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
+        converterMap.get(mediaType.toString()).traverseInterview(allVars, parser, collector);
     if (res.isErr()) {
       log.error("Error when calculating filing fees: {}", res.toString());
       return Response.status(400).entity(collector.jsonSummary()).build();
@@ -261,6 +278,11 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
+    Result<CodesParser, Response> maybeParser = makeParser(courtId);
+    if (maybeParser.isErr()) {
+      return maybeParser.unwrapErrOrElseThrow();
+    }
+    var parser = maybeParser.unwrapOrElseThrow();
     Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
@@ -270,7 +292,7 @@ public class FilingReviewService {
     }
     InfoCollector collector = new FailFastCollector();
     Result<FilingInformation, FilingError> res =
-        converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
+        converterMap.get(mediaType.toString()).traverseInterview(allVars, parser, collector);
     if (res.isErr()) {
       return Response.status(400).entity(collector.jsonSummary()).build();
     }
@@ -408,7 +430,7 @@ public class FilingReviewService {
           filingIds,
           atRest.get().serverId,
           activeToken.get(),
-          info.getCaseTypeCode(),
+          info.getCaseTypeCode().code,
           courtId,
           ts,
           acceptedTemplate,
@@ -459,8 +481,13 @@ public class FilingReviewService {
       return Result.err(
           Response.status(415).entity("We only support " + converterMap.keySet()).build());
     }
+    Result<CodesParser, Response> maybeParser = makeParser(courtId);
+    if (maybeParser.isErr()) {
+      return maybeParser.propagateErr();
+    }
+    var parser = maybeParser.unwrapOrElseThrow();
     Result<FilingInformation, FilingError> maybeInfo =
-        converterMap.get(mediaType.toString()).extractInformation(allVars);
+        converterMap.get(mediaType.toString()).extractInformation(allVars, parser);
     if (maybeInfo.isErr()) {
       return Result.err(
           Response.status(400).entity(maybeInfo.unwrapErrOrElseThrow().toJson()).build());
@@ -557,5 +584,14 @@ public class FilingReviewService {
       return Result.err(Response.status(404).entity("Cannot send filing to " + courtId).build());
     }
     return Result.ok(filingInterfaces.get(courtId));
+  }
+
+  private Result<CodesParser, Response> makeParser(String courtId) {
+    CodeDatabase cd = cdSupplier.get();
+    Optional<CourtLocationInfo> info = cd.getFullLocationInfo(courtId);
+    if (info.isEmpty()) {
+      return Result.err(Response.status(404).entity("Cannot send filing to " + courtId).build());
+    }
+    return Result.ok(new TylerCodesParser(cd, info.get()));
   }
 }

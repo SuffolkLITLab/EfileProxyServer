@@ -109,18 +109,13 @@ public class EcfCourtSpecificSerializer {
    * Given the case info from a case that's already in the court's system on a subsequent filing.
    */
   public ComboCaseCodes serializeCaseCodesIndexed(
-      String caseCategoryCode,
-      String caseTypeCode,
+      CaseCategory caseCategory,
+      CaseType type,
       List<String> filingCodeStrs,
       Map<String, Person> existingParties,
       Map<String, Person> newParties,
       InfoCollector collector)
       throws FilingError {
-    CaseCategory caseCategory =
-        vetCaseCat(cd.getCaseCategoryWithCode(this.court.code, caseCategoryCode), collector);
-    List<CaseType> caseTypes = cd.getCaseTypesFor(court.code, caseCategory.code, Optional.empty());
-    Optional<CaseType> maybeType = cd.getCaseTypeWith(court.code, caseTypeCode);
-    CaseType type = vetCaseType(maybeType, caseTypes, caseCategory, collector, false);
     List<FilingCode> filingRealCodes =
         vetFilingTypes(filingCodeStrs, caseCategory, type, collector, false);
     Map<String, Pair<PartyType, Boolean>> partyTypes =
@@ -131,14 +126,8 @@ public class EcfCourtSpecificSerializer {
   /** Either an initial filing, or a non-indexed case. */
   public ComboCaseCodes serializeCaseCodes(
       FilingInformation info, InfoCollector collector, boolean isInitialFiling) throws FilingError {
-    Optional<CaseCategory> maybeCaseCat =
-        cd.getCaseCategoryWithCode(this.court.code, info.getCaseCategoryCode());
-    CaseCategory caseCategory = vetCaseCat(maybeCaseCat, collector);
-
-    List<CaseType> caseTypes = cd.getCaseTypesFor(court.code, caseCategory.code, Optional.empty());
-    Optional<CaseType> maybeType =
-        caseTypes.stream().filter(type -> type.code.equals(info.getCaseTypeCode())).findFirst();
-    CaseType type = vetCaseType(maybeType, caseTypes, caseCategory, collector, isInitialFiling);
+    CaseCategory caseCategory = info.getCaseCategoryCode();
+    CaseType type = info.getCaseTypeCode();
 
     if (!type.initial && info.getCaseDocketNumber().isEmpty()) {
       FilingError err =
@@ -171,70 +160,6 @@ public class EcfCourtSpecificSerializer {
             .collect(Collectors.toMap(per -> per.getIdString(), per -> per));
     Map<String, Pair<PartyType, Boolean>> partyTypes = vetPartyTypes(Map.of(), partyInfo, type);
     return new ComboCaseCodes(caseCategory, type, filingCodes, partyTypes);
-  }
-
-  private CaseCategory vetCaseCat(Optional<CaseCategory> caseCat, InfoCollector collector)
-      throws FilingError {
-    if (caseCat.isEmpty()) {
-      List<CaseCategory> categories = cd.getCaseCategoriesFor(court.code);
-      // TODO(brycew-later): handle that these variables could be different from different
-      // deserializers
-      InterviewVariable var =
-          collector.requestVar(
-              "efile_case_category",
-              "",
-              "choice",
-              categories.stream().map(cat -> cat.code).collect(Collectors.toList()),
-              caseCat.map(CaseCategory::getCode));
-      collector.addWrong(var);
-      // Foundational error: Category is sorely needed
-      throw FilingError.wrongValue(var);
-    }
-    return caseCat.get();
-  }
-
-  private CaseType vetCaseType(
-      Optional<CaseType> maybeType,
-      List<CaseType> caseTypes,
-      CaseCategory caseCategory,
-      InfoCollector collector,
-      boolean isInitialFiling)
-      throws FilingError {
-    if (caseTypes.isEmpty()) {
-      FilingError err =
-          FilingError.serverError(
-              "There are no caseTypes for " + court.code + " and " + caseCategory.code);
-      collector.error(err);
-    }
-    if (maybeType.isEmpty()) {
-      InterviewVariable var =
-          collector.requestVar(
-              "efile_case_type",
-              "",
-              "choice",
-              caseTypes.stream().map(type -> type.name).collect(Collectors.toList()),
-              maybeType.map(CaseType::toString));
-      collector.addWrong(var);
-      throw FilingError.wrongValue(var);
-    }
-    CaseType type = maybeType.get();
-    // Check if the court doesn't handle this type (initial vs subsequent) of filing
-    if (isInitialFiling && (!type.initial || !court.initial)) {
-      FilingError err =
-          FilingError.malformedInterview(
-              "An Initial"
-                  + " filing can't be filed at "
-                  + court.name
-                  + " or be of filing type "
-                  + type.name);
-      collector.error(err);
-    } else if (!isInitialFiling && (!court.subsequent)) {
-      FilingError err =
-          FilingError.malformedInterview("A Subsequent filing can't be filed at " + court.name);
-      collector.error(err);
-    }
-
-    return maybeType.get();
   }
 
   private List<FilingCode> vetFilingTypes(

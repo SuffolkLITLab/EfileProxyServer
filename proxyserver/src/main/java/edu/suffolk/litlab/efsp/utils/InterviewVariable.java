@@ -1,6 +1,8 @@
 package edu.suffolk.litlab.efsp.utils;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.text.StringEscapeUtils;
@@ -109,5 +111,63 @@ public class InterviewVariable {
   public int hashCode() {
     HashCodeBuilder bd = new HashCodeBuilder();
     return bd.append(name).append(datatype).append(choices).append(currentVal).build();
+  }
+
+  public static class VarBuilder {
+    private String attributeStack;
+    private String name;
+
+    private String description;
+    private String datatype;
+    private Collection<String> choices;
+    private Optional<String> currentVal;
+
+    public VarBuilder(String attributeStack) {
+      this.attributeStack = attributeStack;
+    }
+
+    public VarBuilder name(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public VarBuilder description(String description) {
+      this.description = description;
+      return this;
+    }
+
+    public VarBuilder datatype(String datatype) {
+      this.datatype = datatype;
+      return this;
+    }
+
+    public VarBuilder choices(Collection<String> choices) {
+      this.choices = choices;
+      return this;
+    }
+
+    public VarBuilder currentVal(String currentVal) {
+      this.currentVal = Optional.of(currentVal);
+      return this;
+    }
+
+    public VarBuilder currentVal(JsonNode node) {
+      if (node != null && !node.isNull() && node.isTextual()) {
+        this.currentVal = Optional.of(node.asText());
+      } else {
+        this.currentVal = Optional.empty();
+      }
+      return this;
+    }
+
+    public InterviewVariable build() {
+      choices = (choices != null) ? choices : List.of();
+      currentVal = (currentVal != null) ? currentVal : Optional.empty();
+      if (choices.size() > 0 && datatype == null) {
+        datatype = "choice";
+      }
+      return new InterviewVariable(
+          attributeStack + name, description, datatype, choices, currentVal);
+    }
   }
 }
