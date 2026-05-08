@@ -13,6 +13,7 @@ import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.LowerCourtInfo;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
@@ -39,13 +40,15 @@ public class FilingInformationDocassembleJacksonDeserializer
 
   private static final long serialVersionUID = 1L;
   private final InfoCollector classCollector;
+  private final CodesParser parser;
 
   /** If Tyler is setup on this server, this is the env we're submitting to. */
   private final TylerEnv tylerEnv;
 
   public FilingInformationDocassembleJacksonDeserializer(
-      Class<FilingInformation> t, InfoCollector collector, TylerEnv env) {
+      Class<FilingInformation> t, InfoCollector collector, CodesParser parser, TylerEnv env) {
     super(t);
+    this.parser = parser;
     this.classCollector = collector;
     this.tylerEnv = env;
   }
@@ -96,6 +99,8 @@ public class FilingInformationDocassembleJacksonDeserializer
     entities.setPreviousCaseId(extractNullableString(node.get("previous_case_id")));
     entities.setCaseDocketNumber(extractNullableString(node.get("docket_number")));
     boolean isFirstIndexedFiling = entities.getPreviousCaseId().isEmpty();
+    boolean isInitialFiling =
+        entities.getPreviousCaseId().isEmpty() && entities.getCaseDocketNumber().isEmpty();
 
     List<Person> users = collectPeople(node, "users", collector);
     List<Person> otherParties = collectPeople(node, "other_parties", collector);
@@ -206,16 +211,41 @@ public class FilingInformationDocassembleJacksonDeserializer
     entities.setLowerCourtInfo(extractLowerCourt(node, collector));
 
     JsonNode category = node.get("efile_case_category");
+    var varBuilder =
+        collector
+            .varBuilder()
+            .name("efile_case_category")
+            .description("The top-level case category")
+            .currentVal(category);
     if (category != null && !category.isNull() && category.isTextual()) {
-      entities.setCaseCategoryCode(category.asText());
+      var res = parser.vetCaseCat(category.asText());
+      res.ifOk(
+          code -> {
+            entities.setCaseCategoryCode(code);
+          });
+      if (res.isErr()) {
+        var variable = collector.addCodeError(res.expectErr("checked err above"), varBuilder);
+        // Foundational error: Category is sorely needed
+        throw FilingError.wrongValue(variable);
+      }
     } else if (isFirstIndexedFiling) {
-      InterviewVariable var = collector.requestVar("efile_case_category", "", "text");
+      // TODO: show the options?
+      InterviewVariable var = varBuilder.build();
       collector.addRequired(var);
     }
 
     JsonNode type = node.get("efile_case_type");
+    var varCaseBuilder =
+        collector.varBuilder().name("efile_case_type").description("").currentVal(type);
     if (type != null && type.isTextual()) {
-      entities.setCaseTypeCode(type.asText());
+      var res = parser.vetCaseType(type.asText(), entities.getCaseCategoryCode(), isInitialFiling);
+      res.ifOk(
+          code -> {
+            entities.setCaseTypeCode(code);
+          });
+      if (res.isErr()) {
+        collector.addCodeError(res.expectErr(""), varCaseBuilder);
+      }
     } else if (isFirstIndexedFiling) {
       InterviewVariable var = collector.requestVar("efile_case_type", "", "text");
       collector.addRequired(var);
@@ -223,12 +253,23 @@ public class FilingInformationDocassembleJacksonDeserializer
 
     JsonNode subtype = node.get("efile_case_subtype");
     if (subtype != null && subtype.isTextual()) {
-      entities.setCaseSubtypeCode(subtype.asText());
+      var res = parser.vetSubType(subtype.asText(), entities.getCaseTypeCode());
+      res.ifOk(
+          code -> {
+            entities.setCaseSubtypeCode(code);
+          });
+      if (res.isErr()) {
+        var err = res.expectErr("");
+        InterviewVariable var =
+            collector.requestVar(
+                "efile_case_subtype", "", "choice", err.options(), Optional.of(err.given()));
+        collector.addWrong(var);
+      }
     } else if (isFirstIndexedFiling) {
       InterviewVariable var =
           collector.requestVar("efile_case_subtype", "subtype (not always present)", "text");
       collector.addOptional(var);
-      entities.setCaseSubtypeCode("");
+      entities.setCaseSubtypeCode(Optional.empty());
     }
 
     // Get the interview metadablock TODO(brycew-later): just one for now

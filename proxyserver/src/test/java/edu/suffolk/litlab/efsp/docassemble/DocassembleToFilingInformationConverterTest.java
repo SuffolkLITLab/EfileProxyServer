@@ -5,11 +5,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.hubspot.algebra.Result;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.Person;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
+import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
@@ -26,10 +34,30 @@ import org.junit.jupiter.api.Test;
 public class DocassembleToFilingInformationConverterTest {
 
   InterviewToFilingInformationConverter converter;
+  CodesParser parser;
+
+  CaseCategory exampleCategory =
+      new CaseCategory(
+          "123987",
+          "Test Category",
+          "",
+          "Not Available",
+          "Not Available",
+          "Not Available",
+          "Not Available");
+  CaseType exampleCaseType =
+      new CaseType("456098", "Test Case Type", "123987", "true", "0", "", "", "01");
 
   @BeforeEach
   public void setUp() throws IOException {
     converter = new DocassembleToFilingInformationConverter(TylerEnv.STAGE);
+    CodeDatabase cd = mock(CodeDatabase.class);
+    when(cd.getCaseCategoriesFor("01")).thenReturn(List.of(exampleCategory));
+    when(cd.getCaseCategoryWithCode("01", "123987")).thenReturn(Optional.of(exampleCategory));
+    when(cd.getCaseTypesFor("01", "123987", Optional.empty())).thenReturn(List.of(exampleCaseType));
+    var loc = new CourtLocationInfo("01");
+    loc.initial = true;
+    parser = new TylerCodesParser(cd, loc);
   }
 
   private String getFileContents(String inFileName) throws IOException {
@@ -47,12 +75,13 @@ public class DocassembleToFilingInformationConverterTest {
   @Test
   public void testEmptyOnInvalidJson() throws IOException {
     String contents1 = getFileContents("/invalid_1.json");
-    Result<FilingInformation, FilingError> result = converter.extractInformation(contents1);
+    Result<FilingInformation, FilingError> result = converter.extractInformation(contents1, parser);
     assertThat(result).isErr();
     assertEquals(result.unwrapErrOrElseThrow().getType(), FilingError.Type.MalformedInterview);
 
     String contents2 = getFileContents("/invalid_2.json");
-    Result<FilingInformation, FilingError> result2 = converter.extractInformation(contents2);
+    Result<FilingInformation, FilingError> result2 =
+        converter.extractInformation(contents2, parser);
     assertThat(result2).isErr();
     assertEquals(result2.unwrapErrOrElseThrow().getType(), FilingError.Type.MalformedInterview);
   }
@@ -60,12 +89,12 @@ public class DocassembleToFilingInformationConverterTest {
   @Test
   public void testEmptyOnUnsupportedJson() throws IOException {
     String justStr = getFileContents("/just_str.json");
-    Result<FilingInformation, FilingError> result = converter.extractInformation(justStr);
+    Result<FilingInformation, FilingError> result = converter.extractInformation(justStr, parser);
     assertThat(result).isErr();
     assertEquals(result.unwrapErrOrElseThrow().getType(), FilingError.Type.MalformedInterview);
 
     String justNull = getFileContents("/just_null.json");
-    Result<FilingInformation, FilingError> result2 = converter.extractInformation(justNull);
+    Result<FilingInformation, FilingError> result2 = converter.extractInformation(justNull, parser);
     assertThat(result2).isErr();
     assertEquals(result2.unwrapErrOrElseThrow().getType(), FilingError.Type.MalformedInterview);
   }
@@ -73,7 +102,7 @@ public class DocassembleToFilingInformationConverterTest {
   @Test
   public void testEnsureUserEmail() throws IOException {
     String contents = getFileContents("/housing_tro_2_plaintiff_business_def_no_email.json");
-    Result<FilingInformation, FilingError> result = converter.extractInformation(contents);
+    Result<FilingInformation, FilingError> result = converter.extractInformation(contents, parser);
     System.out.println(result);
     assertThat(result)
         .isErr()
@@ -86,7 +115,7 @@ public class DocassembleToFilingInformationConverterTest {
   public void testGetsUserInformation() throws IOException {
     String interviewContents = getFileContents("/housing_tro_2_plaintiff_business_def.json");
     Result<FilingInformation, FilingError> maybeEntities =
-        converter.extractInformation(interviewContents);
+        converter.extractInformation(interviewContents, parser);
     assertThat(maybeEntities).isOk();
     FilingInformation entities = maybeEntities.unwrapOrElseThrow();
     assertEquals(
@@ -125,13 +154,14 @@ public class DocassembleToFilingInformationConverterTest {
   @Test
   public void testGetFilingInformation() throws IOException {
     String contents = getFileContents("/housing_tro_2_plaintiff_business_def.json");
-    Result<FilingInformation, FilingError> maybeEntities = converter.extractInformation(contents);
+    Result<FilingInformation, FilingError> maybeEntities =
+        converter.extractInformation(contents, parser);
     assertThat(maybeEntities).isOk();
     FilingInformation entities = maybeEntities.unwrapOrElseThrow();
     assertNotNull(entities.getCaseCategoryCode());
-    assertEquals("CivilCase", entities.getCaseCategoryCode());
-    assertEquals("Motion", entities.getCaseTypeCode());
-    assertEquals("", entities.getCaseSubtypeCode());
+    assertEquals("123987", entities.getCaseCategoryCode().code);
+    assertEquals("456098", entities.getCaseTypeCode().code);
+    assertEquals(Optional.empty(), entities.getCaseSubtypeCode());
 
     List<FilingDoc> filingDocs = entities.getFilings();
     assertEquals(1, filingDocs.size());
@@ -140,7 +170,8 @@ public class DocassembleToFilingInformationConverterTest {
   @Test
   public void testHasIsFormFiller() throws IOException {
     String contents = getFileContents("/existing_is_form_filler.json");
-    Result<FilingInformation, FilingError> maybeInfo = converter.extractInformation(contents);
+    Result<FilingInformation, FilingError> maybeInfo =
+        converter.extractInformation(contents, parser);
     assertThat(maybeInfo).isOk();
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     assertEquals(info.getPartyAttorneyMap().size(), 1);
@@ -162,7 +193,8 @@ public class DocassembleToFilingInformationConverterTest {
   @Test
   public void testfilteredOutNotNew() throws IOException {
     String contents = getFileContents("/checking_filtered_users.json");
-    Result<FilingInformation, FilingError> maybeInfo = converter.extractInformation(contents);
+    Result<FilingInformation, FilingError> maybeInfo =
+        converter.extractInformation(contents, parser);
     assertThat(maybeInfo).isOk();
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     assertEquals(

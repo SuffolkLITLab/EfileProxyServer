@@ -44,6 +44,8 @@ import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRec
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.ServiceMDEService;
 import edu.suffolk.litlab.efsp.Jurisdiction;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
@@ -58,6 +60,7 @@ import edu.suffolk.litlab.efsp.model.FilingResult;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.ecf4.CoreMessageAndNames;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
@@ -65,6 +68,7 @@ import edu.suffolk.litlab.efsp.server.ecf4.EcfCourtSpecificSerializer;
 import edu.suffolk.litlab.efsp.server.ecf4.PaymentFactory;
 import edu.suffolk.litlab.efsp.server.ecf4.PolicyCacher;
 import edu.suffolk.litlab.efsp.server.ecf4.QueryType;
+import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
 import edu.suffolk.litlab.efsp.server.services.impl.EfmCheckableFilingInterface;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
@@ -178,7 +182,6 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       QueryType queryType)
       throws FilingError {
     String existingCaseTitle = null;
-    String caseCategoryName = "";
     try (CodeDatabase cd = cdSupplier.get()) {
       EcfCaseTypeFactory ecfCaseFactory = new EcfCaseTypeFactory(cd, this.jurisdiction);
       Optional<CourtLocationInfo> maybeLocationInfo =
@@ -210,6 +213,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       }
 
       EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo);
+      CodesParser parser = new TylerCodesParser(cd, locationInfo);
       boolean isInitialFiling =
           info.getPreviousCaseId().isEmpty() && info.getCaseDocketNumber().isEmpty();
       boolean isFirstIndexedFiling = info.getPreviousCaseId().isEmpty();
@@ -235,12 +239,37 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
           collector.addWrong(filingVar);
         }
 
-        String catCode = resp.getCase().getValue().getCaseCategoryText().getValue();
-        String typeCode =
+        String catStr = resp.getCase().getValue().getCaseCategoryText().getValue();
+        var catRes = parser.vetCaseCat(catStr);
+        if (catRes.isErr()) {
+          var variable =
+              collector.addCodeError(
+                  catRes.expectErr(""),
+                  collector
+                      .varBuilder()
+                      .name("case category (fom the court)")
+                      .description("(shouldn't be wrong)"));
+          // Foundational error: Category is sorely needed
+          throw FilingError.wrongValue(variable);
+        }
+        CaseCategory catCode = catRes.expect("");
+        String typeStr =
             EcfCaseTypeFactory.getCaseAugmentation(resp.getCase().getValue())
                 .get()
                 .getCaseTypeText()
                 .getValue();
+        var typeRes = parser.vetCaseType(typeStr, catCode, isInitialFiling);
+        if (typeRes.isErr()) {
+          var variable =
+              collector.addCodeError(
+                  typeRes.expectErr(""),
+                  collector
+                      .varBuilder()
+                      .name("case type (fom tyler)")
+                      .description("(shouldn't be wrong)"));
+          throw FilingError.wrongValue(variable);
+        }
+        CaseType typeCode = typeRes.expect("");
         Map<PartyId, Person> exisitingPartips =
             EcfCaseTypeFactory.getCaseParticipants(resp.getCase().getValue()).get();
         List<Optional<String>> maybeFilingCodes =
@@ -272,7 +301,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       } else {
         allCodes = serializer.serializeCaseCodes(info, collector, isInitialFiling);
       }
-      caseCategoryName = allCodes.cat.name;
+      String caseCategoryName = allCodes.cat.name;
       log.info("have all codes");
 
       var coreObjFac =

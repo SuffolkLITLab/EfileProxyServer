@@ -141,8 +141,8 @@
     "user_started_case": true,
     "user_needs_interpreter": true,
     "user_preferred_language": "Spanish",
-    "efile_case_category": "CivilCase",
-    "efile_case_type": "Motion",
+    "efile_case_category": "123987",
+    "efile_case_type": "456098",
     "lead_contact": {
         "name": {
             "first": "Bob",

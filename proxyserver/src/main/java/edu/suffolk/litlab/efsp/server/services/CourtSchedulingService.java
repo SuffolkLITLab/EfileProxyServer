@@ -35,6 +35,7 @@ import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRec
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
@@ -42,10 +43,12 @@ import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCourtSpecificSerializer;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecfv5CaseTypeFactory;
+import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
 import edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
@@ -250,8 +253,9 @@ public class CourtSchedulingService {
         mediaType = MediaType.valueOf("application/json");
       }
       InfoCollector collector = new FailFastCollector();
+      CodesParser parser = new TylerCodesParser(cd, locationInfo.get());
       Result<FilingInformation, FilingError> res =
-          converterMap.get(mediaType.toString()).traverseInterview(allVars, collector);
+          converterMap.get(mediaType.toString()).traverseInterview(allVars, parser, collector);
       if (res.isErr()) {
         return Response.status(400).entity(collector.jsonSummary()).build();
       }
@@ -282,12 +286,35 @@ public class CourtSchedulingService {
           query.setCaseTrackingID(Ecf4Helper.convertString(info.getPreviousCaseId().get()));
           query.setCaseQueryCriteria(EcfCaseTypeFactory.getCriteria());
           CaseResponseMessageType resp = recordPort.get().getCase(query);
-          String catCode = resp.getCase().getValue().getCaseCategoryText().getValue();
-          String typeCode =
+          String catStr = resp.getCase().getValue().getCaseCategoryText().getValue();
+          var catRes = parser.vetCaseCat(catStr);
+          if (catRes.isErr()) {
+            var variable =
+                collector.addCodeError(
+                    catRes.expectErr(""),
+                    collector
+                        .varBuilder()
+                        .name("case category (fom the court)")
+                        .description("(shouldn't be wrong)"));
+            // Foundational error: Category is sorely needed
+            throw FilingError.wrongValue(variable);
+          }
+          CaseCategory catCode = catRes.expect("");
+          String typeStr =
               EcfCaseTypeFactory.getCaseAugmentation(resp.getCase().getValue())
                   .get()
                   .getCaseTypeText()
                   .getValue();
+          var typeRes = parser.vetCaseType(typeStr, catCode, isInitialFiling);
+          if (typeRes.isErr()) {
+            collector.addCodeError(
+                typeRes.expectErr(""),
+                collector
+                    .varBuilder()
+                    .name("case type (fom tyler)")
+                    .description("(shouldn't be wrong)"));
+          }
+          edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType typeCode = typeRes.expect("");
           existingParties = EcfCaseTypeFactory.getCaseParticipants(resp.getCase().getValue());
           if (existingParties.isEmpty()) {
             log.info("Couldn't get exsting parties?");
@@ -313,12 +340,7 @@ public class CourtSchedulingService {
                       Collectors.toMap(
                           ent -> ent.getKey().getIdentificationString(), ent -> ent.getValue()));
           log.info(
-              "Existing cat, type, and filings: "
-                  + catCode
-                  + ","
-                  + typeCode
-                  + ","
-                  + filingCodeStrs);
+              "Existing cat, type, and filings: {}, {}, {}", catCode, typeCode, filingCodeStrs);
           allCodes =
               serializer.serializeCaseCodesIndexed(
                   catCode, typeCode, filingCodeStrs, newPartyMap, existingPartyMap, collector);

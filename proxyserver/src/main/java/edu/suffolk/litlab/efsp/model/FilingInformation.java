@@ -1,6 +1,9 @@
 package edu.suffolk.litlab.efsp.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,10 +55,9 @@ public class FilingInformation {
   /** Existing docket number, NOT from EFM system. For subsequent filing into non-indexed cases. */
   private Optional<String> caseDocketNumber = Optional.empty();
 
-  // TODO(brycew-later): refactor so this is selected only in Tyler stuff
-  private String caseCategoryCode;
-  private String caseTypeCode;
-  private String caseSubtypeCode;
+  private CaseCategory caseCategoryCode;
+  private CaseType caseTypeCode;
+  private Optional<NameAndCode> caseSubtypeCode;
   private String paymentId;
   private List<FilingDoc> filingDocs = List.of();
   private Optional<LocalDate> returnDate = Optional.empty();
@@ -146,11 +148,11 @@ public class FilingInformation {
     return parties;
   }
 
-  public String getCaseCategoryCode() {
+  public CaseCategory getCaseCategoryCode() {
     return caseCategoryCode;
   }
 
-  public String getCaseTypeCode() {
+  public CaseType getCaseTypeCode() {
     return caseTypeCode;
   }
 
@@ -158,7 +160,7 @@ public class FilingInformation {
     return serviceContacts;
   }
 
-  public String getCaseSubtypeCode() {
+  public Optional<NameAndCode> getCaseSubtypeCode() {
     return caseSubtypeCode;
   }
 
@@ -218,7 +220,7 @@ public class FilingInformation {
     this.serviceContacts = serviceContacts;
   }
 
-  public void setCaseCategoryCode(String caseCategoryCode) {
+  public void setCaseCategoryCode(CaseCategory caseCategoryCode) {
     this.caseCategoryCode = caseCategoryCode;
   }
 
@@ -230,11 +232,11 @@ public class FilingInformation {
     this.caseDocketNumber = Optional.ofNullable(num);
   }
 
-  public void setCaseTypeCode(String caseTypeCode) {
+  public void setCaseTypeCode(CaseType caseTypeCode) {
     this.caseTypeCode = caseTypeCode;
   }
 
-  public void setCaseSubtypeCode(String caseSubtypeId) {
+  public void setCaseSubtypeCode(Optional<NameAndCode> caseSubtypeId) {
     this.caseSubtypeCode = caseSubtypeId;
   }
 
