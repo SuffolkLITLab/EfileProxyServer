@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.model.CaseServiceContact;
@@ -206,28 +205,9 @@ public class FilingInformationDocassembleJacksonDeserializer
         extractServiceContacts(node.get("service_contacts"), varToPartyId, collector));
     entities.setLowerCourtInfo(extractLowerCourt(node, collector));
 
-    // TODO(brycew-later): this approach is a complete mess, don't know
-    // how to best map LIST onto case categories, ECF is too high level
-    JsonNode metadata = JsonNodeFactory.instance.nullNode();
-    if (node.has("interview_metadata") && node.get("interview_metadata").has("elements")) {
-      JsonNode metadataElems = node.get("interview_metadata").get("elements");
-      if (metadataElems.size() >= 1) {
-        String key = metadataElems.fieldNames().next();
-        if (metadataElems.size() > 1) {
-          log.warn("Only the first metadata element will be looked at: {}", key);
-        }
-        metadata = metadataElems.get(key).get("elements");
-      }
-    }
-
     JsonNode category = node.get("efile_case_category");
     if (category != null && !category.isNull() && category.isTextual()) {
       entities.setCaseCategoryCode(category.asText());
-    } else if (metadata.has("categories") && metadata.get("categories").isArray()) {
-      List<String> categories = new ArrayList<String>();
-      metadata.get("categories").forEach((cat) -> categories.add(cat.asText()));
-      entities.setCaseCategoryCode(String.join(", ", categories));
-      log.info("Categories: {}", categories);
     } else if (isFirstIndexedFiling) {
       InterviewVariable var = collector.requestVar("efile_case_category", "", "text");
       collector.addRequired(var);
@@ -236,8 +216,6 @@ public class FilingInformationDocassembleJacksonDeserializer
     JsonNode type = node.get("efile_case_type");
     if (type != null && type.isTextual()) {
       entities.setCaseTypeCode(type.asText());
-    } else if (metadata.has("title") && metadata.get("title").isTextual()) {
-      entities.setCaseTypeCode(metadata.get("title").asText());
     } else if (isFirstIndexedFiling) {
       InterviewVariable var = collector.requestVar("efile_case_type", "", "text");
       collector.addRequired(var);

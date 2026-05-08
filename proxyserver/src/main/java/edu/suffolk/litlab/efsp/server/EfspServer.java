@@ -212,8 +212,7 @@ public class EfspServer {
     setupDatabases(codeDs, userDs);
 
     InterviewToFilingInformationConverter daJsonConverter =
-        new DocassembleToFilingInformationConverter(
-            EfspServer.class.getResourceAsStream("/taxonomy.csv"), tylerEnv);
+        new DocassembleToFilingInformationConverter(tylerEnv);
     Map<String, InterviewToFilingInformationConverter> converterMap =
         Map.of(
             "application/json", daJsonConverter,

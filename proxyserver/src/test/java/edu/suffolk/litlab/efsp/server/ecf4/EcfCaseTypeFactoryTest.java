@@ -116,7 +116,7 @@ public class EcfCaseTypeFactoryTest {
     // EcfCaseTypeFactory caseFactory = new EcfCaseTypeFactory(cd, "illinois");
     EcfCaseTypeFactory.getCriteria();
     InterviewToFilingInformationConverter converter =
-        new DocassembleToFilingInformationConverter(null, TylerEnv.STAGE);
+        new DocassembleToFilingInformationConverter(TylerEnv.STAGE);
     Result<FilingInformation, FilingError> infoRes = converter.extractInformation("");
     assertTrue(infoRes.isErr());
     return;

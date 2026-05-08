@@ -9,7 +9,6 @@ import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
-import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +18,7 @@ public class DocassembleToFilingInformationConverter extends InterviewToFilingIn
       LoggerFactory.getLogger(DocassembleToFilingInformationConverter.class);
   private final TylerEnv tylerEnv;
 
-  public DocassembleToFilingInformationConverter(InputStream taxonomyCsv, TylerEnv tylerEnv) {
+  public DocassembleToFilingInformationConverter(TylerEnv tylerEnv) {
     this.tylerEnv = tylerEnv;
   }
 

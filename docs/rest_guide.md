@@ -140,18 +140,6 @@ These three endpoints each deal with the same large request payload: the entire 
         "tyler_prod_lower_court_code": "98"
         // Only have experience in MA, but see https://github.com/SuffolkLITLab/docassemble-MACourts/pull/38 and https://github.com/SuffolkLITLab/docassemble-MACourts/pull/71
     },
-    // only used if the above 3 aren't present
-    "interview_metadata": {
-        "elements": {
-            "interview idk": {
-                "elements": {
-                    "title": "Housing temporary restraining order",
-                    // A list of the Legal Taxonomy codes that this form applies to. (https://taxonomy.legal/)
-                    "categories": ["HO-00-00-00-00"]
-                }
-            }
-        }
-    },
     "al_court_bundle": [
         { // 0th document is the lead document by default
             "proxy_enabled": true, // required to be parsed
