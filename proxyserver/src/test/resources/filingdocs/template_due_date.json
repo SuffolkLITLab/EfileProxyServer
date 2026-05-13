@@ -4,6 +4,7 @@
   "always_enabled": false,
   "document_type_code": "6586",
   "has_courtesy_copies": false,
+  "filing_type": "6553",
   "due_date": %s,
   "filing_description": "The Motion to Stay Eviction for Bob Ma",
   "reference_number": null,

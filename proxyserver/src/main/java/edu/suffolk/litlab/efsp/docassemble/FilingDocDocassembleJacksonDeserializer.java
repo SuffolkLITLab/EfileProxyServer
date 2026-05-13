@@ -11,11 +11,13 @@ import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.model.FilingAction;
 import edu.suffolk.litlab.efsp.model.FilingAttachment;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.model.PartyId;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
@@ -45,7 +47,12 @@ public class FilingDocDocassembleJacksonDeserializer {
 
   /** Parses a filing from the DA Json Object. Used by Deserializers that include filings. */
   public static Optional<FilingDoc> fromNode(
-      JsonNode node, Map<String, PartyId> varToPartyId, int sequenceNum, InfoCollector collector)
+      JsonNode node,
+      Map<String, PartyId> varToPartyId,
+      int sequenceNum,
+      List<FilingCode> filingOptions,
+      CodesParser parser,
+      InfoCollector collector)
       throws FilingError {
     if (!node.isObject()) {
       FilingError err =
@@ -58,19 +65,17 @@ public class FilingDocDocassembleJacksonDeserializer {
       log.info("Filing doc isn't proxy enabled, won't parse it or attachments");
       return Optional.empty();
     }
-    JsonNode filingJson = node.get("filing_type");
-    Optional<String> filingType = Optional.empty();
-    if (filingJson != null && filingJson.isTextual()) {
-      filingType = Optional.of(filingJson.asText());
-    } else {
-      InterviewVariable filingVar =
-          collector.requestVar("filing_type", "What filing type is this?", "text");
-      log.warn("filing_type not present in the info!: {}", node);
-      // Optional for non-tyler ones. Will be enforced at the tyler level
-      collector.addOptional(
-          filingVar.appendDesc(
-              (node.has("instanceName")) ? node.get("instanceName").asText("?") : "?"));
+    Optional<String> filingStr = JsonHelpers.getStringMember(node, "filing_type");
+    var res = parser.vetFilingType(filingStr, filingOptions);
+    var name = (node.has("instanceName")) ? node.get("instanceName").asText("?") : "?";
+    var varBuilder =
+        collector.varBuilder().name("filing_type").description("What filing type is this?" + name);
+    if (res.isErr()) {
+      collector.addCodeError(res.unwrapErrOrElseThrow(), varBuilder);
+    } else if (res.unwrapOrElseThrow().isEmpty()) {
+      collector.addOptional(varBuilder.build());
     }
+    var filingType = res.unwrapOrElseThrow();
     Optional<String> motionName = Optional.empty();
     if (node.has("motion_type") && node.get("motion_type").isTextual()) {
       motionName = Optional.of(node.get("motion_type").asText());
@@ -110,7 +115,7 @@ public class FilingDocDocassembleJacksonDeserializer {
     String filingComment = getStringDefault(node, "filing_comment", "");
 
     String _logName =
-        (userDescription.isBlank()) ? filingType.orElse(filingComment) : userDescription;
+        (userDescription.isBlank()) ? filingStr.orElse(filingComment) : userDescription;
 
     List<String> courtesyCopies = getMemberList(node, "courtesy_copies");
     List<String> preliminaryCopies = getMemberList(node, "preliminary_copies");

@@ -111,16 +111,14 @@ public class EcfCourtSpecificSerializer {
   public ComboCaseCodes serializeCaseCodesIndexed(
       CaseCategory caseCategory,
       CaseType type,
-      List<String> filingCodeStrs,
+      List<FilingCode> filingCodes,
       Map<String, Person> existingParties,
       Map<String, Person> newParties,
       InfoCollector collector)
       throws FilingError {
-    List<FilingCode> filingRealCodes =
-        vetFilingTypes(filingCodeStrs, caseCategory, type, collector, false);
     Map<String, Pair<PartyType, Boolean>> partyTypes =
         vetPartyTypes(existingParties, newParties, type);
-    return new ComboCaseCodes(caseCategory, type, filingRealCodes, partyTypes);
+    return new ComboCaseCodes(caseCategory, type, filingCodes, partyTypes);
   }
 
   /** Either an initial filing, or a non-indexed case. */
@@ -149,78 +147,13 @@ public class EcfCourtSpecificSerializer {
       idx += 1;
       collector.popAttributeStack();
     }
-    List<String> filingCodeStrs =
-        info.getFilings().stream()
-            .map(f -> f.getFilingCode().orElse(""))
-            .collect(Collectors.toList());
     List<FilingCode> filingCodes =
-        vetFilingTypes(filingCodeStrs, caseCategory, type, collector, isInitialFiling);
+        info.getFilings().stream().map(f -> f.getFilingCode().get()).toList();
     Map<String, Person> partyInfo =
         Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
             .collect(Collectors.toMap(per -> per.getIdString(), per -> per));
     Map<String, Pair<PartyType, Boolean>> partyTypes = vetPartyTypes(Map.of(), partyInfo, type);
     return new ComboCaseCodes(caseCategory, type, filingCodes, partyTypes);
-  }
-
-  private List<FilingCode> vetFilingTypes(
-      List<String> maybeCodeStrs,
-      CaseCategory caseCategory,
-      CaseType type,
-      InfoCollector collector,
-      boolean isInitialFiling)
-      throws FilingError {
-    List<FilingCode> filingOptions =
-        cd.getFilingType(court.code, caseCategory.code, type.code, isInitialFiling);
-    List<Optional<FilingCode>> maybeCodes =
-        maybeCodeStrs.stream()
-            .map(
-                code -> {
-                  return filingOptions.stream().filter(fil -> fil.code.equals(code)).findFirst();
-                })
-            .collect(Collectors.toList());
-
-    collector.pushAttributeStack("al_court_bundle[i]");
-    if (filingOptions.isEmpty()) {
-      log.error(
-          "Need a filing type! FilingTypes are empty, so {} and {} are restricted",
-          caseCategory,
-          type);
-      InterviewVariable var =
-          collector.requestVar(
-              "filing_type",
-              "What type of filing is this?",
-              "text",
-              filingOptions.stream().map(f -> f.code).toList(),
-              Optional.of(maybeCodeStrs.toString()));
-      collector.addWrong(var);
-      collector.popAttributeStack();
-      // Is foundational, so returning now
-      throw FilingError.wrongValue(var);
-    }
-    collector.popAttributeStack();
-
-    if (maybeCodes.stream().anyMatch(f -> f.isEmpty())) {
-      log.error("Nothing matches filing in the info!");
-      int idx = 0;
-      for (var maybeCode : maybeCodes) {
-        if (maybeCode.isEmpty()) {
-          collector.pushAttributeStack("al_court_bundle[" + idx + "]");
-          var filingVar =
-              collector.requestVar(
-                  "filing_type",
-                  "What filing type is this? (can't be " + maybeCodeStrs.get(idx) + ")",
-                  "text",
-                  filingOptions.stream().map(f -> f.code).collect(Collectors.toList()),
-                  Optional.of(maybeCodeStrs.get(idx)));
-          collector.addWrong(filingVar);
-          collector.popAttributeStack();
-          throw FilingError.missingRequired(filingVar);
-        }
-        idx += 1;
-      }
-    }
-
-    return maybeCodes.stream().map(f -> f.get()).collect(Collectors.toList());
   }
 
   /**

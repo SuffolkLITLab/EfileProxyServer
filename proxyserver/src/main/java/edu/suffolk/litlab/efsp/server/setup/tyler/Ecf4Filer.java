@@ -272,8 +272,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         CaseType typeCode = typeRes.expect("");
         Map<PartyId, Person> exisitingPartips =
             EcfCaseTypeFactory.getCaseParticipants(resp.getCase().getValue()).get();
-        List<Optional<String>> maybeFilingCodes =
-            info.getFilings().stream().map(f -> f.getFilingCode()).collect(Collectors.toList());
+        List<Optional<FilingCode>> maybeFilingCodes =
+            info.getFilings().stream().map(f -> f.getFilingCode()).toList();
         if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
           InterviewVariable filingVar =
               collector.requestVar(
@@ -284,8 +284,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                   Optional.empty());
           collector.addRequired(filingVar);
         }
-        List<String> filingCodeStrs =
-            maybeFilingCodes.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
+        List<FilingCode> filingCodes = maybeFilingCodes.stream().map(fc -> fc.get()).toList();
         Map<String, Person> newPartyCodes =
             Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
                 .collect(Collectors.toMap(per -> per.getIdString(), per -> per));
@@ -294,10 +293,10 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                 .collect(
                     Collectors.toMap(
                         ent -> ent.getKey().getIdentificationString(), ent -> ent.getValue()));
-        log.info("Existing cat, type, and filings: {}, {}, {}", catCode, typeCode, filingCodeStrs);
+        log.info("Existing cat, type, and filings: {}, {}, {}", catCode, typeCode, filingCodes);
         allCodes =
             serializer.serializeCaseCodesIndexed(
-                catCode, typeCode, filingCodeStrs, existingPartyCodes, newPartyCodes, collector);
+                catCode, typeCode, filingCodes, existingPartyCodes, newPartyCodes, collector);
       } else {
         allCodes = serializer.serializeCaseCodes(info, collector, isInitialFiling);
       }

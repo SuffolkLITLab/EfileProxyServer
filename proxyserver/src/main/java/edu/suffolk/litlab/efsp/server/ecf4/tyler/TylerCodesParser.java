@@ -7,11 +7,14 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * All of the Tyler code specific conversions and logic checks from our objects (really light
@@ -22,6 +25,7 @@ import java.util.Optional;
  * be rejected.
  */
 public class TylerCodesParser implements CodesParser {
+  private static Logger log = LoggerFactory.getLogger(TylerCodesParser.class);
   private final CodeDatabase cd;
   private final CourtLocationInfo court;
   private final DataFields allDataFields;
@@ -41,6 +45,8 @@ public class TylerCodesParser implements CodesParser {
     return locationInfo.map(li -> new TylerCodesParser(cd, li));
   }
 
+  /////////////////// Methods that access the codes database.
+
   public Result<CaseCategory, CodeError> vetCaseCat(String caseCategoryCode) {
     Optional<CaseCategory> maybeCaseCat =
         cd.getCaseCategoryWithCode(this.court.code, caseCategoryCode);
@@ -51,8 +57,6 @@ public class TylerCodesParser implements CodesParser {
     }
     return Result.ok(maybeCaseCat.get());
   }
-
-  /////////////////// Methods that access the codes database.
 
   public Result<CaseType, CodeError> vetCaseType(
       String caseTypeCode, CaseCategory caseCategory, boolean isInitialFiling) {
@@ -106,5 +110,41 @@ public class TylerCodesParser implements CodesParser {
       return Result.ok(maybeSubtype);
     }
     return Result.ok(Optional.empty());
+  }
+
+  public Result<List<FilingCode>, BadCode> retrieveFilingOptions(
+      CaseCategory caseCategory, CaseType type, boolean isInitialFiling) {
+    List<FilingCode> filingOptions =
+        cd.getFilingType(court.code, caseCategory.code, type.code, isInitialFiling);
+    if (filingOptions.isEmpty()) {
+      return Result.err(
+          new BadCode(
+              FilingError.malformedInterview(
+                  "Need a filing type! FilingTypes are empty, so "
+                      + caseCategory
+                      + " and "
+                      + type
+                      + " are restricted")));
+    }
+    return Result.ok(filingOptions);
+  }
+
+  public Result<Optional<FilingCode>, CodeError> vetFilingType(
+      Optional<String> filingStr,
+      /** Pass in so we only need to make 1 expensive DB query */
+      List<FilingCode> filingOptions) {
+    if (filingStr.isEmpty()) {
+      return Result.err(
+          new RequiredCodeNotPresent(filingOptions.stream().map(f -> f.code).toList()));
+    }
+    Optional<FilingCode> maybeCode =
+        filingOptions.stream().filter(fil -> fil.code.equals(filingStr.get())).findFirst();
+
+    if (maybeCode.isEmpty()) {
+      log.error("Nothing matches filing `{}` in the info!", filingStr);
+      List<String> options = filingOptions.stream().map(f -> f.code).toList();
+      return Result.err(new NoMatchingCode(filingStr.get(), options));
+    }
+    return Result.ok(maybeCode);
   }
 }

@@ -39,6 +39,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
@@ -321,16 +322,15 @@ public class CourtSchedulingService {
             throw FilingError.serverError(
                 "Couldn't get existing parties for case " + info.getPreviousCaseId().get());
           }
-          List<Optional<String>> maybeFilingCodes =
-              info.getFilings().stream().map(f -> f.getFilingCode()).collect(Collectors.toList());
+          List<Optional<FilingCode>> maybeFilingCodes =
+              info.getFilings().stream().map(f -> f.getFilingCode()).toList();
           if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
             InterviewVariable filingVar =
                 collector.requestVar(
                     "court_bundle[i].filing_type", "What filing type is this?", "text");
             collector.addRequired(filingVar);
           }
-          List<String> filingCodeStrs =
-              maybeFilingCodes.stream().map(fc -> fc.orElse("")).collect(Collectors.toList());
+          List<FilingCode> filingCodes = maybeFilingCodes.stream().map(fc -> fc.get()).toList();
           Map<String, Person> newPartyMap =
               Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
                   .collect(Collectors.toMap(per -> per.getIdString(), per -> per));
@@ -339,11 +339,10 @@ public class CourtSchedulingService {
                   .collect(
                       Collectors.toMap(
                           ent -> ent.getKey().getIdentificationString(), ent -> ent.getValue()));
-          log.info(
-              "Existing cat, type, and filings: {}, {}, {}", catCode, typeCode, filingCodeStrs);
+          log.info("Existing cat, type, and filings: {}, {}, {}", catCode, typeCode, filingCodes);
           allCodes =
               serializer.serializeCaseCodesIndexed(
-                  catCode, typeCode, filingCodeStrs, newPartyMap, existingPartyMap, collector);
+                  catCode, typeCode, filingCodes, newPartyMap, existingPartyMap, collector);
         } else {
           allCodes = serializer.serializeCaseCodes(info, collector, isInitialFiling);
         }
