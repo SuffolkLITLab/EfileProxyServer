@@ -251,6 +251,7 @@
                     <version>2.46.1</version>
                     <configuration>
                         <java>
+                            <toggleOffOn/>
                             <googleJavaFormat>
                                 <version>1.28.0</version>
                                 <formatJavadoc>true</formatJavadoc>

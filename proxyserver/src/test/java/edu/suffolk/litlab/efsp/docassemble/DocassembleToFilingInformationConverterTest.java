@@ -13,6 +13,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.Person;
@@ -47,6 +48,8 @@ public class DocassembleToFilingInformationConverterTest {
           "Not Available");
   CaseType exampleCaseType =
       new CaseType("456098", "Test Case Type", "123987", "true", "0", "", "", "01");
+  FilingCode exampleFilingType =
+      new FilingCode("1234fake", "", "", "", "", "", false, "", "", "", false, false, "", "01");
 
   @BeforeEach
   public void setUp() throws IOException {
@@ -55,8 +58,11 @@ public class DocassembleToFilingInformationConverterTest {
     when(cd.getCaseCategoriesFor("01")).thenReturn(List.of(exampleCategory));
     when(cd.getCaseCategoryWithCode("01", "123987")).thenReturn(Optional.of(exampleCategory));
     when(cd.getCaseTypesFor("01", "123987", Optional.empty())).thenReturn(List.of(exampleCaseType));
+    when(cd.getFilingType("01", "123987", "456098", true)).thenReturn(List.of(exampleFilingType));
+    when(cd.getFilingType("01", "123987", "456098", false)).thenReturn(List.of(exampleFilingType));
     var loc = new CourtLocationInfo("01");
     loc.initial = true;
+    loc.subsequent = true;
     parser = new TylerCodesParser(cd, loc);
   }
 

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.hubspot.algebra.Result;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.model.CaseServiceContact;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
@@ -217,18 +218,22 @@ public class FilingInformationDocassembleJacksonDeserializer
             .name("efile_case_category")
             .description("The top-level case category")
             .currentVal(category);
+    log.info("Finding case category: {}", category);
     if (category != null && !category.isNull() && category.isTextual()) {
       var res = parser.vetCaseCat(category.asText());
       res.ifOk(
           code -> {
+            log.info("Setting case category code of {}", code);
             entities.setCaseCategoryCode(code);
           });
       if (res.isErr()) {
+        log.info("Failed to find case category: {}", category.asText());
         var variable = collector.addCodeError(res.expectErr("checked err above"), varBuilder);
         // Foundational error: Category is sorely needed
         throw FilingError.wrongValue(variable);
       }
     } else if (isFirstIndexedFiling) {
+      log.info("No case category?: {}", category);
       // TODO: show the options?
       InterviewVariable var = varBuilder.build();
       collector.addRequired(var);
@@ -275,9 +280,29 @@ public class FilingInformationDocassembleJacksonDeserializer
     // Get the interview metadablock TODO(brycew-later): just one for now
     // log.info("Keyset: {}", metadataElems.fieldNames());
 
+    var caseCat = entities.getCaseCategoryCode();
+    var caseType = entities.getCaseTypeCode();
+    log.info("Getting case category code of {}", caseCat);
+    var res = parser.retrieveFilingOptions(caseCat, caseType, isInitialFiling);
+    if (res.isErr()) {
+      collector.error(
+          FilingError.malformedInterview(
+              "Need a filing type! FilingTypes are empty, so "
+                  + caseCat
+                  + " and "
+                  + caseType
+                  + " are restricted"));
+    }
+
+    var filingOptions = res.unwrapOrElseThrow();
     entities.setFilings(
         extractFilingDocs(
-            node.get("al_court_bundle"), node.get("comments_to_clerk"), varToPartyId, collector));
+            node.get("al_court_bundle"),
+            node.get("comments_to_clerk"),
+            varToPartyId,
+            filingOptions,
+            parser,
+            collector));
     if (entities.getFilings().isEmpty()) {
       log.error("There are no filings in the envelope?");
       FilingError err =
@@ -286,6 +311,7 @@ public class FilingInformationDocassembleJacksonDeserializer
                   + " with a PDF URL, or needs to have that info itself");
       collector.error(err);
     }
+
     entities.setPaymentId(extractNullableString(node.get("tyler_payment_id")));
 
     JsonNode leadJson = node.get("lead_contact");
@@ -429,6 +455,8 @@ public class FilingInformationDocassembleJacksonDeserializer
       JsonNode bundle,
       JsonNode clerkComments,
       Map<String, PartyId> varToPartyId,
+      List<FilingCode> filingOptions,
+      CodesParser parser,
       InfoCollector collector)
       throws FilingError {
     List<FilingDoc> filingDocs = new ArrayList<FilingDoc>();
@@ -453,7 +481,7 @@ public class FilingInformationDocassembleJacksonDeserializer
         collector.pushAttributeStack("al_court_bundle.elements[" + i + "]");
         Optional<FilingDoc> maybeDoc =
             FilingDocDocassembleJacksonDeserializer.fromNode(
-                elems.get(i), varToPartyId, filingDocs.size(), collector);
+                elems.get(i), varToPartyId, filingDocs.size(), filingOptions, parser, collector);
         collector.popAttributeStack();
         maybeDoc.ifPresent(
             doc -> {

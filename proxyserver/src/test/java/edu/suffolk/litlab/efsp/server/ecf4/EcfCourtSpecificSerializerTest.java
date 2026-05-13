@@ -32,6 +32,7 @@ import edu.suffolk.litlab.efsp.model.ContactInformation;
 import edu.suffolk.litlab.efsp.model.Name;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
+import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
 import edu.suffolk.litlab.efsp.utils.AllWrongCollector;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
@@ -307,7 +308,7 @@ public class EcfCourtSpecificSerializerTest {
     CaseType caseType = new CaseType("100", "Divorce", "7", "true", "100", null, null, "not_real");
     FilingCode filing =
         new FilingCode(
-            "200",
+            "6553",
             "Initial Filing",
             "100",
             "7",
@@ -324,7 +325,10 @@ public class EcfCourtSpecificSerializerTest {
 
     var varToPartyId = Map.of("users[0]", PartyId.CurrentFilingNew("abc"));
     JsonNode node = readFile("one_attachment.json");
-    var doc = FilingDocDocassembleJacksonDeserializer.fromNode(node, varToPartyId, 2, collector);
+    var parser = new TylerCodesParser(cd, new CourtLocationInfo("adams"));
+    var doc =
+        FilingDocDocassembleJacksonDeserializer.fromNode(
+            node, varToPartyId, 2, List.of(filing), parser, collector);
 
     EcfCourtSpecificSerializer cookSer = new EcfCourtSpecificSerializer(cd, loc);
     ObjectMapper mapper = new ObjectMapper();

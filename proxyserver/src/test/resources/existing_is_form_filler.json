@@ -11,8 +11,8 @@
     "cms_connection_issue": false,
     "case_was_found": true,
     "is_nonindexed_filing": false,
-    "case_category": "190921",
-    "case_type": "205200",
+    "efile_case_category": "123987",
+    "efile_case_type": "456098",
     "existing_case_parties": null,
     "load_existing_case_defaults": true,
     "previous_case_id": "a08f60c4-832c-48b9-8ce0-7563a6613aaa",
@@ -333,7 +333,7 @@
                 "filing_description": "",
                 "reference_number": "",
                 "has_courtesy_copies": false,
-                "filing_type": "177236",
+                "filing_type": "1234fake",
                 "document_type_options": [
                     [
                         "5766",
