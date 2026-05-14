@@ -42,6 +42,8 @@ public interface CodesParser {
 
   public Result<String, CodeError> vetSuffix(Optional<String> suffix);
 
+  public Result<Optional<String>, CodeError> vetLangCode(Optional<String> lang);
+
   public Result<String, TextVarError> vetFirstName(Optional<String> name);
 
   public Result<String, TextVarError> vetMiddleName(Optional<String> name);

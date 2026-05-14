@@ -4,15 +4,11 @@ import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
-import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.model.Name;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
-import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.CodeError;
-import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.TextVarError;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
-import edu.suffolk.litlab.efsp.utils.InterviewVariable.VarBuilder;
 
 public class NameDocassembleDeserializer {
 
@@ -46,7 +42,7 @@ public class NameDocassembleDeserializer {
             .description("The first name of a person / name of a business")
             .datatype("text");
     String firstName =
-        unwrap(parser.vetFirstName(getStringMember(node, "first")), collector, firstBuilder);
+        collector.unwrap(parser.vetFirstName(getStringMember(node, "first")), firstBuilder);
     var middleBuilder =
         collector
             .varBuilder()
@@ -54,7 +50,7 @@ public class NameDocassembleDeserializer {
             .description("The middle name of a person")
             .datatype("text");
     String middleName =
-        unwrap(parser.vetMiddleName(getStringMember(node, "middle")), collector, middleBuilder);
+        collector.unwrap(parser.vetMiddleName(getStringMember(node, "middle")), middleBuilder);
     var lastBuilder =
         collector
             .varBuilder()
@@ -62,12 +58,12 @@ public class NameDocassembleDeserializer {
             .description("The last name of a person")
             .datatype("text");
     String lastName =
-        unwrap(parser.vetLastName(getStringMember(node, "last")), collector, lastBuilder);
+        collector.unwrap(parser.vetLastName(getStringMember(node, "last")), lastBuilder);
 
     var suffixBuilder =
         collector.varBuilder().name("name.suffix").description("The suffix of a person's name");
     var suffix =
-        unwrapCode(parser.vetSuffix(getStringMember(node, "suffix")), collector, suffixBuilder);
+        collector.unwrapCode(parser.vetSuffix(getStringMember(node, "suffix")), suffixBuilder);
 
     Name name =
         new Name(
@@ -80,25 +76,5 @@ public class NameDocassembleDeserializer {
             );
 
     return name;
-  }
-
-  private static String unwrap(
-      Result<String, TextVarError> res, InfoCollector collector, VarBuilder varBuilder)
-      throws FilingError {
-    if (res.isErr()) {
-      collector.addTextError(res.unwrapErrOrElseThrow(), varBuilder);
-      return "";
-    }
-    return res.unwrapOrElseThrow();
-  }
-
-  private static String unwrapCode(
-      Result<String, CodeError> res, InfoCollector collector, VarBuilder varBuilder)
-      throws FilingError {
-    if (res.isErr()) {
-      collector.addCodeError(res.unwrapErrOrElseThrow(), varBuilder);
-      return "";
-    }
-    return res.unwrapOrElseThrow();
   }
 }

@@ -306,21 +306,8 @@ public class EcfCourtSpecificSerializer {
       }
 
       if (per.getLanguage().isPresent()) {
-        String lang = per.getLanguage().get();
         List<String> langs = cd.getLanguageNames(this.court.code);
-        if (!langs.isEmpty() && !langs.contains(lang)) {
-          log.info("Can't have language: {}", lang);
-          collector.addWrong(
-              collector.requestVar(
-                  "language",
-                  "The primary language of this person",
-                  "choice",
-                  langs,
-                  Optional.of(lang)));
-        }
         if (!langs.isEmpty()) {
-          // TODO(brycew): currently taking the safer option: if no languages are specified, don't
-          // add one
           // TODO(brycew): need to have an ISO 639_2 (language codes) converter, from general
           // language name
           /// https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes
@@ -329,8 +316,9 @@ public class EcfCourtSpecificSerializer {
           plt.getLanguage().add(niemObjFac.createLanguageCode(lct));
           pt.setPersonPrimaryLanguage(plt);
         }
+        // TODO(brycew): currently taking the safer option: if no languages are specified, don't
+        // add one
       }
-      ;
 
       per.getBirthdate()
           .ifPresent(

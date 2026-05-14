@@ -171,6 +171,31 @@ public class TylerCodesParser implements CodesParser {
     return Result.ok(maybeSuffix.orElse(""));
   }
 
+  public Result<Optional<String>, CodeError> vetLangCode(Optional<String> lang) {
+    if (lang.isEmpty()) {
+      return Result.ok(Optional.empty());
+    }
+
+    List<NameAndCode> langs = cd.getLanguages(this.court.code);
+    if (langs.isEmpty()) {
+      log.warn(
+          "Court {} can't handle any languages; simply dropping the language {}",
+          this.court.code,
+          lang);
+      // This court cannot handle languages.
+      return Result.ok(Optional.empty());
+    }
+
+    var matchedLang =
+        langs.stream().filter(l -> l.getName().equalsIgnoreCase(lang.get())).findFirst();
+    if (matchedLang.isEmpty()) {
+      log.info("Can't have language: {}", lang);
+      return Result.err(
+          new NoMatchingCode(lang.get(), langs.stream().map(l -> l.getName()).toList()));
+    }
+    return Result.ok(matchedLang.map(l -> l.getCode()));
+  }
+
   /**
    * Doesn't return optional because we can set the People names to null / blank.
    *
