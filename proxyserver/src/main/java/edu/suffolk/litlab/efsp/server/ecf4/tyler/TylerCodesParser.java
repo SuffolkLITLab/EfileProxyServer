@@ -5,14 +5,22 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CrossReference;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.utils.FilingError;
+
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -194,6 +202,43 @@ public class TylerCodesParser implements CodesParser {
           new NoMatchingCode(lang.get(), langs.stream().map(l -> l.getName()).toList()));
     }
     return Result.ok(matchedLang.map(l -> l.getCode()));
+  }
+
+  public Result<Map<String, String>, CrossReferenceError> getCrossRefIds(
+      Map<String, String> crossRefs, CaseType caseType) {
+    List<CrossReference> refs = cd.getCrossReference(court.code, caseType.code);
+    var refMap = refs.stream().collect(Collectors.toMap(r -> r.code, r -> r));
+    Set<String> usedCodes = new HashSet<>();
+    Map<String, String> ids = new HashMap<>();
+    for (var ref : crossRefs.entrySet()) {
+      String refKey = ref.getKey();
+      String refValue = ref.getValue();
+      if (refMap.containsKey(refKey)) {
+        CrossReference refData = refMap.get(refKey);
+        if (!refData.matchesRegex(refValue)) {
+          return Result.err(
+              new WrongRefVal(
+                  refKey,
+                  refValue,
+                  refData.validationregex,
+                  refData.customvalidationfailuremessage));
+        }
+        ids.put(refData.code, refValue);
+        usedCodes.add(refData.code);
+      } else {
+        return Result.err(new NoMatchingRef(refKey, refValue));
+      }
+    }
+
+    Set<String> missingRefs =
+        refs.stream()
+            .filter(ref -> ref.isrequired && !usedCodes.contains(ref.code))
+            .map(ref -> ref.name)
+            .collect(Collectors.toSet());
+    if (!missingRefs.isEmpty()) {
+      return Result.err(new MissingRequiredRefs(missingRefs));
+    }
+    return Result.ok(ids);
   }
 
   /**

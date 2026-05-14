@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -213,7 +214,7 @@ public class FilingInformationDocassembleJacksonDeserializer
     entities.setLowerCourtInfo(extractLowerCourt(node, collector));
 
     JsonNode category = node.get("efile_case_category");
-    var varBuilder =
+    var varCaseCat =
         collector
             .varBuilder()
             .name("efile_case_category")
@@ -229,14 +230,14 @@ public class FilingInformationDocassembleJacksonDeserializer
           });
       if (res.isErr()) {
         log.info("Failed to find case category: {}", category.asText());
-        var variable = collector.addCodeError(res.expectErr("checked err above"), varBuilder);
+        var variable = collector.addCodeError(res.expectErr("checked err above"), varCaseCat);
         // Foundational error: Category is sorely needed
         throw FilingError.wrongValue(variable);
       }
     } else if (isFirstIndexedFiling) {
       log.info("No case category?: {}", category);
       // TODO: show the options?
-      InterviewVariable var = varBuilder.build();
+      InterviewVariable var = varCaseCat.build();
       collector.addRequired(var);
     }
 
@@ -346,6 +347,21 @@ public class FilingInformationDocassembleJacksonDeserializer
       }
     }
 
+    //// Cross Ref
+    var varBuilder = collector.varBuilder().name("cross_references");
+    var mapRes = JsonHelpers.unwrapSimpleDict(node.get("cross_references"));
+    if (mapRes.isErr()) {
+      collector.addWrong(varBuilder.build());
+    } else {
+      var crossMap = mapRes.unwrapOrElseThrow();
+      var crossRes = parser.getCrossRefIds(crossMap.orElse(Map.of()), entities.getCaseTypeCode());
+      if (crossRes.isErr()) {
+        collector.addCrossRefError(crossRes.unwrapErrOrElseThrow(), varBuilder);
+      } else {
+        entities.setCrossRefs(crossRes.unwrapOrElseThrow());
+      }
+    }
+
     entities.setReturnDate(extractReturnDate(node.get("return_date"), collector));
     entities.setMiscInfo(node);
 
@@ -363,11 +379,16 @@ public class FilingInformationDocassembleJacksonDeserializer
   private static Map<PartyId, List<String>> extractPartyAttorneyMap(
       JsonNode maybePartyToAttorney, Map<String, PartyId> varToPartyId) {
     Map<PartyId, List<String>> partyToAttorney = new HashMap<>();
-    Optional<JsonNode> partyToAttorneyJson = JsonHelpers.unwrapDADict(maybePartyToAttorney);
+    var partyToAttorneyRes = JsonHelpers.unwrapDADict(maybePartyToAttorney);
+    if (partyToAttorneyRes.isErr()) {
+      log.warn("partyToAttorneyMap in filing info is ill-formed!");
+      return partyToAttorney;
+    }
+    var partyToAttorneyJson = partyToAttorneyRes.unwrapOrElseThrow();
     log.info("varToPartyId: {}", varToPartyId);
     if (partyToAttorneyJson.isPresent()) {
-      Iterable<Entry<String, JsonNode>> fields = partyToAttorneyJson.get()::fields;
-      for (Entry<String, JsonNode> elem : fields) {
+      Set<Entry<String, JsonNode>> fields = partyToAttorneyJson.get().properties();
+      for (var elem : fields) {
         final String userStr = elem.getKey();
         PartyId realId = null;
         if (varToPartyId.containsKey(userStr)) {

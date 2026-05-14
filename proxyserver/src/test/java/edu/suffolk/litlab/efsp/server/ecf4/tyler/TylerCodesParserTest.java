@@ -9,6 +9,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CrossReference;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
@@ -16,11 +17,16 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.BadCode;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.NoMatchingCode;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.NoMatchingRef;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.TooLongVar;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.WrongRefVal;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class TylerCodesParserTest {
@@ -206,5 +212,86 @@ public class TylerCodesParserTest {
             + "abcdefghijklmnopqrstuvwxyz";
     var res = parser.vetFirstName(Optional.of(longName));
     assertThat(res).containsErr(new TooLongVar(longName, 100));
+  }
+
+  @Nested
+  @DisplayName("Parsing cross_references")
+  class CrossRefTests {
+
+    @BeforeEach
+    void setUp() {
+      when(cd.getCrossReference("01", exampleCaseType.code))
+          .thenReturn(
+              List.of(
+                  new CrossReference(
+                      "87374",
+                      "Test cross reference (based on Cook County Attorney/Self-Rep code",
+                      exampleCaseType.code,
+                      "False",
+                      "True",
+                      "^[0-9]{5}$",
+                      "Requires a 5-digit Case Cross Reference number. if self-represented, use 99500",
+                      "COOKCOUNTYATTORNEY",
+                      "01"),
+                  new CrossReference(
+                      "76343", "PIN#", exampleCaseType.code, "True", "False", "", "", "", "01")));
+      when(cd.getCrossReference("01", exampleCaseType2.code)).thenReturn(List.of());
+    }
+
+    @Test
+    public void shouldThrowIfRequiredButNotPresent() {
+      assertThat(parser.getCrossRefIds(Map.of(), exampleCaseType)).isErr();
+    }
+
+    @Test
+    public void shouldBeOkayIfNoneRequired() {
+      assertThat(parser.getCrossRefIds(Map.of(), exampleCaseType2)).containsOk(Map.of());
+    }
+
+    @Test
+    public void shouldAllowRequiredWithoutOptionalRefs() {
+      var the_map = Map.of("87374", "99500");
+      var res = parser.getCrossRefIds(the_map, exampleCaseType);
+      assertThat(res).isOk();
+      var crossRefIds = res.unwrapOrElseThrow();
+      assertThat(crossRefIds).hasSize(1);
+      assertThat(crossRefIds).contains(Map.entry("87374", "99500"));
+    }
+
+    @Test
+    public void shouldAllowRequiredWithOneOptionalRef() {
+      var the_map = Map.of("87374", "99502", "76343", "12345");
+      var res = parser.getCrossRefIds(the_map, exampleCaseType);
+      assertThat(res).isOk();
+      var crossRefIds = res.expect("");
+      assertThat(crossRefIds).hasSize(2);
+      assertThat(crossRefIds).contains(Map.entry("87374", "99502"));
+      assertThat(crossRefIds).contains(Map.entry("76343", "12345"));
+    }
+
+    @Test
+    public void shouldThrowOnBadCrossRefKey() {
+      var the_map = Map.of("87374", "99500", "12345", "bad key");
+      var res = parser.getCrossRefIds(the_map, exampleCaseType);
+      assertThat(res)
+          .isErr()
+          .extractingErr()
+          .isInstanceOf(NoMatchingRef.class)
+          .withFailMessage(
+              () -> "Should have failed, we passed a cross reference code that isn't really there");
+    }
+
+    @Test
+    public void shouldThrowOnBadCrossRefValue() {
+      var the_map = Map.of("87374", "123456");
+      var res = parser.getCrossRefIds(the_map, exampleCaseType);
+      assertThat(res)
+          .isErr()
+          .extractingErr()
+          .isInstanceOf(WrongRefVal.class)
+          .withFailMessage(
+              () ->
+                  "Should have failed, we passed a value for a cross reference code that was too long");
+    }
   }
 }

@@ -39,7 +39,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CrossReference;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DocumentTypeTableRow;
@@ -67,11 +66,9 @@ import jakarta.xml.bind.JAXBElement;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -872,53 +869,6 @@ public class EcfCourtSpecificSerializer {
     }
     attachment.setAttachmentSequenceID(Ecf4Helper.convertString(Integer.toString(seqNum)));
     return attachment;
-  }
-
-  public Map<String, String> getCrossRefIds(
-      JsonNode miscInfo, InfoCollector collector, String caseTypeCode) throws FilingError {
-    List<CrossReference> refs = cd.getCrossReference(court.code, caseTypeCode);
-    Map<String, CrossReference> refMap = new HashMap<>();
-    for (CrossReference ref : refs) {
-      refMap.put(ref.code, ref);
-    }
-    InterviewVariable refsVar =
-        collector.requestVar(
-            "cross_references", "References to other cases in different systems", "DAList");
-    Set<String> usedCodes = new HashSet<>();
-    Map<String, String> ids = new HashMap<>();
-    if (miscInfo.has("cross_references") && miscInfo.get("cross_references").isObject()) {
-      JsonNode jsonRefs = miscInfo.get("cross_references");
-      if (jsonRefs.has("_class") && jsonRefs.has("elements")) {
-        jsonRefs = jsonRefs.get("elements");
-      }
-      Iterable<String> refNames = jsonRefs::fieldNames;
-      for (String refKey : refNames) {
-        if (refMap.containsKey(refKey)) {
-          CrossReference myRef = refMap.get(refKey);
-          String refValue = jsonRefs.get(refKey).asText();
-          if (!myRef.matchesRegex(refValue)) {
-            collector.addWrong(
-                refsVar.appendDesc(
-                    ": for " + refValue + ": " + myRef.customvalidationfailuremessage));
-          }
-          ids.put(myRef.code, refValue);
-          usedCodes.add(myRef.code);
-        } else {
-          collector.addWrong(refsVar.appendDesc(": ref " + refKey + " isn't available"));
-        }
-      }
-    }
-
-    Set<String> missingRefs =
-        refs.stream()
-            .filter(ref -> ref.isrequired && !usedCodes.contains(ref.code))
-            .map(ref -> ref.name)
-            .collect(Collectors.toSet());
-    if (!missingRefs.isEmpty()) {
-      collector.addRequired(
-          refsVar.appendDesc(": the following refs are required: " + missingRefs));
-    }
-    return ids;
   }
 
   private String findDocumentDescription(

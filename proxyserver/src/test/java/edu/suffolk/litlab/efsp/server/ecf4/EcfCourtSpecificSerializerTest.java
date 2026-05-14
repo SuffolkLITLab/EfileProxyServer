@@ -3,16 +3,12 @@ package edu.suffolk.litlab.efsp.server.ecf4;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.NullNode;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.CaseParticipantType;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.OrganizationType;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4.PersonType;
@@ -192,110 +188,6 @@ public class EcfCourtSpecificSerializerTest {
     var contactInfoType = courtSer.serializeEcfContactInformation(info, collector);
     assertThat(contactInfoType.getContactMeans()).hasSize(3);
     assertThat(collector.getWrong()).hasSize(0);
-  }
-
-  @Test
-  public void shouldThrowIfRequiredButNotPresent() {
-    CourtLocationInfo loc = new CourtLocationInfo("cook:cd1");
-    EcfCourtSpecificSerializer cookSer = new EcfCourtSpecificSerializer(cd, loc);
-    try {
-      cookSer.getCrossRefIds(NullNode.getInstance(), collector, caseType);
-      fail(
-          "Should have thrown a FilingError when CrossReferences are required, but none passed in");
-    } catch (FilingError err) {
-      // Expected!
-    }
-  }
-
-  @Test
-  public void shouldBeOkayIfNoneRequired() throws FilingError {
-    CourtLocationInfo loc = new CourtLocationInfo("adams");
-    EcfCourtSpecificSerializer adamsSer = new EcfCourtSpecificSerializer(cd, loc);
-    Map<String, String> crossRefIds =
-        adamsSer.getCrossRefIds(NullNode.getInstance(), collector, "78334");
-    assertTrue(crossRefIds.isEmpty());
-  }
-
-  @Test
-  public void shouldAllowRequiredWithoutOptionalRefs()
-      throws FilingError, JsonMappingException, JsonProcessingException {
-    CourtLocationInfo loc = new CourtLocationInfo("cook:cd1");
-    EcfCourtSpecificSerializer cookSer = new EcfCourtSpecificSerializer(cd, loc);
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode node =
-        mapper.readTree(
-            """
-            {
-              "cross_references": {
-                "87374": "99500"
-              }
-            }
-            """);
-    Map<String, String> crossRefIds = cookSer.getCrossRefIds(node, collector, caseType);
-    assertEquals(crossRefIds.size(), 1);
-    assertEquals(crossRefIds.get("87374"), "99500");
-    JsonNode nodeDADict =
-        mapper.readTree(
-            """
-            {
-              "cross_references": {
-                "_class" : "DADict",
-                "elements": {
-                  "87374": "99502",
-                  "76343": "12345"
-                }
-              }
-            }
-            """);
-    collector = new FailFastCollector();
-    Map<String, String> crossRefIdsDADict = cookSer.getCrossRefIds(nodeDADict, collector, caseType);
-    assertEquals(crossRefIdsDADict.size(), 2);
-    assertEquals(crossRefIdsDADict.get("87374"), "99502");
-    assertEquals(crossRefIdsDADict.get("76343"), "12345");
-  }
-
-  @Test
-  public void shouldThrowOnBadCrossRefKey() throws JsonMappingException, JsonProcessingException {
-    CourtLocationInfo loc = new CourtLocationInfo("cook:cd1");
-    EcfCourtSpecificSerializer cookSer = new EcfCourtSpecificSerializer(cd, loc);
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode node =
-        mapper.readTree(
-            """
-            {
-              "cross_references": {
-                "_class": "DADict",
-                "elements": {
-                  "87374": "99500",
-                  "12345": "bad key"
-                }
-              }
-            }
-            """);
-    try {
-      cookSer.getCrossRefIds(node, collector, caseType);
-      fail("Should have failed, we passed a cross reference code that isn't really there");
-    } catch (FilingError err) {
-      // Expected!
-    }
-    node =
-        mapper.readTree(
-            """
-            {
-              "cross_references": {
-                "_class": "DADict",
-                "elements": {
-                  "87374": "123456"
-                }
-              }
-            }
-            """);
-    try {
-      cookSer.getCrossRefIds(node, collector, caseType);
-      fail("Should have failed, we passed a value for a cross reference code that was too long");
-    } catch (FilingError err) {
-      // Expected!
-    }
   }
 
   @Test
