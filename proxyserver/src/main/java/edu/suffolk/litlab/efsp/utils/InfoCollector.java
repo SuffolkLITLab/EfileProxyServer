@@ -3,11 +3,15 @@ package edu.suffolk.litlab.efsp.utils;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.BadCode;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.CodeError;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.CrossReferenceError;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.MissingRequiredRefs;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.MissingVar;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.NoMatchingCode;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.NoMatchingRef;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.RequiredCodeNotPresent;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.TextVarError;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.TooLongVar;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.WrongRefVal;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.WrongVar;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable.VarBuilder;
 import java.util.ArrayList;
@@ -130,6 +134,32 @@ public abstract class InfoCollector {
             .currentVal(tooLong.given());
         var interviewVar = varBuilder.build();
         addWrong(interviewVar);
+        return interviewVar;
+      }
+    }
+  }
+
+  public InterviewVariable addCrossRefError(CrossReferenceError err, VarBuilder varBuilder)
+      throws FilingError {
+    switch (err) {
+      case NoMatchingRef noMatch -> {
+        varBuilder.currentVal(noMatch.refCode() + ": " + noMatch.refVal());
+        var interviewVar = varBuilder.build();
+        addWrong(interviewVar);
+        return interviewVar;
+      }
+      case WrongRefVal wrongRef -> {
+        varBuilder
+            .appendDesc(wrongRef.msg())
+            .currentVal(wrongRef.refCode() + ":" + wrongRef.refVal());
+        var interviewVar = varBuilder.build();
+        addWrong(interviewVar);
+        return interviewVar;
+      }
+      case MissingRequiredRefs missingReq -> {
+        varBuilder.appendDesc("Needs all of the choices filled:").choices(missingReq.refCodes());
+        var interviewVar = varBuilder.build();
+        addRequired(interviewVar);
         return interviewVar;
       }
     }

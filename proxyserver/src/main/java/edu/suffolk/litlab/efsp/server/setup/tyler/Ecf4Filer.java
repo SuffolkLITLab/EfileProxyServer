@@ -360,8 +360,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
           pair.getLeft();
       log.info("Assembled case");
 
-      Map<String, String> crossReferences =
-          serializer.getCrossRefIds(info.getMiscInfo(), collector, allCodes.type.code);
+      Map<String, String> crossReferences = info.getCrossRefs();
       for (Map.Entry<String, String> ref : crossReferences.entrySet()) {
         IdentificationType id = niemObjFac.createIdentificationType();
         id.setIdentificationID(Ecf4Helper.convertString(ref.getValue()));

@@ -7,7 +7,9 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public interface CodesParser {
@@ -22,6 +24,11 @@ public interface CodesParser {
   public record MissingVar(Pattern regex) implements TextVarError {}
   public record WrongVar(String given, Pattern regex) implements TextVarError {}
   public record TooLongVar(String given, int length) implements TextVarError {}
+
+  public sealed interface CrossReferenceError {}
+  public record WrongRefVal(String refCode, String refVal, Pattern regex, String msg) implements CrossReferenceError {}
+  public record NoMatchingRef(String refCode, String refVal) implements CrossReferenceError {}
+  public record MissingRequiredRefs(Set<String> refCodes) implements CrossReferenceError {}
   // spotless:on
 
   // Methods
@@ -43,6 +50,9 @@ public interface CodesParser {
   public Result<String, CodeError> vetSuffix(Optional<String> suffix);
 
   public Result<Optional<String>, CodeError> vetLangCode(Optional<String> lang);
+
+  public Result<Map<String, String>, CrossReferenceError> getCrossRefIds(
+      Map<String, String> crossRefs, CaseType caseType);
 
   public Result<String, TextVarError> vetFirstName(Optional<String> name);
 

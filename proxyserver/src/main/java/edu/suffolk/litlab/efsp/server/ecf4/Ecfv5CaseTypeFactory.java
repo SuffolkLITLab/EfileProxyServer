@@ -244,17 +244,12 @@ public class Ecfv5CaseTypeFactory {
       tylerAug.setFilingAttorney(attorneyEnt);
     }
 
-    try {
-      Map<String, String> crossReferences =
-          serializer.getCrossRefIds(info.getMiscInfo(), collector, allCodes.type.code);
-      for (Map.Entry<String, String> refs : crossReferences.entrySet()) {
-        IdentificationType idType = niemObjFac.createIdentificationType();
-        idType.setIdentificationID(convertString(refs.getValue()));
-        idType.setIdentificationSourceText(convertText(refs.getKey()));
-        tylerAug.getCrossReferenceNumber().add(idType);
-      }
-    } catch (FilingError err) {
-      return Result.err(err);
+    Map<String, String> crossReferences = info.getCrossRefs();
+    for (Map.Entry<String, String> refs : crossReferences.entrySet()) {
+      IdentificationType idType = niemObjFac.createIdentificationType();
+      idType.setIdentificationID(convertString(refs.getValue()));
+      idType.setIdentificationSourceText(convertText(refs.getKey()));
+      tylerAug.getCrossReferenceNumber().add(idType);
     }
     ct.getCaseAugmentationPoint().add(tylerObjFac.createCaseAugmentation(tylerAug));
 

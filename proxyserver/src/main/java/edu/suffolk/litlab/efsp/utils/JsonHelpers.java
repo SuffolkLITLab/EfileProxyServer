@@ -1,9 +1,13 @@
 package edu.suffolk.litlab.efsp.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.hubspot.algebra.NullValue;
+import com.hubspot.algebra.Result;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class JsonHelpers {
@@ -89,20 +93,41 @@ public class JsonHelpers {
     return Optional.empty();
   }
 
-  public static Optional<JsonNode> unwrapDADict(JsonNode obj) {
+  public static Result<Optional<JsonNode>, NullValue> unwrapDADict(JsonNode obj) {
     if (obj == null) {
-      return Optional.empty();
+      return Result.ok(Optional.empty());
     }
     if (obj.isObject()) {
-      if (obj.has("_class")
-          && obj.has("instanceName")
+      if ((obj.has("_class")
+          || obj.has("instanceName"))
           && obj.has("elements")
           && obj.get("elements").isObject()) {
-        return Optional.of(obj.get("elements"));
+        return Result.ok(Optional.of(obj.get("elements")));
       } else {
-        return Optional.of(obj);
+        return Result.ok(Optional.of(obj));
       }
     }
-    return Optional.empty();
+    return Result.nullErr();
+  }
+
+  public static Result<Optional<Map<String, String>>, NullValue> unwrapSimpleDict(JsonNode obj) {
+    var maybeDict = unwrapDADict(obj);
+    if (maybeDict.isErr()) {
+      return maybeDict.propagateErr();
+    } else if (maybeDict.unwrapOrElseThrow().isEmpty()) {
+      return Result.ok(Optional.empty());
+    }
+    var dict = maybeDict.unwrapOrElseThrow().get();
+    Map<String, String> output = new HashMap<>();
+    Iterable<String> dictKeys = dict::fieldNames;
+    for (String dictKey : dictKeys) {
+      if (dict.get(dictKey) != null && dict.get(dictKey).isTextual()) {
+        String value = dict.get(dictKey).asText();
+        output.put(dictKey, value);
+      } else {
+        return Result.nullErr();
+      }
+    }
+    return Result.ok(Optional.of(output));
   }
 }

@@ -58,6 +58,7 @@ public class FilingInformation {
   private CaseCategory caseCategoryCode;
   private CaseType caseTypeCode;
   private Optional<NameAndCode> caseSubtypeCode;
+  private Map<String, String> crossRefs;
   private String paymentId;
   private List<FilingDoc> filingDocs = List.of();
   private Optional<LocalDate> returnDate = Optional.empty();
@@ -164,6 +165,10 @@ public class FilingInformation {
     return caseSubtypeCode;
   }
 
+  public Map<String, String> getCrossRefs() {
+    return crossRefs;
+  }
+
   public List<FilingDoc> getFilings() {
     return filingDocs;
   }
@@ -238,6 +243,10 @@ public class FilingInformation {
 
   public void setCaseSubtypeCode(Optional<NameAndCode> caseSubtypeId) {
     this.caseSubtypeCode = caseSubtypeId;
+  }
+
+  public void setCrossRefs(Map<String, String> crossRefs) {
+    this.crossRefs = crossRefs;
   }
 
   public void setLeadContact(Person leadContact) {
