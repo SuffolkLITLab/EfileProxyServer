@@ -8,6 +8,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 public interface CodesParser {
   // Types specifically for errors.
@@ -16,6 +17,11 @@ public interface CodesParser {
   public record NoMatchingCode(String given, List<String> options) implements CodeError {}
   public record RequiredCodeNotPresent(List<String> options) implements CodeError {}
   public record BadCode(FilingError err) implements CodeError {}
+
+  public sealed interface TextVarError {}
+  public record MissingVar(Pattern regex) implements TextVarError {}
+  public record WrongVar(String given, Pattern regex) implements TextVarError {}
+  public record TooLongVar(String given, int length) implements TextVarError {}
   // spotless:on
 
   // Methods
@@ -33,4 +39,12 @@ public interface CodesParser {
 
   public Result<Optional<FilingCode>, CodeError> vetFilingType(
       Optional<String> filingCode, List<FilingCode> filingOptions);
+
+  public Result<String, CodeError> vetSuffix(Optional<String> suffix);
+
+  public Result<String, TextVarError> vetFirstName(Optional<String> name);
+
+  public Result<String, TextVarError> vetMiddleName(Optional<String> name);
+
+  public Result<String, TextVarError> vetLastName(Optional<String> name);
 }

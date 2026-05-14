@@ -502,78 +502,15 @@ public class EcfCourtSpecificSerializer {
           return t;
         };
     PersonNameType personName = niemObjFac.createPersonNameType();
-    personName.setPersonGivenName(
-        checkName(
-            name.getFirstName(),
-            allDataFields.getFieldRow("PartyFirstName"),
-            collector,
-            collector.requestVar(
-                "name.first",
-                "First name of a case party",
-                "text",
-                List.of(),
-                Optional.of(name.getFirstName()))));
+    personName.setPersonGivenName(wrapName.apply(name.getFirstName()));
     personName.setPersonMaidenName(wrapName.apply(name.getMaidenName()));
-    personName.setPersonMiddleName(
-        checkName(
-            name.getMiddleName(),
-            allDataFields.getFieldRow("PartyMiddleName"),
-            collector,
-            collector.requestVar("name.middle", "Middle name of the case party", "text")));
-    personName.setPersonSurName(
-        checkName(
-            name.getLastName(),
-            allDataFields.getFieldRow("PartyLastName"),
-            collector,
-            collector.requestVar("name.last", "Last name of the case party", "text")));
+    personName.setPersonMiddleName(wrapName.apply(name.getMiddleName()));
+    personName.setPersonSurName(wrapName.apply(name.getLastName()));
     personName.setPersonNamePrefixText(wrapName.apply(name.getPrefix()));
-    DataFieldRow suffixRow = allDataFields.getFieldRow("PartyNameSuffix");
-    if (suffixRow.isvisible) {
-      List<NameAndCode> suffixes = cd.getNameSuffixes(this.court.code);
-      InterviewVariable var =
-          collector.requestVar(
-              "name.suffix",
-              "Suffix of the name of the party",
-              "choices",
-              suffixes.stream().map(s -> s.getName()).collect(Collectors.toList()),
-              Optional.of(name.getSuffix()));
-      if (name.getSuffix().isBlank()) {
-        if (suffixRow.isrequired) {
-          // TODO(brycew-later):
-          log.error(
-              "DEV WARNING: why would you ever require a suffix? There aren't empty suffix codes at"
-                  + " all.");
-          collector.addRequired(var);
-        } else {
-          personName.setPersonNameSuffixText(wrapName.apply(name.getSuffix()));
-        }
-      } else {
-        Optional<NameAndCode> suffix =
-            suffixes.stream()
-                .filter(s -> s.getName().equalsIgnoreCase(name.getSuffix()))
-                .findFirst();
-        if (suffix.isEmpty()) {
-          collector.addWrong(var);
-        } else {
-          personName.setPersonNameSuffixText(wrapName.apply(name.getSuffix()));
-        }
-      }
+    if (!name.getSuffix().isBlank()) {
+      personName.setPersonNameSuffixText(wrapName.apply(name.getSuffix()));
     }
     return personName;
-  }
-
-  private PersonNameTextType checkName(
-      String name, DataFieldRow row, InfoCollector collector, InterviewVariable var)
-      throws FilingError {
-    if (!row.matchRegex(name)) {
-      collector.addWrong(var.appendDesc(": must match regex: " + row.regularexpression));
-    }
-    if (name.length() > 100) {
-      collector.addWrong(var.appendDesc(": can't exceed 100 characters"));
-    }
-    PersonNameTextType t = niemObjFac.createPersonNameTextType();
-    t.setValue(name);
-    return t;
   }
 
   public JAXBElement<DocumentType> filingDocToXml(

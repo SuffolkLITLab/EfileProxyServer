@@ -3,32 +3,58 @@ package edu.suffolk.litlab.efsp.docassemble;
 import static edu.suffolk.litlab.efsp.docassemble.PersonDocassembleJacksonDeserializer.fromNode;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.model.PartyId;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
+import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
 import edu.suffolk.litlab.efsp.utils.AllWrongCollector;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class PersonDocassembleJacksonDeserializerTest {
 
   InfoCollector collector;
+  CodesParser parser;
 
   @BeforeEach
   public void setUp() {
     collector = new FailFastCollector();
+    var cd = mock(CodeDatabase.class);
+    when(cd.getDataFields("adams"))
+        .thenReturn(
+            new DataFields(
+                List.of(
+                    Map.of(
+                        "PartyFirstName",
+                            new DataFieldRow("PartyFirstName", "first name", true, true, "adams"),
+                        "PartyMiddleName",
+                            new DataFieldRow(
+                                "PartyMiddleName", "middle name", true, false, "adams"),
+                        "PartyLastName",
+                            new DataFieldRow(
+                                "PartyLastName", "last name", true, false, "adams")))));
+    parser = new TylerCodesParser(cd, new CourtLocationInfo("adams"));
   }
 
   @Test
   public void testShouldParseWithAllJsonFields() throws FilingError, IOException {
     JsonNode node = readFile("person_with_all.json");
-    var res = fromNode(node, collector);
+    var res = fromNode(node, parser, collector);
     assertThat(res.isOk()).isTrue();
     var per = res.unwrapOrElseThrow();
     assertThat(per.getContactInfo().getEmail()).contains("john.brown@example.com");
@@ -43,7 +69,7 @@ public class PersonDocassembleJacksonDeserializerTest {
   @Test
   public void testShouldParseWithMinimal() throws FilingError, IOException {
     JsonNode node = readFile("person_with_minimal.json");
-    var res = fromNode(node, collector);
+    var res = fromNode(node, parser, collector);
     assertThat(res.isOk()).isTrue();
     var per = res.unwrapOrElseThrow();
     assertThat(per.getName().getFirstName()).isEqualTo("John");
@@ -52,7 +78,7 @@ public class PersonDocassembleJacksonDeserializerTest {
   @Test
   public void testShouldParseWithExtraJson() throws FilingError, IOException {
     JsonNode node = readFile("person_with_extras.json");
-    var res = fromNode(node, collector);
+    var res = fromNode(node, parser, collector);
     assertThat(res.isOk()).isTrue();
     var per = res.unwrapOrElseThrow();
     assertThat(per.getContactInfo().getEmail()).contains("john.brown@example.com");
@@ -67,17 +93,18 @@ public class PersonDocassembleJacksonDeserializerTest {
   @Test
   public void testDontParseBadJson() throws FilingError, IOException {
     collector = new AllWrongCollector();
-    assertThrows(FilingError.class, () -> fromNode(readString("\"abc\""), collector));
+    assertThrows(FilingError.class, () -> fromNode(readString("\"abc\""), parser, collector));
     collector = new AllWrongCollector();
-    assertThrows(FilingError.class, () -> fromNode(readString("[{}]"), collector));
+    assertThrows(FilingError.class, () -> fromNode(readString("[{}]"), parser, collector));
     collector = new AllWrongCollector();
-    fromNode(readString("{\"abc\": \"def\"}"), collector);
+    fromNode(readString("{\"abc\": \"def\"}"), parser, collector);
     assertThat(collector.getRequired()).hasSize(1); // only requires name
   }
 
   @Test
   public void testValidBirthDate() throws IOException, FilingError {
-    var res = fromNode(readTemplate("person_birthdate_template.json", "2000-11-02"), collector);
+    var res =
+        fromNode(readTemplate("person_birthdate_template.json", "2000-11-02"), parser, collector);
     assertThat(res.isOk()).isTrue();
     var per = res.unwrapOrElseThrow();
     assertThat(per.getBirthdate()).isPresent();
@@ -86,7 +113,8 @@ public class PersonDocassembleJacksonDeserializerTest {
 
   @Test
   public void testInvalidBirthDate() throws IOException, FilingError {
-    var res = fromNode(readTemplate("person_birthdate_template.json", "2000-11-32"), collector);
+    var res =
+        fromNode(readTemplate("person_birthdate_template.json", "2000-11-32"), parser, collector);
     assertThat(res.isOk()).isTrue();
     var per = res.unwrapOrElseThrow();
     assertThat(per.getBirthdate()).isEmpty();
@@ -95,14 +123,15 @@ public class PersonDocassembleJacksonDeserializerTest {
   @Test
   public void testIsNewNotABoolean() throws FilingError, IOException {
     collector = new AllWrongCollector();
-    fromNode(readTemplate("person_new_id.json", "\"abc\"", "\"this will fail\""), collector);
+    fromNode(
+        readTemplate("person_new_id.json", "\"abc\"", "\"this will fail\""), parser, collector);
     assertThat(collector.getWrong()).hasSize(1);
   }
 
   @Test
   public void testIsNewAndEfmId() throws FilingError, IOException {
     collector = new AllWrongCollector();
-    fromNode(readTemplate("person_new_id.json", "\"abc\"", "true"), collector);
+    fromNode(readTemplate("person_new_id.json", "\"abc\"", "true"), parser, collector);
     assertThat(collector.getWrong()).hasSize(1);
     assertThat(collector.getWrong().get(0).getDescription())
         .contains("EFM (tyler) ID on a brand new party to the case");
@@ -111,7 +140,7 @@ public class PersonDocassembleJacksonDeserializerTest {
   @Test
   public void testIsNotNewAndNoEfmId() throws FilingError, IOException {
     collector = new AllWrongCollector();
-    fromNode(readTemplate("person_new_id.json", "null", "false"), collector);
+    fromNode(readTemplate("person_new_id.json", "null", "false"), parser, collector);
     assertThat(collector.getWrong()).hasSize(1);
     assertThat(collector.getWrong().get(0).getDescription())
         .contains("Can't be marked as not new, but not have an EFM ID");

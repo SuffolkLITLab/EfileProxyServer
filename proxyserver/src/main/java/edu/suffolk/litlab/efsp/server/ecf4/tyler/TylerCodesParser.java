@@ -147,4 +147,61 @@ public class TylerCodesParser implements CodesParser {
     }
     return Result.ok(maybeCode);
   }
+
+  public Result<String, CodeError> vetSuffix(Optional<String> maybeSuffix) {
+    DataFieldRow suffixRow = allDataFields.getFieldRow("PartyNameSuffix");
+    if (suffixRow.isvisible) {
+      List<NameAndCode> suffixes = cd.getNameSuffixes(this.court.code);
+      if ((maybeSuffix.isEmpty() || maybeSuffix.get().isBlank()) && suffixRow.isrequired) {
+        // TODO(brycew-later):
+        log.error(
+            "DEV WARNING: Court {}: WHY would you ever require a suffix? There aren't empty suffix codes at all.",
+            this.court.code);
+      }
+      String suffix = maybeSuffix.orElse("");
+      Optional<NameAndCode> suffixMatch =
+          suffixes.stream().filter(s -> s.getName().equalsIgnoreCase(suffix)).findFirst();
+      if (suffixMatch.isEmpty()) {
+        return Result.err(
+            new NoMatchingCode(suffix, suffixes.stream().map(s -> s.getName()).toList()));
+      } else {
+        return Result.ok(suffixMatch.get().getName());
+      }
+    }
+    return Result.ok(maybeSuffix.orElse(""));
+  }
+
+  /**
+   * Doesn't return optional because we can set the People names to null / blank.
+   *
+   * @param name
+   * @param row
+   * @return
+   */
+  private Result<String, TextVarError> vetName(Optional<String> maybeName, DataFieldRow row) {
+    var name = maybeName.orElse("");
+    if (!row.matchRegex(name)) {
+      return Result.err(new WrongVar(name, row.regularexpression));
+    }
+    if (name.length() > 100) {
+      return Result.err(new TooLongVar(name, 100));
+    }
+    return Result.ok(name);
+  }
+
+  public Result<String, TextVarError> vetFirstName(Optional<String> name) {
+    var dataField = allDataFields.getFieldRow("PartyFirstName");
+    if (name.isEmpty() || name.get().isBlank()) {
+      return Result.err(new MissingVar(dataField.regularexpression));
+    }
+    return vetName(name, dataField);
+  }
+
+  public Result<String, TextVarError> vetMiddleName(Optional<String> name) {
+    return vetName(name, allDataFields.getFieldRow("PartyMiddleName"));
+  }
+
+  public Result<String, TextVarError> vetLastName(Optional<String> name) {
+    return vetName(name, allDataFields.getFieldRow("PartyLastName"));
+  }
 }

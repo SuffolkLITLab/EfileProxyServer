@@ -62,7 +62,8 @@ public class FilingInformationDocassembleJacksonDeserializer
    * @throws FilingError
    */
   private static List<Person> collectPeople(
-      JsonNode topObj, String potentialMember, InfoCollector collector) throws FilingError {
+      JsonNode topObj, String potentialMember, CodesParser parser, InfoCollector collector)
+      throws FilingError {
     if (!topObj.has(potentialMember)) {
       return List.of(); // Just an empty list: we don't know if it's required
     }
@@ -77,7 +78,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       JsonNode personJson = peopleElements.get(i);
       collector.pushAttributeStack(potentialMember + "[" + i + "]");
       Result<Person, FilingError> per =
-          PersonDocassembleJacksonDeserializer.fromNode(personJson, collector);
+          PersonDocassembleJacksonDeserializer.fromNode(personJson, parser, collector);
       collector.popAttributeStack();
       if (per.isErr()) {
         FilingError ex = per.unwrapErrOrElseThrow();
@@ -103,8 +104,8 @@ public class FilingInformationDocassembleJacksonDeserializer
     boolean isInitialFiling =
         entities.getPreviousCaseId().isEmpty() && entities.getCaseDocketNumber().isEmpty();
 
-    List<Person> users = collectPeople(node, "users", collector);
-    List<Person> otherParties = collectPeople(node, "other_parties", collector);
+    List<Person> users = collectPeople(node, "users", parser, collector);
+    List<Person> otherParties = collectPeople(node, "other_parties", parser, collector);
 
     var varToPartyId = new HashMap<String, PartyId>();
     int perIdx = 0;
@@ -323,7 +324,8 @@ public class FilingInformationDocassembleJacksonDeserializer
     } else {
       collector.pushAttributeStack("lead_contact");
       Result<Person, FilingError> per =
-          PersonDocassembleJacksonDeserializer.fromNode(node.get("lead_contact"), collector);
+          PersonDocassembleJacksonDeserializer.fromNode(
+              node.get("lead_contact"), parser, collector);
       collector.popAttributeStack();
       if (per.isErr()) {
         FilingError ex = per.unwrapErrOrElseThrow();
@@ -544,7 +546,8 @@ public class FilingInformationDocassembleJacksonDeserializer
     } else if (jsonLowerCase.get("judge").isObject()) {
       collector.pushAttributeStack("judge");
       judgeName =
-          NameDocassembleDeserializer.fromNode(jsonLowerCase.get("judge"), collector).getFullName();
+          NameDocassembleDeserializer.fromNode(jsonLowerCase.get("judge"), parser, collector)
+              .getFullName();
       collector.popAttributeStack();
     }
     Optional<String> title = JsonHelpers.getStringMember(jsonLowerCase, "title");

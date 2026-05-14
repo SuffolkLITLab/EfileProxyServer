@@ -11,10 +11,12 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.BadCode;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.NoMatchingCode;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.TooLongVar;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +26,7 @@ import org.junit.jupiter.api.Test;
 public class TylerCodesParserTest {
 
   CodesParser parser;
+  CodeDatabase cd;
   DataFields dataFields;
 
   CaseCategory exampleCategory =
@@ -39,16 +42,34 @@ public class TylerCodesParserTest {
       new CaseType("456098", "Test Case Type", "123987", "true", "0", "", "", "01");
   CaseType exampleCaseType2 =
       new CaseType("54321", "Test Case Type (no initial)", "123987", "false", "0", "", "", "01");
+  FilingCode filingCode =
+      new FilingCode(
+          "777",
+          "",
+          "",
+          exampleCategory.code,
+          exampleCaseType.code,
+          "",
+          false,
+          "",
+          "",
+          "",
+          false,
+          false,
+          "",
+          "01");
 
   @BeforeEach
   public void setUp() {
-    CodeDatabase cd = mock(CodeDatabase.class);
+    cd = mock(CodeDatabase.class);
     when(cd.getCaseCategoriesFor("01")).thenReturn(List.of(exampleCategory));
     when(cd.getCaseCategoryWithCode("01", "123987")).thenReturn(Optional.of(exampleCategory));
     when(cd.getCaseTypesFor("01", "123987", Optional.empty()))
         .thenReturn(List.of(exampleCaseType, exampleCaseType2));
     when(cd.getCaseSubtypesFor("01", "456098"))
         .thenReturn(List.of(new NameAndCode("SubType code", "998877")));
+    when(cd.getFilingType("01", exampleCategory.code, exampleCaseType.code, true))
+        .thenReturn(List.of(filingCode));
     var loc = new CourtLocationInfo("01");
     loc.initial = true;
 
@@ -134,5 +155,56 @@ public class TylerCodesParserTest {
         .thenReturn(new DataFieldRow("CaseInformationCaseSubType", "Sub type", true, true, "01"));
     var res = parser.vetSubType("998800", exampleCaseType);
     assertThat(res).containsErr(new NoMatchingCode("998800", List.of("998877")));
+  }
+
+  @Test
+  public void testVetFilingCodesRestricted() {
+    when(cd.getFilingType("01", exampleCategory.code, exampleCaseType.code, true))
+        .thenReturn(List.of());
+    var res = parser.retrieveFilingOptions(exampleCategory, exampleCaseType, true);
+    assertThat(res)
+        .containsErr(
+            new BadCode(
+                FilingError.malformedInterview(
+                    "Need a filing type! FilingTypes are empty, so 123987, Test Category,  and 456098, Test Case Type, 123987, true, 0.0, , , 01 are restricted")));
+  }
+
+  @Test
+  public void testSuffixVisibleNotVisible() {
+    when(dataFields.getFieldRow("PartyNameSuffix"))
+        .thenReturn(DataFieldRow.MissingDataField("PartyNameSuffix"));
+    var res = parser.vetSuffix(Optional.empty());
+    assertThat(res).containsOk("");
+  }
+
+  @Test
+  public void testSuffixVisibleAndRequired() {
+    when(dataFields.getFieldRow("PartyNameSuffix"))
+        .thenReturn(new DataFieldRow("PartyNameSuffix", "suffix", true, true, "01"));
+    var res = parser.vetSuffix(Optional.empty());
+    assertThat(res).containsErr(new NoMatchingCode("", List.of()));
+  }
+
+  @Test
+  public void testSuffixVisibleAndPresent() {
+    when(dataFields.getFieldRow("PartyNameSuffix"))
+        .thenReturn(new DataFieldRow("PartyNameSuffix", "suffix", true, true, "01"));
+    when(cd.getNameSuffixes("01")).thenReturn(List.of(new NameAndCode("MD", "MD")));
+    var res = parser.vetSuffix(Optional.of("md"));
+    assertThat(res).containsOk("MD");
+  }
+
+  @Test
+  public void testNameTooLong() {
+    when(dataFields.getFieldRow("PartyFirstName"))
+        .thenReturn(new DataFieldRow("PartyFirstName", "first name", true, true, "01"));
+    String longName =
+        "abcdefghijklmnopqrstuvwxyz"
+            + "abcdefghijklmnopqrstuvwxyz"
+            + "abcdefghijklmnopqrstuvwxyz"
+            + "abcdefghijklmnopqrstuvwxyz"
+            + "abcdefghijklmnopqrstuvwxyz";
+    var res = parser.vetFirstName(Optional.of(longName));
+    assertThat(res).containsErr(new TooLongVar(longName, 100));
   }
 }
