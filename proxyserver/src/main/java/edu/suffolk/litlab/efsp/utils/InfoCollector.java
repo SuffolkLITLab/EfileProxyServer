@@ -2,8 +2,12 @@ package edu.suffolk.litlab.efsp.utils;
 
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.BadCode;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.CodeError;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.MissingVar;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.NoMatchingCode;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.RequiredCodeNotPresent;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.TextVarError;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.TooLongVar;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.WrongVar;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable.VarBuilder;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
@@ -102,6 +106,32 @@ public abstract class InfoCollector {
       case BadCode badCode -> error(badCode.err());
     }
     return null;
+  }
+
+  public InterviewVariable addTextError(TextVarError err, VarBuilder varBuilder)
+      throws FilingError {
+    switch (err) {
+      case MissingVar missing -> {
+        varBuilder.appendDesc(", missing, must also match regex: " + missing.regex());
+        var interviewVar = varBuilder.build();
+        addRequired(interviewVar);
+        return interviewVar;
+      }
+      case WrongVar wrong -> {
+        varBuilder.appendDesc(": must match regex: " + wrong.regex()).currentVal(wrong.given());
+        var interviewVar = varBuilder.build();
+        addWrong(interviewVar);
+        return interviewVar;
+      }
+      case TooLongVar tooLong -> {
+        varBuilder
+            .appendDesc(": can't exceed " + tooLong.length() + " characters")
+            .currentVal(tooLong.given());
+        var interviewVar = varBuilder.build();
+        addWrong(interviewVar);
+        return interviewVar;
+      }
+    }
   }
 
   public void pushAttributeStack(String variableName) {

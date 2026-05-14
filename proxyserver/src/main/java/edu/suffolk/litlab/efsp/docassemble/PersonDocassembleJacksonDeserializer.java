@@ -10,6 +10,7 @@ import edu.suffolk.litlab.efsp.model.Address;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
 import edu.suffolk.litlab.efsp.model.Name;
 import edu.suffolk.litlab.efsp.model.Person;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
@@ -31,8 +32,8 @@ public class PersonDocassembleJacksonDeserializer {
    *
    * @throws FilingError
    */
-  public static Result<Person, FilingError> fromNode(JsonNode node, InfoCollector collector)
-      throws FilingError {
+  public static Result<Person, FilingError> fromNode(
+      JsonNode node, CodesParser parser, InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
       FilingError err =
           FilingError.malformedInterview(
@@ -112,7 +113,7 @@ public class PersonDocassembleJacksonDeserializer {
                 })
             .orElse(Optional.<LocalDate>empty());
     collector.pushAttributeStack("name");
-    Name name = NameDocassembleDeserializer.fromNode(node.get("name"), collector);
+    Name name = NameDocassembleDeserializer.fromNode(node.get("name"), parser, collector);
     collector.popAttributeStack();
     boolean isPer = !name.getMiddleName().isBlank() || !name.getLastName().isBlank();
 

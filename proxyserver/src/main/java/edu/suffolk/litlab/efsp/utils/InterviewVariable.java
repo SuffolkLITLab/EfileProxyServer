@@ -136,6 +136,14 @@ public class InterviewVariable {
       return this;
     }
 
+    public VarBuilder appendDesc(String newDescription) {
+      if (this.description == null) {
+        this.description = "";
+      }
+      this.description += newDescription;
+      return this;
+    }
+
     public VarBuilder datatype(String datatype) {
       this.datatype = datatype;
       return this;

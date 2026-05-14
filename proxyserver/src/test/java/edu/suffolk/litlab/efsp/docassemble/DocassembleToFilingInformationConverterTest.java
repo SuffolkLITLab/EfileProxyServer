@@ -13,6 +13,8 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
@@ -28,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,6 +63,19 @@ public class DocassembleToFilingInformationConverterTest {
     when(cd.getCaseTypesFor("01", "123987", Optional.empty())).thenReturn(List.of(exampleCaseType));
     when(cd.getFilingType("01", "123987", "456098", true)).thenReturn(List.of(exampleFilingType));
     when(cd.getFilingType("01", "123987", "456098", false)).thenReturn(List.of(exampleFilingType));
+    when(cd.getDataFields("01"))
+        .thenReturn(
+            new DataFields(
+                List.of(
+                    Map.of(
+                        "PartyFirstName",
+                            new DataFieldRow("PartyFirstName", "first name", true, true, "adams"),
+                        "PartyMiddleName",
+                            new DataFieldRow(
+                                "PartyMiddleName", "middle name", true, false, "adams"),
+                        "PartyLastName",
+                            new DataFieldRow(
+                                "PartyLastName", "last name", true, false, "adams")))));
     var loc = new CourtLocationInfo("01");
     loc.initial = true;
     loc.subsequent = true;
