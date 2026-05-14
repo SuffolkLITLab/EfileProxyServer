@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.utils;
 
+import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.BadCode;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.CodeError;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.MissingVar;
@@ -205,6 +206,32 @@ public abstract class InfoCollector {
 
   public InterviewVariable requestVar(String localName, String description, String datatype) {
     return requestVar(localName, description, datatype, List.of(), Optional.empty());
+  }
+
+  public String unwrap(Result<String, TextVarError> res, VarBuilder varBuilder) throws FilingError {
+    if (res.isErr()) {
+      addTextError(res.unwrapErrOrElseThrow(), varBuilder);
+      return "";
+    }
+    return res.unwrapOrElseThrow();
+  }
+
+  public String unwrapCode(Result<String, CodeError> res, VarBuilder varBuilder)
+      throws FilingError {
+    if (res.isErr()) {
+      addCodeError(res.unwrapErrOrElseThrow(), varBuilder);
+      return "";
+    }
+    return res.unwrapOrElseThrow();
+  }
+
+  public Optional<String> unwrapOpt(Result<Optional<String>, CodeError> res, VarBuilder varBuilder)
+      throws FilingError {
+    if (res.isErr()) {
+      addCodeError(res.unwrapErrOrElseThrow(), varBuilder);
+      return Optional.empty();
+    }
+    return res.unwrapOrElseThrow();
   }
 
   public String jsonSummary() {
