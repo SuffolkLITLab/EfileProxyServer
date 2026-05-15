@@ -98,8 +98,7 @@ public class JsonHelpers {
       return Result.ok(Optional.empty());
     }
     if (obj.isObject()) {
-      if ((obj.has("_class")
-          || obj.has("instanceName"))
+      if ((obj.has("_class") || obj.has("instanceName"))
           && obj.has("elements")
           && obj.get("elements").isObject()) {
         return Result.ok(Optional.of(obj.get("elements")));

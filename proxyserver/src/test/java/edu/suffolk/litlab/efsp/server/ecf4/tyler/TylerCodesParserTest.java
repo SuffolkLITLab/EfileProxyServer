@@ -18,6 +18,7 @@ import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.BadCode;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.NoMatchingCode;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.NoMatchingRef;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.RequiredCodeNotPresent;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.TooLongVar;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.WrongRefVal;
 import edu.suffolk.litlab.efsp.utils.FilingError;
@@ -292,6 +293,71 @@ public class TylerCodesParserTest {
           .withFailMessage(
               () ->
                   "Should have failed, we passed a value for a cross reference code that was too long");
+    }
+  }
+
+  @Nested
+  class MotionTypeTests {
+
+    @Test
+    public void noMotionCodeNoFilingCodeNotVisible() {
+      when(dataFields.getFieldRow("FilingMotionType"))
+          .thenReturn(DataFieldRow.MissingDataField("FilingMotionType"));
+      assertThat(parser.vetMotionCode(Optional.empty(), Optional.empty()))
+          .containsOk(Optional.empty());
+    }
+
+    @Test
+    public void noMotionCodeNoFilingCodeVisible() {
+      when(dataFields.getFieldRow("FilingMotionType"))
+          .thenReturn(new DataFieldRow("FilingMotionType", "", true, false, "01"));
+      assertThat(parser.vetMotionCode(Optional.empty(), Optional.empty()))
+          .containsOk(Optional.empty());
+    }
+
+    @Test
+    public void noMotionCodeYesFilingCodeVisible() {
+      when(dataFields.getFieldRow("FilingMotionType"))
+          .thenReturn(new DataFieldRow("FilingMotionType", "", true, false, "01"));
+      assertThat(parser.vetMotionCode(Optional.empty(), Optional.of(filingCode)))
+          .containsOk(Optional.empty());
+    }
+
+    @Test
+    public void noMotionCodeYesFilingCodeRequired() {
+      when(dataFields.getFieldRow("FilingMotionType"))
+          .thenReturn(new DataFieldRow("FilingMotionType", "", true, true, "01"));
+      assertThat(parser.vetMotionCode(Optional.empty(), Optional.of(filingCode)))
+          .extractingErr()
+          .isInstanceOf(RequiredCodeNotPresent.class);
+    }
+
+    @Test
+    public void yesMotionCodeNoFilingCodeVisible() {
+      when(dataFields.getFieldRow("FilingMotionType"))
+          .thenReturn(new DataFieldRow("FilingMotionType", "", true, true, "01"));
+      assertThat(parser.vetMotionCode(Optional.of("1234"), Optional.empty()))
+          .extractingErr()
+          .isInstanceOf(BadCode.class);
+    }
+
+    @Test
+    public void yesMotionCodeYesFilingCodeNoMatching() {
+      when(dataFields.getFieldRow("FilingMotionType"))
+          .thenReturn(new DataFieldRow("FilingMotionType", "", true, false, "01"));
+      when(cd.getMotionTypes("01", filingCode.code)).thenReturn(List.of());
+      var res = parser.vetMotionCode(Optional.of("1234"), Optional.of(filingCode));
+      assertThat(res).extractingErr().isInstanceOf(NoMatchingCode.class);
+    }
+
+    @Test
+    public void yesMotionCodeYesFilingCodePresent() {
+      when(dataFields.getFieldRow("FilingMotionType"))
+          .thenReturn(new DataFieldRow("FilingMotionType", "", true, false, "01"));
+      when(cd.getMotionTypes("01", filingCode.code))
+          .thenReturn(List.of(new NameAndCode("idk", "1234")));
+      var res = parser.vetMotionCode(Optional.of("1234"), Optional.of(filingCode));
+      assertThat(res).containsOk(Optional.of(new NameAndCode("idk", "1234")));
     }
   }
 }

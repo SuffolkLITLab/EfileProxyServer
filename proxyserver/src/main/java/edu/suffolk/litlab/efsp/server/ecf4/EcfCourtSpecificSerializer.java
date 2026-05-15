@@ -45,7 +45,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.DocumentTypeTableRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
 import edu.suffolk.litlab.efsp.model.Address;
@@ -621,33 +620,11 @@ public class EcfCourtSpecificSerializer {
       docType.setFilingCommentsText(Ecf4Helper.convertText(doc.getFilingComments()));
     }
 
-    DataFieldRow motionRow = allDataFields.getFieldRow("FilingMotionType");
-    if (motionRow.isvisible) {
-      List<NameAndCode> motionTypes = cd.getMotionTypes(this.court.code, filing.code);
-      InterviewVariable var =
-          collector.requestVar(
-              "motion_type",
-              "the motion type (?)",
-              "choices",
-              motionTypes.stream().map(m -> m.getCode()).collect(Collectors.toList()),
-              doc.getMotionType());
-      if (doc.getMotionType().isPresent()) {
-        String mt = doc.getMotionType().get();
-        Optional<NameAndCode> matchedMotion =
-            motionTypes.stream().filter(m -> m.getCode().equalsIgnoreCase(mt)).findFirst();
-        if (matchedMotion.isPresent()) {
-          docType.setMotionTypeCode(Ecf4Helper.convertText(matchedMotion.get().getCode()));
-        } else {
-          collector.addWrong(var);
-        }
-      } else if (motionRow.isrequired) {
-        // TODO(brycew-later): "A motion type may be required for a filing type, and may or may not
-        // allow multiple occurances"
-        // What does it actually mean? Motion types are empty for most IL courts (not Cook), so IDK
-        // what to do if there's nothing there
-        collector.addRequired(var);
-      }
-    }
+    doc.getMotionType()
+        .ifPresent(
+            motion -> {
+              docType.setMotionTypeCode(Ecf4Helper.convertText(motion.getCode()));
+            });
     boolean serviceOnInitial =
         switch (this.court.allowserviceoninitial) {
           case TRUE -> true;

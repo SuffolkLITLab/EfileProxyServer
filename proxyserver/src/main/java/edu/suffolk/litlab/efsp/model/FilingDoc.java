@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efsp.model;
 
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.stdlib.NonEmptyString;
 import fj.data.NonEmptyList;
 import java.time.LocalDate;
@@ -32,7 +33,7 @@ public class FilingDoc {
   // From filer, about this filing
   private String filingComments;
   // Only necessary if it's a motion?
-  private final Optional<String> motionType;
+  private final Optional<NameAndCode> motionType;
   private final List<String> courtesyCopies;
   private final List<String> preliminaryCopies;
 
@@ -73,7 +74,7 @@ public class FilingDoc {
       Optional<String> filingAttorney,
       NonEmptyList<FilingAttachment> filingAttachments,
       String filingComments,
-      Optional<String> motionType,
+      Optional<NameAndCode> motionType,
       List<OptionalService> optionalServices,
       List<String> courtesyCopies,
       List<String> preliminaryCopies,
@@ -158,7 +159,7 @@ public class FilingDoc {
     return preliminaryCopies;
   }
 
-  public Optional<String> getMotionType() {
+  public Optional<NameAndCode> getMotionType() {
     return motionType;
   }
 

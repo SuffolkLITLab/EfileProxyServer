@@ -12,7 +12,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.utils.FilingError;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,7 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -239,6 +237,43 @@ public class TylerCodesParser implements CodesParser {
       return Result.err(new MissingRequiredRefs(missingRefs));
     }
     return Result.ok(ids);
+  }
+
+  // TODO: leaving a gap for PartyType related checks.
+
+  // TODO: do good tests here
+  public Result<Optional<NameAndCode>, CodeError> vetMotionCode(
+      Optional<String> motionCode, Optional<FilingCode> filing) {
+    DataFieldRow motionRow = allDataFields.getFieldRow("FilingMotionType");
+    if (!motionRow.isvisible) {
+      return Result.ok(Optional.empty());
+    }
+    if (!motionRow.isrequired && motionCode.isEmpty()) {
+      return Result.ok(Optional.empty());
+    }
+    if (filing.isEmpty()) {
+      return Result.err(
+          new BadCode(FilingError.malformedInterview("Need filing type to handle motion types")));
+    }
+    List<NameAndCode> motionTypes = cd.getMotionTypes(this.court.code, filing.get().code);
+    if (motionCode.isPresent()) {
+      String mt = motionCode.get();
+      Optional<NameAndCode> matchedMotion =
+          motionTypes.stream().filter(m -> m.getCode().equalsIgnoreCase(mt)).findFirst();
+      if (matchedMotion.isEmpty()) {
+        return Result.err(
+            new NoMatchingCode(mt, motionTypes.stream().map(m -> m.getCode()).toList()));
+      }
+      return Result.ok(matchedMotion);
+    } else if (motionRow.isrequired) {
+      // TODO(brycew-later): "A motion type may be required for a filing type, and may or may not
+      // allow multiple occurances"
+      // What does it actually mean? Motion types are empty for most IL courts (not Cook), so IDK
+      // what to do if there's nothing there
+      return Result.err(
+          new RequiredCodeNotPresent(motionTypes.stream().map(m -> m.getCode()).toList()));
+    }
+    return Result.ok(Optional.empty());
   }
 
   /**

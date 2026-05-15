@@ -54,6 +54,9 @@ public interface CodesParser {
   public Result<Map<String, String>, CrossReferenceError> getCrossRefIds(
       Map<String, String> crossRefs, CaseType caseType);
 
+  public Result<Optional<NameAndCode>, CodeError> vetMotionCode(
+      Optional<String> motionCode, Optional<FilingCode> filing);
+
   public Result<String, TextVarError> vetFirstName(Optional<String> name);
 
   public Result<String, TextVarError> vetMiddleName(Optional<String> name);
