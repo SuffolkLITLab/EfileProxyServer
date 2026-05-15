@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
@@ -51,7 +52,8 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     collector = new FailFastCollector();
     varToPartyId = Map.of("users[0]", PartyId.CurrentFilingNew("abc"));
     CodeDatabase cd = mock(CodeDatabase.class);
-    parser = new TylerCodesParser(cd, new CourtLocationInfo("adams"));
+    var dataFields = new DataFields();
+    parser = new TylerCodesParser(cd, new CourtLocationInfo("adams"), dataFields);
   }
 
   @Test

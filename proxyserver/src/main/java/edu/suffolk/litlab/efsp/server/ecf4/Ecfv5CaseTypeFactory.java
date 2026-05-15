@@ -106,7 +106,8 @@ public class Ecfv5CaseTypeFactory {
       doc.getMotionType()
           .ifPresentOrElse(
               mot -> {
-                e.setCourtLocationCode(tylerObjFac.createMotionTypeCode(convertText(mot)));
+                e.setCourtLocationCode(
+                    tylerObjFac.createMotionTypeCode(convertText(mot.getCode())));
               },
               () -> {
                 e.setCourtLocationCode(tylerObjFac.createMotionTypeCode(convertText("")));

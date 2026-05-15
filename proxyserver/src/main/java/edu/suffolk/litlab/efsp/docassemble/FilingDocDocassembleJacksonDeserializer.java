@@ -76,14 +76,14 @@ public class FilingDocDocassembleJacksonDeserializer {
       collector.addOptional(varBuilder.build());
     }
     var filingType = res.unwrapOrElseThrow();
-    Optional<String> motionName = Optional.empty();
-    if (node.has("motion_type") && node.get("motion_type").isTextual()) {
-      motionName = Optional.of(node.get("motion_type").asText());
-    } else {
-      InterviewVariable var =
-          collector.requestVar("motion", "The Type of Motion that this interview is", "text");
-      collector.addOptional(var);
+
+    Optional<String> motionName = getStringMember(node, "motion_type");
+    var motionBuilder = collector.varBuilder().name("motion_type").description("(optional)");
+    var motionRes = parser.vetMotionCode(motionName, filingType);
+    if (motionRes.isErr()) {
+      collector.addCodeError(motionRes.expectErr(""), motionBuilder);
     }
+    var motionCode = motionRes.expect("");
 
     List<OptionalService> optServices = new ArrayList<OptionalService>();
     Optional<JsonNode> maybeOptServs = JsonHelpers.unwrapDAList(node.get("optional_services"));
@@ -200,7 +200,7 @@ public class FilingDocDocassembleJacksonDeserializer {
             filingAttorney,
             goodAttachments.some(),
             filingComment,
-            motionName,
+            motionCode,
             optServices,
             courtesyCopies,
             preliminaryCopies,
