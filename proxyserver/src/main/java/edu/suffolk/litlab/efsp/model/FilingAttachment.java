@@ -1,6 +1,8 @@
 package edu.suffolk.litlab.efsp.model;
 
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.DocumentTypeTableRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
+import java.util.Optional;
 
 /** An individual PDF, all a part of the same "document". The equivalent of an ALDocument. */
 public class FilingAttachment {
@@ -12,14 +14,14 @@ public class FilingAttachment {
   // This is, "determined via configuration within the EFM for each EFSP"?
   // So, we can just say yes?
   // Provides Document Type code / BinaryFormatStandardName
-  private final String documentTypeFormatStandardName;
+  private final Optional<DocumentTypeTableRow> documentTypeFormatStandardName;
 
   // page count?
 
   public FilingAttachment(
       String fileName,
       byte[] fileStream,
-      String documentTypeFormatStandardName,
+      Optional<DocumentTypeTableRow> documentTypeFormatStandardName,
       FilingComponent filingComponentCode,
       String documentDescription) {
     this.filingComponentCode = filingComponentCode;
@@ -41,7 +43,7 @@ public class FilingAttachment {
     return filingComponentCode;
   }
 
-  public String getDocumentTypeFormatStandardName() {
+  public Optional<DocumentTypeTableRow> getDocumentTypeFormatStandardName() {
     return documentTypeFormatStandardName;
   }
 

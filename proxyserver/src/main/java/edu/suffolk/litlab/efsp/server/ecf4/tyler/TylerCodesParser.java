@@ -8,6 +8,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CrossReference;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.DocumentTypeTableRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
@@ -368,6 +369,29 @@ public class TylerCodesParser implements CodesParser {
       components.remove(filt);
     }
     return Result.ok(filt);
+  }
+
+  // TODO(brycew): should add helptext / validationmessage from DataField?
+  public Result<Optional<DocumentTypeTableRow>, CodeError> vetDocType(
+      String docTypeStr, FilingCode filing) {
+    // Literally should just be if it's confidential or not. (or "Hot fix" or public).
+    // Search options in "documenttype" table with location
+    DataFieldRow documentType = allDataFields.getFieldRow("DocumentType");
+    if (documentType.isvisible) {
+      List<DocumentTypeTableRow> docTypes = cd.getDocumentTypes(court.code, filing.code);
+      if (documentType.isrequired && docTypeStr.isBlank()) {
+        return Result.err(new RequiredCodeNotPresent(docTypes.stream().map(d -> d.code).toList()));
+      }
+
+      Optional<DocumentTypeTableRow> code =
+          docTypes.stream().filter(d -> d.code.equals(docTypeStr)).findFirst();
+      if (code.isPresent()) {
+        return Result.ok(code);
+      }
+      return Result.err(
+          new NoMatchingCode(docTypeStr, docTypes.stream().map(d -> d.code).toList()));
+    }
+    return Result.ok(Optional.empty());
   }
 
   /**

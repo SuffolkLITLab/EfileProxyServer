@@ -41,7 +41,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.DocumentTypeTableRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
@@ -714,33 +713,14 @@ public class EcfCourtSpecificSerializer {
     FilingComponent filt = fa.getFilingComponent();
 
     attachment.setBinaryCategoryText(Ecf4Helper.convertText(filt.code));
+
     // Literally should just be if it's confidential or not. (or "Hot fix" or public).
     // Search options in "documenttype" table with location
-    DataFieldRow documentType = allDataFields.getFieldRow("DocumentType");
-    if (documentType.isvisible) {
-      List<DocumentTypeTableRow> docTypes = cd.getDocumentTypes(court.code, filing.code);
-      String docTypeStr = fa.getDocumentTypeFormatStandardName();
-      InterviewVariable docTypeVar =
-          collector.requestVar(
-              "document_type",
-              documentType.helptext + " " + documentType.validationmessage,
-              "choices",
-              docTypes.stream().map(dt -> dt.code).collect(Collectors.toList()),
-              Optional.of(docTypeStr));
-      if (documentType.isrequired) {
-        if (docTypeStr.isBlank()) {
-          collector.addRequired(docTypeVar);
-        }
-
-        Optional<DocumentTypeTableRow> code =
-            docTypes.stream().filter(d -> d.code.equals(docTypeStr)).findFirst();
-        if (code.isEmpty()) {
-          collector.addWrong(docTypeVar);
-        } else {
-          attachment.setBinaryFormatStandardName(Ecf4Helper.convertText(code.get().code));
-        }
-      }
-    }
+    fa.getDocumentTypeFormatStandardName()
+        .ifPresent(
+            code -> {
+              attachment.setBinaryFormatStandardName(Ecf4Helper.convertText(code.code));
+            });
 
     // log.info("Filing code: {} {}: {}///////{}", filing.code, filing.name, docType, attachment);
     // TODO(#62): DO this: make the file downloadable from the Proxy server
