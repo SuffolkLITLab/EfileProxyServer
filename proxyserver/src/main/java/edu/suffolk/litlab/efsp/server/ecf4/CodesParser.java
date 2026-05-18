@@ -4,10 +4,12 @@ import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -64,6 +66,11 @@ public interface CodesParser {
 
   public Result<List<OptionalService>, List<CodeError>> vetOptionalServices(
       List<InputOptionalService> servs, Optional<FilingCode> filing);
+
+  public List<FilingComponent> retrieveFilingComponents(Optional<FilingCode> filingCode);
+
+  public Result<FilingComponent, CodeError> vetFilingComponent(
+      String filingComponent, ArrayList<FilingComponent> components);
 
   public Result<String, TextVarError> vetFirstName(Optional<String> name);
 

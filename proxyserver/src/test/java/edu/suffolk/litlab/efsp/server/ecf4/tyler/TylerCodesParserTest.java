@@ -13,6 +13,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CrossReference;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.model.OptionalService;
@@ -25,6 +26,7 @@ import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.TooLongVar;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.WrongRefVal;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -479,5 +481,18 @@ public class TylerCodesParserTest {
                   opt.equals(
                       new OptionalService(optServMultCode, Optional.of(3), Optional.empty())));
     }
+  }
+
+  FilingComponent component =
+      new FilingComponent("333", "Test Filing Component", "", false, false, 0, "", "01");
+
+  @Test
+  public void testFilingComponents() {
+    var components = new ArrayList<FilingComponent>();
+    components.add(component);
+    var res = parser.vetFilingComponent("333", components);
+    assertThat(res).containsOk(component);
+    var resAgain = parser.vetFilingComponent("333", components);
+    assertThat(resAgain).containsErr(new NoMatchingCode("333", List.of()));
   }
 }

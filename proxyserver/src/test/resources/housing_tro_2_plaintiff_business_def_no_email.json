@@ -304,6 +304,7 @@
                 },
                 "title": "Housing Temporary Restraining Order",
                 "filename": "housing_tro",
+                "filing_component": "1234",
                 "data_url": "https://www.adobe.com/support/products/enterprise/knowledgecenter/media/c4611_sample_explain.pdf",
                 "proxy_enabled": true
             }
@@ -314,6 +315,5 @@
     "Housing_Temporary_Restraining_Order0002_preview_question": true,
     "signature_fields": [
         "users[0].signature"
-    ],
-    "efile_case_category": "CivilCase"
+    ]
 }

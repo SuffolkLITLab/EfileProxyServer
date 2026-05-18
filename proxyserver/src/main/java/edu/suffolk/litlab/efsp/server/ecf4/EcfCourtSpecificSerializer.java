@@ -665,27 +665,12 @@ public class EcfCourtSpecificSerializer {
 
     // The document itself
     DocumentRenditionMetadataType renditionMetadata = ecfOf.createDocumentRenditionMetadataType();
-    int seqNum = 0;
-    List<FilingComponent> components = cd.getFilingComponents(this.court.code, filing.code);
-    if (components.isEmpty()) {
-      InterviewVariable filingComponentVar =
-          collector.requestVar(
-              "filing_component",
-              "The filing component: Lead or Attachment (nothing there with filing "
-                  + filing.code
-                  + ")",
-              "text");
-      collector.addRequired(filingComponentVar);
-      if (collector.finished()) {
-        throw FilingError.missingRequired(filingComponentVar);
-      }
-    }
     int idx = 0;
     for (var attachment : doc.getFilingAttachments()) {
       collector.pushAttributeStack(".elements[" + idx + "]");
       renditionMetadata
           .getDocumentAttachment()
-          .add(attachmentToXml(attachment, filing, components, miscInfo, collector, seqNum));
+          .add(attachmentToXml(attachment, filing, miscInfo, collector, idx));
       collector.popAttributeStack();
       idx += 1;
     }
@@ -719,7 +704,6 @@ public class EcfCourtSpecificSerializer {
   private DocumentAttachmentType attachmentToXml(
       FilingAttachment fa,
       FilingCode filing,
-      List<FilingComponent> components,
       JsonNode miscInfo,
       InfoCollector collector,
       int seqNum)
@@ -727,38 +711,9 @@ public class EcfCourtSpecificSerializer {
     // TODO(brycew-later): what should this actually be? Very unclear
     DocumentAttachmentType attachment = ecfOf.createDocumentAttachmentType();
     attachment.setBinaryDescriptionText(Ecf4Helper.convertText(fa.getDocumentDescription()));
+    FilingComponent filt = fa.getFilingComponent();
 
-    InterviewVariable var =
-        collector.requestVar(
-            "filing_component",
-            "Filing component: Lead or attachment",
-            "text",
-            List.of(),
-            Optional.of(fa.getFilingComponent()));
-    if (components.isEmpty()) {
-      log.error(
-          "Filing Components List is empty! There are no other documents that can be added!"
-              + " Stopping at {}",
-          fa.getFileName());
-      collector.addRequired(var);
-    }
-
-    Optional<FilingComponent> filtered =
-        components.stream()
-            .filter(c -> c.code.equalsIgnoreCase(fa.getFilingComponent()))
-            .findFirst();
-    if (filtered.isEmpty()) {
-      log.error("Filing Components ({}) don't match `{}`.", components, fa.getFilingComponent());
-      collector.addRequired(var);
-    }
-
-    FilingComponent filt =
-        filtered.orElse(new FilingComponent("NO CODE", "NOT PRESENT", "", false, false, 0, "", ""));
     attachment.setBinaryCategoryText(Ecf4Helper.convertText(filt.code));
-    if (!filt.allowmultiple) {
-      components.remove(filt);
-    }
-
     // Literally should just be if it's confidential or not. (or "Hot fix" or public).
     // Search options in "documenttype" table with location
     DataFieldRow documentType = allDataFields.getFieldRow("DocumentType");

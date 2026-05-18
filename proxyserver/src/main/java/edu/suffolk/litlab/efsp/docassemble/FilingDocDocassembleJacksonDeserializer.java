@@ -12,6 +12,7 @@ import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.model.FilingAction;
 import edu.suffolk.litlab.efsp.model.FilingAttachment;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
@@ -163,7 +164,7 @@ public class FilingDocDocassembleJacksonDeserializer {
                   return PartyId.Already(fp);
                 })
             .collect(Collectors.toList());
-
+    var components = new ArrayList<FilingComponent>(parser.retrieveFilingComponents(filingType));
     fj.data.List<FilingAttachment> attachments = fj.data.List.nil();
     if (node.has("tyler_merge_attachments")
         && node.get("tyler_merge_attachments").asBoolean(false)) {
@@ -177,7 +178,7 @@ public class FilingDocDocassembleJacksonDeserializer {
         int idx = 0;
         for (var attachNode : nodes) {
           collector.pushAttributeStack(".elements[" + idx + "]");
-          var maybeAttachment = getAttachment(attachNode, collector);
+          var maybeAttachment = getAttachment(attachNode, components, parser, collector);
           if (maybeAttachment.isPresent()) {
             attachments = attachments.snoc(maybeAttachment.get());
           }
@@ -188,7 +189,7 @@ public class FilingDocDocassembleJacksonDeserializer {
     }
     if (attachments.isEmpty()) {
       log.info("No attachments present in {}", _logName);
-      Optional<FilingAttachment> attachment = getAttachment(node, collector);
+      Optional<FilingAttachment> attachment = getAttachment(node, components, parser, collector);
       if (attachment.isPresent()) {
         attachments = fj.data.List.single(attachment.get());
       }
@@ -221,10 +222,28 @@ public class FilingDocDocassembleJacksonDeserializer {
             sequenceNum));
   }
 
-  private static Optional<FilingAttachment> getAttachment(JsonNode node, InfoCollector collector)
+  private static Optional<FilingAttachment> getAttachment(
+      JsonNode node,
+      ArrayList<FilingComponent> components,
+      CodesParser parser,
+      InfoCollector collector)
       throws FilingError {
     String documentTypeFormatName = getStringDefault(node, "document_type", "");
     String filingComponentCode = getStringDefault(node, "filing_component", "");
+    var componentRes = parser.vetFilingComponent(filingComponentCode, components);
+    var componentBuilder =
+        collector
+            .varBuilder()
+            .name("filing_component")
+            .description("Filing component: Lead or attachment");
+    if (componentRes.isErr()) {
+      var componentVar = collector.addCodeError(componentRes.expectErr(""), componentBuilder);
+      // I don't care, throw.
+      throw FilingError.wrongValue(componentVar);
+    }
+    // TODO: use this default fallback?
+    // new FilingComponent("NO CODE", "NOT PRESENT", "", false, false, 0, "", "");
+    var filingComponent = componentRes.expect("");
     JsonNode filenameNode = node.get("filename");
     if (filenameNode == null || !filenameNode.isTextual()) {
       InterviewVariable nameVar =
@@ -277,7 +296,7 @@ public class FilingDocDocassembleJacksonDeserializer {
               fileName,
               (inStream != null) ? inStream.readAllBytes() : new byte[0],
               documentTypeFormatName,
-              filingComponentCode,
+              filingComponent,
               documentDescription));
     } catch (MalformedURLException ex) {
       FilingError err =

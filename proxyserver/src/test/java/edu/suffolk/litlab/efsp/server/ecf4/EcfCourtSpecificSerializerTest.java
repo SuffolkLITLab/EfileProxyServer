@@ -23,6 +23,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
 import edu.suffolk.litlab.efsp.model.Name;
@@ -71,6 +72,8 @@ public class EcfCourtSpecificSerializerTest {
     when(cd.getLanguageNames("not_real")).thenReturn(List.of("English", "Polish", "Spanish"));
     when(cd.getAllowedFileTypes("not_real"))
         .thenReturn(List.of(new FileType("PDF", "pdf", ".pdf", "not_real")));
+    when(cd.getFilingComponents("not_real", "6553"))
+        .thenReturn(List.of(new FilingComponent("332", "", "", false, true, 0, "", "")));
     when(cd.getDataFields(eq("not_real")))
         .thenReturn(
             new DataFields(
@@ -217,7 +220,7 @@ public class EcfCourtSpecificSerializerTest {
 
     var varToPartyId = Map.of("users[0]", PartyId.CurrentFilingNew("abc"));
     JsonNode node = readFile("one_attachment.json");
-    var parser = new TylerCodesParser(cd, new CourtLocationInfo("adams"), new DataFields());
+    var parser = new TylerCodesParser(cd, new CourtLocationInfo("not_real"), new DataFields());
     var doc =
         FilingDocDocassembleJacksonDeserializer.fromNode(
             node, varToPartyId, 2, List.of(filing), parser, collector);

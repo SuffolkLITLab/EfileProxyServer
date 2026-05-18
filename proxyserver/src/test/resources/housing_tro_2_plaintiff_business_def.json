@@ -170,6 +170,7 @@
                 "data_url": "https://www.adobe.com/support/products/enterprise/knowledgecenter/media/c4611_sample_explain.pdf",
                 "title": "Housing Temporary Restraining Order",
                 "filename": "housing_tro",
+                "filing_component": "332",
                 "proxy_enabled": true
             }
         ],
