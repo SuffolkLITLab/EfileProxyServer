@@ -14,6 +14,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
@@ -54,7 +55,11 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     collector = new FailFastCollector();
     varToPartyId = Map.of("users[0]", PartyId.CurrentFilingNew("abc"));
     CodeDatabase cd = mock(CodeDatabase.class);
-    when(cd.getOptionalServices("adams", "6553")).thenReturn(List.of(new OptionalServiceCode("1234", null, 0, null, null, false, null, true, null)));
+    when(cd.getOptionalServices("adams", "6553"))
+        .thenReturn(
+            List.of(new OptionalServiceCode("1234", null, 0, null, null, false, null, true, null)));
+    when(cd.getFilingComponents("adams", "6553"))
+        .thenReturn(List.of(new FilingComponent("332", null, null, false, true, 0, null, null)));
     var dataFields = new DataFields();
     parser = new TylerCodesParser(cd, new CourtLocationInfo("adams"), dataFields);
   }

@@ -1,8 +1,10 @@
 package edu.suffolk.litlab.efsp.model;
 
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
+
 /** An individual PDF, all a part of the same "document". The equivalent of an ALDocument. */
 public class FilingAttachment {
-  private final String filingComponentCode;
+  private final FilingComponent filingComponentCode;
   // For the setBinaryDescriptionText
   private final String documentDescription;
   private final String fileName;
@@ -18,7 +20,7 @@ public class FilingAttachment {
       String fileName,
       byte[] fileStream,
       String documentTypeFormatStandardName,
-      String filingComponentCode,
+      FilingComponent filingComponentCode,
       String documentDescription) {
     this.filingComponentCode = filingComponentCode;
     this.fileName = fileName;
@@ -35,7 +37,7 @@ public class FilingAttachment {
     return fileName;
   }
 
-  public String getFilingComponent() {
+  public FilingComponent getFilingComponent() {
     return filingComponentCode;
   }
 

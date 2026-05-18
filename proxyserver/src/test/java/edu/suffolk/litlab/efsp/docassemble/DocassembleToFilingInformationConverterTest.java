@@ -16,6 +16,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.Person;
@@ -61,8 +62,12 @@ public class DocassembleToFilingInformationConverterTest {
     when(cd.getCaseCategoriesFor("01")).thenReturn(List.of(exampleCategory));
     when(cd.getCaseCategoryWithCode("01", "123987")).thenReturn(Optional.of(exampleCategory));
     when(cd.getCaseTypesFor("01", "123987", Optional.empty())).thenReturn(List.of(exampleCaseType));
-    when(cd.getFilingType("01", "123987", "456098", true)).thenReturn(List.of(exampleFilingType));
-    when(cd.getFilingType("01", "123987", "456098", false)).thenReturn(List.of(exampleFilingType));
+    when(cd.getFilingType("01", "123987", exampleCaseType.code, true))
+        .thenReturn(List.of(exampleFilingType));
+    when(cd.getFilingType("01", "123987", exampleCaseType.code, false))
+        .thenReturn(List.of(exampleFilingType));
+    when(cd.getFilingComponents("01", exampleFilingType.code))
+        .thenReturn(List.of(new FilingComponent("332", null, null, false, false, 0, null, null)));
     when(cd.getDataFields("01"))
         .thenReturn(
             new DataFields(

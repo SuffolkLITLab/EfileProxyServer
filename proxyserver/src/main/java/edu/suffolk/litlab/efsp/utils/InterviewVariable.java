@@ -85,7 +85,7 @@ public class InterviewVariable {
     sb.append("[InterviewVariable: ");
     sb.append("name: `").append(name).append("`, ");
     sb.append("description: `").append(description).append("`, ");
-    sb.append("datatype: `").append(datatype).append(", ");
+    sb.append("datatype: `").append(datatype).append("`, ");
     sb.append("choices: `").append(choices).append("`, ");
     sb.append("currentVal: `").append(currentVal).append("]");
     return sb.toString();

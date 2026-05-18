@@ -9,6 +9,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CrossReference;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.model.OptionalService;
@@ -334,6 +335,39 @@ public class TylerCodesParser implements CodesParser {
       return Result.ok(opts);
     }
     return Result.err(errs);
+  }
+
+  public List<FilingComponent> retrieveFilingComponents(Optional<FilingCode> filingCode) {
+    return filingCode.map(fc -> cd.getFilingComponents(this.court.code, fc.code)).orElse(List.of());
+  }
+
+  /**
+   * NOTE: modifies the components list, removing the selected component if allowmultiple is false.
+   *
+   * @param filingComponent
+   * @param components
+   * @param collector
+   * @return
+   */
+  public Result<FilingComponent, CodeError> vetFilingComponent(
+      String filingComponent, ArrayList<FilingComponent> components) {
+    if (components.isEmpty()) {
+      log.error("Filing Components are empty! There are no other documents that can be added!");
+      return Result.err(new NoMatchingCode(filingComponent, List.of()));
+    }
+
+    Optional<FilingComponent> filtered =
+        components.stream().filter(c -> c.code.equalsIgnoreCase(filingComponent)).findFirst();
+    if (filtered.isEmpty()) {
+      log.error("Filing Components (" + components + ") don't match \"" + filingComponent + "\".");
+      return Result.err(
+          new NoMatchingCode(filingComponent, components.stream().map(c -> c.code).toList()));
+    }
+    var filt = filtered.get();
+    if (!filt.allowmultiple) {
+      components.remove(filt);
+    }
+    return Result.ok(filt);
   }
 
   /**

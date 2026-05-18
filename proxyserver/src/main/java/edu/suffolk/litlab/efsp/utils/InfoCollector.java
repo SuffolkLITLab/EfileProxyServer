@@ -99,7 +99,11 @@ public abstract class InfoCollector {
     switch (err) {
       case NoMatchingCode noMatch -> {
         var interviewVar =
-            varBuilder.currentVal(noMatch.given()).choices(noMatch.options()).build();
+            varBuilder
+                .appendDesc(": no match found")
+                .currentVal(noMatch.given())
+                .choices(noMatch.options())
+                .build();
         addWrong(interviewVar);
         return interviewVar;
       }
