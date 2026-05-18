@@ -10,8 +10,11 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
+import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.utils.FilingError;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -274,6 +277,63 @@ public class TylerCodesParser implements CodesParser {
           new RequiredCodeNotPresent(motionTypes.stream().map(m -> m.getCode()).toList()));
     }
     return Result.ok(Optional.empty());
+  }
+
+  /**
+   * Checks all of the optional services in one go. Can't return OptionalServiceCode, since it
+   * doesn't have the selected multiplier / fee amount.
+   */
+  public Result<List<OptionalService>, List<CodeError>> vetOptionalServices(
+      List<InputOptionalService> servs, Optional<FilingCode> filing) {
+    if (servs.isEmpty()) {
+      return Result.ok(List.of());
+    }
+
+    if (filing.isEmpty()) {
+      return Result.err(
+          List.of(
+              new BadCode(
+                  FilingError.malformedInterview(
+                      "Need to use filing code if you have optional services"))));
+    }
+
+    List<OptionalServiceCode> codes = cd.getOptionalServices(this.court.code, filing.get().code);
+    Map<String, OptionalServiceCode> codeMap =
+        codes.stream().collect(Collectors.toMap(sv -> sv.code, sv -> sv));
+    List<CodeError> errs = new ArrayList<>();
+    List<OptionalService> opts = new ArrayList<>();
+    for (var serv : servs) {
+      if (!codeMap.containsKey(serv.code())) {
+        errs.add(new NoMatchingCode(serv.code(), codeMap.keySet().stream().toList()));
+        continue;
+      }
+      OptionalServiceCode codeSettings = codeMap.get(serv.code());
+      if (codeSettings.hasfeeprompt && serv.feeAmount().isEmpty()) {
+        var err =
+            FilingError.malformedInterview(
+                "Optional service " + serv.code() + " needs a fee amount.");
+        errs.add(new BadCode(err));
+      }
+      if (!codeSettings.hasfeeprompt && serv.feeAmount().isPresent()) {
+        var err =
+            FilingError.malformedInterview(
+                "Optional service "
+                    + serv.code()
+                    + " doesn't support a fee amount, which was given.");
+        errs.add(new BadCode(err));
+      }
+      if (codeSettings.multiplier == true && serv.multiplier().isEmpty()) {
+        var err =
+            FilingError.malformedInterview(
+                "Optional service " + serv.code() + " needs a multiplier");
+        errs.add(new BadCode(err));
+      }
+      opts.add(new OptionalService(codeSettings, serv.multiplier(), serv.feeAmount()));
+    }
+    if (errs.isEmpty()) {
+      return Result.ok(opts);
+    }
+    return Result.err(errs);
   }
 
   /**

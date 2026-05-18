@@ -45,7 +45,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.DocumentTypeTableRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
 import edu.suffolk.litlab.efsp.model.Address;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
@@ -652,44 +651,16 @@ public class EcfCourtSpecificSerializer {
       docType.setFilingAction(act);
     }
 
-    if (!doc.getOptionalServices().isEmpty()) {
-      List<OptionalServiceCode> codes = cd.getOptionalServices(this.court.code, filing.code);
-      var codeMap = new HashMap<String, OptionalServiceCode>();
-      codes.stream().forEach(sv -> codeMap.put(sv.code, sv));
-      int i = 0;
-      for (OptionalService serv : doc.getOptionalServices()) {
-        DocumentOptionalServiceType xmlServ = tylerObjFac.createDocumentOptionalServiceType();
-        InterviewVariable servVar =
-            collector.requestVar(
-                "optional_services[" + i + "]",
-                "things the court can do",
-                "",
-                List.of(),
-                Optional.of(serv.code));
-        if (!codeMap.containsKey(serv.code)) {
-          collector.addWrong(servVar);
-        }
-        xmlServ.setIdentificationID(Ecf4Helper.convertString(serv.code));
-        OptionalServiceCode codeSettings = codeMap.get(serv.code);
-        if (codeSettings.hasfeeprompt) {
-          if (serv.feeAmount.isEmpty()) {
-            collector.addWrong(servVar.appendDesc(": needs fee prompt"));
-          } else {
-            xmlServ.setFeeAmount(Ecf4Helper.convertDecimal(serv.feeAmount.get()));
-          }
-        }
-        if (!codeSettings.hasfeeprompt && serv.feeAmount.isPresent()) {
-          collector.addWrong(servVar.appendDesc(": doesn't need fee prompt"));
-        }
-        if (codeSettings.multiplier == true) {
-          if (serv.multiplier.isEmpty()) {
-            collector.addWrong(servVar.appendDesc(": needs multiplier"));
-          } else {
-            xmlServ.setMultiplier(Ecf4Helper.convertDecimal(serv.multiplier.get()));
-          }
-        }
-        docType.getDocumentOptionalService().add(xmlServ);
+    for (OptionalService serv : doc.getOptionalServices()) {
+      DocumentOptionalServiceType xmlServ = tylerObjFac.createDocumentOptionalServiceType();
+      xmlServ.setIdentificationID(Ecf4Helper.convertString(serv.code().code));
+      if (serv.feeAmount().isPresent()) {
+        xmlServ.setFeeAmount(Ecf4Helper.convertDecimal(serv.feeAmount().get()));
       }
+      if (serv.multiplier().isPresent()) {
+        xmlServ.setMultiplier(Ecf4Helper.convertDecimal(serv.multiplier().get()));
+      }
+      docType.getDocumentOptionalService().add(xmlServ);
     }
 
     // The document itself

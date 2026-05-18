@@ -18,6 +18,7 @@ import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.InputOptionalService;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
@@ -66,16 +67,16 @@ public class FilingDocDocassembleJacksonDeserializer {
       return Optional.empty();
     }
     Optional<String> filingStr = JsonHelpers.getStringMember(node, "filing_type");
-    var res = parser.vetFilingType(filingStr, filingOptions);
+    var filingRes = parser.vetFilingType(filingStr, filingOptions);
     var name = (node.has("instanceName")) ? node.get("instanceName").asText("?") : "?";
-    var varBuilder =
+    var filingBuilder =
         collector.varBuilder().name("filing_type").description("What filing type is this?" + name);
-    if (res.isErr()) {
-      collector.addCodeError(res.unwrapErrOrElseThrow(), varBuilder);
-    } else if (res.unwrapOrElseThrow().isEmpty()) {
-      collector.addOptional(varBuilder.build());
+    if (filingRes.isErr()) {
+      collector.addCodeError(filingRes.unwrapErrOrElseThrow(), filingBuilder);
+    } else if (filingRes.unwrapOrElseThrow().isEmpty()) {
+      collector.addOptional(filingBuilder.build());
     }
-    var filingType = res.unwrapOrElseThrow();
+    var filingType = filingRes.unwrapOrElseThrow();
 
     Optional<String> motionName = getStringMember(node, "motion_type");
     var motionBuilder = collector.varBuilder().name("motion_type").description("(optional)");
@@ -85,20 +86,32 @@ public class FilingDocDocassembleJacksonDeserializer {
     }
     var motionCode = motionRes.expect("");
 
-    List<OptionalService> optServices = new ArrayList<OptionalService>();
+    List<OptionalService> optServices = new ArrayList<>();
     Optional<JsonNode> maybeOptServs = JsonHelpers.unwrapDAList(node.get("optional_services"));
-    maybeOptServs.ifPresent(
-        optServs -> {
-          optServs
-              .elements()
-              .forEachRemaining(
-                  optServ -> {
-                    String code = optServ.get("code").asText();
-                    Optional<Integer> mult = getIntMember(optServ, "multiplier");
-                    Optional<BigDecimal> fee = getNumberMember(optServ, "fee_amount");
-                    optServices.add(new OptionalService(code, mult, fee));
-                  });
-        });
+    if (maybeOptServs.isPresent()) {
+      var optServs = maybeOptServs.get();
+      List<InputOptionalService> inputOpts = new ArrayList<>();
+      optServs
+          .elements()
+          .forEachRemaining(
+              optServ -> {
+                String code = optServ.get("code").asText();
+                Optional<Integer> mult = getIntMember(optServ, "multiplier");
+                Optional<BigDecimal> fee = getNumberMember(optServ, "fee_amount");
+                inputOpts.add(new InputOptionalService(code, mult, fee));
+              });
+      var res = parser.vetOptionalServices(inputOpts, filingType);
+      if (res.isErr()) {
+        var varBuilder = collector.varBuilder().name("optional_services");
+        var errors = res.expectErr("");
+        for (var error : errors) {
+          collector.addCodeError(error, varBuilder);
+        }
+      } else {
+        optServices = res.expect("");
+      }
+    }
+
     JsonNode jsonDueDate = node.get("due_date");
     Optional<LocalDate> maybeDueDate = Optional.empty();
     if (jsonDueDate != null && jsonDueDate.isTextual()) {

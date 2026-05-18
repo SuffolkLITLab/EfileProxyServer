@@ -4,6 +4,7 @@ import static edu.suffolk.litlab.efsp.docassemble.FilingDocDocassembleJacksonDes
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -13,6 +14,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
@@ -52,6 +54,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     collector = new FailFastCollector();
     varToPartyId = Map.of("users[0]", PartyId.CurrentFilingNew("abc"));
     CodeDatabase cd = mock(CodeDatabase.class);
+    when(cd.getOptionalServices("adams", "6553")).thenReturn(List.of(new OptionalServiceCode("1234", null, 0, null, null, false, null, true, null)));
     var dataFields = new DataFields();
     parser = new TylerCodesParser(cd, new CourtLocationInfo("adams"), dataFields);
   }
@@ -203,7 +206,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     assertThat(doc).isPresent();
     var optionalServices = doc.get().getOptionalServices();
     assertThat(optionalServices).hasSize(1);
-    assertThat(optionalServices.get(0).feeAmount).contains(new BigDecimal("12.54"));
+    assertThat(optionalServices.get(0).feeAmount()).contains(new BigDecimal("12.54"));
   }
 
   @Test
