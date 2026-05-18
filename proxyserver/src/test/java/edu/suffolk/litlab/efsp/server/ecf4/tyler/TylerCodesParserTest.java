@@ -14,6 +14,8 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
+import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.BadCode;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.NoMatchingCode;
@@ -22,6 +24,7 @@ import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.RequiredCodeNotPresent;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.TooLongVar;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.WrongRefVal;
 import edu.suffolk.litlab.efsp.utils.FilingError;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -358,6 +361,123 @@ public class TylerCodesParserTest {
           .thenReturn(List.of(new NameAndCode("idk", "1234")));
       var res = parser.vetMotionCode(Optional.of("1234"), Optional.of(filingCode));
       assertThat(res).containsOk(Optional.of(new NameAndCode("idk", "1234")));
+    }
+  }
+
+  @Nested
+  class OptionalServiceTests {
+
+    OptionalServiceCode optServCode =
+        new OptionalServiceCode(
+            "9876", "Optional but really required", 0, "10", null, false, null, false, null);
+    OptionalServiceCode optServFeeCode =
+        new OptionalServiceCode(
+            "9877",
+            "Optional but really required",
+            0,
+            "10",
+            null,
+            false,
+            null,
+            true,
+            "fee prompt text");
+    OptionalServiceCode optServMultCode =
+        new OptionalServiceCode(
+            "9878", "Optional but really required", 0, "10", null, true, null, false, null);
+
+    @BeforeEach
+    public void setup() {
+      when(cd.getOptionalServices("01", filingCode.code))
+          .thenReturn(List.of(optServCode, optServFeeCode, optServMultCode));
+    }
+
+    @Test
+    public void testNoOptServs() {
+      var res = parser.vetOptionalServices(List.of(), Optional.empty());
+      assertThat(res).containsOk(List.of());
+      var res2 = parser.vetOptionalServices(List.of(), Optional.of(filingCode));
+      assertThat(res2).containsOk(List.of());
+    }
+
+    @Test
+    public void testOptServsNoFilingCode() {
+      var res =
+          parser.vetOptionalServices(
+              List.of(
+                  new CodesParser.InputOptionalService(null, Optional.empty(), Optional.empty())),
+              Optional.empty());
+      assertThat(res).isErr();
+    }
+
+    @Test
+    public void testOptServsNoMatch() {
+      var res =
+          parser.vetOptionalServices(
+              List.of(
+                  new CodesParser.InputOptionalService("2233", Optional.empty(), Optional.empty())),
+              Optional.of(filingCode));
+      assertThat(res).isErr();
+      var errs = res.expectErr("");
+      assertThat(errs).hasSize(1).allMatch(err -> err instanceof NoMatchingCode);
+    }
+
+    @Test
+    public void testOptServsFeeWrong() {
+      var res =
+          parser.vetOptionalServices(
+              List.of(
+                  new CodesParser.InputOptionalService("9877", Optional.empty(), Optional.empty())),
+              Optional.of(filingCode));
+      assertThat(res).isErr();
+      var errs = res.expectErr("");
+      assertThat(errs).hasSize(1).allMatch(err -> err instanceof BadCode);
+    }
+
+    @Test
+    public void testOptServsFeeRight() {
+      var res =
+          parser.vetOptionalServices(
+              List.of(
+                  new CodesParser.InputOptionalService(
+                      "9877", Optional.empty(), Optional.of(new BigDecimal(13)))),
+              Optional.of(filingCode));
+      assertThat(res).isOk();
+      var list = res.expect("");
+      assertThat(list)
+          .hasSize(1)
+          .allMatch(
+              opt ->
+                  opt.equals(
+                      new OptionalService(
+                          optServFeeCode, Optional.empty(), Optional.of(new BigDecimal(13)))));
+    }
+
+    @Test
+    public void testOptServsMultWrong() {
+      var res =
+          parser.vetOptionalServices(
+              List.of(
+                  new CodesParser.InputOptionalService("9878", Optional.empty(), Optional.empty())),
+              Optional.of(filingCode));
+      assertThat(res).isErr();
+      var errs = res.expectErr("");
+      assertThat(errs).hasSize(1).allMatch(err -> err instanceof BadCode);
+    }
+
+    @Test
+    public void testOptServsMultRight() {
+      var res =
+          parser.vetOptionalServices(
+              List.of(
+                  new CodesParser.InputOptionalService("9878", Optional.of(3), Optional.empty())),
+              Optional.of(filingCode));
+      assertThat(res).isOk();
+      var list = res.expect("");
+      assertThat(list)
+          .allMatch(
+              opt ->
+                  opt.equals(
+                      new OptionalService(optServMultCode, Optional.of(3), Optional.empty())));
     }
   }
 }

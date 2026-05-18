@@ -5,7 +5,9 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
+import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.utils.FilingError;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,6 +58,12 @@ public interface CodesParser {
 
   public Result<Optional<NameAndCode>, CodeError> vetMotionCode(
       Optional<String> motionCode, Optional<FilingCode> filing);
+
+  public record InputOptionalService(
+      String code, Optional<Integer> multiplier, Optional<BigDecimal> feeAmount) {}
+
+  public Result<List<OptionalService>, List<CodeError>> vetOptionalServices(
+      List<InputOptionalService> servs, Optional<FilingCode> filing);
 
   public Result<String, TextVarError> vetFirstName(Optional<String> name);
 
