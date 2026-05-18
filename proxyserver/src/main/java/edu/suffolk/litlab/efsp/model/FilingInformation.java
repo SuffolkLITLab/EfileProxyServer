@@ -59,6 +59,7 @@ public class FilingInformation {
   private CaseType caseTypeCode;
   private Optional<NameAndCode> caseSubtypeCode;
   private Optional<NameAndCode> procedureRemedy;
+  private Optional<NameAndCode> damageAmount;
   private Map<String, String> crossRefs;
   private String paymentId;
   private List<FilingDoc> filingDocs = List.of();
@@ -170,6 +171,10 @@ public class FilingInformation {
     return procedureRemedy;
   }
 
+  public Optional<NameAndCode> getDamageAmount() {
+    return damageAmount;
+  }
+
   public Map<String, String> getCrossRefs() {
     return crossRefs;
   }
@@ -252,6 +257,10 @@ public class FilingInformation {
 
   public void setProcedureRemedy(Optional<NameAndCode> procedureRemedy) {
     this.procedureRemedy = procedureRemedy;
+  }
+
+  public void setDamageAmount(Optional<NameAndCode> damageAmount) {
+    this.damageAmount = damageAmount;
   }
 
   public void setCrossRefs(Map<String, String> crossRefs) {
