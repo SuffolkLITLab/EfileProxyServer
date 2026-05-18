@@ -76,6 +76,9 @@ public interface CodesParser {
   public Result<Optional<DocumentTypeTableRow>, CodeError> vetDocType(
       String docTypeStr, FilingCode filing);
 
+  public Result<Optional<NameAndCode>, CodeError> vetDamageAmount(
+      boolean initial, CaseCategory cat, Optional<String> maybeDamageAmount);
+
   public Result<Optional<NameAndCode>, CodeError> vetProcedureRemedy(
       Optional<String> maybeProRem, boolean initial, CaseCategory cat);
 

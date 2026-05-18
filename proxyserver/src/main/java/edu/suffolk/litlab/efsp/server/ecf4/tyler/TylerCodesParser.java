@@ -434,6 +434,46 @@ public class TylerCodesParser implements CodesParser {
     return Result.ok(Optional.empty());
   }
 
+  public Result<Optional<NameAndCode>, CodeError> vetDamageAmount(
+      boolean initial, CaseCategory cat, Optional<String> maybeDamageAmount) {
+    String courtLocationId = this.court.code;
+    DataFieldRow damageConfig = allDataFields.getFieldRow("DamageAmount");
+    String damgBehavior = (initial) ? cat.damageamountinitial : cat.damageamountsubsequent;
+    if (!damgBehavior.isEmpty() && !damgBehavior.equals("Not Available")) {
+      damageConfig =
+          allDataFields.getFieldRow(
+              "CivilCaseDamageAmount" + ((initial) ? "Initial" : "Subsequent"));
+    }
+
+    List<NameAndCode> damageAmounts = cd.getDamageAmount(courtLocationId, cat.getCode());
+    if (maybeDamageAmount.isEmpty()) {
+      if (damageConfig.isrequired) {
+        return Result.err(
+            new RequiredCodeNotPresent(damageAmounts.stream().map(da -> da.getCode()).toList()));
+      } else {
+        return Result.ok(Optional.empty());
+      }
+    }
+    String damageAmountCode = maybeDamageAmount.get();
+    if (damageConfig.isvisible) {
+      Optional<NameAndCode> maybeDmg =
+          damageAmounts.stream().filter(nac -> nac.getName().equals(damageAmountCode)).findFirst();
+      if (maybeDmg.isPresent()) {
+        return Result.ok(maybeDmg);
+      } else {
+        return Result.err(
+            new NoMatchingCode(
+                damageAmountCode, damageAmounts.stream().map(da -> da.getCode()).toList()));
+      }
+    } else {
+      log.info(
+          "Dropping damage_amount {}, since isvisible is false for {}",
+          damageAmountCode,
+          courtLocationId);
+      return Result.ok(Optional.empty());
+    }
+  }
+
   /**
    * Doesn't return optional because we can set the People names to null / blank.
    *

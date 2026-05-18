@@ -375,6 +375,16 @@ public class FilingInformationDocassembleJacksonDeserializer
       entities.setProcedureRemedy(procRemRes.expect(""));
     }
 
+    /// Damage Amount
+    var damageAmountRes =
+        parser.vetDamageAmount(isInitialFiling, caseCat, getStringMember(node, "damage_amount"));
+    if (damageAmountRes.isErr()) {
+      var damageAmountBuilder = collector.varBuilder().name("damage_amount");
+      collector.addCodeError(damageAmountRes.expectErr(""), damageAmountBuilder);
+    } else {
+      entities.setDamageAmount(damageAmountRes.expect(""));
+    }
+
     entities.setReturnDate(extractReturnDate(node.get("return_date"), collector));
     entities.setMiscInfo(node);
 

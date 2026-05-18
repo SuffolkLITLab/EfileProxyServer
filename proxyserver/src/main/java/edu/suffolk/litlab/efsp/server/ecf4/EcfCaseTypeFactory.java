@@ -22,7 +22,6 @@ import ecf4.latest.tyler.ecf.extensions.common.OrganizationIdentificationType;
 import ecf4.latest.tyler.ecf.extensions.common.ProcedureRemedyType;
 import ecf4.latest.tyler.ecf.extensions.common.ServicePartyDataType;
 import edu.suffolk.litlab.efsp.Jurisdiction;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
@@ -630,14 +629,16 @@ public class EcfCaseTypeFactory {
     }
 
     Optional<ProcedureRemedyType> resPlus =
-        addDamageAmountType(
-            makeProcedureRemedyType(info.getProcedureRemedy()),
-            isInitialFiling,
-            comboCodes.cat,
-            courtLocation.code,
-            miscInfo,
-            collector,
-            serializer);
+        makeProcedureRemedyType(info.getProcedureRemedy())
+            .map(
+                pr -> {
+                  info.getDamageAmount()
+                      .ifPresent(
+                          da -> {
+                            pr.setDamageAmountCode(Ecf4Helper.convertText(da.getCode()));
+                          });
+                  return pr;
+                });
     if (resPlus.isPresent()) {
       ecfAug.setProcedureRemedy(resPlus.get());
     }
@@ -714,66 +715,6 @@ public class EcfCaseTypeFactory {
           type.getRemedyCode().add(Ecf4Helper.convertText(code.getCode()));
           return type;
         });
-  }
-
-  private Optional<ProcedureRemedyType> addDamageAmountType(
-      Optional<ProcedureRemedyType> existingType,
-      boolean initial,
-      CaseCategory cat,
-      String courtLocationId,
-      JsonNode miscInfo,
-      InfoCollector collector,
-      EcfCourtSpecificSerializer serializer)
-      throws SQLException, FilingError {
-    List<NameAndCode> damageAmounts = cd.getDamageAmount(courtLocationId, cat.getCode());
-    DataFieldRow damageConfig = cd.getDataField(courtLocationId, "DamageAmount");
-    String damgBehavior = (initial) ? cat.damageamountinitial : cat.damageamountsubsequent;
-    if (!damgBehavior.isEmpty() && !damgBehavior.equals("Not Available")) {
-      damageConfig =
-          serializer.allDataFields.getFieldRow(
-              "CivilCaseDamageAmount" + ((initial) ? "Initial" : "Subsequent"));
-    }
-    JsonNode jsonDmg = miscInfo.get("damage_amount");
-    InterviewVariable docVar;
-    if (damageAmounts.isEmpty()) {
-      docVar = collector.requestVar("procedure_remedy", "Procedure Remedy", "text");
-    } else {
-      docVar =
-          collector.requestVar(
-              "procedure_remedy",
-              "Procedure Remedy",
-              "choices",
-              damageAmounts.stream().map(nac -> nac.getName()).collect(Collectors.toList()),
-              Optional.ofNullable(jsonDmg).map(JsonNode::toString));
-    }
-    if (jsonDmg != null && !jsonDmg.isNull() && jsonDmg.isTextual()) {
-      if (damageConfig.isvisible) {
-        Optional<NameAndCode> maybeDmg =
-            damageAmounts.stream()
-                .filter(nac -> nac.getName().equals(jsonDmg.asText()))
-                .findFirst();
-        if (maybeDmg.isPresent()) {
-          ProcedureRemedyType type = existingType.orElse(new ProcedureRemedyType());
-          type.setDamageAmountCode(Ecf4Helper.convertText(maybeDmg.get().getCode()));
-          return Optional.of(type);
-        } else {
-          collector.addWrong(docVar);
-        }
-      } else {
-        log.info(
-            "Dropping damage_amount "
-                + jsonDmg.asText()
-                + ", since isvisible is false for "
-                + courtLocationId);
-      }
-    } else {
-      if (damageConfig.isrequired) {
-        collector.addRequired(docVar);
-      } else {
-        collector.addOptional(docVar);
-      }
-    }
-    return existingType;
   }
 
   /**
