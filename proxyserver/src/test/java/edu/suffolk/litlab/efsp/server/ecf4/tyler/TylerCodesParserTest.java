@@ -12,6 +12,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CrossReference;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.DocumentTypeTableRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
@@ -494,5 +495,17 @@ public class TylerCodesParserTest {
     assertThat(res).containsOk(component);
     var resAgain = parser.vetFilingComponent("333", components);
     assertThat(resAgain).containsErr(new NoMatchingCode("333", List.of()));
+  }
+
+  DocumentTypeTableRow docType =
+      new DocumentTypeTableRow("4444", null, filingCode.code, "false", null, null, null);
+
+  @Test
+  public void testDocumentType() {
+    when(dataFields.getFieldRow("DocumentType"))
+        .thenReturn(new DataFieldRow("DocumenType", null, true, false, null));
+    when(cd.getDocumentTypes("01", filingCode.code)).thenReturn(List.of(docType));
+    var res = parser.vetDocType("4444", filingCode);
+    assertThat(res).containsOk(Optional.of(docType));
   }
 }

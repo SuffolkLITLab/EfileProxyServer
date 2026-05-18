@@ -178,7 +178,10 @@ public class FilingDocDocassembleJacksonDeserializer {
         int idx = 0;
         for (var attachNode : nodes) {
           collector.pushAttributeStack(".elements[" + idx + "]");
-          var maybeAttachment = getAttachment(attachNode, components, parser, collector);
+          // TODO(brycew): I don't like orElse(null), but unsure how to handle optional filing codes
+          // yet? Revisit with Alaska's stuff
+          var maybeAttachment =
+              getAttachment(attachNode, components, filingType.orElse(null), parser, collector);
           if (maybeAttachment.isPresent()) {
             attachments = attachments.snoc(maybeAttachment.get());
           }
@@ -189,7 +192,8 @@ public class FilingDocDocassembleJacksonDeserializer {
     }
     if (attachments.isEmpty()) {
       log.info("No attachments present in {}", _logName);
-      Optional<FilingAttachment> attachment = getAttachment(node, components, parser, collector);
+      Optional<FilingAttachment> attachment =
+          getAttachment(node, components, filingType.orElse(null), parser, collector);
       if (attachment.isPresent()) {
         attachments = fj.data.List.single(attachment.get());
       }
@@ -225,10 +229,19 @@ public class FilingDocDocassembleJacksonDeserializer {
   private static Optional<FilingAttachment> getAttachment(
       JsonNode node,
       ArrayList<FilingComponent> components,
+      FilingCode filingCode,
       CodesParser parser,
       InfoCollector collector)
       throws FilingError {
     String documentTypeFormatName = getStringDefault(node, "document_type", "");
+    var documentTypeRes = parser.vetDocType(documentTypeFormatName, filingCode);
+    var documentBuilder = collector.varBuilder().name("document_type");
+    if (documentTypeRes.isErr()) {
+      var documentVar = collector.addCodeError(documentTypeRes.expectErr(""), documentBuilder);
+      throw FilingError.wrongValue(documentVar);
+    }
+    var documentType = documentTypeRes.expect("");
+
     String filingComponentCode = getStringDefault(node, "filing_component", "");
     var componentRes = parser.vetFilingComponent(filingComponentCode, components);
     var componentBuilder =
@@ -295,7 +308,7 @@ public class FilingDocDocassembleJacksonDeserializer {
           new FilingAttachment(
               fileName,
               (inStream != null) ? inStream.readAllBytes() : new byte[0],
-              documentTypeFormatName,
+              documentType,
               filingComponent,
               documentDescription));
     } catch (MalformedURLException ex) {
