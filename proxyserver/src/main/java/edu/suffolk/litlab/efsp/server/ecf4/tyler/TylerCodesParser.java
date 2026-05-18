@@ -394,6 +394,46 @@ public class TylerCodesParser implements CodesParser {
     return Result.ok(Optional.empty());
   }
 
+  // Note: older versions of this code passed back a list of proc/rem codes. Doesn't make a ton of
+  // sense,
+  // and Tyler's docs only refer to the code in the singular. So only returning one here.
+  public Result<Optional<NameAndCode>, CodeError> vetProcedureRemedy(
+      Optional<String> maybeProRem, boolean initial, CaseCategory cat) {
+    List<NameAndCode> procedureRemedies = cd.getProcedureOrRemedy(this.court.code, cat.getCode());
+    String procedureViewName = "CivilCaseProcedureView" + ((initial) ? "Initial" : "Subsequent");
+    DataFieldRow procedureView = DataFieldRow.MissingDataField(procedureViewName);
+    String procBehavior = (initial) ? cat.procedureremedyinitial : cat.procedureremedysubsequent;
+    if (!procBehavior.isEmpty() && !procBehavior.equals("Not Available")) {
+      procedureView = allDataFields.getFieldRow(procedureViewName);
+    }
+    if (maybeProRem.isPresent()) {
+      var proRemCode = maybeProRem.get();
+      if (procedureView.isvisible) {
+        Optional<NameAndCode> maybeProcedures =
+            procedureRemedies.stream().filter(nac -> nac.getCode().equals(proRemCode)).findFirst();
+        if (maybeProcedures.isEmpty()) {
+          return Result.err(
+              new NoMatchingCode(
+                  proRemCode, procedureRemedies.stream().map(pr -> pr.getCode()).toList()));
+        }
+        return Result.ok(maybeProcedures);
+      } else {
+        log.info(
+            "Dropping procedure_remedy "
+                + proRemCode
+                + ", since isvisible is false for "
+                + this.court.code);
+      }
+    } else {
+      if (procedureView.isrequired) {
+        return Result.err(
+            new RequiredCodeNotPresent(
+                procedureRemedies.stream().map(pr -> pr.getCode()).toList()));
+      }
+    }
+    return Result.ok(Optional.empty());
+  }
+
   /**
    * Doesn't return optional because we can set the People names to null / blank.
    *

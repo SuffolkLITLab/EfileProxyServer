@@ -508,4 +508,42 @@ public class TylerCodesParserTest {
     var res = parser.vetDocType("4444", filingCode);
     assertThat(res).containsOk(Optional.of(docType));
   }
+
+  @Nested
+  class ProcedureRemedyTests {
+    CaseCategory exampleCatProcRem =
+        new CaseCategory(
+            "123987",
+            "Test Category",
+            "",
+            "Available",
+            "Not Available",
+            "Not Available",
+            "Not Available");
+
+    @Test
+    public void testNoProcedureRemedyType() {
+      var res = parser.vetProcedureRemedy(Optional.of("2244"), true, exampleCategory);
+      assertThat(res).containsOk(Optional.empty());
+    }
+
+    @Test
+    public void testProcedureRemedyNoMatching() {
+      when(dataFields.getFieldRow("CivilCaseProcedureViewInitial"))
+          .thenReturn(new DataFieldRow("CivilCaseProcedureViewInitial", "proc", true, false, "01"));
+      when(cd.getProcedureOrRemedy("01", exampleCatProcRem.code)).thenReturn(List.of());
+      var res = parser.vetProcedureRemedy(Optional.of("2244"), true, exampleCatProcRem);
+      assertThat(res).isErr().extractingErr().isInstanceOf(NoMatchingCode.class);
+    }
+
+    @Test
+    public void testProcedureRemedyType() {
+      var procRem = new NameAndCode("Proc Rem Example", "2244");
+      when(dataFields.getFieldRow("CivilCaseProcedureViewInitial"))
+          .thenReturn(new DataFieldRow("CivilCaseProcedureViewInitial", "proc", true, false, "01"));
+      when(cd.getProcedureOrRemedy("01", exampleCatProcRem.code)).thenReturn(List.of(procRem));
+      var res = parser.vetProcedureRemedy(Optional.of("2244"), true, exampleCatProcRem);
+      assertThat(res).containsOk(Optional.of(procRem));
+    }
+  }
 }

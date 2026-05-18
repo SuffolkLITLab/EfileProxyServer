@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efsp.docassemble;
 
+import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -360,6 +362,17 @@ public class FilingInformationDocassembleJacksonDeserializer
       } else {
         entities.setCrossRefs(crossRes.unwrapOrElseThrow());
       }
+    }
+
+    /// Procedure Remedy
+    var procRemRes =
+        parser.vetProcedureRemedy(
+            getStringMember(node, "procedure_remedy"), isInitialFiling, caseCat);
+    if (procRemRes.isErr()) {
+      var procRemBuilder = collector.varBuilder().name("procedure_remedy");
+      collector.addCodeError(procRemRes.expectErr(""), procRemBuilder);
+    } else {
+      entities.setProcedureRemedy(procRemRes.expect(""));
     }
 
     entities.setReturnDate(extractReturnDate(node.get("return_date"), collector));

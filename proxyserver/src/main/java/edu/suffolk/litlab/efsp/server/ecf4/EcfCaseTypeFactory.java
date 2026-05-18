@@ -629,13 +629,9 @@ public class EcfCaseTypeFactory {
       ecfAug.getExtendedData().add(tylerObjFac.createServicePartyReference(ref));
     }
 
-    Optional<ProcedureRemedyType> res =
-        makeProcedureRemedyType(
-            isInitialFiling, comboCodes.cat, courtLocation.code, miscInfo, collector, serializer);
-
     Optional<ProcedureRemedyType> resPlus =
         addDamageAmountType(
-            res,
+            makeProcedureRemedyType(info.getProcedureRemedy()),
             isInitialFiling,
             comboCodes.cat,
             courtLocation.code,
@@ -711,63 +707,13 @@ public class EcfCaseTypeFactory {
     return Pair.of(tylerObjFac.createCaseAugmentation(ecfAug), partyIdToRefObj);
   }
 
-  private Optional<ProcedureRemedyType> makeProcedureRemedyType(
-      boolean initial,
-      CaseCategory cat,
-      String courtLocationId,
-      JsonNode miscInfo,
-      InfoCollector collector,
-      EcfCourtSpecificSerializer serializer)
-      throws SQLException, FilingError {
-    List<NameAndCode> procedureRemedies = cd.getProcedureOrRemedy(courtLocationId, cat.getCode());
-    String procedureViewName = "CivilCaseProcedureView" + ((initial) ? "Initial" : "Subsequent");
-    DataFieldRow procedureView = DataFieldRow.MissingDataField(procedureViewName);
-    String procBehavior = (initial) ? cat.procedureremedyinitial : cat.procedureremedysubsequent;
-    if (!procBehavior.isEmpty() && !procBehavior.equals("Not Available")) {
-      procedureView = serializer.allDataFields.getFieldRow(procedureViewName);
-    }
-    InterviewVariable var;
-    JsonNode proRem = miscInfo.get("procedure_remedy");
-    if (procedureRemedies.isEmpty()) {
-      var = collector.requestVar("procedure_remedy", "Procedure Remedy", "text");
-    } else {
-      var =
-          collector.requestVar(
-              "procedure_remedy",
-              "Procedure Remedy",
-              "choices",
-              procedureRemedies.stream().map(nac -> nac.getName()).collect(Collectors.toList()),
-              Optional.ofNullable(proRem).map(JsonNode::toString));
-    }
-    ProcedureRemedyType type = new ProcedureRemedyType();
-    if (proRem != null && !proRem.isNull() && proRem.isTextual()) {
-      if (procedureView.isvisible) {
-        List<NameAndCode> maybeProcedures =
-            procedureRemedies.stream()
-                .filter(nac -> nac.getName().equals(proRem.asText()))
-                .collect(Collectors.toList());
-        if (!maybeProcedures.isEmpty()) {
-          for (NameAndCode nac : maybeProcedures) {
-            type.getRemedyCode().add(Ecf4Helper.convertText(nac.getCode()));
-          }
-          return Optional.of(type);
-        }
-        collector.addWrong(var);
-      } else {
-        log.info(
-            "Dropping procedure_remedy "
-                + proRem.asText()
-                + ", since isvisible is false for "
-                + courtLocationId);
-      }
-    } else {
-      if (procedureView.isrequired) {
-        collector.addRequired(var);
-      } else {
-        collector.addOptional(var);
-      }
-    }
-    return Optional.empty();
+  private Optional<ProcedureRemedyType> makeProcedureRemedyType(Optional<NameAndCode> procRemCode) {
+    return procRemCode.map(
+        code -> {
+          ProcedureRemedyType type = new ProcedureRemedyType();
+          type.getRemedyCode().add(Ecf4Helper.convertText(code.getCode()));
+          return type;
+        });
   }
 
   private Optional<ProcedureRemedyType> addDamageAmountType(
