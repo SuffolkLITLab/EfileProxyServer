@@ -1,16 +1,14 @@
 package edu.suffolk.litlab.efsp.tyler;
 
 import edu.suffolk.litlab.efsp.Jurisdiction;
+import java.io.IOException;
 import java.net.URL;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tyler.efm.EfmFirmService;
 import tyler.efm.EfmUserService;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 public class TylerClients {
   private static final Logger log = LoggerFactory.getLogger(TylerClients.class);
