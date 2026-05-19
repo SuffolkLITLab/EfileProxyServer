@@ -4,36 +4,20 @@ import edu.suffolk.litlab.efsp.Jurisdiction;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tyler.efm.EfmFirmService;
 import tyler.efm.EfmUserService;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 public class TylerClients {
   private static final Logger log = LoggerFactory.getLogger(TylerClients.class);
-
   private static final String USER_WSDL = "-EFMUserServiceSingle.svc.wsdl";
   private static final String FIRM_WSDL = "-EFMFirmServiceSingle.svc.wsdl";
+  private static final String VERSION_KEY_PREFIX = "edu.suffolk.litlab.efsp.tyler.version.";
 
-  private static final Map<Jurisdiction, TylerVersion> STAGE_VERSION_MAP =
-      Map.of(
-          Jurisdiction.CALIFORNIA, TylerVersion.v2024_6,
-          Jurisdiction.ILLINOIS, TylerVersion.v2024_6,
-          Jurisdiction.INDIANA, TylerVersion.v2024_6,
-          Jurisdiction.MASSACHUSETTS, TylerVersion.v2025_0,
-          Jurisdiction.TEXAS, TylerVersion.v2024_6,
-          Jurisdiction.VERMONT, TylerVersion.v2024_6);
-
-  private static final Map<Jurisdiction, TylerVersion> PROD_VERSION_MAP =
-      Map.of(
-          Jurisdiction.ILLINOIS, TylerVersion.v2024_6,
-          Jurisdiction.MASSACHUSETTS, TylerVersion.v2022_1);
-
-  /**
-   * Gets the EfmUserService from the individual jursdiction and env arguments.
-   *
-   * @param domain e.g. Jurisdiction.ILLINOIS, TylerEnv.STAGE.
-   */
   public static Optional<TylerUserFactory> getEfmUserFactory(TylerDomain domain) {
     var version = getVersion(domain);
     return version.flatMap(
@@ -52,14 +36,6 @@ public class TylerClients {
         });
   }
 
-  /**
-   * Gets Tyler server's root URL for a given jurisdiction / Tyler Env (i.e. california stage).
-   *
-   * <p>TODO(brycew): turn this into a URL type? Find where it's used.
-   *
-   * @param domain
-   * @return
-   */
   public static String getTylerServerRootUrl(TylerDomain domain) {
     if (domain.jurisdiction() == Jurisdiction.CALIFORNIA) {
       return "https://california-efm-" + domain.env().getName() + ".tylertech.cloud/";
@@ -71,17 +47,30 @@ public class TylerClients {
   }
 
   public static Optional<TylerVersion> getVersion(TylerDomain domain) {
-    Map<Jurisdiction, TylerVersion> versionMap =
-        switch (domain.env()) {
-          case TylerEnv.STAGE -> STAGE_VERSION_MAP;
-          case TylerEnv.PROD -> PROD_VERSION_MAP;
-        };
-
-    if (!versionMap.containsKey(domain.jurisdiction())) {
+    String propertiesFile = "application." + domain.env().getName() + ".properties";
+    var props = new Properties();
+    try (var is = TylerClients.class.getClassLoader().getResourceAsStream(propertiesFile)) {
+      if (is == null) {
+        log.warn("Could not find properties file:{}", propertiesFile);
+        return Optional.empty();
+      }
+      props.load(is);
+    } catch (IOException e) {
+      log.warn("Failed to load properties file:{}", propertiesFile, e);
       return Optional.empty();
     }
-
-    return Optional.of(versionMap.get(domain.jurisdiction()));
+    String key = VERSION_KEY_PREFIX + domain.jurisdiction().getName();
+    String value = props.getProperty(key);
+    if (value == null) {
+      log.warn("No Tyler version configured for key:{}", key);
+      return Optional.empty();
+    }
+    try {
+      return Optional.of(TylerVersion.valueOf(value.trim()));
+    } catch (IllegalArgumentException e) {
+      log.warn("Unknown TylerVersion value '{}' for key '{}'", value, key);
+      return Optional.empty();
+    }
   }
 
   private static Optional<URL> createLocalWsdlUrl(
