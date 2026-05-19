@@ -3,6 +3,8 @@ package edu.suffolk.litlab.efsp.tyler;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import java.io.IOException;
 import java.net.URL;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import org.slf4j.Logger;
@@ -15,6 +17,38 @@ public class TylerClients {
   private static final String USER_WSDL = "-EFMUserServiceSingle.svc.wsdl";
   private static final String FIRM_WSDL = "-EFMFirmServiceSingle.svc.wsdl";
   private static final String VERSION_KEY_PREFIX = "edu.suffolk.litlab.efsp.tyler.version.";
+
+  private static final Map<Jurisdiction, TylerVersion> STAGE_VERSION_MAP =
+      loadVersionMap(TylerEnv.STAGE);
+  private static final Map<Jurisdiction, TylerVersion> PROD_VERSION_MAP =
+      loadVersionMap(TylerEnv.PROD);
+
+  private static Map<Jurisdiction, TylerVersion> loadVersionMap(TylerEnv env) {
+    String propertiesFile = "application." + env.getName() + ".properties";
+    var props = new Properties();
+    try (var is = TylerClients.class.getClassLoader().getResourceAsStream(propertiesFile)) {
+      if (is == null) {
+        throw new RuntimeException("Could not find properties file: " + propertiesFile);
+      }
+      props.load(is);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to load properties file: " + propertiesFile, e);
+    }
+    var map = new EnumMap<Jurisdiction, TylerVersion>(Jurisdiction.class);
+    for (Jurisdiction jurisdiction : Jurisdiction.values()) {
+      String key = VERSION_KEY_PREFIX + jurisdiction.getName();
+      String value = props.getProperty(key);
+      if (value != null) {
+        try {
+          map.put(jurisdiction, TylerVersion.valueOf(value.trim()));
+        } catch (IllegalArgumentException e) {
+          throw new RuntimeException(
+              "Unknown TylerVersion value '" + value.trim() + "' for key '" + key + "'");
+        }
+      }
+    }
+    return map;
+  }
 
   public static Optional<TylerUserFactory> getEfmUserFactory(TylerDomain domain) {
     var version = getVersion(domain);
@@ -45,30 +79,12 @@ public class TylerClients {
   }
 
   public static Optional<TylerVersion> getVersion(TylerDomain domain) {
-    String propertiesFile = "application." + domain.env().getName() + ".properties";
-    var props = new Properties();
-    try (var is = TylerClients.class.getClassLoader().getResourceAsStream(propertiesFile)) {
-      if (is == null) {
-        log.warn("Could not find properties file:{}", propertiesFile);
-        return Optional.empty();
-      }
-      props.load(is);
-    } catch (IOException e) {
-      log.warn("Failed to load properties file:{}", propertiesFile, e);
-      return Optional.empty();
-    }
-    String key = VERSION_KEY_PREFIX + domain.jurisdiction().getName();
-    String value = props.getProperty(key);
-    if (value == null) {
-      log.warn("No Tyler version configured for key:{}", key);
-      return Optional.empty();
-    }
-    try {
-      return Optional.of(TylerVersion.valueOf(value.trim()));
-    } catch (IllegalArgumentException e) {
-      log.warn("Unknown TylerVersion value '{}' for key '{}'", value, key);
-      return Optional.empty();
-    }
+    Map<Jurisdiction, TylerVersion> versionMap =
+        switch (domain.env()) {
+          case STAGE -> STAGE_VERSION_MAP;
+          case PROD -> PROD_VERSION_MAP;
+        };
+    return Optional.ofNullable(versionMap.get(domain.jurisdiction()));
   }
 
   private static Optional<URL> createLocalWsdlUrl(
