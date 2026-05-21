@@ -14,6 +14,12 @@ jobs:
           java-version: '21'
           distribution: 'adopt'
           cache: 'maven'
+          cache-dependency-path: |
+            EfspCommons/pom.xml
+            TylerEfmClient/pom.xml
+            TylerEcf4/pom.xml
+            TylerEcf5/pom.xml
+            proxyserver/pom.xml
       - name: Build with Maven
         run: mvn --batch-mode -Preproducible verify javadoc:javadoc
 
