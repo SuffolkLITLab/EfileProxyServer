@@ -1,6 +1,8 @@
 package edu.suffolk.litlab.efsp.tyler;
 
 import edu.suffolk.litlab.efsp.Jurisdiction;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.EnumMap;
@@ -26,11 +28,20 @@ public class TylerClients {
   private static Map<Jurisdiction, TylerVersion> loadVersionMap(TylerEnv env) {
     String propertiesFile = "application." + env.getName() + ".properties";
     var props = new Properties();
-    try (var is = TylerClients.class.getClassLoader().getResourceAsStream(propertiesFile)) {
-      if (is == null) {
-        throw new RuntimeException("Could not find properties file: " + propertiesFile);
-      }
+    try (var is = new FileInputStream(propertiesFile)) {
       props.load(is);
+    } catch (FileNotFoundException ex) {
+      try (var secondIs = TylerClients.class.getClassLoader().getResourceAsStream(propertiesFile)) {
+        if (secondIs == null) {
+          throw new RuntimeException(
+              "Couldn't load config file as file in current dir or as class resource. "
+                  + propertiesFile);
+        }
+        props.load(secondIs);
+      } catch (IOException e) {
+        throw new RuntimeException(
+            "Failed to load properties file as class resource " + propertiesFile, e);
+      }
     } catch (IOException e) {
       throw new RuntimeException("Failed to load properties file: " + propertiesFile, e);
     }
