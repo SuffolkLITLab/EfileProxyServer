@@ -361,9 +361,13 @@ public class EcfCourtSpecificSerializer {
       cit.getContactMeans().add(niemObjFac.createContactTelephoneNumber(tnt));
     }
 
-    contactInfo.getEmail().ifPresent(email -> {
-      cit.getContactMeans().add(niemObjFac.createContactEmailID(Ecf4Helper.convertString(email)));
-    });
+    contactInfo
+        .getEmail()
+        .ifPresent(
+            email -> {
+              cit.getContactMeans()
+                  .add(niemObjFac.createContactEmailID(Ecf4Helper.convertString(email)));
+            });
     return cit;
   }
 

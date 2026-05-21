@@ -474,7 +474,7 @@ public class TylerCodesParser implements CodesParser {
     }
   }
 
- /**
+  /**
    * Throws if something is wrong; otherwise, an optional email (empty does not mean error!).
    *
    * <p>Note that the collector type is what determines if it throws.
@@ -507,18 +507,36 @@ public class TylerCodesParser implements CodesParser {
         // if just visible but not required, keep the empty list
         return Result.ok(List.of());
       }
-      var correctNumbers = numbers.stream().map(number -> {
-        if (phoneRow.matchRegex(number)) {
-          return number;
-        }
-        // HACK(brycew): Massachusetts doesn't like dashes in the number, just wants numbers
-        return number.replace("-", "").replace("(", "").replace(")", "").replace(" ", "");
-      }).filter(number -> {
-        if (number.isEmpty()) {
-          return false;
-        }
-        return phoneRow.matchRegex(number);
-      }).toList();
+      var correctNumbers =
+          numbers.stream()
+              .map(
+                  number -> {
+                    if (phoneRow.matchRegex(number)) {
+                      return number;
+                    }
+                    // HACK(brycew): Massachusetts doesn't like dashes in the number, just wants
+                    // numbers
+                    if (number.contains("+")) {
+                      // there should be a space between the country code and the rest of the
+                      // number, but no where else??
+                      // TODO(brycew): really just needs to be checked in docassemble itself
+                      return number.replace("-", "").replace("(", "").replace(")", "").strip();
+                    } else {
+                      return number
+                          .replace("-", "")
+                          .replace("(", "")
+                          .replace(")", "")
+                          .replace(" ", "");
+                    }
+                  })
+              .filter(
+                  number -> {
+                    if (number.isEmpty()) {
+                      return false;
+                    }
+                    return phoneRow.matchRegex(number);
+                  })
+              .toList();
       if (correctNumbers.isEmpty()) {
         return Result.err(new WrongVar(numbers.toString(), phoneRow.regularexpression));
       }
