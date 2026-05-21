@@ -352,68 +352,22 @@ public class EcfCourtSpecificSerializer {
       cit.getContactMeans().add(contactMeans);
     }
 
-    DataFieldRow phoneRow = allDataFields.getFieldRow("PartyPhone");
-    if (phoneRow.isvisible) {
-      List<String> numbers = contactInfo.getPhoneNumbers();
-      InterviewVariable var =
-          collector.requestVar(
-              "phone_number",
-              "Phone number with regex: " + phoneRow.regularexpression,
-              "text",
-              List.of(),
-              Optional.of(numbers.toString()));
-      if (phoneRow.isrequired && numbers.isEmpty()) {
-        collector.addRequired(var);
-      }
-      boolean atLeastOnePhoneAdded = false;
-      for (String phoneNumber : numbers) {
-        if (!phoneRow.matchRegex(phoneNumber)) {
-          if (phoneNumber.contains("-")
-              || phoneNumber.contains("(")
-              || phoneNumber.contains(")")
-              || phoneNumber.contains(" ")) {
-            // HACK(brycew): Massachusetts doesn't like dashes in the number, just numbers
-            phoneNumber =
-                phoneNumber
-                    .replace("-", "")
-                    .replace("(", "")
-                    .replace(")", "")
-                    .strip()
-                    .replace(" ", "");
-          }
-          if (!phoneRow.matchRegex(phoneNumber)) {
-            continue;
-          }
-        }
-
-        TelephoneNumberType tnt = niemObjFac.createTelephoneNumberType();
-        FullTelephoneNumberType ftnt = niemObjFac.createFullTelephoneNumberType();
-        ftnt.setTelephoneNumberFullID(Ecf4Helper.convertString(phoneNumber));
-        tnt.setTelephoneNumberRepresentation(niemObjFac.createFullTelephoneNumber(ftnt));
-        cit.getContactMeans().add(niemObjFac.createContactTelephoneNumber(tnt));
-        atLeastOnePhoneAdded = true;
-      }
-      if (!numbers.isEmpty() && !atLeastOnePhoneAdded) {
-        collector.addWrong(var);
-      }
+    List<String> numbers = contactInfo.getPhoneNumbers();
+    for (String phoneNumber : numbers) {
+      TelephoneNumberType tnt = niemObjFac.createTelephoneNumberType();
+      FullTelephoneNumberType ftnt = niemObjFac.createFullTelephoneNumberType();
+      ftnt.setTelephoneNumberFullID(Ecf4Helper.convertString(phoneNumber));
+      tnt.setTelephoneNumberRepresentation(niemObjFac.createFullTelephoneNumber(ftnt));
+      cit.getContactMeans().add(niemObjFac.createContactTelephoneNumber(tnt));
     }
 
-    DataFieldRow emailRow = allDataFields.getFieldRow("PartyEmail");
-    if (emailRow.isvisible) {
-      InterviewVariable var =
-          collector.requestVar("email", "Email with regex " + emailRow.regularexpression, "email");
-      if (contactInfo.getEmail().isPresent()) {
-        String em = contactInfo.getEmail().get();
-        if (emailRow.matchRegex(em)) {
-          cit.getContactMeans().add(niemObjFac.createContactEmailID(Ecf4Helper.convertString(em)));
-        } else {
-          collector.addWrong(var);
-        }
-      }
-      if (emailRow.isrequired) {
-        collector.addRequired(var);
-      }
-    }
+    contactInfo
+        .getEmail()
+        .ifPresent(
+            email -> {
+              cit.getContactMeans()
+                  .add(niemObjFac.createContactEmailID(Ecf4Helper.convertString(email)));
+            });
     return cit;
   }
 

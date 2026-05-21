@@ -475,6 +475,77 @@ public class TylerCodesParser implements CodesParser {
   }
 
   /**
+   * Throws if something is wrong; otherwise, an optional email (empty does not mean error!).
+   *
+   * <p>Note that the collector type is what determines if it throws.
+   *
+   * @param email
+   * @param collector
+   * @return
+   */
+  public Result<Optional<String>, TextVarError> vetEmail(Optional<String> email) {
+    DataFieldRow emailRow = allDataFields.getFieldRow("PartyEmail");
+    if (emailRow.isvisible) {
+      if (email.isPresent()) {
+        if (!emailRow.matchRegex(email.get())) {
+          return Result.err(new WrongVar(email.get(), emailRow.regularexpression));
+        }
+      } else if (emailRow.isrequired) {
+        return Result.err(new MissingVar(emailRow.regularexpression));
+      }
+    }
+    return Result.ok(email);
+  }
+
+  public Result<List<String>, TextVarError> vetPhoneNumbers(List<String> numbers) {
+    DataFieldRow phoneRow = allDataFields.getFieldRow("PartyPhone");
+    if (phoneRow.isvisible) {
+      if (phoneRow.isrequired && numbers.isEmpty()) {
+        return Result.err(new MissingVar(phoneRow.regularexpression));
+      }
+      if (numbers.isEmpty()) {
+        // if just visible but not required, keep the empty list
+        return Result.ok(List.of());
+      }
+      var correctNumbers =
+          numbers.stream()
+              .map(
+                  number -> {
+                    if (phoneRow.matchRegex(number)) {
+                      return number;
+                    }
+                    // HACK(brycew): Massachusetts doesn't like dashes in the number, just wants
+                    // numbers
+                    if (number.contains("+")) {
+                      // there should be a space between the country code and the rest of the
+                      // number, but no where else??
+                      // TODO(brycew): really just needs to be checked in docassemble itself
+                      return number.replace("-", "").replace("(", "").replace(")", "").strip();
+                    } else {
+                      return number
+                          .replace("-", "")
+                          .replace("(", "")
+                          .replace(")", "")
+                          .replace(" ", "");
+                    }
+                  })
+              .filter(
+                  number -> {
+                    if (number.isEmpty()) {
+                      return false;
+                    }
+                    return phoneRow.matchRegex(number);
+                  })
+              .toList();
+      if (correctNumbers.isEmpty()) {
+        return Result.err(new WrongVar(numbers.toString(), phoneRow.regularexpression));
+      }
+      return Result.ok(correctNumbers);
+    }
+    return Result.ok(List.of());
+  }
+
+  /**
    * Doesn't return optional because we can set the People names to null / blank.
    *
    * @param name

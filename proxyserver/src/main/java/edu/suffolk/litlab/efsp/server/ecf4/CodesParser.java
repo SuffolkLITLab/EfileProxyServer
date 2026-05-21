@@ -82,6 +82,10 @@ public interface CodesParser {
   public Result<Optional<NameAndCode>, CodeError> vetProcedureRemedy(
       Optional<String> maybeProRem, boolean initial, CaseCategory cat);
 
+  public Result<Optional<String>, TextVarError> vetEmail(Optional<String> email);
+
+  public Result<List<String>, TextVarError> vetPhoneNumbers(List<String> numbers);
+
   public Result<String, TextVarError> vetFirstName(Optional<String> name);
 
   public Result<String, TextVarError> vetMiddleName(Optional<String> name);

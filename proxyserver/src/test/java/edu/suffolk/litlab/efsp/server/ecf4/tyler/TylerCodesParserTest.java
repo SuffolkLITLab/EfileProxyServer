@@ -545,5 +545,48 @@ public class TylerCodesParserTest {
       var res = parser.vetProcedureRemedy(Optional.of("2244"), true, exampleCatProcRem);
       assertThat(res).containsOk(Optional.of(procRem));
     }
+
+    @Nested
+    class PhoneNumberTests {
+      @BeforeEach
+      public void setup() {
+        when(dataFields.getFieldRow("PartyPhone"))
+            .thenReturn(
+                new DataFieldRow(
+                    "PartyPhone",
+                    "phone number",
+                    true,
+                    false,
+                    "",
+                    "",
+                    "",
+                    "",
+                    "^(\\+0?1\\s)?\\(?\\d{3}\\)?\\d{3}\\d{4}$",
+                    null,
+                    false,
+                    "01"));
+      }
+
+      @Test
+      public void testNormalPhoneNumber() {
+        var phones = List.of("4092345678");
+        var res = parser.vetPhoneNumbers(phones);
+        assertThat(res).containsOk(phones);
+      }
+
+      @Test
+      public void testBadPhoneNumber() {
+        var phones = List.of("+34092345678");
+        var res = parser.vetPhoneNumbers(phones);
+        assertThat(res).isErr();
+      }
+
+      @Test
+      public void testOneBadOneOkayPhoneNumber() {
+        var phones = List.of("+34092345678", "+1 4092345678");
+        var res = parser.vetPhoneNumbers(phones);
+        assertThat(res).containsOk(List.of("+1 4092345678"));
+      }
+    }
   }
 }

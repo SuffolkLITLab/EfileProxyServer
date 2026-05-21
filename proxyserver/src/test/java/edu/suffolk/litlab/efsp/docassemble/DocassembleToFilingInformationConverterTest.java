@@ -74,13 +74,13 @@ public class DocassembleToFilingInformationConverterTest {
                 List.of(
                     Map.of(
                         "PartyFirstName",
-                            new DataFieldRow("PartyFirstName", "first name", true, true, "adams"),
+                        new DataFieldRow("PartyFirstName", "first name", true, true, "adams"),
                         "PartyMiddleName",
-                            new DataFieldRow(
-                                "PartyMiddleName", "middle name", true, false, "adams"),
+                        new DataFieldRow("PartyMiddleName", "middle name", true, false, "adams"),
                         "PartyLastName",
-                            new DataFieldRow(
-                                "PartyLastName", "last name", true, false, "adams")))));
+                        new DataFieldRow("PartyLastName", "last name", true, false, "adams"),
+                        "PartyPhone",
+                        new DataFieldRow("PartyPhone", "", true, false, "adams")))));
     var loc = new CourtLocationInfo("01");
     loc.initial = true;
     loc.subsequent = true;

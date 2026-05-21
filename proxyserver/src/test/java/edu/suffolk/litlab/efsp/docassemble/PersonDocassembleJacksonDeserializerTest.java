@@ -21,8 +21,6 @@ import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,24 +28,26 @@ public class PersonDocassembleJacksonDeserializerTest {
 
   InfoCollector collector;
   CodesParser parser;
+  DataFields allDataFields;
 
   @BeforeEach
   public void setUp() {
     collector = new FailFastCollector();
     var cd = mock(CodeDatabase.class);
-    when(cd.getDataFields("adams"))
-        .thenReturn(
-            new DataFields(
-                List.of(
-                    Map.of(
-                        "PartyFirstName",
-                            new DataFieldRow("PartyFirstName", "first name", true, true, "adams"),
-                        "PartyMiddleName",
-                            new DataFieldRow(
-                                "PartyMiddleName", "middle name", true, false, "adams"),
-                        "PartyLastName",
-                            new DataFieldRow(
-                                "PartyLastName", "last name", true, false, "adams")))));
+    var allDataFields = mock(DataFields.class);
+    when(cd.getDataFields("adams")).thenReturn(allDataFields);
+    when(allDataFields.getFieldRow("PartyFirstName"))
+        .thenReturn(new DataFieldRow("PartyFirstName", "", true, true, "adams"));
+    when(allDataFields.getFieldRow("PartyMiddleName"))
+        .thenReturn(new DataFieldRow("PartyMiddleName", "", true, false, "adams"));
+    when(allDataFields.getFieldRow("PartyLastName"))
+        .thenReturn(new DataFieldRow("PartyLastName", "", true, false, "adams"));
+    when(allDataFields.getFieldRow("PartyPhone"))
+        .thenReturn(new DataFieldRow("PartyPhone", "", true, false, "adams"));
+    when(allDataFields.getFieldRow("PartyEmail"))
+        .thenReturn(new DataFieldRow("PartyEmail", "", true, false, "adams"));
+    when(allDataFields.getFieldRow("PartyNameSuffix"))
+        .thenReturn(new DataFieldRow("PartyNameSuffix", "", false, false, "adams"));
     parser = new TylerCodesParser(cd, new CourtLocationInfo("adams"));
   }
 
@@ -58,7 +58,7 @@ public class PersonDocassembleJacksonDeserializerTest {
     assertThat(res.isOk()).isTrue();
     var per = res.unwrapOrElseThrow();
     assertThat(per.getContactInfo().getEmail()).contains("john.brown@example.com");
-    assertThat(per.getContactInfo().getPhoneNumbers()).hasSize(1);
+    assertThat(per.getContactInfo().getPhoneNumbers()).hasSize(2);
     assertThat(per.getContactInfo().getAddress())
         .isPresent(); // contains(new Address("123 Fake St", "", "Chicago", "IL", "60007",
     assertThat(per.getContactInfo().getAddress().get().getCity()).isEqualTo("Chicago");

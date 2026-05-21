@@ -1,6 +1,7 @@
 package edu.suffolk.litlab.efsp.docassemble;
 
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getBoolMember;
+import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getNonEmptyStringMember;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -42,34 +43,21 @@ public class PersonDocassembleJacksonDeserializer {
       return Result.err(err);
     }
 
-    List<String> phones = new ArrayList<String>();
-    if (node.has("mobile_number") && node.get("mobile_number").isTextual()) {
-      String mobile = node.get("mobile_number").asText();
-      if (!mobile.isBlank()) {
-        phones.add(mobile);
-      }
-    } else {
-      InterviewVariable var =
-          collector.requestVar("mobile_number", "A mobile or cell phone number", "text");
-      collector.addOptional(var);
-    }
+    List<String> inputPhones = new ArrayList<String>();
+    var maybeMobile = getNonEmptyStringMember(node, "mobile_number");
+    maybeMobile.ifPresent(number -> inputPhones.add(number));
 
-    if (node.has("phone_number")) {
-      if (node.get("phone_number").isTextual()) {
-        String phone = node.get("phone_number").asText();
-        if (!phone.isBlank()) {
-          phones.add(phone);
-        }
-      } else {
-        FilingError err =
-            FilingError.malformedInterview(
-                "phone number needs to be text: " + node.get("phone_number").toPrettyString());
-        return Result.err(err);
-      }
+    var maybePhone = getNonEmptyStringMember(node, "phone_number");
+    maybePhone.ifPresent(number -> inputPhones.add(number));
+
+    var phonesRes = parser.vetPhoneNumbers(inputPhones);
+    List<String> phones;
+    if (phonesRes.isErr()) {
+      var phoneBuilder = collector.varBuilder().name("phone_number").datatype("text");
+      collector.addTextError(phonesRes.expectErr(""), phoneBuilder);
+      phones = List.of();
     } else {
-      InterviewVariable var =
-          collector.requestVar("phone_number", "A mobile or cell phone number", "text");
-      collector.addOptional(var);
+      phones = phonesRes.expect("");
     }
 
     Optional<Address> addr = Optional.empty();
@@ -85,7 +73,14 @@ public class PersonDocassembleJacksonDeserializer {
         }
       }
     }
-    Optional<String> email = getStringMember(node, "email");
+    var emailRes = parser.vetEmail(getStringMember(node, "email"));
+    Optional<String> email;
+    if (emailRes.isErr()) {
+      collector.addTextError(emailRes.expectErr(""), collector.varBuilder().name("email"));
+      email = Optional.empty();
+    } else {
+      email = emailRes.expect("");
+    }
     final ContactInformation info = new ContactInformation(phones, addr, email);
 
     JsonNode partyJson = node.get("party_type");
