@@ -62,7 +62,6 @@ import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.Hasher;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
-import edu.suffolk.litlab.efsp.utils.InterviewVariable;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -322,15 +321,8 @@ public class CourtSchedulingService {
             throw FilingError.serverError(
                 "Couldn't get existing parties for case " + info.getPreviousCaseId().get());
           }
-          List<Optional<FilingCode>> maybeFilingCodes =
+          List<FilingCode> filingCodes =
               info.getFilings().stream().map(f -> f.getFilingCode()).toList();
-          if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
-            InterviewVariable filingVar =
-                collector.requestVar(
-                    "court_bundle[i].filing_type", "What filing type is this?", "text");
-            collector.addRequired(filingVar);
-          }
-          List<FilingCode> filingCodes = maybeFilingCodes.stream().map(fc -> fc.get()).toList();
           Map<String, Person> newPartyMap =
               Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
                   .collect(Collectors.toMap(per -> per.getIdString(), per -> per));

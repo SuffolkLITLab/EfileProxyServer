@@ -272,19 +272,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         CaseType typeCode = typeRes.expect("");
         Map<PartyId, Person> exisitingPartips =
             EcfCaseTypeFactory.getCaseParticipants(resp.getCase().getValue()).get();
-        List<Optional<FilingCode>> maybeFilingCodes =
+        List<FilingCode> filingCodes =
             info.getFilings().stream().map(f -> f.getFilingCode()).toList();
-        if (maybeFilingCodes.stream().anyMatch(fc -> fc.isEmpty())) {
-          InterviewVariable filingVar =
-              collector.requestVar(
-                  "al_court_bundle[i].filing_type",
-                  "What filing type is this?",
-                  "text",
-                  List.of(),
-                  Optional.empty());
-          collector.addRequired(filingVar);
-        }
-        List<FilingCode> filingCodes = maybeFilingCodes.stream().map(fc -> fc.get()).toList();
         Map<String, Person> newPartyCodes =
             Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
                 .collect(Collectors.toMap(per -> per.getIdString(), per -> per));
@@ -433,7 +422,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                       + filingDoc
                           .getDescription()
                           .map(d -> d.get())
-                          .orElse(filingDoc.getFilingComments())
+                          .orElse(filingDoc.getFilingComments().orElse(""))
                       + " is too big! Must be max "
                       + maxSize
                       + ", is "

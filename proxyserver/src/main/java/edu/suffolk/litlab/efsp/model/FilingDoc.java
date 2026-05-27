@@ -14,6 +14,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 // FilingInformation: add a JsonNode / generic container for EFM specific settings
 public class FilingDoc {
   private final Optional<NonEmptyString> userProvidedDescription;
+  // Tyler has crazy dumb rules regarding the title of a doc; it's set here
+  private final Optional<String> descriptionFromSpec;
   // TODO(#57): what is this? Might be able to be a dup of the GUID,
   // it's returned with Get FilingList
   private final Optional<String> filingReferenceNum;
@@ -21,7 +23,7 @@ public class FilingDoc {
   private final Optional<LocalDate> dueDate;
   // A valid filing code (complaint, motion, Appearance, Motion, etc.)
   // Sets the RegActionDesc attribute
-  private final Optional<FilingCode> filingCode;
+  private final FilingCode filingCode;
   private final UUID id;
 
   // Required to at least have one
@@ -31,7 +33,7 @@ public class FilingDoc {
   private final NonEmptyList<FilingAttachment> filingAttachments;
 
   // From filer, about this filing
-  private String filingComments;
+  private Optional<String> filingComments;
   // Only necessary if it's a motion?
   private final Optional<NameAndCode> motionType;
   private final List<String> courtesyCopies;
@@ -43,7 +45,7 @@ public class FilingDoc {
   private final int sequenceNum;
 
   public FilingDoc(
-      Optional<FilingCode> filingCode,
+      FilingCode filingCode,
       List<PartyId> filingPartyIds,
       NonEmptyList<FilingAttachment> filingAttachments,
       int sequenceNum) {
@@ -52,10 +54,11 @@ public class FilingDoc {
         "",
         Optional.empty(),
         Optional.empty(),
+        Optional.empty(),
         filingPartyIds,
         Optional.empty(),
         filingAttachments,
-        "",
+        Optional.empty(),
         Optional.empty(),
         List.of(),
         List.of(),
@@ -66,14 +69,15 @@ public class FilingDoc {
 
   /** Full constructor, in all it's mess. */
   public FilingDoc(
-      Optional<FilingCode> filingCode,
+      FilingCode filingCode,
       String userProvidedDescription,
+      Optional<String> descriptionFromSpec,
       Optional<String> filingReferenceNum,
       Optional<LocalDate> dueDate,
       List<PartyId> filingPartyIds,
       Optional<String> filingAttorney,
       NonEmptyList<FilingAttachment> filingAttachments,
-      String filingComments,
+      Optional<String> filingComments,
       Optional<NameAndCode> motionType,
       List<OptionalService> optionalServices,
       List<String> courtesyCopies,
@@ -82,6 +86,7 @@ public class FilingDoc {
       int sequenceNum) {
     this.filingCode = filingCode;
     this.userProvidedDescription = NonEmptyString.create(userProvidedDescription);
+    this.descriptionFromSpec = descriptionFromSpec;
     this.filingReferenceNum = filingReferenceNum;
     this.dueDate = dueDate;
     this.id = UUID.randomUUID();
@@ -131,12 +136,12 @@ public class FilingDoc {
     return userProvidedDescription;
   }
 
-  public String getFilingComments() {
+  public Optional<String> getFilingComments() {
     return filingComments;
   }
 
   public void setFilingComments(String comments) {
-    this.filingComments = comments;
+    this.filingComments = Optional.of(comments);
   }
 
   public Optional<String> getFilingReferenceNum() {
@@ -167,12 +172,16 @@ public class FilingDoc {
     return optServices;
   }
 
-  public Optional<FilingCode> getFilingCode() {
+  public FilingCode getFilingCode() {
     return filingCode;
   }
 
   public Optional<FilingAction> getFilingAction() {
     return filingAction;
+  }
+
+  public Optional<String> descriptionFromSpec() {
+    return descriptionFromSpec;
   }
 
   @Override

@@ -48,6 +48,8 @@ public class PersonDocassembleJacksonDeserializerTest {
         .thenReturn(new DataFieldRow("PartyEmail", "", true, false, "adams"));
     when(allDataFields.getFieldRow("PartyNameSuffix"))
         .thenReturn(new DataFieldRow("PartyNameSuffix", "", false, false, "adams"));
+    when(allDataFields.getFieldRow("PartyGender"))
+        .thenReturn(new DataFieldRow("PartyGender", "", true, false, "adams"));
     parser = new TylerCodesParser(cd, new CourtLocationInfo("adams"));
   }
 

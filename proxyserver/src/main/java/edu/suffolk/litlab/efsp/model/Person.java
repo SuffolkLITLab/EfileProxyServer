@@ -11,11 +11,26 @@ import java.util.UUID;
  */
 public class Person {
 
+  /**
+   * These are determined by the SEXCodeSimpleType from the FBI's NIEM codes. We can't use the same
+   * ones that we want, but will use Unknown for gnc folks.
+   *
+   * <p>Representative of a bigger issue of mixing random govt agency definitions of things. It's
+   * dumb.
+   */
+  public enum Gender {
+    MALE,
+    FEMALE,
+    NONBINARY,
+    OTHER,
+    UNKNOWN
+  }
+
   private final Name name;
   // NOTE: from docassemble, we will take the mailing address if present, not the standard
   // address.
   private final ContactInformation contactInfo;
-  private final Optional<String> gender;
+  private final Optional<Gender> gender;
   private Optional<String> language;
   private final Optional<LocalDate> birthdate;
   // If true, this is actually a business or organization, i.e. a legal person, not an individual.
@@ -52,7 +67,7 @@ public class Person {
   public static Person FromEfm(
       Name name,
       ContactInformation contactInfo,
-      Optional<String> gender,
+      Optional<Gender> gender,
       Optional<String> language,
       Optional<LocalDate> birthdate,
       boolean isOrg,
@@ -67,7 +82,7 @@ public class Person {
   public static Person FromInput(
       Name name,
       ContactInformation contactInfo,
-      Optional<String> gender,
+      Optional<Gender> gender,
       Optional<String> language,
       Optional<LocalDate> birthdate,
       boolean isOrg,
@@ -86,7 +101,7 @@ public class Person {
   private Person(
       Name name,
       ContactInformation contactInfo,
-      Optional<String> gender,
+      Optional<Gender> gender,
       Optional<String> language,
       Optional<LocalDate> birthdate,
       boolean isOrg,
@@ -126,7 +141,7 @@ public class Person {
     return birthdate;
   }
 
-  public Optional<String> getGender() {
+  public Optional<Gender> getGender() {
     return gender;
   }
 

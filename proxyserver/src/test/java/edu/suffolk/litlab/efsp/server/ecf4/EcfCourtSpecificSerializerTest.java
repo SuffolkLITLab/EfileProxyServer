@@ -29,6 +29,7 @@ import edu.suffolk.litlab.efsp.model.ContactInformation;
 import edu.suffolk.litlab.efsp.model.Name;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
+import edu.suffolk.litlab.efsp.model.Person.Gender;
 import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
 import edu.suffolk.litlab.efsp.utils.AllWrongCollector;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
@@ -112,7 +113,7 @@ public class EcfCourtSpecificSerializerTest {
         Person.FromInput(
             new Name("Bob", "", "Zombie"),
             info,
-            Optional.of("Male"),
+            Optional.of(Gender.MALE),
             Optional.of("Spanish"),
             Optional.empty(),
             false,
@@ -157,7 +158,7 @@ public class EcfCourtSpecificSerializerTest {
         Person.FromInput(
             new Name("Bob", "", "Zombie"),
             info,
-            Optional.of("Male"),
+            Optional.of(Gender.MALE),
             Optional.of("Spanish"),
             Optional.empty(),
             false,
@@ -220,7 +221,7 @@ public class EcfCourtSpecificSerializerTest {
 
     var varToPartyId = Map.of("users[0]", PartyId.CurrentFilingNew("abc"));
     JsonNode node = readFile("one_attachment.json");
-    var parser = new TylerCodesParser(cd, new CourtLocationInfo("not_real"), new DataFields());
+    var parser = new TylerCodesParser(cd, loc);
     var doc =
         FilingDocDocassembleJacksonDeserializer.fromNode(
             node, varToPartyId, 2, List.of(filing), parser, collector);
