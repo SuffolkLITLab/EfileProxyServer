@@ -11,6 +11,7 @@ import edu.suffolk.litlab.efsp.model.Address;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
 import edu.suffolk.litlab.efsp.model.Name;
 import edu.suffolk.litlab.efsp.model.Person;
+import edu.suffolk.litlab.efsp.model.Person.Gender;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
@@ -101,7 +102,14 @@ public class PersonDocassembleJacksonDeserializer {
     Optional<String> language =
         collector.unwrapOpt(
             parser.vetLangCode(getStringMember(node, "prefered_language")), langBuilder);
-    Optional<String> gender = getStringMember(node, "gender");
+    var genderRes = parser.vetGender(getStringMember(node, "gender"));
+    Optional<Gender> gender;
+    if (genderRes.isErr()) {
+      collector.addTextError(genderRes.expectErr(""), collector.varBuilder().name("gender"));
+      gender = Optional.empty();
+    } else {
+      gender = genderRes.expect("");
+    }
     Optional<String> birthdateString = getStringMember(node, "date_of_birth");
     Optional<LocalDate> birthdate =
         birthdateString

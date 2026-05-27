@@ -113,7 +113,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
             node, varToPartyId, 0, filingCodes, parser, collector);
     assertThat(maybeDoc).isPresent();
     var doc = maybeDoc.get();
-    assertThat(doc.getFilingCode()).isPresent().contains(filingCodes.get(0));
+    assertThat(doc.getFilingCode()).isEqualTo(filingCodes.get(0));
     assertThat(doc.sequenceNum()).isEqualTo(0);
     var attachments = doc.getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);

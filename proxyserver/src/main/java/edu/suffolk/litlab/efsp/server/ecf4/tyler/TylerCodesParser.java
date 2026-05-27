@@ -14,6 +14,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.model.OptionalService;
+import edu.suffolk.litlab.efsp.model.Person.Gender;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.util.ArrayList;
@@ -140,7 +141,7 @@ public class TylerCodesParser implements CodesParser {
     return Result.ok(filingOptions);
   }
 
-  public Result<Optional<FilingCode>, CodeError> vetFilingType(
+  public Result<FilingCode, CodeError> vetFilingType(
       Optional<String> filingStr,
       /** Pass in so we only need to make 1 expensive DB query */
       List<FilingCode> filingOptions) {
@@ -150,13 +151,14 @@ public class TylerCodesParser implements CodesParser {
     }
     Optional<FilingCode> maybeCode =
         filingOptions.stream().filter(fil -> fil.code.equals(filingStr.get())).findFirst();
-
-    if (maybeCode.isEmpty()) {
-      log.error("Nothing matches filing `{}` in the info!", filingStr);
-      List<String> options = filingOptions.stream().map(f -> f.code).toList();
-      return Result.err(new NoMatchingCode(filingStr.get(), options));
-    }
-    return Result.ok(maybeCode);
+    return maybeCode
+        .map(c -> Result.<FilingCode, CodeError>ok(c))
+        .orElseGet(
+            () -> {
+              log.error("Nothing matches filing `{}` in the info!", filingStr);
+              List<String> options = filingOptions.stream().map(f -> f.code).toList();
+              return Result.err(new NoMatchingCode(filingStr.get(), options));
+            });
   }
 
   public Result<String, CodeError> vetSuffix(Optional<String> maybeSuffix) {
@@ -248,7 +250,7 @@ public class TylerCodesParser implements CodesParser {
 
   // TODO: do good tests here
   public Result<Optional<NameAndCode>, CodeError> vetMotionCode(
-      Optional<String> motionCode, Optional<FilingCode> filing) {
+      Optional<String> motionCode, FilingCode filing) {
     DataFieldRow motionRow = allDataFields.getFieldRow("FilingMotionType");
     if (!motionRow.isvisible) {
       return Result.ok(Optional.empty());
@@ -256,11 +258,7 @@ public class TylerCodesParser implements CodesParser {
     if (!motionRow.isrequired && motionCode.isEmpty()) {
       return Result.ok(Optional.empty());
     }
-    if (filing.isEmpty()) {
-      return Result.err(
-          new BadCode(FilingError.malformedInterview("Need filing type to handle motion types")));
-    }
-    List<NameAndCode> motionTypes = cd.getMotionTypes(this.court.code, filing.get().code);
+    List<NameAndCode> motionTypes = cd.getMotionTypes(this.court.code, filing.code);
     if (motionCode.isPresent()) {
       String mt = motionCode.get();
       Optional<NameAndCode> matchedMotion =
@@ -286,20 +284,12 @@ public class TylerCodesParser implements CodesParser {
    * doesn't have the selected multiplier / fee amount.
    */
   public Result<List<OptionalService>, List<CodeError>> vetOptionalServices(
-      List<InputOptionalService> servs, Optional<FilingCode> filing) {
+      List<InputOptionalService> servs, FilingCode filing) {
     if (servs.isEmpty()) {
       return Result.ok(List.of());
     }
 
-    if (filing.isEmpty()) {
-      return Result.err(
-          List.of(
-              new BadCode(
-                  FilingError.malformedInterview(
-                      "Need to use filing code if you have optional services"))));
-    }
-
-    List<OptionalServiceCode> codes = cd.getOptionalServices(this.court.code, filing.get().code);
+    List<OptionalServiceCode> codes = cd.getOptionalServices(this.court.code, filing.code);
     Map<String, OptionalServiceCode> codeMap =
         codes.stream().collect(Collectors.toMap(sv -> sv.code, sv -> sv));
     List<CodeError> errs = new ArrayList<>();
@@ -338,8 +328,8 @@ public class TylerCodesParser implements CodesParser {
     return Result.err(errs);
   }
 
-  public List<FilingComponent> retrieveFilingComponents(Optional<FilingCode> filingCode) {
-    return filingCode.map(fc -> cd.getFilingComponents(this.court.code, fc.code)).orElse(List.of());
+  public List<FilingComponent> retrieveFilingComponents(FilingCode filingCode) {
+    return cd.getFilingComponents(this.court.code, filingCode.code);
   }
 
   /**
@@ -474,6 +464,18 @@ public class TylerCodesParser implements CodesParser {
     }
   }
 
+  ////////  Still TODO
+  // Org Name
+  // Attorney: Party Attorney and Filing Attorney
+  // PartyType
+  // FileName
+  // DueDate
+  // Filing Action
+  // Filing Doc
+  // Filer Types
+  // Filing Associations
+  // Anything else not currently checked
+
   /**
    * Throws if something is wrong; otherwise, an optional email (empty does not mean error!).
    *
@@ -577,5 +579,85 @@ public class TylerCodesParser implements CodesParser {
 
   public Result<String, TextVarError> vetLastName(Optional<String> name) {
     return vetName(name, allDataFields.getFieldRow("PartyLastName"));
+  }
+
+  public Result<Optional<Gender>, TextVarError> vetGender(Optional<String> gender) {
+    DataFieldRow genderRow = allDataFields.getFieldRow("PartyGender");
+    if (genderRow.isvisible) {
+      if (gender.isEmpty()) {
+        // Whether or not it's required, going to set unknown
+        return Result.ok(Optional.of(Gender.UNKNOWN));
+      }
+      var genderString = gender.get();
+      if (genderString.equalsIgnoreCase("male") || genderString.equalsIgnoreCase("m")) {
+        return Result.ok(Optional.of(Gender.MALE));
+      } else if (genderString.equalsIgnoreCase("female") || genderString.equals("f")) {
+        return Result.ok(Optional.of(Gender.FEMALE));
+      } else if (genderString.equalsIgnoreCase("nonbinary") || genderString.equals("nb")) {
+        return Result.ok(Optional.of(Gender.NONBINARY));
+      } else {
+        return Result.ok(Optional.of(Gender.OTHER));
+      }
+    } else {
+      return Result.ok(Optional.empty());
+    }
+  }
+
+  public Result<Optional<String>, TextVarError> vetFilingRefNum(Optional<String> fileRefNum) {
+    DataFieldRow fileRefRow = allDataFields.getFieldRow("FilingReferenceNumber");
+    if (fileRefRow.isvisible) {
+      if (fileRefNum.isEmpty() && fileRefRow.isrequired) {
+        return Result.err(new MissingVar(fileRefRow.regularexpression));
+      }
+      return Result.ok(fileRefNum);
+    }
+    return Result.ok(Optional.empty());
+  }
+
+  public Result<Optional<String>, TextVarError> vetComment(Optional<String> maybeComment) {
+    DataFieldRow commentRow = allDataFields.getFieldRow("FilingFilingComments");
+    String comment = maybeComment.orElse("");
+    if (commentRow.isvisible) {
+      if (!commentRow.matchRegex(comment)) {
+        return Result.err(new WrongVar(comment, commentRow.regularexpression));
+      }
+      // I absolutely refuse to require comments from the user on each individual document.
+      if (commentRow.isrequired) {
+        log.error(
+            "Dev Ops Error: Comments are required per filing document apparently. "
+                + "Not being forced yet");
+        return Result.ok(Optional.of("(No comment)"));
+      }
+      return Result.ok(Optional.of(comment));
+    }
+    return Result.ok(Optional.empty());
+  }
+
+  public Optional<String> getDocumentDescription(
+      String description, String firstFileName, FilingCode filing) {
+    DataFieldRow row = allDataFields.getFieldRow("DocumentDescription");
+    if (!row.isvisible) {
+      return Optional.empty();
+    }
+    if (!description.isBlank()) {
+      return Optional.of(description);
+    } else {
+      if (this.court.defaultdocumentdescription.equals("1")) {
+        return Optional.of(filing.name);
+      } else if (this.court.defaultdocumentdescription.equals("2")) {
+        return Optional.of(firstFileName);
+      } else if (row.defaultvalueexpression.equals("{{FilingCodeDescription}}")) {
+        return Optional.of(filing.name);
+      } else if (row.defaultvalueexpression.equals("{{FileName}}")) {
+        return Optional.of(firstFileName);
+      } else if (row.isrequired) {
+        log.warn(
+            "DEVOPS Error: A document description is required, but not as Tyler defines in their docs: {}",
+            row.defaultvalueexpression);
+        return Optional.of("A document");
+      } else {
+        return Optional.of(row.defaultvalueexpression);
+      }
+    }
   }
 }

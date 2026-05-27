@@ -11,6 +11,7 @@ import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
+import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.model.FilingAction;
@@ -19,7 +20,9 @@ import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.CodeError;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.InputOptionalService;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.TextVarError;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
@@ -39,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,25 +71,18 @@ public class FilingDocDocassembleJacksonDeserializer {
       log.info("Filing doc isn't proxy enabled, won't parse it or attachments");
       return Optional.empty();
     }
-    Optional<String> filingStr = JsonHelpers.getStringMember(node, "filing_type");
+    Optional<String> filingStr = getStringMember(node, "filing_type");
     var filingRes = parser.vetFilingType(filingStr, filingOptions);
     var name = (node.has("instanceName")) ? node.get("instanceName").asText("?") : "?";
     var filingBuilder =
         collector.varBuilder().name("filing_type").description("What filing type is this?" + name);
     if (filingRes.isErr()) {
       collector.addCodeError(filingRes.unwrapErrOrElseThrow(), filingBuilder);
-    } else if (filingRes.unwrapOrElseThrow().isEmpty()) {
-      collector.addOptional(filingBuilder.build());
     }
     var filingType = filingRes.unwrapOrElseThrow();
 
-    Optional<String> motionName = getStringMember(node, "motion_type");
-    var motionBuilder = collector.varBuilder().name("motion_type").description("(optional)");
-    var motionRes = parser.vetMotionCode(motionName, filingType);
-    if (motionRes.isErr()) {
-      collector.addCodeError(motionRes.expectErr(""), motionBuilder);
-    }
-    var motionCode = motionRes.expect("");
+    var motionCode =
+        unwrapCodeErr(r -> parser.vetMotionCode(r, filingType), node, "motion_type", collector);
 
     List<OptionalService> optServices = new ArrayList<>();
     Optional<JsonNode> maybeOptServs = JsonHelpers.unwrapDAList(node.get("optional_services"));
@@ -124,12 +121,12 @@ public class FilingDocDocassembleJacksonDeserializer {
                   Instant.parse(jsonDueDate.asText()), ZoneId.of("America/Chicago")));
     }
     String userDescription = getStringDefault(node, "filing_description", "");
-    Optional<String> filingRefNum = getStringMember(node, "reference_number");
+    var filingRefNum = unwrap(parser::vetFilingRefNum, node, "reference_number", collector);
     Optional<String> filingAttorney = getNonEmptyStringMember(node, "filing_attorney");
-    String filingComment = getStringDefault(node, "filing_comment", "");
+    var filingComment = unwrap(parser::vetComment, node, "filing_comment", collector);
 
     String _logName =
-        (userDescription.isBlank()) ? filingStr.orElse(filingComment) : userDescription;
+        (userDescription.isBlank()) ? filingStr.orElse(filingComment.orElse("")) : userDescription;
 
     List<String> courtesyCopies = getMemberList(node, "courtesy_copies");
     List<String> preliminaryCopies = getMemberList(node, "preliminary_copies");
@@ -181,7 +178,7 @@ public class FilingDocDocassembleJacksonDeserializer {
           // TODO(brycew): I don't like orElse(null), but unsure how to handle optional filing codes
           // yet? Revisit with Alaska's stuff
           var maybeAttachment =
-              getAttachment(attachNode, components, filingType.orElse(null), parser, collector);
+              getAttachment(attachNode, components, filingType, parser, collector);
           if (maybeAttachment.isPresent()) {
             attachments = attachments.snoc(maybeAttachment.get());
           }
@@ -193,7 +190,7 @@ public class FilingDocDocassembleJacksonDeserializer {
     if (attachments.isEmpty()) {
       log.info("No attachments present in {}", _logName);
       Optional<FilingAttachment> attachment =
-          getAttachment(node, components, filingType.orElse(null), parser, collector);
+          getAttachment(node, components, filingType, parser, collector);
       if (attachment.isPresent()) {
         attachments = fj.data.List.single(attachment.get());
       }
@@ -208,10 +205,15 @@ public class FilingDocDocassembleJacksonDeserializer {
           _logName);
       return Optional.empty();
     }
+
+    var descriptionFromSpec =
+        parser.getDocumentDescription(
+            userDescription, goodAttachments.some().head().getFileName(), filingType);
     return Optional.of(
         new FilingDoc(
             filingType,
             userDescription,
+            descriptionFromSpec,
             filingRefNum,
             maybeDueDate,
             fullParties,
@@ -322,6 +324,36 @@ public class FilingDocDocassembleJacksonDeserializer {
           serverError("IOException trying to connect to data_url (" + dataUrl + "):" + ex);
       collector.error(err);
       throw err;
+    }
+  }
+
+  public static <T> Optional<T> unwrap(
+      Function<Optional<String>, Result<Optional<T>, TextVarError>> resMaker,
+      JsonNode node,
+      String name,
+      InfoCollector collector)
+      throws FilingError {
+    var res = resMaker.apply(getStringMember(node, name));
+    if (res.isErr()) {
+      collector.addTextError(res.expectErr(""), collector.varBuilder().name(name));
+      return Optional.empty();
+    } else {
+      return res.expect("");
+    }
+  }
+
+  public static <T> Optional<T> unwrapCodeErr(
+      Function<Optional<String>, Result<Optional<T>, CodeError>> resMaker,
+      JsonNode node,
+      String name,
+      InfoCollector collector)
+      throws FilingError {
+    var res = resMaker.apply(getStringMember(node, name));
+    if (res.isErr()) {
+      collector.addCodeError(res.expectErr(""), collector.varBuilder().name(name));
+      return Optional.empty();
+    } else {
+      return res.expect("");
     }
   }
 }

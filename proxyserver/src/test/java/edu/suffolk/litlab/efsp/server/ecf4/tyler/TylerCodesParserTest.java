@@ -309,42 +309,23 @@ public class TylerCodesParserTest {
     public void noMotionCodeNoFilingCodeNotVisible() {
       when(dataFields.getFieldRow("FilingMotionType"))
           .thenReturn(DataFieldRow.MissingDataField("FilingMotionType"));
-      assertThat(parser.vetMotionCode(Optional.empty(), Optional.empty()))
-          .containsOk(Optional.empty());
-    }
-
-    @Test
-    public void noMotionCodeNoFilingCodeVisible() {
-      when(dataFields.getFieldRow("FilingMotionType"))
-          .thenReturn(new DataFieldRow("FilingMotionType", "", true, false, "01"));
-      assertThat(parser.vetMotionCode(Optional.empty(), Optional.empty()))
-          .containsOk(Optional.empty());
+      assertThat(parser.vetMotionCode(Optional.empty(), filingCode)).containsOk(Optional.empty());
     }
 
     @Test
     public void noMotionCodeYesFilingCodeVisible() {
       when(dataFields.getFieldRow("FilingMotionType"))
           .thenReturn(new DataFieldRow("FilingMotionType", "", true, false, "01"));
-      assertThat(parser.vetMotionCode(Optional.empty(), Optional.of(filingCode)))
-          .containsOk(Optional.empty());
+      assertThat(parser.vetMotionCode(Optional.empty(), filingCode)).containsOk(Optional.empty());
     }
 
     @Test
     public void noMotionCodeYesFilingCodeRequired() {
       when(dataFields.getFieldRow("FilingMotionType"))
           .thenReturn(new DataFieldRow("FilingMotionType", "", true, true, "01"));
-      assertThat(parser.vetMotionCode(Optional.empty(), Optional.of(filingCode)))
+      assertThat(parser.vetMotionCode(Optional.empty(), filingCode))
           .extractingErr()
           .isInstanceOf(RequiredCodeNotPresent.class);
-    }
-
-    @Test
-    public void yesMotionCodeNoFilingCodeVisible() {
-      when(dataFields.getFieldRow("FilingMotionType"))
-          .thenReturn(new DataFieldRow("FilingMotionType", "", true, true, "01"));
-      assertThat(parser.vetMotionCode(Optional.of("1234"), Optional.empty()))
-          .extractingErr()
-          .isInstanceOf(BadCode.class);
     }
 
     @Test
@@ -352,7 +333,7 @@ public class TylerCodesParserTest {
       when(dataFields.getFieldRow("FilingMotionType"))
           .thenReturn(new DataFieldRow("FilingMotionType", "", true, false, "01"));
       when(cd.getMotionTypes("01", filingCode.code)).thenReturn(List.of());
-      var res = parser.vetMotionCode(Optional.of("1234"), Optional.of(filingCode));
+      var res = parser.vetMotionCode(Optional.of("1234"), filingCode);
       assertThat(res).extractingErr().isInstanceOf(NoMatchingCode.class);
     }
 
@@ -362,7 +343,7 @@ public class TylerCodesParserTest {
           .thenReturn(new DataFieldRow("FilingMotionType", "", true, false, "01"));
       when(cd.getMotionTypes("01", filingCode.code))
           .thenReturn(List.of(new NameAndCode("idk", "1234")));
-      var res = parser.vetMotionCode(Optional.of("1234"), Optional.of(filingCode));
+      var res = parser.vetMotionCode(Optional.of("1234"), filingCode);
       assertThat(res).containsOk(Optional.of(new NameAndCode("idk", "1234")));
     }
   }
@@ -396,20 +377,8 @@ public class TylerCodesParserTest {
 
     @Test
     public void testNoOptServs() {
-      var res = parser.vetOptionalServices(List.of(), Optional.empty());
-      assertThat(res).containsOk(List.of());
-      var res2 = parser.vetOptionalServices(List.of(), Optional.of(filingCode));
+      var res2 = parser.vetOptionalServices(List.of(), filingCode);
       assertThat(res2).containsOk(List.of());
-    }
-
-    @Test
-    public void testOptServsNoFilingCode() {
-      var res =
-          parser.vetOptionalServices(
-              List.of(
-                  new CodesParser.InputOptionalService(null, Optional.empty(), Optional.empty())),
-              Optional.empty());
-      assertThat(res).isErr();
     }
 
     @Test
@@ -418,7 +387,7 @@ public class TylerCodesParserTest {
           parser.vetOptionalServices(
               List.of(
                   new CodesParser.InputOptionalService("2233", Optional.empty(), Optional.empty())),
-              Optional.of(filingCode));
+              filingCode);
       assertThat(res).isErr();
       var errs = res.expectErr("");
       assertThat(errs).hasSize(1).allMatch(err -> err instanceof NoMatchingCode);
@@ -430,7 +399,7 @@ public class TylerCodesParserTest {
           parser.vetOptionalServices(
               List.of(
                   new CodesParser.InputOptionalService("9877", Optional.empty(), Optional.empty())),
-              Optional.of(filingCode));
+              filingCode);
       assertThat(res).isErr();
       var errs = res.expectErr("");
       assertThat(errs).hasSize(1).allMatch(err -> err instanceof BadCode);
@@ -443,7 +412,7 @@ public class TylerCodesParserTest {
               List.of(
                   new CodesParser.InputOptionalService(
                       "9877", Optional.empty(), Optional.of(new BigDecimal(13)))),
-              Optional.of(filingCode));
+              filingCode);
       assertThat(res).isOk();
       var list = res.expect("");
       assertThat(list)
@@ -461,7 +430,7 @@ public class TylerCodesParserTest {
           parser.vetOptionalServices(
               List.of(
                   new CodesParser.InputOptionalService("9878", Optional.empty(), Optional.empty())),
-              Optional.of(filingCode));
+              filingCode);
       assertThat(res).isErr();
       var errs = res.expectErr("");
       assertThat(errs).hasSize(1).allMatch(err -> err instanceof BadCode);
@@ -473,7 +442,7 @@ public class TylerCodesParserTest {
           parser.vetOptionalServices(
               List.of(
                   new CodesParser.InputOptionalService("9878", Optional.of(3), Optional.empty())),
-              Optional.of(filingCode));
+              filingCode);
       assertThat(res).isOk();
       var list = res.expect("");
       assertThat(list)

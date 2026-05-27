@@ -8,6 +8,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.model.OptionalService;
+import edu.suffolk.litlab.efsp.model.Person.Gender;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public interface CodesParser {
   public Result<List<FilingCode>, BadCode> retrieveFilingOptions(
       CaseCategory caseCategory, CaseType type, boolean isInitialFiling);
 
-  public Result<Optional<FilingCode>, CodeError> vetFilingType(
+  public Result<FilingCode, CodeError> vetFilingType(
       Optional<String> filingCode, List<FilingCode> filingOptions);
 
   public Result<String, CodeError> vetSuffix(Optional<String> suffix);
@@ -60,15 +61,15 @@ public interface CodesParser {
       Map<String, String> crossRefs, CaseType caseType);
 
   public Result<Optional<NameAndCode>, CodeError> vetMotionCode(
-      Optional<String> motionCode, Optional<FilingCode> filing);
+      Optional<String> motionCode, FilingCode filing);
 
   public record InputOptionalService(
       String code, Optional<Integer> multiplier, Optional<BigDecimal> feeAmount) {}
 
   public Result<List<OptionalService>, List<CodeError>> vetOptionalServices(
-      List<InputOptionalService> servs, Optional<FilingCode> filing);
+      List<InputOptionalService> servs, FilingCode filing);
 
-  public List<FilingComponent> retrieveFilingComponents(Optional<FilingCode> filingCode);
+  public List<FilingComponent> retrieveFilingComponents(FilingCode filingCode);
 
   public Result<FilingComponent, CodeError> vetFilingComponent(
       String filingComponent, ArrayList<FilingComponent> components);
@@ -91,4 +92,13 @@ public interface CodesParser {
   public Result<String, TextVarError> vetMiddleName(Optional<String> name);
 
   public Result<String, TextVarError> vetLastName(Optional<String> name);
+
+  public Result<Optional<Gender>, TextVarError> vetGender(Optional<String> gender);
+
+  public Result<Optional<String>, TextVarError> vetFilingRefNum(Optional<String> fileRefNum);
+
+  public Result<Optional<String>, TextVarError> vetComment(Optional<String> comment);
+
+  public Optional<String> getDocumentDescription(
+      String description, String firstFileName, FilingCode filing);
 }

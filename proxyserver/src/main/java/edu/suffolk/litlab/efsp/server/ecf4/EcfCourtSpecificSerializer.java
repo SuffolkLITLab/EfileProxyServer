@@ -55,7 +55,6 @@ import edu.suffolk.litlab.efsp.model.Name;
 import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
-import edu.suffolk.litlab.efsp.stdlib.NonEmptyString;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
@@ -130,19 +129,7 @@ public class EcfCourtSpecificSerializer {
       collector.error(err);
     }
 
-    int idx = 0;
-    for (var filing : info.getFilings()) {
-      collector.pushAttributeStack("al_court_bundle[" + idx + "]");
-      if (filing.getFilingCode().isEmpty()) {
-        InterviewVariable filingVar =
-            collector.requestVar("filing_type", "What filing type is this?", "text");
-        collector.addRequired(filingVar);
-      }
-      idx += 1;
-      collector.popAttributeStack();
-    }
-    List<FilingCode> filingCodes =
-        info.getFilings().stream().map(f -> f.getFilingCode().get()).toList();
+    List<FilingCode> filingCodes = info.getFilings().stream().map(f -> f.getFilingCode()).toList();
     Map<String, Person> partyInfo =
         Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
             .collect(Collectors.toMap(per -> per.getIdString(), per -> per));
@@ -280,24 +267,24 @@ public class EcfCourtSpecificSerializer {
       pt.setPersonName(serializeNameType(per.getName(), collector));
       pt.setPersonAugmentation(aug);
 
-      DataFieldRow genderRow = allDataFields.getFieldRow("PartyGender");
-      if (genderRow.isvisible) {
-        if (per.getGender().isPresent()) {
-          String gen = per.getGender().get();
-          SEXCodeType sct = new SEXCodeType();
-          if (gen.equalsIgnoreCase("male") || gen.equalsIgnoreCase("m")) {
-            sct.setValue(SEXCodeSimpleType.M);
-          } else if (gen.equalsIgnoreCase("female") || gen.equals("f")) {
-            sct.setValue(SEXCodeSimpleType.F);
-          } else {
-            sct.setValue(SEXCodeSimpleType.U);
-          }
-          pt.setPersonSex(niemObjFac.createPersonSexCode(sct));
-        } else if (genderRow.isrequired) {
-          InterviewVariable var = collector.requestVar("gender", "Gender of this filer", "text");
-          collector.addRequired(var);
-        }
-      }
+      per.getGender()
+          .ifPresent(
+              gen -> {
+                // We can't use the same ones that we want, but will use Unknown for gnc folks.
+                // Representative of a bigger issue of mixing random govt agency definitions of
+                // things. It's dumb.
+                SEXCodeSimpleType sexEnum =
+                    switch (gen) {
+                      case MALE -> SEXCodeSimpleType.M;
+                      case FEMALE -> SEXCodeSimpleType.F;
+                      case NONBINARY -> SEXCodeSimpleType.U;
+                      case OTHER -> SEXCodeSimpleType.U;
+                      case UNKNOWN -> SEXCodeSimpleType.U;
+                    };
+                SEXCodeType sct = new SEXCodeType();
+                sct.setValue(sexEnum);
+                pt.setPersonSex(niemObjFac.createPersonSexCode(sct));
+              });
 
       if (per.getLanguage().isPresent()) {
         List<String> langs = cd.getLanguageNames(this.court.code);
@@ -460,12 +447,12 @@ public class EcfCourtSpecificSerializer {
       InfoCollector collector)
       throws IOException, FilingError {
     DocumentType docType = tylerObjFac.createDocumentType();
-    DataFieldRow row = allDataFields.getFieldRow("DocumentDescription");
-    if (row.isvisible) {
-      docType.setDocumentDescriptionText(
-          Ecf4Helper.convertText(
-              findDocumentDescription(doc.getDescription(), row, doc, filing, collector)));
-    }
+    doc.descriptionFromSpec()
+        .ifPresent(
+            desc -> {
+              docType.setDocumentDescriptionText(Ecf4Helper.convertText(desc));
+            });
+
     List<FileType> allowedFileTypes = cd.getAllowedFileTypes(this.court.code);
     for (var attachment : doc.getFilingAttachments()) {
       boolean correctExtension =
@@ -481,20 +468,12 @@ public class EcfCourtSpecificSerializer {
       }
     }
 
-    DataFieldRow fileRefRow = allDataFields.getFieldRow("FilingReferenceNumber");
-    if (fileRefRow.isvisible) {
-      if (doc.getFilingReferenceNum().isPresent()) {
-        docType.setDocumentFileControlID(
-            Ecf4Helper.convertString(doc.getFilingReferenceNum().get()));
-      } else if (fileRefRow.isrequired) {
-        InterviewVariable var =
-            collector.requestVar(
-                "reference_number",
-                "Reference Number for a document, given by the user? TODO(brycew)",
-                "text");
-        collector.addRequired(var);
-      }
-    }
+    doc.getFilingReferenceNum()
+        .ifPresent(
+            refNum -> {
+              docType.setDocumentFileControlID(Ecf4Helper.convertString(refNum));
+            });
+
     DataFieldRow dueDateRow = allDataFields.getFieldRow("DueDateAvailableForFilers");
     if (filing.useduedate && dueDateRow.isvisible) {
       if (doc.getDueDate().isPresent()) {
@@ -555,23 +534,11 @@ public class EcfCourtSpecificSerializer {
     docType.setCourtesyCopiesText(Ecf4Helper.convertText(cc));
     String prelim = doc.getPreliminaryCopies().stream().reduce("", (base, str) -> base + "," + str);
     docType.setPreliminaryCopiesText(Ecf4Helper.convertText(prelim));
-    DataFieldRow commentRow = allDataFields.getFieldRow("FilingFilingComments");
-    if (commentRow.isvisible) {
-      String comment = doc.getFilingComments();
-      if (!commentRow.matchRegex(comment)) {
-        InterviewVariable var =
-            collector.requestVar("comment", "", "text", List.of(), Optional.of(comment));
-        collector.addWrong(var);
-      }
-      // I absolutely refuse to require comments from the user on each individual document.
-      if (commentRow.isrequired) {
-        log.error(
-            "Dev Ops Error: Comments are required per filing document apparently. "
-                + "Not being forced yet");
-      }
-      docType.setFilingCommentsText(Ecf4Helper.convertText(doc.getFilingComments()));
-    }
-
+    doc.getFilingComments()
+        .ifPresent(
+            comment -> {
+              docType.setFilingCommentsText(Ecf4Helper.convertText(comment));
+            });
     doc.getMotionType()
         .ifPresent(
             motion -> {
@@ -706,38 +673,6 @@ public class EcfCourtSpecificSerializer {
     }
     attachment.setAttachmentSequenceID(Ecf4Helper.convertString(Integer.toString(seqNum)));
     return attachment;
-  }
-
-  private String findDocumentDescription(
-      Optional<NonEmptyString> userProvidedDescription,
-      DataFieldRow descriptionRow,
-      FilingDoc doc,
-      FilingCode filing,
-      InfoCollector collector)
-      throws FilingError {
-    if (userProvidedDescription.isPresent()) {
-      return userProvidedDescription.get().get();
-    } else {
-      if (this.court.defaultdocumentdescription.equals("1")) {
-        return filing.name;
-      } else if (this.court.defaultdocumentdescription.equals("2")) {
-        return doc.getFilingAttachments().head().getFileName();
-      } else if (descriptionRow.defaultvalueexpression.equals("{{FilingCodeDescription}}")) {
-        return filing.name;
-      } else if (descriptionRow.defaultvalueexpression.equals("{{FileName}}")) {
-        return doc.getFilingAttachments().head().getFileName();
-      } else if (descriptionRow.isrequired) {
-        InterviewVariable var =
-            collector.requestVar(
-                "description",
-                "A human understandable description of this filing document",
-                "text");
-        collector.addRequired(var);
-        throw FilingError.missingRequired(var);
-      } else {
-        return descriptionRow.defaultvalueexpression;
-      }
-    }
   }
 
   /** True if it worked. */
