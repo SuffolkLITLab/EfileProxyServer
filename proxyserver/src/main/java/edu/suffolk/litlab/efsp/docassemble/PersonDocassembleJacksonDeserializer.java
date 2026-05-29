@@ -5,7 +5,6 @@ import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getNonEmptyStringMember;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NullNode;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.model.Address;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
@@ -15,7 +14,6 @@ import edu.suffolk.litlab.efsp.model.Person.Gender;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
-import edu.suffolk.litlab.efsp.utils.InterviewVariable;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -84,14 +82,7 @@ public class PersonDocassembleJacksonDeserializer {
     }
     final ContactInformation info = new ContactInformation(phones, addr, email);
 
-    JsonNode partyJson = node.get("party_type");
-    if (partyJson == null || !partyJson.isTextual()) {
-      InterviewVariable var =
-          collector.requestVar("party_type", "What legal role the party fulfills", "text");
-      collector.addOptional(var);
-      partyJson = NullNode.getInstance();
-    }
-    String partyType = partyJson.asText("");
+    Optional<String> partyType = getStringMember(node, "party_type");
 
     boolean isFormFiller = getBoolMember(node, "is_form_filler").orElse(false);
     var langBuilder =

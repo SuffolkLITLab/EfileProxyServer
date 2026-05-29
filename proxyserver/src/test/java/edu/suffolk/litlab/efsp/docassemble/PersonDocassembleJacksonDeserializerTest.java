@@ -65,7 +65,8 @@ public class PersonDocassembleJacksonDeserializerTest {
         .isPresent(); // contains(new Address("123 Fake St", "", "Chicago", "IL", "60007",
     assertThat(per.getContactInfo().getAddress().get().getCity()).isEqualTo("Chicago");
     assertThat(per.getPartyId()).isEqualTo(PartyId.Already("abcd1234-1234-1234-1234-abcdabcd1234"));
-    assertThat(per.getRole()).isEqualTo("29738");
+    assertThat(per.getRole()).isPresent();
+    assertThat(per.getRole().get()).isEqualTo("29738");
   }
 
   @Test
@@ -89,7 +90,8 @@ public class PersonDocassembleJacksonDeserializerTest {
         .isPresent(); // contains(new Address("123 Fake St", "", "Chicago", "IL", "60007",
     assertThat(per.getContactInfo().getAddress().get().getCity()).isEqualTo("Chicago");
     assertThat(per.getPartyId()).isEqualTo(PartyId.Already("abcd1234-1234-1234-1234-abcdabcd1234"));
-    assertThat(per.getRole()).isEqualTo("29738");
+    assertThat(per.getRole()).isPresent();
+    assertThat(per.getRole().get()).isEqualTo("29738");
   }
 
   @Test

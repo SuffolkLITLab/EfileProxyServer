@@ -289,7 +289,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       } else {
         allCodes = serializer.serializeCaseCodes(info, collector, isInitialFiling);
       }
-      String caseCategoryName = allCodes.cat.name;
+      String caseCategoryName = allCodes.cat().name;
       log.info("have all codes");
 
       var coreObjFac =
@@ -431,15 +431,15 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         }
         cumulativeBytes += bytes;
 
-        FilingCode fc = allCodes.filings.get(seqNum);
+        FilingCode fc = allCodes.filings().get(seqNum);
 
         collector.pushAttributeStack("al_court_bundle[" + seqNum + "]");
         JAXBElement<DocumentType> result =
             serializer.filingDocToXml(
                 filingDoc,
                 isInitialFiling,
-                allCodes.cat,
-                allCodes.type,
+                allCodes.cat(),
+                allCodes.type(),
                 fc,
                 isIndividual,
                 info.getMiscInfo(),

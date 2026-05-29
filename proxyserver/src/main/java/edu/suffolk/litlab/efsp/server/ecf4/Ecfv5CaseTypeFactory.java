@@ -34,17 +34,16 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.PartyId;
+import edu.suffolk.litlab.efsp.model.PartyInfo;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
-import edu.suffolk.litlab.efsp.utils.InterviewVariable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +80,7 @@ public class Ecfv5CaseTypeFactory {
       InfoCollector collector,
       Optional<Map<PartyId, Person>> existingParties) {
     Optional<BigDecimal> maybeAmt = Optional.empty();
-    if (allCodes.filings.stream()
+    if (allCodes.filings().stream()
         .anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"))) {
       log.info(info.getMiscInfo().toPrettyString());
       JsonNode jsonAmt = info.getMiscInfo().get("amount_in_controversy");
@@ -102,7 +101,7 @@ public class Ecfv5CaseTypeFactory {
     for (FilingDoc doc : info.getFilings()) {
       CourtEventAugmentationType e = oasisObjFac.createCourtEventAugmentationType();
       e.setCourtEventEnteredOnDocketDate(currentDate);
-      e.setCourtEventTypeCode(convertText(allCodes.filings.get(i).code));
+      e.setCourtEventTypeCode(convertText(allCodes.filings().get(i).code));
       doc.getMotionType()
           .ifPresentOrElse(
               mot -> {
@@ -117,19 +116,21 @@ public class Ecfv5CaseTypeFactory {
     }
 
     var ecfAug = oasisObjFac.createCaseAugmentationType();
-    ecfAug.getRest().add(oasisObjFac.createCaseCategoryCode(convertText(allCodes.cat.code)));
-    ecfAug.getRest().add(oasisObjFac.createCaseTypeCode(convertNormalized(allCodes.type.code)));
+    ecfAug.getRest().add(oasisObjFac.createCaseCategoryCode(convertText(allCodes.cat().code)));
+    ecfAug.getRest().add(oasisObjFac.createCaseTypeCode(convertNormalized(allCodes.type().code)));
 
     // TODO(brycew-later): write ecfv5 versions of this. Right now, don't have time to reimplement
     // everything, so checking with old ecfv4 code and building here
-    List<PartyType> partyTypes = cd.getPartyTypeFor(info.getCourtLocation(), allCodes.type.code);
+    List<PartyType> partyTypes = cd.getPartyTypeFor(info.getCourtLocation(), allCodes.type().code);
     Map<PartyId, EntityType> idToCaseParty = new HashMap<PartyId, EntityType>();
 
     try {
       i = 0;
       for (Person per : info.getNewPlaintiffs()) {
         collector.pushAttributeStack("plaintiffs[" + i + ']');
-        EntityType ent = serializeCaseParticipant(per, info, collector, partyTypes, idToCaseParty);
+        var pInfo = allCodes.partyInfo().get(per.getPartyId().getIdentificationString());
+        EntityType ent =
+            serializeCaseParticipant(per, info, pInfo, collector, partyTypes, idToCaseParty);
         collector.popAttributeStack();
         ecfAug.getRest().add(oasisObjFac.createCaseParty(ent));
         i++;
@@ -137,7 +138,9 @@ public class Ecfv5CaseTypeFactory {
       i = 0;
       for (Person per : info.getNewDefendants()) {
         collector.pushAttributeStack("defendants[" + i + ']');
-        EntityType ent = serializeCaseParticipant(per, info, collector, partyTypes, idToCaseParty);
+        var pInfo = allCodes.partyInfo().get(per.getPartyId().getIdentificationString());
+        EntityType ent =
+            serializeCaseParticipant(per, info, pInfo, collector, partyTypes, idToCaseParty);
         collector.popAttributeStack();
         ecfAug.getRest().add(oasisObjFac.createCaseParty(ent));
         i++;
@@ -276,24 +279,12 @@ public class Ecfv5CaseTypeFactory {
   private EntityType serializeCaseParticipant(
       Person per,
       FilingInformation info,
+      PartyInfo partyInfo,
       InfoCollector collector,
       List<PartyType> partyTypes,
       Map<PartyId, EntityType> idToCaseParty)
       throws FilingError {
-    Optional<PartyType> matchingType =
-        partyTypes.stream().filter(pt -> pt.code.equalsIgnoreCase(per.getRole())).findFirst();
-    if (matchingType.isEmpty()) {
-      List<String> partyTypeChoices =
-          partyTypes.stream().map(p -> p.code).collect(Collectors.toList());
-      InterviewVariable ptVar =
-          collector.requestVar(
-              "party_type",
-              "Legal role of the party",
-              "choices",
-              partyTypeChoices,
-              Optional.of(per.getRole()));
-      collector.addWrong(ptVar);
-    }
+    PartyType matchingType = partyInfo.type();
     EntityType ent = niemObjFac.createEntityType();
     ent.setId(per.getIdString());
 
@@ -301,7 +292,7 @@ public class Ecfv5CaseTypeFactory {
     if (per.isOrg()) {
       OrganizationType orgType = niemObjFac.createOrganizationType();
       OrganizationAugmentationType orgAug = oasisObjFac.createOrganizationAugmentationType();
-      orgAug.getCaseParticipantRoleCode().add(convertText(matchingType.get().code));
+      orgAug.getCaseParticipantRoleCode().add(convertText(matchingType.code));
       if (!info.getPartyAttorneyMap().containsKey(key)
           || info.getPartyAttorneyMap().get(key).isEmpty()) {
         orgAug.setParticipantID(convertId("SRL"));
@@ -315,7 +306,7 @@ public class Ecfv5CaseTypeFactory {
     } else {
       PersonType perType = niemObjFac.createPersonType();
       PersonAugmentationType pat = oasisObjFac.createPersonAugmentationType();
-      pat.getCaseParticipantRoleCode().add(convertText(matchingType.get().code));
+      pat.getCaseParticipantRoleCode().add(convertText(matchingType.code));
       if (!info.getPartyAttorneyMap().containsKey(key)
           || info.getPartyAttorneyMap().get(key).isEmpty()) {
         pat.setParticipantID(convertId("SRL"));

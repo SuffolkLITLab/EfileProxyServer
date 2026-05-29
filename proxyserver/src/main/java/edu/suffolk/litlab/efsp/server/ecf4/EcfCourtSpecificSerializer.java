@@ -54,6 +54,7 @@ import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.Name;
 import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.model.PartyId;
+import edu.suffolk.litlab.efsp.model.PartyInfo;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
@@ -68,7 +69,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,8 +109,7 @@ public class EcfCourtSpecificSerializer {
       Map<String, Person> newParties,
       InfoCollector collector)
       throws FilingError {
-    Map<String, Pair<PartyType, Boolean>> partyTypes =
-        vetPartyTypes(existingParties, newParties, type);
+    Map<String, PartyInfo> partyTypes = vetPartyTypes(existingParties, newParties, type);
     return new ComboCaseCodes(caseCategory, type, filingCodes, partyTypes);
   }
 
@@ -133,7 +132,7 @@ public class EcfCourtSpecificSerializer {
     Map<String, Person> partyInfo =
         Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
             .collect(Collectors.toMap(per -> per.getIdString(), per -> per));
-    Map<String, Pair<PartyType, Boolean>> partyTypes = vetPartyTypes(Map.of(), partyInfo, type);
+    Map<String, PartyInfo> partyTypes = vetPartyTypes(Map.of(), partyInfo, type);
     return new ComboCaseCodes(caseCategory, type, filingCodes, partyTypes);
   }
 
@@ -143,7 +142,7 @@ public class EcfCourtSpecificSerializer {
    *
    * @return the combined map of tyler ids and our ids to each party type
    */
-  private Map<String, Pair<PartyType, Boolean>> vetPartyTypes(
+  private Map<String, PartyInfo> vetPartyTypes(
       Map<String, Person> existingParties, Map<String, Person> newParties, CaseType type)
       throws FilingError {
     List<PartyType> pTypesForCase = cd.getPartyTypeFor(court.code, type.code);
@@ -153,65 +152,61 @@ public class EcfCourtSpecificSerializer {
     // on new cases anymore. So we'll make a backup map of all of the real party types, if
     // necessary.
     Map<String, PartyType> codeToAllPartyType = Map.of();
-    Map<String, Pair<PartyType, Boolean>> partyInfo = new HashMap<>();
-    for (Map.Entry<String, Person> party : existingParties.entrySet()) {
-      if (codeToPartyType.containsKey(party.getValue().getRole())) {
+    Map<String, PartyInfo> partyInfo = new HashMap<>();
+    for (Map.Entry<String, Person> entity : existingParties.entrySet()) {
+      Person party = entity.getValue();
+      String key = entity.getKey();
+      if (party.getRole().isEmpty()) {
+        log.warn("Existing party {} doesn't have a role?", key);
+        continue;
+      }
+      var role = party.getRole().get();
+      if (codeToPartyType.containsKey(role)) {
         partyInfo.put(
-            party.getKey(),
-            Pair.of(codeToPartyType.get(party.getValue().getRole()), party.getValue().isOrg()));
+            key, new PartyInfo(codeToPartyType.get(role), party.getPartyId(), party.isOrg()));
       } else {
-        log.warn(
-            "Existing party "
-                + party.getKey()
-                + "'s role ("
-                + party.getValue().getRole()
-                + ") isn't a code?");
+        log.warn("Existing party " + key + "'s role (" + party.getRole() + ") isn't a code?");
         if (codeToAllPartyType.isEmpty()) {
           var allForCourt = cd.getPartyTypeFor(court.code, null);
           codeToAllPartyType =
               allForCourt.stream().collect(Collectors.toMap(pt -> pt.code, pt -> pt));
         }
-        if (codeToAllPartyType.containsKey(party.getValue().getRole())) {
+        if (codeToAllPartyType.containsKey(role)) {
           partyInfo.put(
-              party.getKey(),
-              Pair.of(
-                  codeToAllPartyType.get(party.getValue().getRole()), party.getValue().isOrg()));
+              key, new PartyInfo(codeToAllPartyType.get(role), party.getPartyId(), party.isOrg()));
         } else {
           log.warn(
-              "Existing party "
-                  + party.getKey()
-                  + "'s role ("
-                  + party.getValue().getRole()
-                  + ") still isn't a code?: "
-                  + codeToAllPartyType.keySet());
+              "Existing party {}'s role ({}) still isn't a code?: {}",
+              key,
+              party.getRole(),
+              codeToAllPartyType.keySet());
           // partyInfo.put(party.getKey(), Pair.of(null, party.getValue().isOrg()));
         }
       }
     }
-    for (Map.Entry<String, Person> party : newParties.entrySet()) {
-      if (codeToPartyType.containsKey(party.getValue().getRole())) {
+    for (Map.Entry<String, Person> entry : newParties.entrySet()) {
+      Person party = entry.getValue();
+      String key = entry.getKey();
+      if (party.getRole().isEmpty()) {
+        log.warn("New party {} doesn't have a role?", key);
+        continue;
+      }
+      var role = party.getRole().get();
+      if (codeToPartyType.containsKey(role)) {
         partyInfo.put(
-            party.getKey(),
-            Pair.of(codeToPartyType.get(party.getValue().getRole()), party.getValue().isOrg()));
+            key, new PartyInfo(codeToPartyType.get(role), party.getPartyId(), party.isOrg()));
       } else {
-        log.warn(
-            "New party "
-                + party.getKey()
-                + "'s role ("
-                + party.getValue().getRole()
-                + ") isn't a code?");
+        log.warn("New party " + key + "'s role (" + party.getRole() + ") isn't a code?");
         if (codeToAllPartyType.isEmpty()) {
           var allForCourt = cd.getPartyTypeFor(court.code, type.code);
           codeToAllPartyType =
               allForCourt.stream().collect(Collectors.toMap(pt -> pt.code, pt -> pt));
         }
-        if (codeToAllPartyType.containsKey(party.getValue().getRole())) {
+        if (codeToAllPartyType.containsKey(role)) {
           partyInfo.put(
-              party.getKey(),
-              Pair.of(
-                  codeToAllPartyType.get(party.getValue().getRole()), party.getValue().isOrg()));
+              key, new PartyInfo(codeToAllPartyType.get(role), party.getPartyId(), party.isOrg()));
         } else {
-          partyInfo.put(party.getKey(), Pair.of(null, party.getValue().isOrg()));
+          partyInfo.put(key, new PartyInfo(null, party.getPartyId(), party.isOrg()));
         }
       }
     }
@@ -225,7 +220,7 @@ public class EcfCourtSpecificSerializer {
    * @throws FilingError
    */
   public CaseParticipantType serializeEcfCaseParticipant(
-      Person per, InfoCollector collector, List<PartyType> partyTypes) throws FilingError {
+      Person per, PartyInfo info, InfoCollector collector) throws FilingError {
     final CaseParticipantType cpt = ecfOf.createCaseParticipantType();
     ContactInformationType cit = serializeEcfContactInformation(per.getContactInfo(), collector);
     if (per.isOrg()) {
@@ -310,22 +305,8 @@ public class EcfCourtSpecificSerializer {
       cpt.setEntityRepresentation(ecfOf.createEntityPerson(pt));
     }
 
-    Optional<PartyType> matchingType =
-        partyTypes.stream().filter(pt -> pt.code.equalsIgnoreCase(per.getRole())).findFirst();
     TextType tt = niemObjFac.createTextType();
-    if (matchingType.isEmpty()) {
-      InterviewVariable ptVar =
-          collector.requestVar(
-              "party_type",
-              "Legal role of the party",
-              "choices",
-              partyTypes.stream().map(pt -> pt.code).collect(Collectors.toList()),
-              Optional.of(per.getRole()));
-      collector.addWrong(ptVar);
-      tt.setValue("");
-    } else {
-      tt.setValue(matchingType.get().code);
-    }
+    tt.setValue(info.type().code);
     cpt.setCaseParticipantRoleCode(tt);
     return cpt;
   }
