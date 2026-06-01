@@ -45,7 +45,7 @@ public class Person {
   /** A random identifier for this specific object */
   private final UUID id;
 
-  private String role;
+  private Optional<String> role;
 
   /** Is true if the person who's Tyler id is being used to file the form is this user. */
   private final boolean isFormFiller;
@@ -60,7 +60,7 @@ public class Person {
         Optional.empty(),
         isOrg,
         false,
-        "",
+        Optional.empty(),
         Optional.empty());
   }
 
@@ -75,7 +75,16 @@ public class Person {
       UUID efmId) {
     PartyId partyId = PartyId.Already(efmId.toString());
     return new Person(
-        name, contactInfo, gender, language, birthdate, isOrg, false, role, partyId, efmId);
+        name,
+        contactInfo,
+        gender,
+        language,
+        birthdate,
+        isOrg,
+        false,
+        Optional.of(role),
+        partyId,
+        efmId);
   }
 
   /** Default constructor. */
@@ -87,7 +96,7 @@ public class Person {
       Optional<LocalDate> birthdate,
       boolean isOrg,
       boolean isFormFiller,
-      String role,
+      Optional<String> role,
       Optional<String> efmIdIfAlreadyIn) {
     UUID uuid = UUID.randomUUID();
     PartyId partyId =
@@ -106,7 +115,7 @@ public class Person {
       Optional<LocalDate> birthdate,
       boolean isOrg,
       boolean isFormFiller,
-      String role,
+      Optional<String> role,
       PartyId partyId,
       UUID id) {
     this.name = name;
@@ -145,7 +154,7 @@ public class Person {
     return gender;
   }
 
-  public String getRole() {
+  public Optional<String> getRole() {
     return role;
   }
 
@@ -162,7 +171,7 @@ public class Person {
   }
 
   public void setRole(String role) {
-    this.role = role;
+    this.role = Optional.of(role);
   }
 
   public PartyId getPartyId() {

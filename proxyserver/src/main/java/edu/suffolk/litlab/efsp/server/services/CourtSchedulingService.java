@@ -82,7 +82,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -274,6 +273,9 @@ public class CourtSchedulingService {
         boolean isFirstIndexedFiling = info.getPreviousCaseId().isEmpty();
         ComboCaseCodes allCodes;
         Optional<Map<PartyId, Person>> existingParties = Optional.empty();
+        var newParties =
+            Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
+                .toList();
         if (!isFirstIndexedFiling) {
           Optional<CourtRecordMDEPort> recordPort = setupRecordPort(httpHeaders);
           if (recordPort.isEmpty()) {
@@ -323,20 +325,32 @@ public class CourtSchedulingService {
           }
           List<FilingCode> filingCodes =
               info.getFilings().stream().map(f -> f.getFilingCode()).toList();
-          Map<String, Person> newPartyMap =
-              Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
-                  .collect(Collectors.toMap(per -> per.getIdString(), per -> per));
-          Map<String, Person> existingPartyMap =
-              existingParties.get().entrySet().stream()
-                  .collect(
-                      Collectors.toMap(
-                          ent -> ent.getKey().getIdentificationString(), ent -> ent.getValue()));
+          var existingPartyList = existingParties.get().values();
+          var partyTypesRes =
+              parser.vetPartyTypes(newParties, existingPartyList, typeCode, isFirstIndexedFiling);
+          if (partyTypesRes.isErr()) {
+            var interviewVar =
+                collector.addCodeError(
+                    partyTypesRes.expectErr(""),
+                    collector.varBuilder().name("(new and exisiting parties)"));
+            throw FilingError.wrongValue(interviewVar);
+          }
+          var partyTypes = partyTypesRes.expect("");
           log.info("Existing cat, type, and filings: {}, {}, {}", catCode, typeCode, filingCodes);
-          allCodes =
-              serializer.serializeCaseCodesIndexed(
-                  catCode, typeCode, filingCodes, newPartyMap, existingPartyMap, collector);
+          allCodes = new ComboCaseCodes(catCode, typeCode, filingCodes, partyTypes);
         } else {
-          allCodes = serializer.serializeCaseCodes(info, collector, isInitialFiling);
+          var partyTypesRes =
+              parser.vetPartyTypes(
+                  newParties, List.of(), info.getCaseTypeCode(), isFirstIndexedFiling);
+          if (partyTypesRes.isErr()) {
+            var interviewVar =
+                collector.addCodeError(
+                    partyTypesRes.expectErr(""),
+                    collector.varBuilder().name("(new and existing parties)"));
+            throw FilingError.wrongValue(interviewVar);
+          }
+          var partyTypes = partyTypesRes.expect("");
+          allCodes = serializer.serializeCaseCodes(info, partyTypes, collector, isInitialFiling);
         }
         Optional<LocalDate> returnDate = info.getReturnDate();
         if (returnDate.isEmpty()) {

@@ -28,7 +28,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilerType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
 import edu.suffolk.litlab.efsp.model.CaseServiceContact;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
@@ -301,10 +300,10 @@ public class EcfCaseTypeFactory {
     JAXBElement<ecf4.latest.tyler.ecf.extensions.common.CaseAugmentationType> tylerAug =
         pair.getLeft();
     JAXBElement<? extends ecf4.latest.gov.niem.niem.niem_core._2.CaseType> myCase;
-    if (comboCodes.cat.ecfcasetype.equals("CivilCase")) {
+    if (comboCodes.cat().ecfcasetype.equals("CivilCase")) {
       Optional<BigDecimal> amountInControversy = Optional.empty();
       boolean anyAmountInControversy =
-          comboCodes.filings.stream()
+          comboCodes.filings().stream()
               .anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"));
       if (anyAmountInControversy) {
         JsonNode jsonAmt = info.getMiscInfo().get("amount_in_controversy");
@@ -322,29 +321,29 @@ public class EcfCaseTypeFactory {
               info.getCaseDocketNumber(),
               info.getPreviousCaseId(),
               amountInControversy);
-    } else if (comboCodes.cat.ecfcasetype.equals("DomesticCase")) {
+    } else if (comboCodes.cat().ecfcasetype.equals("DomesticCase")) {
       myCase =
           makeDomesticCaseType(
               caseAug, tylerAug, info.getCaseDocketNumber(), info.getPreviousCaseId(), miscInfo);
-    } else if (comboCodes.cat.ecfcasetype.equals("AppellateCase")) {
+    } else if (comboCodes.cat().ecfcasetype.equals("AppellateCase")) {
       myCase = makeAppellateCaseType(caseAug, tylerAug, info, miscInfo, collector);
-    } else if (comboCodes.cat.ecfcasetype.equals("BankruptcyCase")
-        || comboCodes.cat.ecfcasetype.equals("CitationCase")
-        || comboCodes.cat.ecfcasetype.equals("JuvenileCase")
-        || comboCodes.cat.ecfcasetype.equals("CriminalCase")) {
+    } else if (comboCodes.cat().ecfcasetype.equals("BankruptcyCase")
+        || comboCodes.cat().ecfcasetype.equals("CitationCase")
+        || comboCodes.cat().ecfcasetype.equals("JuvenileCase")
+        || comboCodes.cat().ecfcasetype.equals("CriminalCase")) {
       // TODO(brycew): handle these
       InterviewVariable var =
           collector.requestVar(
               "efile_case_category",
               "The "
-                  + comboCodes.cat.name
+                  + comboCodes.cat().name
                   + " Case category requires an ECF case type that we know about but don't yet"
                   + " support ("
-                  + comboCodes.cat.ecfcasetype
+                  + comboCodes.cat().ecfcasetype
                   + ")",
               "text",
               List.of(),
-              Optional.of(comboCodes.cat.code));
+              Optional.of(comboCodes.cat().code));
       collector.addWrong(var);
       FilingError err = FilingError.wrongValue(var);
       throw err;
@@ -353,18 +352,18 @@ public class EcfCaseTypeFactory {
           collector.requestVar(
               "efile_case_category",
               "The "
-                  + comboCodes.cat.name
+                  + comboCodes.cat().name
                   + " Case category requires an ECF case type that we don't know about or support ("
-                  + comboCodes.cat.ecfcasetype
+                  + comboCodes.cat().ecfcasetype
                   + ")",
               "text",
               List.of(),
-              Optional.of(comboCodes.cat.code));
+              Optional.of(comboCodes.cat().code));
       collector.addWrong(var);
       FilingError err = FilingError.wrongValue(var);
       throw err;
     }
-    myCase.getValue().setCaseCategoryText(Ecf4Helper.convertText(comboCodes.cat.code));
+    myCase.getValue().setCaseCategoryText(Ecf4Helper.convertText(comboCodes.cat().code));
     return Pair.of(myCase, pair.getRight());
   }
 
@@ -400,11 +399,11 @@ public class EcfCaseTypeFactory {
           throws SQLException, FilingError {
     var ecfAug = tylerObjFac.createCaseAugmentationType();
 
-    if (comboCodes.type.code.isEmpty()) {
+    if (comboCodes.type().code.isEmpty()) {
       log.warn("Type's code is empty?: {}", comboCodes);
     } else {
-      log.info("Setting case type text to {}", comboCodes.type.toString());
-      ecfAug.setCaseTypeText(Ecf4Helper.convertText(comboCodes.type.code));
+      log.info("Setting case type text to {}", comboCodes.type().toString());
+      ecfAug.setCaseTypeText(Ecf4Helper.convertText(comboCodes.type().code));
     }
 
     var maybeSubtype = info.getCaseSubtypeCode();
@@ -413,46 +412,28 @@ public class EcfCaseTypeFactory {
       ecfAug.setCaseSubTypeText(Ecf4Helper.convertText(maybeSubtype.get().getCode()));
     }
 
-    List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocation.code, comboCodes.type.code);
-    Set<String> requiredTypes =
-        partyTypes.stream().filter(t -> t.isrequired).map(t -> t.code).collect(Collectors.toSet());
     Set<String> presentPartyTypes = new HashSet<>();
     Map<String, Object> partyIdToRefObj = new HashMap<>();
     int i = 0;
     for (Person plaintiff : info.getNewPlaintiffs()) {
       collector.pushAttributeStack("plaintiffs[" + i + ']');
-      CaseParticipantType cp =
-          serializer.serializeEcfCaseParticipant(plaintiff, collector, partyTypes);
+      var pInfo = comboCodes.partyInfo().get(plaintiff.getPartyId());
+      CaseParticipantType cp = serializer.serializeEcfCaseParticipant(plaintiff, pInfo, collector);
       collector.popAttributeStack();
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
       partyIdToRefObj.put(plaintiff.getIdString(), cp.getEntityRepresentation().getValue());
-      presentPartyTypes.add(plaintiff.getRole());
+      presentPartyTypes.add(pInfo.type().code);
     }
 
     i = 0;
     for (Person defendant : info.getNewDefendants()) {
       collector.pushAttributeStack("defendants[" + i + ']');
-      CaseParticipantType cp =
-          serializer.serializeEcfCaseParticipant(defendant, collector, partyTypes);
+      var pInfo = comboCodes.partyInfo().get(defendant.getPartyId());
+      CaseParticipantType cp = serializer.serializeEcfCaseParticipant(defendant, pInfo, collector);
       collector.popAttributeStack();
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
       partyIdToRefObj.put(defendant.getIdString(), cp.getEntityRepresentation().getValue());
-      presentPartyTypes.add(defendant.getRole());
-    }
-
-    // We need to make sure the initial filing handles all required parties: subsequents we can
-    // assume the required parties are there
-    if (isFirstIndexedFiling) {
-      requiredTypes.removeAll(presentPartyTypes);
-      if (!requiredTypes.isEmpty()) {
-        FilingError err =
-            FilingError.serverError(
-                "DEV ERROR: All required parties not covered by existing party types. ("
-                    + presentPartyTypes
-                    + ". Missing "
-                    + requiredTypes);
-        collector.error(err);
-      }
+      presentPartyTypes.add(pInfo.type().code);
     }
 
     int attorneyCount = 1;
@@ -501,7 +482,7 @@ public class EcfCaseTypeFactory {
         id.setIdentificationCategory(
             of.createIdentificationCategoryText(Ecf4Helper.convertText("CASEPARTYID")));
         id.setIdentificationID(Ecf4Helper.convertString(partyId.getIdentificationString()));
-        var pInfo = comboCodes.partyInfo.get(partyId.getIdentificationString());
+        var pInfo = comboCodes.partyInfo().get(partyId);
         boolean isOrg = false;
         if (pInfo == null) {
           log.warn("PartyId ({}) has null info in combocodes. Why? Assuming person", partyId);
@@ -518,7 +499,7 @@ public class EcfCaseTypeFactory {
                   + info.getFilings().stream()
                       .flatMap(filing -> filing.getFilingPartyIds().stream()));
         } else {
-          isOrg = pInfo.getRight();
+          isOrg = pInfo.isOrg();
         }
         if (isOrg) {
           OrganizationIdentificationType orgId = tylerObjFac.createOrganizationIdentificationType();
@@ -536,9 +517,8 @@ public class EcfCaseTypeFactory {
           cpt.setEntityRepresentation(ecfCommonObjFac.createEntityPerson(pt));
           partyIdToRefObj.put(partyId.getIdString(), pt);
         }
-        var partyInfo = comboCodes.partyInfo.get(partyId.getIdentificationString());
-        if (partyInfo != null && partyInfo.getLeft() != null) {
-          cpt.setCaseParticipantRoleCode(Ecf4Helper.convertText(partyInfo.getLeft().code));
+        if (pInfo != null && pInfo.type() != null) {
+          cpt.setCaseParticipantRoleCode(Ecf4Helper.convertText(pInfo.type().code));
         } else {
           cpt.setCaseParticipantRoleCode(
               Ecf4Helper.convertText("")); // Will likely cause an error, but what can we do now?

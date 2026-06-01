@@ -28,6 +28,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
 import edu.suffolk.litlab.efsp.model.Name;
 import edu.suffolk.litlab.efsp.model.PartyId;
+import edu.suffolk.litlab.efsp.model.PartyInfo;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.model.Person.Gender;
 import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
@@ -107,7 +108,7 @@ public class EcfCourtSpecificSerializerTest {
     ContactInformation info = new ContactInformation("bob@example.com");
     CourtLocationInfo loc = new CourtLocationInfo("not_real");
     EcfCourtSpecificSerializer courtSer = new EcfCourtSpecificSerializer(cd, loc);
-    List<PartyType> okPartyTypes = List.of(PartyType.TestObj("1234", "Special", "not_real"));
+    PartyType partyType = PartyType.TestObj("1234", "Special", "not_real");
 
     Person user =
         Person.FromInput(
@@ -118,9 +119,10 @@ public class EcfCourtSpecificSerializerTest {
             Optional.empty(),
             false,
             true,
-            "1234",
+            Optional.of("1234"),
             Optional.empty());
-    CaseParticipantType cpt = courtSer.serializeEcfCaseParticipant(user, collector, okPartyTypes);
+    PartyInfo partyInfo = new PartyInfo(partyType, user.getPartyId(), user.isOrg());
+    CaseParticipantType cpt = courtSer.serializeEcfCaseParticipant(user, partyInfo, collector);
     assertEquals("1234", cpt.getCaseParticipantRoleCode().getValue());
     assertTrue(
         cpt.getEntityRepresentation().getValue()
@@ -145,9 +147,10 @@ public class EcfCourtSpecificSerializerTest {
             Optional.empty(),
             true,
             true,
-            "1234",
+            Optional.of("1234"),
             Optional.empty());
-    CaseParticipantType cptOrg = courtSer.serializeEcfCaseParticipant(org, collector, okPartyTypes);
+    PartyInfo orgInfo = new PartyInfo(partyType, org.getPartyId(), org.isOrg());
+    CaseParticipantType cptOrg = courtSer.serializeEcfCaseParticipant(org, orgInfo, collector);
     assertEquals("1234", cptOrg.getCaseParticipantRoleCode().getValue());
     assertTrue(cptOrg.getEntityRepresentation().getValue() instanceof OrganizationType);
     OrganizationType orgPt = ((OrganizationType) cptOrg.getEntityRepresentation().getValue());
@@ -163,9 +166,10 @@ public class EcfCourtSpecificSerializerTest {
             Optional.empty(),
             false,
             false,
-            "1234",
+            Optional.of("1234"),
             Optional.empty());
-    CaseParticipantType cptPer = courtSer.serializeEcfCaseParticipant(per, collector, okPartyTypes);
+    PartyInfo perInfo = new PartyInfo(partyType, per.getPartyId(), per.isOrg());
+    CaseParticipantType cptPer = courtSer.serializeEcfCaseParticipant(per, perInfo, collector);
     System.out.println(Ecf4Helper.objectToXmlStr(cpt, CaseParticipantType.class));
     assertEquals(cptPer.getCaseParticipantRoleCode().getValue(), "1234");
     assertTrue(cptPer.getEntityRepresentation().getValue() instanceof PersonType);

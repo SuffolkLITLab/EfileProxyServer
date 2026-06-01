@@ -99,14 +99,14 @@ public class EcfCaseTypeFactoryTest {
     Person abcFromData = participants.get().get(abcKey);
     assertTrue(abcFromData.isOrg());
     assertEquals(abcFromData.getName().getFullName(), "ABC CORP");
-    assertEquals(abcFromData.getRole(), "20646");
+    assertEquals(abcFromData.getRole().get(), "20646");
 
     PartyId xyzKey = PartyId.Already("e56ed9ec-b473-41cc-bfb6-fec4129422bb");
     assertTrue(participants.get().containsKey(xyzKey));
     Person xyzFromData = participants.get().get(xyzKey);
     assertTrue(xyzFromData.isOrg());
     assertEquals(xyzFromData.getName().getFullName(), "ORG XYZ");
-    assertEquals(xyzFromData.getRole(), "20641");
+    assertEquals(xyzFromData.getRole().get(), "20641");
   }
 
   @Test
