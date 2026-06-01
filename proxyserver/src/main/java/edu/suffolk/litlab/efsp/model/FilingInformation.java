@@ -21,7 +21,6 @@ public class FilingInformation {
   private List<Person> newPlaintiffs = List.of();
 
   private List<Person> newDefendants = List.of();
-  private Map<String, PartyId> varToPartyId = Map.of();
 
   /**
    * A list of attorney UIDs.
@@ -125,10 +124,6 @@ public class FilingInformation {
     return newDefendants;
   }
 
-  public Map<String, PartyId> getVarToPartyId() {
-    return varToPartyId;
-  }
-
   public List<String> getAttorneyIds() {
     return attorneyIds;
   }
@@ -217,10 +212,6 @@ public class FilingInformation {
 
   public void setNewDefendants(List<Person> defendants) {
     this.newDefendants = defendants;
-  }
-
-  public void setVarToPartyId(Map<String, PartyId> varToPartyId) {
-    this.varToPartyId = Map.copyOf(varToPartyId);
   }
 
   public void setAttorneyIds(List<String> attorneyIds) {

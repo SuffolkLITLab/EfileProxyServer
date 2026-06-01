@@ -217,6 +217,9 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       boolean isInitialFiling =
           info.getPreviousCaseId().isEmpty() && info.getCaseDocketNumber().isEmpty();
       boolean isFirstIndexedFiling = info.getPreviousCaseId().isEmpty();
+      var newParties =
+          Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
+              .toList();
       ComboCaseCodes allCodes;
       if (!isFirstIndexedFiling) {
         CaseQueryMessageType query = new CaseQueryMessageType();
@@ -274,20 +277,31 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
             EcfCaseTypeFactory.getCaseParticipants(resp.getCase().getValue()).get();
         List<FilingCode> filingCodes =
             info.getFilings().stream().map(f -> f.getFilingCode()).toList();
-        Map<String, Person> newPartyCodes =
-            Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
-                .collect(Collectors.toMap(per -> per.getIdString(), per -> per));
-        Map<String, Person> existingPartyCodes =
-            exisitingPartips.entrySet().stream()
-                .collect(
-                    Collectors.toMap(
-                        ent -> ent.getKey().getIdentificationString(), ent -> ent.getValue()));
+        var existingParties = exisitingPartips.values();
         log.info("Existing cat, type, and filings: {}, {}, {}", catCode, typeCode, filingCodes);
-        allCodes =
-            serializer.serializeCaseCodesIndexed(
-                catCode, typeCode, filingCodes, existingPartyCodes, newPartyCodes, collector);
+        var partyTypesRes =
+            parser.vetPartyTypes(newParties, existingParties, typeCode, isFirstIndexedFiling);
+        if (partyTypesRes.isErr()) {
+          var interviewVar =
+              collector.addCodeError(
+                  partyTypesRes.expectErr(""),
+                  collector.varBuilder().name("(new and exisiting parties)"));
+          throw FilingError.wrongValue(interviewVar);
+        }
+        var partyTypes = partyTypesRes.expect("");
+        allCodes = new ComboCaseCodes(catCode, typeCode, filingCodes, partyTypes);
       } else {
-        allCodes = serializer.serializeCaseCodes(info, collector, isInitialFiling);
+        var partyTypesRes =
+            parser.vetPartyTypes(
+                newParties, List.of(), info.getCaseTypeCode(), isFirstIndexedFiling);
+        if (partyTypesRes.isErr()) {
+          var interviewVar =
+              collector.addCodeError(
+                  partyTypesRes.expectErr(""), collector.varBuilder().name("(new parties)"));
+          throw FilingError.wrongValue(interviewVar);
+        }
+        var partyTypes = partyTypesRes.expect("");
+        allCodes = serializer.serializeCaseCodes(info, partyTypes, collector, isInitialFiling);
       }
       String caseCategoryName = allCodes.cat().name;
       log.info("have all codes");

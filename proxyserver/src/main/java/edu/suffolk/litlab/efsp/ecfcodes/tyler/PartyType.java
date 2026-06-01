@@ -24,6 +24,11 @@ public class PartyType {
     return new PartyType(code, name, true, "123", true, "386.53", "0", "", "", "", "", location);
   }
 
+  public static PartyType MissingType(String code, String caseTypeCode, String location) {
+    return new PartyType(
+        code, "", true, caseTypeCode, false, "0.00", "0", "", "", "", "", location);
+  }
+
   public PartyType(
       String code,
       String name,

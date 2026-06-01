@@ -13,11 +13,16 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
 import edu.suffolk.litlab.efsp.model.OptionalService;
+import edu.suffolk.litlab.efsp.model.PartyId;
+import edu.suffolk.litlab.efsp.model.PartyInfo;
+import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.model.Person.Gender;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -246,7 +251,113 @@ public class TylerCodesParser implements CodesParser {
     return Result.ok(ids);
   }
 
-  // TODO: leaving a gap for PartyType related checks.
+  /**
+   * existingPartyCodes: str of Tyler party ID to their role code string newPartyCodes: str of our
+   * generated ID of party to their role code string
+   *
+   * @return the combined map of tyler ids and our ids to each party type
+   */
+  public Result<Map<PartyId, PartyInfo>, CodeError> vetPartyTypes(
+      Collection<Person> existingParties,
+      Collection<Person> newParties,
+      CaseType type,
+      boolean isFirstIndexedFiling) {
+    List<PartyType> pTypesForCase = cd.getPartyTypeFor(court.code, type.code);
+    Map<String, PartyType> codeToPartyType =
+        pTypesForCase.stream().collect(Collectors.toMap(pt -> pt.code, pt -> pt));
+    Set<String> requiredTypes =
+        pTypesForCase.stream()
+            .filter(t -> t.isrequired)
+            .map(t -> t.code)
+            .collect(Collectors.toSet());
+    Set<String> presentPartyTypes = new HashSet<>();
+    // So, Tyler lies: it's possible for older cases to have party types that aren't allowed
+    // on new cases anymore. So we'll make a backup map of all of the real party types, if
+    // necessary.
+    Map<String, PartyType> codeToAllPartyType = Map.of();
+    Map<PartyId, PartyInfo> partyInfos = new HashMap<>();
+    for (Person party : existingParties) {
+      var key = party.getPartyId();
+      if (party.getRole().isEmpty()) {
+        log.warn("Existing party {} doesn't have a role?", key);
+        continue;
+      }
+      var role = party.getRole().get();
+      PartyInfo partyInfo = null;
+      if (codeToPartyType.containsKey(role)) {
+        partyInfo = new PartyInfo(codeToPartyType.get(role), party.getPartyId(), party.isOrg());
+      } else {
+        log.warn("Existing party " + key + "'s role (" + party.getRole() + ") isn't a code?");
+        if (codeToAllPartyType.isEmpty()) {
+          var allForCourt = cd.getPartyTypeFor(court.code, null);
+          codeToAllPartyType =
+              allForCourt.stream().collect(Collectors.toMap(pt -> pt.code, pt -> pt));
+        }
+        if (codeToAllPartyType.containsKey(role)) {
+          partyInfo =
+              new PartyInfo(codeToAllPartyType.get(role), party.getPartyId(), party.isOrg());
+        } else {
+          log.warn(
+              "Existing party {}'s role ({}) still isn't a code?: {}",
+              key,
+              party.getRole(),
+              codeToAllPartyType.keySet());
+          continue;
+        }
+      }
+      partyInfos.put(party.getPartyId(), partyInfo);
+      presentPartyTypes.add(partyInfo.type().code);
+    }
+    for (Person party : newParties) {
+      var key = party.getPartyId();
+      if (party.getRole().isEmpty()) {
+        log.warn("New party {} doesn't have a role?", key);
+        continue;
+      }
+      var role = party.getRole().get();
+      PartyInfo partyInfo = null;
+      if (codeToPartyType.containsKey(role)) {
+        partyInfo = new PartyInfo(codeToPartyType.get(role), party.getPartyId(), party.isOrg());
+      } else {
+        log.warn("New party " + key + "'s role (" + party.getRole() + ") isn't a code?");
+        if (codeToAllPartyType.isEmpty()) {
+          var allForCourt = cd.getPartyTypeFor(court.code, type.code);
+          codeToAllPartyType =
+              allForCourt.stream().collect(Collectors.toMap(pt -> pt.code, pt -> pt));
+        }
+        if (codeToAllPartyType.containsKey(role)) {
+          partyInfo =
+              new PartyInfo(codeToAllPartyType.get(role), party.getPartyId(), party.isOrg());
+        } else {
+          partyInfo =
+              new PartyInfo(
+                  PartyType.MissingType(role, type.code, court.code),
+                  party.getPartyId(),
+                  party.isOrg());
+        }
+      }
+      partyInfos.put(party.getPartyId(), partyInfo);
+      presentPartyTypes.add(partyInfo.type().code);
+    }
+
+    // We need to make sure the initial filing handles all required parties: subsequents we can
+    // assume the required parties are there
+    if (isFirstIndexedFiling) {
+      requiredTypes.removeAll(presentPartyTypes);
+      if (!requiredTypes.isEmpty()) {
+        FilingError err =
+            FilingError.serverError(
+                "DEV ERROR: All required parties not covered by existing party types. ("
+                    + presentPartyTypes
+                    + ". Missing "
+                    + requiredTypes);
+        return Result.err(new BadCode(err));
+      }
+    }
+
+    // TODO(brycew): move more detailed vetting to be here: stuff in EcfCaseTypeFactory.java:263
+    return Result.ok(partyInfos);
+  }
 
   // TODO: do good tests here
   public Result<Optional<NameAndCode>, CodeError> vetMotionCode(

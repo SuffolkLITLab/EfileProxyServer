@@ -8,10 +8,14 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.model.OptionalService;
+import edu.suffolk.litlab.efsp.model.PartyId;
+import edu.suffolk.litlab.efsp.model.PartyInfo;
+import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.model.Person.Gender;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -59,6 +63,12 @@ public interface CodesParser {
 
   public Result<Map<String, String>, CrossReferenceError> getCrossRefIds(
       Map<String, String> crossRefs, CaseType caseType);
+
+  public Result<Map<PartyId, PartyInfo>, CodeError> vetPartyTypes(
+      Collection<Person> existingParties,
+      Collection<Person> newParties,
+      CaseType type,
+      boolean isFirstIndexedFiling);
 
   public Result<Optional<NameAndCode>, CodeError> vetMotionCode(
       Optional<String> motionCode, FilingCode filing);

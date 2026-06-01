@@ -28,7 +28,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilerType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
 import edu.suffolk.litlab.efsp.model.CaseServiceContact;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
@@ -413,15 +412,12 @@ public class EcfCaseTypeFactory {
       ecfAug.setCaseSubTypeText(Ecf4Helper.convertText(maybeSubtype.get().getCode()));
     }
 
-    List<PartyType> partyTypes = cd.getPartyTypeFor(courtLocation.code, comboCodes.type().code);
-    Set<String> requiredTypes =
-        partyTypes.stream().filter(t -> t.isrequired).map(t -> t.code).collect(Collectors.toSet());
     Set<String> presentPartyTypes = new HashSet<>();
     Map<String, Object> partyIdToRefObj = new HashMap<>();
     int i = 0;
     for (Person plaintiff : info.getNewPlaintiffs()) {
       collector.pushAttributeStack("plaintiffs[" + i + ']');
-      var pInfo = comboCodes.partyInfo().get(plaintiff.getPartyId().getIdentificationString());
+      var pInfo = comboCodes.partyInfo().get(plaintiff.getPartyId());
       CaseParticipantType cp = serializer.serializeEcfCaseParticipant(plaintiff, pInfo, collector);
       collector.popAttributeStack();
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
@@ -432,27 +428,12 @@ public class EcfCaseTypeFactory {
     i = 0;
     for (Person defendant : info.getNewDefendants()) {
       collector.pushAttributeStack("defendants[" + i + ']');
-      var pInfo = comboCodes.partyInfo().get(defendant.getPartyId().getIdentificationString());
+      var pInfo = comboCodes.partyInfo().get(defendant.getPartyId());
       CaseParticipantType cp = serializer.serializeEcfCaseParticipant(defendant, pInfo, collector);
       collector.popAttributeStack();
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
       partyIdToRefObj.put(defendant.getIdString(), cp.getEntityRepresentation().getValue());
       presentPartyTypes.add(pInfo.type().code);
-    }
-
-    // We need to make sure the initial filing handles all required parties: subsequents we can
-    // assume the required parties are there
-    if (isFirstIndexedFiling) {
-      requiredTypes.removeAll(presentPartyTypes);
-      if (!requiredTypes.isEmpty()) {
-        FilingError err =
-            FilingError.serverError(
-                "DEV ERROR: All required parties not covered by existing party types. ("
-                    + presentPartyTypes
-                    + ". Missing "
-                    + requiredTypes);
-        collector.error(err);
-      }
     }
 
     int attorneyCount = 1;
@@ -501,7 +482,7 @@ public class EcfCaseTypeFactory {
         id.setIdentificationCategory(
             of.createIdentificationCategoryText(Ecf4Helper.convertText("CASEPARTYID")));
         id.setIdentificationID(Ecf4Helper.convertString(partyId.getIdentificationString()));
-        var pInfo = comboCodes.partyInfo().get(partyId.getIdentificationString());
+        var pInfo = comboCodes.partyInfo().get(partyId);
         boolean isOrg = false;
         if (pInfo == null) {
           log.warn("PartyId ({}) has null info in combocodes. Why? Assuming person", partyId);

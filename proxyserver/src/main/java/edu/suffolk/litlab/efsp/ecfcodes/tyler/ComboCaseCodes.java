@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.ecfcodes.tyler;
 
+import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.PartyInfo;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,7 @@ public record ComboCaseCodes(
      * code / role code, and isOrg value isOrg is hacky, but Tyler expects us to create the exact
      * same case participants in a reply
      */
-    Map<String, PartyInfo> partyInfo) {
+    Map<PartyId, PartyInfo> partyInfo) {
 
   public ComboCaseCodes() {
     this(

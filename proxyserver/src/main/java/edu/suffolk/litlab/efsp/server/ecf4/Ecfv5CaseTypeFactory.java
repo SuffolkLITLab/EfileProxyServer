@@ -128,7 +128,7 @@ public class Ecfv5CaseTypeFactory {
       i = 0;
       for (Person per : info.getNewPlaintiffs()) {
         collector.pushAttributeStack("plaintiffs[" + i + ']');
-        var pInfo = allCodes.partyInfo().get(per.getPartyId().getIdentificationString());
+        var pInfo = allCodes.partyInfo().get(per.getPartyId());
         EntityType ent =
             serializeCaseParticipant(per, info, pInfo, collector, partyTypes, idToCaseParty);
         collector.popAttributeStack();
@@ -138,7 +138,7 @@ public class Ecfv5CaseTypeFactory {
       i = 0;
       for (Person per : info.getNewDefendants()) {
         collector.pushAttributeStack("defendants[" + i + ']');
-        var pInfo = allCodes.partyInfo().get(per.getPartyId().getIdentificationString());
+        var pInfo = allCodes.partyInfo().get(per.getPartyId());
         EntityType ent =
             serializeCaseParticipant(per, info, pInfo, collector, partyTypes, idToCaseParty);
         collector.popAttributeStack();
