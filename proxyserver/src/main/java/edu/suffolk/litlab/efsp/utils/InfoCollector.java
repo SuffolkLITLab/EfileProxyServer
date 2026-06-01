@@ -119,6 +119,7 @@ public abstract class InfoCollector {
 
   public InterviewVariable addTextError(TextVarError err, VarBuilder varBuilder)
       throws FilingError {
+    varBuilder.datatype("text");
     switch (err) {
       case MissingVar missing -> {
         varBuilder.appendDesc(", missing, must also match regex: " + missing.regex());

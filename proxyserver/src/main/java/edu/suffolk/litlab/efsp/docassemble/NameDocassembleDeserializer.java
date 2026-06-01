@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.docassemble;
 
+import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringDefault;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,7 +13,8 @@ import edu.suffolk.litlab.efsp.utils.InterviewVariable;
 
 public class NameDocassembleDeserializer {
 
-  public static Name fromNode(JsonNode node, CodesParser parser, InfoCollector collector)
+  public static Name fromNode(
+      JsonNode node, boolean isOrg, CodesParser parser, InfoCollector collector)
       throws FilingError {
     if (node == null || node.isNull()) {
       InterviewVariable var =
@@ -31,32 +33,26 @@ public class NameDocassembleDeserializer {
     }
     if (!node.has("first")) {
       InterviewVariable var =
-          collector.requestVar(
-              "name.first", "The first name of a person / name of a business", "text");
+          collector.requestVar("first", "The first name of a person / name of a business", "text");
       collector.addRequired(var);
+    }
+    if (isOrg) {
+      var builder = collector.varBuilder().name("first").description("The name of a business");
+      var name = collector.unwrap(parser.vetOrgName(getStringDefault(node, "first", "")), builder);
+      return new Name(name);
     }
     var firstBuilder =
         collector
             .varBuilder()
-            .name("name.first")
-            .description("The first name of a person / name of a business")
-            .datatype("text");
+            .name("first")
+            .description("The first name of a person / name of a business");
     String firstName =
         collector.unwrap(parser.vetFirstName(getStringMember(node, "first")), firstBuilder);
     var middleBuilder =
-        collector
-            .varBuilder()
-            .name("name.middle")
-            .description("The middle name of a person")
-            .datatype("text");
+        collector.varBuilder().name("middle").description("The middle name of a person");
     String middleName =
         collector.unwrap(parser.vetMiddleName(getStringMember(node, "middle")), middleBuilder);
-    var lastBuilder =
-        collector
-            .varBuilder()
-            .name("name.last")
-            .description("The last name of a person")
-            .datatype("text");
+    var lastBuilder = collector.varBuilder().name("last").description("The last name of a person");
     String lastName =
         collector.unwrap(parser.vetLastName(getStringMember(node, "last")), lastBuilder);
 

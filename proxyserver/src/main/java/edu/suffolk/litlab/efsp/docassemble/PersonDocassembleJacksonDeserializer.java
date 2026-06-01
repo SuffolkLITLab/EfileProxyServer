@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efsp.docassemble;
 
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getBoolMember;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getNonEmptyStringMember;
+import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringDefault;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -113,10 +114,14 @@ public class PersonDocassembleJacksonDeserializer {
                   }
                 })
             .orElse(Optional.<LocalDate>empty());
+    boolean isOrg = false;
+    var personType = getStringDefault(node, "person_type", "");
+    if (personType.equalsIgnoreCase("business") || personType.equalsIgnoreCase("organization")) {
+      isOrg = true;
+    }
     collector.pushAttributeStack("name");
-    Name name = NameDocassembleDeserializer.fromNode(node.get("name"), parser, collector);
+    Name name = NameDocassembleDeserializer.fromNode(node.get("name"), isOrg, parser, collector);
     collector.popAttributeStack();
-    boolean isPer = !name.getMiddleName().isBlank() || !name.getLastName().isBlank();
 
     Optional<String> efmId = getStringMember(node, "tyler_id");
     if (node.has("is_new")) {
@@ -155,7 +160,7 @@ public class PersonDocassembleJacksonDeserializer {
 
     Person per =
         Person.FromInput(
-            name, info, gender, language, birthdate, !isPer, isFormFiller, partyType, efmId);
+            name, info, gender, language, birthdate, isOrg, isFormFiller, partyType, efmId);
     log.debug("Read in a new person: {}", per.getName().getFullName());
     return Result.ok(per);
   }

@@ -10,7 +10,6 @@ import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringDefault;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NullNode;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
@@ -21,11 +20,12 @@ import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.CodeError;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.FileExtensionNotAllowed;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.FileNameTextError;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.InputOptionalService;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.TextVarError;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
-import edu.suffolk.litlab.efsp.utils.InterviewVariable;
 import edu.suffolk.litlab.efsp.utils.JsonHelpers;
 import fj.data.NonEmptyList;
 import fj.data.Option;
@@ -259,17 +259,34 @@ public class FilingDocDocassembleJacksonDeserializer {
     // TODO: use this default fallback?
     // new FilingComponent("NO CODE", "NOT PRESENT", "", false, false, 0, "", "");
     var filingComponent = componentRes.expect("");
-    JsonNode filenameNode = node.get("filename");
-    if (filenameNode == null || !filenameNode.isTextual()) {
-      InterviewVariable nameVar =
-          collector.requestVar("filename", "The file name of the filing document", "text");
-      collector.addRequired(nameVar);
-      filenameNode = NullNode.getInstance();
+    Optional<String> maybeFilename = getStringMember(node, "filename");
+    var nameBuilder =
+        collector
+            .varBuilder()
+            .name("filename")
+            .description("The file name of the filing document")
+            .datatype("text");
+    if (maybeFilename.isEmpty()) {
+      collector.addRequired(nameBuilder.build());
     }
-    String fileName = (filenameNode != null) ? filenameNode.asText("") : "";
+    String fileName = maybeFilename.orElse("");
     if (!fileName.endsWith(".pdf")) {
       fileName += ".pdf";
     }
+    var filenameRes = parser.vetFileName(fileName);
+    if (filenameRes.isErr()) {
+      switch (filenameRes.expectErr("")) {
+        case FileExtensionNotAllowed ext -> {
+          nameBuilder.appendDesc(
+              "Extension of " + ext.given() + " not allowed! Try these instead: " + ext.allowed());
+          collector.addWrong(nameBuilder.build());
+        }
+        case FileNameTextError textErr -> collector.addTextError(textErr.err(), nameBuilder);
+      }
+    } else {
+      fileName = filenameRes.expect("");
+    }
+
     String documentDescription = getStringDefault(node, "document_description", fileName);
     if (!node.has("proxy_enabled") || !node.get("proxy_enabled").asBoolean(false)) {
       log.info("{} isn't proxy enabled", fileName);

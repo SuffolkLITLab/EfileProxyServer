@@ -16,6 +16,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DocumentTypeTableRow;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
@@ -68,6 +69,8 @@ public class FilingDocDocassembleJacksonDeserializerTest {
             List.of(
                 new DocumentTypeTableRow("6586", "idk", "6553", "false", "false", "", "adams"),
                 new DocumentTypeTableRow("7788", "idk 2", "6553", "false", "false", "", "adams")));
+    when(cd.getAllowedFileTypes("adams"))
+        .thenReturn(List.of(new FileType("PDF", "PDF", "pdf", "01")));
     var dataFields =
         new DataFields(
             List.of(

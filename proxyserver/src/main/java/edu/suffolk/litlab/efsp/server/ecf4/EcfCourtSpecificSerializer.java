@@ -41,7 +41,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.model.Address;
@@ -337,21 +336,6 @@ public class EcfCourtSpecificSerializer {
               docType.setDocumentDescriptionText(Ecf4Helper.convertText(desc));
             });
 
-    List<FileType> allowedFileTypes = cd.getAllowedFileTypes(this.court.code);
-    for (var attachment : doc.getFilingAttachments()) {
-      boolean correctExtension =
-          allowedFileTypes.stream().anyMatch(t -> t.matchesFile(attachment.getFileName()));
-      if (!correctExtension) {
-        FilingError err =
-            FilingError.malformedInterview(
-                "Extension of "
-                    + attachment.getFileName()
-                    + " not allowed! Try these instead: "
-                    + allowedFileTypes);
-        collector.error(err);
-      }
-    }
-
     doc.getFilingReferenceNum()
         .ifPresent(
             refNum -> {
@@ -529,19 +513,7 @@ public class EcfCourtSpecificSerializer {
 
     // log.info("Filing code: {} {}: {}///////{}", filing.code, filing.name, docType, attachment);
     // TODO(#62): DO this: make the file downloadable from the Proxy server
-    DataFieldRow originalName = allDataFields.getFieldRow("OriginalFileName");
-    if (originalName.matchRegex(fa.getFileName()) && fa.getFileName().length() < 50) {
-      attachment.setBinaryLocationURI(Ecf4Helper.convertUri(fa.getFileName()));
-    } else {
-      InterviewVariable oriNameVar =
-          collector.requestVar(
-              "file_name",
-              "file name of document: regex: " + originalName.regularexpression.toString(),
-              "text",
-              List.of(),
-              Optional.of(fa.getFileName()));
-      collector.addWrong(oriNameVar);
-    }
+    attachment.setBinaryLocationURI(Ecf4Helper.convertUri(fa.getFileName()));
     JAXBElement<Base64Binary> n =
         niemObjFac.createBinaryBase64Object(Ecf4Helper.convertBase64(fa.getFileContents()));
     // System.err.println(Ecf4Helper.objectToXmlStrOrError(n.getValue(), Base64Binary.class));

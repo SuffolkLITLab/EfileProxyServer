@@ -15,6 +15,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
@@ -66,6 +67,7 @@ public class DocassembleToFilingInformationConverterTest {
         .thenReturn(List.of(exampleFilingType));
     when(cd.getFilingType("01", "123987", exampleCaseType.code, false))
         .thenReturn(List.of(exampleFilingType));
+    when(cd.getAllowedFileTypes("01")).thenReturn(List.of(new FileType("PDF", "PDF", "pdf", "01")));
     when(cd.getFilingComponents("01", exampleFilingType.code))
         .thenReturn(List.of(new FilingComponent("332", null, null, false, false, 0, null, null)));
     when(cd.getDataFields("01"))
