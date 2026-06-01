@@ -4,6 +4,7 @@ import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DocumentTypeTableRow;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
@@ -39,6 +40,10 @@ public interface CodesParser {
   public record WrongRefVal(String refCode, String refVal, Pattern regex, String msg) implements CrossReferenceError {}
   public record NoMatchingRef(String refCode, String refVal) implements CrossReferenceError {}
   public record MissingRequiredRefs(Set<String> refCodes) implements CrossReferenceError {}
+
+  public sealed interface FileNameError {}
+  public record FileExtensionNotAllowed(String given, List<FileType> allowed) implements FileNameError {}
+  public record FileNameTextError(TextVarError err) implements FileNameError {}
   // spotless:on
 
   // Methods
@@ -103,6 +108,8 @@ public interface CodesParser {
 
   public Result<String, TextVarError> vetLastName(Optional<String> name);
 
+  public Result<String, TextVarError> vetOrgName(String name);
+
   public Result<Optional<Gender>, TextVarError> vetGender(Optional<String> gender);
 
   public Result<Optional<String>, TextVarError> vetFilingRefNum(Optional<String> fileRefNum);
@@ -111,4 +118,6 @@ public interface CodesParser {
 
   public Optional<String> getDocumentDescription(
       String description, String firstFileName, FilingCode filing);
+
+  public Result<String, FileNameError> vetFileName(String fileName);
 }

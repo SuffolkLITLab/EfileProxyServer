@@ -9,6 +9,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CrossReference;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DocumentTypeTableRow;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
@@ -111,7 +112,6 @@ public class TylerCodesParser implements CodesParser {
     return Result.ok(maybeType.get());
   }
 
-  // TODO(brycew): should this be CodeError?
   public Result<Optional<NameAndCode>, NoMatchingCode> vetSubType(
       String subtypeCode, CaseType caseType) {
     DataFieldRow subTypeConfig = allDataFields.getFieldRow("CaseInformationCaseSubType");
@@ -171,7 +171,6 @@ public class TylerCodesParser implements CodesParser {
     if (suffixRow.isvisible) {
       List<NameAndCode> suffixes = cd.getNameSuffixes(this.court.code);
       if ((maybeSuffix.isEmpty() || maybeSuffix.get().isBlank()) && suffixRow.isrequired) {
-        // TODO(brycew-later):
         log.error(
             "DEV WARNING: Court {}: WHY would you ever require a suffix? There aren't empty suffix codes at all.",
             this.court.code);
@@ -355,7 +354,6 @@ public class TylerCodesParser implements CodesParser {
       }
     }
 
-    // TODO(brycew): move more detailed vetting to be here: stuff in EcfCaseTypeFactory.java:263
     return Result.ok(partyInfos);
   }
 
@@ -576,9 +574,7 @@ public class TylerCodesParser implements CodesParser {
   }
 
   ////////  Still TODO
-  // Org Name
   // Attorney: Party Attorney and Filing Attorney
-  // PartyType
   // FileName
   // DueDate
   // Filing Action
@@ -692,6 +688,29 @@ public class TylerCodesParser implements CodesParser {
     return vetName(name, allDataFields.getFieldRow("PartyLastName"));
   }
 
+  /**
+   * Doesn't return optional because we can set the People names to null / blank.
+   *
+   * @param name
+   * @param row
+   * @param collector
+   * @param var
+   * @return
+   */
+  public Result<String, TextVarError> vetOrgName(String name) {
+    if (name == null) {
+      name = "";
+    }
+    if (name.length() > 400) {
+      return Result.err(new TooLongVar(name, 400));
+    }
+    DataFieldRow row = allDataFields.getFieldRow("PartyBusinessName");
+    if (!row.matchRegex(name)) {
+      return Result.err(new WrongVar(name, row.regularexpression));
+    }
+    return Result.ok(name);
+  }
+
   public Result<Optional<Gender>, TextVarError> vetGender(Optional<String> gender) {
     DataFieldRow genderRow = allDataFields.getFieldRow("PartyGender");
     if (genderRow.isvisible) {
@@ -770,5 +789,21 @@ public class TylerCodesParser implements CodesParser {
         return Optional.of(row.defaultvalueexpression);
       }
     }
+  }
+
+  public Result<String, FileNameError> vetFileName(String fileName) {
+    List<FileType> allowedFileTypes = cd.getAllowedFileTypes(this.court.code);
+    if (allowedFileTypes.stream().noneMatch(t -> t.matchesFile(fileName))) {
+      return Result.err(new FileExtensionNotAllowed(fileName, allowedFileTypes));
+    }
+    DataFieldRow originalName = allDataFields.getFieldRow("OriginalFileName");
+    if (!originalName.matchRegex(fileName)) {
+      return Result.err(
+          new FileNameTextError(new WrongVar(fileName, originalName.regularexpression)));
+    }
+    if (fileName.length() > 50) {
+      return Result.err(new FileNameTextError(new TooLongVar(fileName, 50)));
+    }
+    return Result.ok(fileName);
   }
 }

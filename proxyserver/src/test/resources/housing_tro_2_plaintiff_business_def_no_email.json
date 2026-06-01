@@ -68,6 +68,7 @@
             {
                 "_class": "docassemble.AssemblyLine.al_general.ALIndividual",
                 "instanceName": "other_parties[0]",
+                "person_type": "business",
                 "name": {
                     "_class": "docassemble.base.util.IndividualName",
                     "instanceName": "other_parties[0].name",
