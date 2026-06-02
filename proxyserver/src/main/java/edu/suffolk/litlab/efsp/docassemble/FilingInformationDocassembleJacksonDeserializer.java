@@ -17,6 +17,9 @@ import edu.suffolk.litlab.efsp.model.LowerCourtInfo;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.AttorneyError;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.NoMultipleAttorneys;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.RequiredAttorneys;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
@@ -28,6 +31,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -111,16 +115,19 @@ public class FilingInformationDocassembleJacksonDeserializer
     List<Person> otherParties = collectPeople(node, "other_parties", parser, collector);
 
     var varToPartyId = new HashMap<String, PartyId>();
+    var allPartyIds = new HashSet<PartyId>();
     int perIdx = 0;
     for (Person user : users) {
       varToPartyId.put("users[" + perIdx + "]", user.getPartyId());
       varToPartyId.put(user.getPartyId().getIdentificationString(), user.getPartyId());
+      allPartyIds.add(user.getPartyId());
       perIdx++;
     }
     perIdx = 0;
     for (Person party : otherParties) {
       varToPartyId.put("other_parties[" + perIdx + "]", party.getPartyId());
       varToPartyId.put(party.getPartyId().getIdentificationString(), party.getPartyId());
+      allPartyIds.add(party.getPartyId());
       perIdx++;
     }
     users =
@@ -209,8 +216,14 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
 
     entities.setAttorneyIds(extractAttorneyIds(node.get("attorney_ids")));
+    var attyMapRes =
+        parser.vetPartyAttorneyMap(
+            extractPartyAttorneyMap(node.get("party_to_attorneys"), varToPartyId),
+            allPartyIds,
+            entities.getAttorneyIds());
     entities.setPartyAttorneyMap(
-        extractPartyAttorneyMap(node.get("party_to_attorneys"), varToPartyId));
+        unwrapAtty(attyMapRes, "party_to_attorneys", collector).orElse(Map.of()));
+
     entities.setServiceContacts(
         extractServiceContacts(node.get("service_contacts"), varToPartyId, collector));
     entities.setLowerCourtInfo(extractLowerCourt(node, collector));
@@ -626,6 +639,25 @@ public class FilingInformationDocassembleJacksonDeserializer
       return json.asText();
     }
     return null;
+  }
+
+  public static <T> Optional<T> unwrapAtty(
+      Result<Optional<T>, AttorneyError> res, String name, InfoCollector collector)
+      throws FilingError {
+    if (res.isErr()) {
+      var attyErr = res.expectErr("");
+      var builder = collector.varBuilder().name(name);
+      switch (attyErr) {
+        case RequiredAttorneys reqAtty ->
+            collector.addWrong(builder.appendDesc("Attorneys are required").build());
+        case NoMultipleAttorneys noMult ->
+            collector.addWrong(
+                builder.appendDesc("Multiple attorneys per party are not allowed").build());
+      }
+      return Optional.empty();
+    } else {
+      return res.expect("");
+    }
   }
 
   @Override

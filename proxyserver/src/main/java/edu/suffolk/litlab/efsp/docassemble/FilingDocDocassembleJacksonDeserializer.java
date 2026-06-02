@@ -4,7 +4,6 @@ import static edu.suffolk.litlab.efsp.utils.FilingError.malformedInterview;
 import static edu.suffolk.litlab.efsp.utils.FilingError.serverError;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getIntMember;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getMemberList;
-import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getNonEmptyStringMember;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getNumberMember;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringDefault;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
@@ -122,7 +121,8 @@ public class FilingDocDocassembleJacksonDeserializer {
     }
     String userDescription = getStringDefault(node, "filing_description", "");
     var filingRefNum = unwrap(parser::vetFilingRefNum, node, "reference_number", collector);
-    Optional<String> filingAttorney = getNonEmptyStringMember(node, "filing_attorney");
+    Optional<String> filingAttorney =
+        unwrap(parser::vetFilingAttorney, node, "filing_attorney", collector);
     var filingComment = unwrap(parser::vetComment, node, "filing_comment", collector);
 
     String _logName =

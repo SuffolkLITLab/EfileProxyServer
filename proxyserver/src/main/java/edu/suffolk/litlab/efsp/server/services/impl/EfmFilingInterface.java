@@ -4,10 +4,12 @@ import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.FilingResult;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import jakarta.ws.rs.core.Response;
 import java.time.LocalDate;
+import java.util.Optional;
 
 public interface EfmFilingInterface {
   public enum ApiChoice {
@@ -53,6 +55,8 @@ public interface EfmFilingInterface {
   public Response getPolicy(String courtId, String apiToken);
 
   public Response cancelFiling(String courtId, String filingId, String apiToken);
+
+  public Optional<CodesParser> getParser(String courtId, String apiToken);
 
   /**
    * TYLER ONLY at the moment: returns a list of disclaimers that must be shown to the user before

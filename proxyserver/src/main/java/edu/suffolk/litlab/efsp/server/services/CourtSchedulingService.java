@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.server.services;
 
+import static edu.suffolk.litlab.efsp.server.utils.ServiceHelpers.getIsIndividual;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.isNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -55,7 +56,9 @@ import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
+import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
+import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
@@ -107,6 +110,7 @@ public class CourtSchedulingService {
   private final ecf4.latest.gov.niem.release.niem.proxy.xsd._4.ObjectFactory proxyObjFac;
   private final Map<String, InterviewToFilingInformationConverter> converterMap;
   private final CourtRecordMDEService recordFactory;
+  private final TylerFirmFactory firmFactory;
   private final Jurisdiction jurisdiction;
 
   private final Supplier<CodeDatabase> cdSupplier;
@@ -140,6 +144,11 @@ public class CourtSchedulingService {
       throw new RuntimeException("Cannot find " + domain + " for court record factory");
     }
     this.recordFactory = maybeCourt.get();
+    Optional<TylerFirmFactory> maybeFirmFactory = TylerClients.getEfmFirmFactory(domain);
+    if (maybeFirmFactory.isEmpty()) {
+      throw new RuntimeException("Cannot find " + domain + " for firm mde factory");
+    }
+    this.firmFactory = maybeFirmFactory.get();
   }
 
   @GET
@@ -252,7 +261,12 @@ public class CourtSchedulingService {
         mediaType = MediaType.valueOf("application/json");
       }
       InfoCollector collector = new FailFastCollector();
-      CodesParser parser = new TylerCodesParser(cd, locationInfo.get());
+      Optional<String> activeToken = getActiveToken(httpHeaders);
+      if (activeToken.isEmpty()) {
+        return Response.status(401).entity("Not logged in to file with " + courtId).build();
+      }
+      boolean isIndividual = getIsIndividual(firmFactory, activeToken.get());
+      CodesParser parser = new TylerCodesParser(cd, locationInfo.get(), isIndividual);
       Result<FilingInformation, FilingError> res =
           converterMap.get(mediaType.toString()).traverseInterview(allVars, parser, collector);
       if (res.isErr()) {
@@ -567,6 +581,27 @@ public class CourtSchedulingService {
           }
         });
     return Response.ok(ret).build();
+  }
+
+  private Optional<String> getActiveToken(HttpHeaders httpHeaders) {
+    String orgHeaderKey =
+        httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
+    String serverKey = httpHeaders.getHeaderString("X-API-KEY");
+    try (LoginDatabase ld = ldSupplier.get()) {
+      Optional<AtRest> atRest = ld.getAtRestInfo(serverKey);
+      if (atRest.isEmpty()) {
+        return Optional.empty();
+      }
+      String orgToken = httpHeaders.getHeaderString(orgHeaderKey);
+      if (orgToken == null || orgToken.isBlank()) {
+        return Optional.empty();
+      }
+      MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(orgToken));
+      return Optional.of(orgToken);
+    } catch (SQLException ex) {
+      log.error("SQL Error", ex);
+      return Optional.empty();
+    }
   }
 
   private Optional<CourtSchedulingMDE> setupSchedulingPort(HttpHeaders httpHeaders) {

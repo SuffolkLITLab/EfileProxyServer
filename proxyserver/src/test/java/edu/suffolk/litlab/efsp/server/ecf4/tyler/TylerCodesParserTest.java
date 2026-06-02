@@ -18,10 +18,12 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.model.OptionalService;
+import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.BadCode;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.NoMatchingCode;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.NoMatchingRef;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.NoMultipleAttorneys;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.RequiredCodeNotPresent;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.TooLongVar;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.WrongRefVal;
@@ -31,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -83,11 +86,11 @@ public class TylerCodesParserTest {
         .thenReturn(List.of(new NameAndCode("SubType code", "998877")));
     when(cd.getFilingType("01", exampleCategory.code, exampleCaseType.code, true))
         .thenReturn(List.of(filingCode));
+    dataFields = mock(DataFields.class);
+
     var loc = new CourtLocationInfo("01");
     loc.initial = true;
-
-    dataFields = mock(DataFields.class);
-    parser = new TylerCodesParser(cd, loc, dataFields);
+    parser = new TylerCodesParser(cd, loc, dataFields, true);
   }
 
   @Test
@@ -514,48 +517,75 @@ public class TylerCodesParserTest {
       var res = parser.vetProcedureRemedy(Optional.of("2244"), true, exampleCatProcRem);
       assertThat(res).containsOk(Optional.of(procRem));
     }
+  }
 
-    @Nested
-    class PhoneNumberTests {
-      @BeforeEach
-      public void setup() {
-        when(dataFields.getFieldRow("PartyPhone"))
-            .thenReturn(
-                new DataFieldRow(
-                    "PartyPhone",
-                    "phone number",
-                    true,
-                    false,
-                    "",
-                    "",
-                    "",
-                    "",
-                    "^(\\+0?1\\s)?\\(?\\d{3}\\)?\\d{3}\\d{4}$",
-                    null,
-                    false,
-                    "01"));
-      }
+  @Nested
+  class AttorneyTests {
+    @BeforeEach
+    public void setup() {
+      when(dataFields.getFieldRow("PartyAttorney"))
+          .thenReturn(new DataFieldRow("PartyAttorney", "party attorney", true, false, "01"));
+    }
 
-      @Test
-      public void testNormalPhoneNumber() {
-        var phones = List.of("4092345678");
-        var res = parser.vetPhoneNumbers(phones);
-        assertThat(res).containsOk(phones);
-      }
+    @Test
+    public void noMultipleAttorneys() {
+      var loc = new CourtLocationInfo("01");
+      loc.initial = true;
+      loc.allowmultipleattorneys = false;
+      parser = new TylerCodesParser(cd, loc, dataFields, true);
 
-      @Test
-      public void testBadPhoneNumber() {
-        var phones = List.of("+34092345678");
-        var res = parser.vetPhoneNumbers(phones);
-        assertThat(res).isErr();
-      }
+      var map = Map.of(PartyId.Already("1"), List.of("abc", "def"));
+      var partyIds = Set.of(PartyId.Already("1"));
+      var attySet = Set.of("abc", "def");
+      var res = parser.vetPartyAttorneyMap(map, partyIds, attySet);
+      assertThat(res).isErr().extractingErr().isInstanceOf(NoMultipleAttorneys.class);
 
-      @Test
-      public void testOneBadOneOkayPhoneNumber() {
-        var phones = List.of("+34092345678", "+1 4092345678");
-        var res = parser.vetPhoneNumbers(phones);
-        assertThat(res).containsOk(List.of("+1 4092345678"));
-      }
+      loc.allowmultipleattorneys = true;
+      var res2 = parser.vetPartyAttorneyMap(map, partyIds, attySet);
+      assertThat(res2).isOk();
+    }
+  }
+
+  @Nested
+  class PhoneNumberTests {
+    @BeforeEach
+    public void setup() {
+      when(dataFields.getFieldRow("PartyPhone"))
+          .thenReturn(
+              new DataFieldRow(
+                  "PartyPhone",
+                  "phone number",
+                  true,
+                  false,
+                  "",
+                  "",
+                  "",
+                  "",
+                  "^(\\+0?1\\s)?\\(?\\d{3}\\)?\\d{3}\\d{4}$",
+                  null,
+                  false,
+                  "01"));
+    }
+
+    @Test
+    public void testNormalPhoneNumber() {
+      var phones = List.of("4092345678");
+      var res = parser.vetPhoneNumbers(phones);
+      assertThat(res).containsOk(phones);
+    }
+
+    @Test
+    public void testBadPhoneNumber() {
+      var phones = List.of("+34092345678");
+      var res = parser.vetPhoneNumbers(phones);
+      assertThat(res).isErr();
+    }
+
+    @Test
+    public void testOneBadOneOkayPhoneNumber() {
+      var phones = List.of("+34092345678", "+1 4092345678");
+      var res = parser.vetPhoneNumbers(phones);
+      assertThat(res).containsOk(List.of("+1 4092345678"));
     }
   }
 }

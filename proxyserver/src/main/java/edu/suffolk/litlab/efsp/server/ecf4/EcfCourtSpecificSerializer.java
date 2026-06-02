@@ -362,24 +362,11 @@ public class EcfCourtSpecificSerializer {
     DocumentMetadataType metadata = ecfOf.createDocumentMetadataType();
     metadata.setRegisterActionDescriptionText(Ecf4Helper.convertText(filing.code));
 
-    DataFieldRow attorneyRow = allDataFields.getFieldRow("FilingFilingAttorneyView");
-    if (attorneyRow.isvisible) {
-      if (doc.getFilingAttorney().isPresent() && !doc.getFilingAttorney().get().isBlank()) {
-        metadata.setFilingAttorneyID(
-            Ecf4Helper.convertId(doc.getFilingAttorney().get(), "REFERENCE"));
-      } else if (!attorneyRow.isrequired || isIndividual) {
-        // "This field should contain empty values for Individual filers"
-        metadata.setFilingAttorneyID(Ecf4Helper.convertId("", ""));
-      } else {
-        InterviewVariable attVar =
-            collector.requestVar(
-                "filing_attorney", "The Attorney that is filing this document", "text");
-        collector.addRequired(attVar);
-      }
-    } else {
-      // It's required, even if it's not visible. So keep it empty.
-      metadata.setFilingAttorneyID(Ecf4Helper.convertId("", ""));
-    }
+    metadata.setFilingAttorneyID(
+        doc.getFilingAttorney()
+            .map(atty -> Ecf4Helper.convertId(atty, "REFERENCE"))
+            // It's required, even if it's not visible or an Individual filer. So keep it empty.
+            .orElse(Ecf4Helper.convertId("", "")));
 
     for (PartyId filingPartyId : doc.getFilingPartyIds()) {
       metadata

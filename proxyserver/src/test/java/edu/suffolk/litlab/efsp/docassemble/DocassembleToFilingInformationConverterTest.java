@@ -82,11 +82,13 @@ public class DocassembleToFilingInformationConverterTest {
                         "PartyLastName",
                         new DataFieldRow("PartyLastName", "last name", true, false, "adams"),
                         "PartyPhone",
-                        new DataFieldRow("PartyPhone", "", true, false, "adams")))));
+                        new DataFieldRow("PartyPhone", "", true, false, "adams"),
+                        "PartyAttorney",
+                        new DataFieldRow("PartyAttorney", "Attorney", true, false, "adams")))));
     var loc = new CourtLocationInfo("01");
     loc.initial = true;
     loc.subsequent = true;
-    parser = new TylerCodesParser(cd, loc);
+    parser = new TylerCodesParser(cd, loc, true);
   }
 
   private String getFileContents(String inFileName) throws IOException {

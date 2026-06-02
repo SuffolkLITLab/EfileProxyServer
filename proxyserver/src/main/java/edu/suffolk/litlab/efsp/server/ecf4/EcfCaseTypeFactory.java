@@ -527,18 +527,10 @@ public class EcfCaseTypeFactory {
       }
     }
 
-    DataFieldRow attRow = serializer.allDataFields.getFieldRow("PartyAttorney");
     for (Map.Entry<PartyId, List<String>> partyAttys : info.getPartyAttorneyMap().entrySet()) {
       log.info("Setting Attorneys for : {}", partyAttys.getKey());
-      Object partyObj;
-      if (partyIdToRefObj.containsKey(partyAttys.getKey().getIdString())) {
-        partyObj = partyIdToRefObj.get(partyAttys.getKey().getIdString());
-      } else if (partyIdToRefObj.isEmpty()) {
-        log.warn(
-            "No current filing parties, but {} is in the current filing?",
-            partyAttys.getKey().getIdString());
-        continue;
-      } else {
+      Object partyObj = partyIdToRefObj.get(partyAttys.getKey().getIdString());
+      if (partyObj == null) {
         log.warn(
             "Can't handle current filing participant ({}) not already added?!",
             partyAttys.getKey().getIdString());
@@ -546,17 +538,8 @@ public class EcfCaseTypeFactory {
       }
       ReferenceType repdRef = structObjFac.createReferenceType();
       repdRef.setRef(partyObj);
-      if (!attRow.isvisible) {
-        continue;
-      }
       if (partyAttys.getValue().isEmpty()) {
         // Is Self-Represented
-        if (attRow.isrequired) {
-          InterviewVariable var =
-              collector.requestVar(
-                  "party_to_attorney", "Attorneys are required for this court", "DADict");
-          collector.addRequired(var);
-        }
         CaseOfficialType t = ecfCommonObjFac.createCaseOfficialType();
         t.getCaseRepresentedPartyReference().add(repdRef);
         ReferenceType selfRepresentedRep = structObjFac.createReferenceType();
@@ -564,14 +547,6 @@ public class EcfCaseTypeFactory {
         t.setRoleOfPersonReference(selfRepresentedRep);
         ecfAug.getCaseOtherEntityAttorney().add(t);
       } else {
-        if (!courtLocation.allowmultipleattorneys && partyAttys.getValue().size() > 1) {
-          FilingError err =
-              FilingError.malformedInterview(
-                  "Court "
-                      + info.getCourtLocation()
-                      + " doesn't allow multiple lawyers per case party.");
-          collector.error(err);
-        }
         for (String attyId : partyAttys.getValue()) {
           CaseOfficialType t = ecfCommonObjFac.createCaseOfficialType();
           t.getCaseRepresentedPartyReference().add(repdRef);
