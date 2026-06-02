@@ -7,6 +7,7 @@ import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
+import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
@@ -121,6 +122,30 @@ public class ServiceHelpers {
         return Response.ok(cd.getAllLocations());
       }
     }
+  }
+
+  public static boolean getIsIndividual(TylerFirmFactory firmFactory, String tylerToken) {
+    Optional<TylerFirmClient> firmClient = setupFirmPort(firmFactory, tylerToken);
+    boolean isIndividual =
+        firmClient
+            .map(
+                port -> {
+                  try {
+                    var resp = port.getFirm();
+                    if (TylerErrorCodes.hasError(resp)) {
+                      log.warn(
+                          "GetFirm returned an error: {}, {}",
+                          resp.getError().getErrorCode(),
+                          resp.getError().getErrorText());
+                    }
+                    return resp.getFirm().isIsIndividual();
+                  } catch (Exception ex) {
+                    log.warn("Exception when getting firm info for individual?:", ex);
+                    return true;
+                  }
+                })
+            .orElse(true);
+    return isIndividual;
   }
 
   public static Optional<TylerFirmClient> setupFirmPort(

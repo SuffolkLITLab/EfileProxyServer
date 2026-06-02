@@ -11,13 +11,10 @@ import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.FilingResult;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
-import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
 import edu.suffolk.litlab.efsp.server.services.impl.EfmFilingInterface;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
@@ -70,14 +67,12 @@ public class FilingReviewService {
 
   private final Map<String, EfmRestCallbackInterface> callbackInterfaces;
   private final OrgMessageSender msgSender;
-  private final Supplier<CodeDatabase> cdSupplier;
   private final Supplier<LoginDatabase> ldSupplier;
   private final Supplier<UserDatabase> udSupplier;
   private final EndpointReflection ef;
 
   public FilingReviewService(
       Jurisdiction jurisdiction,
-      Supplier<CodeDatabase> cdSupplier,
       Supplier<LoginDatabase> ldSupplier,
       Supplier<UserDatabase> udSupplier,
       Map<String, InterviewToFilingInformationConverter> converterMap,
@@ -87,7 +82,6 @@ public class FilingReviewService {
     this.converterMap = converterMap;
     this.filingInterfaces = filingInterfaces;
     this.callbackInterfaces = callbackInterfaces;
-    this.cdSupplier = cdSupplier;
     this.ldSupplier = ldSupplier;
     this.udSupplier = udSupplier;
     this.msgSender = msgSender;
@@ -194,15 +188,15 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    Result<CodesParser, Response> maybeParser = makeParser(courtId);
-    if (maybeParser.isErr()) {
-      return maybeParser.unwrapErrOrElseThrow();
-    }
-    var parser = maybeParser.unwrapOrElseThrow();
     Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
+    Result<CodesParser, Response> maybeParser = makeParser(courtId, activeToken.get(), filer);
+    if (maybeParser.isErr()) {
+      return maybeParser.unwrapErrOrElseThrow();
+    }
+    var parser = maybeParser.unwrapOrElseThrow();
     if (!converterMap.containsKey(mediaType.toString())) {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     }
@@ -237,15 +231,15 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    Result<CodesParser, Response> maybeParser = makeParser(courtId);
-    if (maybeParser.isErr()) {
-      return maybeParser.unwrapErrOrElseThrow();
-    }
-    var parser = maybeParser.unwrapOrElseThrow();
     Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
+    Result<CodesParser, Response> maybeParser = makeParser(courtId, activeToken.get(), filer);
+    if (maybeParser.isErr()) {
+      return maybeParser.unwrapErrOrElseThrow();
+    }
+    var parser = maybeParser.unwrapOrElseThrow();
     if (!converterMap.containsKey(mediaType.toString())) {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     }
@@ -278,15 +272,15 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    Result<CodesParser, Response> maybeParser = makeParser(courtId);
-    if (maybeParser.isErr()) {
-      return maybeParser.unwrapErrOrElseThrow();
-    }
-    var parser = maybeParser.unwrapOrElseThrow();
     Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
     if (activeToken.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
+    Result<CodesParser, Response> maybeParser = makeParser(courtId, activeToken.get(), filer);
+    if (maybeParser.isErr()) {
+      return maybeParser.unwrapErrOrElseThrow();
+    }
+    var parser = maybeParser.unwrapOrElseThrow();
     if (!converterMap.containsKey(mediaType.toString())) {
       return Response.status(415).entity("We only support " + converterMap.keySet()).build();
     }
@@ -381,7 +375,7 @@ public class FilingReviewService {
       log.error("SQL Error: ", ex);
     }
     Result<FilingInformation, Response> maybeInfo =
-        parseFiling(httpHeaders, allVars, filer, courtId, mediaType);
+        parseFiling(httpHeaders, allVars, filer, courtId, activeToken.get(), mediaType);
     if (maybeInfo.isErr()) {
       return maybeInfo.unwrapErrOrElseThrow();
     }
@@ -475,13 +469,14 @@ public class FilingReviewService {
       String allVars,
       EfmFilingInterface filer,
       String courtId,
+      String activeToken,
       MediaType mediaType) {
     log.trace("Court id: {}", courtId);
     if (!converterMap.containsKey(mediaType.toString())) {
       return Result.err(
           Response.status(415).entity("We only support " + converterMap.keySet()).build());
     }
-    Result<CodesParser, Response> maybeParser = makeParser(courtId);
+    Result<CodesParser, Response> maybeParser = makeParser(courtId, activeToken, filer);
     if (maybeParser.isErr()) {
       return maybeParser.propagateErr();
     }
@@ -586,12 +581,12 @@ public class FilingReviewService {
     return Result.ok(filingInterfaces.get(courtId));
   }
 
-  private Result<CodesParser, Response> makeParser(String courtId) {
-    CodeDatabase cd = cdSupplier.get();
-    Optional<CourtLocationInfo> info = cd.getFullLocationInfo(courtId);
-    if (info.isEmpty()) {
+  private Result<CodesParser, Response> makeParser(
+      String courtId, String apiToken, EfmFilingInterface filer) {
+    var parser = filer.getParser(courtId, apiToken);
+    if (parser.isEmpty()) {
       return Result.err(Response.status(404).entity("Cannot send filing to " + courtId).build());
     }
-    return Result.ok(new TylerCodesParser(cd, info.get()));
+    return Result.ok(parser.get());
   }
 }

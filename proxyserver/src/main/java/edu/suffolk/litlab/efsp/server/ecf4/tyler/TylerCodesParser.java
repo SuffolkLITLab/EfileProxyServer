@@ -47,20 +47,24 @@ public class TylerCodesParser implements CodesParser {
   private final CodeDatabase cd;
   private final CourtLocationInfo court;
   private final DataFields allDataFields;
+  private final boolean isIndividual;
 
-  public TylerCodesParser(CodeDatabase cd, CourtLocationInfo court, DataFields allDataFields) {
+  public TylerCodesParser(
+      CodeDatabase cd, CourtLocationInfo court, DataFields allDataFields, boolean isIndividual) {
     this.cd = cd;
     this.court = court;
     this.allDataFields = allDataFields;
+    this.isIndividual = isIndividual;
   }
 
-  public TylerCodesParser(CodeDatabase cd, CourtLocationInfo court) {
-    this(cd, court, cd.getDataFields(court.code));
+  public TylerCodesParser(CodeDatabase cd, CourtLocationInfo court, boolean isIndividual) {
+    this(cd, court, cd.getDataFields(court.code), isIndividual);
   }
 
-  public Optional<TylerCodesParser> makeParser(CodeDatabase cd, String courtId) {
+  public static Optional<CodesParser> makeParser(
+      CodeDatabase cd, String courtId, boolean isIndividual) {
     Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId);
-    return locationInfo.map(li -> new TylerCodesParser(cd, li));
+    return locationInfo.map(li -> new TylerCodesParser(cd, li, isIndividual));
   }
 
   /////////////////// Methods that access the codes database.
@@ -582,6 +586,64 @@ public class TylerCodesParser implements CodesParser {
   // Filer Types
   // Filing Associations
   // Anything else not currently checked
+
+  // TODO: should rebuild attySet from scratch if it doesn't exist
+  public Result<Optional<Map<PartyId, List<String>>>, AttorneyError> vetPartyAttorneyMap(
+      Map<PartyId, List<String>> partyAttyMap,
+      Collection<PartyId> partyIdSet,
+      Collection<String> attySet) {
+    DataFieldRow attRow = allDataFields.getFieldRow("PartyAttorney");
+    if (!attRow.isvisible) {
+      return Result.ok(Optional.empty());
+    }
+    for (Map.Entry<PartyId, List<String>> partyAttys : partyAttyMap.entrySet()) {
+      log.info("Setting Attorneys for : {}", partyAttys.getKey());
+      if (partyIdSet.isEmpty()) {
+        log.warn(
+            "No current filing parties, but {} is in the current filing?",
+            partyAttys.getKey().getIdString());
+        continue;
+      } else if (!partyIdSet.contains(partyAttys.getKey())) {
+        log.warn(
+            "Can't handle current filing participant ({}) not already added?!",
+            partyAttys.getKey().getIdString());
+        continue;
+      }
+      if (partyAttys.getValue().isEmpty()) {
+        // Is Self-Represented
+        if (attRow.isrequired) {
+          return Result.err(new RequiredAttorneys());
+        }
+      } else {
+        if (!this.court.allowmultipleattorneys && partyAttys.getValue().size() > 1) {
+          return Result.err(new NoMultipleAttorneys());
+        }
+      }
+      for (String atty : partyAttys.getValue()) {
+        if (!attySet.contains(atty)) {
+          log.warn("Party attorney {} not present in attorney list? {}", atty, attySet);
+        }
+      }
+    }
+
+    return Result.ok(Optional.of(partyAttyMap));
+  }
+
+  // Should only return MissingVar
+  // TODO: should check that filing attorney is in Atty set
+  public Result<Optional<String>, TextVarError> vetFilingAttorney(Optional<String> filingAttorney) {
+    DataFieldRow attorneyRow = allDataFields.getFieldRow("FilingFilingAttorneyView");
+    if (filingAttorney.isPresent() && filingAttorney.get().isBlank()) {
+      filingAttorney = Optional.empty();
+    }
+    if (attorneyRow.isvisible) {
+      if (!filingAttorney.isPresent() && attorneyRow.isrequired && !isIndividual) {
+        return Result.err(new MissingVar(attorneyRow.regularexpression));
+      }
+      return Result.ok(filingAttorney);
+    }
+    return Result.ok(Optional.empty());
+  }
 
   /**
    * Throws if something is wrong; otherwise, an optional email (empty does not mean error!).

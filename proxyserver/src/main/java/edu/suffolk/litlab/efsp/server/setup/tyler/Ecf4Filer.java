@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efsp.server.setup.tyler;
 
-import static edu.suffolk.litlab.efsp.server.utils.ServiceHelpers.setupFirmPort;
+import static edu.suffolk.litlab.efsp.server.utils.ServiceHelpers.getIsIndividual;
 import static edu.suffolk.litlab.efsp.stdlib.StdLib.exists;
 
 import com.hubspot.algebra.Result;
@@ -74,8 +74,6 @@ import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
-import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
-import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
@@ -173,6 +171,16 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     return this.headerKey;
   }
 
+  public Optional<CodesParser> getParser(String courtId, String apiToken) {
+    boolean isIndividual = getIsIndividual(firmFactory, apiToken);
+    try (CodeDatabase cd = cdSupplier.get()) {
+      return TylerCodesParser.makeParser(cd, courtId, isIndividual);
+    } catch (SQLException ex) {
+      log.error("Couldn't get CodeDatabase, can't get CodesParser");
+      return Optional.empty();
+    }
+  }
+
   private CoreMessageAndNames prepareFiling(
       FilingInformation info,
       InfoCollector collector,
@@ -212,8 +220,10 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         collector.error(err);
       }
 
+      boolean isIndividual = getIsIndividual(firmFactory, apiToken);
+
       EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo);
-      CodesParser parser = new TylerCodesParser(cd, locationInfo);
+      CodesParser parser = new TylerCodesParser(cd, locationInfo, isIndividual);
       boolean isInitialFiling =
           info.getPreviousCaseId().isEmpty() && info.getCaseDocketNumber().isEmpty();
       boolean isFirstIndexedFiling = info.getPreviousCaseId().isEmpty();
@@ -405,26 +415,6 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       long maxSize = Ecf4Helper.sizeMeasureAsBytes(maxIndivDocSize);
       long cumulativeBytes = 0;
 
-      Optional<TylerFirmClient> firmClient = setupFirmPort(firmFactory, apiToken);
-      boolean isIndividual =
-          firmClient
-              .map(
-                  port -> {
-                    try {
-                      var resp = port.getFirm();
-                      if (TylerErrorCodes.hasError(resp)) {
-                        log.warn(
-                            "GetFirm returned an error: {}, {}",
-                            resp.getError().getErrorCode(),
-                            resp.getError().getErrorText());
-                      }
-                      return resp.getFirm().isIsIndividual();
-                    } catch (Exception ex) {
-                      log.warn("Exception when getting firm info for individual?:", ex);
-                      return true;
-                    }
-                  })
-              .orElse(true);
       Map<String, Object> filingIdToObj = new HashMap<>();
       int seqNum = 0;
       for (FilingDoc filingDoc : info.getFilings()) {

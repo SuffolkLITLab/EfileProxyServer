@@ -41,6 +41,10 @@ public interface CodesParser {
   public record NoMatchingRef(String refCode, String refVal) implements CrossReferenceError {}
   public record MissingRequiredRefs(Set<String> refCodes) implements CrossReferenceError {}
 
+  public sealed interface AttorneyError {}
+  public record NoMultipleAttorneys() implements AttorneyError {}
+  public record RequiredAttorneys() implements AttorneyError {}
+
   public sealed interface FileNameError {}
   public record FileExtensionNotAllowed(String given, List<FileType> allowed) implements FileNameError {}
   public record FileNameTextError(TextVarError err) implements FileNameError {}
@@ -97,6 +101,13 @@ public interface CodesParser {
 
   public Result<Optional<NameAndCode>, CodeError> vetProcedureRemedy(
       Optional<String> maybeProRem, boolean initial, CaseCategory cat);
+
+  public Result<Optional<Map<PartyId, List<String>>>, AttorneyError> vetPartyAttorneyMap(
+      Map<PartyId, List<String>> partyAttyMap,
+      Collection<PartyId> partyIdSet,
+      Collection<String> attySet);
+
+  public Result<Optional<String>, TextVarError> vetFilingAttorney(Optional<String> filingAttorney);
 
   public Result<Optional<String>, TextVarError> vetEmail(Optional<String> email);
 

@@ -77,7 +77,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
                 Map.of(
                     "DocumentType",
                     new DataFieldRow("DocumentType", "Document Type", true, false, "adams"))));
-    parser = new TylerCodesParser(cd, new CourtLocationInfo("adams"), dataFields);
+    parser = new TylerCodesParser(cd, new CourtLocationInfo("adams"), dataFields, true);
   }
 
   @Test

@@ -225,7 +225,7 @@ public class EcfCourtSpecificSerializerTest {
 
     var varToPartyId = Map.of("users[0]", PartyId.CurrentFilingNew("abc"));
     JsonNode node = readFile("one_attachment.json");
-    var parser = new TylerCodesParser(cd, loc);
+    var parser = new TylerCodesParser(cd, loc, true);
     var doc =
         FilingDocDocassembleJacksonDeserializer.fromNode(
             node, varToPartyId, 2, List.of(filing), parser, collector);
