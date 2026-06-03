@@ -325,7 +325,6 @@ public class EcfCourtSpecificSerializer {
       CaseCategory caseCategory,
       CaseType motionType,
       FilingCode filing,
-      boolean isIndividual,
       JsonNode miscInfo,
       InfoCollector collector)
       throws IOException, FilingError {

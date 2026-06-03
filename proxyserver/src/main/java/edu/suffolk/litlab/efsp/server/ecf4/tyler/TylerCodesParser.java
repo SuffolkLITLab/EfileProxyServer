@@ -1,6 +1,9 @@
 package edu.suffolk.litlab.efsp.server.ecf4.tyler;
 
+import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
+import ecf4.latest.gov.niem.niem.niem_core._2.MeasureType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.DevelopmentPolicyParametersType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
@@ -16,12 +19,14 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
 import edu.suffolk.litlab.efsp.model.FilingAction;
+import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.PartyInfo;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.model.Person.Gender;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
+import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -48,25 +53,38 @@ public class TylerCodesParser implements CodesParser {
   private static Logger log = LoggerFactory.getLogger(TylerCodesParser.class);
   private final CodeDatabase cd;
   private final CourtLocationInfo court;
+  private final DevelopmentPolicyParametersType policy;
   private final DataFields allDataFields;
   private final boolean isIndividual;
 
   public TylerCodesParser(
-      CodeDatabase cd, CourtLocationInfo court, DataFields allDataFields, boolean isIndividual) {
+      CodeDatabase cd,
+      DevelopmentPolicyParametersType policy,
+      CourtLocationInfo court,
+      DataFields allDataFields,
+      boolean isIndividual) {
     this.cd = cd;
     this.court = court;
+    this.policy = policy;
     this.allDataFields = allDataFields;
     this.isIndividual = isIndividual;
   }
 
-  public TylerCodesParser(CodeDatabase cd, CourtLocationInfo court, boolean isIndividual) {
-    this(cd, court, cd.getDataFields(court.code), isIndividual);
+  public TylerCodesParser(
+      CodeDatabase cd,
+      DevelopmentPolicyParametersType policy,
+      CourtLocationInfo court,
+      boolean isIndividual) {
+    this(cd, policy, court, cd.getDataFields(court.code), isIndividual);
   }
 
   public static Optional<CodesParser> makeParser(
-      CodeDatabase cd, String courtId, boolean isIndividual) {
+      CodeDatabase cd,
+      DevelopmentPolicyParametersType policy,
+      String courtId,
+      boolean isIndividual) {
     Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId);
-    return locationInfo.map(li -> new TylerCodesParser(cd, li, isIndividual));
+    return locationInfo.map(li -> new TylerCodesParser(cd, policy, li, isIndividual));
   }
 
   /////////////////// Methods that access the codes database.
@@ -580,7 +598,6 @@ public class TylerCodesParser implements CodesParser {
   }
 
   ////////  Still TODO
-  // Filing Doc
   // Filer Types
   // Filing Associations
   // Anything else not currently checked
@@ -900,5 +917,25 @@ public class TylerCodesParser implements CodesParser {
       return Result.err(new FileNameTextError(new TooLongVar(fileName, 50)));
     }
     return Result.ok(fileName);
+  }
+
+  public Result<NullValue, FilingDocError> vetFilingDocSize(List<FilingDoc> docs) {
+    MeasureType maxIndivDocSize = policy.getMaximumAllowedAttachmentSize();
+    long maxEach = Ecf4Helper.sizeMeasureAsBytes(maxIndivDocSize);
+    long cumulativeBytes = 0;
+    for (int i = 0; i < docs.size(); i++) {
+      var doc = docs.get(i);
+      long docSize = doc.allAttachmentsLength();
+      if (docSize > maxEach) {
+        return Result.err(new DocTooBig(i));
+      }
+      cumulativeBytes += docSize;
+    }
+    MeasureType maxTotalDocSize = policy.getMaximumAllowedMessageSize();
+    long maxTotal = Ecf4Helper.sizeMeasureAsBytes(maxTotalDocSize);
+    if (cumulativeBytes > maxTotal) {
+      return Result.err(new CumulativeDocsTooBig(cumulativeBytes));
+    }
+    return Result.nullOk();
   }
 }

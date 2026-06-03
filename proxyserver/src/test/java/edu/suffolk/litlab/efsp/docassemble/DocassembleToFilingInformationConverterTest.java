@@ -88,7 +88,7 @@ public class DocassembleToFilingInformationConverterTest {
     var loc = new CourtLocationInfo("01");
     loc.initial = true;
     loc.subsequent = true;
-    parser = new TylerCodesParser(cd, loc, true);
+    parser = new TylerCodesParser(cd, null, loc, true);
   }
 
   private String getFileContents(String inFileName) throws IOException {

@@ -225,7 +225,7 @@ public class EcfCourtSpecificSerializerTest {
 
     var varToPartyId = Map.of("users[0]", PartyId.CurrentFilingNew("abc"));
     JsonNode node = readFile("one_attachment.json");
-    var parser = new TylerCodesParser(cd, loc, true);
+    var parser = new TylerCodesParser(cd, null, loc, true);
     var doc =
         FilingDocDocassembleJacksonDeserializer.fromNode(
             node, varToPartyId, 2, List.of(filing), true, parser, collector);
@@ -235,7 +235,7 @@ public class EcfCourtSpecificSerializerTest {
     JsonNode miscNode = mapper.createObjectNode();
     var xmlDoc =
         cookSer.filingDocToXml(
-            doc.get(), true, caseCategory, caseType, filing, true, miscNode, collector);
+            doc.get(), true, caseCategory, caseType, filing, miscNode, collector);
     assertThat(xmlDoc.getValue().getDocumentSequenceID().getValue()).isEqualTo("2");
     assertThat(xmlDoc.getValue().getDocumentDescriptionText().getValue())
         .isEqualTo("The Motion to Stay Eviction for Bob Ma");

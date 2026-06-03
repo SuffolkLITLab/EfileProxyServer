@@ -11,6 +11,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ecf4.latest.gov.niem.niem.niem_core._2.MeasureType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.DevelopmentPolicyParametersType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
@@ -22,6 +24,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
+import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
@@ -81,7 +84,14 @@ public class FilingDocDocassembleJacksonDeserializerTest {
                     new DataFieldRow(
                         "DueDateAvailableForFilers", "Due Date", true, false, "adams"))));
 
-    parser = new TylerCodesParser(cd, new CourtLocationInfo("adams"), dataFields, true);
+    var maxMeasure = new MeasureType();
+    var niem2Fac = new ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory();
+    maxMeasure.setMeasureValue(niem2Fac.createMeasureText(Ecf4Helper.convertText("100")));
+    maxMeasure.setMeasureUnitText(Ecf4Helper.convertText("MB"));
+    var policy = new DevelopmentPolicyParametersType();
+    policy.setMaximumAllowedAttachmentSize(maxMeasure);
+    policy.setMaximumAllowedMessageSize(maxMeasure);
+    parser = new TylerCodesParser(cd, policy, new CourtLocationInfo("adams"), dataFields, true);
   }
 
   @Test
@@ -261,7 +271,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
       JsonNode node = readTemplate("template_filing_action.json", data);
       var doc =
           FilingDocDocassembleJacksonDeserializer.fromNode(
-              node, varToPartyId, 0, filingCodes, true, parser, collector);
+              node, varToPartyId, 0, filingCodes, false, parser, collector);
       assertThat(doc).isPresent();
       assertThat(doc.get().getFilingAction()).isPresent();
     }

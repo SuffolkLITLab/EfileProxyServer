@@ -123,10 +123,11 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   private final FilingReviewMDEService filingFactory;
   private final TylerFirmFactory firmFactory;
   private final ServiceMDEService serviceFactory;
-  private static final PolicyCacher policyCacher = new PolicyCacher();
+  private final PolicyCacher policyCacher;
   private final Jurisdiction jurisdiction;
 
-  public Ecf4Filer(TylerDomain domain, Supplier<CodeDatabase> cdSupplier) {
+  public Ecf4Filer(
+      TylerDomain domain, Supplier<CodeDatabase> cdSupplier, PolicyCacher policyCacher) {
     this.jurisdiction = domain.jurisdiction();
     this.cdSupplier = cdSupplier;
     TylerLogin login = new TylerLogin(domain);
@@ -164,6 +165,11 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       throw new RuntimeException("Cannot find " + domain + " for firm mde factory");
     }
     this.firmFactory = maybeFirmFactory.get();
+    if (policyCacher != null) {
+      this.policyCacher = policyCacher;
+    } else {
+      this.policyCacher = new PolicyCacher();
+    }
   }
 
   @Override
@@ -172,13 +178,27 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   public Optional<CodesParser> getParser(String courtId, String apiToken) {
-    boolean isIndividual = getIsIndividual(firmFactory, apiToken);
     try (CodeDatabase cd = cdSupplier.get()) {
-      return TylerCodesParser.makeParser(cd, courtId, isIndividual);
+      return getParser(cd, courtId, apiToken);
     } catch (SQLException ex) {
       log.error("Couldn't get CodeDatabase, can't get CodesParser");
       return Optional.empty();
     }
+  }
+
+  private Optional<CodesParser> getParser(CodeDatabase cd, String courtId, String apiToken) {
+    var filingPort = setupFilingPort(apiToken);
+    if (filingPort.isEmpty()) {
+      log.error("Couldn't get filingPort, can't get CodesParser");
+      return Optional.empty();
+    }
+    boolean isIndividual = getIsIndividual(firmFactory, apiToken);
+    var policy =
+        policyCacher
+            .getPolicyFor(filingPort.get(), courtId)
+            .getDevelopmentPolicyParameters()
+            .getValue();
+    return TylerCodesParser.makeParser(cd, policy, courtId, isIndividual);
   }
 
   private CoreMessageAndNames prepareFiling(
@@ -220,10 +240,14 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         collector.error(err);
       }
 
-      boolean isIndividual = getIsIndividual(firmFactory, apiToken);
-
       EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo);
-      CodesParser parser = new TylerCodesParser(cd, locationInfo, isIndividual);
+      var maybeParser = getParser(cd, locationInfo.code, apiToken);
+      if (maybeParser.isEmpty()) {
+        collector.error(
+            FilingError.serverError(
+                "Court setup or apiToken wrong: can't get parser for " + info.getCourtLocation()));
+      }
+      var parser = maybeParser.get();
       boolean isInitialFiling =
           info.getPreviousCaseId().isEmpty() && info.getCaseDocketNumber().isEmpty();
       boolean isFirstIndexedFiling = info.getPreviousCaseId().isEmpty();
@@ -445,7 +469,6 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                 allCodes.cat(),
                 allCodes.type(),
                 fc,
-                isIndividual,
                 info.getMiscInfo(),
                 collector);
         collector.popAttributeStack();

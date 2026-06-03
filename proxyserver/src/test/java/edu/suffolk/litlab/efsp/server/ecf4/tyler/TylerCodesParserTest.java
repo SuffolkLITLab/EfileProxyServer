@@ -90,7 +90,7 @@ public class TylerCodesParserTest {
 
     var loc = new CourtLocationInfo("01");
     loc.initial = true;
-    parser = new TylerCodesParser(cd, loc, dataFields, true);
+    parser = new TylerCodesParser(cd, null, loc, dataFields, true);
   }
 
   @Test
@@ -532,7 +532,7 @@ public class TylerCodesParserTest {
       var loc = new CourtLocationInfo("01");
       loc.initial = true;
       loc.allowmultipleattorneys = false;
-      parser = new TylerCodesParser(cd, loc, dataFields, true);
+      parser = new TylerCodesParser(cd, null, loc, dataFields, true);
 
       var map = Map.of(PartyId.Already("1"), List.of("abc", "def"));
       var partyIds = Set.of(PartyId.Already("1"));

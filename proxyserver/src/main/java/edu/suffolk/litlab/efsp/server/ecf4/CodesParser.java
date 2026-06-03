@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
+import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
@@ -9,6 +10,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.model.FilingAction;
+import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.PartyInfo;
@@ -54,6 +56,10 @@ public interface CodesParser {
   public sealed interface FileNameError {}
   public record FileExtensionNotAllowed(String given, List<FileType> allowed) implements FileNameError {}
   public record FileNameTextError(TextVarError err) implements FileNameError {}
+
+  public sealed interface FilingDocError {}
+  public record DocTooBig(int idx) implements FilingDocError {}
+  public record CumulativeDocsTooBig(long cumulativeBytes) implements FilingDocError {}
   // spotless:on
 
   // Methods
@@ -143,4 +149,6 @@ public interface CodesParser {
       String description, String firstFileName, FilingCode filing);
 
   public Result<String, FileNameError> vetFileName(String fileName);
+
+  public Result<NullValue, FilingDocError> vetFilingDocSize(List<FilingDoc> docs);
 }

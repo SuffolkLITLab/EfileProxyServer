@@ -28,11 +28,13 @@ import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.wsdl.c
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.casequerymessage_4.CaseQueryMessageType;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.caseresponsemessage_4.CaseResponseMessageType;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.CourtRecordMDEPort;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_definitions_4_0.FilingReviewMDEPort;
 import ecf4.latest.tyler.ecf.v5_0.extensions.common.CourtScheduleType;
 import ecf4.latest.tyler.ecf.v5_0.extensions.reservedateresponse.ReserveDateResponseMessageType;
 import ecf4.latest.tyler.ecf.v5_0.extensions.returndate.ReturnDateMessageType;
 import ecf4.latest.tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateResponseMessageType;
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
+import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
@@ -50,6 +52,7 @@ import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCourtSpecificSerializer;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecfv5CaseTypeFactory;
+import edu.suffolk.litlab.efsp.server.ecf4.PolicyCacher;
 import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
 import edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
@@ -111,7 +114,9 @@ public class CourtSchedulingService {
   private final Map<String, InterviewToFilingInformationConverter> converterMap;
   private final CourtRecordMDEService recordFactory;
   private final TylerFirmFactory firmFactory;
+  private final FilingReviewMDEService filingFactory;
   private final Jurisdiction jurisdiction;
+  private final PolicyCacher policyCacher;
 
   private final Supplier<CodeDatabase> cdSupplier;
   private final Supplier<LoginDatabase> ldSupplier;
@@ -120,7 +125,8 @@ public class CourtSchedulingService {
       Map<String, InterviewToFilingInformationConverter> converterMap,
       TylerDomain domain,
       Supplier<LoginDatabase> ldSupplier,
-      Supplier<CodeDatabase> cdSupplier) {
+      Supplier<CodeDatabase> cdSupplier,
+      PolicyCacher policyCacher) {
     this.jurisdiction = domain.jurisdiction();
     this.cdSupplier = cdSupplier;
     this.ldSupplier = ldSupplier;
@@ -129,6 +135,11 @@ public class CourtSchedulingService {
       throw new RuntimeException(
           "Can't find " + domain + " in the SoapClientChooser for CourtScheduler");
     }
+    var maybeReview = SoapClientChooser.getFilingReviewFactory(domain);
+    if (maybeReview.isEmpty()) {
+      throw new RuntimeException("Cannot find " + domain + " for filing review factory");
+    }
+    this.filingFactory = maybeReview.get();
     this.schedFactory = maybeSchedFactory.get();
     this.converterMap = converterMap;
     this.oasisWrapObjFac =
@@ -149,6 +160,11 @@ public class CourtSchedulingService {
       throw new RuntimeException("Cannot find " + domain + " for firm mde factory");
     }
     this.firmFactory = maybeFirmFactory.get();
+    if (policyCacher != null) {
+      this.policyCacher = policyCacher;
+    } else {
+      this.policyCacher = new PolicyCacher();
+    }
   }
 
   @GET
@@ -266,7 +282,18 @@ public class CourtSchedulingService {
         return Response.status(401).entity("Not logged in to file with " + courtId).build();
       }
       boolean isIndividual = getIsIndividual(firmFactory, activeToken.get());
-      CodesParser parser = new TylerCodesParser(cd, locationInfo.get(), isIndividual);
+
+      var filingPort = setupFilingPort(activeToken.get());
+      if (filingPort.isEmpty()) {
+        return Response.status(401).entity("Not logged in to file with " + courtId).build();
+      }
+      var policy = policyCacher.getPolicyFor(filingPort.get(), locationInfo.get().code);
+      CodesParser parser =
+          new TylerCodesParser(
+              cd,
+              policy.getDevelopmentPolicyParameters().getValue(),
+              locationInfo.get(),
+              isIndividual);
       Result<FilingInformation, FilingError> res =
           converterMap.get(mediaType.toString()).traverseInterview(allVars, parser, collector);
       if (res.isErr()) {
@@ -666,5 +693,25 @@ public class CourtSchedulingService {
     log.info("Message status: {}, error code: {}", ms, errorCodeText);
     return !ms.getMessageContentError().isEmpty()
         || (!errorCodeText.isBlank() && !errorCodeText.equals("0"));
+  }
+
+  private Optional<FilingReviewMDEPort> setupFilingPort(String apiToken) {
+    Optional<TylerUserNamePassword> creds =
+        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
+    if (creds.isEmpty()) {
+      return Optional.empty();
+    }
+
+    FilingReviewMDEPort port = makeFilingPort();
+    Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
+    List<Header> headersList = List.of(creds.get().toHeader());
+    ctx.put(Header.HEADER_LIST, headersList);
+    return Optional.of(port);
+  }
+
+  private FilingReviewMDEPort makeFilingPort() {
+    FilingReviewMDEPort port = filingFactory.getFilingReviewMDEPort();
+    ServiceHelpers.setupServicePort((BindingProvider) port);
+    return port;
   }
 }

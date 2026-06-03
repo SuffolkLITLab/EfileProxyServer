@@ -10,6 +10,7 @@ import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeUpdater;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
+import edu.suffolk.litlab.efsp.server.ecf4.PolicyCacher;
 import edu.suffolk.litlab.efsp.server.services.AdminUserService;
 import edu.suffolk.litlab.efsp.server.services.CasesService;
 import edu.suffolk.litlab.efsp.server.services.CourtSchedulingService;
@@ -285,7 +286,8 @@ public class TylerModuleSetup implements EfmModuleSetup {
           return CodeDatabase.fromDS(tylerDomain, this.codeDs);
         };
 
-    EfmFilingInterface filer = new Ecf4Filer(tylerDomain, cdSupplier);
+    PolicyCacher policyCacher = new PolicyCacher();
+    EfmFilingInterface filer = new Ecf4Filer(tylerDomain, cdSupplier, policyCacher);
     for (String court : getCourts()) {
       filingMap.put(court, filer);
       getCallback().ifPresent(call -> callbackMap.put(court, call));
@@ -325,7 +327,8 @@ public class TylerModuleSetup implements EfmModuleSetup {
     if (tylerDomain.jurisdiction() == Jurisdiction.ILLINOIS) {
       courtScheduler =
           Optional.of(
-              new CourtSchedulingService(converterMap, tylerDomain, ldSupplier, cdSupplier));
+              new CourtSchedulingService(
+                  converterMap, tylerDomain, ldSupplier, cdSupplier, policyCacher));
     }
     var filingReview =
         new FilingReviewService(
