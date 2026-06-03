@@ -318,6 +318,7 @@ public class FilingInformationDocassembleJacksonDeserializer
             node.get("comments_to_clerk"),
             varToPartyId,
             filingOptions,
+            isInitialFiling,
             parser,
             collector));
     if (entities.getFilings().isEmpty()) {
@@ -515,6 +516,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       JsonNode clerkComments,
       Map<String, PartyId> varToPartyId,
       List<FilingCode> filingOptions,
+      boolean isInitialFiling,
       CodesParser parser,
       InfoCollector collector)
       throws FilingError {
@@ -540,7 +542,13 @@ public class FilingInformationDocassembleJacksonDeserializer
         collector.pushAttributeStack("al_court_bundle.elements[" + i + "]");
         Optional<FilingDoc> maybeDoc =
             FilingDocDocassembleJacksonDeserializer.fromNode(
-                elems.get(i), varToPartyId, filingDocs.size(), filingOptions, parser, collector);
+                elems.get(i),
+                varToPartyId,
+                filingDocs.size(),
+                filingOptions,
+                isInitialFiling,
+                parser,
+                collector);
         collector.popAttributeStack();
         maybeDoc.ifPresent(
             doc -> {

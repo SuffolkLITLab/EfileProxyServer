@@ -228,7 +228,7 @@ public class EcfCourtSpecificSerializerTest {
     var parser = new TylerCodesParser(cd, loc, true);
     var doc =
         FilingDocDocassembleJacksonDeserializer.fromNode(
-            node, varToPartyId, 2, List.of(filing), parser, collector);
+            node, varToPartyId, 2, List.of(filing), true, parser, collector);
 
     EcfCourtSpecificSerializer cookSer = new EcfCourtSpecificSerializer(cd, loc);
     ObjectMapper mapper = new ObjectMapper();

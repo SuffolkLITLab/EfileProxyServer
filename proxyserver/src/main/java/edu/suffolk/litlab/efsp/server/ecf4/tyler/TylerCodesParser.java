@@ -15,6 +15,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
+import edu.suffolk.litlab.efsp.model.FilingAction;
 import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.PartyInfo;
@@ -579,7 +580,6 @@ public class TylerCodesParser implements CodesParser {
   }
 
   ////////  Still TODO
-  // Filing Action
   // Filing Doc
   // Filer Types
   // Filing Associations
@@ -833,6 +833,29 @@ public class TylerCodesParser implements CodesParser {
       return Result.ok(dueDate);
     }
     return Result.ok(Optional.empty());
+  }
+
+  public Result<Optional<FilingAction>, InvalidFilingAction> vetFilingAction(
+      Optional<FilingAction> filingAction, boolean isInitialFiling) {
+    // From Reference Guide: if no FilingAction is provided, the original default behavior applies:
+    // * ReviewFiling API w/o service contacts: EFile
+    // * ReviewFiling API w/ service contacts: EfileAndServe
+    // * ServeFiling API: Serve
+    if (filingAction.isPresent()) {
+      FilingAction act = filingAction.get();
+      boolean serviceOnInitial =
+          switch (this.court.allowserviceoninitial) {
+            case TRUE -> true;
+            case FALSE -> false;
+            case DEFAULT -> allDataFields.getFieldRow("FilingServiceCheckBoxInitial").isvisible;
+          };
+      if (isInitialFiling
+          && !serviceOnInitial
+          && (act.equals(FilingAction.E_FILE_AND_SERVE) || act.equals(FilingAction.SERVE))) {
+        return Result.err(new InvalidFilingAction("Cannot do service on initial filing"));
+      }
+    }
+    return Result.ok(filingAction);
   }
 
   public Optional<String> getDocumentDescription(

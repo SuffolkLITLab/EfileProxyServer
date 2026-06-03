@@ -8,6 +8,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
+import edu.suffolk.litlab.efsp.model.FilingAction;
 import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.PartyInfo;
@@ -47,6 +48,8 @@ public interface CodesParser {
   public record RequiredAttorneys() implements AttorneyError {}
 
   public record DueDateRequired() {}
+
+  public record InvalidFilingAction(String reason) {}
 
   public sealed interface FileNameError {}
   public record FileExtensionNotAllowed(String given, List<FileType> allowed) implements FileNameError {}
@@ -132,6 +135,9 @@ public interface CodesParser {
 
   public Result<Optional<LocalDate>, DueDateRequired> vetDueDate(
       Optional<LocalDate> dueDate, FilingCode filing);
+
+  public Result<Optional<FilingAction>, InvalidFilingAction> vetFilingAction(
+      Optional<FilingAction> filingAction, boolean isInitialFiling);
 
   public Optional<String> getDocumentDescription(
       String description, String firstFileName, FilingCode filing);
