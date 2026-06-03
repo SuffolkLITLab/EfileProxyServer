@@ -342,20 +342,12 @@ public class EcfCourtSpecificSerializer {
               docType.setDocumentFileControlID(Ecf4Helper.convertString(refNum));
             });
 
-    DataFieldRow dueDateRow = allDataFields.getFieldRow("DueDateAvailableForFilers");
-    if (filing.useduedate && dueDateRow.isvisible) {
-      if (doc.getDueDate().isPresent()) {
-        DateType cutOffDate = Ecf4Helper.convertDate(doc.getDueDate().get());
-        docType.setDocumentInformationCutOffDate(cutOffDate);
-      } else if (dueDateRow.isrequired) {
-        InterviewVariable var =
-            collector.requestVar(
-                "due_date",
-                "The due date of the filing, some number of days after the filing.",
-                "date");
-        collector.addRequired(var);
-      }
-    }
+    doc.getDueDate()
+        .ifPresent(
+            dueDate -> {
+              DateType cutOffDate = Ecf4Helper.convertDate(dueDate);
+              docType.setDocumentInformationCutOffDate(cutOffDate);
+            });
 
     docType.setDocumentSequenceID(Ecf4Helper.convertString(Integer.toString(doc.sequenceNum())));
 

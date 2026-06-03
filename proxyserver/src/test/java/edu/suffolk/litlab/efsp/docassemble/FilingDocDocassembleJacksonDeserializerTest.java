@@ -51,7 +51,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   Map<String, PartyId> varToPartyId;
   List<FilingCode> filingCodes =
       List.of(
-          new FilingCode("6553", "idk", "0", "", "", "", false, "", "", "", false, false, "", ""));
+          new FilingCode("6553", "idk", "0", "", "", "", false, "", "", "", true, false, "", ""));
   CodesParser parser;
 
   @BeforeEach
@@ -76,7 +76,11 @@ public class FilingDocDocassembleJacksonDeserializerTest {
             List.of(
                 Map.of(
                     "DocumentType",
-                    new DataFieldRow("DocumentType", "Document Type", true, false, "adams"))));
+                    new DataFieldRow("DocumentType", "Document Type", true, false, "adams"),
+                    "DueDateAvailableForFilers",
+                    new DataFieldRow(
+                        "DueDateAvailableForFilers", "Due Date", true, false, "adams"))));
+
     parser = new TylerCodesParser(cd, new CourtLocationInfo("adams"), dataFields, true);
   }
 

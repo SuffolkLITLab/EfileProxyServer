@@ -115,10 +115,25 @@ public class FilingDocDocassembleJacksonDeserializer {
       maybeDueDate =
           Optional.of(
               LocalDate.ofInstant(
-                  // TODO(brycew): why do we even pass this as a date time? Shouldn't it just be a
+                  // TODO(#47): why do we even pass this as a date time? Shouldn't it just be a
                   // date?
                   Instant.parse(jsonDueDate.asText()), ZoneId.of("America/Chicago")));
     }
+    var dueDateRes = parser.vetDueDate(maybeDueDate, filingType);
+    Optional<LocalDate> dueDate;
+    if (dueDateRes.isErr()) {
+      collector.addWrong(
+          collector
+              .varBuilder()
+              .name("due_date")
+              .datatype("date")
+              .appendDesc("The due date of the filing, some number of days after the filing.")
+              .build());
+      dueDate = maybeDueDate;
+    } else {
+      dueDate = dueDateRes.expect("");
+    }
+
     String userDescription = getStringDefault(node, "filing_description", "");
     var filingRefNum = unwrap(parser::vetFilingRefNum, node, "reference_number", collector);
     Optional<String> filingAttorney =
@@ -215,7 +230,7 @@ public class FilingDocDocassembleJacksonDeserializer {
             userDescription,
             descriptionFromSpec,
             filingRefNum,
-            maybeDueDate,
+            dueDate,
             fullParties,
             filingAttorney,
             goodAttachments.some(),

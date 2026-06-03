@@ -15,6 +15,7 @@ import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.model.Person.Gender;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -44,6 +45,8 @@ public interface CodesParser {
   public sealed interface AttorneyError {}
   public record NoMultipleAttorneys() implements AttorneyError {}
   public record RequiredAttorneys() implements AttorneyError {}
+
+  public record DueDateRequired() {}
 
   public sealed interface FileNameError {}
   public record FileExtensionNotAllowed(String given, List<FileType> allowed) implements FileNameError {}
@@ -126,6 +129,9 @@ public interface CodesParser {
   public Result<Optional<String>, TextVarError> vetFilingRefNum(Optional<String> fileRefNum);
 
   public Result<Optional<String>, TextVarError> vetComment(Optional<String> comment);
+
+  public Result<Optional<LocalDate>, DueDateRequired> vetDueDate(
+      Optional<LocalDate> dueDate, FilingCode filing);
 
   public Optional<String> getDocumentDescription(
       String description, String firstFileName, FilingCode filing);

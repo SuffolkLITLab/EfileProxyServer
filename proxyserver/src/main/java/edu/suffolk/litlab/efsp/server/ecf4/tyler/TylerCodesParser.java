@@ -22,6 +22,7 @@ import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.model.Person.Gender;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.utils.FilingError;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -578,9 +579,6 @@ public class TylerCodesParser implements CodesParser {
   }
 
   ////////  Still TODO
-  // Attorney: Party Attorney and Filing Attorney
-  // FileName
-  // DueDate
   // Filing Action
   // Filing Doc
   // Filer Types
@@ -821,6 +819,18 @@ public class TylerCodesParser implements CodesParser {
         return Result.ok(Optional.of("(No comment)"));
       }
       return Result.ok(Optional.of(comment));
+    }
+    return Result.ok(Optional.empty());
+  }
+
+  public Result<Optional<LocalDate>, DueDateRequired> vetDueDate(
+      Optional<LocalDate> dueDate, FilingCode filing) {
+    DataFieldRow dueDateRow = allDataFields.getFieldRow("DueDateAvailableForFilers");
+    if (filing.useduedate && dueDateRow.isvisible) {
+      if (dueDate.isEmpty() && dueDateRow.isrequired) {
+        return Result.err(new DueDateRequired());
+      }
+      return Result.ok(dueDate);
     }
     return Result.ok(Optional.empty());
   }
