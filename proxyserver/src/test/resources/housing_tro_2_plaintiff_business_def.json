@@ -172,6 +172,7 @@
                 "title": "Housing Temporary Restraining Order",
                 "filename": "housing_tro",
                 "filing_component": "332",
+                "filing_parties": ["users[0]"],
                 "proxy_enabled": true
             }
         ],

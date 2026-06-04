@@ -411,11 +411,7 @@ public class CourtSchedulingService {
         m.setCase(niemObjFac.createCase(ct));
         m.setReturnDate(Ecfv5XmlHelper.convertDate(returnDate.get()));
 
-        boolean outOfState = false;
-        if (info.getMiscInfo().has("out_of_state")) {
-          outOfState = info.getMiscInfo().get("out_of_state").asBoolean(false);
-        }
-        m.setOutOfStateIndicator(Ecfv5XmlHelper.convertBool(outOfState));
+        m.setOutOfStateIndicator(Ecfv5XmlHelper.convertBool(info.getOutOfState()));
         ReturnDateRequestType r = oasisWrapObjFac.createReturnDateRequestType();
         r.setReturnDateMessage(m);
         log.info(

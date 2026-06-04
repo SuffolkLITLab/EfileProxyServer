@@ -29,6 +29,7 @@ import edu.suffolk.litlab.efsp.model.Person.Gender;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.utils.FilingError;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -319,6 +320,12 @@ public class TylerCodesParser implements CodesParser {
     Map<PartyId, PartyInfo> partyInfos = new HashMap<>();
     for (Person party : existingParties) {
       var key = party.getPartyId();
+      if (key.isAlreadyInCase() && key.getIdentificationString().contains(" ")) {
+        FilingError err =
+            FilingError.serverError(
+                "Party ID " + key.getIdentificationString() + " should be a GUID but isn't");
+        return Result.err(new BadCode(err));
+      }
       if (party.getRole().isEmpty()) {
         log.warn("Existing party {} doesn't have a role?", key);
         continue;
@@ -399,10 +406,10 @@ public class TylerCodesParser implements CodesParser {
     return Result.ok(partyInfos);
   }
 
-  public Result<List<PartyId>, RequiredFilingParty> vetFilingParties(List<PartyId> filingParties) {
+  public Result<List<PartyId>, ThingRequired> vetFilingParties(List<PartyId> filingParties) {
     // TODO(brycew): needs to handle when we can avoid using filing party ids
     if (filingParties.isEmpty()) {
-      return Result.err(new RequiredFilingParty());
+      return Result.err(new ThingRequired());
     }
     return Result.ok(filingParties);
   }
@@ -915,15 +922,18 @@ public class TylerCodesParser implements CodesParser {
             case FALSE -> false;
             case DEFAULT -> allDataFields.getFieldRow("FilingServiceCheckBoxInitial").isvisible;
           };
-      boolean tryingToDoService = (act.equals(FilingAction.E_FILE_AND_SERVE) || act.equals(FilingAction.SERVE) || hasServiceContacts);
-      if (isInitialFiling
-          && !serviceOnInitial
-          && tryingToDoService) {
+      boolean tryingToDoService =
+          (act.equals(FilingAction.E_FILE_AND_SERVE)
+              || act.equals(FilingAction.SERVE)
+              || hasServiceContacts);
+      if (isInitialFiling && !serviceOnInitial && tryingToDoService) {
         return Result.err(new InvalidFilingAction("Cannot do service on initial filing"));
       }
       DataFieldRow checkBoxSub = allDataFields.getFieldRow("FilingServiceCheckBoxSubsequent");
       if (!isInitialFiling && !checkBoxSub.isvisible && tryingToDoService) {
-        return Result.err(new InvalidFilingAction("Court " + this.court.name + " cannot do service on subsequent filings"));
+        return Result.err(
+            new InvalidFilingAction(
+                "Court " + this.court.name + " cannot do service on subsequent filings"));
       }
     }
     return Result.ok(filingAction);
@@ -993,6 +1003,27 @@ public class TylerCodesParser implements CodesParser {
     return Result.nullOk();
   }
 
+  public Result<Optional<BigDecimal>, ThingRequired> vetAmountInControversy(
+      Optional<BigDecimal> amt, List<FilingCode> filings) {
+    boolean anyAmountInControversy =
+        filings.stream().anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"));
+    if (anyAmountInControversy) {
+      if (amt.isPresent()) {
+        return Result.ok(amt);
+      } else {
+        return Result.err(new ThingRequired());
+      }
+    }
+    return Result.ok(Optional.empty());
+  }
+
+  public Optional<BigDecimal> vetMaxAmount(Optional<BigDecimal> maxAmount) {
+    if (court.allowmaxfeeamount) {
+      return maxAmount;
+    }
+    return Optional.empty();
+  }
+
   /**
    * Get if we need to add an association between filings and case parties. Is simply a boolean
    * because there's no filing error that needs to be swallowed.
@@ -1001,5 +1032,5 @@ public class TylerCodesParser implements CodesParser {
    */
   public boolean useFilingAssociations() {
     return allDataFields.getFieldRow("FilingEventCaseParties").isrequired;
-  } 
+  }
 }

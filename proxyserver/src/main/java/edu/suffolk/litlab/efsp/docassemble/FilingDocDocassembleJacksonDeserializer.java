@@ -246,7 +246,7 @@ public class FilingDocDocassembleJacksonDeserializer {
 
     var descriptionFromSpec =
         parser.getDocumentDescription(
-            userDescription, goodAttachments.some().head().getFileName(), filingType);
+            userDescription, goodAttachments.some().head().fileName(), filingType);
     return Optional.of(
         new FilingDoc(
             filingType,
@@ -345,6 +345,15 @@ public class FilingDocDocassembleJacksonDeserializer {
                   + dataUrl
                   + ")"));
     }
+
+    // TODO(brycew): depends on some DA code, should read in the PDF if possible here. Might be
+    // risky though.
+    // https://stackoverflow.com/questions/6026971/page-count-of-pdf-with-java
+    Optional<Integer> pageCount = Optional.empty();
+    if (node.has("page_count")) {
+      int count = node.get("page_count").asInt(1);
+      pageCount = Optional.of(count);
+    }
     // Difficult to hardcode more SSRF solutions, since deployment can be varied. Can't block local
     // network /
     // localhost, since things could be on the same server / network. TODO: inject an allow-list
@@ -363,11 +372,12 @@ public class FilingDocDocassembleJacksonDeserializer {
 
       return Optional.of(
           new FilingAttachment(
+              filingComponent,
+              documentDescription,
               fileName,
               (inStream != null) ? inStream.readAllBytes() : new byte[0],
               documentType,
-              filingComponent,
-              documentDescription));
+              pageCount));
     } catch (MalformedURLException ex) {
       FilingError err =
           serverError(

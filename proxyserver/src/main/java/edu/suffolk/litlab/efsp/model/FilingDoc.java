@@ -106,7 +106,7 @@ public class FilingDoc {
   public int allAttachmentsLength() {
     int length = 0;
     for (var attachment : filingAttachments) {
-      length += attachment.getFileContents().length;
+      length += attachment.fileContents().length;
     }
     return length;
   }

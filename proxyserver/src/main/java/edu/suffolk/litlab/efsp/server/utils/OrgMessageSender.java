@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efsp.server.utils;
 import edu.suffolk.litlab.efsp.db.MessageSettingsDatabase;
 import edu.suffolk.litlab.efsp.db.model.MessageInfo;
 import edu.suffolk.litlab.efsp.db.model.Transaction;
+import edu.suffolk.litlab.efsp.model.EmailTemplates;
 import edu.suffolk.litlab.efsp.server.services.api.UpdateMessageStatus;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -188,8 +189,7 @@ public class OrgMessageSender {
 
   public boolean sendConfirmation(
       String email,
-      String emailTemplate,
-      String emailSubject,
+      EmailTemplates tmpls,
       UUID serverId,
       String name,
       String courtName,
@@ -198,11 +198,13 @@ public class OrgMessageSender {
       String caseTitle,
       String envelopeId) {
     MessageInfo msgSettings = getSettings(serverId);
-    if (emailTemplate == null || emailTemplate.isBlank()) {
+    String emailTemplate = tmpls.confirmationTemplate();
+    if (tmpls == null || emailTemplate == null || emailTemplate.isBlank()) {
       log.warn("given email template was blank ({}), using default", emailTemplate);
       emailTemplate = msgSettings.emailConfirmation;
     }
-    if (emailSubject == null || emailSubject.isBlank()) {
+    String emailSubject = tmpls.confirmationSubject();
+    if (tmpls == null || emailSubject == null || emailSubject.isBlank()) {
       emailSubject = msgSettings.subjectLine;
     }
     String ids = transactionIds.stream().map(t -> t.toString()).collect(Collectors.joining(", "));

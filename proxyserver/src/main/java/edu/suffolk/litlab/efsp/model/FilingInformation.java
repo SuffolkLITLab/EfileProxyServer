@@ -1,10 +1,10 @@
 package edu.suffolk.litlab.efsp.model;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilerType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +72,11 @@ public class FilingInformation {
 
   private Optional<FilerType> filerType;
 
-  private JsonNode miscInfo;
+  private Optional<BigDecimal> amountInControversy = Optional.empty();
+  private Optional<BigDecimal> maxFeeAmount = Optional.empty();
+  private boolean contestedCase = false;
+  private boolean outOfState = false;
+  private EmailTemplates emailTemplates = new EmailTemplates();
 
   /**
    * Gets all of the peole who are listed by filer ids in the filing docs. This corresponds to the
@@ -201,12 +205,28 @@ public class FilingInformation {
     return filerType;
   }
 
-  public JsonNode getMiscInfo() {
-    return miscInfo;
-  }
-
   public Optional<LowerCourtInfo> getLowerCourtInfo() {
     return lowerCourtInfo;
+  }
+
+  public Optional<BigDecimal> getAmountInControversy() {
+    return amountInControversy;
+  }
+
+  public Optional<BigDecimal> getMaxFeeAmount() {
+    return maxFeeAmount;
+  }
+
+  public boolean isContestedCase() {
+    return contestedCase;
+  }
+
+  public boolean getOutOfState() {
+    return outOfState;
+  }
+
+  public EmailTemplates getEmailTemplates() {
+    return emailTemplates;
   }
 
   public void setCourtLocation(String courtLocationId) {
@@ -285,15 +305,31 @@ public class FilingInformation {
     this.filerType = filerType;
   }
 
-  public void setMiscInfo(JsonNode node) {
-    this.miscInfo = node;
-  }
-
   public void setLowerCourtInfo(LowerCourtInfo info) {
     this.lowerCourtInfo = Optional.ofNullable(info);
   }
 
   public void setLowerCourtInfo(Optional<LowerCourtInfo> info) {
     this.lowerCourtInfo = info;
+  }
+
+  public void setAmountInControversy(Optional<BigDecimal> amtInControversy) {
+    this.amountInControversy = amtInControversy;
+  }
+
+  public void setMaxFeeAmount(Optional<BigDecimal> maxFeeAmount) {
+    this.maxFeeAmount = maxFeeAmount;
+  }
+
+  public void setIsContestedCase(boolean isContestedCase) {
+    this.contestedCase = isContestedCase;
+  }
+
+  public void setOutOfState(boolean outOfState) {
+    this.outOfState = outOfState;
+  }
+
+  public void setEmailTemplates(EmailTemplates emailTemplates) {
+    this.emailTemplates = emailTemplates;
   }
 }

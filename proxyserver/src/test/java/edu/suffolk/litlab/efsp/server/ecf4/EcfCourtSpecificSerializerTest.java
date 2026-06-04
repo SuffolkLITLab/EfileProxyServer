@@ -52,7 +52,6 @@ public class EcfCourtSpecificSerializerTest {
   private static final String caseType = "78334";
   EcfCourtSpecificSerializer courtSer = new EcfCourtSpecificSerializer();
 
-
   @BeforeEach
   public void setUp() {
     cd = mock(CodeDatabase.class);
@@ -228,11 +227,7 @@ public class EcfCourtSpecificSerializerTest {
         FilingDocDocassembleJacksonDeserializer.fromNode(
             node, varToPartyId, 2, List.of(filing), true, false, parser, collector);
 
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode miscNode = mapper.createObjectNode();
-    var xmlDoc =
-        courtSer.filingDocToXml(
-            doc.get(), true, caseCategory, caseType, filing, miscNode);
+    var xmlDoc = courtSer.filingDocToXml(doc.get(), true, caseCategory, caseType, filing);
     assertThat(xmlDoc.getValue().getDocumentSequenceID().getValue()).isEqualTo("2");
     assertThat(xmlDoc.getValue().getDocumentDescriptionText().getValue())
         .isEqualTo("The Motion to Stay Eviction for Bob Ma");

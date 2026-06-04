@@ -1,6 +1,5 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import ecf4.latest.gov.niem.niem.fbi._2.SEXCodeSimpleType;
 import ecf4.latest.gov.niem.niem.fbi._2.SEXCodeType;
 import ecf4.latest.gov.niem.niem.fips_10_4._2.CountryCodeType;
@@ -108,8 +107,7 @@ public class EcfCourtSpecificSerializer {
    *
    * @throws FilingError
    */
-  public CaseParticipantType serializeEcfCaseParticipant(
-      Person per, PartyInfo info) throws FilingError {
+  public CaseParticipantType serializeEcfCaseParticipant(Person per, PartyInfo info) {
     final CaseParticipantType cpt = ecfOf.createCaseParticipantType();
     ContactInformationType cit = serializeEcfContactInformation(per.getContactInfo());
     if (per.isOrg()) {
@@ -159,15 +157,17 @@ public class EcfCourtSpecificSerializer {
                 pt.setPersonSex(niemObjFac.createPersonSexCode(sct));
               });
 
-      per.getLanguage().ifPresent(lang -> {
-        LanguageCodeType lct = iso639Fac.createLanguageCodeType();
-        PersonLanguageType plt = niemObjFac.createPersonLanguageType();
-        // TODO: need to test this with Tyler still:
-        // lct.setValue(lang);
-        plt.getLanguage();
-        plt.getLanguage().add(niemObjFac.createLanguageCode(lct));
-        pt.setPersonPrimaryLanguage(plt);
-      });
+      per.getLanguage()
+          .ifPresent(
+              lang -> {
+                LanguageCodeType lct = iso639Fac.createLanguageCodeType();
+                PersonLanguageType plt = niemObjFac.createPersonLanguageType();
+                // TODO: need to test this with Tyler still:
+                // lct.setValue(lang);
+                plt.getLanguage();
+                plt.getLanguage().add(niemObjFac.createLanguageCode(lct));
+                pt.setPersonPrimaryLanguage(plt);
+              });
 
       per.getBirthdate()
           .ifPresent(
@@ -184,8 +184,7 @@ public class EcfCourtSpecificSerializer {
     return cpt;
   }
 
-  public ContactInformationType serializeEcfContactInformation(
-      ContactInformation contactInfo) throws FilingError {
+  public ContactInformationType serializeEcfContactInformation(ContactInformation contactInfo) {
     ContactInformationType cit = niemObjFac.createContactInformationType();
     if (contactInfo.getAddress().isPresent()) {
       Address addr = contactInfo.getAddress().get();
@@ -213,7 +212,7 @@ public class EcfCourtSpecificSerializer {
   }
 
   public static tyler.efm.latest.services.schema.common.AddressType serializeTylerAddress(
-      Address myAddr) throws FilingError {
+      Address myAddr) {
     var efmObjFac = new tyler.efm.latest.services.schema.common.ObjectFactory();
     var addr = efmObjFac.createAddressType();
     addr.setAddressLine1(myAddr.getStreet());
@@ -276,8 +275,7 @@ public class EcfCourtSpecificSerializer {
       boolean isInitialFiling,
       CaseCategory caseCategory,
       CaseType motionType,
-      FilingCode filing,
-      JsonNode miscInfo)
+      FilingCode filing)
       throws IOException {
     DocumentType docType = tylerObjFac.createDocumentType();
     doc.descriptionFromSpec()
@@ -339,10 +337,12 @@ public class EcfCourtSpecificSerializer {
     // * ReviewFiling API w/o service contacts: EFile
     // * ReviewFiling API w/ service contacts: EfileAndServe
     // * ServeFiling API: Serve
-    doc.getFilingAction().ifPresent(action -> {
-      FilingTypeType act = filingActionToXml(action);
-      docType.setFilingAction(act);
-    });
+    doc.getFilingAction()
+        .ifPresent(
+            action -> {
+              FilingTypeType act = filingActionToXml(action);
+              docType.setFilingAction(act);
+            });
 
     for (OptionalService serv : doc.getOptionalServices()) {
       DocumentOptionalServiceType xmlServ = tylerObjFac.createDocumentOptionalServiceType();
@@ -360,9 +360,7 @@ public class EcfCourtSpecificSerializer {
     DocumentRenditionMetadataType renditionMetadata = ecfOf.createDocumentRenditionMetadataType();
     int idx = 0;
     for (var attachment : doc.getFilingAttachments()) {
-      renditionMetadata
-          .getDocumentAttachment()
-          .add(attachmentToXml(attachment, filing, miscInfo, idx));
+      renditionMetadata.getDocumentAttachment().add(attachmentToXml(attachment, filing, idx));
       idx += 1;
     }
 
@@ -386,22 +384,18 @@ public class EcfCourtSpecificSerializer {
     };
   }
 
-  private DocumentAttachmentType attachmentToXml(
-      FilingAttachment fa,
-      FilingCode filing,
-      JsonNode miscInfo,
-      int seqNum)
+  private DocumentAttachmentType attachmentToXml(FilingAttachment fa, FilingCode filing, int seqNum)
       throws IOException {
     // TODO(brycew-later): what should this actually be? Very unclear
     DocumentAttachmentType attachment = ecfOf.createDocumentAttachmentType();
-    attachment.setBinaryDescriptionText(Ecf4Helper.convertText(fa.getDocumentDescription()));
-    FilingComponent filt = fa.getFilingComponent();
+    attachment.setBinaryDescriptionText(Ecf4Helper.convertText(fa.documentDescription()));
+    FilingComponent filt = fa.filingComponentCode();
 
     attachment.setBinaryCategoryText(Ecf4Helper.convertText(filt.code));
 
     // Literally should just be if it's confidential or not. (or "Hot fix" or public).
     // Search options in "documenttype" table with location
-    fa.getDocumentTypeFormatStandardName()
+    fa.documentTypeFormatStandardName()
         .ifPresent(
             code -> {
               attachment.setBinaryFormatStandardName(Ecf4Helper.convertText(code.code));
@@ -409,20 +403,18 @@ public class EcfCourtSpecificSerializer {
 
     // log.info("Filing code: {} {}: {}///////{}", filing.code, filing.name, docType, attachment);
     // TODO(#62): DO this: make the file downloadable from the Proxy server
-    attachment.setBinaryLocationURI(Ecf4Helper.convertUri(fa.getFileName()));
+    attachment.setBinaryLocationURI(Ecf4Helper.convertUri(fa.fileName()));
     JAXBElement<Base64Binary> n =
-        niemObjFac.createBinaryBase64Object(Ecf4Helper.convertBase64(fa.getFileContents()));
+        niemObjFac.createBinaryBase64Object(Ecf4Helper.convertBase64(fa.fileContents()));
     // System.err.println(Ecf4Helper.objectToXmlStrOrError(n.getValue(), Base64Binary.class));
     attachment.setBinaryObject(n);
-    // TODO(brycew): depends on some DA code, should read in the PDF if possible here. Might be
-    // risky though.
-    // https://stackoverflow.com/questions/6026971/page-count-of-pdf-with-java
-    if (miscInfo.has("page_count")) {
-      int count = miscInfo.get("page_count").asInt(1);
-      NonNegativeDecimalType nndt = new NonNegativeDecimalType();
-      nndt.setValue(new BigDecimal(count));
-      attachment.setBinarySizeValue(tylerObjFac.createPageCount(nndt));
-    }
+    fa.pageCount()
+        .ifPresent(
+            count -> {
+              NonNegativeDecimalType nndt = new NonNegativeDecimalType();
+              nndt.setValue(new BigDecimal(count));
+              attachment.setBinarySizeValue(tylerObjFac.createPageCount(nndt));
+            });
     attachment.setAttachmentSequenceID(Ecf4Helper.convertString(Integer.toString(seqNum)));
     return attachment;
   }

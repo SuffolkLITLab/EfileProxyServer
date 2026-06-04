@@ -22,8 +22,8 @@ public class AddressDocassembleJacksonDeserializer {
    *
    * @throws FilingError if @param node isn't a JSON object describing an address
    */
-  public static Optional<Address> fromNode(JsonNode node, CodesParser parser, InfoCollector collector)
-      throws FilingError {
+  public static Optional<Address> fromNode(
+      JsonNode node, CodesParser parser, InfoCollector collector) throws FilingError {
     if (!node.isObject()) {
       FilingError err =
           FilingError.malformedInterview(

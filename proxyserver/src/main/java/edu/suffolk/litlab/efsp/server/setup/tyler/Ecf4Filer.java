@@ -60,7 +60,6 @@ import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
-import edu.suffolk.litlab.efsp.server.ecf4.CoreMessageAndNames;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCourtSpecificSerializer;
@@ -79,6 +78,7 @@ import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
+import jakarta.annotation.Nullable;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.ws.BindingProvider;
@@ -199,6 +199,12 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
             .getValue();
     return TylerCodesParser.makeParser(cd, policy, courtId, isIndividual);
   }
+
+  public record CoreMessageAndNames(
+      CoreFilingMessageType cfm,
+      @Nullable String existingCaseTitle,
+      String caseCategoryName,
+      String courtName) {}
 
   private CoreMessageAndNames prepareFiling(
       FilingInformation info,
@@ -388,7 +394,6 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
               isInitialFiling,
               isFirstIndexedFiling,
               queryType,
-              info.getMiscInfo(),
               serializer,
               collector,
               serviceContactXmlObjs);
@@ -441,13 +446,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         collector.pushAttributeStack("al_court_bundle[" + seqNum + "]");
         JAXBElement<DocumentType> result =
             serializer.filingDocToXml(
-                filingDoc,
-                isInitialFiling,
-                allCodes.cat(),
-                allCodes.type(),
-                fc,
-                info.getMiscInfo(),
-                collector);
+                filingDoc, isInitialFiling, allCodes.cat(), allCodes.type(), fc);
         collector.popAttributeStack();
         filingIdToObj.put(filingDoc.getIdString(), result.getValue());
         if (filingDoc.sequenceNum() == 0) {
@@ -479,7 +478,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                             Collectors.toMap(f -> f.getIdString(), f -> f.getFilingPartyIds()));
                 if (parser.useFilingAssociations()) {
                   for (var association :
-                      ecfCaseFactory.lateStageFilingAssociationAdd(filingIdToObj, filingAssociations, pair.getRight())) {
+                      ecfCaseFactory.lateStageFilingAssociationAdd(
+                          filingIdToObj, filingAssociations, pair.getRight())) {
                     aug.getFilingAssociation().add(association);
                   }
                 }

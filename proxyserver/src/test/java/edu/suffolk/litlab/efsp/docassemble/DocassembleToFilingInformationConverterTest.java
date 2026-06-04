@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.hubspot.algebra.Result;
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
@@ -23,6 +24,7 @@ import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
@@ -70,6 +72,8 @@ public class DocassembleToFilingInformationConverterTest {
     when(cd.getAllowedFileTypes("01")).thenReturn(List.of(new FileType("PDF", "PDF", "pdf", "01")));
     when(cd.getFilingComponents("01", exampleFilingType.code))
         .thenReturn(List.of(new FilingComponent("332", null, null, false, false, 0, null, null)));
+    when(cd.getStateCodes("01", "US")).thenReturn(List.of("MA", "TX", "IL", "VT"));
+    when(cd.getDomain()).thenReturn(new TylerDomain(Jurisdiction.ILLINOIS, TylerEnv.STAGE));
     when(cd.getDataFields("01"))
         .thenReturn(
             new DataFields(

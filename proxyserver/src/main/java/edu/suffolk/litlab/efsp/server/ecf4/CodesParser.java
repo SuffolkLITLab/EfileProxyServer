@@ -50,7 +50,7 @@ public interface CodesParser {
   public record NoMultipleAttorneys() implements AttorneyError {}
   public record RequiredAttorneys() implements AttorneyError {}
 
-  public record RequiredFilingParty() {}
+  public record ThingRequired() {}
 
   public record DueDateRequired() {}
 
@@ -96,7 +96,7 @@ public interface CodesParser {
       CaseType type,
       boolean isFirstIndexedFiling);
 
-  public Result<List<PartyId>, RequiredFilingParty> vetFilingParties(List<PartyId> filingParties);
+  public Result<List<PartyId>, ThingRequired> vetFilingParties(List<PartyId> filingParties);
 
   public Result<Optional<NameAndCode>, CodeError> vetMotionCode(
       Optional<String> motionCode, FilingCode filing);
@@ -160,6 +160,11 @@ public interface CodesParser {
   public Result<String, FileNameError> vetFileName(String fileName);
 
   public Result<NullValue, FilingDocError> vetFilingDocSize(List<FilingDoc> docs);
+
+  public Result<Optional<BigDecimal>, ThingRequired> vetAmountInControversy(
+      Optional<BigDecimal> amt, List<FilingCode> filings);
+
+  public Optional<BigDecimal> vetMaxAmount(Optional<BigDecimal> maxAmount);
 
   public boolean useFilingAssociations();
 }

@@ -81,8 +81,14 @@ public class FilingDocDocassembleJacksonDeserializerTest {
                     "DocumentType",
                     new DataFieldRow("DocumentType", "Document Type", true, false, "adams"),
                     "DueDateAvailableForFilers",
+                    new DataFieldRow("DueDateAvailableForFilers", "Due Date", true, false, "adams"),
+                    "FilingServiceCheckBoxSubsequent",
                     new DataFieldRow(
-                        "DueDateAvailableForFilers", "Due Date", true, false, "adams"))));
+                        "FilingServiceCheckBoxSubsequent",
+                        "service on subsequent",
+                        true,
+                        false,
+                        "adams"))));
 
     var maxMeasure = new MeasureType();
     var niem2Fac = new ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory();
@@ -100,12 +106,23 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     ObjectMapper m = new ObjectMapper();
     assertThatThrownBy(
             () ->
-                fromNode(m.readTree("null"), varToPartyId, 0, filingCodes, true, false, parser, collector))
+                fromNode(
+                    m.readTree("null"),
+                    varToPartyId,
+                    0,
+                    filingCodes,
+                    true,
+                    false,
+                    parser,
+                    collector))
         .isInstanceOf(FilingError.class);
     assertThatThrownBy(
-            () -> fromNode(m.readTree("[]"), varToPartyId, 0, filingCodes, true, false, parser, collector))
+            () ->
+                fromNode(
+                    m.readTree("[]"), varToPartyId, 0, filingCodes, true, false, parser, collector))
         .isInstanceOf(FilingError.class);
-    var doc = fromNode(m.readTree("{}"), varToPartyId, 0, filingCodes, true, false, parser, collector);
+    var doc =
+        fromNode(m.readTree("{}"), varToPartyId, 0, filingCodes, true, false, parser, collector);
     assertThat(doc).isEmpty();
   }
 
@@ -119,8 +136,8 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);
-    assertThat(attachments.head().getDocumentTypeFormatStandardName()).isPresent();
-    assertThat(attachments.head().getDocumentTypeFormatStandardName().get().code).isEqualTo("6586");
+    assertThat(attachments.head().documentTypeFormatStandardName()).isPresent();
+    assertThat(attachments.head().documentTypeFormatStandardName().get().code).isEqualTo("6586");
   }
 
   @Test
@@ -135,8 +152,8 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     assertThat(doc.sequenceNum()).isEqualTo(0);
     var attachments = doc.getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);
-    assertThat(attachments.head().getDocumentTypeFormatStandardName()).isPresent();
-    assertThat(attachments.head().getDocumentTypeFormatStandardName().get().code).isEqualTo("6586");
+    assertThat(attachments.head().documentTypeFormatStandardName()).isPresent();
+    assertThat(attachments.head().documentTypeFormatStandardName().get().code).isEqualTo("6586");
     var parties = doc.getFilingPartyIds();
     assertThat(parties.size()).isEqualTo(1);
     assertThat(parties.get(0).isNewInCurrentFiling()).isTrue();
@@ -155,8 +172,8 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     assertThat(doc.get().sequenceNum()).isEqualTo(2);
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);
-    assertThat(attachments.head().getDocumentTypeFormatStandardName()).isPresent();
-    assertThat(attachments.head().getDocumentTypeFormatStandardName().get().code).isEqualTo("6586");
+    assertThat(attachments.head().documentTypeFormatStandardName()).isPresent();
+    assertThat(attachments.head().documentTypeFormatStandardName().get().code).isEqualTo("6586");
     var parties = doc.get().getFilingPartyIds();
     assertThat(parties.size()).isEqualTo(1);
     assertThat(parties.get(0).isNewInCurrentFiling()).isTrue();
@@ -183,8 +200,8 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);
-    assertThat(attachments.head().getDocumentTypeFormatStandardName()).isPresent();
-    assertThat(attachments.head().getDocumentTypeFormatStandardName().get().code).isEqualTo("6586");
+    assertThat(attachments.head().documentTypeFormatStandardName()).isPresent();
+    assertThat(attachments.head().documentTypeFormatStandardName().get().code).isEqualTo("6586");
   }
 
   @Test
@@ -205,9 +222,9 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);
-    assertThat(attachments.head().getDocumentTypeFormatStandardName()).isPresent();
-    assertThat(attachments.head().getDocumentTypeFormatStandardName().get().code).isEqualTo("6586");
-    assertThat(attachments.head().getFileName()).isEqualTo("motion_to_stay_eviction.pdf");
+    assertThat(attachments.head().documentTypeFormatStandardName()).isPresent();
+    assertThat(attachments.head().documentTypeFormatStandardName().get().code).isEqualTo("6586");
+    assertThat(attachments.head().fileName()).isEqualTo("motion_to_stay_eviction.pdf");
   }
 
   @Test
@@ -231,10 +248,10 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(2);
-    assertThat(attachments.head().getDocumentTypeFormatStandardName()).isPresent();
-    assertThat(attachments.head().getDocumentTypeFormatStandardName().get().code).isEqualTo("6586");
-    assertThat(attachments.head().getFileName()).isEqualTo("motion-to-stay-eviction.pdf");
-    assertThat(attachments.tail().head().getFileName()).isEqualTo("exhibits.pdf");
+    assertThat(attachments.head().documentTypeFormatStandardName()).isPresent();
+    assertThat(attachments.head().documentTypeFormatStandardName().get().code).isEqualTo("6586");
+    assertThat(attachments.head().fileName()).isEqualTo("motion-to-stay-eviction.pdf");
+    assertThat(attachments.tail().head().fileName()).isEqualTo("exhibits.pdf");
   }
 
   // TODO: use readTemplate to test has_optional_services.json, with various numbers in place of
@@ -286,10 +303,9 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);
-    assertThat(attachments.head().getDocumentTypeFormatStandardName()).isPresent();
-    assertThat(attachments.head().getDocumentTypeFormatStandardName().get().code).isEqualTo("7788");
-    assertThat(attachments.head().getFileName())
-        .isEqualTo("motion-to-stay-eviction-root-object.pdf");
+    assertThat(attachments.head().documentTypeFormatStandardName()).isPresent();
+    assertThat(attachments.head().documentTypeFormatStandardName().get().code).isEqualTo("7788");
+    assertThat(attachments.head().fileName()).isEqualTo("motion-to-stay-eviction-root-object.pdf");
   }
 
   @Nested

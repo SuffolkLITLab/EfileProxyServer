@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import edu.suffolk.litlab.efsp.db.model.Transaction;
+import edu.suffolk.litlab.efsp.model.EmailTemplates;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -68,12 +69,7 @@ public class UserDatabaseTest {
         "Motion to File",
         courtId,
         new Timestamp(System.currentTimeMillis()),
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
+        new EmailTemplates(),
         "my title",
         "2021ENVL");
 
