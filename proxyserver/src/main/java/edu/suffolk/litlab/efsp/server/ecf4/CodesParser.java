@@ -154,4 +154,6 @@ public interface CodesParser {
   public Result<String, FileNameError> vetFileName(String fileName);
 
   public Result<NullValue, FilingDocError> vetFilingDocSize(List<FilingDoc> docs);
+
+  public boolean useFilingAssociations();
 }

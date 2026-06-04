@@ -627,7 +627,6 @@ public class TylerCodesParser implements CodesParser {
   }
 
   ////////  Still TODO
-  // Filer Types
   // Filing Associations
   // Anything else not currently checked
 
@@ -967,4 +966,14 @@ public class TylerCodesParser implements CodesParser {
     }
     return Result.nullOk();
   }
+
+  /**
+   * Get if we need to add an association between filings and case parties. Is simply a boolean
+   * because there's no filing error that needs to be swallowed.
+   *
+   * @return
+   */
+  public boolean useFilingAssociations() {
+    return allDataFields.getFieldRow("FilingEventCaseParties").isrequired;
+  } 
 }

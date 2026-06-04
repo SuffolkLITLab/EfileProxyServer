@@ -214,18 +214,15 @@ public class EcfCaseTypeFactory {
    * the ID. But we don't have the filing document objects when making the case.
    */
   public List<FilingAssociationType> lateStageFilingAssociationAdd(
-      EcfCourtSpecificSerializer serializer,
       Map<String, Object> filingIdToObj,
       Map<String, List<PartyId>> filingAssociations,
       Map<String, Object> partyIdToRefObj) {
 
-    DataFieldRow filingcaseparties = serializer.allDataFields.getFieldRow("FilingEventCaseParties");
     var toReturn = new ArrayList<FilingAssociationType>();
     var structOf = new ecf4.latest.gov.niem.niem.structures._2.ObjectFactory();
-    if (filingcaseparties.isrequired) {
-      for (Map.Entry<String, Object> filingObj : filingIdToObj.entrySet()) {
-        ecf4.latest.gov.niem.niem.structures._2.ReferenceType filingRt =
-            structOf.createReferenceType();
+    for (Map.Entry<String, Object> filingObj : filingIdToObj.entrySet()) {
+      ecf4.latest.gov.niem.niem.structures._2.ReferenceType filingRt =
+          structOf.createReferenceType();
         filingRt.setRef(filingObj.getValue());
         var filingAssociation = filingAssociations.get(filingObj.getKey());
         for (PartyId partyId : filingAssociation) {
@@ -241,7 +238,6 @@ public class EcfCaseTypeFactory {
             log.warn("Parties that do exist: {}", List.of(partyIdToRefObj.keySet().toArray()));
           }
         }
-      }
     }
     return toReturn;
   }

@@ -500,10 +500,11 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                     info.getFilings().stream()
                         .collect(
                             Collectors.toMap(f -> f.getIdString(), f -> f.getFilingPartyIds()));
-                for (var association :
-                    ecfCaseFactory.lateStageFilingAssociationAdd(
-                        serializer, filingIdToObj, filingAssociations, pair.getRight())) {
-                  aug.getFilingAssociation().add(association);
+                if (parser.useFilingAssociations()) {
+                  for (var association :
+                      ecfCaseFactory.lateStageFilingAssociationAdd(filingIdToObj, filingAssociations, pair.getRight())) {
+                    aug.getFilingAssociation().add(association);
+                  }
                 }
               });
       log.info(
