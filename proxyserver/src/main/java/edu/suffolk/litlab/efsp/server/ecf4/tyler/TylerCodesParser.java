@@ -228,6 +228,9 @@ public class TylerCodesParser implements CodesParser {
       return Result.ok(Optional.empty());
     }
 
+    // TODO(brycew): need to have an ISO 639_2 (language codes) converter, from general
+    // language name
+    // https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes
     var matchedLang =
         langs.stream().filter(l -> l.getName().equalsIgnoreCase(lang.get())).findFirst();
     if (matchedLang.isEmpty()) {
@@ -236,6 +239,20 @@ public class TylerCodesParser implements CodesParser {
           new NoMatchingCode(lang.get(), langs.stream().map(l -> l.getName()).toList()));
     }
     return Result.ok(matchedLang.map(l -> l.getCode()));
+  }
+
+  public Result<String, CodeError> vetStateCode(String state, String countryString) {
+    List<String> stateCodes = cd.getStateCodes(this.court.code, countryString);
+    if (stateCodes.isEmpty()) {
+      FilingError err =
+          FilingError.malformedInterview(
+              "There are no allowed states for " + countryString + " in " + cd.getDomain());
+      return Result.err(new BadCode(err));
+    }
+    if (!stateCodes.contains(state)) {
+      return Result.err(new NoMatchingCode(state, stateCodes));
+    }
+    return Result.ok(state);
   }
 
   public Result<Map<String, String>, CrossReferenceError> getCrossRefIds(
@@ -380,6 +397,14 @@ public class TylerCodesParser implements CodesParser {
     }
 
     return Result.ok(partyInfos);
+  }
+
+  public Result<List<PartyId>, RequiredFilingParty> vetFilingParties(List<PartyId> filingParties) {
+    // TODO(brycew): needs to handle when we can avoid using filing party ids
+    if (filingParties.isEmpty()) {
+      return Result.err(new RequiredFilingParty());
+    }
+    return Result.ok(filingParties);
   }
 
   // TODO: do good tests here
@@ -881,11 +906,7 @@ public class TylerCodesParser implements CodesParser {
   }
 
   public Result<Optional<FilingAction>, InvalidFilingAction> vetFilingAction(
-      Optional<FilingAction> filingAction, boolean isInitialFiling) {
-    // From Reference Guide: if no FilingAction is provided, the original default behavior applies:
-    // * ReviewFiling API w/o service contacts: EFile
-    // * ReviewFiling API w/ service contacts: EfileAndServe
-    // * ServeFiling API: Serve
+      Optional<FilingAction> filingAction, boolean isInitialFiling, boolean hasServiceContacts) {
     if (filingAction.isPresent()) {
       FilingAction act = filingAction.get();
       boolean serviceOnInitial =
@@ -894,10 +915,15 @@ public class TylerCodesParser implements CodesParser {
             case FALSE -> false;
             case DEFAULT -> allDataFields.getFieldRow("FilingServiceCheckBoxInitial").isvisible;
           };
+      boolean tryingToDoService = (act.equals(FilingAction.E_FILE_AND_SERVE) || act.equals(FilingAction.SERVE) || hasServiceContacts);
       if (isInitialFiling
           && !serviceOnInitial
-          && (act.equals(FilingAction.E_FILE_AND_SERVE) || act.equals(FilingAction.SERVE))) {
+          && tryingToDoService) {
         return Result.err(new InvalidFilingAction("Cannot do service on initial filing"));
+      }
+      DataFieldRow checkBoxSub = allDataFields.getFieldRow("FilingServiceCheckBoxSubsequent");
+      if (!isInitialFiling && !checkBoxSub.isvisible && tryingToDoService) {
+        return Result.err(new InvalidFilingAction("Court " + this.court.name + " cannot do service on subsequent filings"));
       }
     }
     return Result.ok(filingAction);

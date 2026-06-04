@@ -28,21 +28,18 @@ import org.junit.jupiter.api.Test;
 public class AddressTest {
 
   Address addr;
-  EcfCourtSpecificSerializer serializer;
+  EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer();
 
   @BeforeEach
   public void setUp() {
     addr = new Address("100 Circle Road", "Apt 2", "Plano", "TX", "75093", "US");
     CodeDatabase cd = mock(CodeDatabase.class);
     when(cd.getStateCodes("adams", "US")).thenReturn(List.of("TX", "MA"));
-    CourtLocationInfo loc = new CourtLocationInfo("adams");
-    serializer = new EcfCourtSpecificSerializer(cd, loc);
   }
 
   @Test
   public void addressShouldMakeXml() throws JAXBException, FilingError {
-    FailFastCollector collector = new FailFastCollector();
-    JAXBElement<AddressType> addrElem = serializer.serializeNiemContactMeans(addr, collector);
+    JAXBElement<AddressType> addrElem = serializer.serializeNiemContactMeans(addr);
 
     // Should be able to grab the xml str without an exception
     Ecf4Helper.objectToXmlStr(addrElem.getValue(), AddressType.class);

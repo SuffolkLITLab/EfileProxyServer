@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efsp.docassemble;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efsp.model.Address;
+import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewVariable;
@@ -21,7 +22,7 @@ public class AddressDocassembleJacksonDeserializer {
    *
    * @throws FilingError if @param node isn't a JSON object describing an address
    */
-  public static Optional<Address> fromNode(JsonNode node, InfoCollector collector)
+  public static Optional<Address> fromNode(JsonNode node, CodesParser parser, InfoCollector collector)
       throws FilingError {
     if (!node.isObject()) {
       FilingError err =
@@ -65,6 +66,7 @@ public class AddressDocassembleJacksonDeserializer {
     String zip = (node.has("zip")) ? node.get("zip").asText("") : "";
     String country = (node.has("country")) ? node.get("country").asText("US").toUpperCase() : "US";
     if (country.length() > 2) {
+      // TODO: consider handling ISO-3166-alpha 3 codes?
       log.error("Country {} isn't a valid country (should be 2 letters", country);
       InterviewVariable countryOptions =
           collector.requestVar(
@@ -72,6 +74,13 @@ public class AddressDocassembleJacksonDeserializer {
       FilingError err = FilingError.wrongValue(countryOptions);
       collector.error(err);
       throw err;
+    }
+    var stateRes = parser.vetStateCode(state, country);
+    if (stateRes.isErr()) {
+      var stateBuilder = collector.varBuilder().name("state");
+      collector.addCodeError(stateRes.expectErr(""), stateBuilder);
+    } else {
+      state = stateRes.expect("");
     }
     Address addr = new Address(address, unit, city, state, zip, country);
     return Optional.of(addr);

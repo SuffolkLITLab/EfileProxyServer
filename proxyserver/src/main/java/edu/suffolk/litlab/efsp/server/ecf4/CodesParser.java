@@ -50,6 +50,8 @@ public interface CodesParser {
   public record NoMultipleAttorneys() implements AttorneyError {}
   public record RequiredAttorneys() implements AttorneyError {}
 
+  public record RequiredFilingParty() {}
+
   public record DueDateRequired() {}
 
   public record InvalidFilingAction(String reason) {}
@@ -83,6 +85,8 @@ public interface CodesParser {
 
   public Result<Optional<String>, CodeError> vetLangCode(Optional<String> lang);
 
+  public Result<String, CodeError> vetStateCode(String state, String countryString);
+
   public Result<Map<String, String>, CrossReferenceError> getCrossRefIds(
       Map<String, String> crossRefs, CaseType caseType);
 
@@ -91,6 +95,8 @@ public interface CodesParser {
       Collection<Person> newParties,
       CaseType type,
       boolean isFirstIndexedFiling);
+
+  public Result<List<PartyId>, RequiredFilingParty> vetFilingParties(List<PartyId> filingParties);
 
   public Result<Optional<NameAndCode>, CodeError> vetMotionCode(
       Optional<String> motionCode, FilingCode filing);
@@ -146,7 +152,7 @@ public interface CodesParser {
       Optional<LocalDate> dueDate, FilingCode filing);
 
   public Result<Optional<FilingAction>, InvalidFilingAction> vetFilingAction(
-      Optional<FilingAction> filingAction, boolean isInitialFiling);
+      Optional<FilingAction> filingAction, boolean isInitialFiling, boolean hasServiceContacts);
 
   public Optional<String> getDocumentDescription(
       String description, String firstFileName, FilingCode filing);

@@ -307,8 +307,7 @@ public class CourtSchedulingService {
             .build();
       }
       try {
-        EcfCourtSpecificSerializer serializer =
-            new EcfCourtSpecificSerializer(cd, locationInfo.get());
+        EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer();
         boolean isInitialFiling =
             info.getPreviousCaseId().isEmpty() && info.getCaseDocketNumber().isEmpty();
         boolean isFirstIndexedFiling = info.getPreviousCaseId().isEmpty();

@@ -319,6 +319,7 @@ public class FilingInformationDocassembleJacksonDeserializer
             varToPartyId,
             filingOptions,
             isInitialFiling,
+            entities.getServiceContacts().size() > 0,
             parser,
             collector));
     if (entities.getFilings().isEmpty()) {
@@ -526,6 +527,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       Map<String, PartyId> varToPartyId,
       List<FilingCode> filingOptions,
       boolean isInitialFiling,
+      boolean hasServiceContacts,
       CodesParser parser,
       InfoCollector collector)
       throws FilingError {
@@ -556,6 +558,7 @@ public class FilingInformationDocassembleJacksonDeserializer
                 filingDocs.size(),
                 filingOptions,
                 isInitialFiling,
+                hasServiceContacts,
                 parser,
                 collector);
         collector.popAttributeStack();

@@ -25,6 +25,7 @@ import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.InputOptionalService;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.TextVarError;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
+import edu.suffolk.litlab.efsp.utils.InterviewVariable;
 import edu.suffolk.litlab.efsp.utils.JsonHelpers;
 import fj.data.NonEmptyList;
 import fj.data.Option;
@@ -57,6 +58,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       int sequenceNum,
       List<FilingCode> filingOptions,
       boolean isInitialFiling,
+      boolean hasServiceContacts,
       CodesParser parser,
       InfoCollector collector)
       throws FilingError {
@@ -161,7 +163,7 @@ public class FilingDocDocassembleJacksonDeserializer {
             yield Optional.empty();
           }
         };
-    var actionRes = parser.vetFilingAction(maybeAction, isInitialFiling);
+    var actionRes = parser.vetFilingAction(maybeAction, isInitialFiling, hasServiceContacts);
     if (actionRes.isErr()) {
       collector.addWrong(
           collector
@@ -187,6 +189,16 @@ public class FilingDocDocassembleJacksonDeserializer {
                   return PartyId.Already(fp);
                 })
             .collect(Collectors.toList());
+    var partiesRes = parser.vetFilingParties(fullParties);
+    if (partiesRes.isErr()) {
+      InterviewVariable partyVar =
+          collector.requestVar(
+              "filing_parties", "The Parties that are filing this document", "text");
+      collector.addRequired(partyVar);
+    } else {
+      fullParties = partiesRes.expect("");
+    }
+
     var components = new ArrayList<FilingComponent>(parser.retrieveFilingComponents(filingType));
     fj.data.List<FilingAttachment> attachments = fj.data.List.nil();
     if (node.has("tyler_merge_attachments")

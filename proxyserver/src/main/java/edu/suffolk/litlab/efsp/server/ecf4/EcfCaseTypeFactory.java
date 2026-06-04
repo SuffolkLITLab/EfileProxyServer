@@ -25,7 +25,6 @@ import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.model.CaseServiceContact;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
@@ -56,7 +55,6 @@ import org.slf4j.LoggerFactory;
 public class EcfCaseTypeFactory {
   private static Logger log = LoggerFactory.getLogger(EcfCaseTypeFactory.class);
 
-  private final CodeDatabase cd;
   private final ecf4.latest.tyler.ecf.extensions.common.ObjectFactory tylerObjFac;
   private final ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4
           .ObjectFactory
@@ -66,7 +64,6 @@ public class EcfCaseTypeFactory {
   private final Jurisdiction jurisdiction;
 
   public EcfCaseTypeFactory(CodeDatabase cd, Jurisdiction jurisdiction) {
-    this.cd = cd;
     this.tylerObjFac = new ecf4.latest.tyler.ecf.extensions.common.ObjectFactory();
     this.ecfCommonObjFac =
         new ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4
@@ -411,10 +408,8 @@ public class EcfCaseTypeFactory {
     Map<String, Object> partyIdToRefObj = new HashMap<>();
     int i = 0;
     for (Person plaintiff : info.getNewPlaintiffs()) {
-      collector.pushAttributeStack("plaintiffs[" + i + ']');
       var pInfo = comboCodes.partyInfo().get(plaintiff.getPartyId());
-      CaseParticipantType cp = serializer.serializeEcfCaseParticipant(plaintiff, pInfo, collector);
-      collector.popAttributeStack();
+      CaseParticipantType cp = serializer.serializeEcfCaseParticipant(plaintiff, pInfo);
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
       partyIdToRefObj.put(plaintiff.getIdString(), cp.getEntityRepresentation().getValue());
       presentPartyTypes.add(pInfo.type().code);
@@ -422,10 +417,8 @@ public class EcfCaseTypeFactory {
 
     i = 0;
     for (Person defendant : info.getNewDefendants()) {
-      collector.pushAttributeStack("defendants[" + i + ']');
       var pInfo = comboCodes.partyInfo().get(defendant.getPartyId());
-      CaseParticipantType cp = serializer.serializeEcfCaseParticipant(defendant, pInfo, collector);
-      collector.popAttributeStack();
+      CaseParticipantType cp = serializer.serializeEcfCaseParticipant(defendant, pInfo);
       ecfAug.getCaseParticipant().add(ecfCommonObjFac.createCaseParticipant(cp));
       partyIdToRefObj.put(defendant.getIdString(), cp.getEntityRepresentation().getValue());
       presentPartyTypes.add(pInfo.type().code);

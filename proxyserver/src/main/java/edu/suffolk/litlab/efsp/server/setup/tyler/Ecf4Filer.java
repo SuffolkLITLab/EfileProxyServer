@@ -49,7 +49,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.Disclaimer;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.ServiceCodeType;
@@ -240,7 +239,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
         collector.error(err);
       }
 
-      EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer(cd, locationInfo);
+      EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer();
       var maybeParser = getParser(cd, locationInfo.code, apiToken);
       if (maybeParser.isEmpty()) {
         collector.error(
@@ -406,28 +405,6 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
                 Ecf4Helper.convertText("CaseCrossReferenceNumber")));
         id.setIdentificationSourceText(Ecf4Helper.convertText(ref.getKey()));
         cfm.getDocumentIdentification().add(id);
-      }
-
-      boolean serviceOnInitial =
-          switch (locationInfo.allowserviceoninitial) {
-            case TRUE -> true;
-            case FALSE -> false;
-            case DEFAULT ->
-                cd.getDataField(locationInfo.code, "FilingServiceCheckBoxInitial").isvisible;
-          };
-      if (isInitialFiling && !serviceOnInitial && info.getServiceContacts().size() > 0) {
-        FilingError err =
-            FilingError.malformedInterview(
-                "Court " + locationInfo.name + " doesn't allow service on initial filings");
-        collector.error(err);
-      }
-      DataFieldRow checkBoxSub =
-          cd.getDataField(locationInfo.code, "FilingServiceCheckBoxSubsequent");
-      if (!isInitialFiling && !checkBoxSub.isvisible && info.getServiceContacts().size() > 0) {
-        FilingError err =
-            FilingError.malformedInterview(
-                "Court " + locationInfo.name + " doesn't allow service on subsequent filings");
-        collector.error(err);
       }
 
       cfm.setSendingMDELocationID(Ecf4Helper.convertId(ServiceHelpers.SERVICE_URL));
