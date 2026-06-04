@@ -400,6 +400,15 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
 
     entities.setReturnDate(extractReturnDate(node.get("return_date"), collector));
+
+    var filerTypeRes = parser.vetFilerType(getStringMember(node, "filer_type"));
+    if (filerTypeRes.isErr()) {
+      var filerTypeBuilder = collector.varBuilder().name("filer_type");
+      collector.addCodeError(filerTypeRes.expectErr(""), filerTypeBuilder);
+    } else {
+      entities.setFilerType(filerTypeRes.expect(""));
+    }
+
     entities.setMiscInfo(node);
 
     return entities;

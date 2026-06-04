@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efsp.model;
 import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilerType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -68,6 +69,8 @@ public class FilingInformation {
   private Optional<LowerCourtInfo> lowerCourtInfo = Optional.empty();
 
   private Person leadContact;
+
+  private Optional<FilerType> filerType;
 
   private JsonNode miscInfo;
 
@@ -194,6 +197,10 @@ public class FilingInformation {
     return returnDate;
   }
 
+  public Optional<FilerType> getFilerType() {
+    return filerType;
+  }
+
   public JsonNode getMiscInfo() {
     return miscInfo;
   }
@@ -272,6 +279,10 @@ public class FilingInformation {
 
   public void setReturnDate(Optional<LocalDate> returnDate) {
     this.returnDate = returnDate;
+  }
+
+  public void setFilerType(Optional<FilerType> filerType) {
+    this.filerType = filerType;
   }
 
   public void setMiscInfo(JsonNode node) {

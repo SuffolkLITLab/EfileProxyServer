@@ -26,7 +26,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilerType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.model.CaseServiceContact;
 import edu.suffolk.litlab.efsp.model.ContactInformation;
@@ -599,36 +598,11 @@ public class EcfCaseTypeFactory {
     }
 
     // Filing
-    DataFieldRow filertype = serializer.allDataFields.getFieldRow("FilingFilerType");
-    if (filertype.isvisible) {
-      List<FilerType> allTypes = cd.getFilerTypes(courtLocation.code);
-      String filerTypeName = "filer_type";
-      JsonNode filerTypeNode = miscInfo.get(filerTypeName);
-      InterviewVariable var =
-          collector.requestVar(
-              filerTypeName,
-              "Metadata about the filer of this case",
-              "choices",
-              allTypes.stream().map(t -> t.code).collect(Collectors.toList()),
-              Optional.ofNullable(filerTypeNode).map(JsonNode::toString));
-      if (filerTypeNode != null && filerTypeNode.isTextual()) {
-        String filerType = filerTypeNode.asText();
-        Optional<FilerType> typeInfo =
-            allTypes.stream().filter(t -> t.code.equalsIgnoreCase(filerType)).findFirst();
-        if (typeInfo.isPresent()) {
-          ecfAug.setFilerTypeText(Ecf4Helper.convertText(typeInfo.get().code));
-        } else {
-          collector.addWrong(var);
-        }
-      } else {
-        Optional<FilerType> defaultType = allTypes.stream().filter(t -> t.isDefault).findFirst();
-        if (defaultType.isPresent()) {
-          ecfAug.setFilerTypeText(Ecf4Helper.convertText(defaultType.get().code));
-        } else if (filertype.isrequired) {
-          collector.addRequired(var);
-        }
-      }
-    }
+    info.getFilerType()
+        .ifPresent(
+            filerType -> {
+              ecfAug.setFilerTypeText(Ecf4Helper.convertText(filerType.code));
+            });
 
     if (courtLocation.allowreturndate && info.getReturnDate().isPresent()) {
       ecfAug.setReturnDate(Ecf4Helper.convertDate(info.getReturnDate().get()));

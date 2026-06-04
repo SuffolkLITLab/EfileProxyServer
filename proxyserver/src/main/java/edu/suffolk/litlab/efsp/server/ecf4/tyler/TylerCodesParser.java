@@ -13,6 +13,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DocumentTypeTableRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilerType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
@@ -513,6 +514,34 @@ public class TylerCodesParser implements CodesParser {
       }
       return Result.err(
           new NoMatchingCode(docTypeStr, docTypes.stream().map(d -> d.code).toList()));
+    }
+    return Result.ok(Optional.empty());
+  }
+
+  public Result<Optional<FilerType>, CodeError> vetFilerType(Optional<String> maybeFilerType) {
+    DataFieldRow filertype = allDataFields.getFieldRow("FilingFilerType");
+    if (filertype.isvisible) {
+      List<FilerType> allTypes = cd.getFilerTypes(this.court.code);
+      // allTypes.stream().map(t -> t.code).toList());
+      if (maybeFilerType.isPresent()) {
+        String filerType = maybeFilerType.get();
+        Optional<FilerType> typeInfo =
+            allTypes.stream().filter(t -> t.code.equalsIgnoreCase(filerType)).findFirst();
+        if (typeInfo.isEmpty()) {
+          return Result.err(
+              new NoMatchingCode(filerType, allTypes.stream().map(t -> t.code).toList()));
+        }
+        return Result.ok(typeInfo);
+      } else {
+        // Choose a default, if there's one present.
+        Optional<FilerType> defaultType = allTypes.stream().filter(t -> t.isDefault).findFirst();
+        if (defaultType.isPresent()) {
+          return Result.ok(defaultType);
+        } else if (filertype.isrequired) {
+          return Result.err(
+              new RequiredCodeNotPresent(allTypes.stream().map(t -> t.code).toList()));
+        }
+      }
     }
     return Result.ok(Optional.empty());
   }

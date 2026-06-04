@@ -6,6 +6,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DocumentTypeTableRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilerType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
@@ -104,6 +105,8 @@ public interface CodesParser {
 
   public Result<FilingComponent, CodeError> vetFilingComponent(
       String filingComponent, ArrayList<FilingComponent> components);
+
+  public Result<Optional<FilerType>, CodeError> vetFilerType(Optional<String> maybeFilerType);
 
   public Result<Optional<DocumentTypeTableRow>, CodeError> vetDocType(
       String docTypeStr, FilingCode filing);
