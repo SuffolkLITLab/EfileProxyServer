@@ -50,6 +50,7 @@ public class EcfCourtSpecificSerializerTest {
   CodeDatabase cd;
   InfoCollector collector;
   private static final String caseType = "78334";
+  EcfCourtSpecificSerializer courtSer = new EcfCourtSpecificSerializer();
 
   @BeforeEach
   public void setUp() {
@@ -106,8 +107,6 @@ public class EcfCourtSpecificSerializerTest {
   @Test
   public void shouldBeEmptyPersonIfIsUser() throws FilingError, JAXBException {
     ContactInformation info = new ContactInformation("bob@example.com");
-    CourtLocationInfo loc = new CourtLocationInfo("not_real");
-    EcfCourtSpecificSerializer courtSer = new EcfCourtSpecificSerializer(cd, loc);
     PartyType partyType = PartyType.TestObj("1234", "Special", "not_real");
 
     Person user =
@@ -122,7 +121,7 @@ public class EcfCourtSpecificSerializerTest {
             Optional.of("1234"),
             Optional.empty());
     PartyInfo partyInfo = new PartyInfo(partyType, user.getPartyId(), user.isOrg());
-    CaseParticipantType cpt = courtSer.serializeEcfCaseParticipant(user, partyInfo, collector);
+    CaseParticipantType cpt = courtSer.serializeEcfCaseParticipant(user, partyInfo);
     assertEquals("1234", cpt.getCaseParticipantRoleCode().getValue());
     assertTrue(
         cpt.getEntityRepresentation().getValue()
@@ -150,7 +149,7 @@ public class EcfCourtSpecificSerializerTest {
             Optional.of("1234"),
             Optional.empty());
     PartyInfo orgInfo = new PartyInfo(partyType, org.getPartyId(), org.isOrg());
-    CaseParticipantType cptOrg = courtSer.serializeEcfCaseParticipant(org, orgInfo, collector);
+    CaseParticipantType cptOrg = courtSer.serializeEcfCaseParticipant(org, orgInfo);
     assertEquals("1234", cptOrg.getCaseParticipantRoleCode().getValue());
     assertTrue(cptOrg.getEntityRepresentation().getValue() instanceof OrganizationType);
     OrganizationType orgPt = ((OrganizationType) cptOrg.getEntityRepresentation().getValue());
@@ -169,7 +168,7 @@ public class EcfCourtSpecificSerializerTest {
             Optional.of("1234"),
             Optional.empty());
     PartyInfo perInfo = new PartyInfo(partyType, per.getPartyId(), per.isOrg());
-    CaseParticipantType cptPer = courtSer.serializeEcfCaseParticipant(per, perInfo, collector);
+    CaseParticipantType cptPer = courtSer.serializeEcfCaseParticipant(per, perInfo);
     System.out.println(Ecf4Helper.objectToXmlStr(cpt, CaseParticipantType.class));
     assertEquals(cptPer.getCaseParticipantRoleCode().getValue(), "1234");
     assertTrue(cptPer.getEntityRepresentation().getValue() instanceof PersonType);
@@ -191,9 +190,7 @@ public class EcfCourtSpecificSerializerTest {
             List.of("1234567890", "(123) 456-7890"),
             Optional.empty(),
             Optional.of("bob@example.com"));
-    CourtLocationInfo loc = new CourtLocationInfo("not_real");
-    EcfCourtSpecificSerializer courtSer = new EcfCourtSpecificSerializer(cd, loc);
-    var contactInfoType = courtSer.serializeEcfContactInformation(info, collector);
+    var contactInfoType = courtSer.serializeEcfContactInformation(info);
     assertThat(contactInfoType.getContactMeans()).hasSize(3);
     assertThat(collector.getWrong()).hasSize(0);
   }
@@ -228,14 +225,9 @@ public class EcfCourtSpecificSerializerTest {
     var parser = new TylerCodesParser(cd, null, loc, true);
     var doc =
         FilingDocDocassembleJacksonDeserializer.fromNode(
-            node, varToPartyId, 2, List.of(filing), true, parser, collector);
+            node, varToPartyId, 2, List.of(filing), true, false, parser, collector);
 
-    EcfCourtSpecificSerializer cookSer = new EcfCourtSpecificSerializer(cd, loc);
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode miscNode = mapper.createObjectNode();
-    var xmlDoc =
-        cookSer.filingDocToXml(
-            doc.get(), true, caseCategory, caseType, filing, miscNode, collector);
+    var xmlDoc = courtSer.filingDocToXml(doc.get(), true, caseCategory, caseType, filing);
     assertThat(xmlDoc.getValue().getDocumentSequenceID().getValue()).isEqualTo("2");
     assertThat(xmlDoc.getValue().getDocumentDescriptionText().getValue())
         .isEqualTo("The Motion to Stay Eviction for Bob Ma");

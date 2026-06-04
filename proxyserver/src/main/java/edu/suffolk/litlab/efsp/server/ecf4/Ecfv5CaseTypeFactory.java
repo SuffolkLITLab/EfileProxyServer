@@ -6,9 +6,7 @@ import static edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper.convertId;
 import static edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper.convertNormalized;
 import static edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper.convertString;
 import static edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper.convertText;
-import static edu.suffolk.litlab.efsp.utils.JsonHelpers.isNull;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.hubspot.algebra.Result;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.CaseAugmentationType;
 import ecf4.latest.gov.niem.release.niem.domains.jxdm._6.CaseOfficialType;
@@ -79,16 +77,7 @@ public class Ecfv5CaseTypeFactory {
       EcfCourtSpecificSerializer serializer,
       InfoCollector collector,
       Optional<Map<PartyId, Person>> existingParties) {
-    Optional<BigDecimal> maybeAmt = Optional.empty();
-    if (allCodes.filings().stream()
-        .anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"))) {
-      log.info(info.getMiscInfo().toPrettyString());
-      JsonNode jsonAmt = info.getMiscInfo().get("amount_in_controversy");
-      if (isNull(jsonAmt) || !jsonAmt.isNumber()) {
-        return Result.err(FilingError.malformedInterview("Amount in controversy required"));
-      }
-      maybeAmt = Optional.of(jsonAmt.decimalValue());
-    }
+    Optional<BigDecimal> maybeAmt = info.getAmountInControversy();
 
     CaseType ct = niemObjFac.createCaseType();
 

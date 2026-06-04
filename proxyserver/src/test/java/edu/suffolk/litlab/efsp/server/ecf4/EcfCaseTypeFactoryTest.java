@@ -134,7 +134,7 @@ public class EcfCaseTypeFactoryTest {
     EcfCourtSpecificSerializer courtSer = new EcfCourtSpecificSerializer(cd, loc);
     JAXBElement<? extends ecf4.latest.gov.niem.niem.niem_core._2.CaseType> retVal =
         caseFactory.makeCaseTypeFromTylerCategory(loc, combos, info, false, false,
-            List.of("177239"), "filing", info.getMiscInfo(), courtSer, collector, Map.of());
+            List.of("177239"), "filing", courtSer, collector, Map.of());
     assertTrue(retVal.getValue() != null);
     */
   }

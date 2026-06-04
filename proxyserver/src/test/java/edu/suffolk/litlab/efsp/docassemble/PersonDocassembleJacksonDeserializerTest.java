@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
@@ -15,12 +16,15 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
+import edu.suffolk.litlab.efsp.tyler.TylerDomain;
+import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.AllWrongCollector;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +39,9 @@ public class PersonDocassembleJacksonDeserializerTest {
     collector = new FailFastCollector();
     var cd = mock(CodeDatabase.class);
     var allDataFields = mock(DataFields.class);
+    when(cd.getStateCodes("adams", "US")).thenReturn(List.of("MA", "TX", "IL", "VT"));
     when(cd.getDataFields("adams")).thenReturn(allDataFields);
+    when(cd.getDomain()).thenReturn(new TylerDomain(Jurisdiction.ILLINOIS, TylerEnv.STAGE));
     when(allDataFields.getFieldRow("PartyFirstName"))
         .thenReturn(new DataFieldRow("PartyFirstName", "", true, true, "adams"));
     when(allDataFields.getFieldRow("PartyMiddleName"))

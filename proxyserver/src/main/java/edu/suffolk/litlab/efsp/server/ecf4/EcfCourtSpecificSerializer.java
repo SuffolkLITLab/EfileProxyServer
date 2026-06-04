@@ -1,6 +1,5 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import ecf4.latest.gov.niem.niem.fbi._2.SEXCodeSimpleType;
 import ecf4.latest.gov.niem.niem.fbi._2.SEXCodeType;
 import ecf4.latest.gov.niem.niem.fips_10_4._2.CountryCodeType;
@@ -36,11 +35,7 @@ import ecf4.latest.tyler.ecf.extensions.common.DocumentType;
 import ecf4.latest.tyler.ecf.extensions.common.FilingTypeType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.model.Address;
@@ -56,13 +51,11 @@ import edu.suffolk.litlab.efsp.model.PartyInfo;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
-import edu.suffolk.litlab.efsp.utils.InterviewVariable;
 import jakarta.xml.bind.JAXBElement;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,9 +63,6 @@ import org.slf4j.LoggerFactory;
 public class EcfCourtSpecificSerializer {
   private static Logger log = LoggerFactory.getLogger(EcfCourtSpecificSerializer.class);
 
-  private final CodeDatabase cd;
-  private final CourtLocationInfo court;
-  public final DataFields allDataFields;
   private static final ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory niemObjFac =
       new ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory();
   private static final ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory coreObjFac =
@@ -87,11 +77,7 @@ public class EcfCourtSpecificSerializer {
           new ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4
               .ObjectFactory();
 
-  public EcfCourtSpecificSerializer(CodeDatabase cd, CourtLocationInfo court) {
-    this.cd = cd;
-    this.court = court;
-    this.allDataFields = cd.getDataFields(court.code);
-  }
+  public EcfCourtSpecificSerializer() {}
 
   /** Either an initial filing, or a non-indexed case. */
   public ComboCaseCodes serializeCaseCodes(
@@ -121,25 +107,13 @@ public class EcfCourtSpecificSerializer {
    *
    * @throws FilingError
    */
-  public CaseParticipantType serializeEcfCaseParticipant(
-      Person per, PartyInfo info, InfoCollector collector) throws FilingError {
+  public CaseParticipantType serializeEcfCaseParticipant(Person per, PartyInfo info) {
     final CaseParticipantType cpt = ecfOf.createCaseParticipantType();
-    ContactInformationType cit = serializeEcfContactInformation(per.getContactInfo(), collector);
+    ContactInformationType cit = serializeEcfContactInformation(per.getContactInfo());
     if (per.isOrg()) {
       OrganizationAugmentationType aug = ecfOf.createOrganizationAugmentationType();
       aug.getContactInformation().add(cit);
       OrganizationType ot = ecfOf.createOrganizationType();
-      DataFieldRow orgNameRow = allDataFields.getFieldRow("PartyBusinessName");
-      if (!orgNameRow.matchRegex(per.getName().getFullName())) {
-        InterviewVariable var =
-            collector.requestVar(
-                "name", "Name needs to match the regex: " + orgNameRow.regularexpression, "text");
-        collector.addWrong(var);
-      } else if (per.getName().getFullName().length() > 400) {
-        InterviewVariable var =
-            collector.requestVar("name", "Name needs to be shorter that 400 characters", "text");
-        collector.addWrong(var);
-      }
       ot.setOrganizationName(Ecf4Helper.convertText(per.getName().getFullName()));
       ot.setId(per.getIdString());
       ot.getRest().add(ecfOf.createOrganizationAugmentation(aug));
@@ -161,7 +135,7 @@ public class EcfCourtSpecificSerializer {
         pt.setPersonCapability(extObjFac.createPersonCapability(ct));
       }
 
-      pt.setPersonName(serializeNameType(per.getName(), collector));
+      pt.setPersonName(serializeNameType(per.getName()));
       pt.setPersonAugmentation(aug);
 
       per.getGender()
@@ -183,20 +157,17 @@ public class EcfCourtSpecificSerializer {
                 pt.setPersonSex(niemObjFac.createPersonSexCode(sct));
               });
 
-      if (per.getLanguage().isPresent()) {
-        List<String> langs = cd.getLanguageNames(this.court.code);
-        if (!langs.isEmpty()) {
-          // TODO(brycew): need to have an ISO 639_2 (language codes) converter, from general
-          // language name
-          /// https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes
-          LanguageCodeType lct = iso639Fac.createLanguageCodeType();
-          PersonLanguageType plt = niemObjFac.createPersonLanguageType();
-          plt.getLanguage().add(niemObjFac.createLanguageCode(lct));
-          pt.setPersonPrimaryLanguage(plt);
-        }
-        // TODO(brycew): currently taking the safer option: if no languages are specified, don't
-        // add one
-      }
+      per.getLanguage()
+          .ifPresent(
+              lang -> {
+                LanguageCodeType lct = iso639Fac.createLanguageCodeType();
+                PersonLanguageType plt = niemObjFac.createPersonLanguageType();
+                // TODO: need to test this with Tyler still:
+                // lct.setValue(lang);
+                plt.getLanguage();
+                plt.getLanguage().add(niemObjFac.createLanguageCode(lct));
+                pt.setPersonPrimaryLanguage(plt);
+              });
 
       per.getBirthdate()
           .ifPresent(
@@ -213,12 +184,11 @@ public class EcfCourtSpecificSerializer {
     return cpt;
   }
 
-  public ContactInformationType serializeEcfContactInformation(
-      ContactInformation contactInfo, InfoCollector collector) throws FilingError {
+  public ContactInformationType serializeEcfContactInformation(ContactInformation contactInfo) {
     ContactInformationType cit = niemObjFac.createContactInformationType();
     if (contactInfo.getAddress().isPresent()) {
       Address addr = contactInfo.getAddress().get();
-      JAXBElement<AddressType> contactMeans = serializeNiemContactMeans(addr, collector);
+      JAXBElement<AddressType> contactMeans = serializeNiemContactMeans(addr);
       cit.getContactMeans().add(contactMeans);
     }
 
@@ -242,7 +212,7 @@ public class EcfCourtSpecificSerializer {
   }
 
   public static tyler.efm.latest.services.schema.common.AddressType serializeTylerAddress(
-      Address myAddr) throws FilingError {
+      Address myAddr) {
     var efmObjFac = new tyler.efm.latest.services.schema.common.ObjectFactory();
     var addr = efmObjFac.createAddressType();
     addr.setAddressLine1(myAddr.getStreet());
@@ -258,8 +228,7 @@ public class EcfCourtSpecificSerializer {
    * Returns the "ContactMeans" XML object from this address. Can be used in the ContactInformation
    * element.
    */
-  public JAXBElement<AddressType> serializeNiemContactMeans(
-      Address address, InfoCollector collector) throws FilingError {
+  public JAXBElement<AddressType> serializeNiemContactMeans(Address address) {
     StreetType st = niemObjFac.createStreetType();
     st.setStreetFullText(
         Ecf4Helper.convertText(address.getStreet() + " " + address.getApartment()));
@@ -270,24 +239,7 @@ public class EcfCourtSpecificSerializer {
     sat.setLocationCityName(pntt);
     CountryCodeType cct = Ecf4Helper.strToCountryCode(address.getCountry());
     sat.setLocationCountry(niemObjFac.createLocationCountryFIPS104Code(cct));
-    if (!fillStateCode(address.getState(), cct, sat)) {
-      String countryString = cct.getValue();
-      List<String> stateCodes = cd.getStateCodes(this.court.code, countryString);
-      InterviewVariable var =
-          collector.requestVar(
-              "state",
-              "State in a country",
-              "choices",
-              stateCodes,
-              Optional.of(address.getState()));
-      if (stateCodes.isEmpty()) {
-        FilingError err =
-            FilingError.malformedInterview(
-                "There are no allowed states for " + countryString + " in " + cd.getDomain());
-        collector.error(err);
-      }
-      collector.addWrong(var);
-    }
+    fillStateCode(address.getState(), cct, sat);
     sat.setLocationPostalCode(Ecf4Helper.convertString(address.getZip()));
     var addressType = niemObjFac.createAddressType();
     addressType.setAddressRepresentation(niemObjFac.createStructuredAddress(sat));
@@ -299,8 +251,7 @@ public class EcfCourtSpecificSerializer {
    *
    * @throws FilingError
    */
-  public ecf4.latest.gov.niem.niem.niem_core._2.PersonNameType serializeNameType(
-      Name name, InfoCollector collector) throws FilingError {
+  public ecf4.latest.gov.niem.niem.niem_core._2.PersonNameType serializeNameType(Name name) {
     Function<String, PersonNameTextType> wrapName =
         (n) -> {
           PersonNameTextType t = niemObjFac.createPersonNameTextType();
@@ -324,10 +275,8 @@ public class EcfCourtSpecificSerializer {
       boolean isInitialFiling,
       CaseCategory caseCategory,
       CaseType motionType,
-      FilingCode filing,
-      JsonNode miscInfo,
-      InfoCollector collector)
-      throws IOException, FilingError {
+      FilingCode filing)
+      throws IOException {
     DocumentType docType = tylerObjFac.createDocumentType();
     doc.descriptionFromSpec()
         .ifPresent(
@@ -367,13 +316,6 @@ public class EcfCourtSpecificSerializer {
                   filingPartyId.getIdentificationString(),
                   (filingPartyId.isNewInCurrentFiling()) ? "REFERENCE" : "IDENTIFICATION"));
     }
-    // TODO(brycew): needs to handle when we can avoid using filing party ids
-    if (doc.getFilingPartyIds().isEmpty()) {
-      InterviewVariable partyVar =
-          collector.requestVar(
-              "filing_parties", "The Parties that are filing this document", "text");
-      collector.addRequired(partyVar);
-    }
     docType.setDocumentMetadata(metadata);
 
     String cc = doc.getCourtesyCopies().stream().reduce("", (base, str) -> base + "," + str);
@@ -390,32 +332,17 @@ public class EcfCourtSpecificSerializer {
             motion -> {
               docType.setMotionTypeCode(Ecf4Helper.convertText(motion.getCode()));
             });
-    boolean serviceOnInitial =
-        switch (this.court.allowserviceoninitial) {
-          case TRUE -> true;
-          case FALSE -> false;
-          case DEFAULT -> allDataFields.getFieldRow("FilingServiceCheckBoxInitial").isvisible;
-        };
+
     // From Reference Guide: if no FilingAction is provided, the original default behavior applies:
     // * ReviewFiling API w/o service contacts: EFile
     // * ReviewFiling API w/ service contacts: EfileAndServe
     // * ServeFiling API: Serve
-    if (doc.getFilingAction().isPresent()) {
-      FilingTypeType act = filingActionToXml(doc.getFilingAction().get());
-      if (isInitialFiling
-          && !serviceOnInitial
-          && (act.equals(FilingTypeType.E_FILE_AND_SERVE) || act.equals(FilingTypeType.SERVE))) {
-        InterviewVariable var =
-            collector.requestVar(
-                "filing_action",
-                "Cannot do service on initial filing",
-                "text",
-                List.of(),
-                doc.getFilingAction().map(FilingAction::toString));
-        collector.addWrong(var);
-      }
-      docType.setFilingAction(act);
-    }
+    doc.getFilingAction()
+        .ifPresent(
+            action -> {
+              FilingTypeType act = filingActionToXml(action);
+              docType.setFilingAction(act);
+            });
 
     for (OptionalService serv : doc.getOptionalServices()) {
       DocumentOptionalServiceType xmlServ = tylerObjFac.createDocumentOptionalServiceType();
@@ -433,11 +360,7 @@ public class EcfCourtSpecificSerializer {
     DocumentRenditionMetadataType renditionMetadata = ecfOf.createDocumentRenditionMetadataType();
     int idx = 0;
     for (var attachment : doc.getFilingAttachments()) {
-      collector.pushAttributeStack(".elements[" + idx + "]");
-      renditionMetadata
-          .getDocumentAttachment()
-          .add(attachmentToXml(attachment, filing, miscInfo, collector, idx));
-      collector.popAttributeStack();
+      renditionMetadata.getDocumentAttachment().add(attachmentToXml(attachment, filing, idx));
       idx += 1;
     }
 
@@ -454,36 +377,25 @@ public class EcfCourtSpecificSerializer {
   }
 
   private FilingTypeType filingActionToXml(FilingAction action) {
-    switch (action) {
-      case E_FILE:
-        return FilingTypeType.E_FILE;
-      case E_FILE_AND_SERVE:
-        return FilingTypeType.E_FILE_AND_SERVE;
-      case SERVE:
-        return FilingTypeType.SERVE;
-      default:
-        // I don't like enum defaults...
-        return FilingTypeType.E_FILE;
-    }
+    return switch (action) {
+      case E_FILE -> FilingTypeType.E_FILE;
+      case E_FILE_AND_SERVE -> FilingTypeType.E_FILE_AND_SERVE;
+      case SERVE -> FilingTypeType.SERVE;
+    };
   }
 
-  private DocumentAttachmentType attachmentToXml(
-      FilingAttachment fa,
-      FilingCode filing,
-      JsonNode miscInfo,
-      InfoCollector collector,
-      int seqNum)
-      throws IOException, FilingError {
+  private DocumentAttachmentType attachmentToXml(FilingAttachment fa, FilingCode filing, int seqNum)
+      throws IOException {
     // TODO(brycew-later): what should this actually be? Very unclear
     DocumentAttachmentType attachment = ecfOf.createDocumentAttachmentType();
-    attachment.setBinaryDescriptionText(Ecf4Helper.convertText(fa.getDocumentDescription()));
-    FilingComponent filt = fa.getFilingComponent();
+    attachment.setBinaryDescriptionText(Ecf4Helper.convertText(fa.documentDescription()));
+    FilingComponent filt = fa.filingComponentCode();
 
     attachment.setBinaryCategoryText(Ecf4Helper.convertText(filt.code));
 
     // Literally should just be if it's confidential or not. (or "Hot fix" or public).
     // Search options in "documenttype" table with location
-    fa.getDocumentTypeFormatStandardName()
+    fa.documentTypeFormatStandardName()
         .ifPresent(
             code -> {
               attachment.setBinaryFormatStandardName(Ecf4Helper.convertText(code.code));
@@ -491,33 +403,24 @@ public class EcfCourtSpecificSerializer {
 
     // log.info("Filing code: {} {}: {}///////{}", filing.code, filing.name, docType, attachment);
     // TODO(#62): DO this: make the file downloadable from the Proxy server
-    attachment.setBinaryLocationURI(Ecf4Helper.convertUri(fa.getFileName()));
+    attachment.setBinaryLocationURI(Ecf4Helper.convertUri(fa.fileName()));
     JAXBElement<Base64Binary> n =
-        niemObjFac.createBinaryBase64Object(Ecf4Helper.convertBase64(fa.getFileContents()));
+        niemObjFac.createBinaryBase64Object(Ecf4Helper.convertBase64(fa.fileContents()));
     // System.err.println(Ecf4Helper.objectToXmlStrOrError(n.getValue(), Base64Binary.class));
     attachment.setBinaryObject(n);
-    // TODO(brycew): depends on some DA code, should read in the PDF if possible here. Might be
-    // risky though.
-    // https://stackoverflow.com/questions/6026971/page-count-of-pdf-with-java
-    if (miscInfo.has("page_count")) {
-      int count = miscInfo.get("page_count").asInt(1);
-      NonNegativeDecimalType nndt = new NonNegativeDecimalType();
-      nndt.setValue(new BigDecimal(count));
-      attachment.setBinarySizeValue(tylerObjFac.createPageCount(nndt));
-    }
+    fa.pageCount()
+        .ifPresent(
+            count -> {
+              NonNegativeDecimalType nndt = new NonNegativeDecimalType();
+              nndt.setValue(new BigDecimal(count));
+              attachment.setBinarySizeValue(tylerObjFac.createPageCount(nndt));
+            });
     attachment.setAttachmentSequenceID(Ecf4Helper.convertString(Integer.toString(seqNum)));
     return attachment;
   }
 
   /** True if it worked. */
   private boolean fillStateCode(String state, CountryCodeType country, StructuredAddressType sat) {
-    String countryString = country.getValue().toString();
-    List<String> stateCodes = cd.getStateCodes(this.court.code, countryString);
-
-    if (!stateCodes.contains(state)) {
-      return false;
-    }
-
     if (country.getValue().equalsIgnoreCase("US")) {
       try {
         USStateCodeSimpleType stateSimple = USStateCodeSimpleType.fromValue(state);

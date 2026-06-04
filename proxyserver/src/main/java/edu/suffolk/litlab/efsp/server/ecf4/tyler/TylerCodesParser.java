@@ -13,6 +13,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFields;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DocumentTypeTableRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilerType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
@@ -28,6 +29,7 @@ import edu.suffolk.litlab.efsp.model.Person.Gender;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.utils.FilingError;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -227,6 +229,9 @@ public class TylerCodesParser implements CodesParser {
       return Result.ok(Optional.empty());
     }
 
+    // TODO(brycew): need to have an ISO 639_2 (language codes) converter, from general
+    // language name
+    // https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes
     var matchedLang =
         langs.stream().filter(l -> l.getName().equalsIgnoreCase(lang.get())).findFirst();
     if (matchedLang.isEmpty()) {
@@ -235,6 +240,20 @@ public class TylerCodesParser implements CodesParser {
           new NoMatchingCode(lang.get(), langs.stream().map(l -> l.getName()).toList()));
     }
     return Result.ok(matchedLang.map(l -> l.getCode()));
+  }
+
+  public Result<String, CodeError> vetStateCode(String state, String countryString) {
+    List<String> stateCodes = cd.getStateCodes(this.court.code, countryString);
+    if (stateCodes.isEmpty()) {
+      FilingError err =
+          FilingError.malformedInterview(
+              "There are no allowed states for " + countryString + " in " + cd.getDomain());
+      return Result.err(new BadCode(err));
+    }
+    if (!stateCodes.contains(state)) {
+      return Result.err(new NoMatchingCode(state, stateCodes));
+    }
+    return Result.ok(state);
   }
 
   public Result<Map<String, String>, CrossReferenceError> getCrossRefIds(
@@ -301,6 +320,12 @@ public class TylerCodesParser implements CodesParser {
     Map<PartyId, PartyInfo> partyInfos = new HashMap<>();
     for (Person party : existingParties) {
       var key = party.getPartyId();
+      if (key.isAlreadyInCase() && key.getIdentificationString().contains(" ")) {
+        FilingError err =
+            FilingError.serverError(
+                "Party ID " + key.getIdentificationString() + " should be a GUID but isn't");
+        return Result.err(new BadCode(err));
+      }
       if (party.getRole().isEmpty()) {
         log.warn("Existing party {} doesn't have a role?", key);
         continue;
@@ -379,6 +404,14 @@ public class TylerCodesParser implements CodesParser {
     }
 
     return Result.ok(partyInfos);
+  }
+
+  public Result<List<PartyId>, ThingRequired> vetFilingParties(List<PartyId> filingParties) {
+    // TODO(brycew): needs to handle when we can avoid using filing party ids
+    if (filingParties.isEmpty()) {
+      return Result.err(new ThingRequired());
+    }
+    return Result.ok(filingParties);
   }
 
   // TODO: do good tests here
@@ -517,6 +550,34 @@ public class TylerCodesParser implements CodesParser {
     return Result.ok(Optional.empty());
   }
 
+  public Result<Optional<FilerType>, CodeError> vetFilerType(Optional<String> maybeFilerType) {
+    DataFieldRow filertype = allDataFields.getFieldRow("FilingFilerType");
+    if (filertype.isvisible) {
+      List<FilerType> allTypes = cd.getFilerTypes(this.court.code);
+      // allTypes.stream().map(t -> t.code).toList());
+      if (maybeFilerType.isPresent()) {
+        String filerType = maybeFilerType.get();
+        Optional<FilerType> typeInfo =
+            allTypes.stream().filter(t -> t.code.equalsIgnoreCase(filerType)).findFirst();
+        if (typeInfo.isEmpty()) {
+          return Result.err(
+              new NoMatchingCode(filerType, allTypes.stream().map(t -> t.code).toList()));
+        }
+        return Result.ok(typeInfo);
+      } else {
+        // Choose a default, if there's one present.
+        Optional<FilerType> defaultType = allTypes.stream().filter(t -> t.isDefault).findFirst();
+        if (defaultType.isPresent()) {
+          return Result.ok(defaultType);
+        } else if (filertype.isrequired) {
+          return Result.err(
+              new RequiredCodeNotPresent(allTypes.stream().map(t -> t.code).toList()));
+        }
+      }
+    }
+    return Result.ok(Optional.empty());
+  }
+
   // Note: older versions of this code passed back a list of proc/rem codes. Doesn't make a ton of
   // sense,
   // and Tyler's docs only refer to the code in the singular. So only returning one here.
@@ -598,7 +659,6 @@ public class TylerCodesParser implements CodesParser {
   }
 
   ////////  Still TODO
-  // Filer Types
   // Filing Associations
   // Anything else not currently checked
 
@@ -853,11 +913,7 @@ public class TylerCodesParser implements CodesParser {
   }
 
   public Result<Optional<FilingAction>, InvalidFilingAction> vetFilingAction(
-      Optional<FilingAction> filingAction, boolean isInitialFiling) {
-    // From Reference Guide: if no FilingAction is provided, the original default behavior applies:
-    // * ReviewFiling API w/o service contacts: EFile
-    // * ReviewFiling API w/ service contacts: EfileAndServe
-    // * ServeFiling API: Serve
+      Optional<FilingAction> filingAction, boolean isInitialFiling, boolean hasServiceContacts) {
     if (filingAction.isPresent()) {
       FilingAction act = filingAction.get();
       boolean serviceOnInitial =
@@ -866,10 +922,18 @@ public class TylerCodesParser implements CodesParser {
             case FALSE -> false;
             case DEFAULT -> allDataFields.getFieldRow("FilingServiceCheckBoxInitial").isvisible;
           };
-      if (isInitialFiling
-          && !serviceOnInitial
-          && (act.equals(FilingAction.E_FILE_AND_SERVE) || act.equals(FilingAction.SERVE))) {
+      boolean tryingToDoService =
+          (act.equals(FilingAction.E_FILE_AND_SERVE)
+              || act.equals(FilingAction.SERVE)
+              || hasServiceContacts);
+      if (isInitialFiling && !serviceOnInitial && tryingToDoService) {
         return Result.err(new InvalidFilingAction("Cannot do service on initial filing"));
+      }
+      DataFieldRow checkBoxSub = allDataFields.getFieldRow("FilingServiceCheckBoxSubsequent");
+      if (!isInitialFiling && !checkBoxSub.isvisible && tryingToDoService) {
+        return Result.err(
+            new InvalidFilingAction(
+                "Court " + this.court.name + " cannot do service on subsequent filings"));
       }
     }
     return Result.ok(filingAction);
@@ -937,5 +1001,36 @@ public class TylerCodesParser implements CodesParser {
       return Result.err(new CumulativeDocsTooBig(cumulativeBytes));
     }
     return Result.nullOk();
+  }
+
+  public Result<Optional<BigDecimal>, ThingRequired> vetAmountInControversy(
+      Optional<BigDecimal> amt, List<FilingCode> filings) {
+    boolean anyAmountInControversy =
+        filings.stream().anyMatch(f -> f.amountincontroversy.equalsIgnoreCase("Required"));
+    if (anyAmountInControversy) {
+      if (amt.isPresent()) {
+        return Result.ok(amt);
+      } else {
+        return Result.err(new ThingRequired());
+      }
+    }
+    return Result.ok(Optional.empty());
+  }
+
+  public Optional<BigDecimal> vetMaxAmount(Optional<BigDecimal> maxAmount) {
+    if (court.allowmaxfeeamount) {
+      return maxAmount;
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * Get if we need to add an association between filings and case parties. Is simply a boolean
+   * because there's no filing error that needs to be swallowed.
+   *
+   * @return
+   */
+  public boolean useFilingAssociations() {
+    return allDataFields.getFieldRow("FilingEventCaseParties").isrequired;
   }
 }

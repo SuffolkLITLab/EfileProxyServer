@@ -64,7 +64,8 @@ public class PersonDocassembleJacksonDeserializer {
     if (node.has("address") && node.get("address").isObject()) {
       collector.pushAttributeStack("address");
       try {
-        addr = AddressDocassembleJacksonDeserializer.fromNode(node.get("address"), collector);
+        addr =
+            AddressDocassembleJacksonDeserializer.fromNode(node.get("address"), parser, collector);
         collector.popAttributeStack();
       } catch (FilingError err) {
         if (!err.getType().equals(FilingError.Type.MissingRequired)) {

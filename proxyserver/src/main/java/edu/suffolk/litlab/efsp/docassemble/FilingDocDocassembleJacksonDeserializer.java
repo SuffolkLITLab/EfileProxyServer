@@ -25,6 +25,7 @@ import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.InputOptionalService;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser.TextVarError;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
+import edu.suffolk.litlab.efsp.utils.InterviewVariable;
 import edu.suffolk.litlab.efsp.utils.JsonHelpers;
 import fj.data.NonEmptyList;
 import fj.data.Option;
@@ -57,6 +58,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       int sequenceNum,
       List<FilingCode> filingOptions,
       boolean isInitialFiling,
+      boolean hasServiceContacts,
       CodesParser parser,
       InfoCollector collector)
       throws FilingError {
@@ -161,7 +163,7 @@ public class FilingDocDocassembleJacksonDeserializer {
             yield Optional.empty();
           }
         };
-    var actionRes = parser.vetFilingAction(maybeAction, isInitialFiling);
+    var actionRes = parser.vetFilingAction(maybeAction, isInitialFiling, hasServiceContacts);
     if (actionRes.isErr()) {
       collector.addWrong(
           collector
@@ -187,6 +189,16 @@ public class FilingDocDocassembleJacksonDeserializer {
                   return PartyId.Already(fp);
                 })
             .collect(Collectors.toList());
+    var partiesRes = parser.vetFilingParties(fullParties);
+    if (partiesRes.isErr()) {
+      InterviewVariable partyVar =
+          collector.requestVar(
+              "filing_parties", "The Parties that are filing this document", "text");
+      collector.addRequired(partyVar);
+    } else {
+      fullParties = partiesRes.expect("");
+    }
+
     var components = new ArrayList<FilingComponent>(parser.retrieveFilingComponents(filingType));
     fj.data.List<FilingAttachment> attachments = fj.data.List.nil();
     if (node.has("tyler_merge_attachments")
@@ -234,7 +246,7 @@ public class FilingDocDocassembleJacksonDeserializer {
 
     var descriptionFromSpec =
         parser.getDocumentDescription(
-            userDescription, goodAttachments.some().head().getFileName(), filingType);
+            userDescription, goodAttachments.some().head().fileName(), filingType);
     return Optional.of(
         new FilingDoc(
             filingType,
@@ -333,6 +345,15 @@ public class FilingDocDocassembleJacksonDeserializer {
                   + dataUrl
                   + ")"));
     }
+
+    // TODO(brycew): depends on some DA code, should read in the PDF if possible here. Might be
+    // risky though.
+    // https://stackoverflow.com/questions/6026971/page-count-of-pdf-with-java
+    Optional<Integer> pageCount = Optional.empty();
+    if (node.has("page_count")) {
+      int count = node.get("page_count").asInt(1);
+      pageCount = Optional.of(count);
+    }
     // Difficult to hardcode more SSRF solutions, since deployment can be varied. Can't block local
     // network /
     // localhost, since things could be on the same server / network. TODO: inject an allow-list
@@ -351,11 +372,12 @@ public class FilingDocDocassembleJacksonDeserializer {
 
       return Optional.of(
           new FilingAttachment(
+              filingComponent,
+              documentDescription,
               fileName,
               (inStream != null) ? inStream.readAllBytes() : new byte[0],
               documentType,
-              filingComponent,
-              documentDescription));
+              pageCount));
     } catch (MalformedURLException ex) {
       FilingError err =
           serverError(

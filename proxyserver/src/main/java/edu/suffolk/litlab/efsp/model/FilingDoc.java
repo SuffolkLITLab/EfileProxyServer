@@ -10,8 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-// TODO(brycew-later): this class is a mess. Refactor, considering the same pattern that's in
-// FilingInformation: add a JsonNode / generic container for EFM specific settings
+// TODO(brycew-later): this class is a mess. Refactor
 public class FilingDoc {
   private final Optional<NonEmptyString> userProvidedDescription;
   // Tyler has crazy dumb rules regarding the title of a doc; it's set here
@@ -107,7 +106,7 @@ public class FilingDoc {
   public int allAttachmentsLength() {
     int length = 0;
     for (var attachment : filingAttachments) {
-      length += attachment.getFileContents().length;
+      length += attachment.fileContents().length;
     }
     return length;
   }

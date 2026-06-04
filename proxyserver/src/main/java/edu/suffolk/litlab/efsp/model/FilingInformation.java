@@ -1,9 +1,10 @@
 package edu.suffolk.litlab.efsp.model;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilerType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,13 @@ public class FilingInformation {
 
   private Person leadContact;
 
-  private JsonNode miscInfo;
+  private Optional<FilerType> filerType;
+
+  private Optional<BigDecimal> amountInControversy = Optional.empty();
+  private Optional<BigDecimal> maxFeeAmount = Optional.empty();
+  private boolean contestedCase = false;
+  private boolean outOfState = false;
+  private EmailTemplates emailTemplates = new EmailTemplates();
 
   /**
    * Gets all of the peole who are listed by filer ids in the filing docs. This corresponds to the
@@ -194,12 +201,32 @@ public class FilingInformation {
     return returnDate;
   }
 
-  public JsonNode getMiscInfo() {
-    return miscInfo;
+  public Optional<FilerType> getFilerType() {
+    return filerType;
   }
 
   public Optional<LowerCourtInfo> getLowerCourtInfo() {
     return lowerCourtInfo;
+  }
+
+  public Optional<BigDecimal> getAmountInControversy() {
+    return amountInControversy;
+  }
+
+  public Optional<BigDecimal> getMaxFeeAmount() {
+    return maxFeeAmount;
+  }
+
+  public boolean isContestedCase() {
+    return contestedCase;
+  }
+
+  public boolean getOutOfState() {
+    return outOfState;
+  }
+
+  public EmailTemplates getEmailTemplates() {
+    return emailTemplates;
   }
 
   public void setCourtLocation(String courtLocationId) {
@@ -274,8 +301,8 @@ public class FilingInformation {
     this.returnDate = returnDate;
   }
 
-  public void setMiscInfo(JsonNode node) {
-    this.miscInfo = node;
+  public void setFilerType(Optional<FilerType> filerType) {
+    this.filerType = filerType;
   }
 
   public void setLowerCourtInfo(LowerCourtInfo info) {
@@ -284,5 +311,25 @@ public class FilingInformation {
 
   public void setLowerCourtInfo(Optional<LowerCourtInfo> info) {
     this.lowerCourtInfo = info;
+  }
+
+  public void setAmountInControversy(Optional<BigDecimal> amtInControversy) {
+    this.amountInControversy = amtInControversy;
+  }
+
+  public void setMaxFeeAmount(Optional<BigDecimal> maxFeeAmount) {
+    this.maxFeeAmount = maxFeeAmount;
+  }
+
+  public void setIsContestedCase(boolean isContestedCase) {
+    this.contestedCase = isContestedCase;
+  }
+
+  public void setOutOfState(boolean outOfState) {
+    this.outOfState = outOfState;
+  }
+
+  public void setEmailTemplates(EmailTemplates emailTemplates) {
+    this.emailTemplates = emailTemplates;
   }
 }

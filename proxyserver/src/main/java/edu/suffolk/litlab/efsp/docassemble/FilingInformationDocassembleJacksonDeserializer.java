@@ -1,5 +1,7 @@
 package edu.suffolk.litlab.efsp.docassemble;
 
+import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getNumberMember;
+import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringDefault;
 import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringMember;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -11,6 +13,7 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.model.CaseServiceContact;
+import edu.suffolk.litlab.efsp.model.EmailTemplates;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.LowerCourtInfo;
@@ -319,6 +322,7 @@ public class FilingInformationDocassembleJacksonDeserializer
             varToPartyId,
             filingOptions,
             isInitialFiling,
+            entities.getServiceContacts().size() > 0,
             parser,
             collector));
     if (entities.getFilings().isEmpty()) {
@@ -400,7 +404,53 @@ public class FilingInformationDocassembleJacksonDeserializer
     }
 
     entities.setReturnDate(extractReturnDate(node.get("return_date"), collector));
-    entities.setMiscInfo(node);
+
+    var filerTypeRes = parser.vetFilerType(getStringMember(node, "filer_type"));
+    if (filerTypeRes.isErr()) {
+      var filerTypeBuilder = collector.varBuilder().name("filer_type");
+      collector.addCodeError(filerTypeRes.expectErr(""), filerTypeBuilder);
+    } else {
+      entities.setFilerType(filerTypeRes.expect(""));
+    }
+
+    var maybeAmt = getNumberMember(node, "amount_in_controversy");
+    var filingCodes = entities.getFilings().stream().map(d -> d.getFilingCode()).toList();
+    var amtRes = parser.vetAmountInControversy(maybeAmt, filingCodes);
+    if (amtRes.isErr()) {
+      collector.error(
+          FilingError.malformedInterview("ad danum amount, Amount in controversy required"));
+    } else {
+      entities.setAmountInControversy(amtRes.expect(""));
+    }
+
+    var maybeMax = getNumberMember(node, "max_fee_amount");
+    entities.setMaxFeeAmount(parser.vetMaxAmount(maybeMax));
+
+    boolean contestedCase = false;
+    JsonNode jsonContested = node.get("is_contested_case");
+    if (jsonContested != null && jsonContested.isBoolean()) {
+      contestedCase = jsonContested.asBoolean();
+    }
+    entities.setIsContestedCase(contestedCase);
+
+    boolean outOfState = false;
+    if (node.has("out_of_state")) {
+      outOfState = node.get("out_of_state").asBoolean(false);
+    }
+    entities.setOutOfState(outOfState);
+
+    var emailTemplates =
+        new EmailTemplates(
+            getStringDefault(node, "email_confirmation_contents", ""),
+            getStringDefault(node, "email_confirmation_subject", ""),
+            getStringDefault(node, "acceptance_contents", ""),
+            getStringDefault(node, "acceptance_subject", ""),
+            getStringDefault(node, "rejected_contents", ""),
+            getStringDefault(node, "rejected_subject", ""),
+            getStringDefault(node, "neutral_contents", ""),
+            getStringDefault(node, "neutral_subject", ""));
+
+    entities.setEmailTemplates(emailTemplates);
 
     return entities;
   }
@@ -517,6 +567,7 @@ public class FilingInformationDocassembleJacksonDeserializer
       Map<String, PartyId> varToPartyId,
       List<FilingCode> filingOptions,
       boolean isInitialFiling,
+      boolean hasServiceContacts,
       CodesParser parser,
       InfoCollector collector)
       throws FilingError {
@@ -547,6 +598,7 @@ public class FilingInformationDocassembleJacksonDeserializer
                 filingDocs.size(),
                 filingOptions,
                 isInitialFiling,
+                hasServiceContacts,
                 parser,
                 collector);
         collector.popAttributeStack();

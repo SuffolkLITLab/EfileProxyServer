@@ -1,9 +1,7 @@
 package edu.suffolk.litlab.efsp.server.services;
 
 import static edu.suffolk.litlab.efsp.server.utils.EndpointReflection.replacePathParam;
-import static edu.suffolk.litlab.efsp.utils.JsonHelpers.getStringDefault;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
@@ -399,16 +397,6 @@ public class FilingReviewService {
       phoneNumber = Optional.of(user.getContactInfo().getPhoneNumbers().get(0));
     }
     Timestamp ts = new Timestamp(System.currentTimeMillis());
-    JsonNode miscInfo = info.getMiscInfo();
-
-    String confirmationTemplate = getStringDefault(miscInfo, "email_confirmation_contents", "");
-    String confirmationSubject = getStringDefault(miscInfo, "email_confirmation_subject", "");
-    String acceptedTemplate = getStringDefault(miscInfo, "acceptance_contents", "");
-    String acceptedSubject = getStringDefault(miscInfo, "acceptance_subject", "");
-    String rejectedTemplate = getStringDefault(miscInfo, "rejected_contents", "");
-    String rejectedSubject = getStringDefault(miscInfo, "rejected_subject", "");
-    String neutralTemplate = getStringDefault(miscInfo, "neutral_contents", "");
-    String neutralSubject = getStringDefault(miscInfo, "neutral_subject", "");
 
     try (UserDatabase ud = udSupplier.get()) {
       // TODO(brycew): this is going to send case type code (i.e. random numbers to the user.
@@ -427,12 +415,7 @@ public class FilingReviewService {
           info.getCaseTypeCode().code,
           courtId,
           ts,
-          acceptedTemplate,
-          acceptedSubject,
-          rejectedTemplate,
-          rejectedSubject,
-          neutralTemplate,
-          neutralSubject,
+          info.getEmailTemplates(),
           filingResult.caseTitle,
           filingResult.envelopeId);
 
@@ -451,8 +434,7 @@ public class FilingReviewService {
     }
     msgSender.sendConfirmation(
         user.getContactInfo().getEmail().orElse(""),
-        confirmationTemplate,
-        confirmationSubject,
+        info.getEmailTemplates(),
         atRest.get().serverId,
         user.getName().getFullName(),
         filingResult.courtName,

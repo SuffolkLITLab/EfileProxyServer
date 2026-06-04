@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efsp.db;
 
 import edu.suffolk.litlab.efsp.db.model.Transaction;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeTableConstants;
+import edu.suffolk.litlab.efsp.model.EmailTemplates;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -84,12 +85,7 @@ public class UserDatabase extends Database {
       String caseType,
       String courtId,
       Timestamp submitted,
-      String acceptedTmpl,
-      String acceptedSubject,
-      String rejectedTmpl,
-      String rejectedSubject,
-      String neutralTmpl,
-      String neutralSubject,
+      EmailTemplates emailTemplates,
       String caseTitle,
       String envelopeId)
       throws SQLException {
@@ -105,12 +101,7 @@ public class UserDatabase extends Database {
           caseType,
           courtId,
           submitted,
-          acceptedTmpl,
-          acceptedSubject,
-          rejectedTmpl,
-          rejectedSubject,
-          neutralTmpl,
-          neutralSubject,
+          emailTemplates,
           caseTitle,
           envelopeId);
     }
@@ -128,12 +119,7 @@ public class UserDatabase extends Database {
       String caseType,
       String courtId,
       Timestamp submitted,
-      String acceptedTmpl,
-      String acceptedSubject,
-      String rejectedTmpl,
-      String rejectedSubject,
-      String neutralTmpl,
-      String neutralSubject,
+      EmailTemplates tmpls,
       String caseTitle,
       String envelopeId)
       throws SQLException {
@@ -173,12 +159,12 @@ public class UserDatabase extends Database {
       insertSt.setString(8, caseType);
       insertSt.setString(9, courtId);
       insertSt.setTimestamp(10, submitted);
-      insertSt.setString(11, acceptedTmpl);
-      insertSt.setString(12, acceptedSubject);
-      insertSt.setString(13, rejectedTmpl);
-      insertSt.setString(14, rejectedSubject);
-      insertSt.setString(15, neutralTmpl);
-      insertSt.setString(16, neutralSubject);
+      insertSt.setString(11, tmpls.acceptedTemplate());
+      insertSt.setString(12, tmpls.acceptedSubject());
+      insertSt.setString(13, tmpls.rejectedTemplate());
+      insertSt.setString(14, tmpls.rejectedSubject());
+      insertSt.setString(15, tmpls.neutralTemplate());
+      insertSt.setString(16, tmpls.neutralSubject());
       insertSt.setString(17, caseTitle);
       insertSt.setString(18, envelopeId);
       insertSt.executeUpdate();

@@ -6,6 +6,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DocumentTypeTableRow;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
+import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilerType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
@@ -49,6 +50,8 @@ public interface CodesParser {
   public record NoMultipleAttorneys() implements AttorneyError {}
   public record RequiredAttorneys() implements AttorneyError {}
 
+  public record ThingRequired() {}
+
   public record DueDateRequired() {}
 
   public record InvalidFilingAction(String reason) {}
@@ -82,6 +85,8 @@ public interface CodesParser {
 
   public Result<Optional<String>, CodeError> vetLangCode(Optional<String> lang);
 
+  public Result<String, CodeError> vetStateCode(String state, String countryString);
+
   public Result<Map<String, String>, CrossReferenceError> getCrossRefIds(
       Map<String, String> crossRefs, CaseType caseType);
 
@@ -90,6 +95,8 @@ public interface CodesParser {
       Collection<Person> newParties,
       CaseType type,
       boolean isFirstIndexedFiling);
+
+  public Result<List<PartyId>, ThingRequired> vetFilingParties(List<PartyId> filingParties);
 
   public Result<Optional<NameAndCode>, CodeError> vetMotionCode(
       Optional<String> motionCode, FilingCode filing);
@@ -104,6 +111,8 @@ public interface CodesParser {
 
   public Result<FilingComponent, CodeError> vetFilingComponent(
       String filingComponent, ArrayList<FilingComponent> components);
+
+  public Result<Optional<FilerType>, CodeError> vetFilerType(Optional<String> maybeFilerType);
 
   public Result<Optional<DocumentTypeTableRow>, CodeError> vetDocType(
       String docTypeStr, FilingCode filing);
@@ -143,7 +152,7 @@ public interface CodesParser {
       Optional<LocalDate> dueDate, FilingCode filing);
 
   public Result<Optional<FilingAction>, InvalidFilingAction> vetFilingAction(
-      Optional<FilingAction> filingAction, boolean isInitialFiling);
+      Optional<FilingAction> filingAction, boolean isInitialFiling, boolean hasServiceContacts);
 
   public Optional<String> getDocumentDescription(
       String description, String firstFileName, FilingCode filing);
@@ -151,4 +160,11 @@ public interface CodesParser {
   public Result<String, FileNameError> vetFileName(String fileName);
 
   public Result<NullValue, FilingDocError> vetFilingDocSize(List<FilingDoc> docs);
+
+  public Result<Optional<BigDecimal>, ThingRequired> vetAmountInControversy(
+      Optional<BigDecimal> amt, List<FilingCode> filings);
+
+  public Optional<BigDecimal> vetMaxAmount(Optional<BigDecimal> maxAmount);
+
+  public boolean useFilingAssociations();
 }
