@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.server.ecf4;
 
+import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
@@ -8,6 +9,8 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
+import edu.suffolk.litlab.efsp.model.FilingAction;
+import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.OptionalService;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.PartyInfo;
@@ -15,6 +18,7 @@ import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.model.Person.Gender;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -45,9 +49,17 @@ public interface CodesParser {
   public record NoMultipleAttorneys() implements AttorneyError {}
   public record RequiredAttorneys() implements AttorneyError {}
 
+  public record DueDateRequired() {}
+
+  public record InvalidFilingAction(String reason) {}
+
   public sealed interface FileNameError {}
   public record FileExtensionNotAllowed(String given, List<FileType> allowed) implements FileNameError {}
   public record FileNameTextError(TextVarError err) implements FileNameError {}
+
+  public sealed interface FilingDocError {}
+  public record DocTooBig(int idx) implements FilingDocError {}
+  public record CumulativeDocsTooBig(long cumulativeBytes) implements FilingDocError {}
   // spotless:on
 
   // Methods
@@ -127,8 +139,16 @@ public interface CodesParser {
 
   public Result<Optional<String>, TextVarError> vetComment(Optional<String> comment);
 
+  public Result<Optional<LocalDate>, DueDateRequired> vetDueDate(
+      Optional<LocalDate> dueDate, FilingCode filing);
+
+  public Result<Optional<FilingAction>, InvalidFilingAction> vetFilingAction(
+      Optional<FilingAction> filingAction, boolean isInitialFiling);
+
   public Optional<String> getDocumentDescription(
       String description, String firstFileName, FilingCode filing);
 
   public Result<String, FileNameError> vetFileName(String fileName);
+
+  public Result<NullValue, FilingDocError> vetFilingDocSize(List<FilingDoc> docs);
 }

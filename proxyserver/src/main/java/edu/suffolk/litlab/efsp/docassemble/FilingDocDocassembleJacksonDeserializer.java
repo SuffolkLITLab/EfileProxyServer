@@ -56,6 +56,7 @@ public class FilingDocDocassembleJacksonDeserializer {
       Map<String, PartyId> varToPartyId,
       int sequenceNum,
       List<FilingCode> filingOptions,
+      boolean isInitialFiling,
       CodesParser parser,
       InfoCollector collector)
       throws FilingError {
@@ -115,10 +116,25 @@ public class FilingDocDocassembleJacksonDeserializer {
       maybeDueDate =
           Optional.of(
               LocalDate.ofInstant(
-                  // TODO(brycew): why do we even pass this as a date time? Shouldn't it just be a
+                  // TODO(#47): why do we even pass this as a date time? Shouldn't it just be a
                   // date?
                   Instant.parse(jsonDueDate.asText()), ZoneId.of("America/Chicago")));
     }
+    var dueDateRes = parser.vetDueDate(maybeDueDate, filingType);
+    Optional<LocalDate> dueDate;
+    if (dueDateRes.isErr()) {
+      collector.addWrong(
+          collector
+              .varBuilder()
+              .name("due_date")
+              .datatype("date")
+              .appendDesc("The due date of the filing, some number of days after the filing.")
+              .build());
+      dueDate = maybeDueDate;
+    } else {
+      dueDate = dueDateRes.expect("");
+    }
+
     String userDescription = getStringDefault(node, "filing_description", "");
     var filingRefNum = unwrap(parser::vetFilingRefNum, node, "reference_number", collector);
     Optional<String> filingAttorney =
@@ -132,23 +148,33 @@ public class FilingDocDocassembleJacksonDeserializer {
     List<String> preliminaryCopies = getMemberList(node, "preliminary_copies");
     List<String> filingParties = getMemberList(node, "filing_parties");
 
-    Optional<String> actionStr = getStringMember(node, "filing_action");
-    Optional<FilingAction> action = Optional.empty();
-    if (actionStr.isPresent()) {
-      String s = actionStr.get();
-      if (s.equalsIgnoreCase("e_file") || s.equalsIgnoreCase("efile")) {
-        action = Optional.of(FilingAction.E_FILE);
-      } else if (s.equalsIgnoreCase("efile_and_serve") || s.equalsIgnoreCase("e_file_and_serve")) {
-        action = Optional.of(FilingAction.E_FILE_AND_SERVE);
-      } else if (s.equalsIgnoreCase("serve")) {
-        action = Optional.of(FilingAction.SERVE);
-      } else {
-        log.warn(
-            "Filing Action "
-                + s
-                + " isn't an allowed action, defaulting to default action for the operation");
-      }
+    String actionStr = getStringDefault(node, "filing_action", "");
+    Optional<FilingAction> maybeAction =
+        switch (actionStr.toLowerCase()) {
+          case "e_file" -> Optional.of(FilingAction.E_FILE);
+          case "efile" -> Optional.of(FilingAction.E_FILE);
+          case "e_file_and_serve" -> Optional.of(FilingAction.E_FILE_AND_SERVE);
+          case "efile_and_serve" -> Optional.of(FilingAction.E_FILE_AND_SERVE);
+          case "serve" -> Optional.of(FilingAction.SERVE);
+          default -> {
+            log.warn("Action {} isn't allowed, using default action for the operation", actionStr);
+            yield Optional.empty();
+          }
+        };
+    var actionRes = parser.vetFilingAction(maybeAction, isInitialFiling);
+    if (actionRes.isErr()) {
+      collector.addWrong(
+          collector
+              .varBuilder()
+              .name("filing_action")
+              .appendDesc(actionRes.expectErr("").reason())
+              .build());
     }
+    Optional<FilingAction> action = Optional.empty();
+    if (actionRes.isOk()) {
+      action = actionRes.expect("");
+    }
+
     List<PartyId> fullParties =
         filingParties.stream()
             .map(
@@ -215,7 +241,7 @@ public class FilingDocDocassembleJacksonDeserializer {
             userDescription,
             descriptionFromSpec,
             filingRefNum,
-            maybeDueDate,
+            dueDate,
             fullParties,
             filingAttorney,
             goodAttachments.some(),

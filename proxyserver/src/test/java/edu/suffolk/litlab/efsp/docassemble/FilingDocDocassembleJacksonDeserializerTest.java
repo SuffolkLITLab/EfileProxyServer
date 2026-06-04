@@ -11,6 +11,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ecf4.latest.gov.niem.niem.niem_core._2.MeasureType;
+import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.DevelopmentPolicyParametersType;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
@@ -22,6 +24,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
+import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
@@ -51,7 +54,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
   Map<String, PartyId> varToPartyId;
   List<FilingCode> filingCodes =
       List.of(
-          new FilingCode("6553", "idk", "0", "", "", "", false, "", "", "", false, false, "", ""));
+          new FilingCode("6553", "idk", "0", "", "", "", false, "", "", "", true, false, "", ""));
   CodesParser parser;
 
   @BeforeEach
@@ -76,8 +79,19 @@ public class FilingDocDocassembleJacksonDeserializerTest {
             List.of(
                 Map.of(
                     "DocumentType",
-                    new DataFieldRow("DocumentType", "Document Type", true, false, "adams"))));
-    parser = new TylerCodesParser(cd, new CourtLocationInfo("adams"), dataFields, true);
+                    new DataFieldRow("DocumentType", "Document Type", true, false, "adams"),
+                    "DueDateAvailableForFilers",
+                    new DataFieldRow(
+                        "DueDateAvailableForFilers", "Due Date", true, false, "adams"))));
+
+    var maxMeasure = new MeasureType();
+    var niem2Fac = new ecf4.latest.gov.niem.niem.niem_core._2.ObjectFactory();
+    maxMeasure.setMeasureValue(niem2Fac.createMeasureText(Ecf4Helper.convertText("100")));
+    maxMeasure.setMeasureUnitText(Ecf4Helper.convertText("MB"));
+    var policy = new DevelopmentPolicyParametersType();
+    policy.setMaximumAllowedAttachmentSize(maxMeasure);
+    policy.setMaximumAllowedMessageSize(maxMeasure);
+    parser = new TylerCodesParser(cd, policy, new CourtLocationInfo("adams"), dataFields, true);
   }
 
   @Test
@@ -85,12 +99,13 @@ public class FilingDocDocassembleJacksonDeserializerTest {
       throws JsonMappingException, JsonProcessingException, FilingError {
     ObjectMapper m = new ObjectMapper();
     assertThatThrownBy(
-            () -> fromNode(m.readTree("null"), varToPartyId, 0, filingCodes, parser, collector))
+            () ->
+                fromNode(m.readTree("null"), varToPartyId, 0, filingCodes, true, parser, collector))
         .isInstanceOf(FilingError.class);
     assertThatThrownBy(
-            () -> fromNode(m.readTree("[]"), varToPartyId, 0, filingCodes, parser, collector))
+            () -> fromNode(m.readTree("[]"), varToPartyId, 0, filingCodes, true, parser, collector))
         .isInstanceOf(FilingError.class);
-    var doc = fromNode(m.readTree("{}"), varToPartyId, 0, filingCodes, parser, collector);
+    var doc = fromNode(m.readTree("{}"), varToPartyId, 0, filingCodes, true, parser, collector);
     assertThat(doc).isEmpty();
   }
 
@@ -100,7 +115,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     JsonNode node = readFile("old_style_doc.json");
     var doc =
         FilingDocDocassembleJacksonDeserializer.fromNode(
-            node, varToPartyId, 0, filingCodes, parser, collector);
+            node, varToPartyId, 0, filingCodes, true, parser, collector);
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);
@@ -113,7 +128,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     JsonNode node = readFile("one_attachment.json");
     var maybeDoc =
         FilingDocDocassembleJacksonDeserializer.fromNode(
-            node, varToPartyId, 0, filingCodes, parser, collector);
+            node, varToPartyId, 0, filingCodes, true, parser, collector);
     assertThat(maybeDoc).isPresent();
     var doc = maybeDoc.get();
     assertThat(doc.getFilingCode()).isEqualTo(filingCodes.get(0));
@@ -135,7 +150,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     JsonNode node = readFile("one_attachment.json");
     var doc =
         FilingDocDocassembleJacksonDeserializer.fromNode(
-            node, varToPartyId, 2, filingCodes, parser, collector);
+            node, varToPartyId, 2, filingCodes, true, parser, collector);
     assertThat(doc).isPresent();
     assertThat(doc.get().sequenceNum()).isEqualTo(2);
     var attachments = doc.get().getFilingAttachments();
@@ -152,7 +167,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     JsonNode node = readFile("one_attachment.json");
     var doc =
         FilingDocDocassembleJacksonDeserializer.fromNode(
-            node, Map.of(), 0, filingCodes, parser, collector);
+            node, Map.of(), 0, filingCodes, true, parser, collector);
     assertThat(doc).isPresent();
     var parties = doc.get().getFilingPartyIds();
     assertThat(parties.size()).isEqualTo(1);
@@ -164,7 +179,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     JsonNode node = readFile("one_enabled_one_disabled.json");
     var doc =
         FilingDocDocassembleJacksonDeserializer.fromNode(
-            node, varToPartyId, 0, filingCodes, parser, collector);
+            node, varToPartyId, 0, filingCodes, true, parser, collector);
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);
@@ -177,7 +192,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     JsonNode node = readFile("fail_no_enabled_attachment.json");
     var doc =
         FilingDocDocassembleJacksonDeserializer.fromNode(
-            node, varToPartyId, 0, filingCodes, parser, collector);
+            node, varToPartyId, 0, filingCodes, true, parser, collector);
     assertThat(doc).as("Document shouldn't have parsed").isEmpty();
   }
 
@@ -186,7 +201,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     JsonNode node = readFile("fallback_to_upper_doc.json");
     var doc =
         FilingDocDocassembleJacksonDeserializer.fromNode(
-            node, varToPartyId, 0, filingCodes, parser, collector);
+            node, varToPartyId, 0, filingCodes, true, parser, collector);
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);
@@ -200,7 +215,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     JsonNode node = readFile("fail_missing_doc_types.json");
     try {
       FilingDocDocassembleJacksonDeserializer.fromNode(
-          node, varToPartyId, 0, filingCodes, parser, collector);
+          node, varToPartyId, 0, filingCodes, true, parser, collector);
       fail("Should have thrown a filing error, didn't");
     } catch (FilingError err) {
       assertThat(err.getType()).isEqualTo(FilingError.Type.WrongValue);
@@ -212,7 +227,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     JsonNode node = readFile("two_attachments.json");
     var doc =
         FilingDocDocassembleJacksonDeserializer.fromNode(
-            node, varToPartyId, 0, filingCodes, parser, collector);
+            node, varToPartyId, 0, filingCodes, true, parser, collector);
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(2);
@@ -229,7 +244,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     JsonNode node = readFile("has_optional_services.json");
     var doc =
         FilingDocDocassembleJacksonDeserializer.fromNode(
-            node, varToPartyId, 0, filingCodes, parser, collector);
+            node, varToPartyId, 0, filingCodes, true, parser, collector);
     assertThat(doc).isPresent();
     var optionalServices = doc.get().getOptionalServices();
     assertThat(optionalServices).hasSize(1);
@@ -242,7 +257,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
       JsonNode node = readTemplate("template_filing_action.json", emptyData);
       var doc =
           FilingDocDocassembleJacksonDeserializer.fromNode(
-              node, varToPartyId, 0, filingCodes, parser, collector);
+              node, varToPartyId, 0, filingCodes, true, parser, collector);
       assertThat(doc).isPresent();
       assertThat(doc.get().getFilingAction()).isEmpty();
     }
@@ -256,7 +271,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
       JsonNode node = readTemplate("template_filing_action.json", data);
       var doc =
           FilingDocDocassembleJacksonDeserializer.fromNode(
-              node, varToPartyId, 0, filingCodes, parser, collector);
+              node, varToPartyId, 0, filingCodes, false, parser, collector);
       assertThat(doc).isPresent();
       assertThat(doc.get().getFilingAction()).isPresent();
     }
@@ -267,7 +282,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
     JsonNode node = readFile("tyler_merge_attachments.json");
     var doc =
         FilingDocDocassembleJacksonDeserializer.fromNode(
-            node, varToPartyId, 0, filingCodes, parser, collector);
+            node, varToPartyId, 0, filingCodes, true, parser, collector);
     assertThat(doc).isPresent();
     var attachments = doc.get().getFilingAttachments();
     assertThat(attachments.length()).isEqualTo(1);
@@ -294,7 +309,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
         JsonNode node = readTemplate(INPUT_FILE, testData.dateInput);
         var doc =
             FilingDocDocassembleJacksonDeserializer.fromNode(
-                node, varToPartyId, 0, filingCodes, parser, collector);
+                node, varToPartyId, 0, filingCodes, true, parser, collector);
         assertThat(doc).isPresent();
         assertThat(doc.get().getDueDate()).isPresent();
         assertThat(doc.get().getDueDate().get()).isEqualTo(testData.savedDate);
@@ -311,7 +326,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
         JsonNode node = readTemplate(INPUT_FILE, emptyData);
         var doc =
             FilingDocDocassembleJacksonDeserializer.fromNode(
-                node, varToPartyId, 0, filingCodes, parser, collector);
+                node, varToPartyId, 0, filingCodes, true, parser, collector);
         assertThat(doc).isPresent();
         assertThat(doc.get().getDueDate()).isEmpty();
       }
@@ -332,7 +347,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
         assertThatThrownBy(
                 () ->
                     FilingDocDocassembleJacksonDeserializer.fromNode(
-                        node, varToPartyId, 0, filingCodes, parser, collector))
+                        node, varToPartyId, 0, filingCodes, true, parser, collector))
             .withFailMessage("Failed on %s", badData)
             .isInstanceOf(DateTimeParseException.class);
       }
@@ -356,7 +371,7 @@ public class FilingDocDocassembleJacksonDeserializerTest {
         assertThatThrownBy(
                 () ->
                     FilingDocDocassembleJacksonDeserializer.fromNode(
-                        node, varToPartyId, 0, filingCodes, parser, collector))
+                        node, varToPartyId, 0, filingCodes, true, parser, collector))
             .withFailMessage("Using %s", badData)
             .isInstanceOf(FilingError.class);
       }
