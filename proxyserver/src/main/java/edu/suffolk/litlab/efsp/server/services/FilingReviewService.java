@@ -6,21 +6,21 @@ import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import edu.suffolk.litlab.efsp.Jurisdiction;
-import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.UserDatabase;
-import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.FilingResult;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.services.impl.EfmFilingInterface;
 import edu.suffolk.litlab.efsp.server.setup.EfmRestCallbackInterface;
+import edu.suffolk.litlab.efsp.server.utils.EfspSecurityContext;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
+import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
+import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
-import edu.suffolk.litlab.efsp.utils.Hasher;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import edu.suffolk.litlab.efsp.utils.NeverSubmitCollector;
@@ -35,6 +35,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -65,13 +66,11 @@ public class FilingReviewService {
 
   private final Map<String, EfmRestCallbackInterface> callbackInterfaces;
   private final OrgMessageSender msgSender;
-  private final Supplier<LoginDatabase> ldSupplier;
   private final Supplier<UserDatabase> udSupplier;
   private final EndpointReflection ef;
 
   public FilingReviewService(
       Jurisdiction jurisdiction,
-      Supplier<LoginDatabase> ldSupplier,
       Supplier<UserDatabase> udSupplier,
       Map<String, InterviewToFilingInformationConverter> converterMap,
       Map<String, EfmFilingInterface> filingInterfaces,
@@ -80,7 +79,6 @@ public class FilingReviewService {
     this.converterMap = converterMap;
     this.filingInterfaces = filingInterfaces;
     this.callbackInterfaces = callbackInterfaces;
-    this.ldSupplier = ldSupplier;
     this.udSupplier = udSupplier;
     this.msgSender = msgSender;
     this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction.getName() + "/filingreview");
@@ -120,8 +118,9 @@ public class FilingReviewService {
 
   @GET
   @Path("/courts/{court_id}/filings/{filing_id}/status")
+  @NeedsAuthorization
   public Response getFilingStatus(
-      @Context HttpHeaders httpHeaders,
+      @Context SecurityContext security,
       @PathParam("court_id") String courtId,
       @PathParam("filing_id") String filingId) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getFilingStatus");
@@ -131,19 +130,20 @@ public class FilingReviewService {
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
 
-    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
-    if (activeToken.isEmpty()) {
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    if (tylerUser.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    var toRet = filer.getFilingStatus(courtId, filingId, activeToken.get());
+    var toRet = filer.getFilingStatus(courtId, filingId, tylerUser.get().creds());
     return toRet;
   }
 
   /** If 0 is passed for court, search all courts. */
   @GET
   @Path("/courts/{court_id}/filings")
+  @NeedsAuthorization
   public Response getFilingList(
-      @Context HttpHeaders httpHeaders,
+      @Context SecurityContext security,
       @PathParam("court_id") String courtId,
       @QueryParam("user_id") String userId,
       @QueryParam("start_date") String startStr,
@@ -154,15 +154,15 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = filingInterfaces.get(courtId);
-    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
-    if (activeToken.isEmpty()) {
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    if (tylerUser.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
     try {
       LocalDate startDate = (startStr != null) ? LocalDate.parse(startStr) : null;
       LocalDate beforeDate = (beforeStr != null) ? LocalDate.parse(beforeStr) : null;
       // beforeDate is exclusive!
-      return filer.getFilingList(courtId, userId, startDate, beforeDate, activeToken.get());
+      return filer.getFilingList(courtId, userId, startDate, beforeDate, tylerUser.get().creds());
     } catch (DateTimeParseException ex) {
       return Response.status(400)
           .entity(
@@ -174,8 +174,12 @@ public class FilingReviewService {
 
   @GET
   @Path("/courts/{court_id}/filing/check")
+  @NeedsAuthorization
   public Response checkFilingForReview(
-      @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars) {
+      @Context SecurityContext security,
+      @Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId,
+      String allVars) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.checkFilingForReview");
     MediaType mediaType = httpHeaders.getMediaType();
     if (mediaType == null) {
@@ -186,11 +190,11 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
-    if (activeToken.isEmpty()) {
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    if (tylerUser.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    Result<CodesParser, Response> maybeParser = makeParser(courtId, activeToken.get(), filer);
+    Result<CodesParser, Response> maybeParser = makeParser(courtId, tylerUser.get().creds(), filer);
     if (maybeParser.isErr()) {
       return maybeParser.unwrapErrOrElseThrow();
     }
@@ -207,7 +211,8 @@ public class FilingReviewService {
     }
     FilingInformation info = res.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
-    Result<NullValue, FilingError> resEfm = filer.checkFiling(info, activeToken.get(), collector);
+    Result<NullValue, FilingError> resEfm =
+        filer.checkFiling(info, tylerUser.get().creds(), collector);
     if (resEfm.isErr()) {
       log.error("Error on checkFiling: {}", resEfm.toString());
       return Response.ok(collector.jsonSummary()).build();
@@ -217,8 +222,12 @@ public class FilingReviewService {
 
   @POST
   @Path("/courts/{court_id}/filing/fees")
+  @NeedsAuthorization
   public Response calculateFilingFees(
-      @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars) {
+      @Context SecurityContext security,
+      @Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId,
+      String allVars) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.calculateFilingFees");
     MediaType mediaType = httpHeaders.getMediaType();
     if (mediaType == null) {
@@ -229,11 +238,11 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
-    if (activeToken.isEmpty()) {
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    if (tylerUser.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    Result<CodesParser, Response> maybeParser = makeParser(courtId, activeToken.get(), filer);
+    Result<CodesParser, Response> maybeParser = makeParser(courtId, tylerUser.get().creds(), filer);
     if (maybeParser.isErr()) {
       return maybeParser.unwrapErrOrElseThrow();
     }
@@ -251,14 +260,18 @@ public class FilingReviewService {
     }
     FilingInformation info = res.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
-    Result<Response, FilingError> fees = filer.getFilingFees(info, activeToken.get());
+    Result<Response, FilingError> fees = filer.getFilingFees(info, tylerUser.get().creds());
     return fees.match(err -> Response.status(400).entity(err.toJson()).build(), respon -> respon);
   }
 
   @GET
   @Path("/courts/{court_id}/filing/servicetypes")
+  @NeedsAuthorization
   public Response getServiceTypes(
-      @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars) {
+      @Context SecurityContext security,
+      @Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId,
+      String allVars) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getServiceTypes");
     MediaType mediaType = httpHeaders.getMediaType();
     if (mediaType == null) {
@@ -270,11 +283,11 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
-    if (activeToken.isEmpty()) {
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    if (tylerUser.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    Result<CodesParser, Response> maybeParser = makeParser(courtId, activeToken.get(), filer);
+    Result<CodesParser, Response> maybeParser = makeParser(courtId, tylerUser.get().creds(), filer);
     if (maybeParser.isErr()) {
       return maybeParser.unwrapErrOrElseThrow();
     }
@@ -290,26 +303,27 @@ public class FilingReviewService {
     }
     FilingInformation info = res.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
-    Result<Response, FilingError> fees = filer.getServiceTypes(info, activeToken.get());
+    Result<Response, FilingError> fees = filer.getServiceTypes(info, tylerUser.get().creds());
     return fees.match(err -> Response.status(400).entity(err.toJson()).build(), respon -> respon);
   }
 
   @GET
   @Path("/courts/{court_id}/policy")
+  @NeedsAuthorization
   public Response getPolicy(
-      @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId) {
+      @Context SecurityContext security, @PathParam("court_id") String courtId) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getPolicy");
     Result<EfmFilingInterface, Response> checked = checkFilingInterfaces(courtId);
     if (checked.isErr()) {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
-    if (activeToken.isEmpty()) {
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    if (tylerUser.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
 
-    var toRet = filer.getPolicy(courtId, activeToken.get());
+    var toRet = filer.getPolicy(courtId, tylerUser.get().creds());
     return toRet;
   }
 
@@ -341,15 +355,26 @@ public class FilingReviewService {
 
   @POST
   @Path("/courts/{court_id}/filings")
+  @NeedsAuthorization
   public Response submitFilingForReview(
-      @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars) {
+      @Context HttpHeaders httpHeaders,
+      @Context SecurityContext security,
+      @PathParam("court_id") String courtId,
+      String allVars) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.submitFilingForReview");
-    var toRet = fileOrServe(httpHeaders, courtId, allVars, EfmFilingInterface.ApiChoice.FileApi);
+    var toRet =
+        fileOrServe(
+            httpHeaders,
+            (EfspSecurityContext) security,
+            courtId,
+            allVars,
+            EfmFilingInterface.ApiChoice.FileApi);
     return toRet;
   }
 
   private Response fileOrServe(
       HttpHeaders httpHeaders,
+      EfspSecurityContext security,
       String courtId,
       String allVars,
       EfmFilingInterface.ApiChoice choice) {
@@ -362,25 +387,19 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    Optional<String> activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
-    Optional<AtRest> atRest = Optional.empty();
-    try (LoginDatabase ld = ldSupplier.get()) {
-      atRest = ld.getAtRestInfo(httpHeaders.getHeaderString("X-API-KEY"));
-      if (activeToken.isEmpty() || atRest.isEmpty()) {
-        return Response.status(401).entity("Not logged in to file with " + courtId).build();
-      }
-    } catch (SQLException ex) {
-      log.error("SQL Error: ", ex);
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    if (tylerUser.isEmpty()) {
+      return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
     Result<FilingInformation, Response> maybeInfo =
-        parseFiling(httpHeaders, allVars, filer, courtId, activeToken.get(), mediaType);
+        parseFiling(allVars, filer, courtId, tylerUser.get().creds(), mediaType);
     if (maybeInfo.isErr()) {
       return maybeInfo.unwrapErrOrElseThrow();
     }
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
     Result<FilingResult, FilingError> result =
-        filer.sendFiling(info, activeToken.get(), EfmFilingInterface.ApiChoice.FileApi);
+        filer.sendFiling(info, tylerUser.get().creds(), EfmFilingInterface.ApiChoice.FileApi);
     if (result.isErr()) {
       return Response.status(500).entity(result.unwrapErrOrElseThrow().toJson()).build();
     }
@@ -410,8 +429,8 @@ public class FilingReviewService {
           phoneNumber,
           user.getContactInfo().getEmail().orElse(""),
           filingIds,
-          atRest.get().serverId,
-          activeToken.get(),
+          security.getServerId(),
+          tylerUser.get().creds().toString(),
           info.getCaseTypeCode().code,
           courtId,
           ts,
@@ -435,7 +454,7 @@ public class FilingReviewService {
     msgSender.sendConfirmation(
         user.getContactInfo().getEmail().orElse(""),
         info.getEmailTemplates(),
-        atRest.get().serverId,
+        security.getServerId(),
         user.getName().getFullName(),
         filingResult.courtName,
         filingIds,
@@ -447,11 +466,10 @@ public class FilingReviewService {
   }
 
   private Result<FilingInformation, Response> parseFiling(
-      HttpHeaders httpHeaders,
       String allVars,
       EfmFilingInterface filer,
       String courtId,
-      String activeToken,
+      TylerUserNamePassword activeToken,
       MediaType mediaType) {
     log.trace("Court id: {}", courtId);
     if (!converterMap.containsKey(mediaType.toString())) {
@@ -476,8 +494,9 @@ public class FilingReviewService {
 
   @GET
   @Path("/courts/{court_id}/filings/{filing_id}")
+  @NeedsAuthorization
   public Response getFilingDetails(
-      @Context HttpHeaders httpHeaders,
+      @Context SecurityContext security,
       @PathParam("court_id") String courtId,
       @PathParam("filing_id") String filingId) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getFilingDetails");
@@ -487,19 +506,20 @@ public class FilingReviewService {
         return checked.unwrapErrOrElseThrow();
       }
       EfmFilingInterface filer = checked.unwrapOrElseThrow();
-      var activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
-      if (activeToken.isEmpty()) {
+      var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+      if (tylerUser.isEmpty()) {
         return Response.status(401).entity("Not logged in to file with " + courtId).build();
       }
-      return filer.getFilingDetails(courtId, filingId, activeToken.get());
+      return filer.getFilingDetails(courtId, filingId, tylerUser.get().creds());
     } finally {
     }
   }
 
   @GET
   @Path("/courts/{court_id}/filings/{filing_id}/service/{contact_id}")
+  @NeedsAuthorization
   public Response getFilingService(
-      @Context HttpHeaders httpHeaders,
+      @Context SecurityContext security,
       @PathParam("court_id") String courtId,
       @PathParam("filing_id") String filingId,
       @PathParam("contact_id") String contactId) {
@@ -509,18 +529,19 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    var activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
-    if (activeToken.isEmpty()) {
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    if (tylerUser.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    var toRet = filer.getFilingService(courtId, filingId, contactId, activeToken.get());
+    var toRet = filer.getFilingService(courtId, filingId, contactId, tylerUser.get().creds());
     return toRet;
   }
 
   @DELETE
   @Path("/courts/{court_id}/filings/{filing_id}")
+  @NeedsAuthorization
   public Response cancelFiling(
-      @Context HttpHeaders httpHeaders,
+      @Context SecurityContext security,
       @PathParam("court_id") String courtId,
       @PathParam("filing_id") String filingId) {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.cancelFiling");
@@ -529,31 +550,12 @@ public class FilingReviewService {
       return checked.unwrapErrOrElseThrow();
     }
     EfmFilingInterface filer = checked.unwrapOrElseThrow();
-    var activeToken = getActiveToken(httpHeaders, filer.getHeaderKey());
-    if (activeToken.isEmpty()) {
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    if (tylerUser.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
-    var toRet = filer.cancelFiling(courtId, filingId, activeToken.get());
+    var toRet = filer.cancelFiling(courtId, filingId, tylerUser.get().creds());
     return toRet;
-  }
-
-  private Optional<String> getActiveToken(HttpHeaders httpHeaders, String orgHeaderKey) {
-    String serverKey = httpHeaders.getHeaderString("X-API-KEY");
-    try (LoginDatabase ld = ldSupplier.get()) {
-      Optional<AtRest> atRest = ld.getAtRestInfo(serverKey);
-      if (atRest.isEmpty()) {
-        return Optional.empty();
-      }
-      String orgToken = httpHeaders.getHeaderString(orgHeaderKey);
-      if (orgToken == null || orgToken.isBlank()) {
-        return Optional.empty();
-      }
-      MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(orgToken));
-      return Optional.of(orgToken);
-    } catch (SQLException ex) {
-      log.error("SQL Error", ex);
-      return Optional.empty();
-    }
   }
 
   private Result<EfmFilingInterface, Response> checkFilingInterfaces(String courtId) {
@@ -564,8 +566,8 @@ public class FilingReviewService {
   }
 
   private Result<CodesParser, Response> makeParser(
-      String courtId, String apiToken, EfmFilingInterface filer) {
-    var parser = filer.getParser(courtId, apiToken);
+      String courtId, TylerUserNamePassword creds, EfmFilingInterface filer) {
+    var parser = filer.getParser(courtId, creds);
     if (parser.isEmpty()) {
       return Result.err(Response.status(404).entity("Cannot send filing to " + courtId).build());
     }

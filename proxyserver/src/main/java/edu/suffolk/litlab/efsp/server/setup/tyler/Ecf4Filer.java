@@ -180,27 +180,21 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     return this.headerKey;
   }
 
-  public Optional<CodesParser> getParser(String courtId, String apiToken) {
+  public Optional<CodesParser> getParser(String courtId, TylerUserNamePassword creds) {
     try (CodeDatabase cd = cdSupplier.get()) {
-      return getParser(cd, courtId, apiToken);
+      return getParser(cd, courtId, creds);
     } catch (SQLException ex) {
       log.error("Couldn't get CodeDatabase, can't get CodesParser");
       return Optional.empty();
     }
   }
 
-  private Optional<CodesParser> getParser(CodeDatabase cd, String courtId, String apiToken) {
-    var filingPort = setupFilingPort(apiToken);
-    if (filingPort.isEmpty()) {
-      log.error("Couldn't get filingPort, can't get CodesParser");
-      return Optional.empty();
-    }
-    boolean isIndividual = getIsIndividual(firmFactory, apiToken);
+  private Optional<CodesParser> getParser(
+      CodeDatabase cd, String courtId, TylerUserNamePassword creds) {
+    var filingPort = setupFilingPort(creds);
+    boolean isIndividual = getIsIndividual(firmFactory, Optional.of(creds));
     var policy =
-        policyCacher
-            .getPolicyFor(filingPort.get(), courtId)
-            .getDevelopmentPolicyParameters()
-            .getValue();
+        policyCacher.getPolicyFor(filingPort, courtId).getDevelopmentPolicyParameters().getValue();
     return TylerCodesParser.makeParser(cd, policy, courtId, isIndividual);
   }
 
@@ -213,7 +207,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   private CoreMessageAndNames prepareFiling(
       FilingInformation info,
       InfoCollector collector,
-      String apiToken,
+      TylerUserNamePassword creds,
       FilingReviewMDEPort filingPort,
       CourtRecordMDEPort recordPort,
       QueryType queryType)
@@ -250,7 +244,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       }
 
       EcfCourtSpecificSerializer serializer = new EcfCourtSpecificSerializer();
-      var maybeParser = getParser(cd, locationInfo.code, apiToken);
+      var maybeParser = getParser(cd, locationInfo.code, creds);
       if (maybeParser.isEmpty()) {
         collector.error(
             FilingError.serverError(
@@ -500,13 +494,12 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   private Result<FilingResult, FilingError> serveFilingIfReady(
-      CoreFilingMessageType cfm, FilingInformation info, InfoCollector collector, String apiToken) {
-    Optional<ServiceMDEPort> port = setupServicePort(apiToken);
-    if (port.isEmpty()) {
-      return Result.err(
-          FilingError.serverError("Couldn't make a service MDE port with the given API token"));
-    }
-    ServiceReceiptMessageType receipt = port.get().serveFiling(cfm);
+      CoreFilingMessageType cfm,
+      FilingInformation info,
+      InfoCollector collector,
+      TylerUserNamePassword creds) {
+    ServiceMDEPort port = setupServicePort(creds);
+    ServiceReceiptMessageType receipt = port.serveFiling(cfm);
     StringBuilder sb = new StringBuilder();
     boolean anyErrors = false;
     for (var err : receipt.getError()) {
@@ -537,25 +530,22 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
 
   @Override
   public Result<FilingResult, FilingError> submitFilingIfReady(
-      FilingInformation info, InfoCollector collector, String apiToken, ApiChoice choice) {
+      FilingInformation info,
+      InfoCollector collector,
+      TylerUserNamePassword creds,
+      ApiChoice choice) {
     FilingReviewMDEPort filingPort;
     CoreFilingMessageType cfm;
     String existingCaseTitle = null;
     String caseCategoryName = null;
     String courtName = null;
     try {
-      Optional<FilingReviewMDEPort> maybeFilingPort = setupFilingPort(apiToken);
-      Optional<CourtRecordMDEPort> recordPort = setupRecordPort(apiToken);
-      if (maybeFilingPort.isEmpty() || recordPort.isEmpty()) {
-        FilingError err =
-            FilingError.serverError("Couldn't create SOAP port object with token: " + apiToken);
-        collector.error(err);
-      }
-      filingPort = maybeFilingPort.get();
+      filingPort = setupFilingPort(creds);
+      CourtRecordMDEPort recordPort = setupRecordPort(creds);
       QueryType queryType =
           (choice.equals(ApiChoice.ServiceApi)) ? QueryType.Service : QueryType.Review;
       var coreAndExisting =
-          prepareFiling(info, collector, apiToken, filingPort, recordPort.get(), queryType);
+          prepareFiling(info, collector, creds, filingPort, recordPort, queryType);
       cfm = coreAndExisting.cfm;
       caseCategoryName = coreAndExisting.caseCategoryName;
       courtName = coreAndExisting.courtName;
@@ -575,7 +565,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     }
 
     if (choice.equals(ApiChoice.ServiceApi)) {
-      return serveFilingIfReady(cfm, info, collector, apiToken);
+      return serveFilingIfReady(cfm, info, collector, creds);
     }
 
     var wsOf =
@@ -647,22 +637,15 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   @Override
-  public Result<Response, FilingError> getFilingFees(FilingInformation info, String apiToken) {
+  public Result<Response, FilingError> getFilingFees(
+      FilingInformation info, TylerUserNamePassword creds) {
     FailFastCollector collector = new FailFastCollector();
     CoreFilingMessageType cfm;
-    Optional<FilingReviewMDEPort> filingPort = setupFilingPort(apiToken);
-    Optional<CourtRecordMDEPort> recordPort = setupRecordPort(apiToken);
-    if (filingPort.isEmpty() || recordPort.isEmpty()) {
-      FilingError err =
-          FilingError.serverError("Couldn't create SOAP port object with token: " + apiToken);
-      return Result.err(err);
-    }
+    FilingReviewMDEPort filingPort = setupFilingPort(creds);
+    CourtRecordMDEPort recordPort = setupRecordPort(creds);
     log.info("Getting Filing Fees");
     try {
-      cfm =
-          prepareFiling(
-                  info, collector, apiToken, filingPort.get(), recordPort.get(), QueryType.Fees)
-              .cfm;
+      cfm = prepareFiling(info, collector, creds, filingPort, recordPort, QueryType.Fees).cfm;
     } catch (FilingError err) {
       log.error("Error when preparing Filing for getFilingFees", err);
       return Result.err(err);
@@ -670,7 +653,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
 
     var query = prep(new FeesCalculationQueryMessageType(), info.getCourtLocation());
     query.setCoreFilingMessage(cfm);
-    var resp = filingPort.get().getFeesCalculation(query);
+    var resp = filingPort.getFeesCalculation(query);
 
     var err = Ecf4Helper.checkErrors(resp.getError());
     logTylerErrorsWithContext(err, info);
@@ -726,7 +709,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   @Override
-  public Result<Response, FilingError> getServiceTypes(FilingInformation info, String apiToken) {
+  public Result<Response, FilingError> getServiceTypes(
+      FilingInformation info, TylerUserNamePassword creds) {
     Optional<CourtLocationInfo> court = getCourtInfo(info);
     if (court.isEmpty()) {
       return Result.ok(Response.status(404).entity("No court " + info.getCourtLocation()).build());
@@ -742,19 +726,11 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     }
 
     FailFastCollector collector = new FailFastCollector();
-    Optional<FilingReviewMDEPort> filingPort = setupFilingPort(apiToken);
-    Optional<CourtRecordMDEPort> recordPort = setupRecordPort(apiToken);
-    if (filingPort.isEmpty() || recordPort.isEmpty()) {
-      FilingError err =
-          FilingError.serverError("Couldn't create SOAP port object with token: " + apiToken);
-      return Result.err(err);
-    }
+    FilingReviewMDEPort filingPort = setupFilingPort(creds);
+    CourtRecordMDEPort recordPort = setupRecordPort(creds);
     CoreFilingMessageType cfm;
     try {
-      cfm =
-          prepareFiling(
-                  info, collector, apiToken, filingPort.get(), recordPort.get(), QueryType.Review)
-              .cfm;
+      cfm = prepareFiling(info, collector, creds, filingPort, recordPort, QueryType.Review).cfm;
     } catch (FilingError err) {
       log.error("Error when preparing Filing", err);
       return Result.err(err);
@@ -763,7 +739,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     ServiceTypesRequestMessageType query =
         prep(new ServiceTypesRequestMessageType(), info.getCourtLocation());
     query.setCoreFilingMessage(cfm);
-    ServiceTypesResponseMessageType resp = filingPort.get().getServiceTypes(query);
+    ServiceTypesResponseMessageType resp = filingPort.getServiceTypes(query);
     return Result.ok(
         Ecf4Helper.makeResponse(resp, () -> Response.ok(resp.getServiceType()).build()));
   }
@@ -774,7 +750,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       String submitterId,
       java.time.LocalDate startDate,
       java.time.LocalDate beforeDate,
-      String apiToken) {
+      TylerUserNamePassword creds) {
     try {
       List<String> courtIds = getAllLocations();
       if (courtId != null && !courtId.equals("0") && !courtIds.contains(courtId)) {
@@ -792,14 +768,9 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
             + ", "
             + startDate
             + ", "
-            + beforeDate
-            + ", "
-            + apiToken);
+            + beforeDate);
 
-    Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
-    if (port.isEmpty()) {
-      return Response.status(403).build();
-    }
+    FilingReviewMDEPort port = setupFilingPort(creds);
     FilingListQueryMessageType m = prep(listObjFac.createFilingListQueryMessageType(), courtId);
     if (courtId == null || courtId.equals("0")) {
       // Search all courts
@@ -845,7 +816,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     }
     log.info(
         "Final query: " + Ecf4Helper.objectToXmlStrOrError(m, FilingListQueryMessageType.class));
-    FilingListResponseMessageType resp = port.get().getFilingList(m);
+    FilingListResponseMessageType resp = port.getFilingList(m);
     for (MatchingFilingType match : resp.getMatchingFiling()) {
       log.trace("Matched: {}, {}", match.getCaseTrackingID(), match);
     }
@@ -860,7 +831,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   @Override
-  public Response getFilingStatus(String courtId, String filingId, String apiToken) {
+  public Response getFilingStatus(String courtId, String filingId, TylerUserNamePassword creds) {
     try {
       List<String> courtIds = getAllLocations();
       if (!courtIds.contains(courtId)) {
@@ -870,37 +841,31 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
     }
 
-    Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
-    if (port.isEmpty()) {
-      return Response.status(403).build();
-    }
+    FilingReviewMDEPort port = setupFilingPort(creds);
     FilingStatusQueryMessageType status =
         prep(statusObjFac.createFilingStatusQueryMessageType(), courtId);
     status.setDocumentIdentification(Ecf4Helper.convertId(filingId));
-    FilingStatusResponseMessageType statusResp = port.get().getFilingStatus(status);
+    FilingStatusResponseMessageType statusResp = port.getFilingStatus(status);
 
     return Ecf4Helper.makeResponse(statusResp, () -> Response.ok().entity(statusResp).build());
   }
 
   @Override
   public Response getFilingService(
-      String courtId, String filingId, String contactId, String apiToken) {
-    Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
-    if (port.isEmpty()) {
-      return Response.status(403).build();
-    }
+      String courtId, String filingId, String contactId, TylerUserNamePassword creds) {
+    FilingReviewMDEPort port = setupFilingPort(creds);
     FilingServiceQueryMessageType req = new FilingServiceQueryMessageType();
     ServiceContactIdentificationType id = new ServiceContactIdentificationType();
     id.setIdentificationCategory(
         niemObjFac.createIdentificationCategoryText(Ecf4Helper.convertText("SERVICECONTACTID")));
     id.setIdentificationID(Ecf4Helper.convertString(contactId));
     req.setServiceContactIdentification(id);
-    FilingServiceResponseMessageType resp = port.get().getFilingService(req);
+    FilingServiceResponseMessageType resp = port.getFilingService(req);
     return Ecf4Helper.makeResponse(resp, () -> Response.ok(resp).build());
   }
 
   @Override
-  public Response getFilingDetails(String courtId, String filingId, String apiToken) {
+  public Response getFilingDetails(String courtId, String filingId, TylerUserNamePassword creds) {
     try {
       List<String> courtIds = getAllLocations();
       if (!courtIds.contains(courtId)) {
@@ -910,19 +875,16 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
     }
 
-    Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
-    if (port.isEmpty()) {
-      return Response.status(403).build();
-    }
+    FilingReviewMDEPort port = setupFilingPort(creds);
     FilingDetailQueryMessageType m =
         prep(detailObjFac.createFilingDetailQueryMessageType(), courtId);
     m.setDocumentIdentification(Ecf4Helper.convertId(filingId));
-    FilingDetailResponseMessageType resp = port.get().getFilingDetails(m);
+    FilingDetailResponseMessageType resp = port.getFilingDetails(m);
     return Ecf4Helper.makeResponse(resp, () -> Response.ok().entity(resp).build());
   }
 
   @Override
-  public Response getPolicy(String courtId, String apiToken) {
+  public Response getPolicy(String courtId, TylerUserNamePassword creds) {
     try {
       List<String> courtIds = getAllLocations();
       if (!courtIds.contains(courtId)) {
@@ -931,30 +893,24 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     } catch (SQLException ex) {
       return Response.status(500).entity("Couldn't access database: " + ex).build();
     }
-    Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
-    if (port.isEmpty()) {
-      return Response.status(403).build();
-    }
+    FilingReviewMDEPort port = setupFilingPort(creds);
 
-    CourtPolicyResponseMessageType resp = policyCacher.getPolicyFor(port.get(), courtId);
+    CourtPolicyResponseMessageType resp = policyCacher.getPolicyFor(port, courtId);
     return Ecf4Helper.makeResponse(resp, () -> Response.ok(resp).build());
   }
 
   @Override
-  public Response cancelFiling(String courtId, String filingId, String apiToken) {
+  public Response cancelFiling(String courtId, String filingId, TylerUserNamePassword creds) {
     try {
       List<String> courtIds = getAllLocations();
       if (!courtIds.contains(courtId)) {
         return Response.status(422).entity("Court " + courtId + " not in jurisdiction").build();
       }
 
-      Optional<FilingReviewMDEPort> port = setupFilingPort(apiToken);
-      if (port.isEmpty()) {
-        return Response.status(403).build();
-      }
+      FilingReviewMDEPort port = setupFilingPort(creds);
       CancelFilingMessageType cancel = prep(cancelObjFac.createCancelFilingMessageType(), courtId);
       cancel.setDocumentIdentification(Ecf4Helper.convertId(filingId));
-      CancelFilingResponseMessageType resp = port.get().cancelFiling(cancel);
+      CancelFilingResponseMessageType resp = port.cancelFiling(cancel);
       return Ecf4Helper.makeResponse(resp, () -> Response.noContent().build());
     } catch (SQLException ex) {
       return Response.status(500).entity("Ops Error: Could not connect to database").build();
@@ -982,13 +938,7 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     return Ecf4Helper.prep(newMsg, courtId);
   }
 
-  private Optional<FilingReviewMDEPort> setupFilingPort(String apiToken) {
-    Optional<TylerUserNamePassword> creds =
-        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
-    if (creds.isEmpty()) {
-      return Optional.empty();
-    }
-
+  private FilingReviewMDEPort setupFilingPort(TylerUserNamePassword creds) {
     FilingReviewMDEPort port = makeFilingPort();
     Client client = ClientProxy.getClient(port);
     HTTPConduit http = (HTTPConduit) client.getConduit();
@@ -997,38 +947,26 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     httpClientPolicy.setReceiveTimeout(180_000);
     http.setClient(httpClientPolicy);
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    List<Header> headersList = List.of(creds.get().toHeader());
+    List<Header> headersList = List.of(creds.toHeader());
     ctx.put(Header.HEADER_LIST, headersList);
-    return Optional.of(port);
+    return port;
   }
 
-  private Optional<ServiceMDEPort> setupServicePort(String apiToken) {
-    Optional<TylerUserNamePassword> creds =
-        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
-    if (creds.isEmpty()) {
-      return Optional.empty();
-    }
-
+  private ServiceMDEPort setupServicePort(TylerUserNamePassword creds) {
     ServiceMDEPort port = makeServicePort();
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    List<Header> headersList = List.of(creds.get().toHeader());
+    List<Header> headersList = List.of(creds.toHeader());
     ctx.put(Header.HEADER_LIST, headersList);
-    return Optional.of(port);
+    return port;
   }
 
-  private Optional<CourtRecordMDEPort> setupRecordPort(String apiToken) {
-    Optional<TylerUserNamePassword> creds =
-        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
-    if (creds.isEmpty()) {
-      return Optional.empty();
-    }
-
+  private CourtRecordMDEPort setupRecordPort(TylerUserNamePassword creds) {
     CourtRecordMDEPort port = recordFactory.getCourtRecordMDEPort();
     ServiceHelpers.setupServicePort((BindingProvider) port);
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    List<Header> headersList = List.of(creds.get().toHeader());
+    List<Header> headersList = List.of(creds.toHeader());
     ctx.put(Header.HEADER_LIST, headersList);
-    return Optional.of(port);
+    return port;
   }
 
   private FilingReviewMDEPort makeFilingPort() {

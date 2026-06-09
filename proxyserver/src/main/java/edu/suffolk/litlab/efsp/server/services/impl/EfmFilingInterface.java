@@ -5,6 +5,7 @@ import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.FilingResult;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
+import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import jakarta.ws.rs.core.Response;
@@ -28,14 +29,16 @@ public interface EfmFilingInterface {
    *     the callbacks. If it's > 1, should be the same number as the FilingDocs in info
    */
   public Result<FilingResult, FilingError> sendFiling(
-      FilingInformation info, String apiToken, ApiChoice choice);
+      FilingInformation info, TylerUserNamePassword creds, ApiChoice choice);
 
   public Result<NullValue, FilingError> checkFiling(
-      FilingInformation info, String apiToken, InfoCollector collector);
+      FilingInformation info, TylerUserNamePassword creds, InfoCollector collector);
 
-  public Result<Response, FilingError> getFilingFees(FilingInformation info, String apiToken);
+  public Result<Response, FilingError> getFilingFees(
+      FilingInformation info, TylerUserNamePassword creds);
 
-  public Result<Response, FilingError> getServiceTypes(FilingInformation info, String apiToken);
+  public Result<Response, FilingError> getServiceTypes(
+      FilingInformation info, TylerUserNamePassword creds);
 
   // TODO(brycew-later): make this a little more independent of HTTP
   public Response getFilingList(
@@ -43,20 +46,20 @@ public interface EfmFilingInterface {
       String submitterId,
       LocalDate startDate,
       LocalDate beforeDate,
-      String apiToken);
+      TylerUserNamePassword creds);
 
-  public Response getFilingStatus(String courtId, String filingId, String apiToken);
+  public Response getFilingStatus(String courtId, String filingId, TylerUserNamePassword creds);
 
-  public Response getFilingDetails(String courtId, String filingId, String apiToken);
+  public Response getFilingDetails(String courtId, String filingId, TylerUserNamePassword creds);
 
   public Response getFilingService(
-      String courtId, String filingId, String contactId, String apiToken);
+      String courtId, String filingId, String contactId, TylerUserNamePassword creds);
 
-  public Response getPolicy(String courtId, String apiToken);
+  public Response getPolicy(String courtId, TylerUserNamePassword creds);
 
-  public Response cancelFiling(String courtId, String filingId, String apiToken);
+  public Response cancelFiling(String courtId, String filingId, TylerUserNamePassword creds);
 
-  public Optional<CodesParser> getParser(String courtId, String apiToken);
+  public Optional<CodesParser> getParser(String courtId, TylerUserNamePassword creds);
 
   /**
    * TYLER ONLY at the moment: returns a list of disclaimers that must be shown to the user before

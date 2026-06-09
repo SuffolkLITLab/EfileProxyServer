@@ -5,7 +5,6 @@ import static edu.suffolk.litlab.efsp.stdlib.StdLib.GetEnv;
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
 import edu.suffolk.litlab.efsp.Jurisdiction;
-import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeUpdater;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
@@ -317,31 +316,22 @@ public class TylerModuleSetup implements EfmModuleSetup {
           return Result.nullOk();
         };
 
-    Supplier<LoginDatabase> ldSupplier = () -> LoginDatabase.fromDS(this.userDs);
     Supplier<UserDatabase> udSupplier = () -> UserDatabase.fromDS(this.userDs);
 
-    var adminUser = new AdminUserService(tylerDomain, ldSupplier, cdSupplier, passwordChecker);
-    var cases = new CasesService(tylerDomain, ldSupplier, cdSupplier);
+    var adminUser = new AdminUserService(tylerDomain, cdSupplier, passwordChecker);
+    var cases = new CasesService(tylerDomain, cdSupplier);
     var codes = new EcfCodesService(tylerDomain.jurisdiction(), cdSupplier);
     Optional<CourtSchedulingService> courtScheduler = Optional.empty();
     if (tylerDomain.jurisdiction() == Jurisdiction.ILLINOIS) {
       courtScheduler =
           Optional.of(
-              new CourtSchedulingService(
-                  converterMap, tylerDomain, ldSupplier, cdSupplier, policyCacher));
+              new CourtSchedulingService(converterMap, tylerDomain, cdSupplier, policyCacher));
     }
     var filingReview =
         new FilingReviewService(
-            getJurisdiction(),
-            ldSupplier,
-            udSupplier,
-            converterMap,
-            filingMap,
-            callbackMap,
-            this.sender);
-    var firmAttorney = new FirmAttorneyAndServiceService(tylerDomain, ldSupplier, cdSupplier);
-    var payments =
-        new PaymentsService(tylerDomain, this.togaKey, this.togaUrl, ldSupplier, cdSupplier);
+            getJurisdiction(), udSupplier, converterMap, filingMap, callbackMap, this.sender);
+    var firmAttorney = new FirmAttorneyAndServiceService(tylerDomain, cdSupplier);
+    var payments = new PaymentsService(tylerDomain, this.togaKey, this.togaUrl, cdSupplier);
     JurisdictionServiceHandle handle =
         new JurisdictionServiceHandle(
             getJurisdiction(),

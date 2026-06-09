@@ -100,14 +100,9 @@ public class TylerClients {
 
   private static Optional<URL> createLocalWsdlUrl(
       TylerDomain domain, TylerVersion version, String suffix) {
-    String wsdlPath =
-        "wsdl/"
-            + version.getVersionPath()
-            + "/"
-            + domain.env().getName()
-            + "/"
-            + domain.jurisdiction().getName()
-            + suffix;
+    var envName = domain.env().getName();
+    var jurisName = domain.jurisdiction().getName();
+    String wsdlPath = "wsdl/" + version.getVersionPath() + "/" + envName + "/" + jurisName + suffix;
     URL url = TylerClients.class.getClassLoader().getResource(wsdlPath);
     if (url == null) {
       log.warn("Could not find the wsdl at the classpath:{}", wsdlPath);

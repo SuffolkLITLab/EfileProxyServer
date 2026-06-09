@@ -2,29 +2,20 @@ package edu.suffolk.litlab.efsp.server.utils;
 
 import static edu.suffolk.litlab.efsp.stdlib.StdLib.GetEnv;
 
-import edu.suffolk.litlab.efsp.Jurisdiction;
-import edu.suffolk.litlab.efsp.db.LoginDatabase;
-import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
-import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
-import edu.suffolk.litlab.efsp.utils.Hasher;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.ws.BindingProvider;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 public class ServiceHelpers {
   private static final Logger log = LoggerFactory.getLogger(ServiceHelpers.class);
@@ -124,8 +115,9 @@ public class ServiceHelpers {
     }
   }
 
-  public static boolean getIsIndividual(TylerFirmFactory firmFactory, String tylerToken) {
-    Optional<TylerFirmClient> firmClient = setupFirmPort(firmFactory, tylerToken);
+  public static boolean getIsIndividual(
+      TylerFirmFactory firmFactory, Optional<TylerUserNamePassword> tylerUser) {
+    Optional<TylerFirmClient> firmClient = setupFirmPort(firmFactory, tylerUser, true);
     boolean isIndividual =
         firmClient
             .map(
@@ -149,51 +141,23 @@ public class ServiceHelpers {
   }
 
   public static Optional<TylerFirmClient> setupFirmPort(
-      TylerFirmFactory firmFactory,
-      HttpHeaders httpHeaders,
-      Supplier<LoginDatabase> ldSupplier,
-      Jurisdiction jurisdiction) {
-    return setupFirmPort(firmFactory, httpHeaders, ldSupplier, true, jurisdiction);
+      TylerFirmFactory firmFactory, Optional<TylerUserFromServer> tylerUser) {
+    return setupFirmPort(firmFactory, tylerUser.map(u -> u.creds()), true);
   }
 
-  // TODO(bryce): should this take not a firm service but a normal port?
   public static Optional<TylerFirmClient> setupFirmPort(
       TylerFirmFactory firmFactory,
-      HttpHeaders httpHeaders,
-      Supplier<LoginDatabase> ldSupplier,
-      boolean needsSoapHeader,
-      Jurisdiction jurisdiction) {
-    String activeToken = httpHeaders.getHeaderString("X-API-KEY");
-    try (LoginDatabase ld = ldSupplier.get()) {
-      Optional<AtRest> atRest = ld.getAtRestInfo(activeToken);
-      if (atRest.isEmpty()) {
-        log.warn("Couldn't find server api key");
+      Optional<TylerUserNamePassword> creds,
+      boolean needsSoapHeader) {
+    if (needsSoapHeader) {
+      if (creds.isEmpty()) {
+        log.warn("No creds?");
         return Optional.empty();
       }
-      if (needsSoapHeader) {
-        String tylerToken =
-            httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-        return setupFirmPort(firmFactory, tylerToken);
-      } else {
-        return Optional.of(firmFactory.makeFirmClient(ServiceHelpers::setupServicePort));
-      }
-    } catch (SQLException ex) {
-      log.error("SQL Error with firm port: ", ex);
-      return Optional.empty();
+      return Optional.of(
+          firmFactory.makeFirmClient((port) -> ServiceHelpers.setupServicePort(port, creds.get())));
+    } else {
+      return Optional.of(firmFactory.makeFirmClient(ServiceHelpers::setupServicePort));
     }
-  }
-
-  public static Optional<TylerFirmClient> setupFirmPort(
-      TylerFirmFactory firmFactory, String tylerToken) {
-    MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(tylerToken));
-    Optional<TylerUserNamePassword> creds =
-        TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
-    if (creds.isEmpty()) {
-      log.warn("No creds from {}?", tylerToken);
-      return Optional.empty();
-    }
-
-    return Optional.of(
-        firmFactory.makeFirmClient((port) -> ServiceHelpers.setupServicePort(port, creds.get())));
   }
 }

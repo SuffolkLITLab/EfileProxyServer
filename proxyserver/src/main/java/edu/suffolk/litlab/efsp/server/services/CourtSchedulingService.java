@@ -36,8 +36,6 @@ import ecf4.latest.tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateRespon
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 import edu.suffolk.litlab.efsp.Jurisdiction;
-import edu.suffolk.litlab.efsp.db.LoginDatabase;
-import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
@@ -46,7 +44,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
-import edu.suffolk.litlab.efsp.server.auth.TylerLogin;
 import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
@@ -55,9 +52,12 @@ import edu.suffolk.litlab.efsp.server.ecf4.Ecfv5CaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.ecf4.PolicyCacher;
 import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
 import edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper;
+import edu.suffolk.litlab.efsp.server.utils.EfspSecurityContext;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
+import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
+import edu.suffolk.litlab.efsp.server.utils.TylerUserFromServer;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
@@ -65,7 +65,6 @@ import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
-import edu.suffolk.litlab.efsp.utils.Hasher;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import jakarta.ws.rs.GET;
@@ -77,6 +76,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.ws.BindingProvider;
 import java.sql.SQLException;
@@ -119,17 +119,14 @@ public class CourtSchedulingService {
   private final PolicyCacher policyCacher;
 
   private final Supplier<CodeDatabase> cdSupplier;
-  private final Supplier<LoginDatabase> ldSupplier;
 
   public CourtSchedulingService(
       Map<String, InterviewToFilingInformationConverter> converterMap,
       TylerDomain domain,
-      Supplier<LoginDatabase> ldSupplier,
       Supplier<CodeDatabase> cdSupplier,
       PolicyCacher policyCacher) {
     this.jurisdiction = domain.jurisdiction();
     this.cdSupplier = cdSupplier;
-    this.ldSupplier = ldSupplier;
     var maybeSchedFactory = SoapClientChooser.getCourtSchedulingFactory(domain);
     if (maybeSchedFactory.isEmpty()) {
       throw new RuntimeException(
@@ -253,11 +250,16 @@ public class CourtSchedulingService {
 
   @POST
   @Path("/courts/{court_id}/return_date")
+  @NeedsAuthorization
   public Response getReturnDate(
-      @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String allVars)
+      @Context SecurityContext security,
+      @Context HttpHeaders httpHeaders,
+      @PathParam("court_id") String courtId,
+      String allVars)
       throws SQLException, JAXBException {
     MDC.put(MDCWrappers.OPERATION, "CourtSchedulingService.getReturnDate");
-    Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort(httpHeaders);
+    Optional<TylerUserFromServer> tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort((EfspSecurityContext) security);
     if (maybeServ.isEmpty()) {
       return Response.status(401).build();
     }
@@ -277,13 +279,9 @@ public class CourtSchedulingService {
         mediaType = MediaType.valueOf("application/json");
       }
       InfoCollector collector = new FailFastCollector();
-      Optional<String> activeToken = getActiveToken(httpHeaders);
-      if (activeToken.isEmpty()) {
-        return Response.status(401).entity("Not logged in to file with " + courtId).build();
-      }
-      boolean isIndividual = getIsIndividual(firmFactory, activeToken.get());
+      boolean isIndividual = getIsIndividual(firmFactory, tylerUser.map(u -> u.creds()));
 
-      var filingPort = setupFilingPort(activeToken.get());
+      var filingPort = setupFilingPort(tylerUser);
       if (filingPort.isEmpty()) {
         return Response.status(401).entity("Not logged in to file with " + courtId).build();
       }
@@ -317,7 +315,7 @@ public class CourtSchedulingService {
             Stream.concat(info.getNewPlaintiffs().stream(), info.getNewDefendants().stream())
                 .toList();
         if (!isFirstIndexedFiling) {
-          Optional<CourtRecordMDEPort> recordPort = setupRecordPort(httpHeaders);
+          Optional<CourtRecordMDEPort> recordPort = setupRecordPort(tylerUser);
           if (recordPort.isEmpty()) {
             return Response.status(500)
                 .entity("Can't make connection to retrieve court records for subsequent case")
@@ -481,13 +479,19 @@ public class CourtSchedulingService {
 
   @POST
   @Path("/courts/{court_id}/reserve_date")
+  @NeedsAuthorization
   public Response reserveCourtDateSync(
-      @Context HttpHeaders httpHeaders, @PathParam("court_id") String courtId, String paramStr)
+      @Context SecurityContext security, @PathParam("court_id") String courtId, String paramStr)
       throws JsonMappingException,
           JsonProcessingException,
           DatatypeConfigurationException,
           SQLException {
     MDC.put(MDCWrappers.OPERATION, "CourtSchedulingService.reserveCourtDateSync");
+    Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort((EfspSecurityContext) security);
+    if (maybeServ.isEmpty()) {
+      return Response.status(401).build();
+    }
+
     log.info("AllParams: {}", paramStr);
     JsonMapper mapper = new JsonMapper();
     JsonNode params = mapper.readTree(paramStr);
@@ -547,10 +551,6 @@ public class CourtSchedulingService {
       msg.setEstimatedDuration(dur);
     }
 
-    Optional<CourtSchedulingMDE> maybeServ = setupSchedulingPort(httpHeaders);
-    if (maybeServ.isEmpty()) {
-      return Response.status(401).build();
-    }
     ReserveCourtDateRequestType req = oasisWrapObjFac.createReserveCourtDateRequestType();
     req.setReserveCourtDateMessage(msg);
     log.info(
@@ -605,44 +605,8 @@ public class CourtSchedulingService {
     return Response.ok(ret).build();
   }
 
-  private Optional<String> getActiveToken(HttpHeaders httpHeaders) {
-    String orgHeaderKey =
-        httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-    String serverKey = httpHeaders.getHeaderString("X-API-KEY");
-    try (LoginDatabase ld = ldSupplier.get()) {
-      Optional<AtRest> atRest = ld.getAtRestInfo(serverKey);
-      if (atRest.isEmpty()) {
-        return Optional.empty();
-      }
-      String orgToken = httpHeaders.getHeaderString(orgHeaderKey);
-      if (orgToken == null || orgToken.isBlank()) {
-        return Optional.empty();
-      }
-      MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(orgToken));
-      return Optional.of(orgToken);
-    } catch (SQLException ex) {
-      log.error("SQL Error", ex);
-      return Optional.empty();
-    }
-  }
-
-  private Optional<CourtSchedulingMDE> setupSchedulingPort(HttpHeaders httpHeaders) {
-    String apiKey = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<TylerUserNamePassword> creds = Optional.empty();
-    try (LoginDatabase ld = ldSupplier.get()) {
-      Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
-      if (atRest.isEmpty()) {
-        log.warn("Couldn't checkLogin");
-        return Optional.empty();
-      }
-      String tylerToken =
-          httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-      MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(tylerToken));
-      creds = TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
-    } catch (SQLException ex) {
-      log.error("SQL error with Scheduling port", ex);
-      return Optional.empty();
-    }
+  private Optional<CourtSchedulingMDE> setupSchedulingPort(EfspSecurityContext security) {
+    Optional<TylerUserNamePassword> creds = security.getTylerUser().map(u -> u.creds());
     if (creds.isEmpty()) {
       log.warn("No creds?");
       return Optional.empty();
@@ -655,20 +619,15 @@ public class CourtSchedulingService {
     return Optional.of(serv);
   }
 
-  private Optional<CourtRecordMDEPort> setupRecordPort(HttpHeaders httpHeaders) {
-    String tylerToken =
-        httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-
-    Optional<TylerUserNamePassword> creds =
-        TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
-    if (creds.isEmpty()) {
+  private Optional<CourtRecordMDEPort> setupRecordPort(Optional<TylerUserFromServer> tylerUser) {
+    if (tylerUser.isEmpty()) {
       return Optional.empty();
     }
 
     CourtRecordMDEPort port = recordFactory.getCourtRecordMDEPort();
     ServiceHelpers.setupServicePort((BindingProvider) port);
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    List<Header> headersList = List.of(creds.get().toHeader());
+    List<Header> headersList = List.of(tylerUser.get().creds().toHeader());
     ctx.put(Header.HEADER_LIST, headersList);
     return Optional.of(port);
   }
@@ -690,16 +649,14 @@ public class CourtSchedulingService {
         || (!errorCodeText.isBlank() && !errorCodeText.equals("0"));
   }
 
-  private Optional<FilingReviewMDEPort> setupFilingPort(String apiToken) {
-    Optional<TylerUserNamePassword> creds =
-        TylerUserNamePassword.userCredsFromAuthorization(apiToken);
-    if (creds.isEmpty()) {
+  private Optional<FilingReviewMDEPort> setupFilingPort(Optional<TylerUserFromServer> tylerUser) {
+    if (tylerUser.isEmpty()) {
       return Optional.empty();
     }
 
     FilingReviewMDEPort port = makeFilingPort();
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
-    List<Header> headersList = List.of(creds.get().toHeader());
+    List<Header> headersList = List.of(tylerUser.get().creds().toHeader());
     ctx.put(Header.HEADER_LIST, headersList);
     return Optional.of(port);
   }
