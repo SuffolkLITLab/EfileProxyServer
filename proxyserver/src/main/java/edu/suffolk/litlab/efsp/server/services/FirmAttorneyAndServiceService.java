@@ -9,12 +9,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import edu.suffolk.litlab.efsp.Jurisdiction;
-import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
 import edu.suffolk.litlab.efsp.server.services.api.ServiceContactInput;
+import edu.suffolk.litlab.efsp.server.utils.EfspSecurityContext;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
+import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
@@ -30,9 +31,9 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
@@ -80,14 +81,12 @@ public class FirmAttorneyAndServiceService {
 
   private final TylerFirmFactory firmFactory;
   private final Supplier<CodeDatabase> cdSupplier;
-  private final Supplier<LoginDatabase> ldSupplier;
   private final Jurisdiction jurisdiction;
 
   private static final tyler.efm.latest.services.schema.common.ObjectFactory tylerCommonObjFac =
       new tyler.efm.latest.services.schema.common.ObjectFactory();
 
-  public FirmAttorneyAndServiceService(
-      TylerDomain domain, Supplier<LoginDatabase> ldSupplier, Supplier<CodeDatabase> cdSupplier) {
+  public FirmAttorneyAndServiceService(TylerDomain domain, Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = domain.jurisdiction();
     Optional<TylerFirmFactory> maybeFirmFactory = TylerClients.getEfmFirmFactory(domain);
     if (maybeFirmFactory.isPresent()) {
@@ -96,7 +95,6 @@ public class FirmAttorneyAndServiceService {
       throw new RuntimeException(domain + " not in SoapClientChooser for EFMFirm");
     }
     this.cdSupplier = cdSupplier;
-    this.ldSupplier = ldSupplier;
   }
 
   @GET
@@ -111,10 +109,11 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/firm")
-  public Response getSelfFirm(@Context HttpHeaders httpHeaders) {
+  @NeedsAuthorization
+  public Response getSelfFirm(@Context SecurityContext security) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getSelfFirm");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -125,10 +124,11 @@ public class FirmAttorneyAndServiceService {
 
   @PATCH
   @Path("/firm")
-  public Response updateFirm(@Context HttpHeaders httpHeaders, String json) {
+  @NeedsAuthorization
+  public Response updateFirm(@Context SecurityContext security, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateFirm");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -163,10 +163,11 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/attorneys")
-  public Response getAttorneyList(@Context HttpHeaders httpHeaders) {
+  @NeedsAuthorization
+  public Response getAttorneyList(@Context SecurityContext security) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getAttorneyList");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -177,11 +178,12 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/attorneys/{attorney_id}")
+  @NeedsAuthorization
   public Response getAttorney(
-      @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId) {
+      @Context SecurityContext security, @PathParam("attorney_id") String attorneyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getAttorney");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -194,10 +196,11 @@ public class FirmAttorneyAndServiceService {
 
   @POST
   @Path("/attorneys")
-  public Response createAttorney(@Context HttpHeaders httpHeaders, AttorneyType attorney) {
+  @NeedsAuthorization
+  public Response createAttorney(@Context SecurityContext security, AttorneyType attorney) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.createAttorney");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -227,11 +230,12 @@ public class FirmAttorneyAndServiceService {
 
   @PATCH
   @Path("/attorneys/{attorney_id}")
+  @NeedsAuthorization
   public Response updateAttorney(
-      @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId, String json) {
+      @Context SecurityContext security, @PathParam("attorney_id") String attorneyId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateAttorney");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -260,11 +264,12 @@ public class FirmAttorneyAndServiceService {
 
   @DELETE
   @Path("/attorneys/{attorney_id}")
+  @NeedsAuthorization
   public Response removeAttorney(
-      @Context HttpHeaders httpHeaders, @PathParam("attorney_id") String attorneyId) {
+      @Context SecurityContext security, @PathParam("attorney_id") String attorneyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.removeAttorney");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
     if (firmPort.isEmpty()) {
       return Response.status(403).build();
     }
@@ -277,10 +282,11 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/service-contacts")
-  public Response getServiceContactList(@Context HttpHeaders httpHeaders) {
+  @NeedsAuthorization
+  public Response getServiceContactList(@Context SecurityContext security) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getServiceContactList");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -290,11 +296,12 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/service-contacts/{contact_id}")
+  @NeedsAuthorization
   public Response getServiceContact(
-      @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId) {
+      @Context SecurityContext security, @PathParam("contact_id") String contactId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getServiceContact");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -310,11 +317,12 @@ public class FirmAttorneyAndServiceService {
 
   @DELETE
   @Path("/service-contacts/{contact_id}")
+  @NeedsAuthorization
   public Response removeServiceContact(
-      @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId) {
+      @Context SecurityContext security, @PathParam("contact_id") String contactId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.removeServiceContact");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -327,12 +335,13 @@ public class FirmAttorneyAndServiceService {
 
   @POST
   @Path("/service-contacts")
-  public Response createServiceContact(@Context HttpHeaders httpHeaders, String strInput) {
+  @NeedsAuthorization
+  public Response createServiceContact(@Context SecurityContext security, String strInput) {
     try {
       ServiceContactInput input = new ObjectMapper().readValue(strInput, ServiceContactInput.class);
       MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.createServiceContact");
-      Optional<TylerFirmClient> firmPort =
-          setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+      var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+      Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
       if (firmPort.isEmpty()) {
         return Response.status(401).build();
       }
@@ -368,11 +377,12 @@ public class FirmAttorneyAndServiceService {
    */
   @PUT
   @Path("/service-contacts/{contact_id}/cases")
+  @NeedsAuthorization
   public Response attachServiceContact(
-      @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId, String json) {
+      @Context SecurityContext security, @PathParam("contact_id") String contactId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.attachServiceContact");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -407,14 +417,15 @@ public class FirmAttorneyAndServiceService {
 
   @DELETE
   @Path("/service-contacts/{contact_id}/cases/{case_id}")
+  @NeedsAuthorization
   public Response detachServiceContact(
-      @Context HttpHeaders httpHeaders,
+      @Context SecurityContext security,
       @PathParam("contact_id") String contactId,
       @PathParam("case_id") String caseId,
       @QueryParam("case_party_id") String casePartyId) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.detachServiceContact");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -431,11 +442,12 @@ public class FirmAttorneyAndServiceService {
 
   @PATCH
   @Path("/service-contacts/{contact_id}")
+  @NeedsAuthorization
   public Response updateServiceContact(
-      @Context HttpHeaders httpHeaders, @PathParam("contact_id") String contactId, String json) {
+      @Context SecurityContext security, @PathParam("contact_id") String contactId, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.updateServiceContact");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }
@@ -479,10 +491,11 @@ public class FirmAttorneyAndServiceService {
 
   @GET
   @Path("/service-contacts/public")
-  public Response getPublicList(@Context HttpHeaders httpHeaders, String json) {
+  @NeedsAuthorization
+  public Response getPublicList(@Context SecurityContext security, String json) {
     MDC.put(MDCWrappers.OPERATION, "FirmAttorneyAndServiceService.getPublicList");
-    Optional<TylerFirmClient> firmPort =
-        setupFirmPort(firmFactory, httpHeaders, ldSupplier, jurisdiction);
+    var tylerUser = ((EfspSecurityContext) security).getTylerUser();
+    Optional<TylerFirmClient> firmPort = setupFirmPort(firmFactory, tylerUser);
     if (firmPort.isEmpty()) {
       return Response.status(401).build();
     }

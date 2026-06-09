@@ -47,7 +47,7 @@ import tyler.efm.latest.services.schema.registrationresponse.RegistrationRespons
 
 public class AdminUserServiceTest {
 
-  private static final String ENDPOINT_ADDRESS = "http://localhost:9090";
+  private static final String ENDPOINT_ADDRESS = "http://localhost:9090/jurisdiction/illinois";
   private static final String API_KEY = "abc123";
   private Server server;
   private WebClient client;
@@ -102,13 +102,12 @@ public class AdminUserServiceTest {
         new SingletonResourceProvider(
             new AdminUserService(
                 new TylerDomain(Jurisdiction.ILLINOIS, TylerEnv.STAGE),
-                () -> ld,
                 () -> cd,
                 passwordChecker)));
     sf.setAddress(ENDPOINT_ADDRESS);
     Map<Object, Object> extensionMappings = Map.of("json", MediaType.APPLICATION_JSON);
     sf.setExtensionMappings(extensionMappings);
-    List<?> providers = EfspServer.providers();
+    List<?> providers = EfspServer.providers(() -> ld);
     sf.setProviders(providers);
     server = sf.create();
 

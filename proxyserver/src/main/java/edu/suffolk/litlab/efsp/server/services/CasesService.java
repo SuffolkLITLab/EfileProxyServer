@@ -25,8 +25,6 @@ import ecf4.latest.tyler.ecf.extensions.serviceinformationhistoryquerymessage.Se
 import ecf4.latest.tyler.ecf.extensions.serviceinformationhistoryresponsemessage.ServiceInformationHistoryResponseMessageType;
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 import edu.suffolk.litlab.efsp.Jurisdiction;
-import edu.suffolk.litlab.efsp.db.LoginDatabase;
-import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.DataFieldRow;
@@ -36,6 +34,7 @@ import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
+import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
@@ -84,13 +83,11 @@ public class CasesService {
       ecfOf =
           new ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.commontypes_4
               .ObjectFactory();
-  private final Supplier<LoginDatabase> ldSupplier;
   private final Supplier<CodeDatabase> cdSupplier;
   private final Jurisdiction jurisdiction;
   private final EndpointReflection ef;
 
-  public CasesService(
-      TylerDomain domain, Supplier<LoginDatabase> ldSupplier, Supplier<CodeDatabase> cdSupplier) {
+  public CasesService(TylerDomain domain, Supplier<CodeDatabase> cdSupplier) {
     this.jurisdiction = domain.jurisdiction();
     Optional<CourtRecordMDEService> maybeRecords = SoapClientChooser.getCourtRecordFactory(domain);
     if (maybeRecords.isEmpty()) {
@@ -98,7 +95,6 @@ public class CasesService {
     }
     this.recordFactory = maybeRecords.get();
     this.cdSupplier = cdSupplier;
-    this.ldSupplier = ldSupplier;
     this.ef = new EndpointReflection("/jurisdictions/" + jurisdiction.getName() + "/cases");
   }
 
@@ -149,6 +145,7 @@ public class CasesService {
    */
   @GET
   @Path("/courts/{court_id}/cases")
+  @NeedsAuthorization
   public Response getCaseList(
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
@@ -253,6 +250,7 @@ public class CasesService {
 
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}")
+  @NeedsAuthorization
   public Response getCase(
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
@@ -329,6 +327,7 @@ public class CasesService {
   @SuppressWarnings("static-method")
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}/documents")
+  @NeedsAuthorization
   public Response getDocument(
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
@@ -338,6 +337,7 @@ public class CasesService {
 
   @GET
   @Path("/courts/{court_id}/service-contacts/{service_contact_id}/cases")
+  @NeedsAuthorization
   public Response getServiceAttachCaseList(
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
@@ -365,6 +365,7 @@ public class CasesService {
 
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}/service-information")
+  @NeedsAuthorization
   public Response getServiceInformation(
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
@@ -393,6 +394,7 @@ public class CasesService {
 
   @GET
   @Path("/courts/{court_id}/cases/{case_tracking_id}/service-information-history")
+  @NeedsAuthorization
   public Response getServiceInformationHistory(
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
@@ -427,21 +429,9 @@ public class CasesService {
   }
 
   private Optional<CourtRecordMDEPort> setupRecordPort(HttpHeaders httpHeaders) {
-    String apiKey = httpHeaders.getHeaderString("X-API-KEY");
-    Optional<AtRest> atRest = Optional.empty();
     String tylerToken =
         httpHeaders.getHeaderString(TylerLogin.getHeaderKeyFromJurisdiction(jurisdiction));
-    try (LoginDatabase ld = ldSupplier.get()) {
-      atRest = ld.getAtRestInfo(apiKey);
-      if (atRest.isEmpty()) {
-        log.warn("Couldn't checkLogin");
-        return Optional.empty();
-      }
-      MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(tylerToken));
-    } catch (SQLException ex) {
-      log.error("SQL error with record port", ex);
-      return Optional.empty();
-    }
+    MDC.put(MDCWrappers.USER_ID, Hasher.makeHash(tylerToken));
     Optional<TylerUserNamePassword> creds =
         TylerUserNamePassword.userCredsFromAuthorization(tylerToken);
     if (creds.isEmpty()) {
