@@ -36,7 +36,7 @@ public class UpdateCodeVersions implements Job {
 
   /**
    * A very light wrapper around the CLI CodeUpdater tool. A separate Job is started for each
-   * jurisdiciton, so only jurisdiciton and Tyler env is passed through.
+   * jurisdiction, so only jurisdiction and Tyler env is passed through.
    */
   public void execute(JobExecutionContext context) throws JobExecutionException {
     JobDataMap dataMap = context.getJobDetail().getJobDataMap();

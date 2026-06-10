@@ -47,7 +47,7 @@ import tyler.efm.latest.services.schema.registrationresponse.RegistrationRespons
 
 public class AdminUserServiceTest {
 
-  private static final String ENDPOINT_ADDRESS = "http://localhost:9090/jurisdiction/illinois";
+  private static final String ENDPOINT_ADDRESS = "http://localhost:9090/jurisdictions/illinois";
   private static final String API_KEY = "abc123";
   private Server server;
   private WebClient client;

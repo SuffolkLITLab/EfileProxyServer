@@ -60,10 +60,10 @@ public class AuthenticateRequestInterceptor implements ContainerRequestFilter {
   }
 
   public static Optional<Jurisdiction> getJurisdiction(String path) {
-    // Endpoints outside "jurisdiction/" are taken by server admins, not tyler users.
-    if (path.contains("/jurisdiction/")) {
-      int start = path.indexOf("/jurisdiction/");
-      path = path.substring(start).replace("/jurisdiction/", "");
+    // Endpoints outside "jurisdictions/" are taken by server admins, not tyler users.
+    if (path.contains("/jurisdictions/")) {
+      int start = path.indexOf("/jurisdictions/");
+      path = path.substring(start).replace("/jurisdictions/", "");
       var parts = path.split("/");
       try {
         return Optional.of(Jurisdiction.parse(parts[0]));
