@@ -13,7 +13,7 @@ A clear and concise description of what the bug is.
 Steps to reproduce the behavior:
 1. I send this API call ...
 2. Then filled out the docassemble form with these choices '....'
-3. I called the `/jurisdiction/illinois/review_filing/courts/adams/check_filing` endpoint
+3. I called the `/jurisdictions/illinois/review_filing/courts/adams/check_filing` endpoint
 4. See error
 
 **Expected behavior**
