@@ -181,12 +181,8 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
   }
 
   public Optional<CodesParser> getParser(String courtId, TylerUserNamePassword creds) {
-    try (CodeDatabase cd = cdSupplier.get()) {
-      return getParser(cd, courtId, creds);
-    } catch (SQLException ex) {
-      log.error("Couldn't get CodeDatabase, can't get CodesParser");
-      return Optional.empty();
-    }
+    CodeDatabase cd = cdSupplier.get();
+    return getParser(cd, courtId, creds);
   }
 
   private Optional<CodesParser> getParser(

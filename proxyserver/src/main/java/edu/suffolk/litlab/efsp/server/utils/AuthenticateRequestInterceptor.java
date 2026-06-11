@@ -37,8 +37,6 @@ public class AuthenticateRequestInterceptor implements ContainerRequestFilter {
   @Override
   public void filter(ContainerRequestContext requestContext) throws IOException {
     String apiKey = requestContext.getHeaders().getFirst(API_KEY_HEADER);
-    log.warn("requestContext headers: {}", requestContext.getHeaders());
-    // log.warn("requestContext path: {}", requestContext.getUriInfo().getAbsolutePath());
     try (LoginDatabase ld = ldSupplier.get()) {
       Optional<AtRest> atRest = ld.getAtRestInfo(apiKey);
       if (atRest.isEmpty()) {
