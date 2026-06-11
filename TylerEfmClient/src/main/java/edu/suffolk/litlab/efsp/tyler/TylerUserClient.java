@@ -3,7 +3,9 @@ package edu.suffolk.litlab.efsp.tyler;
 import static edu.suffolk.litlab.efsp.tyler.TylerVersion.v2022_1;
 
 import jakarta.xml.ws.BindingProvider;
+import java.util.Set;
 import java.util.function.Consumer;
+import org.apache.cxf.ext.logging.LoggingFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tyler.efm.EfmUserService;
@@ -35,20 +37,26 @@ public class TylerUserClient {
 
   public TylerUserClient(
       EfmUserService factory, TylerVersion version, Consumer<BindingProvider> setup) {
+
+    LoggingFeature loggingFeature = new LoggingFeature();
+    // TODO(brycew): control this from a cofig
+    loggingFeature.addSensitiveElementNames(Set.of("password", "Password", "PasswordHash"));
+    loggingFeature.setPrettyLogging(true);
+
     this.version = version;
     switch (version) {
       case v2022_1:
         this.latestPort = null;
-        this.v2022Port = factory.getBasicHttpBindingV2022IEfmUserService();
+        this.v2022Port = factory.getBasicHttpBindingV2022IEfmUserService(loggingFeature);
         setup.accept((BindingProvider) v2022Port);
         break;
       case v2024_6:
-        this.latestPort = factory.getBasicHttpBindingIEfmUserService();
+        this.latestPort = factory.getBasicHttpBindingIEfmUserService(loggingFeature);
         this.v2022Port = null;
         setup.accept((BindingProvider) latestPort);
         break;
       case v2025_0:
-        this.latestPort = factory.getBasicHttpBindingIEfmUserService();
+        this.latestPort = factory.getBasicHttpBindingIEfmUserService(loggingFeature);
         this.v2022Port = null;
         setup.accept((BindingProvider) latestPort);
         break;

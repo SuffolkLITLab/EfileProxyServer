@@ -50,6 +50,16 @@ public class EfmUserService extends Service {
 
     /**
      *
+     * @return
+     *     returns IEfmUserService
+     */
+    @WebEndpoint(name = "BasicHttpBinding_IEfmUserService")
+    public tyler.efm.v2022_1.services.IEfmUserService getBasicHttpBindingV2022IEfmUserService(WebServiceFeature... features) {
+        return super.getPort(BasicHttpBindingIEfmUserService, tyler.efm.v2022_1.services.IEfmUserService.class, features);
+    }
+
+    /**
+     *
      * @param features
      *     A list of {@link jakarta.xml.ws.WebServiceFeature} to configure on the proxy.  Supported features not in the <code>features</code> parameter will have their default values.
      * @return

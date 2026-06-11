@@ -45,10 +45,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
 import org.apache.cxf.endpoint.Server;
+import org.apache.cxf.ext.logging.LoggingFeature;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
 import org.apache.cxf.jaxrs.provider.JAXBElementProvider;
@@ -105,6 +107,21 @@ public class EfspServer {
 
     sf = new JAXRSServerFactoryBean();
     sf.setResourceClasses(new ArrayList<Class<?>>(services.keySet()));
+
+    LoggingFeature loggingFeature = new LoggingFeature();
+    // TODO(brycew): control this from a cofig
+    loggingFeature.addSensitiveElementNames(
+        Set.of("api_key", "password", "Password", "TYLER-TOKEN-ILLINOIS", "TYLER-ID-ILLINOIS"));
+    loggingFeature.addSensitiveProtocolHeaderNames(
+        Set.of(
+            "TYLER-TOKEN-ILLINOIS",
+            "TYLER-TOKEN-MASSACHUSETTS",
+            "TYLER-TOKEN-VERMONT",
+            "TYLER-ID-ILLINOIS",
+            "X-API-KEY"));
+    loggingFeature.setPrettyLogging(true);
+    sf.setFeatures(List.of(loggingFeature));
+
     for (Map.Entry<Class<?>, SingletonResourceProvider> prov : services.entrySet()) {
       sf.setResourceProvider(prov.getKey(), prov.getValue());
     }
