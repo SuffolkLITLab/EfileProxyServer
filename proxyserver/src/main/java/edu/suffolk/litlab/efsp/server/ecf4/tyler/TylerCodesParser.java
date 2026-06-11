@@ -666,10 +666,6 @@ public class TylerCodesParser implements CodesParser {
     }
   }
 
-  ////////  Still TODO
-  // Filing Associations
-  // Anything else not currently checked
-
   // TODO: should rebuild attySet from scratch if it doesn't exist
   public Result<Optional<Map<PartyId, List<String>>>, AttorneyError> vetPartyAttorneyMap(
       Map<PartyId, List<String>> partyAttyMap,
