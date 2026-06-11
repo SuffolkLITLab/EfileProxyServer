@@ -12,7 +12,16 @@
     <name>Tyler EFM Services Client code</name>
     <description>For Tyler's EFMUserService and EFMFirmService. Lets you choose the specific version that you want to interact with.</description>
 
+    <properties>
+        <cxf.version>4.1.6</cxf.version>
+    </properties>
+
     <dependencies>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-features-logging</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
         <dependency>
             <groupId>edu.suffolk.litlab</groupId>
             <artifactId>efsp-commons</artifactId>
