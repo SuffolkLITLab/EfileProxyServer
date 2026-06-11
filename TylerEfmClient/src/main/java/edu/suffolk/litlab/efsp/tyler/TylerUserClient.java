@@ -65,7 +65,6 @@ public class TylerUserClient {
         this.v2022Port = null;
         break;
     }
-    ;
   }
 
   public AuthenticateResponseType authenticateUser(AuthenticateRequestType authenticateRequest) {

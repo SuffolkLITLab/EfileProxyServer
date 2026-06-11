@@ -42,7 +42,10 @@ public class SoapClientChooser {
 
   public static Optional<FilingReviewMDEService> getFilingReviewFactory(TylerDomain domain) {
     var version = TylerClients.getVersion(domain);
-    return version.map(v -> new FilingReviewMDEService(getRes(domain, v, REVIEW_SUFFIX)));
+    return version.map(v -> {
+      URL url = getRes(domain, v, REVIEW_SUFFIX);
+      return new FilingReviewMDEService(url);
+    });
   }
 
   public static Optional<ServiceMDEService> getServiceFactory(TylerDomain domain) {
