@@ -179,7 +179,8 @@ public class FilingReviewService {
       @Context SecurityContext security,
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
-      String allVars) {
+      String allVars)
+      throws Exception {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.checkFilingForReview");
     MediaType mediaType = httpHeaders.getMediaType();
     if (mediaType == null) {
@@ -194,19 +195,20 @@ public class FilingReviewService {
     if (tylerUser.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
+    if (!converterMap.containsKey(mediaType.toString())) {
+      return Response.status(415).entity("We only support " + converterMap.keySet()).build();
+    }
     Result<CodesParser, Response> maybeParser = makeParser(courtId, tylerUser.get().creds(), filer);
     if (maybeParser.isErr()) {
       return maybeParser.unwrapErrOrElseThrow();
     }
     var parser = maybeParser.unwrapOrElseThrow();
-    if (!converterMap.containsKey(mediaType.toString())) {
-      return Response.status(415).entity("We only support " + converterMap.keySet()).build();
-    }
     InfoCollector collector = new NeverSubmitCollector();
     Result<FilingInformation, FilingError> res =
         converterMap.get(mediaType.toString()).traverseInterview(allVars, parser, collector);
     if (res.isErr()) {
       log.error("Error on traverseInterview: {}", res.toString());
+      parser.close();
       return Response.status(400).entity(collector.jsonSummary()).build();
     }
     FilingInformation info = res.unwrapOrElseThrow();
@@ -215,8 +217,10 @@ public class FilingReviewService {
         filer.checkFiling(info, tylerUser.get().creds(), collector);
     if (resEfm.isErr()) {
       log.error("Error on checkFiling: {}", resEfm.toString());
+      parser.close();
       return Response.ok(collector.jsonSummary()).build();
     }
+    parser.close();
     return Response.ok(collector.jsonSummary()).build();
   }
 
@@ -227,7 +231,8 @@ public class FilingReviewService {
       @Context SecurityContext security,
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
-      String allVars) {
+      String allVars)
+      throws Exception {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.calculateFilingFees");
     MediaType mediaType = httpHeaders.getMediaType();
     if (mediaType == null) {
@@ -242,25 +247,27 @@ public class FilingReviewService {
     if (tylerUser.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
+    if (!converterMap.containsKey(mediaType.toString())) {
+      return Response.status(415).entity("We only support " + converterMap.keySet()).build();
+    }
     Result<CodesParser, Response> maybeParser = makeParser(courtId, tylerUser.get().creds(), filer);
     if (maybeParser.isErr()) {
       return maybeParser.unwrapErrOrElseThrow();
     }
     var parser = maybeParser.unwrapOrElseThrow();
-    if (!converterMap.containsKey(mediaType.toString())) {
-      return Response.status(415).entity("We only support " + converterMap.keySet()).build();
-    }
     log.trace("Court id: {}", courtId);
     InfoCollector collector = new FailFastCollector();
     Result<FilingInformation, FilingError> res =
         converterMap.get(mediaType.toString()).traverseInterview(allVars, parser, collector);
     if (res.isErr()) {
       log.error("Error when calculating filing fees: {}", res.toString());
+      parser.close();
       return Response.status(400).entity(collector.jsonSummary()).build();
     }
     FilingInformation info = res.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
     Result<Response, FilingError> fees = filer.getFilingFees(info, tylerUser.get().creds());
+    parser.close();
     return fees.match(err -> Response.status(400).entity(err.toJson()).build(), respon -> respon);
   }
 
@@ -271,7 +278,8 @@ public class FilingReviewService {
       @Context SecurityContext security,
       @Context HttpHeaders httpHeaders,
       @PathParam("court_id") String courtId,
-      String allVars) {
+      String allVars)
+      throws Exception {
     MDC.put(MDCWrappers.OPERATION, "FilingReviewService.getServiceTypes");
     MediaType mediaType = httpHeaders.getMediaType();
     if (mediaType == null) {
@@ -287,23 +295,25 @@ public class FilingReviewService {
     if (tylerUser.isEmpty()) {
       return Response.status(401).entity("Not logged in to file with " + courtId).build();
     }
+    if (!converterMap.containsKey(mediaType.toString())) {
+      return Response.status(415).entity("We only support " + converterMap.keySet()).build();
+    }
     Result<CodesParser, Response> maybeParser = makeParser(courtId, tylerUser.get().creds(), filer);
     if (maybeParser.isErr()) {
       return maybeParser.unwrapErrOrElseThrow();
     }
     var parser = maybeParser.unwrapOrElseThrow();
-    if (!converterMap.containsKey(mediaType.toString())) {
-      return Response.status(415).entity("We only support " + converterMap.keySet()).build();
-    }
     InfoCollector collector = new FailFastCollector();
     Result<FilingInformation, FilingError> res =
         converterMap.get(mediaType.toString()).traverseInterview(allVars, parser, collector);
     if (res.isErr()) {
+      parser.close();
       return Response.status(400).entity(collector.jsonSummary()).build();
     }
     FilingInformation info = res.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
     Result<Response, FilingError> fees = filer.getServiceTypes(info, tylerUser.get().creds());
+    parser.close();
     return fees.match(err -> Response.status(400).entity(err.toJson()).build(), respon -> respon);
   }
 
@@ -484,11 +494,21 @@ public class FilingReviewService {
     Result<FilingInformation, FilingError> maybeInfo =
         converterMap.get(mediaType.toString()).extractInformation(allVars, parser);
     if (maybeInfo.isErr()) {
+      try {
+        parser.close();
+      } catch (Exception ex) {
+        log.warn("Couldn't close parser", ex);
+      }
       return Result.err(
           Response.status(400).entity(maybeInfo.unwrapErrOrElseThrow().toJson()).build());
     }
     FilingInformation info = maybeInfo.unwrapOrElseThrow();
     info.setCourtLocation(courtId);
+    try {
+      parser.close();
+    } catch (Exception ex) {
+      log.warn("Couldn't close parser", ex);
+    }
     return Result.ok(info);
   }
 

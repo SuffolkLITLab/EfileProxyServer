@@ -30,6 +30,7 @@ import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -87,6 +88,13 @@ public class TylerCodesParser implements CodesParser {
       boolean isIndividual) {
     Optional<CourtLocationInfo> locationInfo = cd.getFullLocationInfo(courtId);
     return locationInfo.map(li -> new TylerCodesParser(cd, policy, li, isIndividual));
+  }
+
+  @Override
+  public void close() throws SQLException {
+    if (this.cd != null) {
+      this.cd.close();
+    }
   }
 
   /////////////////// Methods that access the codes database.

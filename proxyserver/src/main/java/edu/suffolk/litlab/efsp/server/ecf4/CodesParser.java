@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public interface CodesParser {
+public interface CodesParser extends AutoCloseable {
   // Types specifically for errors.
   // spotless:off
   public sealed interface CodeError {}
