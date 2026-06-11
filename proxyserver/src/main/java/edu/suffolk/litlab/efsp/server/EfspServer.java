@@ -118,7 +118,9 @@ public class EfspServer {
             "TYLER-TOKEN-MASSACHUSETTS",
             "TYLER-TOKEN-VERMONT",
             "TYLER-ID-ILLINOIS",
-            "X-API-KEY"));
+            "X-API-KEY",
+            "x-api-key",
+            "X-Api-Key"));
     loggingFeature.setPrettyLogging(true);
     sf.setFeatures(List.of(loggingFeature));
 
