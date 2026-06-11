@@ -10,7 +10,10 @@
       <Pattern>| %d{yyyy-MM-dd HH:mm:ss.SSS} | %X{serverId} | %X{userId} | %X{sessionId} | %X{correlationId} | %X{requestId} | %X{operation} | %thread | %-5level | %logger{40} |- %msg | %rEx |%n</Pattern>
     </encoder>
   </appender>
-  <if condition='isDefined("PAPERTRAIL_HOST")'>
+  <condition class="ch.qos.logback.core.boolex.ExpressionPropertyCondition">
+    <expression>isDefined("PAPERTRAIL_HOST")</expression>
+  </condition>
+  <if>
     <then>
       <appender name="SYSLOG-TLS" class="com.papertrailapp.logback.Syslog4jAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
