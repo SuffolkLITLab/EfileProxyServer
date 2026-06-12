@@ -15,8 +15,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
 import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.server.EfspServer;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
-import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
@@ -71,8 +69,12 @@ public class AdminUserServiceTest {
     when(userFactory.makeUserClient(any())).thenReturn(tylerUserClient);
 
     mockClients = Mockito.mockStatic(TylerClients.class);
-    when(TylerClients.getEfmFirmFactory(any())).thenReturn(Optional.of(firmFactory));
-    when(TylerClients.getEfmUserFactory(any())).thenReturn(Optional.of(userFactory));
+    mockClients
+        .when(() -> TylerClients.getEfmFirmFactory(any()))
+        .thenReturn(Optional.of(firmFactory));
+    mockClients
+        .when(() -> TylerClients.getEfmUserFactory(any()))
+        .thenReturn(Optional.of(userFactory));
   }
 
   private void startServer() {
@@ -100,10 +102,7 @@ public class AdminUserServiceTest {
     sf.setResourceProvider(
         AdminUserService.class,
         new SingletonResourceProvider(
-            new AdminUserService(
-                new TylerDomain(Jurisdiction.ILLINOIS, TylerEnv.STAGE),
-                () -> cd,
-                passwordChecker)));
+            new AdminUserService(Jurisdiction.ILLINOIS, () -> cd, passwordChecker)));
     sf.setAddress(ENDPOINT_ADDRESS);
     Map<Object, Object> extensionMappings = Map.of("json", MediaType.APPLICATION_JSON);
     sf.setExtensionMappings(extensionMappings);

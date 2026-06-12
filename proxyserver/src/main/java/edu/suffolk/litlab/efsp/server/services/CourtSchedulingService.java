@@ -60,7 +60,6 @@ import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.TylerUserFromServer;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
@@ -122,19 +121,19 @@ public class CourtSchedulingService {
 
   public CourtSchedulingService(
       Map<String, InterviewToFilingInformationConverter> converterMap,
-      TylerDomain domain,
+      Jurisdiction jurisdiction,
       Supplier<CodeDatabase> cdSupplier,
       PolicyCacher policyCacher) {
-    this.jurisdiction = domain.jurisdiction();
+    this.jurisdiction = jurisdiction;
     this.cdSupplier = cdSupplier;
-    var maybeSchedFactory = SoapClientChooser.getCourtSchedulingFactory(domain);
+    var maybeSchedFactory = SoapClientChooser.getCourtSchedulingFactory(jurisdiction);
     if (maybeSchedFactory.isEmpty()) {
       throw new RuntimeException(
-          "Can't find " + domain + " in the SoapClientChooser for CourtScheduler");
+          "Can't find " + jurisdiction + " in the SoapClientChooser for CourtScheduler");
     }
-    var maybeReview = SoapClientChooser.getFilingReviewFactory(domain);
+    var maybeReview = SoapClientChooser.getFilingReviewFactory(jurisdiction);
     if (maybeReview.isEmpty()) {
-      throw new RuntimeException("Cannot find " + domain + " for filing review factory");
+      throw new RuntimeException("Cannot find " + jurisdiction + " for filing review factory");
     }
     this.filingFactory = maybeReview.get();
     this.schedFactory = maybeSchedFactory.get();
@@ -147,14 +146,15 @@ public class CourtSchedulingService {
             .ObjectFactory();
     this.niemObjFac = new ecf4.latest.gov.niem.release.niem.niem_core._4.ObjectFactory();
     this.proxyObjFac = new ecf4.latest.gov.niem.release.niem.proxy.xsd._4.ObjectFactory();
-    Optional<CourtRecordMDEService> maybeCourt = SoapClientChooser.getCourtRecordFactory(domain);
+    Optional<CourtRecordMDEService> maybeCourt =
+        SoapClientChooser.getCourtRecordFactory(jurisdiction);
     if (maybeCourt.isEmpty()) {
-      throw new RuntimeException("Cannot find " + domain + " for court record factory");
+      throw new RuntimeException("Cannot find " + jurisdiction + " for court record factory");
     }
     this.recordFactory = maybeCourt.get();
-    Optional<TylerFirmFactory> maybeFirmFactory = TylerClients.getEfmFirmFactory(domain);
+    Optional<TylerFirmFactory> maybeFirmFactory = TylerClients.getEfmFirmFactory(jurisdiction);
     if (maybeFirmFactory.isEmpty()) {
-      throw new RuntimeException("Cannot find " + domain + " for firm mde factory");
+      throw new RuntimeException("Cannot find " + jurisdiction + " for firm mde factory");
     }
     this.firmFactory = maybeFirmFactory.get();
     if (policyCacher != null) {

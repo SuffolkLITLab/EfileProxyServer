@@ -1,14 +1,12 @@
 package edu.suffolk.litlab.efsp.tyler;
 
+import edu.suffolk.litlab.efsp.ConfigurationLoader;
 import edu.suffolk.litlab.efsp.Jurisdiction;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import edu.suffolk.litlab.efsp.ServerEnv;
 import java.net.URL;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tyler.efm.EfmFirmService;
@@ -20,31 +18,12 @@ public class TylerClients {
   private static final String FIRM_WSDL = "-EFMFirmServiceSingle.svc.wsdl";
   private static final String VERSION_KEY_PREFIX = "edu.suffolk.litlab.efsp.tyler.version.";
 
-  private static final Map<Jurisdiction, TylerVersion> STAGE_VERSION_MAP =
-      loadVersionMap(TylerEnv.STAGE);
-  private static final Map<Jurisdiction, TylerVersion> PROD_VERSION_MAP =
-      loadVersionMap(TylerEnv.PROD);
+  private static boolean shouldLogRequests = false;
 
-  private static Map<Jurisdiction, TylerVersion> loadVersionMap(TylerEnv env) {
-    String propertiesFile = "application." + env.getName() + ".properties";
-    var props = new Properties();
-    try (var is = new FileInputStream(propertiesFile)) {
-      props.load(is);
-    } catch (FileNotFoundException ex) {
-      try (var secondIs = TylerClients.class.getClassLoader().getResourceAsStream(propertiesFile)) {
-        if (secondIs == null) {
-          throw new RuntimeException(
-              "Couldn't load config file as file in current dir or as class resource. "
-                  + propertiesFile);
-        }
-        props.load(secondIs);
-      } catch (IOException e) {
-        throw new RuntimeException(
-            "Failed to load properties file as class resource " + propertiesFile, e);
-      }
-    } catch (IOException e) {
-      throw new RuntimeException("Failed to load properties file: " + propertiesFile, e);
-    }
+  private static Map<Jurisdiction, TylerVersion> VERSION_MAP;
+
+  private static Map<Jurisdiction, TylerVersion> loadVersionMap() {
+    var props = ConfigurationLoader.loadConfig();
     var map = new EnumMap<Jurisdiction, TylerVersion>(Jurisdiction.class);
     for (Jurisdiction jurisdiction : Jurisdiction.values()) {
       String key = VERSION_KEY_PREFIX + jurisdiction.getName();
@@ -61,25 +40,32 @@ public class TylerClients {
     return map;
   }
 
-  public static Optional<TylerUserFactory> getEfmUserFactory(TylerDomain domain) {
-    var version = getVersion(domain);
+  public static final TylerEnv getTylerEnv() {
+    return TylerEnv.from(ServerEnv.fromEnvVar());
+  }
+
+  public static Optional<TylerUserFactory> getEfmUserFactory(Jurisdiction jurisdiction) {
+    var version = getVersion(jurisdiction);
+    var domain = new TylerDomain(jurisdiction, getTylerEnv());
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, USER_WSDL);
-          return url.map(u -> new TylerUserFactory(new EfmUserService(u), v));
+          return url.map(u -> new TylerUserFactory(new EfmUserService(u), v, shouldLogRequests));
         });
   }
 
-  public static Optional<TylerFirmFactory> getEfmFirmFactory(TylerDomain domain) {
-    var version = getVersion(domain);
+  public static Optional<TylerFirmFactory> getEfmFirmFactory(Jurisdiction jurisdiction) {
+    var version = getVersion(jurisdiction);
+    var domain = new TylerDomain(jurisdiction, getTylerEnv());
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, FIRM_WSDL);
-          return url.map(u -> new TylerFirmFactory(new EfmFirmService(u), v));
+          return url.map(u -> new TylerFirmFactory(new EfmFirmService(u), v, shouldLogRequests));
         });
   }
 
-  public static String getTylerServerRootUrl(TylerDomain domain) {
+  public static String getTylerServerRootUrl(Jurisdiction jurisdiction) {
+    TylerDomain domain = new TylerDomain(jurisdiction, getTylerEnv());
     if (domain.jurisdiction() == Jurisdiction.CALIFORNIA) {
       return "https://california-efm-" + domain.env().getName() + ".tylertech.cloud/";
     }
@@ -89,13 +75,12 @@ public class TylerClients {
     return "https://" + domain.getName() + ".tylertech.cloud/";
   }
 
-  public static Optional<TylerVersion> getVersion(TylerDomain domain) {
-    Map<Jurisdiction, TylerVersion> versionMap =
-        switch (domain.env()) {
-          case STAGE -> STAGE_VERSION_MAP;
-          case PROD -> PROD_VERSION_MAP;
-        };
-    return Optional.ofNullable(versionMap.get(domain.jurisdiction()));
+  public static Optional<TylerVersion> getVersion(Jurisdiction jurisdiction) {
+    if (VERSION_MAP == null) {
+      VERSION_MAP = loadVersionMap();
+      shouldLogRequests = ConfigurationLoader.shouldLogRequests();
+    }
+    return Optional.ofNullable(VERSION_MAP.get(jurisdiction));
   }
 
   private static Optional<URL> createLocalWsdlUrl(

@@ -3,7 +3,9 @@ package edu.suffolk.litlab.efsp.tyler;
 import static edu.suffolk.litlab.efsp.tyler.TylerVersion.v2022_1;
 
 import jakarta.xml.ws.BindingProvider;
+import java.util.Set;
 import java.util.function.Consumer;
+import org.apache.cxf.ext.logging.LoggingFeature;
 import tyler.efm.EfmFirmService;
 import tyler.efm.latest.services.schema.adduserrolerequest.AddUserRoleRequestType;
 import tyler.efm.latest.services.schema.attachservicecontactrequest.AttachServiceContactRequestType;
@@ -64,21 +66,49 @@ public class TylerFirmClient {
   private static final WsdlMapper mapper = new WsdlMapperImpl();
 
   public TylerFirmClient(
-      EfmFirmService factory, TylerVersion version, Consumer<BindingProvider> setup) {
+      EfmFirmService factory,
+      TylerVersion version,
+      Consumer<BindingProvider> setup,
+      boolean shouldLogRequests) {
     this.version = version;
+    LoggingFeature loggingFeature = null;
+    if (shouldLogRequests) {
+      loggingFeature = new LoggingFeature();
+      loggingFeature.addSensitiveElementNames(
+          Set.of(
+              "password",
+              "Password",
+              "PasswordHash",
+              "SignatureValue",
+              "UserID",
+              "PasswordAnswer"));
+      loggingFeature.setPrettyLogging(true);
+    }
     switch (version) {
       case v2022_1:
         this.latestPort = null;
-        this.v2022Port = factory.getBasicHttpBindingV2022IEfmFirmService();
+        if (loggingFeature != null) {
+          this.v2022Port = factory.getBasicHttpBindingV2022IEfmFirmService(loggingFeature);
+        } else {
+          this.v2022Port = factory.getBasicHttpBindingV2022IEfmFirmService();
+        }
         setup.accept((BindingProvider) v2022Port);
         break;
       case v2024_6:
-        this.latestPort = factory.getBasicHttpBindingIEfmFirmService();
+        if (loggingFeature != null) {
+          this.latestPort = factory.getBasicHttpBindingIEfmFirmService(loggingFeature);
+        } else {
+          this.latestPort = factory.getBasicHttpBindingIEfmFirmService();
+        }
         this.v2022Port = null;
         setup.accept((BindingProvider) latestPort);
         break;
       case v2025_0:
-        this.latestPort = factory.getBasicHttpBindingIEfmFirmService();
+        if (loggingFeature != null) {
+          this.latestPort = factory.getBasicHttpBindingIEfmFirmService(loggingFeature);
+        } else {
+          this.latestPort = factory.getBasicHttpBindingIEfmFirmService();
+        }
         this.v2022Port = null;
         setup.accept((BindingProvider) latestPort);
         break;

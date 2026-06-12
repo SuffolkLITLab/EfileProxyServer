@@ -42,6 +42,11 @@ public class EfmFirmService extends Service {
         return super.getPort(BasicHttpBindingIEfmFirmService, tyler.efm.v2022_1.services.IEfmFirmService.class);
     }
 
+    @WebEndpoint(name = "BasicHttpBinding_IEfmFirmService")
+    public tyler.efm.v2022_1.services.IEfmFirmService getBasicHttpBindingV2022IEfmFirmService(WebServiceFeature... features) {
+        return super.getPort(BasicHttpBindingIEfmFirmService, tyler.efm.v2022_1.services.IEfmFirmService.class, features);
+    }
+
     /**
      *
      * @param features
