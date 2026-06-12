@@ -7,13 +7,16 @@ import tyler.efm.EfmUserService;
 public class TylerUserFactory {
   private final EfmUserService userService;
   private final TylerVersion version;
+  private final boolean shouldLogRequests;
 
-  public TylerUserFactory(EfmUserService userService, TylerVersion version) {
+  public TylerUserFactory(
+      EfmUserService userService, TylerVersion version, boolean shouldLogRequests) {
     this.userService = userService;
     this.version = version;
+    this.shouldLogRequests = shouldLogRequests;
   }
 
   public TylerUserClient makeUserClient(Consumer<BindingProvider> setup) {
-    return new TylerUserClient(userService, version, setup);
+    return new TylerUserClient(userService, version, setup, shouldLogRequests);
   }
 }

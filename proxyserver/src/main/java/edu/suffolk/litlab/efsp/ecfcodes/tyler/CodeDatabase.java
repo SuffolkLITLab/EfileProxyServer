@@ -41,6 +41,8 @@ public class CodeDatabase extends CodeDatabaseAPI {
   /** The tyler jurisdiction + tyler environment, i.e. illinois-stage. */
   private final TylerDomain tylerDomain;
 
+  // TODO(brycew): the database doesn't need the env. Should be implicit, but it's gonna be a lot to
+  // take out.
   public CodeDatabase(TylerDomain domain, Connection conn) {
     super(conn);
     this.tylerDomain = domain;

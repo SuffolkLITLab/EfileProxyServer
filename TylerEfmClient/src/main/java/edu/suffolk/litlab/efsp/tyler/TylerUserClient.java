@@ -36,27 +36,51 @@ public class TylerUserClient {
   private static final WsdlMapper mapper = new WsdlMapperImpl();
 
   public TylerUserClient(
-      EfmUserService factory, TylerVersion version, Consumer<BindingProvider> setup) {
+      EfmUserService factory,
+      TylerVersion version,
+      Consumer<BindingProvider> setup,
+      boolean shouldLogRequests) {
 
-    LoggingFeature loggingFeature = new LoggingFeature();
-    // TODO(brycew): control this from a cofig
-    loggingFeature.addSensitiveElementNames(Set.of("password", "Password", "PasswordHash"));
-    loggingFeature.setPrettyLogging(true);
+    LoggingFeature loggingFeature = null;
+    if (shouldLogRequests) {
+      loggingFeature = new LoggingFeature();
+      loggingFeature.addSensitiveElementNames(
+          Set.of(
+              "password",
+              "Password",
+              "PasswordHash",
+              "SignatureValue",
+              "UserID",
+              "PasswordAnswer"));
+      loggingFeature.setPrettyLogging(true);
+    }
 
     this.version = version;
     switch (version) {
       case v2022_1:
         this.latestPort = null;
-        this.v2022Port = factory.getBasicHttpBindingV2022IEfmUserService(loggingFeature);
+        if (loggingFeature != null) {
+          this.v2022Port = factory.getBasicHttpBindingV2022IEfmUserService(loggingFeature);
+        } else {
+          this.v2022Port = factory.getBasicHttpBindingV2022IEfmUserService();
+        }
         setup.accept((BindingProvider) v2022Port);
         break;
       case v2024_6:
-        this.latestPort = factory.getBasicHttpBindingIEfmUserService(loggingFeature);
+        if (loggingFeature != null) {
+          this.latestPort = factory.getBasicHttpBindingIEfmUserService(loggingFeature);
+        } else {
+          this.latestPort = factory.getBasicHttpBindingIEfmUserService();
+        }
         this.v2022Port = null;
         setup.accept((BindingProvider) latestPort);
         break;
       case v2025_0:
-        this.latestPort = factory.getBasicHttpBindingIEfmUserService(loggingFeature);
+        if (loggingFeature != null) {
+          this.latestPort = factory.getBasicHttpBindingIEfmUserService(loggingFeature);
+        } else {
+          this.latestPort = factory.getBasicHttpBindingIEfmUserService();
+        }
         this.v2022Port = null;
         setup.accept((BindingProvider) latestPort);
         break;

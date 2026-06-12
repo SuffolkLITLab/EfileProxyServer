@@ -40,29 +40,36 @@ public class SoapClientChooser {
     return url;
   }
 
-  public static Optional<FilingReviewMDEService> getFilingReviewFactory(TylerDomain domain) {
-    var version = TylerClients.getVersion(domain);
-    return version.map(v -> {
-      URL url = getRes(domain, v, REVIEW_SUFFIX);
-      return new FilingReviewMDEService(url);
-    });
+  public static Optional<FilingReviewMDEService> getFilingReviewFactory(Jurisdiction jurisdiction) {
+    var version = TylerClients.getVersion(jurisdiction);
+    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
+    return version.map(
+        v -> {
+          URL url = getRes(domain, v, REVIEW_SUFFIX);
+          return new FilingReviewMDEService(url);
+        });
   }
 
-  public static Optional<ServiceMDEService> getServiceFactory(TylerDomain domain) {
-    var version = TylerClients.getVersion(domain);
+  public static Optional<ServiceMDEService> getServiceFactory(Jurisdiction jurisdiction) {
+    var version = TylerClients.getVersion(jurisdiction);
+    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
+
     return version.map(v -> new ServiceMDEService(getRes(domain, v, SERVICE_SUFFIX)));
   }
 
-  public static Optional<CourtRecordMDEService> getCourtRecordFactory(TylerDomain domain) {
-    var version = TylerClients.getVersion(domain);
+  public static Optional<CourtRecordMDEService> getCourtRecordFactory(Jurisdiction jurisdiction) {
+    var version = TylerClients.getVersion(jurisdiction);
+    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
     return version.map(v -> new CourtRecordMDEService(getRes(domain, v, RECORD_SUFFIX)));
   }
 
-  public static Optional<CourtSchedulingMDE_Service> getCourtSchedulingFactory(TylerDomain domain) {
-    if (domain.jurisdiction().getApi() != Jurisdiction.Api.ECF_4_Schedule) {
+  public static Optional<CourtSchedulingMDE_Service> getCourtSchedulingFactory(
+      Jurisdiction jurisdiction) {
+    if (jurisdiction.getApi() != Jurisdiction.Api.ECF_4_Schedule) {
       return Optional.empty();
     }
-    var version = TylerClients.getVersion(domain);
+    var version = TylerClients.getVersion(jurisdiction);
+    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
     return version.map(v -> new CourtSchedulingMDE_Service(getRes(domain, v, SCHEDULE_SUFFIX)));
   }
 }

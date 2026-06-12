@@ -3,7 +3,9 @@ package edu.suffolk.litlab.efsp.server;
 import static edu.suffolk.litlab.efsp.stdlib.StdLib.GetEnv;
 
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import edu.suffolk.litlab.efsp.ConfigurationLoader;
 import edu.suffolk.litlab.efsp.Jurisdiction;
+import edu.suffolk.litlab.efsp.ServerEnv;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.db.DatabaseVersion;
 import edu.suffolk.litlab.efsp.db.LoginDatabase;
@@ -34,7 +36,6 @@ import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
 import jakarta.ws.rs.core.MediaType;
-import java.io.FileInputStream;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -223,13 +224,27 @@ public class EfspServer {
         DatabaseCreator.makeDataSource(
             dbUrl, dbPortInt, userDatabaseName, dbUser, dbPassword, 12, 400);
 
-    var tylerEnv =
-        GetEnv("TYLER_ENV")
-            .map(TylerEnv::parse)
+    var serverEnv =
+        GetEnv("SERVER_ENV")
+            .map(ServerEnv::parse)
+            .or(
+                () -> {
+                  Optional<TylerEnv> tylerEnv = GetEnv("TYLER_ENV").map(TylerEnv::parse);
+                  Optional<ServerEnv> maybeServer =
+                      tylerEnv.map(
+                          e -> {
+                            return switch (e) {
+                              case TylerEnv.PROD -> ServerEnv.PROD;
+                              case TylerEnv.STAGE -> ServerEnv.TEST;
+                            };
+                          });
+                  return maybeServer;
+                })
             .orElseThrow(
                 () ->
                     new RuntimeException(
-                        "The Env var 'TYLER_ENV' needs to be defined, either 'stage' or 'prod'"));
+                        "The Env vars 'SERVER_ENV' ('test' or 'prod') or 'TYLER_ENV' ('stage' or 'prod') needs to be defined"));
+    TylerEnv tylerEnv = TylerEnv.from(serverEnv);
     setupDatabases(codeDs, userDs);
 
     InterviewToFilingInformationConverter daJsonConverter =
@@ -258,14 +273,9 @@ public class EfspServer {
     }
 
     LocalTime codesUpdateTime = LocalTime.of(2, 13);
-    var propertiesFile = "application." + tylerEnv.getName() + ".properties";
-    log.info("Loading {}", propertiesFile);
-    try (var is = new FileInputStream(propertiesFile)) {
-      Properties properties = new Properties();
-      properties.load(is);
-      String time = properties.getProperty(CODES_UPDATE_TIME_PROP);
-      codesUpdateTime = LocalTime.parse(time);
-    }
+    Properties properties = ConfigurationLoader.loadConfig();
+    String time = properties.getProperty(CODES_UPDATE_TIME_PROP);
+    codesUpdateTime = LocalTime.parse(time);
 
     List<EfmModuleSetup> modules = new ArrayList<>();
     for (int idx = 0; idx < jurisdictions.size(); idx++) {
@@ -290,7 +300,7 @@ public class EfspServer {
     log.info("Starting Server with the following Filers: {}", modules);
 
     Supplier<LoginDatabase> ldSupplier = () -> LoginDatabase.fromDS(userDs);
-    SecurityHub security = new SecurityHub(ldSupplier, tylerEnv, jurisdictions);
+    SecurityHub security = new SecurityHub(ldSupplier, jurisdictions);
     EfspServer server = new EfspServer(codeDs, userDs, sender, modules, security, converterMap);
 
     Runtime.getRuntime()

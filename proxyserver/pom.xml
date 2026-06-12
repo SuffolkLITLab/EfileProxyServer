@@ -89,16 +89,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-features-logging</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <!-- Jetty is needed if you're are not using the CXFServlet -->
-        <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http-jetty</artifactId>
             <version>${cxf.version}</version>
         </dependency>
@@ -129,6 +119,11 @@
                     <artifactId>jaxb-runtime</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <!-- Jetty is needed if you're are not using the CXFServlet -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>

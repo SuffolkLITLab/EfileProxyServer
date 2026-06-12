@@ -192,11 +192,14 @@ public class TylerModuleSetup implements EfmModuleSetup {
               testOnlyLocation,
               tylerDomain);
           CodeUpdater.executeCommand(
-              () -> cd, tylerDomain, List.of("replacesome", testOnlyLocation), this.x509Password);
+              () -> cd,
+              tylerDomain.jurisdiction(),
+              List.of("replacesome", testOnlyLocation),
+              this.x509Password);
         } else {
           log.info("Downloading all codes for {}: please wait a bit", tylerDomain);
           CodeUpdater.executeCommand(
-              () -> cd, tylerDomain, List.of("replaceall"), this.x509Password);
+              () -> cd, tylerDomain.jurisdiction(), List.of("replaceall"), this.x509Password);
         }
       }
     } catch (SQLException e) {
@@ -286,7 +289,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
         };
 
     PolicyCacher policyCacher = new PolicyCacher();
-    EfmFilingInterface filer = new Ecf4Filer(tylerDomain, cdSupplier, policyCacher);
+    EfmFilingInterface filer = new Ecf4Filer(tylerDomain.jurisdiction(), cdSupplier, policyCacher);
     for (String court : getCourts()) {
       filingMap.put(court, filer);
       getCallback().ifPresent(call -> callbackMap.put(court, call));
@@ -318,20 +321,22 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
     Supplier<UserDatabase> udSupplier = () -> UserDatabase.fromDS(this.userDs);
 
-    var adminUser = new AdminUserService(tylerDomain, cdSupplier, passwordChecker);
-    var cases = new CasesService(tylerDomain, cdSupplier);
+    var adminUser = new AdminUserService(tylerDomain.jurisdiction(), cdSupplier, passwordChecker);
+    var cases = new CasesService(tylerDomain.jurisdiction(), cdSupplier);
     var codes = new EcfCodesService(tylerDomain.jurisdiction(), cdSupplier);
     Optional<CourtSchedulingService> courtScheduler = Optional.empty();
     if (tylerDomain.jurisdiction() == Jurisdiction.ILLINOIS) {
       courtScheduler =
           Optional.of(
-              new CourtSchedulingService(converterMap, tylerDomain, cdSupplier, policyCacher));
+              new CourtSchedulingService(
+                  converterMap, tylerDomain.jurisdiction(), cdSupplier, policyCacher));
     }
     var filingReview =
         new FilingReviewService(
             getJurisdiction(), udSupplier, converterMap, filingMap, callbackMap, this.sender);
-    var firmAttorney = new FirmAttorneyAndServiceService(tylerDomain, cdSupplier);
-    var payments = new PaymentsService(tylerDomain, this.togaKey, this.togaUrl, cdSupplier);
+    var firmAttorney = new FirmAttorneyAndServiceService(tylerDomain.jurisdiction(), cdSupplier);
+    var payments =
+        new PaymentsService(tylerDomain.jurisdiction(), this.togaKey, this.togaUrl, cdSupplier);
     JurisdictionServiceHandle handle =
         new JurisdictionServiceHandle(
             getJurisdiction(),
@@ -417,7 +422,6 @@ public class TylerModuleSetup implements EfmModuleSetup {
     return JobBuilder.newJob(UpdateCodeVersions.class)
         .withIdentity(jobName, "codesdb-group")
         .usingJobData("TYLER_JURISDICTION", this.tylerDomain.jurisdiction().getName())
-        .usingJobData("TYLER_ENV", this.tylerDomain.env().getName())
         .usingJobData("X509_PASSWORD", this.x509Password)
         .usingJobData("POSTGRES_URL", this.pgUrl)
         .usingJobData("POSTGRES_DB", this.pgDb)
