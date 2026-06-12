@@ -19,7 +19,6 @@ import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.stdlib.RandomString;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
@@ -109,8 +108,11 @@ public class PaymentsService {
   private final Jurisdiction jurisdiction;
 
   public PaymentsService(
-      TylerDomain domain, String togaKey, String togaUrl, Supplier<CodeDatabase> cdSupplier) {
-    this.jurisdiction = domain.jurisdiction();
+      Jurisdiction jurisdiction,
+      String togaKey,
+      String togaUrl,
+      Supplier<CodeDatabase> cdSupplier) {
+    this.jurisdiction = jurisdiction;
     this.callbackToUsUrl =
         ServiceHelpers.EXTERNAL_URL
             + "/jurisdictions/"
@@ -121,11 +123,11 @@ public class PaymentsService {
     this.togaKey = togaKey;
     this.togaUrl = togaUrl;
     this.tempAccounts = new HashMap<String, TempAccount>();
-    var maybeFirmFactory = TylerClients.getEfmFirmFactory(domain);
+    var maybeFirmFactory = TylerClients.getEfmFirmFactory(jurisdiction);
     if (maybeFirmFactory.isPresent()) {
       this.firmFactory = maybeFirmFactory.get();
     } else {
-      throw new RuntimeException(domain + " not in SoapClientChooser for EFMFirm");
+      throw new RuntimeException(jurisdiction + " not in SoapClientChooser for EFMFirm");
     }
     this.cdSupplier = cdSupplier;
   }

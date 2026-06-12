@@ -9,6 +9,7 @@ import ecf5.TylerCourtRecordMDEService;
 import ecf5.TylerCourtSchedulingMDEService;
 import ecf5.TylerFilingAssemblyMDEService;
 import ecf5.TylerFilingReviewMDEService;
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerVersion;
@@ -34,8 +35,9 @@ public class SoapClientChooserV5 {
   private static final String TYLER_FILING_REVIEW_WSDL = "-ECF5-TylerFilingReviewMDEService.wsdl";
 
   public static Optional<Function<Consumer<BindingProvider>, CourtPolicyClient>>
-      getCourtPolicyFactory(TylerDomain domain) {
-    var version = TylerClients.getVersion(domain);
+      getCourtPolicyFactory(Jurisdiction jurisdiction) {
+    var version = TylerClients.getVersion(jurisdiction);
+    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, COURT_POLICY_WSDL);
@@ -45,8 +47,9 @@ public class SoapClientChooserV5 {
   }
 
   public static Optional<Function<Consumer<BindingProvider>, CourtRecordClient>>
-      getCourtRecordFactory(TylerDomain domain) {
-    var version = TylerClients.getVersion(domain);
+      getCourtRecordFactory(Jurisdiction jurisdiction) {
+    var version = TylerClients.getVersion(jurisdiction);
+    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, COURT_RECORD_WSDL);
@@ -56,8 +59,9 @@ public class SoapClientChooserV5 {
   }
 
   public static Optional<Function<Consumer<BindingProvider>, CourtSchedulingClient>>
-      getCourtSchedulingFactory(TylerDomain domain) {
-    var version = TylerClients.getVersion(domain);
+      getCourtSchedulingFactory(Jurisdiction jurisdiction) {
+    var version = TylerClients.getVersion(jurisdiction);
+    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, COURT_SCHED_WSDL);
@@ -69,8 +73,9 @@ public class SoapClientChooserV5 {
   }
 
   public static Optional<Function<Consumer<BindingProvider>, FilingReviewClient>>
-      getFilingReviewClientFactory(TylerDomain domain) {
-    var version = TylerClients.getVersion(domain);
+      getFilingReviewClientFactory(Jurisdiction jurisdiction) {
+    var version = TylerClients.getVersion(jurisdiction);
+    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, FILING_REVIEW_WSDL);
@@ -80,8 +85,9 @@ public class SoapClientChooserV5 {
   }
 
   public static Optional<Function<Consumer<BindingProvider>, ServiceClient>> getServiceFactory(
-      TylerDomain domain) {
-    var version = TylerClients.getVersion(domain);
+      Jurisdiction jurisdiction) {
+    var version = TylerClients.getVersion(jurisdiction);
+    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, SERVICE_WSDL);
@@ -90,8 +96,9 @@ public class SoapClientChooserV5 {
   }
 
   public static Optional<Function<Consumer<BindingProvider>, TylerCourtRecordClient>>
-      getTylerCourtRecordFactory(TylerDomain domain) {
-    var version = TylerClients.getVersion(domain);
+      getTylerCourtRecordFactory(Jurisdiction jurisdiction) {
+    var version = TylerClients.getVersion(jurisdiction);
+    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, TYLER_COURT_RECORD_WSDL);
@@ -103,8 +110,9 @@ public class SoapClientChooserV5 {
   }
 
   public static Optional<Function<Consumer<BindingProvider>, TylerCourtSchedulingClient>>
-      getTylerCourtSchedulingFactory(TylerDomain domain) {
-    var version = TylerClients.getVersion(domain);
+      getTylerCourtSchedulingFactory(Jurisdiction jurisdiction) {
+    var version = TylerClients.getVersion(jurisdiction);
+    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, TYLER_COURT_SCHED_WSDL);
@@ -117,8 +125,9 @@ public class SoapClientChooserV5 {
   }
 
   public static Optional<Function<Consumer<BindingProvider>, TylerFilingAssemblyClient>>
-      getTylerFilingAssemblyFactory(TylerDomain domain) {
-    var version = TylerClients.getVersion(domain);
+      getTylerFilingAssemblyFactory(Jurisdiction jurisdiction) {
+    var version = TylerClients.getVersion(jurisdiction);
+    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, TYLER_FILING_ASSEM_WSDL);
@@ -131,8 +140,9 @@ public class SoapClientChooserV5 {
   }
 
   public static Optional<Function<Consumer<BindingProvider>, TylerFilingReviewClient>>
-      getTylerFilingReviewFactory(TylerDomain domain) {
-    var version = TylerClients.getVersion(domain);
+      getTylerFilingReviewFactory(Jurisdiction jurisdiction) {
+    var version = TylerClients.getVersion(jurisdiction);
+    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
     return version.flatMap(
         v -> {
           var url = createLocalWsdlUrl(domain, v, TYLER_FILING_REVIEW_WSDL);

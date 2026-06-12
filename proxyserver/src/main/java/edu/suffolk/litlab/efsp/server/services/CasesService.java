@@ -37,7 +37,6 @@ import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.utils.Hasher;
 import jakarta.ws.rs.GET;
@@ -87,11 +86,12 @@ public class CasesService {
   private final Jurisdiction jurisdiction;
   private final EndpointReflection ef;
 
-  public CasesService(TylerDomain domain, Supplier<CodeDatabase> cdSupplier) {
-    this.jurisdiction = domain.jurisdiction();
-    Optional<CourtRecordMDEService> maybeRecords = SoapClientChooser.getCourtRecordFactory(domain);
+  public CasesService(Jurisdiction jurisdiction, Supplier<CodeDatabase> cdSupplier) {
+    this.jurisdiction = jurisdiction;
+    Optional<CourtRecordMDEService> maybeRecords =
+        SoapClientChooser.getCourtRecordFactory(jurisdiction);
     if (maybeRecords.isEmpty()) {
-      throw new RuntimeException("Can't find " + domain + " for court record factory");
+      throw new RuntimeException("Can't find " + jurisdiction + " for court record factory");
     }
     this.recordFactory = maybeRecords.get();
     this.cdSupplier = cdSupplier;

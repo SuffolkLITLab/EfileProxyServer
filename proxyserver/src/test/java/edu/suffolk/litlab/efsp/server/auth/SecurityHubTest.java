@@ -13,7 +13,6 @@ import edu.suffolk.litlab.efsp.db.LoginDatabase;
 import edu.suffolk.litlab.efsp.db.model.AtRest;
 import edu.suffolk.litlab.efsp.db.model.NewTokens;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
-import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
 import java.util.List;
@@ -37,13 +36,14 @@ public class SecurityHubTest {
 
   private static MockedStatic<TylerClients> mockClients;
   private static TylerUserClient tylerUserClient;
+  private static TylerUserFactory userFactory;
   private SecurityHub hub;
   private LoginDatabase ld;
 
   @BeforeAll
   static void init() {
     tylerUserClient = mock(TylerUserClient.class);
-    TylerUserFactory userFactory = mock(TylerUserFactory.class);
+    userFactory = mock(TylerUserFactory.class);
     when(userFactory.makeUserClient(any())).thenReturn(tylerUserClient);
 
     mockClients = Mockito.mockStatic(TylerClients.class);
@@ -58,7 +58,7 @@ public class SecurityHubTest {
   @BeforeEach
   public void setup() {
     ld = mock(LoginDatabase.class);
-    hub = new SecurityHub(() -> ld, TylerEnv.STAGE, List.of(Jurisdiction.ILLINOIS));
+    hub = new SecurityHub(() -> ld, List.of(Jurisdiction.ILLINOIS));
   }
 
   @Test

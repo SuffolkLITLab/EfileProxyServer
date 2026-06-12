@@ -17,7 +17,6 @@ import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
@@ -86,13 +85,14 @@ public class FirmAttorneyAndServiceService {
   private static final tyler.efm.latest.services.schema.common.ObjectFactory tylerCommonObjFac =
       new tyler.efm.latest.services.schema.common.ObjectFactory();
 
-  public FirmAttorneyAndServiceService(TylerDomain domain, Supplier<CodeDatabase> cdSupplier) {
-    this.jurisdiction = domain.jurisdiction();
-    Optional<TylerFirmFactory> maybeFirmFactory = TylerClients.getEfmFirmFactory(domain);
+  public FirmAttorneyAndServiceService(
+      Jurisdiction jurisdiction, Supplier<CodeDatabase> cdSupplier) {
+    this.jurisdiction = jurisdiction;
+    Optional<TylerFirmFactory> maybeFirmFactory = TylerClients.getEfmFirmFactory(jurisdiction);
     if (maybeFirmFactory.isPresent()) {
       this.firmFactory = maybeFirmFactory.get();
     } else {
-      throw new RuntimeException(domain + " not in SoapClientChooser for EFMFirm");
+      throw new RuntimeException(jurisdiction + " not in SoapClientChooser for EFMFirm");
     }
     this.cdSupplier = cdSupplier;
   }
