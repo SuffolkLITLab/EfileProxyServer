@@ -13,13 +13,11 @@ public enum Jurisdiction {
   CALIFORNIA("california", Api.ECF_4, Vendor.TYLER),
   INDIANA("indiana", Api.ECF_4, Vendor.TYLER),
   ILLINOIS("illinois", Api.ECF_4_Schedule, Vendor.TYLER),
-  LOUISIANA("louisiana", Api.JEFFNET, Vendor.JEFFERSON_PARISH),
   MASSACHUSETTS("massachusetts", Api.ECF_4, Vendor.TYLER),
   TEXAS("texas", Api.ECF_4, Vendor.TYLER),
   VERMONT("vermont", Api.ECF_4, Vendor.TYLER);
 
   public enum Api {
-    JEFFNET,
     ECF_4,
     // Illinois uses a custom Tyler ECF4 version, which includes a pre-release ECF 5
     // version of the Court Scheduling MDE.
@@ -27,7 +25,6 @@ public enum Jurisdiction {
   }
 
   public enum Vendor {
-    JEFFERSON_PARISH,
     TYLER;
   }
 

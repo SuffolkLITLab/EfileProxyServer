@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
 import java.util.Map;
@@ -21,13 +20,13 @@ public class TylerLogin implements LoginInterface {
   private static final String HEADER_KEY_PREFIX = "TYLER-TOKEN";
   private final Jurisdiction jurisdiction;
 
-  public TylerLogin(TylerDomain domain) {
-    this.jurisdiction = domain.jurisdiction();
-    Optional<TylerUserFactory> maybeUserFactory = TylerClients.getEfmUserFactory(domain);
+  public TylerLogin(Jurisdiction jurisdiction) {
+    this.jurisdiction = jurisdiction;
+    Optional<TylerUserFactory> maybeUserFactory = TylerClients.getEfmUserFactory(jurisdiction);
     if (maybeUserFactory.isPresent()) {
       userServiceFactory = maybeUserFactory.get();
     } else {
-      throw new RuntimeException(domain + " not in SoapClientChooser for EFMUser");
+      throw new RuntimeException(jurisdiction + " not in SoapClientChooser for EFMUser");
     }
   }
 
