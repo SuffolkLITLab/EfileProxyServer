@@ -26,14 +26,14 @@ import ecf4.latest.https.docs_oasis_open_org.legalxml_courtfiling.ns.v5_0.ecf.Pe
 import ecf4.latest.tyler.ecf.v5_0.extensions.common.FilingAttorneyEntityType;
 import ecf4.latest.tyler.ecf.v5_0.extensions.common.FilingPartyEntityType;
 import ecf4.latest.tyler.ecf.v5_0.extensions.common.FilingReferenceType;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.PartyInfo;
 import edu.suffolk.litlab.efsp.model.Person;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.ComboCaseCodes;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.PartyType;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
 import java.math.BigDecimal;

@@ -1,8 +1,8 @@
 package edu.suffolk.litlab.efsp.utils;
 
 import com.hubspot.algebra.Result;
+import edu.suffolk.litlab.efsp.ecfcodes.CodesParser;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
-import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 
 public abstract class InterviewToFilingInformationConverter {
 

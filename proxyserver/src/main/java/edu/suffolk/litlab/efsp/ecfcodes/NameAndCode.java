@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efsp.ecfcodes.tyler;
+package edu.suffolk.litlab.efsp.ecfcodes;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 

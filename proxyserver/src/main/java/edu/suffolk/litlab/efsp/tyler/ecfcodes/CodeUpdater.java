@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efsp.ecfcodes;
+package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyquerymessage_4.CourtPolicyQueryMessageType;
 import ecf4.latest.oasis.names.tc.legalxml_courtfiling.schema.xsd.courtpolicyresponsemessage_4.CourtPolicyResponseMessageType;
@@ -6,11 +6,11 @@ import ecf4.latest.oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_d
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeTableConstants.UnsupportedTableException;
+import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseAPI;
+import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseUtils.UnsupportedTableException;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
+import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.HeaderSigner;
-import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;

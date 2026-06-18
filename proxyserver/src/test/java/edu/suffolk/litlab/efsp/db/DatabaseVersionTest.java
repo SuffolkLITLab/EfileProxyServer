@@ -3,12 +3,12 @@ package edu.suffolk.litlab.efsp.db;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.suffolk.litlab.efsp.Jurisdiction;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingComponent;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.OptionalServiceCode;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.PartyType;
 import edu.suffolk.litlab.efsp.utils.Hasher;
 import java.io.File;
 import java.io.FileInputStream;

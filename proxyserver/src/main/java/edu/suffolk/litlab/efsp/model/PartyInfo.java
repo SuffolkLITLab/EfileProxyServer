@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efsp.model;
 
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.PartyType;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.PartyType;
 
 /**
  * PartyType code / role code, and isOrg value isOrg is hacky, but Tyler expects us to create the

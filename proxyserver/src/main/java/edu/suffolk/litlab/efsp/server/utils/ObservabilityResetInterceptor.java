@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.server.utils;
 
+import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;

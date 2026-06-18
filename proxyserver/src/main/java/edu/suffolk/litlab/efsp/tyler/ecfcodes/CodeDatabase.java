@@ -1,11 +1,12 @@
-package edu.suffolk.litlab.efsp.ecfcodes.tyler;
+package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
+import edu.suffolk.litlab.efsp.ecfcodes.CodeAndLocation;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseAPI;
+import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseUtils;
+import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseUtils.UnsupportedTableException;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDocException;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDocIterator;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeTableConstants.UnsupportedTableException;
-import edu.suffolk.litlab.efsp.stdlib.SQLFunction;
-import edu.suffolk.litlab.efsp.stdlib.SQLGetter;
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -59,7 +60,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
   }
 
   public boolean tablesExist() throws SQLException {
-    String tableExistsQuery = CodeTableConstants.getTableExists();
+    String tableExistsQuery = CodeDatabaseUtils.getTableExists();
     boolean locationExists = false;
     boolean installedExists = false;
     try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
@@ -101,7 +102,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
 
     // TODO(brycew-later): eventually make the create tables have foreign keys and
     // required from the Id / columnRefs
-    String tableExistsQuery = CodeTableConstants.getTableExists();
+    String tableExistsQuery = CodeDatabaseUtils.getTableExists();
     try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
       existsSt.setString(1, tableName);
       ResultSet rs = existsSt.executeQuery();
@@ -132,7 +133,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
       return;
     }
 
-    String indicesExist = CodeTableConstants.getIndicesExist();
+    String indicesExist = CodeDatabaseUtils.getIndicesExist();
     try (PreparedStatement existsSt = conn.prepareStatement(indicesExist)) {
       existsSt.setString(1, tableName);
       ResultSet rs = existsSt.executeQuery();
@@ -253,26 +254,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
     return stmt;
   }
 
-  /**
-   * In most cases, we want to find all instances of the search term, not the exact term. It's a
-   * LIKE compare, so add the 0 or more characters on either side.
-   *
-   * @param searchTerm
-   * @return
-   */
-  private static String likeWildcard(String searchTerm) {
-    if (searchTerm == null) {
-      return "%";
-    }
-    return "%" + searchTerm + "%";
-  }
-
-  /**
-   * Gets all distinct case category names that have the search term in them.
-   *
-   * @param searchTerm
-   * @return
-   */
+  @Override
   public List<String> searchCaseCategory(String searchTerm) {
     return genericSearch(
         searchTerm,
@@ -285,6 +267,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         });
   }
 
+  @Override
   public List<String> courtCoverageCaseCategory(String searchTerm) {
     return genericSearch(
         searchTerm,
@@ -297,12 +280,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         });
   }
 
-  /**
-   * Get the code and court locations of the case categories that match the given name exactly.
-   *
-   * @param categoryName
-   * @return
-   */
+  @Override
   public List<CodeAndLocation> retrieveCaseCategoryByName(String categoryName) {
     return safetyWrap(
         () -> {
@@ -317,6 +295,23 @@ public class CodeDatabase extends CodeDatabaseAPI {
             }
           }
           return cats;
+        });
+  }
+
+  public List<NameAndCode> getCaseCategoryNames(String courtLocationId) {
+    return safetyWrap(
+        () -> {
+          String query = CaseCategory.getCaseCategoriesForLoc();
+          List<NameAndCode> nacs = new ArrayList<>();
+          try (PreparedStatement st = conn.prepareStatement(query)) {
+            st.setString(1, domainStr());
+            st.setString(2, courtLocationId);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+              nacs.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+            }
+          }
+          return nacs;
         });
   }
 
@@ -380,26 +375,17 @@ public class CodeDatabase extends CodeDatabaseAPI {
         });
   }
 
-  /**
-   * Gets all distinct case type names that have the search term in them.
-   *
-   * @param searchTerm
-   * @return
-   */
+  @Override
   public List<String> searchCaseType(String searchTerm) {
     return genericSearch(searchTerm, (term) -> CaseType.prepSearchQuery(conn, domainStr(), term));
   }
 
+  @Override
   public List<String> courtCoverageCaseType(String searchTerm) {
     return genericSearch(searchTerm, (term) -> CaseType.prepCourtCoverage(conn, domainStr(), term));
   }
 
-  /**
-   * Get the code and court locations of the case types that match the given name exactly.
-   *
-   * @param caseTypeName
-   * @return
-   */
+  @Override
   public List<CodeAndLocation> retrieveCaseTypeByName(String caseTypeName) {
     return safetyWrap(
         () -> {
@@ -411,6 +397,31 @@ public class CodeDatabase extends CodeDatabaseAPI {
             }
             return types;
           }
+        });
+  }
+
+  @Override
+  public List<NameAndCode> getCaseTypeNamesFor(
+      String courtLocationId, String caseCategoryCode, Optional<Boolean> initial) {
+    return safetyWrap(
+        () -> {
+          PreparedStatement st;
+          if (initial.isPresent()) {
+            st =
+                CaseType.prepQueryTiming(
+                    conn, domainStr(), courtLocationId, caseCategoryCode, initial);
+          } else {
+            st = CaseType.prepQueryBroad(conn, domainStr(), courtLocationId, caseCategoryCode);
+          }
+          ResultSet rs = st.executeQuery();
+          List<NameAndCode> nacs = new ArrayList<>();
+          // TODO(bryce): can be more efficient, just grabbing the name and code and not all of the
+          // other data.
+          while (rs.next()) {
+            nacs.add(new NameAndCode(rs.getString(2), rs.getString(1)));
+          }
+          st.close();
+          return nacs;
         });
   }
 
@@ -629,23 +640,6 @@ public class CodeDatabase extends CodeDatabaseAPI {
   public List<String> courtCoverageFilingType(String searchTerm) {
     return genericSearch(
         searchTerm, (term) -> FilingCode.prepCourtCoverageQuery(conn, domainStr(), term));
-  }
-
-  /** Runs all of the logic for search queries (both name searches and court coverage searches). */
-  private List<String> genericSearch(
-      String searchTerm, SQLFunction<String, PreparedStatement> queryMaker) {
-    String finalSearchTerm = likeWildcard(searchTerm);
-    return safetyWrap(
-        () -> {
-          try (PreparedStatement st = queryMaker.apply(finalSearchTerm)) {
-            List<String> types = new ArrayList<>();
-            ResultSet rs = st.executeQuery();
-            while (rs.next()) {
-              types.add(rs.getString(1));
-            }
-            return types;
-          }
-        });
   }
 
   /**
@@ -1376,31 +1370,5 @@ public class CodeDatabase extends CodeDatabaseAPI {
             return disclaimers;
           }
         });
-  }
-
-  private <T> List<T> safetyWrap(SQLGetter<List<T>> sup) {
-    if (conn == null) {
-      log.error("SQL connection not created yet!");
-      return List.of();
-    }
-    try {
-      return sup.get();
-    } catch (SQLException ex) {
-      log.error("SQL excption: ", ex);
-      return List.of();
-    }
-  }
-
-  private <T> Optional<T> safetyWrapOpt(SQLGetter<Optional<T>> sup) {
-    if (conn == null) {
-      log.error("SQL connection not created yet!");
-      return Optional.empty();
-    }
-    try {
-      return sup.get();
-    } catch (SQLException ex) {
-      log.error("SQL excption: ", ex);
-      return Optional.empty();
-    }
   }
 }

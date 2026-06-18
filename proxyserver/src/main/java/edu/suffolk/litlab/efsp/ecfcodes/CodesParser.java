@@ -1,15 +1,7 @@
-package edu.suffolk.litlab.efsp.server.ecf4;
+package edu.suffolk.litlab.efsp.ecfcodes;
 
 import com.hubspot.algebra.NullValue;
 import com.hubspot.algebra.Result;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.DocumentTypeTableRow;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.FileType;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilerType;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
 import edu.suffolk.litlab.efsp.model.FilingAction;
 import edu.suffolk.litlab.efsp.model.FilingDoc;
 import edu.suffolk.litlab.efsp.model.OptionalService;
@@ -17,6 +9,13 @@ import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.PartyInfo;
 import edu.suffolk.litlab.efsp.model.Person;
 import edu.suffolk.litlab.efsp.model.Person.Gender;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.DocumentTypeTableRow;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.FileType;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilerType;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingCode;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingComponent;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,6 +27,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+/**
+ * Given the strings from an input case, 'parses' them (i.e. checks, confirms, and converts them
+ * into slightly more strict types).
+ *
+ * <p>TODO(brycew): still needs to remove the tyler specific codes from this API
+ */
 public interface CodesParser extends AutoCloseable {
   // Types specifically for errors.
   // spotless:off

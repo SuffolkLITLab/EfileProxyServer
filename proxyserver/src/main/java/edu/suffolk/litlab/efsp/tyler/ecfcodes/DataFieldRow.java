@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efsp.ecfcodes.tyler;
+package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

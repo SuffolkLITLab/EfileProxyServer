@@ -1,6 +1,6 @@
 package edu.suffolk.litlab.efsp.model;
 
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.OptionalServiceCode;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.OptionalServiceCode;
 import java.math.BigDecimal;
 import java.util.Optional;
 

@@ -18,12 +18,12 @@ import ecf4.latest.oasis.names.tc.legalxml_courtfiling.wsdl.webservicesprofile_d
 import ecf4.latest.tyler.ecf.extensions.common.ReviewedDocumentType;
 import edu.suffolk.litlab.efsp.db.UserDatabase;
 import edu.suffolk.litlab.efsp.db.model.Transaction;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.ReviewedFilingExamples;
 import edu.suffolk.litlab.efsp.server.services.api.UpdateMessageStatus;
 import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.CourtLocationInfo;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Optional;

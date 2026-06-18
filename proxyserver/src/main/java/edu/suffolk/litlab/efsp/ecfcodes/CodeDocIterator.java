@@ -48,6 +48,7 @@ public class CodeDocIterator implements Iterator<Map<String, String>> {
   private final XMLEventReader reader;
   /// From the Identification / Version tags.
   private final String version;
+  // TODO: factor out these ECF4 specific types, this should be ECF 4 / 5 independent.
   private final ColumnSet columnSet;
 
   private Map<String, String> nextRow;

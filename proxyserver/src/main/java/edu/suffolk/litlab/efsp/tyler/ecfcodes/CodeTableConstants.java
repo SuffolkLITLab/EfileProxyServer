@@ -1,6 +1,5 @@
-package edu.suffolk.litlab.efsp.ecfcodes.tyler;
+package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +7,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+
+import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseUtils.UnsupportedTableException;
 
 public class CodeTableConstants {
   /*
@@ -387,18 +388,6 @@ public class CodeTableConstants {
     return tableColumns.getOrDefault(tableName, new TableColumns()).needsExtraLocCol;
   }
 
-  public static String getTableExists() {
-    return """
-        SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'
-        AND table_name = ? LIMIT 1;""";
-  }
-
-  public static String getIndicesExist() {
-    return """
-        SELECT COUNT(*) FROM pg_catalog.pg_indexes where schemaname='public'
-        AND tablename = ? LIMIT 1;""";
-  }
-
   public static String updateVersion() {
     return """
         INSERT INTO installedversion (location, codelist, installedversion, domain) VALUES(?, ?, ?, ?)
@@ -452,12 +441,6 @@ public class CodeTableConstants {
     return "VACUUM ANALYZE";
   }
 
-  /** This exception is returned when a given table name isn't in the pre-approved list of names. */
-  public static class UnsupportedTableException extends SQLException {
-    public UnsupportedTableException(String message) {
-      super(message);
-    }
-  }
 
   public static boolean tableHasLocation(String tableName) {
     return tableColumns.containsKey(tableName) && tableColumns.get(tableName).needsExtraLocCol;

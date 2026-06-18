@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efsp.ecfcodes.tyler;
+package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.PartyInfo;

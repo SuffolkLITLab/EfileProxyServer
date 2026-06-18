@@ -1,7 +1,7 @@
 package edu.suffolk.litlab.efsp.db;
 
 import edu.suffolk.litlab.efsp.db.model.Transaction;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeTableConstants;
+import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseUtils;
 import edu.suffolk.litlab.efsp.model.EmailTemplates;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -42,7 +42,7 @@ public class UserDatabase extends Database {
 
   /** Creates the userdatabase table if it doesn't exist yet. */
   public void createTablesIfAbsent() throws SQLException {
-    String tableExistsQuery = CodeTableConstants.getTableExists();
+    String tableExistsQuery = CodeDatabaseUtils.getTableExists();
     try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
       existsSt.setString(1, "submitted_filings");
       ResultSet rs = existsSt.executeQuery();

@@ -1,7 +1,7 @@
 package edu.suffolk.litlab.efsp.model;
 
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.DocumentTypeTableRow;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingComponent;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.DocumentTypeTableRow;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingComponent;
 import java.util.Optional;
 
 /** An individual PDF, all a part of the same "document". The equivalent of an ALDocument. */
