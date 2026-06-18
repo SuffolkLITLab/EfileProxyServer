@@ -1,7 +1,7 @@
-package edu.suffolk.litlab.efsp.ecfcodes.tyler;
+package edu.suffolk.litlab.efsp.ecfcodes;
 
 /**
- * The code and location for a Tyler code.
+ * The code and location for an ECF code.
  *
  * <p>Returned by the various "search" APIs; you search for all codes with "XYZ" in the name, and
  * then do `/filing_code_names/XYZ` to get the code and location, enough to find all of the

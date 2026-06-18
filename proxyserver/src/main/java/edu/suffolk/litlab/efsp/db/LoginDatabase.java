@@ -1,8 +1,8 @@
 package edu.suffolk.litlab.efsp.db;
 
 import edu.suffolk.litlab.efsp.db.model.AtRest;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeTableConstants;
-import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
+import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseUtils;
+import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.stdlib.RandomString;
 import edu.suffolk.litlab.efsp.utils.Hasher;
 import java.sql.Connection;
@@ -65,7 +65,7 @@ public class LoginDatabase extends Database {
 
     String tableName = "at_rest_keys";
     String createQuery = atRestCreate;
-    String tableExistsQuery = CodeTableConstants.getTableExists();
+    String tableExistsQuery = CodeDatabaseUtils.getTableExists();
     try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
       existsSt.setString(1, tableName);
       ResultSet rs = existsSt.executeQuery();
@@ -84,7 +84,7 @@ public class LoginDatabase extends Database {
 
   public boolean tablesExist() throws SQLException {
     String tableName = "at_rest_keys";
-    String tableExistsQuery = CodeTableConstants.getTableExists();
+    String tableExistsQuery = CodeDatabaseUtils.getTableExists();
     try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
       existsSt.setString(1, tableName);
       ResultSet rs = existsSt.executeQuery();

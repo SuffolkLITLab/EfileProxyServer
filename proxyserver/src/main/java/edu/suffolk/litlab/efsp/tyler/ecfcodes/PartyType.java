@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efsp.ecfcodes.tyler;
+package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;

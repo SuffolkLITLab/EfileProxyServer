@@ -1,4 +1,4 @@
-package edu.suffolk.litlab.efsp.server.utils;
+package edu.suffolk.litlab.efsp.server.logging;
 
 import org.slf4j.MDC;
 

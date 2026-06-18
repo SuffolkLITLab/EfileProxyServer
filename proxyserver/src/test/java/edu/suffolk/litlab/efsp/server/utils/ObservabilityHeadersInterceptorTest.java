@@ -3,6 +3,7 @@ package edu.suffolk.litlab.efsp.server.utils;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import java.io.IOException;

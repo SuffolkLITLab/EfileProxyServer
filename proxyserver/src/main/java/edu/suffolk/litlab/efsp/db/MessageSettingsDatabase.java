@@ -1,7 +1,7 @@
 package edu.suffolk.litlab.efsp.db;
 
 import edu.suffolk.litlab.efsp.db.model.MessageInfo;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeTableConstants;
+import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseUtils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,7 +36,7 @@ public class MessageSettingsDatabase extends Database {
       throw new SQLException();
     }
 
-    String tableExistsQuery = CodeTableConstants.getTableExists();
+    String tableExistsQuery = CodeDatabaseUtils.getTableExists();
     try (PreparedStatement existsSt = conn.prepareStatement(tableExistsQuery)) {
       existsSt.setString(1, "message_settings");
       ResultSet rs = existsSt.executeQuery();

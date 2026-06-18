@@ -36,25 +36,19 @@ import ecf4.latest.tyler.ecf.v5_0.extensions.returndateresponse.ReturnDateRespon
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.CourtRecordMDEService;
 import ecf4.latest.tyler.efm.wsdl.webservicesprofile_implementation_4_0.FilingReviewMDEService;
 import edu.suffolk.litlab.efsp.Jurisdiction;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CodeDatabase;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.ComboCaseCodes;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CourtLocationInfo;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
+import edu.suffolk.litlab.efsp.ecfcodes.CodesParser;
 import edu.suffolk.litlab.efsp.model.FilingInformation;
 import edu.suffolk.litlab.efsp.model.PartyId;
 import edu.suffolk.litlab.efsp.model.Person;
-import edu.suffolk.litlab.efsp.server.ecf4.CodesParser;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecf4Helper;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.ecf4.EcfCourtSpecificSerializer;
 import edu.suffolk.litlab.efsp.server.ecf4.Ecfv5CaseTypeFactory;
 import edu.suffolk.litlab.efsp.server.ecf4.PolicyCacher;
-import edu.suffolk.litlab.efsp.server.ecf4.tyler.TylerCodesParser;
+import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.Ecfv5XmlHelper;
 import edu.suffolk.litlab.efsp.server.utils.EfspSecurityContext;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
-import edu.suffolk.litlab.efsp.server.utils.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.TylerUserFromServer;
@@ -62,6 +56,12 @@ import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.ComboCaseCodes;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.CourtLocationInfo;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingCode;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.TylerCodesParser;
 import edu.suffolk.litlab.efsp.utils.FailFastCollector;
 import edu.suffolk.litlab.efsp.utils.FilingError;
 import edu.suffolk.litlab.efsp.utils.InfoCollector;
@@ -354,7 +354,7 @@ public class CourtSchedulingService {
                     .name("case type (fom tyler)")
                     .description("(shouldn't be wrong)"));
           }
-          edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType typeCode = typeRes.expect("");
+          edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType typeCode = typeRes.expect("");
           existingParties = EcfCaseTypeFactory.getCaseParticipants(resp.getCase().getValue());
           if (existingParties.isEmpty()) {
             log.info("Couldn't get exsting parties?");

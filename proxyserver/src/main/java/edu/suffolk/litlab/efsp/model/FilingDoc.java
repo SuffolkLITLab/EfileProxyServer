@@ -1,8 +1,8 @@
 package edu.suffolk.litlab.efsp.model;
 
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilingCode;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.stdlib.NonEmptyString;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingCode;
 import fj.data.NonEmptyList;
 import java.time.LocalDate;
 import java.util.List;

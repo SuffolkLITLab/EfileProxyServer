@@ -1,9 +1,9 @@
 package edu.suffolk.litlab.efsp.model;
 
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseCategory;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.CaseType;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.FilerType;
-import edu.suffolk.litlab.efsp.ecfcodes.tyler.NameAndCode;
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType;
+import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilerType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
