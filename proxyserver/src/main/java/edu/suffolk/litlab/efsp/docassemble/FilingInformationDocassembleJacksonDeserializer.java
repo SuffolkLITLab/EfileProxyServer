@@ -336,34 +336,48 @@ public class FilingInformationDocassembleJacksonDeserializer
 
     entities.setPaymentId(extractNullableString(node.get("tyler_payment_id")));
 
-    JsonNode leadJson = node.get("lead_contact");
-    if (leadJson == null) {
-      InterviewVariable var =
-          collector.requestVar(
-              "lead_contact", "Someone to contact about this case", "ALIndividual");
-      collector.addRequired(var);
+    if (users.size() >= 1
+        && users.get(0).isFormFiller()
+        && users.get(0).getContactInfo().getEmail().isPresent()) {
+      log.info(
+          "Using users[0] as lead_contact because `is_form_filler` is true (this is what the EFM will do as well)");
+      entities.setLeadContact(users.get(0));
     } else {
-      collector.pushAttributeStack("lead_contact");
-      Result<Person, FilingError> per =
-          PersonDocassembleJacksonDeserializer.fromNode(
-              node.get("lead_contact"), parser, collector);
-      collector.popAttributeStack();
-      if (per.isErr()) {
-        FilingError ex = per.unwrapErrOrElseThrow();
-        log.warn("Person exception: ", ex);
-        collector.error(ex);
-        entities.setLeadContact(null);
+      if (users.size() >= 1
+          && users.get(0).isFormFiller()
+          && users.get(0).getContactInfo().getEmail().isEmpty()) {
+        log.warn(
+            "I want to use users[0] as lead_contact, but they don't have an email! Using lead_contact instead");
+      }
+      JsonNode leadJson = node.get("lead_contact");
+      if (leadJson == null) {
+        InterviewVariable var =
+            collector.requestVar(
+                "lead_contact", "Someone to contact about this case", "ALIndividual");
+        collector.addRequired(var);
       } else {
-        Person person = per.unwrapOrElseThrow();
-        if (person.getContactInfo().getEmail().isEmpty()) {
-          InterviewVariable var =
-              collector.requestVar(
-                  "lead_contact.email",
-                  "We need an email to contact someone about this case.",
-                  "text");
-          collector.addRequired(var);
+        collector.pushAttributeStack("lead_contact");
+        Result<Person, FilingError> per =
+            PersonDocassembleJacksonDeserializer.fromNode(
+                node.get("lead_contact"), parser, collector);
+        collector.popAttributeStack();
+        if (per.isErr()) {
+          FilingError ex = per.unwrapErrOrElseThrow();
+          log.warn("Person exception: ", ex);
+          collector.error(ex);
+          entities.setLeadContact(null);
+        } else {
+          Person person = per.unwrapOrElseThrow();
+          if (person.getContactInfo().getEmail().isEmpty()) {
+            InterviewVariable var =
+                collector.requestVar(
+                    "lead_contact.email",
+                    "We need an email to contact someone about this case.",
+                    "text");
+            collector.addRequired(var);
+          }
+          entities.setLeadContact(person);
         }
-        entities.setLeadContact(person);
       }
     }
 
