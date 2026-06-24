@@ -7,6 +7,7 @@ import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection.Endpoint;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
+import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers.FileableCourtType;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
@@ -90,9 +91,16 @@ public class EcfCodesService extends CodesService {
   }
 
   @Override
-  public Response getCourts(HttpHeaders httpHeaders, boolean fileableOnly, boolean withNames) {
+  public Response getCourts(
+      HttpHeaders httpHeaders, boolean fileable, String fileableType, boolean withNames) {
     try (CodeDatabase cd = cdSupplier.get()) {
-      return cors(ServiceHelpers.getCourts(cd, fileableOnly, withNames));
+      FileableCourtType param;
+      if (fileableType.isBlank()) {
+        param = (fileable) ? FileableCourtType.INITIAL_OR_SUBSEQUENT : FileableCourtType.NONE;
+      } else {
+        param = FileableCourtType.valueOf(fileableType);
+      }
+      return cors(ServiceHelpers.getCourts(cd, param, withNames));
     } catch (SQLException ex) {
       return cors(Response.status(500).entity("SQLException on server!"));
     }

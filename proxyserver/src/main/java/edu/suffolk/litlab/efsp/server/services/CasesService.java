@@ -33,6 +33,7 @@ import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.utils.EndpointReflection;
 import edu.suffolk.litlab.efsp.server.utils.NeedsAuthorization;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
+import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers.FileableCourtType;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
@@ -109,7 +110,7 @@ public class CasesService {
   @Path("/courts")
   public Response getCourts() {
     try (CodeDatabase cd = cdSupplier.get()) {
-      return ServiceHelpers.getCourts(cd, false, false).build();
+      return ServiceHelpers.getCourts(cd, FileableCourtType.NONE, false).build();
     } catch (SQLException ex) {
       return Response.status(500).entity("database error retrieving all courts!").build();
     }

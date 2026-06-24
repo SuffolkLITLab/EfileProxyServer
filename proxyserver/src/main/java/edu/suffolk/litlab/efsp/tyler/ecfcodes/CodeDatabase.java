@@ -1278,25 +1278,42 @@ public class CodeDatabase extends CodeDatabaseAPI {
         });
   }
 
-  public List<String> getFileableLocations() {
+  public List<NameAndCode> getFileableLocationNames() {
     return safetyWrap(
         () -> {
           try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.fileableQuery())) {
             st.setString(1, domainStr());
             ResultSet rs = st.executeQuery();
-            var codes = new ArrayList<String>();
+            var codes = new ArrayList<NameAndCode>();
             while (rs.next()) {
-              codes.add(rs.getString(1));
+              codes.add(new NameAndCode(rs.getString(1), rs.getString(2)));
             }
             return codes;
           }
         });
   }
 
-  public List<NameAndCode> getFileableLocationNames() {
+  public List<NameAndCode> getFileableInitialLocationNames() {
     return safetyWrap(
         () -> {
-          try (PreparedStatement st = conn.prepareStatement(CourtLocationInfo.fileableQuery())) {
+          try (PreparedStatement st =
+              conn.prepareStatement(CourtLocationInfo.fileableInitialQuery())) {
+            st.setString(1, domainStr());
+            ResultSet rs = st.executeQuery();
+            var codes = new ArrayList<NameAndCode>();
+            while (rs.next()) {
+              codes.add(new NameAndCode(rs.getString(1), rs.getString(2)));
+            }
+            return codes;
+          }
+        });
+  }
+
+  public List<NameAndCode> getFileableSubsequentLocationNames() {
+    return safetyWrap(
+        () -> {
+          try (PreparedStatement st =
+              conn.prepareStatement(CourtLocationInfo.fileableSubsequentQuery())) {
             st.setString(1, domainStr());
             ResultSet rs = st.executeQuery();
             var codes = new ArrayList<NameAndCode>();
