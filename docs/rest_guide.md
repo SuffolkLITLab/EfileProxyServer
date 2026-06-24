@@ -192,7 +192,7 @@ These three endpoints each deal with the same large request payload: the entire 
     "comments_to_clerk": "I worked with clerk John Brown to complete this at the law library.",
     "tyler_payment_id": "12345678-1234-1234-1234-12345678abcd", // retrieved from .../payments/payment-accounts
     "lead_contact": {
-        // same as users / other_parties
+        // same as users / other_parties. Not required if users[0].is_form_filler is true
         "email": "cool_dude1@example.com", // email is required
     },
     "return_date": "YYYY-MM-DD+01:00",

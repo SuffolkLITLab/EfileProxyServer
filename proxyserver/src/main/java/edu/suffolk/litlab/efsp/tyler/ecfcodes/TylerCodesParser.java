@@ -726,6 +726,9 @@ public class TylerCodesParser implements CodesParser {
         if (!emailRow.matchRegex(email.get())) {
           return Result.err(new WrongVar(email.get(), emailRow.regularexpression));
         }
+        if (email.get().isBlank()) {
+          return Result.ok(Optional.empty());
+        }
       } else if (emailRow.isrequired) {
         return Result.err(new MissingVar(emailRow.regularexpression));
       }
