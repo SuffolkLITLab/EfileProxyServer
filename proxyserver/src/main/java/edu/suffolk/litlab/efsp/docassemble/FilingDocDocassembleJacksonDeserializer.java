@@ -273,6 +273,41 @@ public class FilingDocDocassembleJacksonDeserializer {
       CodesParser parser,
       InfoCollector collector)
       throws FilingError {
+    Optional<String> maybeFilename = getStringMember(node, "filename");
+    String fileName = maybeFilename.orElse("");
+    if (!fileName.endsWith(".pdf")) {
+      fileName += ".pdf";
+    }
+    // Check proxy_enabled asap
+    if (!node.has("proxy_enabled") || !node.get("proxy_enabled").asBoolean(false)) {
+      log.info("{} isn't proxy enabled", fileName);
+      return Optional.empty();
+    }
+
+    var nameBuilder =
+        collector
+            .varBuilder()
+            .name("filename")
+            .description("The file name of the filing document")
+            .datatype("text");
+    if (maybeFilename.isEmpty()) {
+      collector.addRequired(nameBuilder.build());
+    }
+    var filenameRes = parser.vetFileName(fileName);
+    if (filenameRes.isErr()) {
+      switch (filenameRes.expectErr("")) {
+        case FileExtensionNotAllowed ext -> {
+          nameBuilder.appendDesc(
+              "Extension of " + ext.given() + " not allowed! Try these instead: " + ext.allowed());
+          collector.addWrong(nameBuilder.build());
+        }
+        case FileNameTextError textErr -> collector.addTextError(textErr.err(), nameBuilder);
+      }
+    } else {
+      fileName = filenameRes.expect("");
+    }
+
+    String documentDescription = getStringDefault(node, "document_description", fileName);
     String documentTypeFormatName = getStringDefault(node, "document_type", "");
     var documentTypeRes = parser.vetDocType(documentTypeFormatName, filingCode);
     var documentBuilder = collector.varBuilder().name("document_type");
@@ -297,39 +332,6 @@ public class FilingDocDocassembleJacksonDeserializer {
     // TODO: use this default fallback?
     // new FilingComponent("NO CODE", "NOT PRESENT", "", false, false, 0, "", "");
     var filingComponent = componentRes.expect("");
-    Optional<String> maybeFilename = getStringMember(node, "filename");
-    var nameBuilder =
-        collector
-            .varBuilder()
-            .name("filename")
-            .description("The file name of the filing document")
-            .datatype("text");
-    if (maybeFilename.isEmpty()) {
-      collector.addRequired(nameBuilder.build());
-    }
-    String fileName = maybeFilename.orElse("");
-    if (!fileName.endsWith(".pdf")) {
-      fileName += ".pdf";
-    }
-    var filenameRes = parser.vetFileName(fileName);
-    if (filenameRes.isErr()) {
-      switch (filenameRes.expectErr("")) {
-        case FileExtensionNotAllowed ext -> {
-          nameBuilder.appendDesc(
-              "Extension of " + ext.given() + " not allowed! Try these instead: " + ext.allowed());
-          collector.addWrong(nameBuilder.build());
-        }
-        case FileNameTextError textErr -> collector.addTextError(textErr.err(), nameBuilder);
-      }
-    } else {
-      fileName = filenameRes.expect("");
-    }
-
-    String documentDescription = getStringDefault(node, "document_description", fileName);
-    if (!node.has("proxy_enabled") || !node.get("proxy_enabled").asBoolean(false)) {
-      log.info("{} isn't proxy enabled", fileName);
-      return Optional.empty();
-    }
 
     if (!node.has("data_url")
         || !node.get("data_url").isTextual()
