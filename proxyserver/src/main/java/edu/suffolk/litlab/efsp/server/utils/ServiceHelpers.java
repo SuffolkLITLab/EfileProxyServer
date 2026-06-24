@@ -2,6 +2,7 @@ package edu.suffolk.litlab.efsp.server.utils;
 
 import static edu.suffolk.litlab.efsp.stdlib.StdLib.GetEnv;
 
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.tyler.TylerErrorCodes;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmClient;
 import edu.suffolk.litlab.efsp.tyler.TylerFirmFactory;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.cxf.headers.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +82,13 @@ public class ServiceHelpers {
     setupServicePort(bp);
   }
 
+  public enum FileableCourtType {
+    INITIAL_OR_SUBSEQUENT,
+    INITIAL,
+    SUBSEQUENT,
+    NONE
+  };
+
   /**
    * Helper for getting all of the valid courts that can be passed to a particular endpoint,
    *
@@ -89,29 +98,29 @@ public class ServiceHelpers {
    * @return
    */
   public static Response.ResponseBuilder getCourts(
-      CodeDatabase cd, boolean fileableOnly, boolean withNames) {
-    if (fileableOnly) {
-      // 0 and 1 are special "system" courts that have defaults for all courts.
-      // They aren't available for filing, so filter out of either query here
-      if (withNames) {
-        return Response.ok(
-            cd.getFileableLocationNames().stream()
-                .filter(c -> !c.getCode().equals("0") && !c.getCode().equals("1"))
-                .sorted()
-                .collect(Collectors.toList()));
-      } else {
-        return Response.ok(
-            cd.getFileableLocations().stream()
-                .filter(c -> !c.equals("0") && !c.equals("1"))
-                .sorted()
-                .collect(Collectors.toList()));
-      }
+      CodeDatabase cd, FileableCourtType fileableOnly, boolean withNames) {
+    Stream<NameAndCode> locs;
+    // 0 and 1 are special "system" courts that have defaults for all courts.
+    // They aren't available for filing, so filter out of either query here
+    if (fileableOnly == FileableCourtType.INITIAL_OR_SUBSEQUENT) {
+      locs =
+          cd.getFileableLocationNames().stream()
+              .filter(c -> !c.getCode().equals("0") && !c.getCode().equals("1"));
+    } else if (fileableOnly == FileableCourtType.INITIAL) {
+      locs =
+          cd.getFileableInitialLocationNames().stream()
+              .filter(c -> !c.getCode().equals("0") && !c.getCode().equals("1"));
+    } else if (fileableOnly == FileableCourtType.SUBSEQUENT) {
+      locs =
+          cd.getFileableSubsequentLocationNames().stream()
+              .filter(c -> !c.getCode().equals("0") && !c.getCode().equals("1"));
     } else {
-      if (withNames) {
-        return Response.ok(cd.getLocationNames());
-      } else {
-        return Response.ok(cd.getAllLocations());
-      }
+      locs = cd.getLocationNames().stream();
+    }
+    if (withNames) {
+      return Response.ok(locs.sorted().collect(Collectors.toList()));
+    } else {
+      return Response.ok(locs.map(c -> c.getCode()).sorted().collect(Collectors.toList()));
     }
   }
 

@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.db.DatabaseVersionTest;
+import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
 import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
@@ -110,7 +111,7 @@ public class CodeDatabaseTest {
     Optional<CourtLocationInfo> info = cd.getFullLocationInfo("adams");
     List<String> allCourts = cd.getAllLocations();
     assertTrue(allCourts.size() > 0);
-    List<String> fileable = cd.getFileableLocations();
+    List<NameAndCode> fileable = cd.getFileableLocationNames();
     assertTrue(fileable.size() > 0);
     assertTrue(info.isPresent());
   }

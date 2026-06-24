@@ -32,7 +32,8 @@ public abstract class CodesService {
   @Path("/courts")
   public abstract Response getCourts(
       @Context HttpHeaders httpHeaders,
-      @DefaultValue("false") @QueryParam("fileable_only") boolean fileable,
+      @Deprecated @DefaultValue("false") @QueryParam("fileable_only") boolean fileable,
+      @DefaultValue("") @QueryParam("fileable_type") String fileableType,
       @DefaultValue("false") @QueryParam("with_names") boolean withNames);
 
   @GET
@@ -47,7 +48,7 @@ public abstract class CodesService {
   @Path("/courts/{court_id}/categories")
   public abstract Response getCategories(
       @PathParam("court_id") String courtId,
-      @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly,
+      @Deprecated @DefaultValue("false") @QueryParam("fileable_only") boolean fileableOnly,
       @QueryParam("timing") String timing)
       throws SQLException;
 

@@ -290,4 +290,20 @@ public class CourtLocationInfo {
     WHERE domain=? AND (initial ILIKE 'true' OR subsequent ILIKE 'true')
     """;
   }
+
+  public static String fileableInitialQuery() {
+    return """
+    SELECT name, code
+    FROM location
+    WHERE domain=? AND (initial ILIKE 'true')
+    """;
+  }
+
+  public static String fileableSubsequentQuery() {
+    return """
+    SELECT name, code
+    FROM location
+    WHERE domain=? AND (subsequent ILIKE 'true')
+    """;
+  }
 }
