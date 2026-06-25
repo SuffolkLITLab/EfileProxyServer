@@ -8,7 +8,6 @@ import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
 import java.util.Map;
 import java.util.Optional;
-import javax.xml.datatype.XMLGregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tyler.efm.latest.services.schema.authenticaterequest.AuthenticateRequestType;
@@ -66,12 +65,16 @@ public class TylerLogin implements LoginInterface {
               + authRes.getError().getErrorText());
       return Optional.empty();
     } else {
-      Map<String, String> tokens = Map.of(
-          getHeaderKey(), authRes.getEmail() + ":" + authRes.getPasswordHash(),
-          getHeaderId(jurisdiction), authRes.getUserID());
-      Optional<String> expirationDateTime = authRes.getExpirationDateTime() != null
-          ? Optional.of(authRes.getExpirationDateTime().toString())
-          : Optional.empty();
+      Map<String, String> tokens =
+          Map.of(
+              getHeaderKey(),
+              authRes.getEmail() + ":" + authRes.getPasswordHash(),
+              getHeaderId(jurisdiction),
+              authRes.getUserID());
+      Optional<String> expirationDateTime =
+          authRes.getExpirationDateTime() != null
+              ? Optional.of(authRes.getExpirationDateTime().toString())
+              : Optional.empty();
       return Optional.of(new LoginResult(tokens, expirationDateTime));
     }
   }

@@ -49,8 +49,10 @@ public class SecurityHub {
     }
 
     this.loginFunctions = new HashMap<>();
-    this.loginFunctions.put("jeffnet",
-        info -> Optional.of(new LoginResult(Map.of("JEFFNET-TOKEN", "deprecated"), Optional.empty())));
+    this.loginFunctions.put(
+        "jeffnet",
+        info ->
+            Optional.of(new LoginResult(Map.of("JEFFNET-TOKEN", "deprecated"), Optional.empty())));
     this.loginFunctions.putAll(
         this.tylerLoginObjs.stream()
             .collect(Collectors.toMap(lo -> lo.getLoginName(), lo -> (info) -> lo.login(info))));
@@ -113,8 +115,7 @@ public class SecurityHub {
         log.error("There is no {} to login to: enabled map: {}", permissionsName, atRest.enabled);
         return Optional.empty();
       }
-      Optional<LoginResult> maybeResult =
-          loginFunctions.get(orgName).apply(loginInfo.get(orgName));
+      Optional<LoginResult> maybeResult = loginFunctions.get(orgName).apply(loginInfo.get(orgName));
       if (maybeResult.isEmpty()) {
         log.warn("Couldn't login to {}", orgName);
         return Optional.empty();

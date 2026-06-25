@@ -15,10 +15,10 @@ import edu.suffolk.litlab.efsp.db.model.NewTokens;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -108,8 +108,9 @@ public class SecurityHubTest {
       var error = new ErrorType();
       error.setErrorCode("0");
 
-      var expiry = DatatypeFactory.newInstance()
-          .newXMLGregorianCalendar(new GregorianCalendar(2026, 11, 31, 23, 59, 59));
+      var expiry =
+          DatatypeFactory.newInstance()
+              .newXMLGregorianCalendar(new GregorianCalendar(2026, 11, 31, 23, 59, 59));
 
       var authResp = new AuthenticateResponseType();
       authResp.setEmail(EMAIL);
@@ -151,7 +152,7 @@ public class SecurityHubTest {
       assertThat(repeatLogin).isPresent();
       assertThat(activeTyler.get()).isEqualTo(repeatLogin.get());
     }
-    
+
     @Test
     public void testLoginWithUnauthorizedJeffNet() throws Exception {
       ObjectNode jeffNetNode = mapper.createObjectNode();
