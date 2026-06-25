@@ -31,7 +31,7 @@ public class SecurityHub {
   private static final Logger log = LoggerFactory.getLogger(SecurityHub.class);
 
   private final List<LoginInterface> tylerLoginObjs;
-  private final Map<String, Function<JsonNode, Optional<Map<String, String>>>> loginFunctions;
+  private final Map<String, Function<JsonNode, Optional<LoginResult>>> loginFunctions;
   private final Supplier<LoginDatabase> ldSupplier;
 
   /**
@@ -49,7 +49,8 @@ public class SecurityHub {
     }
 
     this.loginFunctions = new HashMap<>();
-    this.loginFunctions.put("jeffnet", info -> Optional.of(Map.of("JEFFNET-TOKEN", "deprecated")));
+    this.loginFunctions.put("jeffnet",
+        info -> Optional.of(new LoginResult(Map.of("JEFFNET-TOKEN", "deprecated"), Optional.empty())));
     this.loginFunctions.putAll(
         this.tylerLoginObjs.stream()
             .collect(Collectors.toMap(lo -> lo.getLoginName(), lo -> (info) -> lo.login(info))));
@@ -89,6 +90,7 @@ public class SecurityHub {
       return Optional.empty();
     }
     var newTokens = new HashMap<String, String>();
+    var expirationTimes = new HashMap<String, String>();
     Iterable<String> orgs = loginInfo::fieldNames;
     for (String orgName : orgs) {
       orgName = orgName.toLowerCase();
@@ -111,18 +113,21 @@ public class SecurityHub {
         log.error("There is no {} to login to: enabled map: {}", permissionsName, atRest.enabled);
         return Optional.empty();
       }
-      Optional<Map<String, String>> maybeNewTokens =
+      Optional<LoginResult> maybeResult =
           loginFunctions.get(orgName).apply(loginInfo.get(orgName));
-      if (maybeNewTokens.isEmpty()) {
+      if (maybeResult.isEmpty()) {
         log.warn("Couldn't login to {}", orgName);
         return Optional.empty();
       }
       log.info("New tokens for {}", orgName);
-      newTokens.putAll(maybeNewTokens.get());
+      LoginResult result = maybeResult.get();
+      newTokens.putAll(result.tokens());
+      final String finalOrgName = orgName;
+      result.expirationDateTime().ifPresent(expiry -> expirationTimes.put(finalOrgName, expiry));
     }
     if (newTokens.isEmpty()) {
       log.warn("No successful logins occurred: returning empty tokens object");
     }
-    return Optional.of(new NewTokens(newTokens));
+    return Optional.of(new NewTokens(newTokens, expirationTimes));
   }
 }
