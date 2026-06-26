@@ -11,17 +11,29 @@ import java.util.Map;
 public class NewTokens {
 
   @JsonUnwrapped private final Map<String, String> tokens;
+  private final Map<String, String> expirationTimes;
 
   public NewTokens() {
     this.tokens = Map.of();
+    this.expirationTimes = Map.of();
   }
 
   public NewTokens(Map<String, String> tokens) {
     this.tokens = tokens;
+    this.expirationTimes = Map.of();
+  }
+
+  public NewTokens(Map<String, String> tokens, Map<String, String> expirationTimes) {
+    this.tokens = tokens;
+    this.expirationTimes = expirationTimes;
   }
 
   public Map<String, String> getTokens() {
     return tokens;
+  }
+
+  public Map<String, String> getExpirationTimes() {
+    return expirationTimes;
   }
 
   @Override
@@ -30,7 +42,8 @@ public class NewTokens {
       return false;
     }
     if (other instanceof NewTokens otherTokens) {
-      return tokens.equals(otherTokens.tokens);
+      return tokens.equals(otherTokens.tokens)
+          && expirationTimes.equals(otherTokens.expirationTimes);
     } else {
       return false;
     }
@@ -38,11 +51,11 @@ public class NewTokens {
 
   @Override
   public int hashCode() {
-    return tokens.hashCode();
+    return tokens.hashCode() * 31 + expirationTimes.hashCode();
   }
 
   @Override
   public String toString() {
-    return tokens.toString();
+    return "tokens=" + tokens + ", expirationTimes=" + expirationTimes;
   }
 }

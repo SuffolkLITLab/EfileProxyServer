@@ -15,9 +15,11 @@ import edu.suffolk.litlab.efsp.db.model.NewTokens;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import javax.xml.datatype.DatatypeFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,7 +96,7 @@ public class SecurityHubTest {
     private ObjectNode loginNode;
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws Exception {
       AtRest atRest = new AtRest();
       atRest.enabled = Map.of("tyler", true, "jeffnet", false);
       when(ld.getAtRestInfo(API_KEY)).thenReturn(Optional.of(atRest));
@@ -106,11 +108,16 @@ public class SecurityHubTest {
       var error = new ErrorType();
       error.setErrorCode("0");
 
+      var expiry =
+          DatatypeFactory.newInstance()
+              .newXMLGregorianCalendar(new GregorianCalendar(2026, 11, 31, 23, 59, 59));
+
       var authResp = new AuthenticateResponseType();
       authResp.setEmail(EMAIL);
       authResp.setError(error);
       authResp.setUserID("abc123");
       authResp.setPasswordHash(PASSWORD_HASH);
+      authResp.setExpirationDateTime(expiry);
       when(tylerUserClient.authenticateUser(refEq(authReq))).thenReturn(authResp);
 
       tylerNode = mapper.createObjectNode();
@@ -140,6 +147,7 @@ public class SecurityHubTest {
       assertThat(activeTyler).isPresent();
       assertThat(activeTyler.get().getTokens().get("TYLER-TOKEN-ILLINOIS"))
           .isEqualTo("bob@example.com:the_password_hash");
+      assertThat(activeTyler.get().getExpirationTimes()).containsKey("tyler-illinois");
       Optional<NewTokens> repeatLogin = hub.login(API_KEY, loginNode);
       assertThat(repeatLogin).isPresent();
       assertThat(activeTyler.get()).isEqualTo(repeatLogin.get());
