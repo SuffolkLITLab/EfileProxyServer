@@ -2,6 +2,8 @@ package edu.suffolk.litlab.efsp.server;
 
 import static edu.suffolk.litlab.efsp.stdlib.StdLib.GetEnv;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import edu.suffolk.litlab.efsp.ConfigurationLoader;
 import edu.suffolk.litlab.efsp.Jurisdiction;
@@ -193,9 +195,10 @@ public class EfspServer {
   }
 
   public static List<?> providers(Supplier<LoginDatabase> ldSupplier) {
+    var objMapper = new ObjectMapper().registerModule(new Jdk8Module());
     return List.of(
         new JAXBElementProvider<Object>(),
-        new JacksonJsonProvider(), // TODO(brycew): JAXBJSon?
+        new JacksonJsonProvider(objMapper), // TODO(brycew): JAXBJSon?
         new SoapExceptionMapper(),
         new JsonExceptionMapper(),
         new EnumExceptionMapper(),
