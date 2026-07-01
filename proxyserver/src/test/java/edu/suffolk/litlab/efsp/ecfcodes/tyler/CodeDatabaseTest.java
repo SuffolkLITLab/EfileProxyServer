@@ -9,8 +9,6 @@ import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.db.DatabaseVersionTest;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
-import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseCategory;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CaseType;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
@@ -53,7 +51,7 @@ public class CodeDatabaseTest {
             postgres.getJdbcUrl(),
             postgres.getUsername(),
             postgres.getPassword());
-    cd = new CodeDatabase(new TylerDomain(Jurisdiction.ILLINOIS, TylerEnv.STAGE), conn);
+    cd = new CodeDatabase(Jurisdiction.ILLINOIS, conn);
     cd.createTablesIfAbsent();
   }
 

@@ -12,8 +12,6 @@ import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.db.DatabaseVersionTest;
 import edu.suffolk.litlab.efsp.server.EfspServer;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
-import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -58,7 +56,7 @@ public class CodesServiceTest {
             100);
     Supplier<CodeDatabase> cdSupplier =
         () -> {
-          return CodeDatabase.fromDS(new TylerDomain(Jurisdiction.ILLINOIS, TylerEnv.STAGE), ds);
+          return CodeDatabase.fromDS(Jurisdiction.ILLINOIS, ds);
         };
     try (CodeDatabase cd = cdSupplier.get()) {
       cd.createTablesIfAbsent();
