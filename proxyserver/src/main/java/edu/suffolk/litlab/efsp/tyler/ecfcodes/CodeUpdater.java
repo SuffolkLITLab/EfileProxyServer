@@ -649,7 +649,6 @@ public class CodeUpdater {
 
   /** Should just be called from main. */
   private static CodeDatabaseAPI makeCodeDatabase(Jurisdiction jurisdiction) {
-    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
     try {
       DataSource ds =
           DatabaseCreator.makeDataSource(
