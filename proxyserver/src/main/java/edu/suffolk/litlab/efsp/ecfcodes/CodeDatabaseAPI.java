@@ -1,9 +1,9 @@
 package edu.suffolk.litlab.efsp.ecfcodes;
 
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.db.Database;
 import edu.suffolk.litlab.efsp.stdlib.SQLFunction;
 import edu.suffolk.litlab.efsp.stdlib.SQLGetter;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,11 +33,8 @@ public abstract class CodeDatabaseAPI extends Database {
     super(conn);
   }
 
-  /**
-   * The domain (the juristiction + environment, e.g. illinois-stage) that this database is working
-   * over.
-   */
-  public abstract TylerDomain getDomain();
+  /** The jurisdiction (e.g illinois) that this database is working over */
+  public abstract Jurisdiction getDomain();
 
   /**
    * Gets all court location identifiers (CLI) stored in the database.

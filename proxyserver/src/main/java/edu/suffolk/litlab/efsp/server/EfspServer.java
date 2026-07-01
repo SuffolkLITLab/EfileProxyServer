@@ -31,7 +31,6 @@ import edu.suffolk.litlab.efsp.server.utils.OrgMessageSender;
 import edu.suffolk.litlab.efsp.server.utils.SendMessage;
 import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapExceptionMapper;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import edu.suffolk.litlab.efsp.utils.InterviewToFilingInformationConverter;
@@ -160,8 +159,8 @@ public class EfspServer {
       @SuppressWarnings("resource")
       LoginDatabase ld = new LoginDatabase(userConn);
       @SuppressWarnings("resource")
-      // Jurisdiction and env args can be null, we're just making the tables
-      CodeDatabase cd = new CodeDatabase(new TylerDomain(null, null), codeConn);
+      // Jurisdiction can be null here, we're just checking if tables exist
+      CodeDatabase cd = new CodeDatabase(null, codeConn);
       boolean brandNew = !ld.tablesExist() || !cd.tablesExist();
 
       // Now we can tell if everything is being set up fresh. If so, we'll make everything now.
