@@ -180,7 +180,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     SoapX509CallbackHandler.setX509Password(x509Password);
 
     log.info("Checking table if absent");
-    try (CodeDatabase cd = new CodeDatabase(tylerDomain, codeDs.getConnection())) {
+    try (CodeDatabase cd = new CodeDatabase(tylerDomain.jurisdiction(), codeDs.getConnection())) {
       cd.createTablesIfAbsent();
       List<String> locations = cd.getAllLocations();
       log.info("All locations for {}: {}", tylerDomain, locations);
@@ -263,7 +263,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
   }
 
   public Set<String> getCourts() {
-    try (CodeDatabase cd = new CodeDatabase(tylerDomain, codeDs.getConnection())) {
+    try (CodeDatabase cd = new CodeDatabase(tylerDomain.jurisdiction(), codeDs.getConnection())) {
       Set<String> allCourts = new HashSet<String>(cd.getAllLocations());
       // 0 and 1 are special "system" courts that have defaults for all courts.
       // They aren't available for filing
@@ -286,7 +286,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
     Supplier<CodeDatabase> cdSupplier =
         () -> {
-          return CodeDatabase.fromDS(tylerDomain, this.codeDs);
+          return CodeDatabase.fromDS(tylerDomain.jurisdiction(), this.codeDs);
         };
 
     PolicyCacher policyCacher = new PolicyCacher();
@@ -358,7 +358,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
 
   @Override
   public void setupGlobals() {
-    Supplier<CodeDatabase> makeCD = () -> CodeDatabase.fromDS(tylerDomain, codeDs);
+    Supplier<CodeDatabase> makeCD = () -> CodeDatabase.fromDS(tylerDomain.jurisdiction(), codeDs);
     Supplier<UserDatabase> makeUD = () -> UserDatabase.fromDS(userDs);
     OasisEcfWsCallback implementor = new OasisEcfWsCallback(makeCD, makeUD, sender);
     String baseLocalUrl = ServiceHelpers.BASE_LOCAL_URL;

@@ -3,8 +3,6 @@ package edu.suffolk.litlab.efsp.db;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.suffolk.litlab.efsp.Jurisdiction;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
-import edu.suffolk.litlab.efsp.tyler.TylerEnv;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.FilingComponent;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.OptionalServiceCode;
@@ -143,11 +141,10 @@ public class DatabaseVersionTest {
     rs = codeSt.executeQuery("SELECT DISTINCT domain from location");
 
     while (rs.next()) {
-      assertEquals(rs.getString(1), "illinois-stage");
+      assertEquals(rs.getString(1), "illinois");
     }
 
-    try (var codesDatabase =
-        new CodeDatabase(new TylerDomain(Jurisdiction.ILLINOIS, TylerEnv.STAGE), codeConn)) {
+    try (var codesDatabase = new CodeDatabase(Jurisdiction.ILLINOIS, codeConn)) {
       List<OptionalServiceCode> opts = codesDatabase.getOptionalServices("adams", "27959");
       assertEquals(23, opts.size());
       List<PartyType> partyTypes = codesDatabase.getPartyTypeFor("adams", "27898");

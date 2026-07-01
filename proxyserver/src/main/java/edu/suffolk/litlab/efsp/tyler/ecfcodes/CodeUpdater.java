@@ -15,7 +15,6 @@ import edu.suffolk.litlab.efsp.server.utils.ServiceHelpers;
 import edu.suffolk.litlab.efsp.server.utils.SoapX509CallbackHandler;
 import edu.suffolk.litlab.efsp.tyler.SoapClientChooser;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.TylerUserClient;
 import edu.suffolk.litlab.efsp.tyler.TylerUserFactory;
 import edu.suffolk.litlab.efsp.tyler.TylerUserNamePassword;
@@ -308,7 +307,7 @@ public class CodeUpdater {
   }
 
   private static Map<String, CourtPolicyResponseMessageType> streamPolicies(
-      Stream<String> locations, TylerDomain domain, FilingReviewMDEPort filingPort) {
+      Stream<String> locations, Jurisdiction jurisdiction, FilingReviewMDEPort filingPort) {
     var policies = new ConcurrentHashMap<String, CourtPolicyResponseMessageType>();
     locations.forEach(
         location -> {
@@ -317,7 +316,8 @@ public class CodeUpdater {
             CourtPolicyResponseMessageType p = filingPort.getPolicy(m);
             policies.put(location, p);
           } catch (SOAPFaultException ex) {
-            log.warn("Got a SOAP excption getting policy for {} in {}: ", location, domain, ex);
+            log.warn(
+                "Got a SOAP excption getting policy for {} in {}: ", location, jurisdiction, ex);
           }
         });
     return policies;
@@ -649,7 +649,6 @@ public class CodeUpdater {
 
   /** Should just be called from main. */
   private static CodeDatabaseAPI makeCodeDatabase(Jurisdiction jurisdiction) {
-    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
     try {
       DataSource ds =
           DatabaseCreator.makeDataSource(
@@ -661,7 +660,7 @@ public class CodeUpdater {
               10,
               100);
 
-      return CodeDatabase.fromDS(domain, ds);
+      return CodeDatabase.fromDS(jurisdiction, ds);
     } catch (Exception ex) {
       throw new RuntimeException(ex);
     }

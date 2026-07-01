@@ -1,5 +1,6 @@
 package edu.suffolk.litlab.efsp.tyler.ecfcodes;
 
+import edu.suffolk.litlab.efsp.Jurisdiction;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeAndLocation;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseAPI;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseUtils;
@@ -7,7 +8,6 @@ import edu.suffolk.litlab.efsp.ecfcodes.CodeDatabaseUtils.UnsupportedTableExcept
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDocException;
 import edu.suffolk.litlab.efsp.ecfcodes.CodeDocIterator;
 import edu.suffolk.litlab.efsp.ecfcodes.NameAndCode;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -39,19 +39,16 @@ import org.slf4j.LoggerFactory;
 public class CodeDatabase extends CodeDatabaseAPI {
   private static final Logger log = LoggerFactory.getLogger(CodeDatabase.class);
 
-  /** The tyler jurisdiction + tyler environment, i.e. illinois-stage. */
-  private final TylerDomain tylerDomain;
+  private final Jurisdiction jurisdiction;
 
-  // TODO(brycew): the database doesn't need the env. Should be implicit, but it's gonna be a lot to
-  // take out.
-  public CodeDatabase(TylerDomain domain, Connection conn) {
+  public CodeDatabase(Jurisdiction jurisdiction, Connection conn) {
     super(conn);
-    this.tylerDomain = domain;
+    this.jurisdiction = jurisdiction;
   }
 
-  public static CodeDatabase fromDS(TylerDomain domain, DataSource ds) {
+  public static CodeDatabase fromDS(Jurisdiction jurisdiction, DataSource ds) {
     try {
-      CodeDatabase cd = new CodeDatabase(domain, ds.getConnection());
+      CodeDatabase cd = new CodeDatabase(jurisdiction, ds.getConnection());
       return cd;
     } catch (SQLException e) {
       log.error("In CodeDatabase constructor, can't get connection: ", e);
@@ -83,12 +80,12 @@ public class CodeDatabase extends CodeDatabaseAPI {
   }
 
   @Override
-  public TylerDomain getDomain() {
-    return tylerDomain;
+  public Jurisdiction getDomain() {
+    return jurisdiction;
   }
 
   private String domainStr() {
-    return tylerDomain.getName();
+    return jurisdiction.getName();
   }
 
   public void createTableIfAbsent(String tableName) throws SQLException {
@@ -714,7 +711,7 @@ public class CodeDatabase extends CodeDatabaseAPI {
         vacuumSt.executeUpdate();
       }
     } catch (SQLException ex) {
-      log.error("Error when vacuuming in {}", this.tylerDomain, ex);
+      log.error("Error when vacuuming in {}", this.jurisdiction, ex);
     }
   }
 

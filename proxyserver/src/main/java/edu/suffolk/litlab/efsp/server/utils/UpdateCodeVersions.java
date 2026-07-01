@@ -5,7 +5,6 @@ import edu.suffolk.litlab.efsp.db.DatabaseCreator;
 import edu.suffolk.litlab.efsp.server.logging.MDCWrappers;
 import edu.suffolk.litlab.efsp.server.logging.Monitor;
 import edu.suffolk.litlab.efsp.tyler.TylerClients;
-import edu.suffolk.litlab.efsp.tyler.TylerDomain;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeDatabase;
 import edu.suffolk.litlab.efsp.tyler.ecfcodes.CodeUpdater;
 import java.sql.Connection;
@@ -42,7 +41,6 @@ public class UpdateCodeVersions implements Job {
   public void execute(JobExecutionContext context) throws JobExecutionException {
     JobDataMap dataMap = context.getJobDetail().getJobDataMap();
     var jurisdiction = Jurisdiction.parse(dataMap.getString("TYLER_JURISDICTION"));
-    var domain = new TylerDomain(jurisdiction, TylerClients.getTylerEnv());
     MDC.put(MDCWrappers.OPERATION, "UpdateCodeVersions.execute");
     MDC.put(MDCWrappers.USER_ID, jurisdiction.getName());
     String x509Password = dataMap.getString("X509_PASSWORD");
@@ -55,7 +53,7 @@ public class UpdateCodeVersions implements Job {
     boolean success = true;
     try (Connection conn =
             DatabaseCreator.makeSingleConnection(pgDb, pgFullUrl, pgUser, pgPassword);
-        CodeDatabase cd = new CodeDatabase(domain, conn)) {
+        CodeDatabase cd = new CodeDatabase(jurisdiction, conn)) {
       success =
           CodeUpdater.executeCommand(() -> cd, jurisdiction, List.of("refresh"), x509Password);
     } catch (SQLException e) {
