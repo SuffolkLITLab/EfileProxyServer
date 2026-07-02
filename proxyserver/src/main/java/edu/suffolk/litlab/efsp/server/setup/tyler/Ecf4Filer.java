@@ -95,7 +95,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.headers.Header;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -995,6 +999,14 @@ public class Ecf4Filer extends EfmCheckableFilingInterface {
     }
 
     CourtRecordMDEPort port = recordFactory.getCourtRecordMDEPort();
+
+    Client client = ClientProxy.getClient(port);
+    HTTPConduit http = (HTTPConduit) client.getConduit();
+    HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
+    httpClientPolicy.setConnectionTimeout(180_000);
+    httpClientPolicy.setReceiveTimeout(180_000);
+    http.setClient(httpClientPolicy);
+
     ServiceHelpers.setupServicePort((BindingProvider) port);
     Map<String, Object> ctx = ((BindingProvider) port).getRequestContext();
     List<Header> headersList = List.of(creds.get().toHeader());
