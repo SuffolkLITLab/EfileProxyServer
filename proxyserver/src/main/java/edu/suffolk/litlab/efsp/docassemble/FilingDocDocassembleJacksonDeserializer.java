@@ -34,6 +34,8 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -361,7 +363,7 @@ public class FilingDocDocassembleJacksonDeserializer {
     // localhost, since things could be on the same server / network. TODO: inject an allow-list
     // into here somehow
     try {
-      URL inUrl = new URL(dataUrl);
+      URL inUrl = (new URI(dataUrl)).toURL();
 
       HttpURLConnection conn = (HttpURLConnection) inUrl.openConnection();
       conn.setRequestMethod("GET");
@@ -389,6 +391,11 @@ public class FilingDocDocassembleJacksonDeserializer {
     } catch (IOException ex) {
       FilingError err =
           serverError("IOException trying to connect to data_url (" + dataUrl + "):" + ex);
+      collector.error(err);
+      throw err;
+    } catch (URISyntaxException ex) {
+      FilingError err =
+          serverError("URISyntaxException trying to connect to data_url (" + dataUrl + "):" + ex);
       collector.error(err);
       throw err;
     }

@@ -27,6 +27,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Savepoint;
@@ -149,9 +151,10 @@ public class CodeUpdater {
    * @return InputStream
    * @throws IOException
    */
-  public static InputStream getCodesZip(String toRead, String authHeader) throws IOException {
+  public static InputStream getCodesZip(String toRead, String authHeader)
+      throws IOException, URISyntaxException {
     if (toRead.startsWith("http://") || toRead.startsWith("https://")) {
-      URL url = new URL(toRead);
+      URL url = (new URI(toRead)).toURL();
       HttpURLConnection conn = (HttpURLConnection) url.openConnection();
       conn.setRequestMethod("GET");
       conn.setRequestProperty("tyl-efm-api", authHeader);
@@ -170,9 +173,11 @@ public class CodeUpdater {
    * @param signedTime
    * @param process
    * @return
+   * @throws URISyntaxException
    */
   private boolean downloadAndProcessZip(
-      String toRead, String signedTime, Function<InputStream, Boolean> process) {
+      String toRead, String signedTime, Function<InputStream, Boolean> process)
+      throws URISyntaxException {
     Instant startTable = Instant.now();
     try (InputStream urlStream = getCodesZip(toRead, signedTime)) {
       // Write out the zip file
@@ -195,7 +200,7 @@ public class CodeUpdater {
   }
 
   private boolean downloadSystemTables(String baseUrl, CodeDatabaseAPI cd, HeaderSigner signer)
-      throws SQLException, IOException, JAXBException {
+      throws SQLException, IOException, JAXBException, URISyntaxException {
     MDC.put(MDCWrappers.SESSION_ID, "system");
     Map<String, String> codeUrls =
         Map.of(
@@ -299,7 +304,7 @@ public class CodeUpdater {
               zip.getNextEntry();
               codeLists.put(
                   toDownload.tableName, new DownloadedCodes(toDownload.tableName, location, zip));
-            } catch (IOException e) {
+            } catch (IOException | URISyntaxException e) {
               log.error("Error when downloading XMLs", e);
             }
           }
@@ -440,9 +445,13 @@ public class CodeUpdater {
     return toReturn;
   }
 
-  /** Returns true if successful, false if not successful */
+  /**
+   * Returns true if successful, false if not successful
+   *
+   * @throws URISyntaxException
+   */
   public boolean updateAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabaseAPI cd)
-      throws SQLException, IOException, JAXBException {
+      throws SQLException, IOException, JAXBException, URISyntaxException {
     cd.setAutoCommit(false);
     HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
     if (!downloadSystemTables(baseUrl, cd, signer)) {
@@ -505,15 +514,17 @@ public class CodeUpdater {
 
   /**
    * Downloads all of the codes from scratch, deleting all of the existing info already in tables.
+   *
+   * @throws URISyntaxException
    */
   public boolean replaceAll(String baseUrl, FilingReviewMDEPort filingPort, CodeDatabaseAPI cd)
-      throws SQLException, IOException, JAXBException {
+      throws SQLException, IOException, JAXBException, URISyntaxException {
     return replaceSome(baseUrl, filingPort, cd, List.of());
   }
 
   public boolean replaceSome(
       String baseUrl, FilingReviewMDEPort filingPort, CodeDatabaseAPI cd, List<String> locs)
-      throws SQLException, IOException, JAXBException {
+      throws SQLException, IOException, JAXBException, URISyntaxException {
     cd.setAutoCommit(false);
     HeaderSigner signer = new HeaderSigner(this.pathToKeystore, this.x509Password);
     log.info("Downloading system tables for {}", cd.getDomain());
@@ -583,8 +594,12 @@ public class CodeUpdater {
     return filingPort;
   }
 
-  /** Downloads a single codes zip. For Debugging. */
-  public boolean downloadIndiv(List<String> args) {
+  /**
+   * Downloads a single codes zip. For Debugging.
+   *
+   * @throws URISyntaxException
+   */
+  public boolean downloadIndiv(List<String> args) throws URISyntaxException {
     if (args.size() < 3) {
       log.error(
           "Need to pass in args: downloadIndiv <jurisdiction> <table> <location or blank for"
@@ -641,7 +656,7 @@ public class CodeUpdater {
         log.error("Command {} isn't a real command", command);
         return false;
       }
-    } catch (SQLException | IOException | JAXBException e) {
+    } catch (SQLException | IOException | JAXBException | URISyntaxException e) {
       log.error("Exception when doing code updating! ", e);
       return false;
     }
