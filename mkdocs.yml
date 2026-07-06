@@ -15,3 +15,5 @@ theme:
 plugins:
   - search
   - awesome-nav
+  - mermaid2:
+      version: 11.16.0
