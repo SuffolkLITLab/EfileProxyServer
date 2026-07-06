@@ -33,7 +33,7 @@ jobs:
           python-version: '3.10'
       - name: Build Mkdocs
         run: |
-            pip install mkdocs mkdocs-awesome-nav
+            pip install mkdocs mkdocs-awesome-nav mkdocs-mermaid2-plugin
             mkdocs build
       - uses: actions/setup-java@v4
         with:
