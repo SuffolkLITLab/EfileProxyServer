@@ -145,7 +145,7 @@ public class TylerModuleSetup implements EfmModuleSetup {
     args.pgUser = GetEnv("POSTGRES_USER").orElse("postgres");
     Optional<String> maybeDbPassword = GetEnv("POSTGRES_PASSWORD");
     if (maybeDbPassword.isEmpty()) {
-      log.warn("You need to define a TOGA_URL. Tyler will not be used.");
+      log.warn("You need to define a POSTGRES_PASSWORD. Tyler will not be used.");
       return Optional.empty();
     }
     args.pgPassword = maybeDbPassword.get();
